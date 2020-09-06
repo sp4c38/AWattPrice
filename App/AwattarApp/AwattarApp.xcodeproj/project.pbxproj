@@ -1,0 +1,585 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		617D85B225052C35009E18FB /* AwattarAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617D85B125052C35009E18FB /* AwattarAppApp.swift */; };
+		617D85B425052C35009E18FB /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617D85B325052C35009E18FB /* ContentView.swift */; };
+		617D85B625052C37009E18FB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 617D85B525052C37009E18FB /* Assets.xcassets */; };
+		617D85B925052C37009E18FB /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 617D85B825052C37009E18FB /* Preview Assets.xcassets */; };
+		617D85C425052C37009E18FB /* AwattarAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617D85C325052C37009E18FB /* AwattarAppTests.swift */; };
+		617D85CF25052C37009E18FB /* AwattarAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617D85CE25052C37009E18FB /* AwattarAppUITests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		617D85C025052C37009E18FB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 617D85A625052C35009E18FB /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 617D85AD25052C35009E18FB;
+			remoteInfo = AwattarApp;
+		};
+		617D85CB25052C37009E18FB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 617D85A625052C35009E18FB /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 617D85AD25052C35009E18FB;
+			remoteInfo = AwattarApp;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		617D85AE25052C35009E18FB /* AwattarApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AwattarApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		617D85B125052C35009E18FB /* AwattarAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AwattarAppApp.swift; sourceTree = "<group>"; };
+		617D85B325052C35009E18FB /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		617D85B525052C37009E18FB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		617D85B825052C37009E18FB /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		617D85BA25052C37009E18FB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		617D85BF25052C37009E18FB /* AwattarAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AwattarAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		617D85C325052C37009E18FB /* AwattarAppTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AwattarAppTests.swift; sourceTree = "<group>"; };
+		617D85C525052C37009E18FB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		617D85CA25052C37009E18FB /* AwattarAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AwattarAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		617D85CE25052C37009E18FB /* AwattarAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AwattarAppUITests.swift; sourceTree = "<group>"; };
+		617D85D025052C37009E18FB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		617D85AB25052C35009E18FB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		617D85BC25052C37009E18FB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		617D85C725052C37009E18FB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		617D85A525052C35009E18FB = {
+			isa = PBXGroup;
+			children = (
+				617D85B025052C35009E18FB /* AwattarApp */,
+				617D85C225052C37009E18FB /* AwattarAppTests */,
+				617D85CD25052C37009E18FB /* AwattarAppUITests */,
+				617D85AF25052C35009E18FB /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		617D85AF25052C35009E18FB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				617D85AE25052C35009E18FB /* AwattarApp.app */,
+				617D85BF25052C37009E18FB /* AwattarAppTests.xctest */,
+				617D85CA25052C37009E18FB /* AwattarAppUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		617D85B025052C35009E18FB /* AwattarApp */ = {
+			isa = PBXGroup;
+			children = (
+				617D85B125052C35009E18FB /* AwattarAppApp.swift */,
+				617D85B325052C35009E18FB /* ContentView.swift */,
+				617D85B525052C37009E18FB /* Assets.xcassets */,
+				617D85BA25052C37009E18FB /* Info.plist */,
+				617D85B725052C37009E18FB /* Preview Content */,
+			);
+			path = AwattarApp;
+			sourceTree = "<group>";
+		};
+		617D85B725052C37009E18FB /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				617D85B825052C37009E18FB /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		617D85C225052C37009E18FB /* AwattarAppTests */ = {
+			isa = PBXGroup;
+			children = (
+				617D85C325052C37009E18FB /* AwattarAppTests.swift */,
+				617D85C525052C37009E18FB /* Info.plist */,
+			);
+			path = AwattarAppTests;
+			sourceTree = "<group>";
+		};
+		617D85CD25052C37009E18FB /* AwattarAppUITests */ = {
+			isa = PBXGroup;
+			children = (
+				617D85CE25052C37009E18FB /* AwattarAppUITests.swift */,
+				617D85D025052C37009E18FB /* Info.plist */,
+			);
+			path = AwattarAppUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		617D85AD25052C35009E18FB /* AwattarApp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 617D85D325052C37009E18FB /* Build configuration list for PBXNativeTarget "AwattarApp" */;
+			buildPhases = (
+				617D85AA25052C35009E18FB /* Sources */,
+				617D85AB25052C35009E18FB /* Frameworks */,
+				617D85AC25052C35009E18FB /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = AwattarApp;
+			productName = AwattarApp;
+			productReference = 617D85AE25052C35009E18FB /* AwattarApp.app */;
+			productType = "com.apple.product-type.application";
+		};
+		617D85BE25052C37009E18FB /* AwattarAppTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 617D85D625052C37009E18FB /* Build configuration list for PBXNativeTarget "AwattarAppTests" */;
+			buildPhases = (
+				617D85BB25052C37009E18FB /* Sources */,
+				617D85BC25052C37009E18FB /* Frameworks */,
+				617D85BD25052C37009E18FB /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				617D85C125052C37009E18FB /* PBXTargetDependency */,
+			);
+			name = AwattarAppTests;
+			productName = AwattarAppTests;
+			productReference = 617D85BF25052C37009E18FB /* AwattarAppTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		617D85C925052C37009E18FB /* AwattarAppUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 617D85D925052C37009E18FB /* Build configuration list for PBXNativeTarget "AwattarAppUITests" */;
+			buildPhases = (
+				617D85C625052C37009E18FB /* Sources */,
+				617D85C725052C37009E18FB /* Frameworks */,
+				617D85C825052C37009E18FB /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				617D85CC25052C37009E18FB /* PBXTargetDependency */,
+			);
+			name = AwattarAppUITests;
+			productName = AwattarAppUITests;
+			productReference = 617D85CA25052C37009E18FB /* AwattarAppUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		617D85A625052C35009E18FB /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1200;
+				LastUpgradeCheck = 1200;
+				TargetAttributes = {
+					617D85AD25052C35009E18FB = {
+						CreatedOnToolsVersion = 12.0;
+					};
+					617D85BE25052C37009E18FB = {
+						CreatedOnToolsVersion = 12.0;
+						TestTargetID = 617D85AD25052C35009E18FB;
+					};
+					617D85C925052C37009E18FB = {
+						CreatedOnToolsVersion = 12.0;
+						TestTargetID = 617D85AD25052C35009E18FB;
+					};
+				};
+			};
+			buildConfigurationList = 617D85A925052C35009E18FB /* Build configuration list for PBXProject "AwattarApp" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 617D85A525052C35009E18FB;
+			productRefGroup = 617D85AF25052C35009E18FB /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				617D85AD25052C35009E18FB /* AwattarApp */,
+				617D85BE25052C37009E18FB /* AwattarAppTests */,
+				617D85C925052C37009E18FB /* AwattarAppUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		617D85AC25052C35009E18FB /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				617D85B925052C37009E18FB /* Preview Assets.xcassets in Resources */,
+				617D85B625052C37009E18FB /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		617D85BD25052C37009E18FB /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		617D85C825052C37009E18FB /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		617D85AA25052C35009E18FB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				617D85B425052C35009E18FB /* ContentView.swift in Sources */,
+				617D85B225052C35009E18FB /* AwattarAppApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		617D85BB25052C37009E18FB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				617D85C425052C37009E18FB /* AwattarAppTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		617D85C625052C37009E18FB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				617D85CF25052C37009E18FB /* AwattarAppUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		617D85C125052C37009E18FB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 617D85AD25052C35009E18FB /* AwattarApp */;
+			targetProxy = 617D85C025052C37009E18FB /* PBXContainerItemProxy */;
+		};
+		617D85CC25052C37009E18FB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 617D85AD25052C35009E18FB /* AwattarApp */;
+			targetProxy = 617D85CB25052C37009E18FB /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		617D85D125052C37009E18FB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		617D85D225052C37009E18FB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		617D85D425052C37009E18FB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_ASSET_PATHS = "\"AwattarApp/Preview Content\"";
+				DEVELOPMENT_TEAM = JC4B7WF2UL;
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = AwattarApp/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = me.sp4c38.AwattarApp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		617D85D525052C37009E18FB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_ASSET_PATHS = "\"AwattarApp/Preview Content\"";
+				DEVELOPMENT_TEAM = JC4B7WF2UL;
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = AwattarApp/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = me.sp4c38.AwattarApp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		617D85D725052C37009E18FB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = JC4B7WF2UL;
+				INFOPLIST_FILE = AwattarAppTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = me.sp4c38.AwattarAppTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AwattarApp.app/AwattarApp";
+			};
+			name = Debug;
+		};
+		617D85D825052C37009E18FB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = JC4B7WF2UL;
+				INFOPLIST_FILE = AwattarAppTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = me.sp4c38.AwattarAppTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AwattarApp.app/AwattarApp";
+			};
+			name = Release;
+		};
+		617D85DA25052C37009E18FB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = JC4B7WF2UL;
+				INFOPLIST_FILE = AwattarAppUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = me.sp4c38.AwattarAppUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = AwattarApp;
+			};
+			name = Debug;
+		};
+		617D85DB25052C37009E18FB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = JC4B7WF2UL;
+				INFOPLIST_FILE = AwattarAppUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = me.sp4c38.AwattarAppUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = AwattarApp;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		617D85A925052C35009E18FB /* Build configuration list for PBXProject "AwattarApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				617D85D125052C37009E18FB /* Debug */,
+				617D85D225052C37009E18FB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		617D85D325052C37009E18FB /* Build configuration list for PBXNativeTarget "AwattarApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				617D85D425052C37009E18FB /* Debug */,
+				617D85D525052C37009E18FB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		617D85D625052C37009E18FB /* Build configuration list for PBXNativeTarget "AwattarAppTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				617D85D725052C37009E18FB /* Debug */,
+				617D85D825052C37009E18FB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		617D85D925052C37009E18FB /* Build configuration list for PBXNativeTarget "AwattarAppUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				617D85DA25052C37009E18FB /* Debug */,
+				617D85DB25052C37009E18FB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 617D85A625052C35009E18FB /* Project object */;
+}

@@ -7,6 +7,8 @@ import configparser
 import json
 import requests
 
+from data_api.data import merge_data
+
 def download_awattar_energy_prices(config):
     # Downloads the price for energy in the time range:
     # If current time is before 14'clock: 14 o'clock of the previouse day to 14 o'clock of current day
@@ -48,9 +50,9 @@ def main():
     config.read(config_file_path)
 
     # Download prices for today and for tomorrow (if there are already prices for tomorrow) for tomorrow day from the aWATTar API
-    arrow_data = download_awattar_energy_prices(config)
+    awattar_data = download_awattar_energy_prices(config)
 
-    return {"Arrow Data": arrow_data}
+    return merge_data.main(awattar = awattar_data)
 
 if __name__ == '__main__':
     main()

@@ -7,7 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		617D85B225052C35009E18FB /* AwattarAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617D85B125052C35009E18FB /* AwattarAppApp.swift */; };
+		614E784D25068F6100A7ED83 /* DownloadEnergyData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 614E784C25068F6100A7ED83 /* DownloadEnergyData.swift */; };
+		617D85B225052C35009E18FB /* AwattarApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617D85B125052C35009E18FB /* AwattarApp.swift */; };
 		617D85B425052C35009E18FB /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617D85B325052C35009E18FB /* ContentView.swift */; };
 		617D85B625052C37009E18FB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 617D85B525052C37009E18FB /* Assets.xcassets */; };
 		617D85B925052C37009E18FB /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 617D85B825052C37009E18FB /* Preview Assets.xcassets */; };
@@ -33,8 +34,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		614E784C25068F6100A7ED83 /* DownloadEnergyData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadEnergyData.swift; sourceTree = "<group>"; };
 		617D85AE25052C35009E18FB /* AwattarApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AwattarApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		617D85B125052C35009E18FB /* AwattarAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AwattarAppApp.swift; sourceTree = "<group>"; };
+		617D85B125052C35009E18FB /* AwattarApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AwattarApp.swift; sourceTree = "<group>"; };
 		617D85B325052C35009E18FB /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		617D85B525052C37009E18FB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		617D85B825052C37009E18FB /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
@@ -72,6 +74,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		614E784B25068E0600A7ED83 /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				614E784C25068F6100A7ED83 /* DownloadEnergyData.swift */,
+			);
+			path = Data;
+			sourceTree = "<group>";
+		};
 		617D85A525052C35009E18FB = {
 			isa = PBXGroup;
 			children = (
@@ -95,8 +105,9 @@
 		617D85B025052C35009E18FB /* AwattarApp */ = {
 			isa = PBXGroup;
 			children = (
-				617D85B125052C35009E18FB /* AwattarAppApp.swift */,
+				614E784B25068E0600A7ED83 /* Data */,
 				617D85B325052C35009E18FB /* ContentView.swift */,
+				617D85B125052C35009E18FB /* AwattarApp.swift */,
 				617D85B525052C37009E18FB /* Assets.xcassets */,
 				617D85BA25052C37009E18FB /* Info.plist */,
 				617D85B725052C37009E18FB /* Preview Content */,
@@ -259,8 +270,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				614E784D25068F6100A7ED83 /* DownloadEnergyData.swift in Sources */,
 				617D85B425052C35009E18FB /* ContentView.swift in Sources */,
-				617D85B225052C35009E18FB /* AwattarAppApp.swift in Sources */,
+				617D85B225052C35009E18FB /* AwattarApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

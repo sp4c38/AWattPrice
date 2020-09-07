@@ -8,10 +8,11 @@
 import SwiftUI
 
 @main
-struct AwattarAppApp: App {
+struct AwattarApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(EnergyData())
         }
     }
 }

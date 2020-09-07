@@ -8,9 +8,26 @@
 import SwiftUI
 
 struct ContentView: View {
+    @EnvironmentObject var energyData: EnergyData
+//    let dateFormatter: DateFormatter
+    
+    init() {
+//        self.dateFormatter = DateFormatter()
+//        self.dateFormatter.dateFormat
+    }
+    
     var body: some View {
-        Text("Hello, world!")
-            .padding()
+        VStack {
+            if energyData.energyData != nil {
+                List(energyData.energyData!.awattar.prices, id: \.startTimestamp) { price in
+                    let date = Date(timeIntervalSince1970: TimeInterval(price.startTimestamp))
+                    Text(date.description)
+                    Text(price.unit)
+                }
+            }
+            
+            Text("Hello")
+        }
     }
 }
 

@@ -10,15 +10,23 @@ import SwiftUI
 struct EnergyPriceGraph: View {
     // Displays a graph for the price of energy for a certain time
     var awattarDataPoint: AwattarDataPoint
-
+    var maxPrice: Float?
+    
     var body: some View {
-        GeometryReader { geometry in
+        GeometryReader { geometry -> Path in
             let width = geometry.size.width
             let height = geometry.size.height
-            let priceWidth = width / CGFloat(awattarDataPoint.marketprice)
             
-            Path { path in
-                path.addRect(CGRect(x: 0, y: 0, width: priceWidth, height: height))
+            let priceBarWidth: CGFloat
+            
+            if maxPrice != nil {
+                priceBarWidth = CGFloat(awattarDataPoint.marketprice / maxPrice!) * width
+            } else {
+                priceBarWidth = width
+            }
+            
+            return Path { path in
+                path.addRect(CGRect(x: 0, y: 0, width: priceBarWidth, height: height))
             }
         }
     }

@@ -26,34 +26,51 @@ struct ContentView: View {
     
     var body: some View {
         NavigationView {
-            VStack {
-                if energyData.energyData != nil {
-                    List(energyData.energyData!.awattar.prices, id: \.startTimestamp) { price in
-                        let startDate = Date(timeIntervalSince1970: TimeInterval(price.startTimestamp / 1000))
-                        let endDate = Date(timeIntervalSince1970: TimeInterval(price.endTimestamp / 1000))
-                        
-                        HStack(spacing: 5) {
-                            EnergyPriceGraph(awattarDataPoint: price)
+            if energyData.energyData != nil {
+                ScrollView(showsIndicators: false) {
+                    VStack {
+                        ForEach(energyData.energyData!.awattar.prices, id: \.startTimestamp) { price in
+                            let startDate = Date(timeIntervalSince1970: TimeInterval(price.startTimestamp / 1000))
+                            let endDate = Date(timeIntervalSince1970: TimeInterval(price.endTimestamp / 1000))
                             
-                            Spacer()
-                            
-                            Text(hourFormatter.string(from: startDate))
-                            Text("-")
-                            Text(hourFormatter.string(from: endDate))
+                            HStack(spacing: 10) {
+                                EnergyPriceGraph(awattarDataPoint: price, maxPrice: energyData.energyData!.awattar.maxPrice)
+                                    .foregroundColor(Color(hue: 0.0673, saturation: 0.7155, brightness: 0.9373))
+                                
+                                Spacer()
+                                
+                                HStack(spacing: 5) {
+                                    Text(hourFormatter.string(from: startDate))
+                                    Text("-")
+                                    Text(hourFormatter.string(from: endDate))
+                                }
+                                .foregroundColor(Color.gray)
+                            }
                         }
-                        .foregroundColor(Color.gray)
                     }
+                    .padding(.top, 20)
+                    .padding(.trailing, 20)
                 }
-                
-                Text("Hello")
+                .navigationBarTitle("Strompreis")
+                .animation(.easeInOut)
+            } else {
+                VStack(spacing: 40) {
+                    Spacer()
+                    
+                    Text("Daten werden geladen")
+                        .font(.title2)
+                    
+                    Image(systemName: "bolt.fill")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 70, height: 70)
+                        .foregroundColor(Color.green)
+                    
+                    Spacer()
+                }
+                .navigationBarTitle("Strompreis")
             }
         }
-        
-//        if energyData.energyData != nil {
-//            if energyData.energyData!.awattar.prices.count >= 1 {
-//                navView.navigationBarTitle(dateFormatter.string(from: Date(timeIntervalSince1970: TimeInterval(energyData.energyData!.awattar.prices[0].startTimestamp))))
-//            }
-//        }
     }
 }
 

@@ -9,50 +9,74 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject var energyData: EnergyData
-    var dateFormatter: DateFormatter
+    
+    class ContentViewPreviewSourcesData: ObservableObject {
+        @Published var energyData: SourcesData? = SourcesData(awattar: AwattarData(prices: [AwattarDataPoint(startTimestamp: 938292, endTimestamp: 738299, marketprice: 20, unit: "Eur/MWh"), AwattarDataPoint(startTimestamp: 294992, endTimestamp: 299992, marketprice: 10, unit: "Eur/MWh")], maxPrice: 20))
+    }
+    
+//    var energyData = ContentViewPreviewSourcesData()
+//    var dateFormatter: DateFormatter
     var hourFormatter: DateFormatter
+    var numberFormatter: NumberFormatter
     
     init() {
-        dateFormatter = DateFormatter()
+//        dateFormatter = DateFormatter()
         hourFormatter = DateFormatter()
         
-        dateFormatter.locale = Locale(identifier: "de_DE")
-        dateFormatter.dateStyle = .full
+//        dateFormatter.locale = Locale(identifier: "de_DE")
+//        dateFormatter.dateStyle = .full
         hourFormatter.locale = Locale(identifier: "de_DE")
         
 //        dateFormatter.setLocalizedDateFormatFromTemplate("dd.MM.yyyy")
         hourFormatter.setLocalizedDateFormatFromTemplate("HH-mm")
+        
+        numberFormatter = NumberFormatter()
+        numberFormatter.locale = Locale(identifier: "de_DE")
+        numberFormatter.numberStyle = .currency
     }
     
     var body: some View {
         NavigationView {
             if energyData.energyData != nil {
+
                 ScrollView(showsIndicators: false) {
-                    VStack {
+                    VStack(spacing: 10) {
                         ForEach(energyData.energyData!.awattar.prices, id: \.startTimestamp) { price in
-                            let startDate = Date(timeIntervalSince1970: TimeInterval(price.startTimestamp / 1000))
-                            let endDate = Date(timeIntervalSince1970: TimeInterval(price.endTimestamp / 1000))
-                            
-                            HStack(spacing: 10) {
-                                EnergyPriceGraph(awattarDataPoint: price, maxPrice: energyData.energyData!.awattar.maxPrice)
-                                    .foregroundColor(Color(hue: 0.0673, saturation: 0.7155, brightness: 0.9373))
+                            NavigationLink(destination: HourPriceInfoView(priceDataPoint: price)) {
+                                let startDate = Date(timeIntervalSince1970: TimeInterval(price.startTimestamp / 1000))
+                                let endDate = Date(timeIntervalSince1970: TimeInterval(price.endTimestamp / 1000))
+                                let priceString = numberFormatter.string(from: NSNumber(value: price.marketprice))
                                 
-                                Spacer()
-                                
-                                HStack(spacing: 5) {
-                                    Text(hourFormatter.string(from: startDate))
-                                    Text("-")
-                                    Text(hourFormatter.string(from: endDate))
+                                if priceString != nil {
+                                    ZStack(alignment: .trailing) {
+                                        ZStack(alignment: .leading) {
+                                            EnergyPriceGraph(awattarDataPoint: price, maxPrice: energyData.energyData!.awattar.maxPrice)
+                                                .foregroundColor(Color(hue: 0.0673, saturation: 0.7155, brightness: 0.9373))
+                                            
+                                            Text(priceString!)
+                                                .padding(10)
+                                                .foregroundColor(Color.white)
+                                        }
+                                        
+                                        Spacer()
+                                        
+                                        HStack(spacing: 5) {
+                                            Text(hourFormatter.string(from: startDate))
+                                            Text("-")
+                                            Text(hourFormatter.string(from: endDate))
+                                        }
+                                        .foregroundColor(Color.black)
+                                        .opacity(0.5)
+                                        .padding(.trailing, 20)
+                                    }
                                 }
-                                .foregroundColor(Color.gray)
                             }
                         }
                     }
                     .padding(.top, 20)
-                    .padding(.trailing, 20)
                 }
                 .navigationBarTitle("Strompreis")
-                .animation(.easeInOut)
+                
             } else {
                 VStack(spacing: 40) {
                     Spacer()
@@ -75,6 +99,7 @@ struct ContentView: View {
 }
 
 struct ContentView_Previews: PreviewProvider {
+    
     static var previews: some View {
         ContentView()
     }

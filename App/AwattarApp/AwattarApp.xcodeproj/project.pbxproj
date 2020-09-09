@@ -14,6 +14,7 @@
 		617D85B925052C37009E18FB /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 617D85B825052C37009E18FB /* Preview Assets.xcassets */; };
 		617D85C425052C37009E18FB /* AwattarAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617D85C325052C37009E18FB /* AwattarAppTests.swift */; };
 		617D85CF25052C37009E18FB /* AwattarAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617D85CE25052C37009E18FB /* AwattarAppUITests.swift */; };
+		61C23FCA250923D600538585 /* HourPriceInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61C23FC9250923D600538585 /* HourPriceInfoView.swift */; };
 		61D196E52507F58D00E57BAC /* EnergyPriceGraph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61D196E42507F58D00E57BAC /* EnergyPriceGraph.swift */; };
 /* End PBXBuildFile section */
 
@@ -48,6 +49,7 @@
 		617D85CA25052C37009E18FB /* AwattarAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AwattarAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		617D85CE25052C37009E18FB /* AwattarAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AwattarAppUITests.swift; sourceTree = "<group>"; };
 		617D85D025052C37009E18FB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		61C23FC9250923D600538585 /* HourPriceInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HourPriceInfoView.swift; sourceTree = "<group>"; };
 		61D196E42507F58D00E57BAC /* EnergyPriceGraph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnergyPriceGraph.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -109,6 +111,7 @@
 			children = (
 				61D196E32507F57800E57BAC /* Graphs */,
 				614E784B25068E0600A7ED83 /* Data */,
+				61C23FC9250923D600538585 /* HourPriceInfoView.swift */,
 				617D85B325052C35009E18FB /* ContentView.swift */,
 				617D85B125052C35009E18FB /* AwattarApp.swift */,
 				617D85B525052C37009E18FB /* Assets.xcassets */,
@@ -283,6 +286,7 @@
 			files = (
 				61D196E52507F58D00E57BAC /* EnergyPriceGraph.swift in Sources */,
 				614E784D25068F6100A7ED83 /* DownloadEnergyData.swift in Sources */,
+				61C23FCA250923D600538585 /* HourPriceInfoView.swift in Sources */,
 				617D85B425052C35009E18FB /* ContentView.swift in Sources */,
 				617D85B225052C35009E18FB /* AwattarApp.swift in Sources */,
 			);

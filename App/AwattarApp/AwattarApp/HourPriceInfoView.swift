@@ -10,67 +10,100 @@ import SwiftUI
 struct HourPriceInfoView: View {
     let priceDataPoint: AwattarDataPoint
     var numberFormatter: NumberFormatter
+    var dateFormatter: DateFormatter
+    var hourFormatter: DateFormatter
     
     var priceInMWh: String?
     var priceInkWh: String?
     
     init(priceDataPoint: AwattarDataPoint) {
+        dateFormatter = DateFormatter()
+        dateFormatter.dateStyle = .full
+        
         self.priceDataPoint = priceDataPoint
         
         numberFormatter = NumberFormatter()
-        numberFormatter.numberStyle = .currency
+        numberFormatter.numberStyle = .decimal
         
-        priceInMWh = numberFormatter.string(from: NSNumber(value: priceDataPoint.marketprice))
-        priceInkWh = numberFormatter.string(from: NSNumber(value: (priceDataPoint.marketprice * 100) * 0.001)) // Price converted from mwh to kwh
+        priceInMWh = String(format: "%.2f", priceDataPoint.marketprice)
+        priceInkWh = String(format: "%.2f", (priceDataPoint.marketprice * 100) * 0.001) // Price converted from MWh to kWh
+        
+        hourFormatter = DateFormatter()
+        hourFormatter.locale = Locale(identifier: "de_DE")
+        hourFormatter.dateStyle = .none
+        hourFormatter.timeStyle = .short
     }
     
     var body: some View {
         if priceInkWh != nil && priceInMWh != nil {
-            VStack(spacing: 60) {
+            let startDate = Date(timeIntervalSince1970: TimeInterval(priceDataPoint.startTimestamp / 1000))
+            let endDate = Date(timeIntervalSince1970: TimeInterval(priceDataPoint.endTimestamp / 1000))
+            
+            VStack(spacing: 50) {
                 Image("awattarLogo")
                     .resizable()
                     .scaledToFit()
 
-                HStack(spacing: 12) {
-                    Image(systemName: "bolt")
-                        .resizable()
-                        .scaledToFit()
-                        .foregroundColor(Color.green)
-                        .frame(width: 25, alignment: .center)
+                VStack(spacing: 40) {
+                    VStack(spacing: 10) {
+                        Text(dateFormatter.string(from: startDate))
+                            .font(.title2)
+                        
+                        HStack {
+                            Text(hourFormatter.string(from: startDate))
+                                .bold()
+                                .font(.headline)
+                            Text("-")
+                            Text(hourFormatter.string(from: endDate))
+                                .bold()
+                                .font(.headline)
+                            Text("Uhr")
+                                .bold()
+                                .font(.headline)
+                        }
+                    }
                     
-                    Text("Strompreis: ")
+                    HStack(spacing: 12) {
+                        Image(systemName: "bolt")
+                            .resizable()
+                            .scaledToFit()
+                            .foregroundColor(Color.green)
+                            .frame(width: 25, alignment: .center)
+                        
+                        Text("Strompreis: ")
+                        
+                        Spacer()
+                        
+                        HStack(spacing: 20) {
+                            VStack(alignment: .trailing, spacing: 10) {
+                                Text(priceInkWh!)
+                                    .bold()
+                                Text(priceInMWh!)
+                                    .bold()
+                            }
+                            
+                            VStack(alignment: .trailing, spacing: 10) {
+                                Text(priceDataPoint.unit[1])
+                                Text(priceDataPoint.unit[0])
+                            }
+                        }
+                        .foregroundColor(Color.green)
+                        .padding(6)
+                        .background(Color.white)
+                        .cornerRadius(5)
+                    }
                     
                     Spacer()
-                    
-                    VStack(alignment: .trailing, spacing: 10) {
-                        HStack {
-                            Text(priceInkWh!)
-                            Text("Cent / kWh")
-                        }
-                        
-                        HStack {
-                            Text(priceInMWh!)
-                            Text(priceDataPoint.unit)
-                        }
-                        
-                    }
-                    .foregroundColor(Color.white)
-                    .padding(5)
-                    .background(Color.gray)
-                    .cornerRadius(5
-                    )
                 }
-                
-                Spacer()
             }
-            .padding()
+            .padding(.leading, 16)
+            .padding(.trailing, 16)
         }
-        
     }
 }
 
 struct HourPriceInfoView_Previews: PreviewProvider {
     static var previews: some View {
-        HourPriceInfoView(priceDataPoint: AwattarDataPoint(startTimestamp: 19384829, endTimestamp: 19484829, marketprice: 29.28, unit: "Eur/MWh"))
+            HourPriceInfoView(priceDataPoint: AwattarDataPoint(startTimestamp: 1599674400000, endTimestamp: 1599678000000, marketprice: 29.28, unit: ["Eur / MWh", "Eur / kWh"]))
     }
 }

@@ -34,7 +34,7 @@ struct EnergyPriceGraph: View {
 
 struct EnergyPriceGraph_Previews: PreviewProvider {
     static var previews: some View {
-        EnergyPriceGraph(awattarDataPoint: AwattarDataPoint(startTimestamp: 1599516000000, endTimestamp: 1599519600000, marketprice: 30, unit: "Eur/MWh"))
+        EnergyPriceGraph(awattarDataPoint: AwattarDataPoint(startTimestamp: 1599516000000, endTimestamp: 1599519600000, marketprice: 30, unit: ["Eur / MWh", "Eur / kWh"]))
             .frame(height: 60)
     }
 }

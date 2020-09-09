@@ -11,24 +11,18 @@ struct ContentView: View {
     @EnvironmentObject var energyData: EnergyData
     
     class ContentViewPreviewSourcesData: ObservableObject {
-        @Published var energyData: SourcesData? = SourcesData(awattar: AwattarData(prices: [AwattarDataPoint(startTimestamp: 938292, endTimestamp: 738299, marketprice: 20, unit: "Eur/MWh"), AwattarDataPoint(startTimestamp: 294992, endTimestamp: 299992, marketprice: 10, unit: "Eur/MWh")], maxPrice: 20))
+        @Published var energyData: SourcesData? = SourcesData(awattar: AwattarData(prices: [AwattarDataPoint(startTimestamp: 938292, endTimestamp: 738299, marketprice: 20, unit: ["Eur / MWh", "Eur / kWh"]), AwattarDataPoint(startTimestamp: 294992, endTimestamp: 299992, marketprice: 10, unit: ["Eur / MWh", "Eur / kWh"])], maxPrice: 20))
     }
     
 //    var energyData = ContentViewPreviewSourcesData()
-//    var dateFormatter: DateFormatter
     var hourFormatter: DateFormatter
     var numberFormatter: NumberFormatter
     
     init() {
-//        dateFormatter = DateFormatter()
         hourFormatter = DateFormatter()
-        
-//        dateFormatter.locale = Locale(identifier: "de_DE")
-//        dateFormatter.dateStyle = .full
+
         hourFormatter.locale = Locale(identifier: "de_DE")
-        
-//        dateFormatter.setLocalizedDateFormatFromTemplate("dd.MM.yyyy")
-        hourFormatter.setLocalizedDateFormatFromTemplate("HH-mm")
+        hourFormatter.timeStyle = .short
         
         numberFormatter = NumberFormatter()
         numberFormatter.locale = Locale(identifier: "de_DE")

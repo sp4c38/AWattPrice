@@ -11,7 +11,7 @@ struct AwattarDataPoint: Codable {
     var startTimestamp: Int
     var endTimestamp: Int
     var marketprice: Float
-    var unit: String
+    var unit: [String]
     
     enum CodingKeys: String, CodingKey {
         case startTimestamp = "start_timestamp"

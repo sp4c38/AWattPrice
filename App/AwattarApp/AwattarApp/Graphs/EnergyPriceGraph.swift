@@ -16,6 +16,7 @@ struct EnergyPriceGraph: View {
         GeometryReader { geometry -> Path in
             let width = geometry.size.width
             let height = geometry.size.height
+            let radius = CGFloat(4)
             
             let priceBarWidth: CGFloat
             
@@ -26,7 +27,12 @@ struct EnergyPriceGraph: View {
             }
             
             return Path { path in
-                path.addRect(CGRect(x: 0, y: 0, width: priceBarWidth, height: height))
+                path.move(to: CGPoint(x: 0, y: 0 + radius))
+                path.addLine(to: CGPoint(x: 0, y: 0))
+                path.addRelativeArc(center: CGPoint(x: priceBarWidth - radius, y: radius), radius: radius, startAngle: .degrees(270), delta: .degrees(180))
+                path.addLine(to: CGPoint(x: priceBarWidth, y: radius))
+                path.addRelativeArc(center: CGPoint(x: priceBarWidth - radius, y: height - radius), radius: radius, startAngle: .degrees(0), delta: .degrees(90))
+                path.addLine(to: CGPoint(x: 0, y: height))
             }
         }
     }

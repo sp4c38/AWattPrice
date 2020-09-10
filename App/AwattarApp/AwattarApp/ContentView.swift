@@ -7,11 +7,17 @@
 
 import SwiftUI
 
+class SelectedTaxSetting: ObservableObject {
+    var taxOptions = [(0, "Mit Mehrwertsteuer"), (1, "Ohne Mehrwertsteuer")]
+    @Published var selectedTaxOption = 0
+}
+
 struct ContentView: View {
     @EnvironmentObject var energyData: EnergyData
+    @ObservedObject var selectedTaxSetting = SelectedTaxSetting()
     
     class ContentViewPreviewSourcesData: ObservableObject {
-        @Published var energyData: SourcesData? = SourcesData(awattar: AwattarData(prices: [AwattarDataPoint(startTimestamp: 938292, endTimestamp: 738299, marketprice: 20, unit: ["Eur / MWh", "Eur / kWh"]), AwattarDataPoint(startTimestamp: 294992, endTimestamp: 299992, marketprice: 10, unit: ["Eur / MWh", "Eur / kWh"])], maxPrice: 20))
+        @Published var energyData: SourcesData? = SourcesData(awattar: AwattarData(prices: [AwattarDataPoint(startTimestamp: 938292, endTimestamp: 738299, marketprice: 21.94, unit: ["Eur / MWh", "Eur / kWh"]), AwattarDataPoint(startTimestamp: 294992, endTimestamp: 299992, marketprice: 15.12, unit: ["Eur / MWh", "Eur / kWh"])], maxPrice: 21.97))
     }
     
 //    var energyData = ContentViewPreviewSourcesData()
@@ -32,58 +38,87 @@ struct ContentView: View {
     var body: some View {
         NavigationView {
             if energyData.energyData != nil {
-
                 ScrollView(showsIndicators: false) {
-                    VStack(spacing: 10) {
+                    
+                    VStack(alignment: .leading, spacing: 10) {
+                        Divider()
+                    
+                        Picker(selection: $selectedTaxSetting.selectedTaxOption, label: Text("Picker")) {
+                            ForEach(selectedTaxSetting.taxOptions, id: \.0) { taxOption in
+                                Text(taxOption.1).tag(taxOption.0)
+                            }
+                        }
+                        .pickerStyle(SegmentedPickerStyle())
+                        .padding(.bottom, 5)
+                        .padding(.leading, 16)
+                        .padding(.trailing, 16)
+
+                        Text("Preis pro kWh")
+                            .font(.subheadline)
+                            .padding(.leading, 10)
+
                         ForEach(energyData.energyData!.awattar.prices, id: \.startTimestamp) { price in
+                            let startDate = Date(timeIntervalSince1970: TimeInterval(price.startTimestamp / 1000))
+                            let endDate = Date(timeIntervalSince1970: TimeInterval(price.endTimestamp / 1000))
+
                             NavigationLink(destination: HourPriceInfoView(priceDataPoint: price)) {
-                                let startDate = Date(timeIntervalSince1970: TimeInterval(price.startTimestamp / 1000))
-                                let endDate = Date(timeIntervalSince1970: TimeInterval(price.endTimestamp / 1000))
-                                let priceString = numberFormatter.string(from: NSNumber(value: price.marketprice))
-                                
-                                if priceString != nil {
+                                VStack {
                                     ZStack(alignment: .trailing) {
                                         ZStack(alignment: .leading) {
                                             EnergyPriceGraph(awattarDataPoint: price, maxPrice: energyData.energyData!.awattar.maxPrice)
                                                 .foregroundColor(Color(hue: 0.0673, saturation: 0.7155, brightness: 0.9373))
+                                                .padding(.trailing, 20)
+
                                             
-                                            Text(priceString!)
-                                                .padding(10)
-                                                .foregroundColor(Color.white)
+                                            if selectedTaxSetting.selectedTaxOption == 0 {
+                                                // With tax
+                                                
+                                                Text(numberFormatter.string(from: NSNumber(value: (price.marketprice * 100 * 0.001 * 1.16)))!)
+                                                    .padding(10)
+                                                    .foregroundColor(Color.white)
+
+                                            } else if selectedTaxSetting.selectedTaxOption == 1 {
+                                                 // Without tax
+                                                Text(numberFormatter.string(from: NSNumber(value: (price.marketprice * 100 * 0.001)))!)
+                                                    .padding(10)
+                                                    .foregroundColor(Color.white)
+                                            }
                                         }
-                                        
-                                        Spacer()
-                                        
+
                                         HStack(spacing: 5) {
                                             Text(hourFormatter.string(from: startDate))
                                             Text("-")
                                             Text(hourFormatter.string(from: endDate))
                                         }
-                                        .foregroundColor(Color.black)
-                                        .opacity(0.5)
-                                        .padding(.trailing, 20)
+                                        .padding(3)
+                                        .background(Color.white)
+                                        .cornerRadius(4)
+                                        .shadow(radius: 3)
+                                        .padding(.trailing, 25)
+
                                     }
+                                    .foregroundColor(Color.black)
+                                    .animation(.easeInOut)
                                 }
                             }
                         }
                     }
-                    .padding(.top, 20)
                 }
                 .navigationBarTitle("Strompreis")
                 
             } else {
                 VStack(spacing: 40) {
                     Spacer()
-                    
+
                     Text("Daten werden geladen")
                         .font(.title2)
-                    
+
                     Image(systemName: "bolt.fill")
                         .resizable()
                         .scaledToFit()
                         .frame(width: 70, height: 70)
                         .foregroundColor(Color.green)
-                    
+
                     Spacer()
                 }
                 .navigationBarTitle("Strompreis")
@@ -93,7 +128,6 @@ struct ContentView: View {
 }
 
 struct ContentView_Previews: PreviewProvider {
-    
     static var previews: some View {
         ContentView()
     }

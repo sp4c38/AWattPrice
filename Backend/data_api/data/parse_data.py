@@ -16,7 +16,7 @@ def parse_awattar_energy_prices(config):
 
 
     awattar_raw_url = config["awattar"]["download_url"]
-    awattar_data = {"prices": [], "max_price": None}
+    awattar_data = {"prices": [], "min_price": None, "max_price": None}
 
     # Use CET timezone to download the newest data from awattar
     cet_now = arrow.utcnow().to("CET") # Current time
@@ -43,6 +43,8 @@ def parse_awattar_energy_prices(config):
                     awattar_data["prices"].append(price)
                     if awattar_data["max_price"] == None or price["marketprice"] > awattar_data["max_price"]:
                         awattar_data["max_price"] = price["marketprice"]
+                    elif awattar_data["min_price"] == None or price["marketprice"] < awattar_data["min_price"]:
+                        awattar_data["min_price"] = price["marketprice"]
 
             return awattar_data
         except:

@@ -23,10 +23,12 @@ struct AwattarDataPoint: Codable {
 
 struct AwattarData: Codable {
     var prices: [AwattarDataPoint]
+    var minPrice: Float?
     var maxPrice: Float?
     
     enum CodingKeys: String, CodingKey {
         case prices = "prices"
+        case minPrice = "min_price"
         case maxPrice = "max_price"
     }
 }

@@ -22,15 +22,23 @@ class PersistenceManager {
     }
 }
 
+class SettingsOptions: ObservableObject {
+    // Global used settings
+    
+    @Published var selectedTaxOption: Int = 0
+}
+
 @main
 struct AwattarApp: App {
     var persistence = PersistenceManager()
+    
     
     var body: some Scene {
         WindowGroup {
             ContentView()
                 .environment(\.managedObjectContext, persistence.persistentContainer.viewContext)
                 .environmentObject(EnergyData())
+                .environmentObject(SettingsOptions())
         }
     }
 }

@@ -7,17 +7,13 @@
 
 import SwiftUI
 
-class ContentViewPreviewSourcesData: ObservableObject {
-    @Published var energyData: SourcesData? = SourcesData(awattar: AwattarData(prices: [AwattarDataPoint(startTimestamp: 938292, endTimestamp: 738299, marketprice: 20, unit: ["Eur / MWh", "Eur / kWh"]), AwattarDataPoint(startTimestamp: 294992, endTimestamp: 299992, marketprice: 15, unit: ["Eur / MWh", "Eur / kWh"]), AwattarDataPoint(startTimestamp: 494992, endTimestamp: 299992, marketprice: -10, unit: ["Eur / MWh", "Eur / kWh"])], minPrice: -10, maxPrice: 20))
-}
-
 struct ContentView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
     @EnvironmentObject var energyData: EnergyData
+    @EnvironmentObject var settingsOptions: SettingsOptions
     
     @State var settingIsPresented: Bool = false
     
-//    var energyData = ContentViewPreviewSourcesData()
     var hourFormatter: DateFormatter
     var numberFormatter: NumberFormatter
     
@@ -37,40 +33,41 @@ struct ContentView: View {
             VStack {
                 if energyData.energyData != nil {
                     ScrollView(showsIndicators: false) {
-                        VStack(alignment: .leading, spacing: 10) {
+                        VStack(alignment: .leading, spacing: 0) {
                             Divider()
                             Text("Preis pro kWh")
                                 .font(.subheadline)
                                 .padding(.leading, 10)
+                                .padding(.top, 8)
+                                .padding(.bottom, 8)
 
                             ForEach(energyData.energyData!.awattar.prices, id: \.startTimestamp) { price in
                                 let startDate = Date(timeIntervalSince1970: TimeInterval(price.startTimestamp / 1000))
                                 let endDate = Date(timeIntervalSince1970: TimeInterval(price.endTimestamp / 1000))
 
                                 NavigationLink(destination: HourPriceInfoView(priceDataPoint: price)) {
-                                    VStack {
+                                    VStack(spacing: 0) {
                                         ZStack(alignment: .trailing) {
                                             ZStack(alignment: .leading) {
                                                 EnergyPriceGraph(awattarDataPoint: price, minPrice: energyData.energyData!.awattar.minPrice, maxPrice: energyData.energyData!.awattar.maxPrice)
                                                     .foregroundColor(Color(hue: 0.0673, saturation: 0.7155, brightness: 0.9373))
                                                     .padding(.trailing, 20)
-
                                                 
-//                                                if selectedTaxSetting.selectedTaxOption == 0 {
+                                                if settingsOptions.selectedTaxOption == 0 {
                                                     // With tax
                                                     Text(numberFormatter.string(from: NSNumber(value: (price.marketprice * 100 * 0.001 * 1.16)))!)
                                                         .padding(10)
-                                                        .foregroundColor(Color.black)
+                                                        .foregroundColor((price.marketprice < 0) ? Color.white : Color.black)
                                                         .shadow(radius: 5)
 
-//                                                } else if selectedTaxSetting.selectedTaxOption == 1 {
+                                                } else if settingsOptions.selectedTaxOption == 1 {
                                                     // Without tax
                                                     Text(numberFormatter.string(from: NSNumber(value: (price.marketprice * 100 * 0.001)))!)
                                                         .padding(10)
                                                         .foregroundColor(Color.white)
                                                         .shadow(radius: 5)
                                                     //    .animation(.easeInOut)
-//                                                }
+                                                }
                                             }
 
                                             HStack(spacing: 5) {
@@ -89,8 +86,8 @@ struct ContentView: View {
                                 }
                             }
                         }
+                        .padding()
                     }
-                    
                 } else {
                     VStack(spacing: 40) {
                         Spacer()
@@ -121,5 +118,7 @@ struct ContentView: View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
+            .environmentObject(EnergyData())
+            .environmentObject(SettingsOptions())
     }
 }

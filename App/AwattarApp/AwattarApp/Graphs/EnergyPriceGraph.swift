@@ -19,11 +19,11 @@ struct EnergyPriceGraph: View {
             let width = geometry.size.width
             let height = geometry.size.height
             let radius = CGFloat(4)
+            let dividerLineWidth = CGFloat(5)
             
             let maximalNegativePriceBarWidth = (
                 (minPrice != nil && !(minPrice == 0))
                     ? CGFloat(abs(minPrice!) / (abs(minPrice!) + abs(maxPrice!))) * width : 0) // Width of most negative price bar
-            
             
             let negativePriceBarWidth = (
                 (minPrice != nil && !(minPrice == 0))
@@ -33,8 +33,8 @@ struct EnergyPriceGraph: View {
                 (maxPrice != nil)
                     ? CGFloat(abs(awattarDataPoint.marketprice) / (abs(minPrice!) + abs(maxPrice!))) * width + maximalNegativePriceBarWidth : 0) // Width for the price bar for positive range
           
-            HStack {
-                var fillColor = Color.red
+            HStack(spacing: 0) {
+                var fillColor = Color.orange
                 Path { path in
                     if awattarDataPoint.marketprice > 0 {
                         path.move(to: CGPoint(x: maximalNegativePriceBarWidth, y: 0))
@@ -44,15 +44,27 @@ struct EnergyPriceGraph: View {
                         path.addLine(to: CGPoint(x: maximalNegativePriceBarWidth, y: height))
                         
                     } else if awattarDataPoint.marketprice < 0 {
-                        path.move(to: CGPoint(x: 0, y: 0))
-                        path.addLine(to: CGPoint(x: negativePriceBarWidth, y: 0))
-                        path.addLine(to: CGPoint(x: negativePriceBarWidth, y: height))
-                        path.addLine(to: CGPoint(x: 0, y: height))
-                        path.addLine(to: CGPoint(x: 0, y: 0))
+                        let barStartWidth = maximalNegativePriceBarWidth - negativePriceBarWidth
+                        path.move(to: CGPoint(x: barStartWidth, y: 0))
+                        path.addRelativeArc(center: CGPoint(x: barStartWidth + radius, y: radius), radius: radius, startAngle: .degrees(180), delta: .degrees(90))
+                        path.addLine(to: CGPoint(x: maximalNegativePriceBarWidth, y: 0))
+                        path.addLine(to: CGPoint(x: maximalNegativePriceBarWidth, y: height))
+                        path.addRelativeArc(center: CGPoint(x: barStartWidth + radius, y: height - radius), radius: radius, startAngle: .degrees(90), delta: .degrees(90))
+                        
                         fillColor = Color.green
                     }
                 }
                 .fill(fillColor)
+                
+                Path { path in
+                    let dividerLineNegativePriceBar = (width - (width - maximalNegativePriceBarWidth)) - (width / 2) - (dividerLineWidth / 2)
+                    
+                    path.move(to: CGPoint(x: dividerLineNegativePriceBar, y: 0))
+                    path.addLine(to: CGPoint(x: dividerLineNegativePriceBar + dividerLineWidth, y: 0))
+                    path.addLine(to: CGPoint(x: dividerLineNegativePriceBar + dividerLineWidth, y: height))
+                    path.addLine(to: CGPoint(x: dividerLineNegativePriceBar, y: height))
+                }
+                .fill(Color.red)
             }
         }
     }
@@ -60,7 +72,7 @@ struct EnergyPriceGraph: View {
 
 struct EnergyPriceGraph_Previews: PreviewProvider {
     static var previews: some View {
-        EnergyPriceGraph(awattarDataPoint: AwattarDataPoint(startTimestamp: 1599516000000, endTimestamp: 1599519600000, marketprice: 60, unit: ["Eur / MWh", "Eur / kWh"]), minPrice: -10, maxPrice: 60)
+        EnergyPriceGraph(awattarDataPoint: AwattarDataPoint(startTimestamp: 1599516000000, endTimestamp: 1599519600000, marketprice: -20, unit: ["Eur / MWh", "Eur / kWh"]), minPrice: -30, maxPrice: 30)
             .frame(height: 60)
     }
 }

@@ -21,10 +21,9 @@ struct DoneButtenStyle: ButtonStyle {
 
 struct SettingsPageView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
+    @EnvironmentObject var settingsOptions: SettingsOptions
     
     var taxOptions = [(0, "Mit Mehrwertsteuer", "Preise auf der Startseite werden mit der Mehrwertsteuer angezeigt."), (1, "Ohne Mehrwertsteuer", "Preise auf der Startseite werden ohne der Mehrwertsteuer angezeigt.")]
-    
-    @State var selectedTaxOption: Int = 0
 
     var body: some View {
         VStack(alignment: .leading, spacing: 40) {
@@ -41,7 +40,7 @@ struct SettingsPageView: View {
                     .padding(.leading, 5)
                 
                 VStack(alignment: .leading, spacing: 10) {
-                    Picker(selection: $selectedTaxOption, label: Text("Picker")) {
+                    Picker(selection: $settingsOptions.selectedTaxOption, label: Text("Picker")) {
                         ForEach(taxOptions, id: \.0) { taxOption in
                             Text(taxOption.1).tag(taxOption.0)
                         }
@@ -49,7 +48,7 @@ struct SettingsPageView: View {
                     .frame(maxWidth: .infinity)
                     .pickerStyle(SegmentedPickerStyle())
 
-                    Text(taxOptions[Int(selectedTaxOption)].2)
+                    Text(taxOptions[Int(settingsOptions.selectedTaxOption)].2)
                         .font(.caption)
                         .foregroundColor(Color.gray)
                         .padding(.leading, 5)
@@ -80,7 +79,7 @@ struct SettingsPageView: View {
             Spacer()
             Button(action: {
                 storeTaxSettingsSelection(
-                    selectedTaxSetting: Int16(selectedTaxOption),
+                    selectedTaxSetting: Int16(settingsOptions.selectedTaxOption),
                     managedObjectContext: managedObjectContext)
             }) {
                Text("Speichern")
@@ -88,7 +87,7 @@ struct SettingsPageView: View {
         }
         .padding(20)
         .onAppear {
-            selectedTaxOption = getTaxSettingsSelection(managedObjectContext: managedObjectContext)
+            settingsOptions.selectedTaxOption = getTaxSettingsSelection(managedObjectContext: managedObjectContext)
         }
     }
 }

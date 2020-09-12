@@ -7,22 +7,17 @@
 
 import SwiftUI
 
-class SelectedTaxSetting: ObservableObject {
-    var taxOptions = [(0, "Mit Mehrwertsteuer"), (1, "Ohne Mehrwertsteuer")]
-    @Published var selectedTaxOption = 0
-}
-
 class ContentViewPreviewSourcesData: ObservableObject {
     @Published var energyData: SourcesData? = SourcesData(awattar: AwattarData(prices: [AwattarDataPoint(startTimestamp: 938292, endTimestamp: 738299, marketprice: 20, unit: ["Eur / MWh", "Eur / kWh"]), AwattarDataPoint(startTimestamp: 294992, endTimestamp: 299992, marketprice: 15, unit: ["Eur / MWh", "Eur / kWh"]), AwattarDataPoint(startTimestamp: 494992, endTimestamp: 299992, marketprice: -10, unit: ["Eur / MWh", "Eur / kWh"])], minPrice: -10, maxPrice: 20))
 }
 
 struct ContentView: View {
-//    @EnvironmentObject var energyData: EnergyData
-    @ObservedObject var selectedTaxSetting = SelectedTaxSetting()
+    @Environment(\.managedObjectContext) var managedObjectContext
+    @EnvironmentObject var energyData: EnergyData
     
     @State var settingIsPresented: Bool = false
     
-    var energyData = ContentViewPreviewSourcesData()
+//    var energyData = ContentViewPreviewSourcesData()
     var hourFormatter: DateFormatter
     var numberFormatter: NumberFormatter
     
@@ -44,17 +39,6 @@ struct ContentView: View {
                     ScrollView(showsIndicators: false) {
                         VStack(alignment: .leading, spacing: 10) {
                             Divider()
-                        
-                            Picker(selection: $selectedTaxSetting.selectedTaxOption, label: Text("Picker")) {
-                                ForEach(selectedTaxSetting.taxOptions, id: \.0) { taxOption in
-                                    Text(taxOption.1).tag(taxOption.0)
-                                }
-                            }
-                            .pickerStyle(SegmentedPickerStyle())
-                            .padding(.bottom, 5)
-                            .padding(.leading, 16)
-                            .padding(.trailing, 16)
-
                             Text("Preis pro kWh")
                                 .font(.subheadline)
                                 .padding(.leading, 10)
@@ -72,21 +56,21 @@ struct ContentView: View {
                                                     .padding(.trailing, 20)
 
                                                 
-                                                if selectedTaxSetting.selectedTaxOption == 0 {
+//                                                if selectedTaxSetting.selectedTaxOption == 0 {
                                                     // With tax
                                                     Text(numberFormatter.string(from: NSNumber(value: (price.marketprice * 100 * 0.001 * 1.16)))!)
                                                         .padding(10)
                                                         .foregroundColor(Color.black)
                                                         .shadow(radius: 5)
 
-                                                } else if selectedTaxSetting.selectedTaxOption == 1 {
+//                                                } else if selectedTaxSetting.selectedTaxOption == 1 {
                                                     // Without tax
                                                     Text(numberFormatter.string(from: NSNumber(value: (price.marketprice * 100 * 0.001)))!)
                                                         .padding(10)
                                                         .foregroundColor(Color.white)
                                                         .shadow(radius: 5)
                                                     //    .animation(.easeInOut)
-                                                }
+//                                                }
                                             }
 
                                             HStack(spacing: 5) {
@@ -110,23 +94,14 @@ struct ContentView: View {
                 } else {
                     VStack(spacing: 40) {
                         Spacer()
-
-                        Text("Daten werden geladen")
-                            .font(.title2)
-
-                        Image(systemName: "bolt.fill")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 70, height: 70)
-                            .foregroundColor(Color.green)
-
+                        ProgressView("")
                         Spacer()
                     }
                 }
             }
             .sheet(isPresented: $settingIsPresented) {
                 SettingsPageView()
-//                    .environment(\.managedObjectContext, managedObjectContext)
+                    .environment(\.managedObjectContext, managedObjectContext)
             }
             .navigationBarTitle("Strompreis")
             .navigationBarItems(trailing:

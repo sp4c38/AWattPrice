@@ -19,7 +19,9 @@ struct EnergyPriceGraph: View {
             let width = geometry.size.width
             let height = geometry.size.height
             let radius = CGFloat(4)
-            let dividerLineWidth = CGFloat(5)
+            let dividerLineWidth = CGFloat(2)
+            
+            let barHeightPadding = CGFloat(1) // Padding kept to the top and to the bottom
             
             let maximalNegativePriceBarWidth = (
                 (minPrice != nil && !(minPrice == 0))
@@ -37,19 +39,21 @@ struct EnergyPriceGraph: View {
                 var fillColor = Color.orange
                 Path { path in
                     if awattarDataPoint.marketprice > 0 {
-                        path.move(to: CGPoint(x: maximalNegativePriceBarWidth, y: 0))
-                        path.addRelativeArc(center: CGPoint(x: positivePriceBarWidth - radius, y: radius), radius: radius, startAngle: .degrees(270), delta: .degrees(180))
-                        path.addLine(to: CGPoint(x: positivePriceBarWidth, y: radius))
-                        path.addRelativeArc(center: CGPoint(x: positivePriceBarWidth - radius, y: height - radius), radius: radius, startAngle: .degrees(0), delta: .degrees(90))
-                        path.addLine(to: CGPoint(x: maximalNegativePriceBarWidth, y: height))
+                        print(positivePriceBarWidth)
+                        path.move(to: CGPoint(x: maximalNegativePriceBarWidth, y: barHeightPadding))
+                        path.addRelativeArc(center: CGPoint(x: positivePriceBarWidth - radius, y: radius + barHeightPadding), radius: radius, startAngle: .degrees(270), delta: .degrees(180))
+                        path.addLine(to: CGPoint(x: positivePriceBarWidth, y: radius + barHeightPadding))
+                        path.addRelativeArc(center: CGPoint(x: positivePriceBarWidth - radius, y: height - barHeightPadding - radius), radius: radius, startAngle: .degrees(0), delta: .degrees(90))
+                        path.addLine(to: CGPoint(x: maximalNegativePriceBarWidth, y: height - barHeightPadding))
                         
                     } else if awattarDataPoint.marketprice < 0 {
                         let barStartWidth = maximalNegativePriceBarWidth - negativePriceBarWidth
-                        path.move(to: CGPoint(x: barStartWidth, y: 0))
-                        path.addRelativeArc(center: CGPoint(x: barStartWidth + radius, y: radius), radius: radius, startAngle: .degrees(180), delta: .degrees(90))
-                        path.addLine(to: CGPoint(x: maximalNegativePriceBarWidth, y: 0))
-                        path.addLine(to: CGPoint(x: maximalNegativePriceBarWidth, y: height))
-                        path.addRelativeArc(center: CGPoint(x: barStartWidth + radius, y: height - radius), radius: radius, startAngle: .degrees(90), delta: .degrees(90))
+                        
+                        path.move(to: CGPoint(x: barStartWidth, y: barHeightPadding))
+                        path.addRelativeArc(center: CGPoint(x: barStartWidth + radius, y: radius + barHeightPadding), radius: radius, startAngle: .degrees(180), delta: .degrees(90))
+                        path.addLine(to: CGPoint(x: maximalNegativePriceBarWidth, y: barHeightPadding))
+                        path.addLine(to: CGPoint(x: maximalNegativePriceBarWidth, y: height - barHeightPadding))
+                        path.addRelativeArc(center: CGPoint(x: barStartWidth + radius, y: height - barHeightPadding - radius), radius: radius, startAngle: .degrees(90), delta: .degrees(90))
                         
                         fillColor = Color.green
                     }
@@ -57,12 +61,12 @@ struct EnergyPriceGraph: View {
                 .fill(fillColor)
                 
                 Path { path in
-                    let dividerLineNegativePriceBar = (width - (width - maximalNegativePriceBarWidth)) - (width / 2) - (dividerLineWidth / 2)
+                    let dividerLineDeltaWidth = maximalNegativePriceBarWidth - (width / 2) - (dividerLineWidth / 2)
                     
-                    path.move(to: CGPoint(x: dividerLineNegativePriceBar, y: 0))
-                    path.addLine(to: CGPoint(x: dividerLineNegativePriceBar + dividerLineWidth, y: 0))
-                    path.addLine(to: CGPoint(x: dividerLineNegativePriceBar + dividerLineWidth, y: height))
-                    path.addLine(to: CGPoint(x: dividerLineNegativePriceBar, y: height))
+                    path.move(to: CGPoint(x: dividerLineDeltaWidth, y: 0))
+                    path.addLine(to: CGPoint(x: dividerLineDeltaWidth + dividerLineWidth, y: 0))
+                    path.addLine(to: CGPoint(x: dividerLineDeltaWidth + dividerLineWidth, y: height))
+                    path.addLine(to: CGPoint(x: dividerLineDeltaWidth, y: height))
                 }
                 .fill(Color.red)
             }

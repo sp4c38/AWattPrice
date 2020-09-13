@@ -86,9 +86,6 @@ struct SettingsPageView: View {
             }.buttonStyle(DoneButtenStyle())
         }
         .padding(20)
-        .onAppear {
-            settingsOptions.selectedTaxOption = getTaxSettingsSelection(managedObjectContext: managedObjectContext)
-        }
     }
 }
 

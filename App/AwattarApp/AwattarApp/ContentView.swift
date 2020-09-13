@@ -51,20 +51,19 @@ struct ContentView: View {
                                             ZStack(alignment: .leading) {
                                                 EnergyPriceGraph(awattarDataPoint: price, minPrice: energyData.energyData!.awattar.minPrice, maxPrice: energyData.energyData!.awattar.maxPrice)
                                                     .foregroundColor(Color(hue: 0.0673, saturation: 0.7155, brightness: 0.9373))
-                                                    .padding(.trailing, 20)
                                                 
                                                 if settingsOptions.selectedTaxOption == 0 {
                                                     // With tax
                                                     Text(numberFormatter.string(from: NSNumber(value: (price.marketprice * 100 * 0.001 * 1.16)))!)
                                                         .padding(10)
-                                                        .foregroundColor((price.marketprice < 0) ? Color.white : Color.black)
+                                                        .foregroundColor((price.marketprice < 0) ? Color.black : Color.black)
                                                         .shadow(radius: 5)
 
                                                 } else if settingsOptions.selectedTaxOption == 1 {
                                                     // Without tax
                                                     Text(numberFormatter.string(from: NSNumber(value: (price.marketprice * 100 * 0.001)))!)
                                                         .padding(10)
-                                                        .foregroundColor(Color.white)
+                                                        .foregroundColor((price.marketprice < 0) ? Color.black : Color.black)
                                                         .shadow(radius: 5)
                                                     //    .animation(.easeInOut)
                                                 }
@@ -80,6 +79,7 @@ struct ContentView: View {
                                             .cornerRadius(4)
                                             .shadow(radius: 3)
                                             .padding(.trailing, 25)
+                                            .padding(.leading, 15)
                                         }
                                         .foregroundColor(Color.black)
                                     }
@@ -111,6 +111,9 @@ struct ContentView: View {
                         .foregroundColor(Color.blue)
                 }
             )
+            .onAppear {
+                settingsOptions.selectedTaxOption = getTaxSettingsSelection(managedObjectContext: managedObjectContext)
+            }
         }
     }
 }

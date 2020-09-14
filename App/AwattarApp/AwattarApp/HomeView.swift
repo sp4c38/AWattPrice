@@ -7,10 +7,11 @@
 
 import SwiftUI
 
-struct ContentView: View {
+struct HomeView: View {
+    @Environment(\.colorScheme) var colorScheme
     @Environment(\.managedObjectContext) var managedObjectContext
     @EnvironmentObject var energyData: EnergyData
-    @EnvironmentObject var settingsOptions: SettingsOptions
+    @EnvironmentObject var currentSetting: CurrentSetting
     
     @State var settingIsPresented: Bool = false
     
@@ -52,20 +53,19 @@ struct ContentView: View {
                                                 EnergyPriceGraph(awattarDataPoint: price, minPrice: energyData.energyData!.awattar.minPrice, maxPrice: energyData.energyData!.awattar.maxPrice)
                                                     .foregroundColor(Color(hue: 0.0673, saturation: 0.7155, brightness: 0.9373))
                                                 
-                                                if settingsOptions.selectedTaxOption == 0 {
+                                                if currentSetting.setting!.taxSelectionIndex == 0 {
                                                     // With tax
                                                     Text(numberFormatter.string(from: NSNumber(value: (price.marketprice * 100 * 0.001 * 1.16)))!)
                                                         .padding(10)
-                                                        .foregroundColor((price.marketprice < 0) ? Color.black : Color.black)
+                                                        .foregroundColor((colorScheme == .dark) ? Color.white : Color.black)
                                                         .shadow(radius: 5)
 
-                                                } else if settingsOptions.selectedTaxOption == 1 {
+                                                } else if currentSetting.setting!.taxSelectionIndex == 1 {
                                                     // Without tax
                                                     Text(numberFormatter.string(from: NSNumber(value: (price.marketprice * 100 * 0.001)))!)
                                                         .padding(10)
-                                                        .foregroundColor((price.marketprice < 0) ? Color.black : Color.black)
+                                                        .foregroundColor((colorScheme == .dark) ? Color.white : Color.black)
                                                         .shadow(radius: 5)
-                                                    //    .animation(.easeInOut)
                                                 }
                                             }
 
@@ -111,17 +111,19 @@ struct ContentView: View {
                         .foregroundColor(Color.blue)
                 }
             )
-            .onAppear {
-                settingsOptions.selectedTaxOption = getTaxSettingsSelection(managedObjectContext: managedObjectContext)
-            }
+        }
+        .preferredColorScheme(.dark)
+        .onAppear {
+            currentSetting.setSetting(managedObjectContext: managedObjectContext)
         }
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
+struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        HomeView()
+            .environment(\.managedObjectContext, PersistenceManager().persistentContainer.viewContext)
             .environmentObject(EnergyData())
-            .environmentObject(SettingsOptions())
+            .environmentObject(CurrentSetting())
     }
 }

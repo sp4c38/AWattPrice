@@ -21,7 +21,7 @@ struct DoneButtenStyle: ButtonStyle {
 
 struct SettingsPageView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
-    @EnvironmentObject var settingsOptions: SettingsOptions
+    @EnvironmentObject var currentSetting: CurrentSetting
     
     var taxOptions = [(0, "Mit Mehrwertsteuer", "Preise auf der Startseite werden mit der Mehrwertsteuer angezeigt."), (1, "Ohne Mehrwertsteuer", "Preise auf der Startseite werden ohne der Mehrwertsteuer angezeigt.")]
 
@@ -40,15 +40,15 @@ struct SettingsPageView: View {
                     .padding(.leading, 5)
                 
                 VStack(alignment: .leading, spacing: 10) {
-                    Picker(selection: $settingsOptions.selectedTaxOption, label: Text("Picker")) {
-                        ForEach(taxOptions, id: \.0) { taxOption in
-                            Text(taxOption.1).tag(taxOption.0)
-                        }
-                    }
-                    .frame(maxWidth: .infinity)
-                    .pickerStyle(SegmentedPickerStyle())
+//                    Picker(selection: $currentSetting.setting!.taxSelectionIndex, label: Text("Picker")) {
+//                        ForEach(taxOptions, id: \.0) { taxOption in
+//                            Text(taxOption.1).tag(taxOption.0)
+//                        }
+//                    }
+//                    .frame(maxWidth: .infinity)
+//                    .pickerStyle(SegmentedPickerStyle())
 
-                    Text(taxOptions[Int(settingsOptions.selectedTaxOption)].2)
+                    Text(taxOptions[Int(currentSetting.setting!.taxSelectionIndex)].2)
                         .font(.caption)
                         .foregroundColor(Color.gray)
                         .padding(.leading, 5)
@@ -59,15 +59,7 @@ struct SettingsPageView: View {
                 Text("aWATTar Tarif:")
                     .padding(.leading, 5)
                 
-                VStack(alignment: .leading) {
-    //                Picker(selection: $selectedTaxOption, label: Text("Picker")) {
-    //                    ForEach(taxOptions, id: \.0) { taxOption in
-    //                        Text(taxOption.1).tag(taxOption.0)
-    //                    }
-    //                }
-    //                .frame(maxWidth: .infinity)
-    //                .pickerStyle(SegmentedPickerStyle())
-                    
+                VStack(alignment: .leading) {                    
                     Text("Wenn du bereits ein aWATTar Kunde bist, kannst du hier deinen Tarif auswählen, um extra Infos für genau deinen Tarif zu sehen.")
                         .font(.caption)
                         .foregroundColor(Color.gray)
@@ -79,7 +71,7 @@ struct SettingsPageView: View {
             Spacer()
             Button(action: {
                 storeTaxSettingsSelection(
-                    selectedTaxSetting: Int16(settingsOptions.selectedTaxOption),
+                    selectedTaxSetting: Int16(currentSetting.setting!.taxSelectionIndex),
                     managedObjectContext: managedObjectContext)
             }) {
                Text("Speichern")

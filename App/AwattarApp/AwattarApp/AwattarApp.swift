@@ -22,10 +22,15 @@ class PersistenceManager {
     }
 }
 
-class SettingsOptions: ObservableObject {
-    // Global used settings
+class CurrentSetting: ObservableObject {
+    @Published var setting: Setting? = nil
     
-    @Published var selectedTaxOption: Int = 0
+    func setSetting(managedObjectContext: NSManagedObjectContext) {
+        let currentSetting = getSetting(managedObjectContext: managedObjectContext)
+        if currentSetting != nil {
+            self.setting = currentSetting!
+        }
+    }
 }
 
 @main
@@ -35,10 +40,10 @@ struct AwattarApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            TabNavigatorView()
                 .environment(\.managedObjectContext, persistence.persistentContainer.viewContext)
                 .environmentObject(EnergyData())
-                .environmentObject(SettingsOptions())
+                .environmentObject(CurrentSetting())
         }
     }
 }

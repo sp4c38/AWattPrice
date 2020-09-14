@@ -1,0 +1,1 @@
+{"profiles": [{"name": "HOURLY", "base_price_per_month": 13.00, "base_price": 21.28, "total_cost": 101.67}, {"name": "HOURLY-CAP", "base_price_per_month": 13.00, "base_price": 27.35, "total_cost": 126.95}, {"name": "YEARLY", "base_price_per_month": 8.79, "base_price": 27.35, "total_cost": 122.75}]}

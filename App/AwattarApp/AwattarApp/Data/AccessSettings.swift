@@ -8,23 +8,27 @@
 import CoreData
 import Foundation
 
-func getTaxSettingsSelection(managedObjectContext: NSManagedObjectContext) -> Int {
-    let fetchRequest: NSFetchRequest<Settings> = Settings.fetchRequest()
-    var fetchRequestResults = [Settings]()
+func getSetting(managedObjectContext: NSManagedObjectContext) -> Setting? {
+    let fetchRequest: NSFetchRequest<Setting> = Setting.fetchRequest()
+    var fetchRequestResults = [Setting]()
     
     do {
         fetchRequestResults = try managedObjectContext.fetch(fetchRequest)
     } catch {
         print("Couldn't read stored settings.")
-        return 0
+        return nil
     }
     
     if fetchRequestResults.count == 1 {
-        return Int(fetchRequestResults[0].taxSelectionIndex)
+        // Settings file was found correctly
+        return fetchRequestResults[0]
+        
     } else if fetchRequestResults.count == 0 {
         // No Settings object is yet created. Create a new Settings object and save it to the persistent store
-        let newSetting = Settings(context: managedObjectContext)
+        let newSetting = Setting(context: managedObjectContext)
+        newSetting.awattarEnergyProfileIndex = 0
         newSetting.taxSelectionIndex = 0
+        
         print("No Settings object yet stored. Creating new Settings object with default options.")
         
         do {
@@ -33,19 +37,18 @@ func getTaxSettingsSelection(managedObjectContext: NSManagedObjectContext) -> In
             print("Couldn't store new Settings object.")
         }
         
-        return 0
+        return newSetting
     } else {
-        // Shouldn't happen because would mean that there are multiple Settings objects stored in the persistent storages
-        print("Multiple Settings objects found in persistent storage. This shouldn't happen with Settings objects. Will delete all Settings and will use last stored settings.")
+        // Shouldn't happen because would mean that there are multiple Settings objects stored in the persistent storage
+        // Only one should exist
+        print("Multiple Settings objects found in persistent storage. This shouldn't happen with Settings objects. Will delete all Settings objects except of the last which is kept.")
         
-        let oldTaxSelectionIndex = fetchRequestResults[fetchRequestResults.count - 1].taxSelectionIndex
-        
-        for storedSettingsObject in fetchRequestResults {
-            managedObjectContext.delete(storedSettingsObject)
+        for x in 0...(fetchRequestResults.count - 1) {
+            // Deletes all Settings objects except of the last
+            if !(x == fetchRequestResults.count - 1) {
+                managedObjectContext.delete(fetchRequestResults[x])
+            }
         }
-    
-        let newSetting = Settings(context: managedObjectContext)
-        newSetting.taxSelectionIndex = oldTaxSelectionIndex
         
         do {
             try managedObjectContext.save()
@@ -53,13 +56,13 @@ func getTaxSettingsSelection(managedObjectContext: NSManagedObjectContext) -> In
             print("Couldn't store new Settings object.")
         }
         
-        return Int(oldTaxSelectionIndex)
+        return fetchRequestResults[fetchRequestResults.count - 1]
     }
 }
 
 func storeTaxSettingsSelection(selectedTaxSetting: Int16, managedObjectContext: NSManagedObjectContext) {
-    let fetchRequest: NSFetchRequest<Settings> = Settings.fetchRequest()
-    var fetchRequestResults = [Settings]()
+    let fetchRequest: NSFetchRequest<Setting> = Setting.fetchRequest()
+    var fetchRequestResults = [Setting]()
     
     do {
         fetchRequestResults = try managedObjectContext.fetch(fetchRequest)
@@ -78,7 +81,7 @@ func storeTaxSettingsSelection(selectedTaxSetting: Int16, managedObjectContext: 
             managedObjectContext.delete(storedSettingsObject)
         }
     
-        let newSetting = Settings(context: managedObjectContext)
+        let newSetting = Setting(context: managedObjectContext)
         newSetting.taxSelectionIndex = selectedTaxSetting
         
     } else if fetchRequestResults.count == 1 {
@@ -88,7 +91,7 @@ func storeTaxSettingsSelection(selectedTaxSetting: Int16, managedObjectContext: 
         
     } else if fetchRequestResults.count == 0 {
         // No Settings object is yet created. Create a new Settings object and save it to the persistent store
-        let newSetting = Settings(context: managedObjectContext)
+        let newSetting = Setting(context: managedObjectContext)
         newSetting.taxSelectionIndex = selectedTaxSetting
         print("No Settings object yet stored. Creating new Settings object.")
     }

@@ -1,7 +1,7 @@
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 
-from .data import parse_data
+from . import merge_data
 
 def get_all_data(request):
-    return JsonResponse(parse_data.main())
+    return JsonResponse(merge_data.main())

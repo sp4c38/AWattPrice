@@ -7,8 +7,6 @@ import configparser
 import json
 import requests
 
-from data_api.data import merge_data
-
 def parse_awattar_energy_prices(config):
     # Downloads and parses the energy prices
 
@@ -55,14 +53,14 @@ def parse_awattar_energy_prices(config):
         return awattar_data
 
 def main():
-    config_file_path = settings.BASE_DIR.joinpath("data_api", "data", "data_config.ini").as_posix()
+    config_file_path = settings.BASE_DIR.joinpath("energy_information", "awattar", "data_config.ini").as_posix()
     config = configparser.ConfigParser()
     config.read(config_file_path)
 
     # Download prices for today and for tomorrow (if there are already prices for tomorrow) for tomorrow day from the aWATTar API
     awattar_data = parse_awattar_energy_prices(config)
 
-    return merge_data.main(awattar = awattar_data)
+    return awattar_data
 
 if __name__ == '__main__':
     main()

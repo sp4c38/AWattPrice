@@ -39,7 +39,6 @@ struct EnergyPriceGraph: View {
                 var fillColor = Color.orange
                 Path { path in
                     if awattarDataPoint.marketprice > 0 {
-                        print(positivePriceBarWidth)
                         path.move(to: CGPoint(x: maximalNegativePriceBarWidth, y: barHeightPadding))
                         path.addRelativeArc(center: CGPoint(x: positivePriceBarWidth - radius, y: radius + barHeightPadding), radius: radius, startAngle: .degrees(270), delta: .degrees(180))
                         path.addLine(to: CGPoint(x: positivePriceBarWidth, y: radius + barHeightPadding))

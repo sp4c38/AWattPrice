@@ -20,8 +20,11 @@ struct DoneButtenStyle: ButtonStyle {
 }
 
 struct SettingsPageView: View {
-    @Environment(\.managedObjectContext) var managedObjectContext
     @EnvironmentObject var currentSetting: CurrentSetting
+    @EnvironmentObject var energyData: EnergyData
+    @Environment(\.managedObjectContext) var managedObjectContext
+    
+    @State var newSelectedTaxOption: Int = 0
     
     var taxOptions = [(0, "Mit Mehrwertsteuer", "Preise auf der Startseite werden mit der Mehrwertsteuer angezeigt."), (1, "Ohne Mehrwertsteuer", "Preise auf der Startseite werden ohne der Mehrwertsteuer angezeigt.")]
 
@@ -40,14 +43,14 @@ struct SettingsPageView: View {
                     .padding(.leading, 5)
                 
                 VStack(alignment: .leading, spacing: 10) {
-//                    Picker(selection: $currentSetting.setting!.taxSelectionIndex, label: Text("Picker")) {
-//                        ForEach(taxOptions, id: \.0) { taxOption in
-//                            Text(taxOption.1).tag(taxOption.0)
-//                        }
-//                    }
-//                    .frame(maxWidth: .infinity)
-//                    .pickerStyle(SegmentedPickerStyle())
-
+                    Picker(selection: $newSelectedTaxOption, label: Text("Steuereinstellungen")) {
+                        ForEach(taxOptions, id: \.0) { taxOption in
+                            Text(taxOption.1).tag(taxOption.0)
+                        }
+                    }
+                    .frame(maxWidth: .infinity)
+                    .pickerStyle(SegmentedPickerStyle())
+                    
                     Text(taxOptions[Int(currentSetting.setting!.taxSelectionIndex)].2)
                         .font(.caption)
                         .foregroundColor(Color.gray)
@@ -60,10 +63,16 @@ struct SettingsPageView: View {
                     .padding(.leading, 5)
                 
                 VStack(alignment: .leading) {                    
-                    Text("Wenn du bereits ein aWATTar Kunde bist, kannst du hier deinen Tarif auswählen, um extra Infos für genau deinen Tarif zu sehen.")
+                    Text("Wenn du bereits ein aWATTar Kunde bist, kannst du hier deinen Tarif auswählen, um Kosten genauer für dich anzuzeigen.")
                         .font(.caption)
                         .foregroundColor(Color.gray)
                         .padding(.leading, 5)
+                    
+                    Picker(selection: .constant(true), label: Text("aWATTAr Profil Einstellungen")) {
+                        ForEach(energyData.profilesData, id: \.self) {
+                            
+                        }
+                    }
                 }
             }
 
@@ -71,13 +80,16 @@ struct SettingsPageView: View {
             Spacer()
             Button(action: {
                 storeTaxSettingsSelection(
-                    selectedTaxSetting: Int16(currentSetting.setting!.taxSelectionIndex),
+                    selectedTaxSetting: Int16(newSelectedTaxOption),
                     managedObjectContext: managedObjectContext)
             }) {
                Text("Speichern")
             }.buttonStyle(DoneButtenStyle())
         }
         .padding(20)
+        .onAppear {
+            newSelectedTaxOption = Int(currentSetting.setting!.taxSelectionIndex)
+        }
     }
 }
 

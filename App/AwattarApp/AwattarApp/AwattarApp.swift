@@ -27,9 +27,7 @@ class CurrentSetting: ObservableObject {
     
     func setSetting(managedObjectContext: NSManagedObjectContext) {
         let currentSetting = getSetting(managedObjectContext: managedObjectContext)
-        if currentSetting != nil {
-            self.setting = currentSetting!
-        }
+        self.setting = currentSetting!
     }
 }
 

@@ -25,8 +25,9 @@ struct HomeView: View {
         hourFormatter.timeStyle = .short
         
         numberFormatter = NumberFormatter()
-        numberFormatter.locale = Locale(identifier: "de_DE")
-        numberFormatter.numberStyle = .currency
+        numberFormatter.numberStyle = .decimal
+        numberFormatter.maximumFractionDigits = 2
+        numberFormatter.minimumFractionDigits = 2
     }
     
     var body: some View {
@@ -112,7 +113,6 @@ struct HomeView: View {
                 }
             )
         }
-        .preferredColorScheme(.dark)
         .onAppear {
             currentSetting.setSetting(managedObjectContext: managedObjectContext)
         }

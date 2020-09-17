@@ -27,7 +27,7 @@ func getSetting(managedObjectContext: NSManagedObjectContext) -> Setting? {
         // No Settings object is yet created. Create a new Settings object and save it to the persistent store
         let newSetting = Setting(context: managedObjectContext)
         newSetting.awattarEnergyProfileIndex = 0
-        newSetting.taxSelectionIndex = 0
+        newSetting.pricesWithTaxIncluded = true
         
         print("No Settings object yet stored. Creating new Settings object with default options.")
         
@@ -60,7 +60,7 @@ func getSetting(managedObjectContext: NSManagedObjectContext) -> Setting? {
     }
 }
 
-func storeTaxSettingsSelection(selectedTaxSetting: Int16, managedObjectContext: NSManagedObjectContext) {
+func storeTaxSettingsSelection(pricesWithTaxIncluded: Bool, awattarEnergyProfileIndex: Int16, managedObjectContext: NSManagedObjectContext) {
     let fetchRequest: NSFetchRequest<Setting> = Setting.fetchRequest()
     var fetchRequestResults = [Setting]()
     
@@ -82,17 +82,20 @@ func storeTaxSettingsSelection(selectedTaxSetting: Int16, managedObjectContext: 
         }
     
         let newSetting = Setting(context: managedObjectContext)
-        newSetting.taxSelectionIndex = selectedTaxSetting
+        newSetting.pricesWithTaxIncluded = pricesWithTaxIncluded
+        newSetting.awattarEnergyProfileIndex = awattarEnergyProfileIndex
         
     } else if fetchRequestResults.count == 1 {
         let settingsObject = fetchRequestResults[0]
-        settingsObject.taxSelectionIndex = selectedTaxSetting
+        settingsObject.pricesWithTaxIncluded = pricesWithTaxIncluded
+        settingsObject.awattarEnergyProfileIndex = awattarEnergyProfileIndex
         print("Stored new settings.")
         
     } else if fetchRequestResults.count == 0 {
         // No Settings object is yet created. Create a new Settings object and save it to the persistent store
         let newSetting = Setting(context: managedObjectContext)
-        newSetting.taxSelectionIndex = selectedTaxSetting
+        newSetting.pricesWithTaxIncluded = pricesWithTaxIncluded
+        newSetting.awattarEnergyProfileIndex = awattarEnergyProfileIndex
         print("No Settings object yet stored. Creating new Settings object.")
     }
     

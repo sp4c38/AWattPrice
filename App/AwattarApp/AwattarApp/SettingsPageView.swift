@@ -24,9 +24,11 @@ struct SettingsPageView: View {
     @EnvironmentObject var energyData: EnergyData
     @Environment(\.managedObjectContext) var managedObjectContext
     
-    @State var newSelectedTaxOption: Int = 0
+    @State var pricesWithTaxIncluded = true
+    @State var awattarEnergyProfileIndex: Int = 0
+    @State var eldo = 0
     
-    var taxOptions = [(0, "Mit Mehrwertsteuer", "Preise auf der Startseite werden mit der Mehrwertsteuer angezeigt."), (1, "Ohne Mehrwertsteuer", "Preise auf der Startseite werden ohne der Mehrwertsteuer angezeigt.")]
+    var taxOptions = ["Preise auf der Startseite werden mit der Mehrwertsteuer angezeigt.", "Preise auf der Startseite werden ohne der Mehrwertsteuer angezeigt."]
 
     var body: some View {
         VStack(alignment: .leading, spacing: 40) {
@@ -38,28 +40,30 @@ struct SettingsPageView: View {
                 Spacer()
             }
             
-            VStack(alignment: .leading) {
+            VStack(alignment: .leading, spacing: 10) {
                 Text("Preiseinstellungen:")
+                    .bold()
                     .padding(.leading, 5)
                 
-                VStack(alignment: .leading, spacing: 10) {
-                    Picker(selection: $newSelectedTaxOption, label: Text("Steuereinstellungen")) {
-                        ForEach(taxOptions, id: \.0) { taxOption in
-                            Text(taxOption.1).tag(taxOption.0)
-                        }
-                    }
-                    .frame(maxWidth: .infinity)
-                    .pickerStyle(SegmentedPickerStyle())
-                    
-                    Text(taxOptions[Int(currentSetting.setting!.taxSelectionIndex)].2)
+                HStack(spacing: 10) {
+                    Text("Preise mit Mehrwertsteuer anzeigen")
                         .font(.caption)
-                        .foregroundColor(Color.gray)
                         .padding(.leading, 5)
+                    
+                    Toggle(isOn: $pricesWithTaxIncluded) {
+                        
+                    }
                 }
+                
+                Text(pricesWithTaxIncluded ? taxOptions[0] : taxOptions[1])
+                    .font(.caption)
+                    .foregroundColor(Color.gray)
+                    .padding(.leading, 5)
             }
             
             VStack(alignment: .leading, spacing: 10) {
                 Text("aWATTar Tarif:")
+                    .bold()
                     .padding(.leading, 5)
                 
                 VStack(alignment: .leading) {                    
@@ -68,10 +72,14 @@ struct SettingsPageView: View {
                         .foregroundColor(Color.gray)
                         .padding(.leading, 5)
                     
-                    Picker(selection: .constant(true), label: Text("aWATTAr Profil Einstellungen")) {
-                        ForEach(energyData.profilesData, id: \.self) {
-                            
+                    if energyData.profilesData != nil {
+                        Picker(selection: $awattarEnergyProfileIndex, label: Text("aWATTAr Profil Einstellungen")) {
+                            ForEach(energyData.profilesData!.profiles, id: \.name) { profile in
+                                Text(profile.name).tag(energyData.profilesData!.profiles.firstIndex(of: profile)!)
+                            }
                         }
+                        .frame(maxWidth: .infinity)
+                        .pickerStyle(SegmentedPickerStyle())
                     }
                 }
             }
@@ -80,7 +88,8 @@ struct SettingsPageView: View {
             Spacer()
             Button(action: {
                 storeTaxSettingsSelection(
-                    selectedTaxSetting: Int16(newSelectedTaxOption),
+                    pricesWithTaxIncluded: pricesWithTaxIncluded,
+                    awattarEnergyProfileIndex: Int16(awattarEnergyProfileIndex),
                     managedObjectContext: managedObjectContext)
             }) {
                Text("Speichern")
@@ -88,7 +97,8 @@ struct SettingsPageView: View {
         }
         .padding(20)
         .onAppear {
-            newSelectedTaxOption = Int(currentSetting.setting!.taxSelectionIndex)
+            pricesWithTaxIncluded = currentSetting.setting!.pricesWithTaxIncluded
+            awattarEnergyProfileIndex = Int(currentSetting.setting!.awattarEnergyProfileIndex)
         }
     }
 }

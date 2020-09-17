@@ -37,7 +37,7 @@ struct SourcesData: Codable {
     var awattar: AwattarData
 }
 
-struct Profile: Codable {
+struct Profile: Codable, Hashable {
     var name: String
 }
 

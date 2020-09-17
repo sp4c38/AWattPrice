@@ -54,14 +54,14 @@ struct HomeView: View {
                                                 EnergyPriceGraph(awattarDataPoint: price, minPrice: energyData.energyData!.awattar.minPrice, maxPrice: energyData.energyData!.awattar.maxPrice)
                                                     .foregroundColor(Color(hue: 0.0673, saturation: 0.7155, brightness: 0.9373))
                                                 
-                                                if currentSetting.setting!.taxSelectionIndex == 0 {
+                                                if currentSetting.setting!.pricesWithTaxIncluded {
                                                     // With tax
                                                     Text(numberFormatter.string(from: NSNumber(value: (price.marketprice * 100 * 0.001 * 1.16)))!)
                                                         .padding(10)
                                                         .foregroundColor((colorScheme == .dark) ? Color.white : Color.black)
                                                         .shadow(radius: 5)
 
-                                                } else if currentSetting.setting!.taxSelectionIndex == 1 {
+                                                } else if !currentSetting.setting!.pricesWithTaxIncluded {
                                                     // Without tax
                                                     Text(numberFormatter.string(from: NSNumber(value: (price.marketprice * 100 * 0.001)))!)
                                                         .padding(10)

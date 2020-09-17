@@ -16,7 +16,7 @@ extension Setting {
     }
 
     @NSManaged public var awattarEnergyProfileIndex: Int16
-    @NSManaged public var taxSelectionIndex: Int16
+    @NSManaged public var pricesWithTaxIncluded: Bool
 
 }
 

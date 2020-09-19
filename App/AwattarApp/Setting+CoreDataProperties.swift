@@ -10,13 +10,14 @@ import Foundation
 import CoreData
 
 extension Setting {
-
     @nonobjc public class func fetchRequest() -> NSFetchRequest<Setting> {
         return NSFetchRequest<Setting>(entityName: "Setting")
     }
 
     @NSManaged public var awattarEnergyProfileIndex: Int16
     @NSManaged public var pricesWithTaxIncluded: Bool
+    @NSManaged public var awattarProfileBasicCharge: Int16
+    @NSManaged public var awattarEnergyPrice: Int16
 
 }
 

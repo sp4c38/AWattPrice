@@ -28,6 +28,8 @@ func getSetting(managedObjectContext: NSManagedObjectContext) -> Setting? {
         let newSetting = Setting(context: managedObjectContext)
         newSetting.awattarEnergyProfileIndex = 0
         newSetting.pricesWithTaxIncluded = true
+        newSetting.awattarProfileBasicCharge = 0
+        newSetting.awattarEnergyPrice = 0
         
         print("No Settings object yet stored. Creating new Settings object with default options.")
         
@@ -60,7 +62,7 @@ func getSetting(managedObjectContext: NSManagedObjectContext) -> Setting? {
     }
 }
 
-func storeTaxSettingsSelection(pricesWithTaxIncluded: Bool, awattarEnergyProfileIndex: Int16, managedObjectContext: NSManagedObjectContext) {
+func storeTaxSettingsSelection(pricesWithTaxIncluded: Bool, awattarEnergyProfileIndex: Int16, basicCharge: Int16, energyPrice: Int16, managedObjectContext: NSManagedObjectContext) {
     let fetchRequest: NSFetchRequest<Setting> = Setting.fetchRequest()
     var fetchRequestResults = [Setting]()
     
@@ -70,8 +72,6 @@ func storeTaxSettingsSelection(pricesWithTaxIncluded: Bool, awattarEnergyProfile
         print("Couldn't read stored settings.")
         return
     }
-    
-    print("Run Store Tax Settings Selection.")
     
     if fetchRequestResults.count > 1 {
         // This shouldn't happen because it would mean that there are multiple Settings objects stored in the persistent storages
@@ -84,11 +84,16 @@ func storeTaxSettingsSelection(pricesWithTaxIncluded: Bool, awattarEnergyProfile
         let newSetting = Setting(context: managedObjectContext)
         newSetting.pricesWithTaxIncluded = pricesWithTaxIncluded
         newSetting.awattarEnergyProfileIndex = awattarEnergyProfileIndex
+        newSetting.awattarProfileBasicCharge = basicCharge
+        newSetting.awattarEnergyPrice = energyPrice
         
     } else if fetchRequestResults.count == 1 {
         let settingsObject = fetchRequestResults[0]
         settingsObject.pricesWithTaxIncluded = pricesWithTaxIncluded
         settingsObject.awattarEnergyProfileIndex = awattarEnergyProfileIndex
+        settingsObject.awattarProfileBasicCharge = basicCharge
+        settingsObject.awattarEnergyPrice = energyPrice
+        
         print("Stored new settings.")
         
     } else if fetchRequestResults.count == 0 {
@@ -96,6 +101,9 @@ func storeTaxSettingsSelection(pricesWithTaxIncluded: Bool, awattarEnergyProfile
         let newSetting = Setting(context: managedObjectContext)
         newSetting.pricesWithTaxIncluded = pricesWithTaxIncluded
         newSetting.awattarEnergyProfileIndex = awattarEnergyProfileIndex
+        newSetting.awattarProfileBasicCharge = basicCharge
+        newSetting.awattarEnergyPrice = energyPrice
+        
         print("No Settings object yet stored. Creating new Settings object.")
     }
     

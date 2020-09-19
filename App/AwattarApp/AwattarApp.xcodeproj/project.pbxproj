@@ -60,6 +60,7 @@
 		617D85CA25052C37009E18FB /* AwattarAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AwattarAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		617D85CE25052C37009E18FB /* AwattarAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AwattarAppUITests.swift; sourceTree = "<group>"; };
 		617D85D025052C37009E18FB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		617E1F5A2515E7CE006B07D4 /* donut.blend */ = {isa = PBXFileReference; lastKnownFileType = file; name = donut.blend; path = ../../../../../../../3D_modelling/DonutImage/donut.blend; sourceTree = "<group>"; };
 		61C23FC9250923D600538585 /* HourPriceInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HourPriceInfoView.swift; sourceTree = "<group>"; };
 		61D196E42507F58D00E57BAC /* EnergyPriceGraph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnergyPriceGraph.swift; sourceTree = "<group>"; };
 		61E5E050250E9AA800E2F9CC /* TabNavigatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabNavigatorView.swift; sourceTree = "<group>"; };
@@ -132,6 +133,7 @@
 		617D85B025052C35009E18FB /* AwattarApp */ = {
 			isa = PBXGroup;
 			children = (
+				617E1F5A2515E7CE006B07D4 /* donut.blend */,
 				61504CFC250FF46D00EF41D6 /* HelpViews */,
 				61D196E32507F57800E57BAC /* Graphs */,
 				614E784B25068E0600A7ED83 /* Data */,

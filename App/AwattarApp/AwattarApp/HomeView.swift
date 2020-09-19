@@ -25,7 +25,9 @@ struct HomeView: View {
         hourFormatter.timeStyle = .short
         
         numberFormatter = NumberFormatter()
-        numberFormatter.numberStyle = .decimal
+        numberFormatter.numberStyle = .currency
+        numberFormatter.locale = Locale(identifier: "de_DE")
+        numberFormatter.currencySymbol = "ct"
         numberFormatter.maximumFractionDigits = 2
         numberFormatter.minimumFractionDigits = 2
     }

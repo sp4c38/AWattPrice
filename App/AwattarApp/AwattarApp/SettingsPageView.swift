@@ -30,8 +30,8 @@ extension AnyTransition {
 
 struct SettingsPageView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
+    @EnvironmentObject var awattarData: AwattarData
     @EnvironmentObject var currentSetting: CurrentSetting
-    @EnvironmentObject var energyData: EnergyData
     
     @State var pricesWithTaxIncluded = true
     
@@ -74,7 +74,7 @@ struct SettingsPageView: View {
                             .fixedSize(horizontal: false, vertical: true)
                     }
                     
-                    if energyData.profilesData != nil {
+                    if awattarData.profilesData != nil {
                         VStack(alignment: .leading, spacing: 10) {
                             Text("aWATTar Tarif:")
                                 .bold()
@@ -86,8 +86,8 @@ struct SettingsPageView: View {
                                     .fixedSize(horizontal: false, vertical: true)
 
                                 Picker(selection: $awattarEnergyProfileIndex.animation(), label: Text("aWATTAr Tarif Einstellungen")) {
-                                    ForEach(energyData.profilesData!.profiles, id: \.name) { profile in
-                                        Text(profile.name).tag(energyData.profilesData!.profiles.firstIndex(of: profile)!)
+                                    ForEach(awattarData.profilesData!.profiles, id: \.name) { profile in
+                                        Text(profile.name).tag(awattarData.profilesData!.profiles.firstIndex(of: profile)!)
                                     }
                                 }
                                 .frame(maxWidth: .infinity)
@@ -103,7 +103,7 @@ struct SettingsPageView: View {
                                                     .frame(width: 60, height: 60, alignment: .center)
                                                     .padding(.top, 5)
 
-                                                Text(energyData.profilesData!.profiles[0].name)
+                                                Text(awattarData.profilesData!.profiles[0].name)
                                                     .font(.title3)
                                                     .bold()
                                                     .padding(.bottom, 10)
@@ -153,7 +153,7 @@ struct SettingsPageView: View {
 //                                                    .scaledToFit()
 //                                                    .frame(width: 40, height: 40, alignment: .center)
 //
-//                                                Text(energyData.profilesData!.profiles[1].name)
+//                                                Text(awattarData.profilesData!.profiles[1].name)
 //                                                    .font(.title3)
 //                                                    .bold()
 //
@@ -167,7 +167,7 @@ struct SettingsPageView: View {
 //                                                    .scaledToFit()
 //                                                    .frame(width: 60, height: 60, alignment: .center)
 //
-//                                                Text(energyData.profilesData!.profiles[2].name)
+//                                                Text(awattarData.profilesData!.profiles[2].name)
 //                                                    .font(.title3)
 //                                                    .bold()
 //                                            }
@@ -211,7 +211,7 @@ struct SettingsPageView_Previews: PreviewProvider {
     static var previews: some View {
         SettingsPageView()
             .environment(\.managedObjectContext, PersistenceManager().persistentContainer.viewContext)
+            .environmentObject(AwattarData())
             .environmentObject(CurrentSetting())
-            .environmentObject(EnergyData())
     }
 }

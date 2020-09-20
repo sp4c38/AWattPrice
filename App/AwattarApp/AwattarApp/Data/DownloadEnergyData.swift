@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct AwattarDataPoint: Codable {
+struct EnergyPricePoint: Codable {
     var startTimestamp: Int
     var endTimestamp: Int
     var marketprice: Float
@@ -21,8 +21,8 @@ struct AwattarDataPoint: Codable {
     }
 }
 
-struct AwattarData: Codable {
-    var prices: [AwattarDataPoint]
+struct EnergyData: Codable {
+    var prices: [EnergyPricePoint]
     var minPrice: Float?
     var maxPrice: Float?
     
@@ -34,7 +34,7 @@ struct AwattarData: Codable {
 }
 
 struct SourcesData: Codable {
-    var awattar: AwattarData
+    var awattar: EnergyData
 }
 
 struct Profile: Codable, Hashable {
@@ -45,10 +45,36 @@ struct ProfilesData: Codable {
     var profiles: [Profile]
 }
 
-struct ProfileData {
-    var profilesData: ProfilesData? = nil
+class AwattarData: ObservableObject {
+    // Needs to be an observable object because the data is downloaded asynchronously from the server
+    // and views need to check when downloading the data finished
+    
+    @Published var energyData: SourcesData? = nil
+    @Published var profilesData: ProfilesData? = nil
 
     init() {
+        var energyRequest = URLRequest(
+                        url: URL(string: "https://www.space8.me:9173/awattar_app/data/")!,
+                        cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy)
+        
+        energyRequest.httpMethod = "GET"
+        
+        let _ = URLSession.shared.dataTask(with: energyRequest) { data, response, error in
+            let jsonDecoder = JSONDecoder()
+            var decodedData = SourcesData(awattar: EnergyData(prices: [], maxPrice: nil))
+            
+            if let data = data {
+                do {
+                    decodedData = try jsonDecoder.decode(SourcesData.self, from: data)
+                    DispatchQueue.main.async {
+                        self.energyData = decodedData
+                    }
+                } catch {
+                    fatalError("Could not decode returned JSON data from server.")
+                }
+            }
+        }.resume()
+        
         var profileRequest = URLRequest(
                         url: URL(string: "https://www.space8.me:9173/awattar_app/static/chargeProfiles.json")!,
                         cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy)
@@ -62,36 +88,8 @@ struct ProfileData {
             if let data = data {
                 do {
                     decodedData = try jsonDecoder.decode(ProfilesData.self, from: data)
-//                    DispatchQueue.main.async {
-                        profilesData = decodedData
-//                    }
-                } catch {
-                    fatalError("Could not decode returned JSON data from server.")
-                }
-            }
-        }.resume()
-    }
-}
-
-class EnergyData {
-    var energyData: SourcesData? = nil
-
-    init() {
-        var energyRequest = URLRequest(
-                        url: URL(string: "https://www.space8.me:9173/awattar_app/data/")!,
-                        cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy)
-        
-        energyRequest.httpMethod = "GET"
-        
-        let _ = URLSession.shared.dataTask(with: energyRequest) { data, response, error in
-            let jsonDecoder = JSONDecoder()
-            var decodedData = SourcesData(awattar: AwattarData(prices: [], maxPrice: nil))
-            
-            if let data = data {
-                do {
-                    decodedData = try jsonDecoder.decode(SourcesData.self, from: data)
                     DispatchQueue.main.async {
-                        self.energyData = decodedData
+                        self.profilesData = decodedData
                     }
                 } catch {
                     fatalError("Could not decode returned JSON data from server.")
@@ -100,5 +98,3 @@ class EnergyData {
         }.resume()
     }
 }
-
-var energyData: EnergyData = EnergyData()

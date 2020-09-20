@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct HourPriceInfoView: View {
-    let priceDataPoint: AwattarDataPoint
+    let priceDataPoint: EnergyPricePoint
     var numberFormatter: NumberFormatter
     var dateFormatter: DateFormatter
     var hourFormatter: DateFormatter
@@ -16,7 +16,7 @@ struct HourPriceInfoView: View {
     var priceInMWh: String?
     var priceInkWh: String?
     
-    init(priceDataPoint: AwattarDataPoint) {
+    init(priceDataPoint: EnergyPricePoint) {
         dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .full
         
@@ -104,6 +104,6 @@ struct HourPriceInfoView: View {
 
 struct HourPriceInfoView_Previews: PreviewProvider {
     static var previews: some View {
-            HourPriceInfoView(priceDataPoint: AwattarDataPoint(startTimestamp: 1599674400000, endTimestamp: 1599678000000, marketprice: 29.28, unit: ["Eur / MWh", "Eur / kWh"]))
+            HourPriceInfoView(priceDataPoint: EnergyPricePoint(startTimestamp: 1599674400000, endTimestamp: 1599678000000, marketprice: 29.28, unit: ["Eur / MWh", "Eur / kWh"]))
     }
 }

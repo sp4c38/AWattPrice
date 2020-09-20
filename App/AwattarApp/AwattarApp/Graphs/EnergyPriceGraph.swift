@@ -9,7 +9,7 @@ import SwiftUI
 
 struct EnergyPriceGraph: View {
     // Displays a graph for the price of energy for a certain time
-    var awattarDataPoint: AwattarDataPoint
+    var awattarDataPoint: EnergyPricePoint
     
     var minPrice: Float?
     var maxPrice: Float?
@@ -75,7 +75,7 @@ struct EnergyPriceGraph: View {
 
 struct EnergyPriceGraph_Previews: PreviewProvider {
     static var previews: some View {
-        EnergyPriceGraph(awattarDataPoint: AwattarDataPoint(startTimestamp: 1599516000000, endTimestamp: 1599519600000, marketprice: -20, unit: ["Eur / MWh", "Eur / kWh"]), minPrice: -30, maxPrice: 30)
+        EnergyPriceGraph(awattarDataPoint: EnergyPricePoint(startTimestamp: 1599516000000, endTimestamp: 1599519600000, marketprice: -20, unit: ["Eur / MWh", "Eur / kWh"]), minPrice: -30, maxPrice: 30)
             .frame(height: 60)
     }
 }

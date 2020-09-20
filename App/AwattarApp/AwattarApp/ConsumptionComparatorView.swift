@@ -26,7 +26,7 @@ class EnergyCalculator: ObservableObject {
 
 struct ConsumptionComparatorView: View {
     @EnvironmentObject var currentSetting: CurrentSetting
-    @EnvironmentObject var energyData: EnergyData
+    @EnvironmentObject var awattarData: AwattarData
     
     @ObservedObject var energyCalculator = EnergyCalculator()
     

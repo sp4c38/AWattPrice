@@ -10,6 +10,7 @@ import SwiftUI
 struct HomeView: View {
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.managedObjectContext) var managedObjectContext
+    @EnvironmentObject var awattarData: AwattarData
     @EnvironmentObject var currentSetting: CurrentSetting
     
     @State var settingIsPresented: Bool = false
@@ -34,7 +35,7 @@ struct HomeView: View {
     var body: some View {
         NavigationView {
             VStack {
-                if energyData.energyData != nil {
+                if awattarData.energyData != nil {
                     ScrollView(showsIndicators: false) {
                         VStack(alignment: .leading, spacing: 0) {
                             Divider()
@@ -44,7 +45,7 @@ struct HomeView: View {
                                 .padding(.top, 8)
                                 .padding(.bottom, 8)
 
-                            ForEach(energyData.energyData!.awattar.prices, id: \.startTimestamp) { price in
+                            ForEach(awattarData.energyData!.awattar.prices, id: \.startTimestamp) { price in
                                 let startDate = Date(timeIntervalSince1970: TimeInterval(price.startTimestamp / 1000))
                                 let endDate = Date(timeIntervalSince1970: TimeInterval(price.endTimestamp / 1000))
 
@@ -52,7 +53,7 @@ struct HomeView: View {
                                     VStack(spacing: 0) {
                                         ZStack(alignment: .trailing) {
                                             ZStack(alignment: .leading) {
-                                                EnergyPriceGraph(awattarDataPoint: price, minPrice: energyData.energyData!.awattar.minPrice, maxPrice: energyData.energyData!.awattar.maxPrice)
+                                                EnergyPriceGraph(awattarDataPoint: price, minPrice: awattarData.energyData!.awattar.minPrice, maxPrice: awattarData.energyData!.awattar.maxPrice)
                                                     .foregroundColor(Color(hue: 0.0673, saturation: 0.7155, brightness: 0.9373))
                                                 
                                                 if currentSetting.setting!.pricesWithTaxIncluded {
@@ -124,7 +125,7 @@ struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
         HomeView()
             .environment(\.managedObjectContext, PersistenceManager().persistentContainer.viewContext)
-            .environmentObject(EnergyData())
+            .environmentObject(AwattarData())
             .environmentObject(CurrentSetting())
     }
 }

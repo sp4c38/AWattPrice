@@ -19,7 +19,7 @@ struct TabNavigatorView: View {
                         Text("Strompreise")
                     }
                 
-                ConsumptionComparatorView()
+                ConsumptionComparisonView()
                     .tabItem {
                         Image(systemName: "rectangle.and.text.magnifyingglass")
                         Text("Verbrauchsvergleicher")

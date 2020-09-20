@@ -20,7 +20,6 @@ struct HomeView: View {
     
     init() {
         hourFormatter = DateFormatter()
-
         hourFormatter.locale = Locale(identifier: "de_DE")
         hourFormatter.timeStyle = .short
         

@@ -8,18 +8,6 @@
 import SceneKit
 import SwiftUI
 
-struct DoneButtenStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .font(.headline)
-            .foregroundColor(Color.white)
-            .frame(maxWidth: .infinity)
-            .padding()
-            .background(Color.blue)
-            .cornerRadius(10)
-    }
-}
-
 extension AnyTransition {
     static var switchPlaces: AnyTransition {
         let insertion = AnyTransition.scale(scale: 2).combined(with: .opacity)
@@ -113,17 +101,11 @@ struct SettingsPageView: View {
                                                     HStack(spacing: 0) {
                                                         TextField("", text: $basicCharge)
                                                             .keyboardType(.decimalPad)
+                                                            .textFieldStyle(RoundedBorderTextFieldStyle())
                                                         
                                                         Text("Euro pro Monat")
-                                                            .padding(.trailing, 5)
+                                                            .padding(.leading, 5)
                                                     }
-                                                    .padding(5)
-                                                    .padding(.leading, 5)
-                                                    .overlay(
-                                                        RoundedRectangle(cornerRadius: 10)
-                                                            .stroke(Color.black, lineWidth: 3)
-                                                    )
-                                                    .shadow(radius: 5)
                                                 }
 
                                                 VStack(alignment: .leading, spacing: 10) {
@@ -131,17 +113,11 @@ struct SettingsPageView: View {
                                                     HStack(spacing: 0) {
                                                         TextField("", text: $energyPrice)
                                                             .keyboardType(.decimalPad)
+                                                            .textFieldStyle(RoundedBorderTextFieldStyle())
                                                         
                                                         Text("Cent pro kWh")
-                                                            .padding(.trailing, 5)
+                                                            .padding(.leading, 5)
                                                     }
-                                                    .padding(5)
-                                                    .padding(.leading, 5)
-                                                    .overlay(
-                                                        RoundedRectangle(cornerRadius: 10)
-                                                            .stroke(Color.black, lineWidth: 3)
-                                                    )
-                                                    .shadow(radius: 5)
                                                 }
                                             }
                                             .transition(.switchPlaces)
@@ -194,7 +170,7 @@ struct SettingsPageView: View {
             }) {
                Text("Speichern")
             }
-            .buttonStyle(DoneButtenStyle())
+            .buttonStyle(DoneButtonStyle())
             .padding(5)
             
         }

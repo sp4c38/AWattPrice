@@ -8,19 +8,34 @@
 import SwiftUI
 
 struct TabNavigatorView: View {
+    @EnvironmentObject var awattarData: AwattarData
+    
     var body: some View {
-        TabView {
-            HomeView()
-                .tabItem {
-                    Image(systemName: "bolt")
-                    Text("Strompreise")
+        if awattarData.energyData != nil {
+            TabView {
+                HomeView()
+                    .tabItem {
+                        Image(systemName: "bolt")
+                        Text("Strompreise")
+                    }
+                
+                ConsumptionComparatorView()
+                    .tabItem {
+                        Image(systemName: "rectangle.and.text.magnifyingglass")
+                        Text("Verbrauchsvergleicher")
+                    }
+            }
+        } else {
+            VStack(spacing: 40) {
+                if awattarData.energyData == nil {
+                    Spacer()
+                    ProgressView("")
+                    Text("Aktuelle Daten Werden Geladen")
+                        .font(.callout)
+                        .multilineTextAlignment(.center)
+                    Spacer()
                 }
-            
-            ConsumptionComparatorView()
-                .tabItem {
-                    Image(systemName: "rectangle.and.text.magnifyingglass")
-                    Text("Verbrauchsvergleicher")
-                }
+            }
         }
     }
 }

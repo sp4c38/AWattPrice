@@ -37,7 +37,8 @@ struct HomeView: View {
             VStack {
                 if awattarData.energyData != nil {
                     ScrollView(showsIndicators: false) {
-                        VStack(alignment: .leading, spacing: 0) {
+                        LazyVStack(alignment: .leading, spacing: 0) { // new SwiftUI feature
+                                                                      // only creates the views in the VStack if they are really on the screen
                             Divider()
                             Text("Preis pro kWh")
                                 .font(.subheadline)

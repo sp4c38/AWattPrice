@@ -9,42 +9,57 @@ import SwiftUI
 
 class EnergyCalculator: ObservableObject {
     @Published var energyUsageInput = "20"
-    @Published var timeOfUsageStartInput = Date(timeIntervalSince1970: 1600585200)
-    @Published var timeOfUsageEndInput = Date(timeIntervalSince1970: 1600596000)
+    
+    @Published var startDate = Date()
+    @Published var timeOfUsageTimeInterval = Date()
     
     @Published var energyUsage = Double(0) // energy usage in kW
     @Published var timeOfUsage = TimeInterval() // time interval in seconds
-    @Published var powerUsage: Double? = nil // total power usage in kWh
+    
+    @Published var cheapestHoursForUsage: HourPair? = nil
+    
+    init() {
+        let calendar = Calendar(identifier: .gregorian)
+        startDate = calendar.startOfDay(for: startDate)
+        timeOfUsageTimeInterval = calendar.startOfDay(for: startDate)
+    }
     
     func setValues() {
         self.energyUsage = Double(self.energyUsageInput) ?? 0
-        self.timeOfUsage = timeOfUsageEndInput.timeIntervalSince(timeOfUsageStartInput)
+        self.timeOfUsage = abs(startDate.timeIntervalSince(timeOfUsageTimeInterval))
+    }
+    
+    class HourPair {
+        // A pair of multiple price points
+        
+        var averagePrice: Float = 0
+        var associatedPricePoints: [EnergyPricePoint]
+        
+        init(associatedPricePoints: [EnergyPricePoint]) {
+            self.associatedPricePoints = associatedPricePoints
+        }
+        
+        func calculateAveragePrice() {
+            var pricesTogether: Float = 0
+            for pricePoint in self.associatedPricePoints {
+                pricesTogether += pricePoint.marketprice
+            }
+            self.averagePrice = pricesTogether / Float(associatedPricePoints.count)
+        }
     }
     
     func calculateBestHours(energyData: EnergyData) {
-        // Calculates which hours are best for energy consumption when using [energyUsage] for [timeOfUsage]
-        class PairNode {
-            var averagePrice: Float = 0
-            var associatedPricePoints: [EnergyPricePoint]
-            
-            init(associatedPricePoints: [EnergyPricePoint]) {
-                self.associatedPricePoints = associatedPricePoints
-            }
-            
-            func calculateAveragePrice() {
-                var pricesTogether: Float = 0
-                for pricePoint in self.associatedPricePoints {
-                    pricesTogether += pricePoint.marketprice
-                }
-                self.averagePrice = pricesTogether / Float(associatedPricePoints.count)
-            }
-        }
+        // Energy used in a certain time interval is specified by the user
+        // This function than can calculate when the cheapest hours are for the users energy consumption
+        // Example:
+        // Want to charge EV for two hours. Function calculates for the user the cheapest hours to charge his EV.
+        // Output would be for example from 4pm to 6pm.
         
         let timeOfUsageInHours: Int = Int(timeOfUsage / 60 / 60)
 
-        var allPairs = [PairNode]()
+        var allPairs = [HourPair]()
         for hourIndex in 0..<energyData.prices.count {
-            let newPairNode = PairNode(associatedPricePoints: [energyData.prices[hourIndex]])
+            let newPairNode = HourPair(associatedPricePoints: [energyData.prices[hourIndex]])
             
             for nextHourIndex in 1..<timeOfUsageInHours {
                 if (hourIndex + nextHourIndex) <= (energyData.prices.count - 1) {
@@ -83,8 +98,8 @@ class EnergyCalculator: ObservableObject {
             }
         }
         
-        for node in allPairs[lowestPricePairIndex!].associatedPricePoints {
-            print("Charge in hour with price \(node.marketprice * 100 * 0.001)")
+        if lowestPricePairIndex != nil {
+            cheapestHoursForUsage = allPairs[lowestPricePairIndex!]
         }
     }
 }
@@ -94,6 +109,14 @@ struct ConsumptionComparatorView: View {
     @EnvironmentObject var awattarData: AwattarData
     
     @ObservedObject var energyCalculator = EnergyCalculator()
+    
+    var dateFormatter: DateFormatter
+    
+    init() {
+        dateFormatter = DateFormatter()
+        dateFormatter.dateStyle = .long
+        dateFormatter.timeStyle = .long
+    }
     
     var body: some View {
         VStack(alignment: .center) {
@@ -126,11 +149,15 @@ struct ConsumptionComparatorView: View {
                     TextField("Verbrauch", text: $energyCalculator.energyUsageInput)
                         .keyboardType(.decimalPad)
                     
-                    DatePicker("Start des Verbrauches", selection: $energyCalculator.timeOfUsageStartInput, displayedComponents: .hourAndMinute)
-                        .datePickerStyle(DefaultDatePickerStyle())
+                    if energyCalculator.cheapestHoursForUsage != nil {
+                        ForEach(energyCalculator.cheapestHoursForUsage!.associatedPricePoints, id: \.self) { cheapestHour in
+                            Text(dateFormatter.string(from: Date(timeIntervalSince1970: TimeInterval(cheapestHour.startTimestamp / 1000))))
+                        }
+                    }
                     
-                    DatePicker("Ende des Verbrauches", selection: $energyCalculator.timeOfUsageEndInput, displayedComponents: .hourAndMinute)
-                        .datePickerStyle(DefaultDatePickerStyle())
+                    
+                    TimeIntervalPicker(selectedInterval: $energyCalculator.timeOfUsageTimeInterval)
+                        .frame(maxWidth: .infinity)
                     
                     Button(action: {
                         energyCalculator.setValues()
@@ -138,8 +165,6 @@ struct ConsumptionComparatorView: View {
                     }) {
                         Text("Berechnen")
                     }
-                    
-                    Text("Bei einer Leistung von \(energyCalculator.energyUsageInput) für \(energyCalculator.timeOfUsage) verbrauchst du \(energyCalculator.powerUsage ?? 0)")
                 }
                 
                 Spacer()

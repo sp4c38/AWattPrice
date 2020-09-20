@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct EnergyPricePoint: Codable {
+struct EnergyPricePoint: Hashable, Codable {
     var startTimestamp: Int
     var endTimestamp: Int
     var marketprice: Float

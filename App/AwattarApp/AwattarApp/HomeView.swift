@@ -10,7 +10,6 @@ import SwiftUI
 struct HomeView: View {
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.managedObjectContext) var managedObjectContext
-    @EnvironmentObject var energyData: EnergyData
     @EnvironmentObject var currentSetting: CurrentSetting
     
     @State var settingIsPresented: Bool = false

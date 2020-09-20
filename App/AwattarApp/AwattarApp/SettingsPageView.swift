@@ -95,7 +95,7 @@ struct SettingsPageView: View {
 
                                 HStack(spacing: 20) {
                                     VStack {
-                                        if awattarEnergyProfileIndex == 0 {
+//                                        if awattarEnergyProfileIndex == 0 {
                                             VStack {
                                                 Image("hourlyProfilePicture")
                                                     .resizable()
@@ -110,60 +110,69 @@ struct SettingsPageView: View {
 
                                                 VStack(alignment: .leading, spacing: 10) {
                                                     Text("Grundgebühr:")
-                                                    TextField("", text: $basicCharge)
-                                                        .padding(5)
-                                                        .padding(.leading, 5)
-                                                        .overlay(
-                                                            RoundedRectangle(cornerRadius: 10)
-                                                                .stroke(Color.black, lineWidth: 3)
-                                                        )
-                                                        .shadow(radius: 5)
-                                                        .keyboardType(.numberPad)
-                                                    
-                                                }.padding(.bottom, 5)
+                                                    HStack(spacing: 0) {
+                                                        TextField("", text: $basicCharge)
+                                                            .keyboardType(.decimalPad)
+                                                        
+                                                        Text("Euro pro Monat")
+                                                            .padding(.trailing, 5)
+                                                    }
+                                                    .padding(5)
+                                                    .padding(.leading, 5)
+                                                    .overlay(
+                                                        RoundedRectangle(cornerRadius: 10)
+                                                            .stroke(Color.black, lineWidth: 3)
+                                                    )
+                                                    .shadow(radius: 5)
+                                                }
 
                                                 VStack(alignment: .leading, spacing: 10) {
                                                     Text("Arbeitspreis:")
-                                                    TextField("", text: $energyPrice)
-                                                        .padding(5)
-                                                        .padding(.leading, 5)
-                                                        .overlay(
-                                                            RoundedRectangle(cornerRadius: 10)
-                                                                .stroke(Color.black, lineWidth: 3)
-                                                        )
-                                                        .shadow(radius: 5)
-                                                        .keyboardType(.numberPad)
+                                                    HStack(spacing: 0) {
+                                                        TextField("", text: $energyPrice)
+                                                            .keyboardType(.decimalPad)
+                                                        
+                                                        Text("Cent pro kWh")
+                                                            .padding(.trailing, 5)
+                                                    }
+                                                    .padding(5)
+                                                    .padding(.leading, 5)
+                                                    .overlay(
+                                                        RoundedRectangle(cornerRadius: 10)
+                                                            .stroke(Color.black, lineWidth: 3)
+                                                    )
+                                                    .shadow(radius: 5)
                                                 }
                                             }
                                             .transition(.switchPlaces)
 //
-                                        } else if awattarEnergyProfileIndex == 1 {
-                                            VStack {
-                                                Image("hourlyCapProfilePicture")
-                                                    .resizable()
-                                                    .scaledToFit()
-                                                    .frame(width: 40, height: 40, alignment: .center)
+//                                        } else if awattarEnergyProfileIndex == 1 {
+//                                            VStack {
+//                                                Image("hourlyCapProfilePicture")
+//                                                    .resizable()
+//                                                    .scaledToFit()
+//                                                    .frame(width: 40, height: 40, alignment: .center)
+//
+//                                                Text(energyData.profilesData!.profiles[1].name)
+//                                                    .font(.title3)
+//                                                    .bold()
+//
+//                                            }
+//                                            .transition(.switchPlaces)
 
-                                                Text(energyData.profilesData!.profiles[1].name)
-                                                    .font(.title3)
-                                                    .bold()
-
-                                            }
-                                            .transition(.switchPlaces)
-
-                                        } else if awattarEnergyProfileIndex == 2 {
-                                            VStack {
-                                                Image("yearlyProfilePicture")
-                                                    .resizable()
-                                                    .scaledToFit()
-                                                    .frame(width: 60, height: 60, alignment: .center)
-
-                                                Text(energyData.profilesData!.profiles[2].name)
-                                                    .font(.title3)
-                                                    .bold()
-                                            }
-                                            .transition(.switchPlaces)
-                                        }
+//                                        } else if awattarEnergyProfileIndex == 2 {
+//                                            VStack {
+//                                                Image("yearlyProfilePicture")
+//                                                    .resizable()
+//                                                    .scaledToFit()
+//                                                    .frame(width: 60, height: 60, alignment: .center)
+//
+//                                                Text(energyData.profilesData!.profiles[2].name)
+//                                                    .font(.title3)
+//                                                    .bold()
+//                                            }
+//                                            .transition(.switchPlaces)
+//                                        }
                                     }
                                 }
                             }
@@ -179,8 +188,8 @@ struct SettingsPageView: View {
                 storeTaxSettingsSelection(
                     pricesWithTaxIncluded: pricesWithTaxIncluded,
                     awattarEnergyProfileIndex: Int16(awattarEnergyProfileIndex),
-                    basicCharge: Int16(Int(basicCharge) ?? 0),
-                    energyPrice: Int16(Int(energyPrice) ?? 0),
+                    basicCharge: Float(basicCharge) ?? Float(0),
+                    energyPrice: Float(energyPrice) ?? Float(0),
                     managedObjectContext: managedObjectContext)
             }) {
                Text("Speichern")

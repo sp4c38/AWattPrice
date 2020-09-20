@@ -40,7 +40,6 @@ struct AwattarApp: App {
         WindowGroup {
             TabNavigatorView()
                 .environment(\.managedObjectContext, persistence.persistentContainer.viewContext)
-                .environmentObject(EnergyData())
                 .environmentObject(CurrentSetting())
         }
     }

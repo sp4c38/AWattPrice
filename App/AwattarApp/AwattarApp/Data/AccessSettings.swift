@@ -62,7 +62,7 @@ func getSetting(managedObjectContext: NSManagedObjectContext) -> Setting? {
     }
 }
 
-func storeTaxSettingsSelection(pricesWithTaxIncluded: Bool, awattarEnergyProfileIndex: Int16, basicCharge: Int16, energyPrice: Int16, managedObjectContext: NSManagedObjectContext) {
+func storeTaxSettingsSelection(pricesWithTaxIncluded: Bool, awattarEnergyProfileIndex: Int16, basicCharge: Float, energyPrice: Float, managedObjectContext: NSManagedObjectContext) {
     let fetchRequest: NSFetchRequest<Setting> = Setting.fetchRequest()
     var fetchRequestResults = [Setting]()
     

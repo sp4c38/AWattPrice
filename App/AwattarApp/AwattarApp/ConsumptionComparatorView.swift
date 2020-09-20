@@ -10,7 +10,7 @@ import SwiftUI
 class EnergyCalculator: ObservableObject {
     @Published var energyUsageInput = "20"
     @Published var timeOfUsageStartInput = Date(timeIntervalSince1970: 1600585200)
-    @Published var timeOfUsageEndInput = Date(timeIntervalSince1970: 1600592400)
+    @Published var timeOfUsageEndInput = Date(timeIntervalSince1970: 1600596000)
     
     @Published var energyUsage = Double(0) // energy usage in kW
     @Published var timeOfUsage = TimeInterval() // time interval in seconds
@@ -25,7 +25,7 @@ class EnergyCalculator: ObservableObject {
         // Calculates which hours are best for energy consumption when using [energyUsage] for [timeOfUsage]
         class PairNode {
             var averagePrice: Float = 0
-            let associatedPricePoints: [EnergyPricePoint]
+            var associatedPricePoints: [EnergyPricePoint]
             
             init(associatedPricePoints: [EnergyPricePoint]) {
                 self.associatedPricePoints = associatedPricePoints
@@ -40,18 +40,40 @@ class EnergyCalculator: ObservableObject {
             }
         }
         
+        let timeOfUsageInHours: Int = Int(timeOfUsage / 60 / 60)
+
         var allPairs = [PairNode]()
         for hourIndex in 0..<energyData.prices.count {
-            if hourIndex + 1 <= energyData.prices.count - 1 {
-                let newPairNode = PairNode(associatedPricePoints: [energyData.prices[hourIndex], energyData.prices[hourIndex + 1]])
-                newPairNode.calculateAveragePrice()
-                allPairs.append(newPairNode)
+            let newPairNode = PairNode(associatedPricePoints: [energyData.prices[hourIndex]])
+            
+            for nextHourIndex in 1..<timeOfUsageInHours {
+                if (hourIndex + nextHourIndex) <= (energyData.prices.count - 1) {
+                    newPairNode.associatedPricePoints.append(energyData.prices[hourIndex + nextHourIndex])
+                }
             }
+
+            newPairNode.calculateAveragePrice()
+            allPairs.append(newPairNode)
         }
         
         var lowestPricePairIndex: Int? = nil
-        
         for pairIndex in 0..<allPairs.count {
+//            print("Number of elements: \(allPairs[pairIndex].associatedPricePoints.count)")
+//            print("1: \(allPairs[pairIndex].associatedPricePoints[0].marketprice)")
+//
+//            if allPairs[pairIndex].associatedPricePoints.count >= 2 {
+//                print("2: \(allPairs[pairIndex].associatedPricePoints[1].marketprice)")
+//            }
+//            if allPairs[pairIndex].associatedPricePoints.count >= 3 {
+//                print("3: \(allPairs[pairIndex].associatedPricePoints[2].marketprice)")
+//            }
+//
+//            if allPairs[pairIndex].associatedPricePoints.count >= 4 {
+//                print("4: \(allPairs[pairIndex].associatedPricePoints[3].marketprice)")
+//            }
+//
+//            print(allPairs[pairIndex].averagePrice)
+            
             if lowestPricePairIndex != nil {
                 if allPairs[pairIndex].averagePrice < allPairs[lowestPricePairIndex!].averagePrice {
                     lowestPricePairIndex = pairIndex
@@ -61,9 +83,9 @@ class EnergyCalculator: ObservableObject {
             }
         }
         
-        print("Node 1: \(allPairs[lowestPricePairIndex!].associatedPricePoints[0].marketprice * 100 * 0.001)")
-        print("Node 2: \(allPairs[lowestPricePairIndex!].associatedPricePoints[1].marketprice * 100 * 0.001)")
-        powerUsage = Double(energyUsage) * (timeOfUsage / 60 / 60) // timeOfUsage has to be converted from seconds to hours
+        for node in allPairs[lowestPricePairIndex!].associatedPricePoints {
+            print("Charge in hour with price \(node.marketprice * 100 * 0.001)")
+        }
     }
 }
 

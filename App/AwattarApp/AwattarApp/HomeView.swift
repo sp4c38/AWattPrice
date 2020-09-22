@@ -15,13 +15,14 @@ struct HomeView: View {
     
     @State var settingIsPresented: Bool = false
     
+    @GestureState var isPressed = false
+    
     var hourFormatter: DateFormatter
     var numberFormatter: NumberFormatter
     
     init() {
         hourFormatter = DateFormatter()
-        hourFormatter.locale = Locale(identifier: "de_DE")
-        hourFormatter.timeStyle = .short
+        hourFormatter.dateFormat = "H"
         
         numberFormatter = NumberFormatter()
         numberFormatter.numberStyle = .currency
@@ -55,27 +56,15 @@ struct HomeView: View {
                                             ZStack(alignment: .leading) {
                                                 EnergyPriceGraph(awattarDataPoint: price, minPrice: awattarData.energyData!.awattar.minPrice, maxPrice: awattarData.energyData!.awattar.maxPrice)
                                                     .foregroundColor(Color(hue: 0.0673, saturation: 0.7155, brightness: 0.9373))
-                                                
-                                                if currentSetting.setting!.pricesWithTaxIncluded {
-                                                    // With tax
-                                                    Text(numberFormatter.string(from: NSNumber(value: (price.marketprice * 100 * 0.001 * 1.16)))!)
-                                                        .padding(10)
-                                                        .foregroundColor((colorScheme == .dark) ? Color.white : Color.black)
-                                                        .shadow(radius: 5)
-
-                                                } else if !currentSetting.setting!.pricesWithTaxIncluded {
-                                                    // Without tax
-                                                    Text(numberFormatter.string(from: NSNumber(value: (price.marketprice * 100 * 0.001)))!)
-                                                        .padding(10)
-                                                        .foregroundColor((colorScheme == .dark) ? Color.white : Color.black)
-                                                        .shadow(radius: 5)
-                                                }
+                                                    .shadow(radius: 1)
+                                                    .animation(.easeInOut)
                                             }
 
                                             HStack(spacing: 5) {
                                                 Text(hourFormatter.string(from: startDate))
                                                 Text("-")
                                                 Text(hourFormatter.string(from: endDate))
+                                                Text("Uhr")
                                             }
                                             .padding(3)
                                             .background(Color.white)
@@ -83,6 +72,7 @@ struct HomeView: View {
                                             .shadow(radius: 3)
                                             .padding(.trailing, 25)
                                             .padding(.leading, 15)
+                                            .padding(5)
                                         }
                                         .foregroundColor(Color.black)
                                     }

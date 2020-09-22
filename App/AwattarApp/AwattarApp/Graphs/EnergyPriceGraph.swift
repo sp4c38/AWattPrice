@@ -8,20 +8,40 @@
 import SwiftUI
 
 struct EnergyPriceGraph: View {
-    // Displays a graph for the price of energy for a certain time
+    @EnvironmentObject var currentSetting: CurrentSetting
+    
+    @State var didLongPress: Bool = false
+    
     var awattarDataPoint: EnergyPricePoint
     
     var minPrice: Float?
     var maxPrice: Float?
+    
+    var numberFormatter: NumberFormatter
+    
+    init(awattarDataPoint: EnergyPricePoint, minPrice: Float?, maxPrice: Float?) {
+        self.awattarDataPoint = awattarDataPoint
+        self.minPrice = minPrice
+        self.maxPrice = maxPrice
+        
+        numberFormatter = NumberFormatter()
+        numberFormatter.numberStyle = .currency
+        numberFormatter.locale = Locale(identifier: "de_DE")
+        numberFormatter.currencySymbol = "ct"
+        numberFormatter.maximumFractionDigits = 2
+        numberFormatter.minimumFractionDigits = 2
+    }
     
     var body: some View {
         GeometryReader { geometry in
             let width = geometry.size.width
             let height = geometry.size.height
             let radius = CGFloat(4)
-            let dividerLineWidth = CGFloat(2)
             
-            let barHeightPadding = CGFloat(1) // Padding kept to the top and to the bottom
+            let horizontalDividerLineHeight = CGFloat(5)
+            let verticalDividerLineWidth = CGFloat(3)
+            
+            let barHeightPadding = CGFloat(3) // Padding kept to the top and to the bottom
             
             let maximalNegativePriceBarWidth = (
                 (minPrice != nil && !(minPrice == 0))
@@ -35,7 +55,7 @@ struct EnergyPriceGraph: View {
                 (maxPrice != nil)
                     ? CGFloat(abs(awattarDataPoint.marketprice) / (abs(minPrice!) + abs(maxPrice!))) * width + maximalNegativePriceBarWidth : 0) // Width for the price bar for positive range
           
-            HStack(spacing: 0) {
+            ZStack(alignment: Alignment(horizontal: .leading, vertical: .center)) {
                 var fillColor = Color.orange
                 Path { path in
                     if awattarDataPoint.marketprice > 0 {
@@ -44,31 +64,61 @@ struct EnergyPriceGraph: View {
                         path.addLine(to: CGPoint(x: positivePriceBarWidth, y: radius + barHeightPadding))
                         path.addRelativeArc(center: CGPoint(x: positivePriceBarWidth - radius, y: height - barHeightPadding - radius), radius: radius, startAngle: .degrees(0), delta: .degrees(90))
                         path.addLine(to: CGPoint(x: maximalNegativePriceBarWidth, y: height - barHeightPadding))
-                        
+
                     } else if awattarDataPoint.marketprice < 0 {
                         let barStartWidth = maximalNegativePriceBarWidth - negativePriceBarWidth
-                        
+
                         path.move(to: CGPoint(x: barStartWidth, y: barHeightPadding))
                         path.addRelativeArc(center: CGPoint(x: barStartWidth + radius, y: radius + barHeightPadding), radius: radius, startAngle: .degrees(180), delta: .degrees(90))
                         path.addLine(to: CGPoint(x: maximalNegativePriceBarWidth, y: barHeightPadding))
                         path.addLine(to: CGPoint(x: maximalNegativePriceBarWidth, y: height - barHeightPadding))
                         path.addRelativeArc(center: CGPoint(x: barStartWidth + radius, y: height - barHeightPadding - radius), radius: radius, startAngle: .degrees(90), delta: .degrees(90))
-                        
+
                         fillColor = Color.green
                     }
                 }
                 .fill(fillColor)
-                
+
                 Path { path in
-                    let dividerLineDeltaWidth = maximalNegativePriceBarWidth - (width / 2) - (dividerLineWidth / 2)
-                    
-                    path.move(to: CGPoint(x: dividerLineDeltaWidth, y: 0))
-                    path.addLine(to: CGPoint(x: dividerLineDeltaWidth + dividerLineWidth, y: 0))
-                    path.addLine(to: CGPoint(x: dividerLineDeltaWidth + dividerLineWidth, y: height))
-                    path.addLine(to: CGPoint(x: dividerLineDeltaWidth, y: height))
+                    let verticalDividerLineDeltaWidth = maximalNegativePriceBarWidth - (verticalDividerLineWidth / 2)
+
+                    path.move(to: CGPoint(x: verticalDividerLineDeltaWidth, y: 0))
+                    path.addLine(to: CGPoint(x: verticalDividerLineDeltaWidth + verticalDividerLineWidth, y: 0))
+                    path.addLine(to: CGPoint(x: verticalDividerLineDeltaWidth + verticalDividerLineWidth, y: height))
+                    path.addLine(to: CGPoint(x: verticalDividerLineDeltaWidth, y: height))
                 }
-                .fill(Color.red)
+                .fill(Color.blue)
+
+                if didLongPress {
+                    let horizontalLineStartHeight = (height / 2) - (horizontalDividerLineHeight / 2) + barHeightPadding
+
+                    Path { path in
+                        path.move(to: CGPoint(x: 0, y: horizontalLineStartHeight))
+                        path.addLine(to: CGPoint(x: width, y: horizontalLineStartHeight))
+                        path.addLine(to: CGPoint(x: width, y: horizontalLineStartHeight + horizontalDividerLineHeight / 2))
+                        path.addLine(to: CGPoint(x: 0, y: horizontalLineStartHeight + horizontalDividerLineHeight / 2))
+                        path.addLine(to: CGPoint(x: 0, y: horizontalLineStartHeight))
+                    }
+                    .fill(Color.red)
+                }
+                
+                if currentSetting.setting!.pricesWithTaxIncluded {
+                    // With tax
+                    Text(numberFormatter.string(from: NSNumber(value: (awattarDataPoint.marketprice * 100 * 0.001 * 1.16)))!)
+                        .font(.caption)
+                        .shadow(radius: 5)
+
+                } else if !currentSetting.setting!.pricesWithTaxIncluded {
+                    // Without tax
+                    Text(numberFormatter.string(from: NSNumber(value: (awattarDataPoint.marketprice * 100 * 0.001)))!)
+                        .font(.caption)
+                        .shadow(radius: 5)
+                }
             }
+
+        }
+        .onLongPressGesture {
+            didLongPress.toggle()
         }
     }
 }

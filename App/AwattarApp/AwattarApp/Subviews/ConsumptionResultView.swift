@@ -17,15 +17,21 @@ struct ConsumptionResultView: View {
         self.cheapestHourCalculator = cheapestHourCalculator
         
         dateFormatter = DateFormatter()
-        dateFormatter.dateStyle = .long
-        dateFormatter.timeStyle = .long
+        dateFormatter.dateStyle = .short
+        dateFormatter.timeStyle = .short
     }
     
     var body: some View {
         VStack {
             if cheapestHourCalculator.cheapestHoursForUsage != nil {
+                ConsumptionClockView(cheapestHour: cheapestHourCalculator.cheapestHoursForUsage!)
+                
                 ForEach(cheapestHourCalculator.cheapestHoursForUsage!.associatedPricePoints, id: \.self) { cheapestHour in
-                    Text(dateFormatter.string(from: Date(timeIntervalSince1970: TimeInterval(cheapestHour.startTimestamp / 1000))))
+                    HStack {
+                        Text(dateFormatter.string(from: Date(timeIntervalSince1970: TimeInterval(cheapestHour.startTimestamp / 1000))))
+                        Text("bis")
+                        Text(dateFormatter.string(from: Date(timeIntervalSince1970: TimeInterval(cheapestHour.endTimestamp / 1000))))
+                    }
                 }
             } else {
                 ProgressView()

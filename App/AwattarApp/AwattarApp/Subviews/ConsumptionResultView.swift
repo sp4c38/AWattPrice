@@ -10,11 +10,11 @@ import SwiftUI
 struct ConsumptionResultView: View {
     @EnvironmentObject var awattarData: AwattarData
     
-    var energyCalculator: EnergyCalculator
+    var cheapestHourCalculator: CheapestHourCalculator
     var dateFormatter = DateFormatter()
     
-    init(energyCalculator: EnergyCalculator) {
-        self.energyCalculator = energyCalculator
+    init(cheapestHourCalculator: CheapestHourCalculator) {
+        self.cheapestHourCalculator = cheapestHourCalculator
         
         dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .long
@@ -23,17 +23,18 @@ struct ConsumptionResultView: View {
     
     var body: some View {
         VStack {
-            if energyCalculator.cheapestHoursForUsage != nil {
-                ForEach(energyCalculator.cheapestHoursForUsage!.associatedPricePoints, id: \.self) { cheapestHour in
+            if cheapestHourCalculator.cheapestHoursForUsage != nil {
+                ForEach(cheapestHourCalculator.cheapestHoursForUsage!.associatedPricePoints, id: \.self) { cheapestHour in
                     Text(dateFormatter.string(from: Date(timeIntervalSince1970: TimeInterval(cheapestHour.startTimestamp / 1000))))
                 }
             } else {
-                Text("Fehler aufgetreten.")
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle())
             }
         }
         .onAppear {
-            energyCalculator.setValues()
-            energyCalculator.calculateBestHours(energyData: awattarData.energyData!.awattar)
+            cheapestHourCalculator.setValues()
+            cheapestHourCalculator.calculateBestHours(energyData: awattarData.energyData!.awattar)
         }
     }
 }

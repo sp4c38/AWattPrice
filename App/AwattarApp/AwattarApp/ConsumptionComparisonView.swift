@@ -7,11 +7,11 @@
 
 import SwiftUI
 
-class EnergyCalculator: ObservableObject {
+class CheapestHourCalculator: ObservableObject {
     @Published var energyUsageInput = "20"
     
     @Published var startDate = Date()
-    @Published var timeOfUsageTimeInterval = Date()
+    @Published var endDate = Date()
     
     @Published var energyUsage = Double(0) // energy usage in kW
     @Published var timeOfUsage = TimeInterval() // time interval in seconds
@@ -21,12 +21,12 @@ class EnergyCalculator: ObservableObject {
     init() {
         let calendar = Calendar(identifier: .gregorian)
         startDate = calendar.startOfDay(for: startDate)
-        timeOfUsageTimeInterval = calendar.startOfDay(for: startDate)
+        endDate = calendar.startOfDay(for: startDate)
     }
     
     func setValues() {
         self.energyUsage = Double(self.energyUsageInput) ?? 0
-        self.timeOfUsage = abs(startDate.timeIntervalSince(timeOfUsageTimeInterval))
+        self.timeOfUsage = abs(startDate.timeIntervalSince(endDate))
     }
     
     class HourPair {
@@ -55,35 +55,39 @@ class EnergyCalculator: ObservableObject {
         // Want to charge EV for two hours. Function calculates for the user the cheapest hours to charge his EV.
         // Output would be for example from 4pm to 6pm.
         
-        let timeOfUsageInHours: Int = Int(timeOfUsage / 60 / 60)
+        DispatchQueue.global(qos: .userInitiated).async {
+            let timeOfUsageInHours: Int = Int(self.timeOfUsage / 60 / 60)
 
-        var allPairs = [HourPair]()
-        for hourIndex in 0..<energyData.prices.count {
-            let newPairNode = HourPair(associatedPricePoints: [energyData.prices[hourIndex]])
-            
-            for nextHourIndex in 1..<timeOfUsageInHours {
-                if (hourIndex + nextHourIndex) <= (energyData.prices.count - 1) {
-                    newPairNode.associatedPricePoints.append(energyData.prices[hourIndex + nextHourIndex])
+            var allPairs = [HourPair]()
+            for hourIndex in 0..<energyData.prices.count {
+                let newPairNode = HourPair(associatedPricePoints: [energyData.prices[hourIndex]])
+                
+                for nextHourIndex in 1..<timeOfUsageInHours {
+                    if (hourIndex + nextHourIndex) <= (energyData.prices.count - 1) {
+                        newPairNode.associatedPricePoints.append(energyData.prices[hourIndex + nextHourIndex])
+                    }
                 }
-            }
 
-            newPairNode.calculateAveragePrice()
-            allPairs.append(newPairNode)
-        }
-        
-        var lowestPricePairIndex: Int? = nil
-        for pairIndex in 0..<allPairs.count {
-            if lowestPricePairIndex != nil {
-                if allPairs[pairIndex].averagePrice < allPairs[lowestPricePairIndex!].averagePrice {
+                newPairNode.calculateAveragePrice()
+                allPairs.append(newPairNode)
+            }
+            
+            var lowestPricePairIndex: Int? = nil
+            for pairIndex in 0..<allPairs.count {
+                if lowestPricePairIndex != nil {
+                    if allPairs[pairIndex].averagePrice < allPairs[lowestPricePairIndex!].averagePrice {
+                        lowestPricePairIndex = pairIndex
+                    }
+                } else {
                     lowestPricePairIndex = pairIndex
                 }
-            } else {
-                lowestPricePairIndex = pairIndex
             }
-        }
-        
-        if lowestPricePairIndex != nil {
-            cheapestHoursForUsage = allPairs[lowestPricePairIndex!]
+            
+            DispatchQueue.main.async {
+                if lowestPricePairIndex != nil {
+                    self.cheapestHoursForUsage = allPairs[lowestPricePairIndex!]
+                }
+            }
         }
     }
 }
@@ -100,7 +104,7 @@ struct ConsumptionComparisonView: View {
     @EnvironmentObject var currentSetting: CurrentSetting
     @EnvironmentObject var awattarData: AwattarData
     
-    @ObservedObject var energyCalculator = EnergyCalculator()
+    @ObservedObject var cheapestHourCalculator = CheapestHourCalculator()
     
     @State var showInfo = false
     
@@ -139,7 +143,7 @@ struct ConsumptionComparisonView: View {
                                     .bold()
                                 
                                 HStack(spacing: 7) {
-                                    TextField("Verbrauch", text: $energyCalculator.energyUsageInput)
+                                    TextField("Verbrauch", text: $cheapestHourCalculator.energyUsageInput)
                                         .keyboardType(.decimalPad)
                                         .multilineTextAlignment(.leading)
                                         .textFieldStyle(RoundedBorderTextFieldStyle())
@@ -152,13 +156,13 @@ struct ConsumptionComparisonView: View {
                                 Text("Dauer des Verbrauches: ")
                                     .bold()
                                 
-                                TimeIntervalPicker(selectedInterval: $energyCalculator.timeOfUsageTimeInterval)
+                                TimeIntervalPicker(selectedInterval: $cheapestHourCalculator.endDate)
                                     .frame(maxWidth: .infinity)
                             }
                             
                             Button(action: {}) {
-                                NavigationLink(destination: ConsumptionResultView(energyCalculator: energyCalculator)) {
-                                        Text("Berechnen")
+                                NavigationLink(destination: ConsumptionResultView(cheapestHourCalculator: cheapestHourCalculator)) {
+                                    Text("Berechnen")
                                 }
                             }.buttonStyle(DoneButtonStyle())
                         }

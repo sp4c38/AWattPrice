@@ -11,12 +11,11 @@ struct ConsumptionClockView: View {
     @State var currentLevel = 0
     @State var now = Date()
     
+    let calendar = Calendar.current
+    
     var hourDegree = (0, 0)
     
     init(cheapestHour: CheapestHourCalculator.HourPair) {
-        var calendar = Calendar.current
-        calendar.locale = Locale(identifier: "en_US")
-
         // 15 degrees is the angle for one single hour
 
         let minItemIndex = 0
@@ -47,9 +46,11 @@ struct ConsumptionClockView: View {
         let middlePointRadius = CGFloat(3)
         let hourMarkerLineWidth = CGFloat(4)
         
-        let clockWidth = 3 * (width / 5)
-        let hourIndicatorWidth = CGFloat(4)
+        let clockWidth = 2 * (width / 5)
+        let hourBorderIndicatorWidth = CGFloat(4)
         let hourMarkerRadius = CGFloat(0.75 * (((clockWidth / 2) - circleLineWidth)))
+        let minuteIndicatorWidth = CGFloat((clockWidth / 2) - hourBorderIndicatorWidth - 10)
+        let hourIndicatorWidth = CGFloat((2 * ((clockWidth / 2) / 3)) - hourBorderIndicatorWidth  - 10)
         
         let clockRightSideStartWidth = ((width - clockWidth) / 2)
         let clockStartHeight = (height / 2) - (width / 2) + clockRightSideStartWidth
@@ -62,11 +63,18 @@ struct ConsumptionClockView: View {
         var hourNamesAndPositions = [(String, CGFloat, CGFloat, CGFloat, CGFloat, CGFloat, CGFloat)]()
         var currentDegree: Double = -60
         
-        let currentHourXCoord = CGFloat(Double(clockWidth / 2) * cos(Double(15 * Calendar.current.component(.hour, from: now)) * Double.pi / 180))
-        let currentHourYCoord = CGFloat(Double(clockWidth / 2) * sin(Double(15 * Calendar.current.component(.minute, from: now)) * Double.pi / 180))
+        let currentMinute = Double(calendar.component(.minute, from: now))
+        let currentMinuteXCoord = CGFloat(Double(minuteIndicatorWidth) * sin((6 * currentMinute * Double.pi) / 180)) + clockRightSideStartWidth + (clockWidth / 2)
+        let currentMinuteYCoord = CGFloat(Double(minuteIndicatorWidth) * -cos((6 * currentMinute * Double.pi) / 180)) + clockStartHeight + (clockWidth / 2)
         
-        let currentMinuteXCoord = CGFloat(Double(clockWidth / 2) * cos(Double(6 * Calendar.current.component(.minute, from: now)) * Double.pi / 180)) + clockRightSideStartWidth + (clockWidth / 2)
-        let currentMinuteYCoord = CGFloat(Double(clockWidth / 2) * sin(Double(-6 * Calendar.current.component(.minute, from: now)) * Double.pi / 180)) + clockStartHeight
+        var currentHour = Double(calendar.component(.hour, from: now))
+        currentHour += (currentMinute / 60) // Add minutes
+        
+        if currentHour > 12 {
+            currentHour -= 12
+        }
+        let currentHourXCoord = CGFloat(Double(hourIndicatorWidth) * sin((30 * currentHour * Double.pi) / 180)) + clockRightSideStartWidth + (clockWidth / 2)
+        let currentHourYCoord = CGFloat(Double(hourIndicatorWidth) * -cos((30 * currentHour * Double.pi) / 180)) + clockStartHeight + (clockWidth / 2)
         
         for hourName in 1...12 {
             // Text
@@ -108,13 +116,13 @@ struct ConsumptionClockView: View {
             let textYCoord = clockStartHeight + (clockWidth / 2) + currentYCoordTextPadding + yCoordTextDiff
             
             // Lines
-            let lineFirstXCoord = CGFloat(Double(clockWidth / 2 - circleLineWidth + hourIndicatorWidth) * cos(currentDegree * Double.pi / 180)) + clockRightSideStartWidth + (clockWidth / 2)
+            let lineFirstXCoord = CGFloat(Double(clockWidth / 2 - circleLineWidth + hourBorderIndicatorWidth) * cos(currentDegree * Double.pi / 180)) + clockRightSideStartWidth + (clockWidth / 2)
             
-            let lineFirstYCoord = CGFloat(Double(clockWidth / 2 - circleLineWidth + hourIndicatorWidth) * sin(currentDegree * Double.pi / 180)) + clockStartHeight + (clockWidth / 2)
+            let lineFirstYCoord = CGFloat(Double(clockWidth / 2 - circleLineWidth + hourBorderIndicatorWidth) * sin(currentDegree * Double.pi / 180)) + clockStartHeight + (clockWidth / 2)
             
-            let lineSecondXCoord = CGFloat(Double(clockWidth / 2 - hourIndicatorWidth - circleLineWidth) * cos(currentDegree * Double.pi / 180)) + clockRightSideStartWidth + (clockWidth / 2)
+            let lineSecondXCoord = CGFloat(Double(clockWidth / 2 - hourBorderIndicatorWidth - circleLineWidth) * cos(currentDegree * Double.pi / 180)) + clockRightSideStartWidth + (clockWidth / 2)
             
-            let lineSecondYCoord = CGFloat(Double(clockWidth / 2 - hourIndicatorWidth - circleLineWidth) * sin(currentDegree * Double.pi / 180)) + clockStartHeight + (clockWidth / 2)
+            let lineSecondYCoord = CGFloat(Double(clockWidth / 2 - hourBorderIndicatorWidth - circleLineWidth) * sin(currentDegree * Double.pi / 180)) + clockStartHeight + (clockWidth / 2)
             
             hourNamesAndPositions.append((String(hourName), textXCoord, textYCoord, lineFirstXCoord, lineFirstYCoord, lineSecondXCoord, lineSecondYCoord))
             
@@ -149,18 +157,26 @@ struct ConsumptionClockView: View {
             }
             .strokedPath(.init(lineWidth: hourMarkerLineWidth, lineCap: .round))
             .foregroundColor(Color.green)
-//
-//            Path { path in
-//                path.move(to: center)
-//                path.addLine(to: CGPoint(x: currentMinuteXCoord, y: currentMinuteYCoord))
-//            }
-//            .strokedPath(.init(lineWidth: 2, lineCap: .round))
-//
-//
-//            Text(String(6 * Calendar.current.component(.minute, from: now)))
-//                .offset(x: -140)
-//            Text(width.description)
-//                .offset(x: -140)
+
+            Path { path in
+                path.move(to: center)
+                path.addLine(to: CGPoint(x: currentMinuteXCoord, y: currentMinuteYCoord))
+            }
+            .strokedPath(.init(lineWidth: 5, lineCap: .round))
+            .foregroundColor(Color.black)
+            
+            Path { path in
+                path.move(to: center)
+                path.addLine(to: CGPoint(x: currentHourXCoord, y: currentHourYCoord))
+            }
+            .strokedPath(.init(lineWidth: 5, lineCap: .round))
+            .foregroundColor(Color.black)
+
+            Text(currentMinute.description)
+                .offset(y: -130)
+            Text(currentHour.description)
+                .offset(y: -170)
+            
         }
     }
 }

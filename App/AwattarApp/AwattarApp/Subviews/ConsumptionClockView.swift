@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ConsumptionClockView: View {
     @State var currentLevel = 0
+    @State var now = Date()
     
     var hourDegree = (0, 0)
     
@@ -41,49 +42,81 @@ struct ConsumptionClockView: View {
         let width = geometry.size.width
         let height = geometry.size.height
         
-        let clockWidth = 4 * (width / 5)
-        let clockLeftSideStartWidth = ((width + clockWidth) / 2)
+        let circleLineWidth = CGFloat(2)
+        let hourIndicatorLineWidth = CGFloat(3)
+        let middlePointRadius = CGFloat(3)
+        let hourMarkerLineWidth = CGFloat(4)
+        
+        let clockWidth = 3 * (width / 5)
+        let hourIndicatorWidth = CGFloat(4)
+        let hourMarkerRadius = CGFloat(0.75 * (((clockWidth / 2) - circleLineWidth)))
+        
         let clockRightSideStartWidth = ((width - clockWidth) / 2)
         let clockStartHeight = (height / 2) - (width / 2) + clockRightSideStartWidth
         
-        let threeHourIndicatorWidth = CGFloat(20)
-        let threeHourIndicatorHeight = CGFloat(8)
-        let threeHourIndicatorRadius = CGFloat(5)
-
-        let circleLineWidth = CGFloat(5)
-
-        let middlePointRadius = CGFloat(5)
-        
-        let hourMarkerRadius = CGFloat(0.6 * (((clockWidth / 2) - circleLineWidth)))
+        let textPaddingToClock = CGFloat(15)
+        let threeTextPaddingToClockAddition = CGFloat(3)
 
         let center = CGPoint(x: width / 2, y: height / 2)
         
-        var hourNamesAndPositions = [(String, CGFloat, CGFloat)]()
+        var hourNamesAndPositions = [(String, CGFloat, CGFloat, CGFloat, CGFloat, CGFloat, CGFloat)]()
         var currentDegree: Double = -60
         
+        let currentHourXCoord = CGFloat(Double(clockWidth / 2) * cos(Double(15 * Calendar.current.component(.hour, from: now)) * Double.pi / 180))
+        let currentHourYCoord = CGFloat(Double(clockWidth / 2) * sin(Double(15 * Calendar.current.component(.minute, from: now)) * Double.pi / 180))
+        
+        let currentMinuteXCoord = CGFloat(Double(clockWidth / 2) * cos(Double(6 * Calendar.current.component(.minute, from: now)) * Double.pi / 180)) + clockRightSideStartWidth + (clockWidth / 2)
+        let currentMinuteYCoord = CGFloat(Double(clockWidth / 2) * sin(Double(-6 * Calendar.current.component(.minute, from: now)) * Double.pi / 180)) + clockStartHeight
+        
         for hourName in 1...12 {
-            let xCoordDiff = CGFloat(Double(clockWidth / 2) * cos(currentDegree * Double.pi / 180))
-            let yCoordDiff = CGFloat(Double(clockWidth / 2) * sin(currentDegree * Double.pi / 180))
+            // Text
+            let xCoordTextDiff = CGFloat(Double(clockWidth / 2) * cos(currentDegree * Double.pi / 180))
+            let yCoordTextDiff = CGFloat(Double(clockWidth / 2) * sin(currentDegree * Double.pi / 180))
             
-            var currentXCoordPadding: CGFloat = 0
-            var currentYCoordPadding: CGFloat = 0
+            var currentXCoordTextPadding: CGFloat = 0
+            var currentYCoordTextPadding: CGFloat = 0
             
             if [1, 2, 3, 4, 5].contains(hourName) {
-                currentXCoordPadding = 15
+                currentXCoordTextPadding = textPaddingToClock
+                
+                if hourName == 3 {
+                    currentXCoordTextPadding += threeTextPaddingToClockAddition
+                }
             } else if [7, 8, 9, 10, 11].contains(hourName) {
-                currentXCoordPadding = -15
+                currentXCoordTextPadding = -textPaddingToClock
+                
+                if hourName == 9 {
+                    currentXCoordTextPadding -= threeTextPaddingToClockAddition
+                }
             }
             
             if [1, 2, 10, 11, 12].contains(hourName) {
-                currentYCoordPadding = -15
+                currentYCoordTextPadding = -textPaddingToClock
+                
+                if hourName == 12 {
+                    currentYCoordTextPadding -= threeTextPaddingToClockAddition
+                }
             } else if [4, 5, 6, 7, 8].contains(hourName) {
-                currentYCoordPadding = 15
+                currentYCoordTextPadding = textPaddingToClock
+                
+                if hourName == 6 {
+                    currentYCoordTextPadding += threeTextPaddingToClockAddition
+                }
             }
-             
-            let xCoord = clockRightSideStartWidth + (clockWidth / 2 + currentXCoordPadding) + xCoordDiff
-            let yCoord = clockStartHeight + (clockWidth / 2 + currentYCoordPadding) + yCoordDiff
             
-            hourNamesAndPositions.append((String(hourName), xCoord, yCoord))
+            let textXCoord = clockRightSideStartWidth + (clockWidth / 2) + currentXCoordTextPadding + xCoordTextDiff
+            let textYCoord = clockStartHeight + (clockWidth / 2) + currentYCoordTextPadding + yCoordTextDiff
+            
+            // Lines
+            let lineFirstXCoord = CGFloat(Double(clockWidth / 2 - circleLineWidth + hourIndicatorWidth) * cos(currentDegree * Double.pi / 180)) + clockRightSideStartWidth + (clockWidth / 2)
+            
+            let lineFirstYCoord = CGFloat(Double(clockWidth / 2 - circleLineWidth + hourIndicatorWidth) * sin(currentDegree * Double.pi / 180)) + clockStartHeight + (clockWidth / 2)
+            
+            let lineSecondXCoord = CGFloat(Double(clockWidth / 2 - hourIndicatorWidth - circleLineWidth) * cos(currentDegree * Double.pi / 180)) + clockRightSideStartWidth + (clockWidth / 2)
+            
+            let lineSecondYCoord = CGFloat(Double(clockWidth / 2 - hourIndicatorWidth - circleLineWidth) * sin(currentDegree * Double.pi / 180)) + clockStartHeight + (clockWidth / 2)
+            
+            hourNamesAndPositions.append((String(hourName), textXCoord, textYCoord, lineFirstXCoord, lineFirstYCoord, lineSecondXCoord, lineSecondYCoord))
             
             currentDegree += 30
         }
@@ -94,66 +127,40 @@ struct ConsumptionClockView: View {
                 path.addArc(center: center, radius: clockWidth / 2, startAngle: .degrees(360), endAngle: .degrees(0), clockwise: true)
             }
             .foregroundColor(Color.black)
-        
-            Path { path in
-                path.move(to: CGPoint(x: clockRightSideStartWidth + circleLineWidth, y: (height / 2) - (threeHourIndicatorHeight / 2)))
-
-                path.addRelativeArc(center: CGPoint(x: clockRightSideStartWidth + threeHourIndicatorWidth - threeHourIndicatorRadius + circleLineWidth, y: (height / 2) - (threeHourIndicatorHeight / 2) + threeHourIndicatorRadius), radius: threeHourIndicatorRadius, startAngle: .degrees(-90), delta: .degrees(90))
-
-                path.addRelativeArc(center: CGPoint(x: clockRightSideStartWidth + threeHourIndicatorWidth - threeHourIndicatorRadius + circleLineWidth, y: (height / 2) + (threeHourIndicatorHeight / 2) - threeHourIndicatorRadius), radius: threeHourIndicatorRadius, startAngle: .degrees(0), delta: .degrees(90))
-
-                path.addLine(to: CGPoint(x: clockRightSideStartWidth + circleLineWidth, y: (height / 2) + (threeHourIndicatorHeight / 2)))
-            }
-            .fill(Color.black)
-
-            Path { path in
-                path.move(to: CGPoint(x: clockLeftSideStartWidth - circleLineWidth, y: (height / 2) - (threeHourIndicatorHeight / 2)))
-
-                path.addRelativeArc(center: CGPoint(x: clockLeftSideStartWidth - threeHourIndicatorWidth + threeHourIndicatorRadius - circleLineWidth, y: (height / 2) - (threeHourIndicatorHeight / 2) + threeHourIndicatorRadius), radius: threeHourIndicatorRadius, startAngle: .degrees(-90), delta: .degrees(-90))
-
-                path.addRelativeArc(center: CGPoint(x: clockLeftSideStartWidth - threeHourIndicatorWidth + threeHourIndicatorRadius - circleLineWidth, y: (height / 2) + (threeHourIndicatorHeight / 2) - threeHourIndicatorRadius), radius: threeHourIndicatorRadius, startAngle: .degrees(180), delta: .degrees(-90))
-
-                path.addLine(to: CGPoint(x: clockLeftSideStartWidth - circleLineWidth, y: (height / 2) + (threeHourIndicatorHeight / 2)))
-            }
-            .fill(Color.black)
-
-            Path { path in
-                path.move(to: CGPoint(x: (width / 2) - (threeHourIndicatorHeight / 2), y: clockStartHeight + circleLineWidth))
-
-                path.addRelativeArc(center: CGPoint(x: (width / 2) - (threeHourIndicatorHeight / 2) + threeHourIndicatorRadius, y: clockStartHeight + threeHourIndicatorWidth - threeHourIndicatorRadius + circleLineWidth), radius: threeHourIndicatorRadius, startAngle: .degrees(180), delta: .degrees(-90))
-
-                path.addRelativeArc(center: CGPoint(x: (width / 2) + (threeHourIndicatorHeight / 2) - threeHourIndicatorRadius, y: clockStartHeight + threeHourIndicatorWidth - threeHourIndicatorRadius + circleLineWidth), radius: threeHourIndicatorRadius, startAngle: .degrees(90), delta: .degrees(-90))
-
-                path.addLine(to: CGPoint(x: (width / 2) + (threeHourIndicatorHeight / 2), y: clockStartHeight + circleLineWidth))
-            }
-            .fill(Color.black)
-
-            Path { path in
-                path.move(to: CGPoint(x: (width / 2) - (threeHourIndicatorHeight / 2), y: clockStartHeight + clockWidth - circleLineWidth))
-
-                path.addRelativeArc(center: CGPoint(x: (width / 2) - (threeHourIndicatorHeight / 2) + threeHourIndicatorRadius, y: clockStartHeight + clockWidth - threeHourIndicatorWidth + threeHourIndicatorRadius - circleLineWidth), radius: threeHourIndicatorRadius, startAngle: .degrees(180), delta: .degrees(90))
-
-                path.addRelativeArc(center: CGPoint(x: (width / 2) + (threeHourIndicatorHeight / 2) - threeHourIndicatorRadius, y: clockStartHeight + clockWidth - threeHourIndicatorWidth + threeHourIndicatorRadius - circleLineWidth), radius: threeHourIndicatorRadius, startAngle: .degrees(270), delta: .degrees(90))
-
-                path.addLine(to: CGPoint(x: (width / 2) + (threeHourIndicatorHeight / 2), y: clockStartHeight + clockWidth - circleLineWidth))
-            }
-            .fill(Color.black)
 
             Path { path in
                 path.addArc(center: center, radius: middlePointRadius, startAngle: .degrees(0), endAngle: .degrees(360), clockwise: true)
             }
             .fill(Color.black)
 
-            Path { path in
-                path.addArc(center: center, radius: hourMarkerRadius, startAngle: .degrees(Double(hourDegree.0)), endAngle: .degrees(Double(hourDegree.1)), clockwise: false)
-            }
-            .strokedPath(.init(lineWidth: circleLineWidth, lineCap: .round))
-            .foregroundColor(Color.green)
-            
             ForEach(hourNamesAndPositions, id: \.0) { hour in
                 Text(hour.0)
                     .position(x: hour.1, y: hour.2)
+                
+                Path { path in
+                    path.move(to: CGPoint(x: hour.3, y: hour.4))
+                    path.addLine(to: CGPoint(x: hour.5, y: hour.6))
+                }
+                .strokedPath(.init(lineWidth: hourIndicatorLineWidth, lineCap: .round))
             }
+            
+            Path { path in
+                path.addArc(center: center, radius: hourMarkerRadius, startAngle: .degrees(Double(hourDegree.0)), endAngle: .degrees(Double(hourDegree.1)), clockwise: false)
+            }
+            .strokedPath(.init(lineWidth: hourMarkerLineWidth, lineCap: .round))
+            .foregroundColor(Color.green)
+//
+//            Path { path in
+//                path.move(to: center)
+//                path.addLine(to: CGPoint(x: currentMinuteXCoord, y: currentMinuteYCoord))
+//            }
+//            .strokedPath(.init(lineWidth: 2, lineCap: .round))
+//
+//
+//            Text(String(6 * Calendar.current.component(.minute, from: now)))
+//                .offset(x: -140)
+//            Text(width.description)
+//                .offset(x: -140)
         }
     }
 }

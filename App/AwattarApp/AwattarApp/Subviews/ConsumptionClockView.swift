@@ -59,41 +59,33 @@ struct ConsumptionClockView: View {
         let center = CGPoint(x: width / 2, y: height / 2)
         
         var hourNamesAndPositions = [(String, CGFloat, CGFloat)]()
-        var currentHorizontalLevel: CGFloat = 4
-        var currentVerticalLevel: CGFloat = 1
+        var currentDegree: Double = -60
         
         for hourName in 1...12 {
-            var horizontalPadding: CGFloat = 0
-            var verticalPadding: CGFloat = 0
+            let xCoordDiff = CGFloat(Double(clockWidth / 2) * cos(currentDegree * Double.pi / 180))
+            let yCoordDiff = CGFloat(Double(clockWidth / 2) * sin(currentDegree * Double.pi / 180))
             
-            if [3, 9].contains(hourName) {
-                horizontalPadding = ((hourName == 9) ? 40 : -40)
-            } else if [12, 6].contains(hourName) {
-                verticalPadding = ((hourName == 12) ? 40 : -40)
+            var currentXCoordPadding: CGFloat = 0
+            var currentYCoordPadding: CGFloat = 0
+            
+            if [1, 2, 3, 4, 5].contains(hourName) {
+                currentXCoordPadding = 15
+            } else if [7, 8, 9, 10, 11].contains(hourName) {
+                currentXCoordPadding = -15
             }
             
-            let currentHeight = currentVerticalLevel * (clockWidth / 6) + clockStartHeight + verticalPadding
-            let currentWidth = currentHorizontalLevel * (clockWidth / 6) + horizontalPadding + clockRightSideStartWidth
-            
-            hourNamesAndPositions.append((String(hourName), currentWidth, currentHeight))
-            
-            if hourName == 6 {
-                currentVerticalLevel = 5
-            } else if hourName < 6 {
-                currentVerticalLevel += 1
-            } else if hourName > 6 {
-                currentVerticalLevel -= 1
+            if [1, 2, 10, 11, 12].contains(hourName) {
+                currentYCoordPadding = -15
+            } else if [4, 5, 6, 7, 8].contains(hourName) {
+                currentYCoordPadding = 15
             }
+             
+            let xCoord = clockRightSideStartWidth + (clockWidth / 2 + currentXCoordPadding) + xCoordDiff
+            let yCoord = clockStartHeight + (clockWidth / 2 + currentYCoordPadding) + yCoordDiff
             
-            if hourName == 3 {
-                currentHorizontalLevel = 5
-            } else if hourName > 3 && hourName < 9 {
-                currentHorizontalLevel -= 1
-            } else if hourName == 9 {
-                currentHorizontalLevel = 1
-            } else if hourName < 3 || hourName > 9 {
-                currentHorizontalLevel += 1
-            }
+            hourNamesAndPositions.append((String(hourName), xCoord, yCoord))
+            
+            currentDegree += 30
         }
         
         return ZStack {
@@ -168,6 +160,6 @@ struct ConsumptionClockView: View {
 
 struct ConsumptionClockView_Previews: PreviewProvider {
     static var previews: some View {
-        ConsumptionClockView(cheapestHour: CheapestHourCalculator.HourPair(associatedPricePoints: [EnergyPricePoint(startTimestamp: 1601082000, endTimestamp: 1601085600, marketprice: 3, unit: ["Eur / MWh", "Eur / kWh"]), EnergyPricePoint(startTimestamp: 1601085600, endTimestamp: 1601089200, marketprice: 9, unit: ["Eur / MWh", "Eur / kWh"]), EnergyPricePoint(startTimestamp: 1601089200, endTimestamp: 1601092800, marketprice: 4, unit: ["Eur / MWh", "Eur / kWh"])]))
+        ConsumptionClockView(cheapestHour: CheapestHourCalculator.HourPair(associatedPricePoints: [EnergyPricePoint(startTimestamp: 1601082000000, endTimestamp: 1601085600000, marketprice: 3, unit: ["Eur / MWh", "Eur / kWh"]), EnergyPricePoint(startTimestamp: 1601085600000, endTimestamp: 1601089200000, marketprice: 9, unit: ["Eur / MWh", "Eur / kWh"])]))
     }
 }

@@ -36,7 +36,7 @@ struct HomeView: View {
         NavigationView {
             VStack {
                 if awattarData.energyData != nil {
-                    ScrollView(showsIndicators: false) {
+                    ScrollView(showsIndicators: true) {
                         LazyVStack(alignment: .leading, spacing: 0) {
                             Divider()
                             Text("pricePerKwh")

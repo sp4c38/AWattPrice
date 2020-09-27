@@ -27,15 +27,13 @@ struct SettingsPageView: View {
     @State var basicCharge = ""
     @State var energyPrice = ""
     
-    var taxOptions = ["Preise auf der Startseite werden mit der Mehrwertsteuer angezeigt.", "Preise auf der Startseite werden ohne der Mehrwertsteuer angezeigt."]
-    
     var body: some View {
         VStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 40) {
                     HStack {
                         Spacer()
-                        Text("Einstellungen")
+                        Text("settings")
                             .bold()
                             .font(.largeTitle)
                             
@@ -43,11 +41,11 @@ struct SettingsPageView: View {
                     }
                     
                     VStack(alignment: .leading, spacing: 10) {
-                        Text("Preiseinstellungen:")
+                        Text("price")
                             .bold()
                         
                         HStack(spacing: 10) {
-                            Text("Preise mit Mehrwertsteuer anzeigen")
+                            Text("pricesWithVat")
                                 .font(.caption)
                                 .fixedSize(horizontal: false, vertical: true)
                             
@@ -56,7 +54,7 @@ struct SettingsPageView: View {
                             }
                         }
                         
-                        Text(pricesWithTaxIncluded ? taxOptions[0] : taxOptions[1])
+                        Text(pricesWithTaxIncluded ? "taxOption1" : "taxOption2")
                             .font(.caption)
                             .foregroundColor(Color.gray)
                             .fixedSize(horizontal: false, vertical: true)
@@ -64,16 +62,16 @@ struct SettingsPageView: View {
                     
                     if awattarData.profilesData != nil {
                         VStack(alignment: .leading, spacing: 10) {
-                            Text("aWATTar Tarif:")
+                            Text("awattarTariff")
                                 .bold()
 
                             VStack(alignment: .center, spacing: 15) {
-                                Text("Wenn du bereits ein aWATTar Kunde bist, kannst du hier deinen Tarif auswählen, um Kosten genauer für dich anzuzeigen.")
+                                Text("tariffSelectionTip")
                                     .font(.caption)
                                     .foregroundColor(Color.gray)
                                     .fixedSize(horizontal: false, vertical: true)
 
-                                Picker(selection: $awattarEnergyProfileIndex.animation(), label: Text("aWATTAr Tarif Einstellungen")) {
+                                Picker(selection: $awattarEnergyProfileIndex.animation(), label: Text("")) {
                                     ForEach(awattarData.profilesData!.profiles, id: \.name) { profile in
                                         Text(profile.name).tag(awattarData.profilesData!.profiles.firstIndex(of: profile)!)
                                     }
@@ -97,25 +95,25 @@ struct SettingsPageView: View {
                                                     .padding(.bottom, 10)
 
                                                 VStack(alignment: .leading, spacing: 10) {
-                                                    Text("Grundgebühr:")
+                                                    Text("basicFee")
                                                     HStack(spacing: 0) {
                                                         TextField("", text: $basicCharge)
                                                             .keyboardType(.decimalPad)
                                                             .textFieldStyle(RoundedBorderTextFieldStyle())
                                                         
-                                                        Text("Euro pro Monat")
+                                                        Text("euroPerMonth")
                                                             .padding(.leading, 5)
                                                     }
                                                 }
 
                                                 VStack(alignment: .leading, spacing: 10) {
-                                                    Text("Arbeitspreis:")
+                                                    Text("elecPriceColon")
                                                     HStack(spacing: 0) {
                                                         TextField("", text: $energyPrice)
                                                             .keyboardType(.decimalPad)
                                                             .textFieldStyle(RoundedBorderTextFieldStyle())
                                                         
-                                                        Text("Cent pro kWh")
+                                                        Text("centPerKwh")
                                                             .padding(.leading, 5)
                                                     }
                                                 }
@@ -168,7 +166,7 @@ struct SettingsPageView: View {
                     energyPrice: Float(energyPrice) ?? Float(0),
                     managedObjectContext: managedObjectContext)
             }) {
-               Text("Speichern")
+               Text("save")
             }
             .buttonStyle(DoneButtonStyle())
             .padding(5)

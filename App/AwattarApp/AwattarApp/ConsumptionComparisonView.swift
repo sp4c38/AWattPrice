@@ -58,23 +58,27 @@ class CheapestHourCalculator: ObservableObject {
         // Output would be for example from 4pm to 6pm.
         
         DispatchQueue.global(qos: .userInitiated).async {
+            let now = Date() // Used to not output values before now
             let timeOfUsageInHours: Float = Float(self.timeOfUsage / 60 / 60)
             let nextRoundedUpHour = Int(timeOfUsageInHours.rounded(.up))
 
             var allPairs = [HourPair]()
             for hourIndex in 0..<energyData.prices.count {
-                let newPairNode = HourPair(associatedPricePoints: [energyData.prices[hourIndex]])
-                
-                for nextHourIndex in 1..<nextRoundedUpHour {
-                    if (hourIndex + nextHourIndex) <= (energyData.prices.count - 1) {
-                        newPairNode.associatedPricePoints.append(energyData.prices[hourIndex + nextHourIndex])
-                    } else {
-                        break
-                    }
-                }
+                if !(Date(timeIntervalSince1970: TimeInterval(energyData.prices[hourIndex].startTimestamp / 1000)) < now) {
 
-                newPairNode.calculateAveragePrice()
-                allPairs.append(newPairNode)
+                    let newPairNode = HourPair(associatedPricePoints: [energyData.prices[hourIndex]])
+                    
+                    for nextHourIndex in 1..<nextRoundedUpHour {
+                        if (hourIndex + nextHourIndex) <= (energyData.prices.count - 1) {
+                            newPairNode.associatedPricePoints.append(energyData.prices[hourIndex + nextHourIndex])
+                        } else {
+                            break
+                        }
+                    }
+
+                    newPairNode.calculateAveragePrice()
+                    allPairs.append(newPairNode)
+                }
             }
             
             var lowestPricePairIndex: Int? = nil
@@ -129,6 +133,8 @@ struct ConsumptionComparisonView: View {
     
     @State var showInfo = false
     
+    @State var calculateAction: Int? = 0 // Takes care of navigating to the result view
+    
     var body: some View {
         NavigationView {
             ZStack(alignment: Alignment(horizontal: .center, vertical: .top)) {
@@ -136,23 +142,23 @@ struct ConsumptionComparisonView: View {
                     if currentSetting.setting != nil && awattarData.energyData != nil {
                         VStack(alignment: .leading, spacing: 15) {
                             VStack(alignment: .leading, spacing: 5) {
-                                Text("Deine angegebene Grundgebühr: ")
+                                Text("givenBasicFee")
                                     .bold()
                                 
                                 HStack(spacing: 5) {
                                     Text(String(currentSetting.setting!.awattarProfileBasicCharge))
-                                    Text("Euro pro Monat")
+                                    Text("euroPerMonth")
                                 }
                                 .font(.callout)
                             }
                             
                             VStack(alignment: .leading, spacing: 5) {
-                                Text("Dein angegebener Strompreis: ")
+                                Text("givenElecPrice")
                                     .bold()
                                 
                                 HStack(spacing: 5) {
                                     Text(String(currentSetting.setting!.awattarEnergyPrice))
-                                    Text("Cent pro kWh")
+                                    Text("centPerKwh")
                                 }
                                 .font(.callout)
                             }
@@ -160,11 +166,11 @@ struct ConsumptionComparisonView: View {
                             Divider()
                             
                             VStack(alignment: .leading, spacing: 5) {
-                                Text("Stromverbrauch: ")
+                                Text("elecUsage")
                                     .bold()
                                 
                                 HStack(spacing: 7) {
-                                    TextField("Verbrauch", text: $cheapestHourCalculator.energyUsageInput)
+                                    TextField("elecUsage", text: $cheapestHourCalculator.energyUsageInput)
                                         .keyboardType(.decimalPad)
                                         .multilineTextAlignment(.leading)
                                         .textFieldStyle(RoundedBorderTextFieldStyle())
@@ -174,17 +180,20 @@ struct ConsumptionComparisonView: View {
                             }
                             
                             VStack(alignment: .leading, spacing: 5) {
-                                Text("Dauer des Verbrauches: ")
+                                Text("lengthOfUse")
                                     .bold()
                                 
                                 TimeIntervalPicker(selectedInterval: $cheapestHourCalculator.endDate)
                                     .frame(maxWidth: .infinity)
                             }
                             
-                            Button(action: {}) {
-                                NavigationLink(destination: ConsumptionResultView(cheapestHourCalculator: cheapestHourCalculator)) {
-                                    Text("Berechnen")
-                                }
+                            NavigationLink(destination: ConsumptionResultView(cheapestHourCalculator: cheapestHourCalculator), tag: 1, selection: $calculateAction) {
+                            }
+                            
+                            Button(action: {
+                                calculateAction = 1
+                            }) {
+                                Text("calculate")
                             }.buttonStyle(DoneButtonStyle())
                         }
                     } else {
@@ -195,12 +204,14 @@ struct ConsumptionComparisonView: View {
                 .opacity(showInfo ? 0.5 : 1)
                 
                 if showInfo {
-                    Text("Hiermit kannst du die Stunden finden, in denen der Strom preislich am günstigsten ist, um zum Beispiel dein Elektroauto aufzuladen, die Waschmachine einzuschalten oder andere elektrische Verbraucher laufen zu lassen.")
+                    Text("comparerInfoText")
                         .foregroundColor(colorScheme == .light ? Color.black : Color.white)
                         .padding()
                         .background(colorScheme == .light ? Color.white : Color(hue: 0.5417, saturation: 0.0930, brightness: 0.1686))
                         .cornerRadius(10)
                         .shadow(radius: 20)
+                        .padding(.leading, 16)
+                        .padding(.trailing, 16)
                         .transition(.scaledOpacity)
                 }
             }
@@ -211,7 +222,7 @@ struct ConsumptionComparisonView: View {
                     }
                 }
             }
-            .navigationBarTitle("Verbrauch")
+            .navigationBarTitle("usage")
             .navigationBarItems(trailing:
                 Button(action: {
                     withAnimation {

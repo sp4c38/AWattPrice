@@ -1,0 +1,33 @@
+/* 
+  Localizable.strings
+  AwattarApp
+
+  Created by Léon Becker on 27.09.20.
+  
+*/
+
+"loadingData" = "Aktuelle Daten werden geladen...";
+"pricePerKwh" = "Preis pro kWh";
+"clockTimeName" = "Uhr";
+"elecPrice" = "Strompreis";
+"settings" = "Einstellung";
+"price" = "Preis:";
+"pricesWithVat" = "Preise mit Mehrwertsteuer anzeigen";
+"awattarTariff" = "aWATTar Tarif:";
+"tariffSelectionTip" = "Wenn du bereits ein aWATTar Kunde bist, kannst du hier deinen Tarif auswählen, um Kosten genauer für dich anzuzeigen.";
+"basicFee" = "Grundgebühr:";
+"euroPerMonth" = "Euro pro Month";
+"elecPriceColon" = "Strompreis:";
+"centPerKwh" = "Cent pro kWh";
+"save" = "Speichern";
+"taxOption1" = "Preise auf der Startseite werden mit Mehrwertsteuer angezeigt.";
+"taxOption2" = "Preise auf der Startseite werden ohne Mehrwertsteuer angezeigt.";
+"usage" = "Verbrauch";
+"comparerInfoText" = "Hiermit kannst du die Stunden finden, in denen der Strom preislich am günstigsten ist, um zum Beispiel dein Elektroauto aufzuladen, die Waschmachine einzuschalten oder andere elektrische Verbraucher laufen zu lassen.";
+"calculate" = "Berechnen";
+"lengthOfUse" = "Dauer des Verbrauches:";
+"elecUsage" = "Stromverbrauch:";
+"givenElecPrice" = "Dein angegebener Strompreis:";
+"givenBasicFee" = "Deine angegebene Grundgebühr:";
+"until" = "until";
+

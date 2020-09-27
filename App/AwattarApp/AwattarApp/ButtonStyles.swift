@@ -16,5 +16,7 @@ struct DoneButtonStyle: ButtonStyle {
             .padding()
             .background(Color.blue)
             .cornerRadius(10)
+            .opacity(configuration.isPressed ? 0.6 : 1.0)
+            .animation(.easeInOut(duration: 0.1))
     }
 }

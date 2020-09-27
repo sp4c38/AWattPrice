@@ -1,0 +1,32 @@
+/* 
+  Localizable.strings
+  AwattarApp
+
+  Created by Léon Becker on 27.09.20.
+  
+*/
+
+"loadingData" = "Loading current data...";
+"pricePerKwh" = "Price per kWh";
+"clockTimeName" = "o'clock";
+"elecPrice" = "Electricity Price";
+"settings" = "Settings";
+"price" = "Price:";
+"pricesWithVat" = "Show prices with VAT included";
+"awattarTariff" = "aWATTar Tariff:";
+"tariffSelectionTip" = "If you already are an aWATTar customer, you can select your tariff here to view costs more accurately for you.";
+"basicFee" = "Basic fee:";
+"euroPerMonth" = "Euro per Month";
+"elecPriceColon" = "Electricity Price:";
+"centPerKwh" = "Cent per kWh";
+"save" = "Save";
+"taxOption1" = "Prices on the start page are displayed with VAT.";
+"taxOption2" = "Prices on the start page are displayed without VAT.";
+"usage" = "Usage";
+"comparerInfoText" = "This allows you to find the hours when electricity is cheapest. For example, to charge your electric car, turn on the washing machine or run other electrical consumers.";
+"calculate" = "Calculate";
+"lengthOfUse" = "Length of use:";
+"elecUsage" = "Electricity usage:";
+"givenElecPrice" = "Your specified electricity price:";
+"givenBasicFee" = "Your specified basic fee:";
+"until" = "until";

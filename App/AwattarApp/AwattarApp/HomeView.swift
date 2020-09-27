@@ -37,10 +37,9 @@ struct HomeView: View {
             VStack {
                 if awattarData.energyData != nil {
                     ScrollView(showsIndicators: false) {
-                        LazyVStack(alignment: .leading, spacing: 0) { // new SwiftUI feature
-                                                                      // only creates the views in the VStack if they are really on the screen
+                        LazyVStack(alignment: .leading, spacing: 0) {
                             Divider()
-                            Text("Preis pro kWh")
+                            Text("pricePerKwh")
                                 .font(.subheadline)
                                 .padding(.leading, 10)
                                 .padding(.top, 8)
@@ -64,7 +63,7 @@ struct HomeView: View {
                                                 Text(hourFormatter.string(from: startDate))
                                                 Text("-")
                                                 Text(hourFormatter.string(from: endDate))
-                                                Text("Uhr")
+                                                Text("clockTimeName")
                                             }
                                             .padding(3)
                                             .background(Color.white)
@@ -93,7 +92,7 @@ struct HomeView: View {
                 SettingsPageView()
                     .environment(\.managedObjectContext, managedObjectContext)
             }
-            .navigationBarTitle("Strompreis")
+            .navigationBarTitle("elecPrice")
             .navigationBarItems(trailing:
                 Button(action: {
                     settingIsPresented = true

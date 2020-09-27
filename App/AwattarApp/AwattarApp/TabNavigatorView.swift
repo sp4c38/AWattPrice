@@ -16,13 +16,13 @@ struct TabNavigatorView: View {
                 HomeView()
                     .tabItem {
                         Image(systemName: "bolt")
-                        Text("Strompreise")
+                        Text("elecPrice")
                     }
                 
                 ConsumptionComparisonView()
                     .tabItem {
                         Image(systemName: "rectangle.and.text.magnifyingglass")
-                        Text("Verbrauchsvergleicher")
+                        Text("usage")
                     }
             }
         } else {
@@ -30,7 +30,7 @@ struct TabNavigatorView: View {
                 if awattarData.energyData == nil {
                     Spacer()
                     ProgressView("")
-                    Text("Aktuelle Daten Werden Geladen")
+                    Text("loadingData")
                         .font(.callout)
                         .multilineTextAlignment(.center)
                     Spacer()

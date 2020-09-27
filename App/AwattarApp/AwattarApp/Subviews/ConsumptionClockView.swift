@@ -8,24 +8,45 @@
 import SwiftUI
 
 struct ConsumptionClockView: View {
+    @Environment(\.colorScheme) var colorScheme
+    
     @State var currentLevel = 0
     @State var now = Date()
     
+    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     let calendar = Calendar.current
     
     var hourDegree = (0, 0)
     
     init(cheapestHour: CheapestHourCalculator.HourPair) {
         // 15 degrees is the angle for one single hour
-
+        
         let minItemIndex = 0
         let maxItemIndex = cheapestHour.associatedPricePoints.count - 1
         
         if cheapestHour.associatedPricePoints.count >= 2 {
-            let startDegree = (30 * calendar.component(.hour, from: Date(timeIntervalSince1970: TimeInterval(cheapestHour.associatedPricePoints[minItemIndex].startTimestamp / 1000)))) - 90
-            let endDegree = (30 * calendar.component(.hour, from: Date(timeIntervalSince1970: TimeInterval(cheapestHour.associatedPricePoints[maxItemIndex].endTimestamp / 1000)))) - 90
+            var relativeStartTimestamp = cheapestHour.associatedPricePoints[minItemIndex].startTimestamp / 1000
+            var relativeEndTimestamp = cheapestHour.associatedPricePoints[maxItemIndex].endTimestamp / 1000
             
-            // Subtract 90 degrees because actual 0 degree is at 90th degree
+            var startMinute: Float = 0
+            var endMinute: Float = 0
+            
+            if cheapestHour.differenceIsBefore {
+                relativeStartTimestamp += cheapestHour.minuteDifferenceInSeconds
+                startMinute = Float(cheapestHour.minuteDifferenceInSeconds) / 3600
+            } else {
+                relativeEndTimestamp -= cheapestHour.minuteDifferenceInSeconds
+                endMinute = Float(cheapestHour.minuteDifferenceInSeconds) / 3600
+            }
+            
+            let startHour = Float(calendar.component(.hour, from: Date(timeIntervalSince1970: TimeInterval(relativeStartTimestamp))))
+
+            let endHour = Float(calendar.component(.hour, from: Date(timeIntervalSince1970: TimeInterval(relativeEndTimestamp))))
+            
+            let startDegree = Int(30 * (startHour + startMinute)) - 90
+            let endDegree = Int(30 * (endHour + endMinute)) - 90
+            
+            // Subtract 90 degrees to make it fit with the clock alignment
             
             hourDegree = (startDegree, endDegree)
         }
@@ -35,6 +56,11 @@ struct ConsumptionClockView: View {
         GeometryReader { geometry in
             self.makeView(geometry)
         }
+        .onReceive(timer) { input in
+            withAnimation {
+                now = Date()
+            }
+        }
     }
     
     func makeView(_ geometry: GeometryProxy) -> some View {
@@ -43,7 +69,7 @@ struct ConsumptionClockView: View {
         
         let circleLineWidth = CGFloat(2)
         let hourIndicatorLineWidth = CGFloat(3)
-        let middlePointRadius = CGFloat(3)
+        let middlePointRadius = CGFloat(5)
         let hourMarkerLineWidth = CGFloat(4)
         
         let clockWidth = 2 * (width / 5)
@@ -134,12 +160,12 @@ struct ConsumptionClockView: View {
                 path.addArc(center: center, radius: (clockWidth / 2) - circleLineWidth, startAngle: .degrees(0), endAngle: .degrees(360), clockwise: false)
                 path.addArc(center: center, radius: clockWidth / 2, startAngle: .degrees(360), endAngle: .degrees(0), clockwise: true)
             }
-            .foregroundColor(Color.black)
+            .foregroundColor(colorScheme == .light ? Color.black : Color.white)
 
             Path { path in
                 path.addArc(center: center, radius: middlePointRadius, startAngle: .degrees(0), endAngle: .degrees(360), clockwise: true)
             }
-            .fill(Color.black)
+            .fill(colorScheme == .light ? Color.black : Color.white)
 
             ForEach(hourNamesAndPositions, id: \.0) { hour in
                 Text(hour.0)
@@ -150,6 +176,7 @@ struct ConsumptionClockView: View {
                     path.addLine(to: CGPoint(x: hour.5, y: hour.6))
                 }
                 .strokedPath(.init(lineWidth: hourIndicatorLineWidth, lineCap: .round))
+                .foregroundColor(colorScheme == .light ? Color.black : Color.white)
             }
             
             Path { path in
@@ -163,20 +190,14 @@ struct ConsumptionClockView: View {
                 path.addLine(to: CGPoint(x: currentMinuteXCoord, y: currentMinuteYCoord))
             }
             .strokedPath(.init(lineWidth: 5, lineCap: .round))
-            .foregroundColor(Color.black)
+            .foregroundColor(colorScheme == .light ? Color.black : Color.white)
             
             Path { path in
                 path.move(to: center)
                 path.addLine(to: CGPoint(x: currentHourXCoord, y: currentHourYCoord))
             }
             .strokedPath(.init(lineWidth: 5, lineCap: .round))
-            .foregroundColor(Color.black)
-
-            Text(currentMinute.description)
-                .offset(y: -130)
-            Text(currentHour.description)
-                .offset(y: -170)
-            
+            .foregroundColor(colorScheme == .light ? Color.black : Color.white)
         }
     }
 }

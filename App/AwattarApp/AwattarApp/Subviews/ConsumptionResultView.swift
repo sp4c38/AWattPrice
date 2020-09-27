@@ -15,7 +15,7 @@ struct ConsumptionResultView: View {
     
     init(cheapestHourCalculator: CheapestHourCalculator) {
         self.cheapestHourCalculator = cheapestHourCalculator
-        
+  
         dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .short
         dateFormatter.timeStyle = .short
@@ -25,19 +25,13 @@ struct ConsumptionResultView: View {
         VStack {
             if cheapestHourCalculator.cheapestHoursForUsage != nil {
                 ConsumptionClockView(cheapestHour: cheapestHourCalculator.cheapestHoursForUsage!)
-                
-                ForEach(cheapestHourCalculator.cheapestHoursForUsage!.associatedPricePoints, id: \.self) { cheapestHour in
-                    HStack {
-                        Text(dateFormatter.string(from: Date(timeIntervalSince1970: TimeInterval(cheapestHour.startTimestamp / 1000))))
-                        Text("bis")
-                        Text(dateFormatter.string(from: Date(timeIntervalSince1970: TimeInterval(cheapestHour.endTimestamp / 1000))))
-                    }
-                }
+                    .frame(maxHeight: 200)
             } else {
                 ProgressView()
                     .progressViewStyle(CircularProgressViewStyle())
             }
         }
+        .animation(.easeInOut)
         .onAppear {
             cheapestHourCalculator.setValues()
             cheapestHourCalculator.calculateBestHours(energyData: awattarData.energyData!.awattar)

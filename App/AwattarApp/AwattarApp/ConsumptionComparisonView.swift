@@ -10,8 +10,8 @@ import SwiftUI
 class CheapestHourCalculator: ObservableObject {
     @Published var energyUsageInput = "20"
     
-    @Published var startDate = Date()
-    @Published var endDate = Date()
+    @Published var startDate = Date(timeIntervalSince1970: 0)
+    @Published var endDate = Date(timeIntervalSince1970: 5400)
     
     @Published var energyUsage = Double(0) // energy usage in kW
     @Published var timeOfUsage = TimeInterval() // time interval in seconds
@@ -32,6 +32,8 @@ class CheapestHourCalculator: ObservableObject {
     class HourPair {
         // A pair of multiple price points
         
+        var minuteDifferenceInSeconds: Int = 0
+        var differenceIsBefore: Bool = true
         var averagePrice: Float = 0
         var associatedPricePoints: [EnergyPricePoint]
         
@@ -50,21 +52,24 @@ class CheapestHourCalculator: ObservableObject {
     
     func calculateBestHours(energyData: EnergyData) {
         // Energy used in a certain time interval is specified by the user
-        // This function than can calculate when the cheapest hours are for the users energy consumption
+        // This function than can calculate when the cheapest hours are for the energy consumption
         // Example:
         // Want to charge EV for two hours. Function calculates for the user the cheapest hours to charge his EV.
         // Output would be for example from 4pm to 6pm.
         
         DispatchQueue.global(qos: .userInitiated).async {
-            let timeOfUsageInHours: Int = Int(self.timeOfUsage / 60 / 60)
+            let timeOfUsageInHours: Float = Float(self.timeOfUsage / 60 / 60)
+            let nextRoundedUpHour = Int(timeOfUsageInHours.rounded(.up))
 
             var allPairs = [HourPair]()
             for hourIndex in 0..<energyData.prices.count {
                 let newPairNode = HourPair(associatedPricePoints: [energyData.prices[hourIndex]])
                 
-                for nextHourIndex in 1..<timeOfUsageInHours {
+                for nextHourIndex in 1..<nextRoundedUpHour {
                     if (hourIndex + nextHourIndex) <= (energyData.prices.count - 1) {
                         newPairNode.associatedPricePoints.append(energyData.prices[hourIndex + nextHourIndex])
+                    } else {
+                        break
                     }
                 }
 
@@ -81,6 +86,20 @@ class CheapestHourCalculator: ObservableObject {
                 } else {
                     lowestPricePairIndex = pairIndex
                 }
+            }
+            
+            let minuteDifferenceInSeconds = Int(((Float(nextRoundedUpHour) - timeOfUsageInHours) * 60 * 60 ).rounded())
+            var differenceIsBefore = false
+            
+            if lowestPricePairIndex != nil {
+                let cheapestPair = allPairs[lowestPricePairIndex!]
+
+                if cheapestPair.associatedPricePoints[0].marketprice > cheapestPair.associatedPricePoints[cheapestPair.associatedPricePoints.count - 1].marketprice {
+                    differenceIsBefore = true
+                }
+                
+                cheapestPair.minuteDifferenceInSeconds = minuteDifferenceInSeconds
+                cheapestPair.differenceIsBefore = differenceIsBefore
             }
             
             DispatchQueue.main.async {

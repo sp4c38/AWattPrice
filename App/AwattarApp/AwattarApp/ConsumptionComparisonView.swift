@@ -120,6 +120,8 @@ extension AnyTransition {
 }
 
 struct ConsumptionComparisonView: View {
+    @Environment(\.colorScheme) var colorScheme
+    
     @EnvironmentObject var currentSetting: CurrentSetting
     @EnvironmentObject var awattarData: AwattarData
     
@@ -194,8 +196,9 @@ struct ConsumptionComparisonView: View {
                 
                 if showInfo {
                     Text("Hiermit kannst du die Stunden finden, in denen der Strom preislich am günstigsten ist, um zum Beispiel dein Elektroauto aufzuladen, die Waschmachine einzuschalten oder andere elektrische Verbraucher laufen zu lassen.")
+                        .foregroundColor(colorScheme == .light ? Color.black : Color.white)
                         .padding()
-                        .background(Color.white)
+                        .background(colorScheme == .light ? Color.white : Color(hue: 0.5417, saturation: 0.0930, brightness: 0.1686))
                         .cornerRadius(10)
                         .shadow(radius: 20)
                         .transition(.scaledOpacity)

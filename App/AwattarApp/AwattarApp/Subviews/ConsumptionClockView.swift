@@ -204,6 +204,6 @@ struct ConsumptionClockView: View {
 
 struct ConsumptionClockView_Previews: PreviewProvider {
     static var previews: some View {
-        ConsumptionClockView(cheapestHour: CheapestHourCalculator.HourPair(associatedPricePoints: [EnergyPricePoint(startTimestamp: 1601082000000, endTimestamp: 1601085600000, marketprice: 3, unit: ["Eur / MWh", "Eur / kWh"]), EnergyPricePoint(startTimestamp: 1601085600000, endTimestamp: 1601089200000, marketprice: 9, unit: ["Eur / MWh", "Eur / kWh"])]))
+        ConsumptionClockView(cheapestHour: CheapestHourCalculator.HourPair(associatedPricePoints: [EnergyPricePoint(startTimestamp: 1601082000000, endTimestamp: 1601085600000, marketprice: 3), EnergyPricePoint(startTimestamp: 1601085600000, endTimestamp: 1601089200000, marketprice: 9)]))
     }
 }

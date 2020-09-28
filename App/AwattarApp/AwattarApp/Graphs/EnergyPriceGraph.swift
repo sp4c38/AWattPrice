@@ -10,8 +10,6 @@ import SwiftUI
 struct EnergyPriceGraph: View {
     @EnvironmentObject var currentSetting: CurrentSetting
     
-    @State var didLongPress: Bool = false
-    
     var awattarDataPoint: EnergyPricePoint
     
     var minPrice: Float?
@@ -56,7 +54,8 @@ struct EnergyPriceGraph: View {
                     ? CGFloat(abs(awattarDataPoint.marketprice) / (abs(minPrice!) + abs(maxPrice!))) * width + maximalNegativePriceBarWidth : 0) // Width for the price bar for positive range
           
             ZStack(alignment: Alignment(horizontal: .leading, vertical: .center)) {
-                var fillColor = Color.orange
+                var fillColor = LinearGradient(gradient: Gradient(colors: [Color(hue: 0.0849, saturation: 0.6797, brightness: 0.9059), Color(hue: 0.9978, saturation: 0.7163, brightness: 0.8431)]), startPoint: .leading, endPoint: .trailing)
+                
                 Path { path in
                     if awattarDataPoint.marketprice > 0 {
                         path.move(to: CGPoint(x: maximalNegativePriceBarWidth, y: barHeightPadding))
@@ -74,7 +73,7 @@ struct EnergyPriceGraph: View {
                         path.addLine(to: CGPoint(x: maximalNegativePriceBarWidth, y: height - barHeightPadding))
                         path.addRelativeArc(center: CGPoint(x: barStartWidth + radius, y: height - barHeightPadding - radius), radius: radius, startAngle: .degrees(90), delta: .degrees(90))
 
-                        fillColor = Color.green
+                        fillColor = LinearGradient(gradient: Gradient(colors: [Color.green, Color.gray]), startPoint: .leading, endPoint: .trailing)
                     }
                 }
                 .fill(fillColor)
@@ -88,8 +87,9 @@ struct EnergyPriceGraph: View {
                     path.addLine(to: CGPoint(x: verticalDividerLineDeltaWidth, y: height))
                 }
                 .fill(Color.blue)
+                .shadow(radius: 3)
 
-                if didLongPress {
+                if false {
                     let horizontalLineStartHeight = (height / 2) - (horizontalDividerLineHeight / 2) + barHeightPadding
 
                     Path { path in
@@ -106,26 +106,23 @@ struct EnergyPriceGraph: View {
                     // With tax
                     Text(numberFormatter.string(from: NSNumber(value: (awattarDataPoint.marketprice * 100 * 0.001 * 1.16)))!)
                         .font(.caption)
-                        .shadow(radius: 5)
+                        .padding(.leading, 10)
 
                 } else if !currentSetting.setting!.pricesWithTaxIncluded {
                     // Without tax
                     Text(numberFormatter.string(from: NSNumber(value: (awattarDataPoint.marketprice * 100 * 0.001)))!)
                         .font(.caption)
-                        .shadow(radius: 5)
+                        .padding(.leading, 10)
                 }
             }
 
-        }
-        .onLongPressGesture {
-            didLongPress.toggle()
         }
     }
 }
 
 struct EnergyPriceGraph_Previews: PreviewProvider {
     static var previews: some View {
-        EnergyPriceGraph(awattarDataPoint: EnergyPricePoint(startTimestamp: 1599516000000, endTimestamp: 1599519600000, marketprice: -20, unit: ["Eur / MWh", "Eur / kWh"]), minPrice: -30, maxPrice: 30)
+        EnergyPriceGraph(awattarDataPoint: EnergyPricePoint(startTimestamp: 1599516000000, endTimestamp: 1599519600000, marketprice: -20), minPrice: -30, maxPrice: 30)
             .frame(height: 60)
     }
 }

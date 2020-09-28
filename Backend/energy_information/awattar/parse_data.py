@@ -37,7 +37,8 @@ def parse_awattar_energy_prices(config):
 
             for price in json_response["data"]:
                 if "Eur/MWh" in price["unit"]:
-                    price["unit"] = ["Eur / MWh", "Eur / kWh"]
+                    # Only send marketprice results as Euro per MWh
+                    price.pop("unit")
                     awattar_data["prices"].append(price)
                     if awattar_data["max_price"] == None or price["marketprice"] > awattar_data["max_price"]:
                         awattar_data["max_price"] = price["marketprice"]

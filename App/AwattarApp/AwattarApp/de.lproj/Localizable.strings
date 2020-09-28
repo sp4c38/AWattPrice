@@ -8,7 +8,7 @@
 
 "loadingData" = "Aktuelle Daten werden geladen...";
 "pricePerKwh" = "Preis pro kWh";
-"clockTimeName" = "Uhr";
+"hourOfDay" = "Uhrzeit";
 "elecPrice" = "Strompreis";
 "settings" = "Einstellung";
 "price" = "Preis:";
@@ -19,6 +19,7 @@
 "euroPerMonth" = "Euro pro Month";
 "elecPriceColon" = "Strompreis:";
 "centPerKwh" = "Cent pro kWh";
+"euroPerMwh" = "Euro pro MWh";
 "save" = "Speichern";
 "taxOption1" = "Preise auf der Startseite werden mit Mehrwertsteuer angezeigt.";
 "taxOption2" = "Preise auf der Startseite werden ohne Mehrwertsteuer angezeigt.";

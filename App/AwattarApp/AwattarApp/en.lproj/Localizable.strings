@@ -8,7 +8,7 @@
 
 "loadingData" = "Loading current data...";
 "pricePerKwh" = "Price per kWh";
-"clockTimeName" = "o'clock";
+"hourOfDay" = "Hour of day";
 "elecPrice" = "Electricity Price";
 "settings" = "Settings";
 "price" = "Price:";
@@ -19,6 +19,7 @@
 "euroPerMonth" = "Euro per Month";
 "elecPriceColon" = "Electricity Price:";
 "centPerKwh" = "Cent per kWh";
+"euroPerMwh" = "Euro per MWh";
 "save" = "Save";
 "taxOption1" = "Prices on the start page are displayed with VAT.";
 "taxOption2" = "Prices on the start page are displayed without VAT.";

@@ -70,26 +70,23 @@ struct HourPriceInfoView: View {
                             .foregroundColor(Color.green)
                             .frame(width: 25, alignment: .center)
                         
-                        Text("Strompreis: ")
-                        
-                        Spacer()
-                        
-                        HStack(spacing: 20) {
-                            VStack(alignment: .trailing, spacing: 10) {
+                        Text("elecPriceColon")
+                            .padding(.trailing, 10)
+
+                        HStack(spacing: 6) {
+                            VStack(alignment: .trailing, spacing: 5) {
                                 Text(priceInkWh!)
                                     .bold()
                                 Text(priceInMWh!)
                                     .bold()
                             }
                             
-                            VStack(alignment: .trailing, spacing: 10) {
-                                Text(priceDataPoint.unit[1])
-                                Text(priceDataPoint.unit[0])
+                            VStack(alignment: .leading, spacing: 5) {
+                                Text("centPerKwh")
+                                Text("euroPerMwh")
                             }
                         }
                         .foregroundColor(Color.green)
-                        .padding(6)
-                        .background(Color.white)
                         .cornerRadius(5)
                     }
                     
@@ -104,6 +101,6 @@ struct HourPriceInfoView: View {
 
 struct HourPriceInfoView_Previews: PreviewProvider {
     static var previews: some View {
-            HourPriceInfoView(priceDataPoint: EnergyPricePoint(startTimestamp: 1599674400000, endTimestamp: 1599678000000, marketprice: 29.28, unit: ["Eur / MWh", "Eur / kWh"]))
+            HourPriceInfoView(priceDataPoint: EnergyPricePoint(startTimestamp: 1599674400000, endTimestamp: 1599678000000, marketprice: 29.28))
     }
 }

@@ -17,6 +17,7 @@ extension AnyTransition {
 }
 
 struct SettingsPageView: View {
+    @Environment(\.presentationMode) var presentationMode
     @Environment(\.managedObjectContext) var managedObjectContext
     @EnvironmentObject var awattarData: AwattarData
     @EnvironmentObject var currentSetting: CurrentSetting
@@ -165,6 +166,7 @@ struct SettingsPageView: View {
                     basicCharge: Float(basicCharge) ?? Float(0),
                     energyPrice: Float(energyPrice) ?? Float(0),
                     managedObjectContext: managedObjectContext)
+                presentationMode.wrappedValue.dismiss()
             }) {
                Text("save")
             }

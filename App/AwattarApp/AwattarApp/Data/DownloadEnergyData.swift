@@ -11,13 +11,11 @@ struct EnergyPricePoint: Hashable, Codable {
     var startTimestamp: Int
     var endTimestamp: Int
     var marketprice: Float
-    var unit: [String]
     
     enum CodingKeys: String, CodingKey {
         case startTimestamp = "start_timestamp"
         case endTimestamp = "end_timestamp"
         case marketprice = "marketprice"
-        case unit = "unit"
     }
 }
 

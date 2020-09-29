@@ -51,44 +51,42 @@ struct HomeView: View {
                         Text("hourOfDay")
                             .padding(.trailing, 25)
                     }
+                    
+                    EnergyPriceGraph()
+                        .frame(height: 2000)
+//                        .foregroundColor(Color.blue)
+//                        .shadow(radius: 1)
+//                        .animation(.easeInOut)
+//                        .padding(.trailing, 35)
 
-                    ForEach(awattarData.energyData!.awattar.prices, id: \.startTimestamp) { price in
-                        let startDate = Date(timeIntervalSince1970: TimeInterval(price.startTimestamp / 1000))
-                        let endDate = Date(timeIntervalSince1970: TimeInterval(price.endTimestamp / 1000))
-
-                        NavigationLink(destination: HourPriceInfoView(priceDataPoint: price), tag: 1, selection: $hourPriceInfoViewNavControl) {
-                        }
-                        
-                        Button(action: {
-                            hourPriceInfoViewNavControl = 1
-                        }) {
-                            ZStack(alignment: .trailing) {
-                                EnergyPriceGraph(awattarDataPoint: price, minPrice: awattarData.energyData!.awattar.minPrice, maxPrice: awattarData.energyData!.awattar.maxPrice)
-                                    .foregroundColor(Color.blue)
-                                    .shadow(radius: 1)
-                                    .animation(.easeInOut)
-                                    .padding(.trailing, 35)
-
-                                HStack(spacing: 5) {
-                                    Text(hourFormatter.string(from: startDate))
-                                    Text("-")
-                                    Text(hourFormatter.string(from: endDate))
-                                }
-                                .foregroundColor(Color.black)
-                                .padding(.top, 1.5)
-                                .padding(.bottom, 1.5)
-                                .padding(.leading, 5)
-                                .padding(.trailing, 5)
-                                .background(LinearGradient(gradient: Gradient(colors: [Color.white, Color(hue: 0.6111, saturation: 0.0276, brightness: 0.8510)]), startPoint: .topLeading, endPoint: .bottomTrailing))
-                                .cornerRadius(4)
-                                .shadow(radius: 2)
-                                .padding(.trailing, 25)
-                                .padding(.leading, 10)
-                                .padding(.top, 5)
-                                .padding(.bottom, 5)
-                            }
-                        }
-                    }
+//                    ForEach(awattarData.energyData!.awattar.prices, id: \.startTimestamp) { price in
+//                        let startDate = Date(timeIntervalSince1970: TimeInterval(price.startTimestamp / 1000))
+//                        let endDate = Date(timeIntervalSince1970: TimeInterval(price.endTimestamp / 1000))
+//
+//                        Button(action: {
+//                            hourPriceInfoViewNavControl = 1
+//                        }) {
+//                            ZStack(alignment: .trailing) {
+//                                HStack(spacing: 5) {
+//                                    Text(hourFormatter.string(from: startDate))
+//                                    Text("-")
+//                                    Text(hourFormatter.string(from: endDate))
+//                                }
+//                                .foregroundColor(Color.black)
+//                                .padding(.top, 1.5)
+//                                .padding(.bottom, 1.5)
+//                                .padding(.leading, 5)
+//                                .padding(.trailing, 5)
+//                                .background(LinearGradient(gradient: Gradient(colors: [Color.white, Color(hue: 0.6111, saturation: 0.0276, brightness: 0.8510)]), startPoint: .topLeading, endPoint: .bottomTrailing))
+//                                .cornerRadius(4)
+//                                .shadow(radius: 2)
+//                                .padding(.trailing, 25)
+//                                .padding(.leading, 10)
+//                                .padding(.top, 5)
+//                                .padding(.bottom, 5)
+//                            }
+//                        }
+//                    }
                 }
                 .sheet(isPresented: $settingIsPresented) {
                     SettingsPageView()

@@ -21,8 +21,8 @@ struct EnergyPricePoint: Hashable, Codable {
 
 struct EnergyData: Codable {
     var prices: [EnergyPricePoint]
-    var minPrice: Float?
-    var maxPrice: Float?
+    var minPrice: Float
+    var maxPrice: Float
     
     enum CodingKeys: String, CodingKey {
         case prices = "prices"
@@ -59,7 +59,7 @@ class AwattarData: ObservableObject {
         
         let _ = URLSession.shared.dataTask(with: energyRequest) { data, response, error in
             let jsonDecoder = JSONDecoder()
-            var decodedData = SourcesData(awattar: EnergyData(prices: [], maxPrice: nil))
+            var decodedData = SourcesData(awattar: EnergyData(prices: [], minPrice: 0, maxPrice: 0))
             
             if let data = data {
                 do {

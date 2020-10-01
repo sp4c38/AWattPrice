@@ -34,10 +34,10 @@ struct HomeView: View {
     }
     
     var body: some View {
-        VStack {//NavigationView {
+        NavigationView {
             if awattarData.energyData != nil {
 //                ScrollView(showsIndicators: true) {
-                VStack {
+                VStack(spacing: 0) {
                     Divider()
                     
                     HStack {
@@ -45,16 +45,18 @@ struct HomeView: View {
                             .font(.subheadline)
                             .padding(.leading, 10)
                             .padding(.top, 8)
-                            .padding(.bottom, 8)
                         
                         Spacer()
                         
                         Text("hourOfDay")
+                            .font(.subheadline)
                             .padding(.trailing, 25)
                     }
+                    .padding(.bottom, 5)
                     
                     EnergyPriceGraph()
-                        .frame(maxWidth: .infinity, maxHeight: 5000)
+                        .shadow(radius: 3)
+                        .padding(.trailing, 16)
                 }
                 .sheet(isPresented: $settingIsPresented) {
                     SettingsPageView()

@@ -37,8 +37,8 @@ struct EnergyPriceSingleBar: View {
     
     var body: some View {
         let maximalNegativePriceBarWidth = (
-            minPrice != 0
-                ? CGFloat(abs(minPrice) / (abs(minPrice) + abs(maxPrice))) * width : 0) // Width of most negative price bar
+            minPrice == 0
+                ? 0 : CGFloat(abs(minPrice) / (abs(minPrice) + abs(maxPrice))) * width) // Width of most negative price bar
         
         let negativePriceBarWidth = (
             minPrice != 0
@@ -48,16 +48,21 @@ struct EnergyPriceSingleBar: View {
             maxPrice != 0
                 ? CGFloat(abs(hourDataPoint.marketprice) / (abs(minPrice) + abs(maxPrice))) * width + maximalNegativePriceBarWidth : 0) // Width for the price bar for positive range
       
+        let currentDividerLineWidth = (
+            maximalNegativePriceBarWidth == 0 ? 0 : singleBarSettings.verticalDividerLineWidth
+        )
+        
         ZStack(alignment: Alignment(horizontal: .trailing, vertical: .center)) {
             var fillColor = LinearGradient(gradient: Gradient(colors: [Color(hue: 0.0849, saturation: 0.6797, brightness: 0.9059), Color(hue: 0.9978, saturation: 0.7163, brightness: 0.8431)]), startPoint: .topLeading, endPoint: .bottomTrailing)
-
+            
             Path { path in
                 if hourDataPoint.marketprice > 0 {
-                    path.move(to: CGPoint(x: maximalNegativePriceBarWidth + singleBarSettings.verticalDividerLineWidth, y: startHeight + singleBarSettings.barHeightPadding))
-                    path.addRelativeArc(center: CGPoint(x: positivePriceBarWidth - singleBarSettings.radius + singleBarSettings.verticalDividerLineWidth, y: startHeight + singleBarSettings.barHeightPadding + singleBarSettings.radius), radius: singleBarSettings.radius, startAngle: .degrees(270), delta: .degrees(180))
-                    path.addLine(to: CGPoint(x: positivePriceBarWidth + singleBarSettings.verticalDividerLineWidth, y: startHeight + singleBarSettings.barHeightPadding + singleBarSettings.radius))
-                    path.addRelativeArc(center: CGPoint(x: positivePriceBarWidth - singleBarSettings.radius + singleBarSettings.verticalDividerLineWidth, y: startHeight + height - singleBarSettings.barHeightPadding - singleBarSettings.radius), radius: singleBarSettings.radius, startAngle: .degrees(0), delta: .degrees(90))
-                    path.addLine(to: CGPoint(x: maximalNegativePriceBarWidth + singleBarSettings.verticalDividerLineWidth, y: startHeight + height - singleBarSettings.barHeightPadding))
+                    path.move(to: CGPoint(x: maximalNegativePriceBarWidth + currentDividerLineWidth, y: startHeight + singleBarSettings.barHeightPadding))
+                    path.addRelativeArc(center: CGPoint(x: positivePriceBarWidth - singleBarSettings.radius + currentDividerLineWidth, y: startHeight + singleBarSettings.barHeightPadding + singleBarSettings.radius), radius: singleBarSettings.radius, startAngle: .degrees(270), delta: .degrees(180))
+                    path.addLine(to: CGPoint(x: positivePriceBarWidth + currentDividerLineWidth, y: startHeight + singleBarSettings.barHeightPadding + singleBarSettings.radius))
+                    path.addRelativeArc(center: CGPoint(x: positivePriceBarWidth - singleBarSettings.radius + currentDividerLineWidth, y: startHeight + height - singleBarSettings.barHeightPadding - singleBarSettings.radius), radius: singleBarSettings.radius, startAngle: .degrees(0), delta: .degrees(90))
+                    path.addLine(to: CGPoint(x: maximalNegativePriceBarWidth + currentDividerLineWidth, y: startHeight + height - singleBarSettings.barHeightPadding))
+                    
 
                 } else if hourDataPoint.marketprice < 0 {
                     let barStartWidth = maximalNegativePriceBarWidth - negativePriceBarWidth
@@ -72,19 +77,18 @@ struct EnergyPriceSingleBar: View {
                 }
             }
             .fill(fillColor)
-            .shadow(radius: 3)
 
             if maximalNegativePriceBarWidth != 0 {
                 Path { path in
-                    let verticalDividerLineStartWidth = maximalNegativePriceBarWidth + (singleBarSettings.verticalDividerLineWidth / 2)
+                    let verticalDividerLineStartWidth = maximalNegativePriceBarWidth + (currentDividerLineWidth / 2)
 
                     path.move(to: CGPoint(x: verticalDividerLineStartWidth, y: startHeight))
                     path.addLine(to: CGPoint(x: verticalDividerLineStartWidth, y: height + startHeight))
                 }
-                .strokedPath(StrokeStyle(lineWidth: singleBarSettings.verticalDividerLineWidth, lineCap: .square))
+                .strokedPath(StrokeStyle(lineWidth: currentDividerLineWidth, lineCap: .square))
                 .foregroundColor(Color.blue)
             }
-//
+
             if false {
                 let horizontalLineStartHeight = (height / 2) - (singleBarSettings.horizontalDividerLineHeight / 2) + singleBarSettings.barHeightPadding
 
@@ -96,19 +100,21 @@ struct EnergyPriceSingleBar: View {
                     path.addLine(to: CGPoint(x: 0, y: horizontalLineStartHeight))
                 }
                 .fill(Color.red)
-        }
+            }
 
             if currentSetting.setting!.pricesWithTaxIncluded {
                 // With tax
                 Text(singleBarSettings.centFormatter.string(from: NSNumber(value: (hourDataPoint.marketprice * 100 * 0.001 * 1.16)))!)
                     .font(.caption)
-                    .position(x: 20, y: startHeight)
+                    .position(x: 30, y: startHeight + (height / 2))
+                    .foregroundColor(Color.white)
 
             } else if !currentSetting.setting!.pricesWithTaxIncluded {
                 // Without tax
                 Text(singleBarSettings.centFormatter.string(from: NSNumber(value: (hourDataPoint.marketprice * 100 * 0.001)))!)
                     .font(.caption)
-                    .position(x: 20, y: startHeight + singleBarSettings.barHeightPadding)
+                    .position(x: 30, y: startHeight + (height / 2))
+                    .foregroundColor(Color.white)
             }
 //
 //            HStack(spacing: 5) {
@@ -127,8 +133,6 @@ struct EnergyPriceSingleBar: View {
 //            .padding(.trailing, 25)
 //            .padding(.leading, 10)
         }
-        .padding(.leading, 10)
-        .padding(.trailing, 10)
     }
 }
 
@@ -156,8 +160,8 @@ struct EnergyPriceSingleBarPointerHighlighter: View {
     
     var body: some View {
         Path { path in
-            path.move(to: CGPoint(x: 0, y: startHeight + singleBarSettings.barHeightPadding + (height / 2)))
-            path.addLine(to: CGPoint(x: width - 20, y: startHeight + singleBarSettings.barHeightPadding + (height / 2)))
+            path.move(to: CGPoint(x: 0, y: startHeight + (height / 2)))
+            path.addLine(to: CGPoint(x: width - 5, y: startHeight + (height / 2)))
         }
         .strokedPath(StrokeStyle(lineWidth: singleBarSettings.horizontalDividerLineHeight, lineCap: .round))
     }
@@ -193,6 +197,7 @@ struct EnergyPriceGraph: View {
     @State var graphHourPointData = [(EnergyPricePoint, CGFloat)]()
     
     @State var currentPointerHourHeight: (EnergyPricePoint, CGFloat)? = nil
+    @State var pointerHeightDeltaToBefore: CGFloat? = nil
     
     let singleBarSettings = SingleBarSettings()
     
@@ -207,47 +212,59 @@ struct EnergyPriceGraph: View {
         let height = geometry.size.height
         let singleHeight = height / 24
         
-        let graphDragGesture = DragGesture()
+        let graphDragGesture = DragGesture(minimumDistance: 0)
             .onChanged { location in
                 let locationHeight = location.location.y
                 
                 if (currentPointerHourHeight == nil) || !(locationHeight == currentPointerHourHeight!.1) {
-                    for hour in graphHourPointData {
-                        if locationHeight >= hour.1 && locationHeight <= (hour.1 + singleHeight) {
-                            withAnimation {
-                                currentPointerHourHeight = (hour.0, hour.1)
+                    if currentPointerHourHeight == nil {
+                        pointerHeightDeltaToBefore = nil
+                    } else {
+                        pointerHeightDeltaToBefore = abs((currentPointerHourHeight!.1 + (singleHeight / 2)) - locationHeight)
+                    }
+                    
+                    if pointerHeightDeltaToBefore == nil || pointerHeightDeltaToBefore! >= (singleHeight / 2) {
+                        for hour in graphHourPointData {
+                            if locationHeight >= hour.1 && locationHeight <= (hour.1 + singleHeight) {
+    //                            withAnimation {
+                                    currentPointerHourHeight = (hour.0, hour.1)
+    //                            }
                             }
                         }
                     }
                 }
             }
             .onEnded {_ in
-                withAnimation {
+//                withAnimation {
                     currentPointerHourHeight = nil
-                }
+//                }
             }
         
         return ZStack {
-            ForEach(graphHourPointData, id: \.0.startTimestamp) { hourPoint in
-                EnergyPriceSingleBar(
-                    singleBarSettings: singleBarSettings,
-                    width: width,
-                    height: singleHeight,
-                    startHeight: hourPoint.1,
-                    hourDataPoint: hourPoint.0,
-                    minPrice: awattarData.energyData!.awattar.minPrice,
-                    maxPrice: awattarData.energyData!.awattar.maxPrice)
-                
-                if currentPointerHourHeight != nil {
-                    EnergyPriceSingleBarPointerHighlighter(
+            ZStack {
+                ForEach(graphHourPointData, id: \.0.startTimestamp) { hourPoint in
+                    EnergyPriceSingleBar(
                         singleBarSettings: singleBarSettings,
                         width: width,
                         height: singleHeight,
-                        startHeight: currentPointerHourHeight!.1,
-                        hourDataPoint: currentPointerHourHeight!.0)
-                        .transition(.opacity)
-                        .animation(.linear(duration: 0.2))
+                        startHeight: hourPoint.1,
+                        hourDataPoint: hourPoint.0,
+                        minPrice: awattarData.energyData!.awattar.minPrice,
+                        maxPrice: awattarData.energyData!.awattar.maxPrice)
                 }
+            }
+            .zIndex(0)
+            
+            if currentPointerHourHeight != nil {
+                EnergyPriceSingleBarPointerHighlighter(
+                    singleBarSettings: singleBarSettings,
+                    width: width,
+                    height: singleHeight,
+                    startHeight: currentPointerHourHeight!.1,
+                    hourDataPoint: currentPointerHourHeight!.0)
+//                    .transition(.opacity)
+//                    .animation(.linear(duration: 0))
+                    .zIndex(1)
             }
         }
         .gesture(graphDragGesture)
@@ -264,6 +281,7 @@ struct EnergyPriceGraph: View {
                     break
                 }
             }
+            print(graphHourPointData)
         }
     }
 }

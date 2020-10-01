@@ -54,7 +54,7 @@ struct HomeView: View {
                     }
                     
                     EnergyPriceGraph()
-                        .frame(maxHeight: 2590)
+                        .frame(maxWidth: .infinity, maxHeight: 5000)
                 }
                 .sheet(isPresented: $settingIsPresented) {
                     SettingsPageView()

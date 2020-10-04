@@ -15,7 +15,6 @@ struct HomeView: View {
     
     @State var hourPriceInfoViewNavControl: Int? = 0
     @State var settingIsPresented: Bool = false
-    @State var heightOfGraph: CGFloat = 0
     
     @GestureState var isPressed = false
     
@@ -37,28 +36,27 @@ struct HomeView: View {
     var body: some View {
         NavigationView {
             if awattarData.energyData != nil {
-                ScrollView(showsIndicators: true) {
-//                VStack(spacing: 0) {
+                VStack {
                     Divider()
-                    
+
                     HStack {
                         Text("pricePerKwh")
                             .font(.subheadline)
                             .padding(.leading, 10)
                             .padding(.top, 8)
-                        
+
                         Spacer()
-                        
+
                         Text("hourOfDay")
                             .font(.subheadline)
                             .padding(.trailing, 25)
                     }
                     .padding(.bottom, 5)
                     
-                    EnergyPriceGraph(heightOfGraph: $heightOfGraph)
+                    EnergyPriceGraph()
                         .shadow(radius: 3)
+                        .padding(.leading, 16)
                         .padding(.trailing, 16)
-                        .frame(height: heightOfGraph)
                 }
                 .sheet(isPresented: $settingIsPresented) {
                     SettingsPageView()
@@ -75,6 +73,7 @@ struct HomeView: View {
                             .foregroundColor(Color.blue)
                     }
                 )
+                .navigationBarTitleDisplayMode(.large)
             } else {
                 VStack(spacing: 40) {
                     Spacer()

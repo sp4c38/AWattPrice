@@ -52,18 +52,23 @@ struct BarShape: Shape {
 
 struct VerticalDividerLineShape: Shape {
     let width: CGFloat
-    let height: CGFloat
+    var height: CGFloat
     let startWidth: CGFloat
     var startHeight: CGFloat
     
-    var animatableData: CGFloat {
-        get { startHeight }
-        set { startHeight = newValue }
+    var animatableData: AnimatablePair<CGFloat, CGFloat> {
+        get { AnimatablePair(startHeight, height) }
+        set {
+            startHeight = newValue.first
+            height = newValue.second
+        }
     }
     
     func path(in rect: CGRect) -> Path {
         var path = Path()
-
+        if startHeight < 24 {
+            print(height)
+        }
         path.move(to: CGPoint(x: startWidth, y: startHeight))
         path.addLine(to: CGPoint(x: startWidth, y: height + startHeight))
         
@@ -113,8 +118,13 @@ struct EnergyPriceSingleBar: View {
 
         self.singleBarSettings = singleBarSettings
         self.width = width
-        self.height = height
-        self.startHeight = startHeight
+        if isSelected {
+            self.height = height + 20
+            self.startHeight = startHeight - 10 // Should be half of which was added to height
+        } else {
+            self.height = height
+            self.startHeight = startHeight
+        }
         self.isSelected = isSelected
         self.hourDataPoint = hourDataPoint
     }
@@ -159,7 +169,7 @@ struct EnergyPriceSingleBar: View {
                     Text(singleBarSettings.centFormatter.string(from: NSNumber(value: (hourDataPoint.marketprice * 100 * 0.001)))!)
                 }
             }
-            .animatableFont(size: (isSelected ? height : height / 2))
+            .animatableFont(size: (isSelected ? 20 : 10))
             .position(x: 30, y: startHeight + (height / 2))
             .foregroundColor(colorScheme == .light ? Color.black : Color.white)
 
@@ -169,7 +179,7 @@ struct EnergyPriceSingleBar: View {
                     Text("-")
                     Text(singleBarSettings.hourFormatter.string(from: Date(timeIntervalSince1970: TimeInterval(hourDataPoint.endTimestamp / 1000))))
                 }
-                .animatableFont(size: (isSelected ? height : height / 2))
+                .animatableFont(size: (isSelected ? 20 : 10))
                 .foregroundColor(colorScheme == .light ? Color.black : Color.white)
                 .padding(1)
                 .background(LinearGradient(gradient: Gradient(colors: [Color.white, Color(hue: 0.6111, saturation: 0.0276, brightness: 0.8510)]), startPoint: .topLeading, endPoint: .bottomTrailing))
@@ -206,10 +216,11 @@ struct EnergyPriceGraph: View {
     @EnvironmentObject var currentSetting: CurrentSetting
     
     @State var graphHourPointData = [(EnergyPricePoint, CGFloat)]()
-    
+
     @State var currentPointerIndex: Int? = nil
     @State var pointerHeightDeltaToBefore: CGFloat? = nil
-
+    @State var singleHeight: CGFloat = 0
+    
     var singleBarSettings = SingleBarSettings()
     
     var body: some View {
@@ -221,10 +232,7 @@ struct EnergyPriceGraph: View {
     func makeView(_ geometry: GeometryProxy) -> some View {
         let width = geometry.size.width
         let height = geometry.size.height
-        
-        let singleHeight: CGFloat
-        
-        singleHeight = height / CGFloat(awattarData.energyData!.awattar.prices.count)
+
         let graphDragGesture = DragGesture(minimumDistance: 0)
             .onChanged { location in
                 let locationHeight = location.location.y
@@ -241,7 +249,7 @@ struct EnergyPriceGraph: View {
                             if locationHeight >= graphHourPointData[hourPoint].1 && locationHeight <= (graphHourPointData[hourPoint].1 + singleHeight) {
                                 withAnimation(.easeInOut(duration: 0.2)) {
                                     currentPointerIndex = hourPoint
-                                    print(graphHourPointData[hourPoint].1)
+//                                    print(graphHourPointData[hourPoint].1)
                                 }
                             }
                         }
@@ -277,21 +285,16 @@ struct EnergyPriceGraph: View {
             .gesture(graphDragGesture)
         }
         .onAppear {
+            singleHeight = height / CGFloat(awattarData.energyData!.prices.count)
             var currentHeight: CGFloat = 0
-            
-            let currentHour = Calendar.current.date(bySettingHour: Calendar.current.component(.hour, from: Date()), minute: 0, second: 0, of: Date())!
 
-            for hourPoint in awattarData.energyData!.awattar.prices {
-                if Date(timeIntervalSince1970: TimeInterval(hourPoint.startTimestamp / 1000)) >= currentHour {
-                    graphHourPointData.append((hourPoint, currentHeight))
-                    currentHeight += singleHeight
-                }
+            for hourPointEntry in awattarData.energyData!.prices {
+                graphHourPointData.append((hourPointEntry, currentHeight))
+                currentHeight += singleHeight
             }
-            
-            if awattarData.energyData != nil {
-                singleBarSettings.minPrice = awattarData.energyData!.awattar.minPrice
-                singleBarSettings.maxPrice = awattarData.energyData!.awattar.minPrice
-            }
+
+            singleBarSettings.minPrice = awattarData.energyData!.minPrice
+            singleBarSettings.maxPrice = awattarData.energyData!.minPrice
         }
     }
 }

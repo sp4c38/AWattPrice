@@ -3,6 +3,6 @@
 from .awattar import parse_data as awattar_parse_data
 
 def main():
-    output = {"awattar": awattar_parse_data.main()}
+    output = awattar_parse_data.main()
 
     return output

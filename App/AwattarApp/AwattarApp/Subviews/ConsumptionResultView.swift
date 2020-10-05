@@ -12,6 +12,7 @@ struct ConsumptionResultView: View {
     
     var cheapestHourCalculator: CheapestHourCalculator
     var dateFormatter = DateFormatter()
+    @State var cheapestTimeIntervalSince1970: TimeInterval = 0
     
     init(cheapestHourCalculator: CheapestHourCalculator) {
         self.cheapestHourCalculator = cheapestHourCalculator
@@ -24,16 +25,19 @@ struct ConsumptionResultView: View {
     var body: some View {
         VStack {
             if cheapestHourCalculator.cheapestHoursForUsage != nil {
+                HStack {
+                    Text(dateFormatter.string(from: Date(timeIntervalSince1970: cheapestTimeIntervalSince1970)))
+                        .onAppear {
+                            cheapestTimeIntervalSince1970 =  TimeInterval(cheapestHourCalculator.cheapestHoursForUsage!.associatedPricePoints[cheapestHourCalculator.cheapestHoursForUsage!.associatedPricePoints.count - 1].startTimestamp + (cheapestHourCalculator.cheapestHoursForUsage!.differenceIsBefore ? cheapestHourCalculator.cheapestHoursForUsage!.minuteDifferenceInSeconds : 0))
+                        }
+                    
+                    Text("until")
+                    
+//                    Text(dateFormatter.string(from: Date(timeIntervalSince1970:  TimeInterval(hour.endTimestamp / 1000))))
+                }
+                
                 ConsumptionClockView(cheapestHour: cheapestHourCalculator.cheapestHoursForUsage!)
                     .frame(maxHeight: 200)
-                
-                ForEach(cheapestHourCalculator.cheapestHoursForUsage!.associatedPricePoints, id: \.startTimestamp) { hour in
-                    HStack {
-                        Text(dateFormatter.string(from: Date(timeIntervalSince1970:  TimeInterval(hour.startTimestamp / 1000))))
-                        Text("until")
-                        Text(dateFormatter.string(from: Date(timeIntervalSince1970:  TimeInterval(hour.endTimestamp / 1000))))
-                    }
-                }
             } else {
                 ProgressView()
                     .progressViewStyle(CircularProgressViewStyle())
@@ -42,7 +46,7 @@ struct ConsumptionResultView: View {
         .animation(.easeInOut)
         .onAppear {
             cheapestHourCalculator.setValues()
-            cheapestHourCalculator.calculateBestHours(energyData: awattarData.energyData!.awattar)
+            cheapestHourCalculator.calculateBestHours(energyData: awattarData.energyData!)
         }
     }
 }

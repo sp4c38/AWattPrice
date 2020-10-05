@@ -21,18 +21,12 @@ struct EnergyPricePoint: Hashable, Codable {
 
 struct EnergyData: Codable {
     var prices: [EnergyPricePoint]
-    var minPrice: Float
-    var maxPrice: Float
+    var minPrice: Float = 0
+    var maxPrice: Float = 0
     
     enum CodingKeys: String, CodingKey {
         case prices = "prices"
-        case minPrice = "min_price"
-        case maxPrice = "max_price"
     }
-}
-
-struct SourcesData: Codable {
-    var awattar: EnergyData
 }
 
 struct Profile: Codable, Hashable {
@@ -47,8 +41,8 @@ class AwattarData: ObservableObject {
     // Needs to be an observable object because the data is downloaded asynchronously from the server
     // and views need to check when downloading the data finished
     
-    @Published var energyData: SourcesData? = nil
-    @Published var profilesData: ProfilesData? = nil
+    @Published var energyData: EnergyData? = nil // Energy Data with all hours included
+    @Published var profilesData: ProfilesData? = nil // Data for the different avalible aWATTar profiles
 
     init() {
         var energyRequest = URLRequest(
@@ -59,13 +53,33 @@ class AwattarData: ObservableObject {
         
         let _ = URLSession.shared.dataTask(with: energyRequest) { data, response, error in
             let jsonDecoder = JSONDecoder()
-            var decodedData = SourcesData(awattar: EnergyData(prices: [], minPrice: 0, maxPrice: 0))
+            var decodedData = EnergyData(prices: [], minPrice: 0, maxPrice: 0)
             
             if let data = data {
                 do {
-                    decodedData = try jsonDecoder.decode(SourcesData.self, from: data)
+                    decodedData = try jsonDecoder.decode(EnergyData.self, from: data)
+                    let currentHour = Calendar.current.date(bySettingHour: Calendar.current.component(.hour, from: Date()), minute: 0, second: 0, of: Date())!
+
+                    var usedPricesDecodedData = [EnergyPricePoint]()
+                    var minPrice: Float? = nil
+                    var maxPrice: Float? = nil
+                    
+                    for hourPoint in decodedData.prices {
+                        if Date(timeIntervalSince1970: TimeInterval(hourPoint.startTimestamp / 1000)) >= currentHour {
+                            usedPricesDecodedData.append(hourPoint)
+                            if maxPrice == nil || hourPoint.marketprice > maxPrice! {
+                                maxPrice = hourPoint.marketprice
+                            }
+                            
+                            if minPrice == nil || hourPoint.marketprice < minPrice! {
+                                minPrice = hourPoint.marketprice
+                            }
+                        }
+                    }
+                    
+                    
                     DispatchQueue.main.async {
-                        self.energyData = decodedData
+                        self.energyData = EnergyData(prices: usedPricesDecodedData, minPrice: (minPrice != nil ? minPrice! : 0), maxPrice: (maxPrice != nil ? maxPrice! : 0))
                     }
                 } catch {
                     fatalError("Could not decode returned JSON data from server.")

@@ -34,8 +34,7 @@ class CurrentSetting: ObservableObject {
 @main
 struct AwattarApp: App {
     var persistence = PersistenceManager()
-    
-    
+
     var body: some Scene {
         WindowGroup {
             TabNavigatorView()

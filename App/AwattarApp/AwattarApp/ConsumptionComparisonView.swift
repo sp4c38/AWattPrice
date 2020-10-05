@@ -64,7 +64,7 @@ class CheapestHourCalculator: ObservableObject {
 
             var allPairs = [HourPair]()
             for hourIndex in 0..<energyData.prices.count {
-                if !(Date(timeIntervalSince1970: TimeInterval(energyData.prices[hourIndex].startTimestamp / 1000)) < now) {
+                if !(Date(timeIntervalSince1970: TimeInterval(energyData.prices[hourIndex].startTimestamp)) < now) {
 
                     let newPairNode = HourPair(associatedPricePoints: [energyData.prices[hourIndex]])
                     

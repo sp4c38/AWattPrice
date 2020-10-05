@@ -175,9 +175,9 @@ struct EnergyPriceSingleBar: View {
 
 //            if isSelected {
                 HStack(spacing: 5) {
-                    Text(singleBarSettings.hourFormatter.string(from: Date(timeIntervalSince1970: TimeInterval(hourDataPoint.startTimestamp / 1000))))
+                    Text(singleBarSettings.hourFormatter.string(from: Date(timeIntervalSince1970: TimeInterval(hourDataPoint.startTimestamp))))
                     Text("-")
-                    Text(singleBarSettings.hourFormatter.string(from: Date(timeIntervalSince1970: TimeInterval(hourDataPoint.endTimestamp / 1000))))
+                    Text(singleBarSettings.hourFormatter.string(from: Date(timeIntervalSince1970: TimeInterval(hourDataPoint.endTimestamp))))
                 }
                 .animatableFont(size: (isSelected ? 20 : 10))
                 .foregroundColor(colorScheme == .light ? Color.black : Color.white)

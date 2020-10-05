@@ -26,11 +26,13 @@ struct ConsumptionResultView: View {
     var body: some View {
         VStack {
             if cheapestHourCalculator.cheapestHoursForUsage != nil {
-                HStack(spacing: 20) {
+                Spacer()
+                
+                VStack(spacing: 5) {
                     Text(dateFormatter.string(from: Date(timeIntervalSince1970: startOfCheapestHours)))
                         .bold()
                         .onAppear {
-                            startOfCheapestHours =  TimeInterval((cheapestHourCalculator.cheapestHoursForUsage!.associatedPricePoints[0].startTimestamp / 1000) + (cheapestHourCalculator.cheapestHoursForUsage!.differenceIsBefore ? cheapestHourCalculator.cheapestHoursForUsage!.minuteDifferenceInSeconds : 0))
+                            startOfCheapestHours =  TimeInterval((cheapestHourCalculator.cheapestHoursForUsage!.associatedPricePoints[0].startTimestamp) + (cheapestHourCalculator.cheapestHoursForUsage!.differenceIsBefore ? cheapestHourCalculator.cheapestHoursForUsage!.minuteDifferenceInSeconds : 0))
                         }
                     
                     Text("until")
@@ -38,15 +40,17 @@ struct ConsumptionResultView: View {
                     Text(dateFormatter.string(from: Date(timeIntervalSince1970: endOfCheapestHours)))
                         .bold()
                         .onAppear {
-                            endOfCheapestHours =  TimeInterval((cheapestHourCalculator.cheapestHoursForUsage!.associatedPricePoints[cheapestHourCalculator.cheapestHoursForUsage!.associatedPricePoints.count - 1].endTimestamp / 1000) + (cheapestHourCalculator.cheapestHoursForUsage!.differenceIsBefore ? cheapestHourCalculator.cheapestHoursForUsage!.minuteDifferenceInSeconds : 0))
+                            endOfCheapestHours =  TimeInterval((cheapestHourCalculator.cheapestHoursForUsage!.associatedPricePoints[cheapestHourCalculator.cheapestHoursForUsage!.associatedPricePoints.count - 1].endTimestamp) + (cheapestHourCalculator.cheapestHoursForUsage!.differenceIsBefore ? cheapestHourCalculator.cheapestHoursForUsage!.minuteDifferenceInSeconds : 0))
                         }
                 }
-                .font(.title)
+                .font(.title2)
                 
                 Spacer()
                 
-                ConsumptionClockView(cheapestHour: cheapestHourCalculator.cheapestHoursForUsage!)
-                    .frame(maxHeight: 200)
+                VStack {
+                    ConsumptionClockView(cheapestHour: cheapestHourCalculator.cheapestHoursForUsage!)
+                        .frame(maxHeight: 200)
+                }
                 
                 Spacer()
                 Spacer()
@@ -55,10 +59,12 @@ struct ConsumptionResultView: View {
                     .progressViewStyle(CircularProgressViewStyle())
             }
         }
+        .padding(16)
         .animation(.easeInOut)
         .onAppear {
             cheapestHourCalculator.setValues()
             cheapestHourCalculator.calculateBestHours(energyData: awattarData.energyData!)
         }
+        .navigationBarTitle("results")
     }
 }

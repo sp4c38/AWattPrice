@@ -25,8 +25,8 @@ struct ConsumptionClockView: View {
         let maxItemIndex = cheapestHour.associatedPricePoints.count - 1
         
         if cheapestHour.associatedPricePoints.count >= 2 {
-            var relativeStartTimestamp = cheapestHour.associatedPricePoints[minItemIndex].startTimestamp / 1000
-            var relativeEndTimestamp = cheapestHour.associatedPricePoints[maxItemIndex].endTimestamp / 1000
+            var relativeStartTimestamp = cheapestHour.associatedPricePoints[minItemIndex].startTimestamp
+            var relativeEndTimestamp = cheapestHour.associatedPricePoints[maxItemIndex].endTimestamp
             
             var startMinute: Float = 0
             var endMinute: Float = 0

@@ -39,6 +39,8 @@ def parse_awattar_energy_prices(config):
                 if "Eur/MWh" in price["unit"]:
                     # Only send marketprice results as Euro per MWh
                     price.pop("unit")
+                    price["start_timestamp"] = int(price["start_timestamp"] / 1000) # Divide through 1000 to not display miliseconds
+                    price["end_timestamp"] = int(price["end_timestamp"] / 1000)
                     awattar_data["prices"].append(price)
 
             return awattar_data

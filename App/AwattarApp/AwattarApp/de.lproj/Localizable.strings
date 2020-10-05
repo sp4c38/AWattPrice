@@ -30,5 +30,6 @@
 "elecUsage" = "Stromverbrauch:";
 "givenElecPrice" = "Dein angegebener Strompreis:";
 "givenBasicFee" = "Deine angegebene Grundgebühr:";
-"until" = "until";
+"until" = "bis";
+"results" = "Ergebnisse";
 

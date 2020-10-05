@@ -36,8 +36,8 @@ struct HourPriceInfoView: View {
     
     var body: some View {
         if priceInkWh != nil && priceInMWh != nil {
-            let startDate = Date(timeIntervalSince1970: TimeInterval(priceDataPoint.startTimestamp / 1000))
-            let endDate = Date(timeIntervalSince1970: TimeInterval(priceDataPoint.endTimestamp / 1000))
+            let startDate = Date(timeIntervalSince1970: TimeInterval(priceDataPoint.startTimestamp))
+            let endDate = Date(timeIntervalSince1970: TimeInterval(priceDataPoint.endTimestamp))
             
             VStack(spacing: 50) {
                 Image("awattarLogo")

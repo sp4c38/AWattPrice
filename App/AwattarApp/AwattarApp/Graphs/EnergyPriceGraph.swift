@@ -27,6 +27,9 @@ struct BarShape: Shape {
     }
     
     func path(in rect: CGRect) -> Path {
+        print("startWidth: \(startWidth)")
+        print("widthOfBar: \(widthOfBar)")
+        
         let radius: CGFloat = 2
         let barPadding: CGFloat = 3
         let dividerLineWidth: CGFloat = 3
@@ -115,7 +118,6 @@ struct EnergyPriceSingleBar: View {
          startHeight: CGFloat,
          isSelected: Bool,
          hourDataPoint: EnergyPricePoint) {
-
         self.singleBarSettings = singleBarSettings
         self.width = width
         if isSelected {
@@ -155,7 +157,7 @@ struct EnergyPriceSingleBar: View {
                     .fill(LinearGradient(gradient: Gradient(colors: [Color.green, Color.gray]), startPoint: .leading, endPoint: .trailing))
             }
 
-            if maximalNegativePriceBarWidth != 0 {//&& isSelected == false {
+            if maximalNegativePriceBarWidth != 0 {
                 VerticalDividerLineShape(width: currentDividerLineWidth, height: height, startWidth: maximalNegativePriceBarWidth, startHeight: startHeight)
                     .foregroundColor(colorScheme == .light ? Color.black : Color.white)
             }
@@ -294,7 +296,7 @@ struct EnergyPriceGraph: View {
             }
 
             singleBarSettings.minPrice = awattarData.energyData!.minPrice
-            singleBarSettings.maxPrice = awattarData.energyData!.minPrice
+            singleBarSettings.maxPrice = awattarData.energyData!.maxPrice
         }
     }
 }

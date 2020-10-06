@@ -53,7 +53,6 @@ struct ConsumptionResultView: View {
                 }
                 
                 Spacer()
-                Spacer()
             } else {
                 ProgressView()
                     .progressViewStyle(CircularProgressViewStyle())

@@ -71,7 +71,11 @@ class AwattarData: ObservableObject {
                                 maxPrice = hourPoint.marketprice
                             }
                             
-                            if minPrice == nil || hourPoint.marketprice < minPrice! {
+                            if minPrice == nil {
+                                if hourPoint.marketprice < 0 {
+                                    minPrice = hourPoint.marketprice
+                                }
+                            } else if hourPoint.marketprice < minPrice! {
                                 minPrice = hourPoint.marketprice
                             }
                         }
@@ -79,6 +83,8 @@ class AwattarData: ObservableObject {
                     
                     
                     DispatchQueue.main.async {
+                        print("minprice \(minPrice != nil ? minPrice! : 0)")
+                        print("maxprice \(maxPrice)")
                         self.energyData = EnergyData(prices: usedPricesDecodedData, minPrice: (minPrice != nil ? minPrice! : 0), maxPrice: (maxPrice != nil ? maxPrice! : 0))
                     }
                 } catch {

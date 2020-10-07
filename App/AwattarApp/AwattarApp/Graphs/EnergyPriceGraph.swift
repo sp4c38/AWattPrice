@@ -27,9 +27,6 @@ struct BarShape: Shape {
     }
     
     func path(in rect: CGRect) -> Path {
-        print("startWidth: \(startWidth)")
-        print("widthOfBar: \(widthOfBar)")
-        
         let radius: CGFloat = 2
         let barPadding: CGFloat = 3
         let dividerLineWidth: CGFloat = 3
@@ -43,6 +40,8 @@ struct BarShape: Shape {
             path.addRelativeArc(center: CGPoint(x: widthOfBar + radius, y: startHeight + barPadding + radius), radius: radius, startAngle: .degrees(180), delta: .degrees(90))
         } else if lookToSide == .right {
             path.move(to: CGPoint(x: startWidth + (dividerLineWidth / 2), y: startHeight + barPadding))
+//            path.addLine(to: CGPoint(x: widthOfBar - radius, y: startHeight + barPadding))
+//            path = path.strokedPath(StrokeStyle(lineWidth: 10, lineCap: .round, lineJoin: .round))
             path.addRelativeArc(center: CGPoint(x: widthOfBar - radius, y: startHeight + barPadding + radius), radius: radius, startAngle: .degrees(270), delta: .degrees(180))
             path.addLine(to: CGPoint(x: widthOfBar, y: startHeight + barPadding + radius))
             path.addRelativeArc(center: CGPoint(x: widthOfBar - radius, y: startHeight + heightOfBar - barPadding - radius), radius: radius, startAngle: .degrees(0), delta: .degrees(90))
@@ -238,24 +237,9 @@ struct EnergyPriceGraph: View {
         let graphDragGesture = DragGesture(minimumDistance: 0)
             .onChanged { location in
                 let locationHeight = location.location.y
-                
-                if (currentPointerIndex == nil) || !(locationHeight == graphHourPointData[currentPointerIndex!].1) {
-                    if currentPointerIndex == nil {
-                        pointerHeightDeltaToBefore = nil
-                    } else {
-                        pointerHeightDeltaToBefore = abs((graphHourPointData[currentPointerIndex!].1 + (singleHeight / 2)) - locationHeight)
-                    }
 
-                    if pointerHeightDeltaToBefore == nil || pointerHeightDeltaToBefore! >= (singleHeight / 2) {
-                        for hourPoint in 0..<graphHourPointData.count {
-                            if locationHeight >= graphHourPointData[hourPoint].1 && locationHeight <= (graphHourPointData[hourPoint].1 + singleHeight) {
-                                withAnimation(.easeInOut(duration: 0.2)) {
-                                    currentPointerIndex = hourPoint
-//                                    print(graphHourPointData[hourPoint].1)
-                                }
-                            }
-                        }
-                    }
+                withAnimation {
+                    currentPointerIndex = Int(((locationHeight / singleHeight) - 1).rounded(.up))
                 }
             }
             .onEnded {_ in

@@ -83,8 +83,6 @@ class AwattarData: ObservableObject {
                     
                     
                     DispatchQueue.main.async {
-                        print("minprice \(minPrice != nil ? minPrice! : 0)")
-                        print("maxprice \(maxPrice)")
                         self.energyData = EnergyData(prices: usedPricesDecodedData, minPrice: (minPrice != nil ? minPrice! : 0), maxPrice: (maxPrice != nil ? maxPrice! : 0))
                     }
                 } catch {

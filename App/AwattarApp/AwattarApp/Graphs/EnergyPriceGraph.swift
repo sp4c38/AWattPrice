@@ -21,9 +21,12 @@ struct BarShape: Shape {
     
     let lookToSide: SidesToLook
     
-    var animatableData: CGFloat {
-        get { startHeight }
-        set { self.startHeight = newValue }
+    var animatableData: AnimatablePair<CGFloat, CGFloat> {
+        get { return AnimatablePair(startHeight, heightOfBar) }
+        set {
+            self.startHeight = newValue.first
+            self.heightOfBar = newValue.second
+        }
     }
     
     func path(in rect: CGRect) -> Path {
@@ -98,6 +101,7 @@ extension View {
     func animatableFont(size: CGFloat) -> some View {
         self.modifier(AnimatableCustomFontModifier(size: size))
     }
+
 }
 
 struct EnergyPriceSingleBar: View {
@@ -165,13 +169,15 @@ struct EnergyPriceSingleBar: View {
                 if currentSetting.setting!.pricesWithTaxIncluded {
                     // With tax
                     Text(singleBarSettings.centFormatter.string(from: NSNumber(value: (hourDataPoint.marketprice * 100 * 0.001 * 1.16)))!)
+                        .fontWeight(isSelected ? .bold : .regular)
                 } else if !currentSetting.setting!.pricesWithTaxIncluded {
                     // Without tax
                     Text(singleBarSettings.centFormatter.string(from: NSNumber(value: (hourDataPoint.marketprice * 100 * 0.001)))!)
+                        .fontWeight(isSelected ? .bold : .regular)
                 }
             }
             .animatableFont(size: (isSelected ? 20 : 10))
-            .position(x: 30, y: startHeight + (height / 2))
+            .position(x: (isSelected ? maximalNegativePriceBarWidth + 16 + 20 : maximalNegativePriceBarWidth + 16 + 5), y: startHeight + (height / 2)) // 16 is padding
             .foregroundColor(colorScheme == .light ? Color.black : Color.white)
 
 //            if isSelected {
@@ -181,12 +187,12 @@ struct EnergyPriceSingleBar: View {
                     Text(singleBarSettings.hourFormatter.string(from: Date(timeIntervalSince1970: TimeInterval(hourDataPoint.endTimestamp))))
                 }
                 .animatableFont(size: (isSelected ? 20 : 10))
-                .foregroundColor(colorScheme == .light ? Color.black : Color.white)
+                .foregroundColor(Color.black)
                 .padding(1)
                 .background(LinearGradient(gradient: Gradient(colors: [Color.white, Color(hue: 0.6111, saturation: 0.0276, brightness: 0.8510)]), startPoint: .topLeading, endPoint: .bottomTrailing))
                 .cornerRadius(4)
                 .shadow(radius: 1)
-                .position(x: 12 * (width / 13), y: startHeight + (height / 2))
+                .position(x: (isSelected ? width - 20 - 16 : width - 10 - 16), y: startHeight + (height / 2))
 //            }
         }
     }

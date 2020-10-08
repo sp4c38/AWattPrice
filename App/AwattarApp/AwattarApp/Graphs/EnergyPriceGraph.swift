@@ -112,25 +112,48 @@ struct EnergyPriceSingleBar: View {
     let width: CGFloat
     let height: CGFloat
     var startHeight: CGFloat
-    let isSelected: Bool
+    let isSelected: Int16 // 0 if not selected and 1 if main selected and 2 if co-selected (bars around the selected bar)
     let hourDataPoint: EnergyPricePoint
 
     init(singleBarSettings: SingleBarSettings,
          width: CGFloat,
          height: CGFloat,
          startHeight: CGFloat,
-         isSelected: Bool,
+         indexSelected: Int?,
+         ownIndex: Int,
          hourDataPoint: EnergyPricePoint) {
+        
+        
         self.singleBarSettings = singleBarSettings
         self.width = width
-        if isSelected {
+        self.startHeight = 0
+        
+        if indexSelected != nil {
+            if indexSelected == ownIndex {
+                self.isSelected = 1
+            } else if ownIndex == indexSelected! - 1 || ownIndex == indexSelected! + 1 {
+                self.isSelected = 2
+            } else {
+                self.isSelected = 0
+            }
+            
+            if ownIndex > indexSelected! {
+                self.startHeight = 30
+            } else if ownIndex < indexSelected! {
+                self.startHeight = -30
+            }
+        } else {
+            self.isSelected = 0
+        }
+        
+        if isSelected == 1 {
             self.height = height + 20
-            self.startHeight = startHeight - 10 // Should be half of which was added to height
+            self.startHeight += startHeight - 10 // Should be half of which was added to height
         } else {
             self.height = height
-            self.startHeight = startHeight
+            self.startHeight += startHeight
         }
-        self.isSelected = isSelected
+
         self.hourDataPoint = hourDataPoint
     }
 
@@ -153,13 +176,13 @@ struct EnergyPriceSingleBar: View {
         
         ZStack(alignment: Alignment(horizontal: .trailing, vertical: .center)) {
             if hourDataPoint.marketprice > 0 {
-                BarShape(isSelected: isSelected, startWidth: maximalNegativePriceBarWidth, startHeight: startHeight, widthOfBar: positivePriceBarWidth + currentDividerLineWidth, heightOfBar: height, lookToSide: .right)
+                BarShape(isSelected: (isSelected == 1 ? true : false), startWidth: maximalNegativePriceBarWidth, startHeight: startHeight, widthOfBar: positivePriceBarWidth + currentDividerLineWidth, heightOfBar: height, lookToSide: .right)
                     .fill(LinearGradient(gradient: Gradient(colors: [Color(hue: 0.0849, saturation: 0.6797, brightness: 0.9059), Color(hue: 0.9978, saturation: 0.7163, brightness: 0.8431)]), startPoint: .leading, endPoint: .trailing))
             } else if hourDataPoint.marketprice < 0 {
-                BarShape(isSelected: isSelected, startWidth: maximalNegativePriceBarWidth, startHeight: startHeight, widthOfBar: maximalNegativePriceBarWidth - negativePriceBarWidth, heightOfBar: height, lookToSide: .left)
+                BarShape(isSelected: (isSelected == 1 ? true : false), startWidth: maximalNegativePriceBarWidth, startHeight: startHeight, widthOfBar: maximalNegativePriceBarWidth - negativePriceBarWidth, heightOfBar: height, lookToSide: .left)
                     .fill(LinearGradient(gradient: Gradient(colors: [Color.green, Color.gray]), startPoint: .leading, endPoint: .trailing))
             }
-
+//
             if maximalNegativePriceBarWidth != 0 {
                 VerticalDividerLineShape(width: currentDividerLineWidth, height: height, startWidth: maximalNegativePriceBarWidth, startHeight: startHeight)
                     .foregroundColor(colorScheme == .light ? Color.black : Color.white)
@@ -169,31 +192,32 @@ struct EnergyPriceSingleBar: View {
                 if currentSetting.setting!.pricesWithTaxIncluded {
                     // With tax
                     Text(singleBarSettings.centFormatter.string(from: NSNumber(value: (hourDataPoint.marketprice * 100 * 0.001 * 1.16)))!)
-                        .fontWeight(isSelected ? .bold : .regular)
+                        .fontWeight((isSelected == 1 || isSelected == 2) ? .bold : .regular)
                 } else if !currentSetting.setting!.pricesWithTaxIncluded {
                     // Without tax
                     Text(singleBarSettings.centFormatter.string(from: NSNumber(value: (hourDataPoint.marketprice * 100 * 0.001)))!)
-                        .fontWeight(isSelected ? .bold : .regular)
+                        .fontWeight((isSelected == 1 || isSelected == 2) ? .bold : .regular)
                 }
             }
-            .animatableFont(size: (isSelected ? 20 : 10))
-            .position(x: (isSelected ? maximalNegativePriceBarWidth + 16 + 20 : maximalNegativePriceBarWidth + 16 + 5), y: startHeight + (height / 2)) // 16 is padding
             .foregroundColor(colorScheme == .light ? Color.black : Color.white)
-
-//            if isSelected {
-                HStack(spacing: 5) {
-                    Text(singleBarSettings.hourFormatter.string(from: Date(timeIntervalSince1970: TimeInterval(hourDataPoint.startTimestamp))))
-                    Text("-")
-                    Text(singleBarSettings.hourFormatter.string(from: Date(timeIntervalSince1970: TimeInterval(hourDataPoint.endTimestamp))))
-                }
-                .animatableFont(size: (isSelected ? 20 : 10))
-                .foregroundColor(Color.black)
-                .padding(1)
-                .background(LinearGradient(gradient: Gradient(colors: [Color.white, Color(hue: 0.6111, saturation: 0.0276, brightness: 0.8510)]), startPoint: .topLeading, endPoint: .bottomTrailing))
-                .cornerRadius(4)
-                .shadow(radius: 1)
-                .position(x: (isSelected ? width - 20 - 16 : width - 10 - 16), y: startHeight + (height / 2))
-//            }
+            .padding((isSelected == 1 || isSelected == 2) ? 2 : 1)
+            .background(Color.white)
+            .cornerRadius((isSelected == 1 || isSelected == 2) ? 3 : 1)
+            .animatableFont(size: ((isSelected == 1 || isSelected == 2) ? 17 : 7))
+            .position(x: ((isSelected == 1 || isSelected == 2) ? maximalNegativePriceBarWidth + 16 + 22 : maximalNegativePriceBarWidth + 16 + 3), y: startHeight + (height / 2)) // 16 is padding
+//
+            HStack(spacing: 5) {
+                Text(singleBarSettings.hourFormatter.string(from: Date(timeIntervalSince1970: TimeInterval(hourDataPoint.startTimestamp))))
+                Text("-")
+                Text(singleBarSettings.hourFormatter.string(from: Date(timeIntervalSince1970: TimeInterval(hourDataPoint.endTimestamp))))
+            }
+            .animatableFont(size: ((isSelected == 1 || isSelected == 2) ? 20 : 10))
+            .foregroundColor(Color.black)
+            .padding(1)
+            .background(LinearGradient(gradient: Gradient(colors: [Color.white, Color(hue: 0.6111, saturation: 0.0276, brightness: 0.8510)]), startPoint: .topLeading, endPoint: .bottomTrailing))
+            .cornerRadius(4)
+            .shadow(radius: 1)
+            .position(x: ((isSelected == 1 || isSelected == 2) ? width - 20 - 16 : width - 10 - 16), y: startHeight + (height / 2))
         }
     }
 }
@@ -224,7 +248,8 @@ struct EnergyPriceGraph: View {
     
     @State var graphHourPointData = [(EnergyPricePoint, CGFloat)]()
 
-    @State var currentPointerIndex: Int? = nil
+    @State var currentPointerIndexSelected: Int? = nil
+    
     @State var pointerHeightDeltaToBefore: CGFloat? = nil
     @State var singleHeight: CGFloat = 0
     
@@ -243,39 +268,30 @@ struct EnergyPriceGraph: View {
         let graphDragGesture = DragGesture(minimumDistance: 0)
             .onChanged { location in
                 let locationHeight = location.location.y
-
-                withAnimation {
-                    currentPointerIndex = Int(((locationHeight / singleHeight) - 1).rounded(.up))
+                
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    currentPointerIndexSelected = Int(((locationHeight / singleHeight) - 1).rounded(.up))
                 }
             }
             .onEnded {_ in
-                withAnimation {
-                    currentPointerIndex = nil
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    currentPointerIndexSelected = nil
                 }
             }
         
         return ZStack {
-            ZStack {
-                ForEach(0..<graphHourPointData.count, id: \.self) { hourPointIndex in
-                    let startHeight: CGFloat = (
-                        (currentPointerIndex != nil) ?
-                            ((hourPointIndex > currentPointerIndex!) ? graphHourPointData[hourPointIndex].1 + 30 :
-                            (hourPointIndex < currentPointerIndex!) ? graphHourPointData[hourPointIndex].1 - 30 : graphHourPointData[hourPointIndex].1)
-                        : graphHourPointData[hourPointIndex].1
-                    )
-                    
-                    EnergyPriceSingleBar(
-                        singleBarSettings: singleBarSettings,
-                        width: width,
-                        height: singleHeight,
-                        startHeight: startHeight,
-                        isSelected: ((hourPointIndex == currentPointerIndex) ? true : false),
-                        hourDataPoint: graphHourPointData[hourPointIndex].0)
-                }
+            ForEach(0..<graphHourPointData.count, id: \.self) { hourPointIndex in
+                EnergyPriceSingleBar(
+                    singleBarSettings: singleBarSettings,
+                    width: width,
+                    height: singleHeight,
+                    startHeight: graphHourPointData[hourPointIndex].1,
+                    indexSelected: currentPointerIndexSelected,
+                    ownIndex: hourPointIndex,
+                    hourDataPoint: graphHourPointData[hourPointIndex].0)
             }
-            .zIndex(0)
-            .gesture(graphDragGesture)
         }
+        .gesture(graphDragGesture)
         .onAppear {
             singleHeight = height / CGFloat(awattarData.energyData!.prices.count)
             var currentHeight: CGFloat = 0

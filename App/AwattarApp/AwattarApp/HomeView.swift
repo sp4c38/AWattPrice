@@ -35,7 +35,7 @@ struct HomeView: View {
     
     var body: some View {
         NavigationView {
-            if awattarData.energyData != nil {
+            if awattarData.energyData != nil && currentSetting.setting != nil {
                 VStack {
                     Divider()
 
@@ -54,7 +54,6 @@ struct HomeView: View {
                     .padding(.bottom, 5)
                     
                     EnergyPriceGraph()
-                        .shadow(radius: 3)
                         .padding(.leading, 16)
                         .padding(.trailing, 16)
                 }
@@ -83,7 +82,7 @@ struct HomeView: View {
             }
         }
         .onAppear {
-            currentSetting.setSetting(managedObjectContext: managedObjectContext)
+            currentSetting.setting = getSetting(managedObjectContext: managedObjectContext)
         }
     }
 }

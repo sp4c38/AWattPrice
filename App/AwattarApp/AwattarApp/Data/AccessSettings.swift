@@ -24,19 +24,18 @@ func getSetting(managedObjectContext: NSManagedObjectContext) -> Setting? {
         return fetchRequestResults[0]
         
     } else if fetchRequestResults.count == 0 {
-        // No Settings object is yet created. Create a new Settings object and save it to the persistent store
+        // No Settings object is yet created. Create a new Settings object with default values and save it to the persistent store
         let newSetting = Setting(context: managedObjectContext)
         newSetting.awattarEnergyProfileIndex = 0
         newSetting.pricesWithTaxIncluded = true
         newSetting.awattarProfileBasicCharge = 0
         newSetting.awattarEnergyPrice = 0
         
-        print("No Settings object yet stored. Creating new Settings object with default options.")
-        
         do {
             try managedObjectContext.save()
         } catch {
-            print("Couldn't store new Settings object.")
+            print("Error storing new settings object.")
+            return nil
         }
         
         return newSetting
@@ -55,62 +54,54 @@ func getSetting(managedObjectContext: NSManagedObjectContext) -> Setting? {
         do {
             try managedObjectContext.save()
         } catch {
-            print("Couldn't store new Settings object.")
+            print("Error storing new settings object.")
+            return nil
         }
         
         return fetchRequestResults[fetchRequestResults.count - 1]
     }
 }
 
-func storeTaxSettingsSelection(pricesWithTaxIncluded: Bool, awattarEnergyProfileIndex: Int16, basicCharge: Float, energyPrice: Float, managedObjectContext: NSManagedObjectContext) {
-    let fetchRequest: NSFetchRequest<Setting> = Setting.fetchRequest()
-    var fetchRequestResults = [Setting]()
-    
-    do {
-        fetchRequestResults = try managedObjectContext.fetch(fetchRequest)
-    } catch {
-        print("Couldn't read stored settings.")
-        return
-    }
-    
-    if fetchRequestResults.count > 1 {
-        // This shouldn't happen because it would mean that there are multiple Settings objects stored in the persistent storages
-        print("Multiple Settings objects found in persistent storage. This shouldn't happen with Settings objects. Will delete all and will reset to default Settings.")
-        
-        for storedSettingsObject in fetchRequestResults {
-            managedObjectContext.delete(storedSettingsObject)
-        }
-    
-        let newSetting = Setting(context: managedObjectContext)
-        newSetting.pricesWithTaxIncluded = pricesWithTaxIncluded
-        newSetting.awattarEnergyProfileIndex = awattarEnergyProfileIndex
-        newSetting.awattarProfileBasicCharge = basicCharge
-        newSetting.awattarEnergyPrice = energyPrice
-        
-    } else if fetchRequestResults.count == 1 {
-        let settingsObject = fetchRequestResults[0]
-        settingsObject.pricesWithTaxIncluded = pricesWithTaxIncluded
-        settingsObject.awattarEnergyProfileIndex = awattarEnergyProfileIndex
-        settingsObject.awattarProfileBasicCharge = basicCharge
-        settingsObject.awattarEnergyPrice = energyPrice
-        
-        print("Stored new settings.")
-        
-    } else if fetchRequestResults.count == 0 {
-        // No Settings object is yet created. Create a new Settings object and save it to the persistent store
-        let newSetting = Setting(context: managedObjectContext)
-        newSetting.pricesWithTaxIncluded = pricesWithTaxIncluded
-        newSetting.awattarEnergyProfileIndex = awattarEnergyProfileIndex
-        newSetting.awattarProfileBasicCharge = basicCharge
-        newSetting.awattarEnergyPrice = energyPrice
-        
-        print("No Settings object yet stored. Creating new Settings object.")
-    }
-    
+func changeTaxSelection(newTaxSelection: Bool, settingsObject: Setting, managedObjectContext: NSManagedObjectContext) {
+    settingsObject.pricesWithTaxIncluded = newTaxSelection
     do {
         try managedObjectContext.save()
     } catch {
-        print("Error saving managed object context.")
         return
     }
+    
+    return
+}
+
+func changeEnergyProfileIndex(newProfileIndex: Int16, settingsObject: Setting, managedObjectContext: NSManagedObjectContext) {
+    settingsObject.awattarEnergyProfileIndex = newProfileIndex
+    do {
+        try managedObjectContext.save()
+    } catch {
+        return
+    }
+    
+    return
+}
+
+func changeBasicCharge(newBasicCharge: Float, settingsObject: Setting, managedObjectContext: NSManagedObjectContext) {
+    settingsObject.awattarProfileBasicCharge = newBasicCharge
+    do {
+        try managedObjectContext.save()
+    } catch {
+        return
+    }
+    
+    return
+}
+
+func changeEnergyCharge(newEnergyCharge: Float, settingsObject: Setting, managedObjectContext: NSManagedObjectContext) {
+    settingsObject.awattarEnergyPrice = newEnergyCharge
+    do {
+        try managedObjectContext.save()
+    } catch {
+        return
+    }
+    
+    return
 }

@@ -24,11 +24,6 @@ class PersistenceManager {
 
 class CurrentSetting: ObservableObject {
     @Published var setting: Setting? = nil
-    
-    func setSetting(managedObjectContext: NSManagedObjectContext) {
-        let currentSetting = getSetting(managedObjectContext: managedObjectContext)
-        self.setting = currentSetting!
-    }
 }
 
 @main

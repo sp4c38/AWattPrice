@@ -29,12 +29,16 @@ struct EnergyData: Codable {
     }
 }
 
-struct Profile: Codable, Hashable {
+struct Profile: Hashable {
     var name: String
+    var imageName: String
 }
 
-struct ProfilesData: Codable {
-    var profiles: [Profile]
+struct ProfilesData {
+    var profiles = [
+        Profile(name: "HOURLY", imageName: "hourlyProfilePicture"),
+        Profile(name: "HOURLY-CAP", imageName: "hourlyCapProfilePicture"),
+        Profile(name: "YEARLY", imageName: "yearlyProfilePicture")]
 }
 
 class AwattarData: ObservableObject {
@@ -42,7 +46,7 @@ class AwattarData: ObservableObject {
     // and views need to check when downloading the data finished
     
     @Published var energyData: EnergyData? = nil // Energy Data with all hours included
-    @Published var profilesData: ProfilesData? = nil // Data for the different avalible aWATTar profiles
+    @Published var profilesData = ProfilesData()
 
     init() {
         var energyRequest = URLRequest(
@@ -84,28 +88,6 @@ class AwattarData: ObservableObject {
                     
                     DispatchQueue.main.async {
                         self.energyData = EnergyData(prices: usedPricesDecodedData, minPrice: (minPrice != nil ? minPrice! : 0), maxPrice: (maxPrice != nil ? maxPrice! : 0))
-                    }
-                } catch {
-                    fatalError("Could not decode returned JSON data from server.")
-                }
-            }
-        }.resume()
-        
-        var profileRequest = URLRequest(
-                        url: URL(string: "https://www.space8.me:9173/awattar_app/static/chargeProfiles.json")!,
-                        cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy)
-        
-        profileRequest.httpMethod = "GET"
-        
-        let _ = URLSession.shared.dataTask(with: profileRequest) { data, response, error in
-            let jsonDecoder = JSONDecoder()
-            var decodedData = ProfilesData(profiles: [])
-            
-            if let data = data {
-                do {
-                    decodedData = try jsonDecoder.decode(ProfilesData.self, from: data)
-                    DispatchQueue.main.async {
-                        self.profilesData = decodedData
                     }
                 } catch {
                     fatalError("Could not decode returned JSON data from server.")

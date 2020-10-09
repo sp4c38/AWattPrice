@@ -138,9 +138,17 @@ struct EnergyPriceSingleBar: View {
             }
             
             if ownIndex > indexSelected! {
-                self.startHeight = 30
+                if !(self.isSelected == 2) {
+                    self.startHeight += 30
+                } else {
+                    self.startHeight += 20
+                }
             } else if ownIndex < indexSelected! {
-                self.startHeight = -30
+                if !(self.isSelected == 2) {
+                    self.startHeight -= 30
+                } else {
+                    self.startHeight -= 20
+                }
             }
         } else {
             self.isSelected = 0
@@ -148,7 +156,10 @@ struct EnergyPriceSingleBar: View {
         
         if isSelected == 1 {
             self.height = height + 20
-            self.startHeight += startHeight - 10 // Should be half of which was added to height
+            self.startHeight += startHeight - 10 // Must be half of which was added to height
+        } else if isSelected == 2 {
+            self.height = height + 5
+            self.startHeight += startHeight - 2.5
         } else {
             self.height = height
             self.startHeight += startHeight
@@ -192,26 +203,26 @@ struct EnergyPriceSingleBar: View {
                 if currentSetting.setting!.pricesWithTaxIncluded {
                     // With tax
                     Text(singleBarSettings.centFormatter.string(from: NSNumber(value: (hourDataPoint.marketprice * 100 * 0.001 * 1.16)))!)
-                        .fontWeight((isSelected == 1 || isSelected == 2) ? .bold : .regular)
+                        .fontWeight((isSelected == 1) ? .bold : ((isSelected == 2 ) ? .medium : .regular))
                 } else if !currentSetting.setting!.pricesWithTaxIncluded {
                     // Without tax
                     Text(singleBarSettings.centFormatter.string(from: NSNumber(value: (hourDataPoint.marketprice * 100 * 0.001)))!)
-                        .fontWeight((isSelected == 1 || isSelected == 2) ? .bold : .regular)
+                        .fontWeight((isSelected == 1) ? .bold : ((isSelected == 2 ) ? .medium : .regular))
                 }
             }
             .foregroundColor(colorScheme == .light ? Color.black : Color.white)
-            .padding((isSelected == 1 || isSelected == 2) ? 2 : 1)
+            .padding(1)
             .background(Color.white)
             .cornerRadius((isSelected == 1 || isSelected == 2) ? 3 : 1)
-            .animatableFont(size: ((isSelected == 1 || isSelected == 2) ? 17 : 7))
-            .position(x: ((isSelected == 1 || isSelected == 2) ? maximalNegativePriceBarWidth + 16 + 22 : maximalNegativePriceBarWidth + 16 + 3), y: startHeight + (height / 2)) // 16 is padding
-//
+            .animatableFont(size: ((isSelected == 1) ? 17 : ((isSelected == 2) ? 9 : 7)))
+            .position(x: ((isSelected == 1) ? maximalNegativePriceBarWidth + 16 + 22 : ((isSelected == 2) ? maximalNegativePriceBarWidth + 16 + 8 : maximalNegativePriceBarWidth + 16 + 3)), y: startHeight + (height / 2)) // 16 is padding
+
             HStack(spacing: 5) {
                 Text(singleBarSettings.hourFormatter.string(from: Date(timeIntervalSince1970: TimeInterval(hourDataPoint.startTimestamp))))
                 Text("-")
                 Text(singleBarSettings.hourFormatter.string(from: Date(timeIntervalSince1970: TimeInterval(hourDataPoint.endTimestamp))))
             }
-            .animatableFont(size: ((isSelected == 1 || isSelected == 2) ? 20 : 10))
+            .animatableFont(size: ((isSelected == 1) ? 20 : ((isSelected == 2) ? 13 : 10)))
             .foregroundColor(Color.black)
             .padding(1)
             .background(LinearGradient(gradient: Gradient(colors: [Color.white, Color(hue: 0.6111, saturation: 0.0276, brightness: 0.8510)]), startPoint: .topLeading, endPoint: .bottomTrailing))

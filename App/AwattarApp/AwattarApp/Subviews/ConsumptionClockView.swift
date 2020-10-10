@@ -18,25 +18,16 @@ struct ConsumptionClockView: View {
     
     var hourDegree = (0, 0)
     
-    init(cheapestHour: CheapestHourCalculator.HourPair) {
+    init(_ cheapestHour: CheapestHourCalculator.HourPair) {
         // 15 degrees is the angle for one single hour
-        
         let minItemIndex = 0
         let maxItemIndex = cheapestHour.associatedPricePoints.count - 1
         
         if cheapestHour.associatedPricePoints.count >= 2 {
-            print(cheapestHour.associatedPricePoints)
-            var startMinute: Float = 0
-            var endMinute: Float = 0
-            
-            if cheapestHour.differenceIsBefore {
-                startMinute = Float(cheapestHour.minuteDifferenceInSeconds) / 3600
-            } else {
-                endMinute = Float(cheapestHour.minuteDifferenceInSeconds) / 3600
-            }
-            
             let startHour = Float(calendar.component(.hour, from: Date(timeIntervalSince1970: TimeInterval(cheapestHour.associatedPricePoints[minItemIndex].startTimestamp))))
+            let startMinute = Float(calendar.component(.minute, from: Date(timeIntervalSince1970: TimeInterval(cheapestHour.associatedPricePoints[minItemIndex].startTimestamp)))) / 60
             let endHour = Float(calendar.component(.hour, from: Date(timeIntervalSince1970: TimeInterval(cheapestHour.associatedPricePoints[maxItemIndex].endTimestamp))))
+            let endMinute = Float(calendar.component(.minute, from: Date(timeIntervalSince1970: TimeInterval(cheapestHour.associatedPricePoints[maxItemIndex].endTimestamp)))) / 60
 
             let startDegree = Int(30 * (startHour + startMinute)) - 90
             let endDegree = Int(30 * (endHour + endMinute)) - 90
@@ -63,20 +54,21 @@ struct ConsumptionClockView: View {
         let height = geometry.size.height
         
         let circleLineWidth = CGFloat(2)
-        let hourIndicatorLineWidth = CGFloat(3)
+        let hourIndicatorLineWidth = CGFloat(2)
         let middlePointRadius = CGFloat(5)
-        let hourMarkerLineWidth = CGFloat(4)
+        let hourMarkerLineWidth = CGFloat(13)
         
         let clockWidth = 2 * (width / 5)
         let hourBorderIndicatorWidth = CGFloat(4)
-        let hourMarkerRadius = CGFloat(0.75 * (((clockWidth / 2) - circleLineWidth)))
+        let hourMarkerRadius = CGFloat(0.70 * (((clockWidth / 2) - circleLineWidth)))
+        let hourMarkerBorderExtraRadius = CGFloat(4)
         let minuteIndicatorWidth = CGFloat((clockWidth / 2) - hourBorderIndicatorWidth - 10)
         let hourIndicatorWidth = CGFloat((2 * ((clockWidth / 2) / 3)) - hourBorderIndicatorWidth  - 10)
         
         let clockRightSideStartWidth = ((width - clockWidth) / 2)
         let clockStartHeight = (height / 2) - (width / 2) + clockRightSideStartWidth
         
-        let textPaddingToClock = CGFloat(15)
+        let textPaddingToClock = CGFloat(13)
         let threeTextPaddingToClockAddition = CGFloat(3)
 
         let center = CGPoint(x: width / 2, y: height / 2)
@@ -175,10 +167,35 @@ struct ConsumptionClockView: View {
             }
             
             Path { path in
-                path.addArc(center: center, radius: hourMarkerRadius, startAngle: .degrees(Double(hourDegree.0)), endAngle: .degrees(Double(hourDegree.1 - Int(hourMarkerLineWidth / 2))), clockwise: false)
+                path.addArc(center: center, radius: hourMarkerRadius - (hourMarkerLineWidth / 2) - hourMarkerBorderExtraRadius, startAngle: .degrees(0), endAngle: .degrees(360), clockwise: false)
+            }
+            .strokedPath(.init(lineWidth: 0.3, lineCap: .round))
+
+
+            Path { path in
+                path.addArc(center: center, radius: hourMarkerRadius + (hourMarkerLineWidth / 2) + hourMarkerBorderExtraRadius, startAngle: .degrees(0), endAngle: .degrees(360), clockwise: false)
+            }
+            .strokedPath(.init(lineWidth: 0.3, lineCap: .round))
+            
+            Path { path in
+                path.addArc(center: center, radius: hourMarkerRadius - (hourMarkerLineWidth / 2) - hourMarkerBorderExtraRadius, startAngle: .degrees(0), endAngle: .degrees(360), clockwise: false)
+
+                path.addArc(center: center, radius: hourMarkerRadius + (hourMarkerLineWidth / 2) + hourMarkerBorderExtraRadius, startAngle: .degrees(360), endAngle: .degrees(0), clockwise: true)
+            }
+            .foregroundColor(Color.black)
+            .opacity(0.1)
+            
+            Path { path in
+                path.addArc(center: center, radius: hourMarkerRadius, startAngle: .degrees(Double(hourDegree.0 + Int(hourMarkerLineWidth / 2))), endAngle: .degrees(Double(hourDegree.1 - Int(hourMarkerLineWidth / 2))), clockwise: false)
+            }
+            .strokedPath(.init(lineWidth: hourMarkerLineWidth + 0.5, lineCap: .round))
+            .foregroundColor(Color.black)
+            
+            Path { path in
+                path.addArc(center: center, radius: hourMarkerRadius, startAngle: .degrees(Double(hourDegree.0 + Int(hourMarkerLineWidth / 2))), endAngle: .degrees(Double(hourDegree.1 - Int(hourMarkerLineWidth / 2))), clockwise: false)
             }
             .strokedPath(.init(lineWidth: hourMarkerLineWidth, lineCap: .round))
-            .foregroundColor(Color.green)
+            .foregroundColor(Color(hue: 0.3786, saturation: 0.6959, brightness: 0.8510))
 
             Path { path in
                 path.move(to: center)
@@ -199,6 +216,6 @@ struct ConsumptionClockView: View {
 
 struct ConsumptionClockView_Previews: PreviewProvider {
     static var previews: some View {
-        ConsumptionClockView(cheapestHour: CheapestHourCalculator.HourPair(associatedPricePoints: [EnergyPricePoint(startTimestamp: 1601082000, endTimestamp: 1601085600, marketprice: 3), EnergyPricePoint(startTimestamp: 1601085600, endTimestamp: 1601089350, marketprice: 9)]))
+        ConsumptionClockView(CheapestHourCalculator.HourPair(associatedPricePoints: [EnergyPricePoint(startTimestamp: 1602331200, endTimestamp: 1602334800, marketprice: 3), EnergyPricePoint(startTimestamp: 1602334800, endTimestamp: 1602340200, marketprice: 9)]))
     }
 }

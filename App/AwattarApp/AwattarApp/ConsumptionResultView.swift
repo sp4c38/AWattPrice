@@ -42,7 +42,7 @@ struct ConsumptionResultView: View {
                 Spacer()
                 
                 VStack {
-                    ConsumptionClockView(cheapestHour: cheapestHourCalculator.cheapestHoursForUsage!)
+                    ConsumptionClockView(cheapestHourCalculator.cheapestHoursForUsage!)
                         .frame(maxHeight: 200)
                 }
                 

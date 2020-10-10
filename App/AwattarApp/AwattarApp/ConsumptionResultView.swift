@@ -26,24 +26,23 @@ struct ConsumptionResultView: View {
             if cheapestHourCalculator.cheapestHoursForUsage != nil {
                 Spacer()
                 
-                VStack(spacing: 5) {
-                    Text(dateFormatter.string(from: Date(timeIntervalSince1970:
-                                                            TimeInterval(cheapestHourCalculator.cheapestHoursForUsage!.associatedPricePoints[0].startTimestamp))))
-                        .bold()
-                    
-                    Text("until")
-                    
-                    Text(dateFormatter.string(from: Date(timeIntervalSince1970:
-                                                            TimeInterval(cheapestHourCalculator.cheapestHoursForUsage!.associatedPricePoints[cheapestHourCalculator.cheapestHoursForUsage!.associatedPricePoints.count - 1].endTimestamp))))
-                        .bold()
-                }
-                .font(.title2)
+//                VStack(spacing: 5) {
+//                    Text(dateFormatter.string(from: Date(timeIntervalSince1970:
+//                                                            TimeInterval(cheapestHourCalculator.cheapestHoursForUsage!.associatedPricePoints[0].startTimestamp))))
+//                        .bold()
+//
+//                    Text("until")
+//
+//                    Text(dateFormatter.string(from: Date(timeIntervalSince1970:
+//                                                            TimeInterval(cheapestHourCalculator.cheapestHoursForUsage!.associatedPricePoints[cheapestHourCalculator.cheapestHoursForUsage!.associatedPricePoints.count - 1].endTimestamp))))
+//                        .bold()
+//                }
+//                .font(.title2)
                 
                 Spacer()
                 
                 VStack {
                     ConsumptionClockView(cheapestHourCalculator.cheapestHoursForUsage!)
-                        .frame(maxHeight: 200)
                 }
                 
                 Spacer()

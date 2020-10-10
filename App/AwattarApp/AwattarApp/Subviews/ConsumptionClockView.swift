@@ -57,9 +57,9 @@ struct ConsumptionClockView: View {
         let hourIndicatorLineWidth = CGFloat(2)
         let middlePointRadius = CGFloat(5)
 
-        let clockWidth = 2 * (width / 5)
+        let clockWidth = 3 * (width / 5)
         let hourBorderIndicatorWidth = CGFloat(4)
-        let hourMarkerRadius = CGFloat(0.70 * (((clockWidth / 2) - circleLineWidth)))
+        let hourMarkerRadius = CGFloat(0.85 * ((clockWidth / 2) - circleLineWidth))
         let minuteIndicatorWidth = CGFloat((clockWidth / 2) - hourBorderIndicatorWidth - 10)
         let hourIndicatorWidth = CGFloat((2 * ((clockWidth / 2) / 3)) - hourBorderIndicatorWidth  - 10)
 
@@ -129,43 +129,42 @@ struct ConsumptionClockView: View {
             let textYCoord = clockStartHeight + (clockWidth / 2) + currentYCoordTextPadding + yCoordTextDiff
 
             // Lines
-            let lineFirstXCoord = CGFloat(Double(clockWidth / 2 - circleLineWidth) * cos(currentDegree * Double.pi / 180)) + clockRightSideStartWidth + (clockWidth / 2)
+            let lineFirstXCoord = CGFloat(Double(clockWidth / 2 + hourBorderIndicatorWidth) * cos(currentDegree * Double.pi / 180)) + clockRightSideStartWidth + (clockWidth / 2)
 
-            let lineFirstYCoord = CGFloat(Double(clockWidth / 2 - circleLineWidth) * sin(currentDegree * Double.pi / 180)) + clockStartHeight + (clockWidth / 2)
+            let lineFirstYCoord = CGFloat(Double(clockWidth / 2 + hourBorderIndicatorWidth) * sin(currentDegree * Double.pi / 180)) + clockStartHeight + (clockWidth / 2)
 
-            let lineSecondXCoord = CGFloat(Double(clockWidth / 2 - hourBorderIndicatorWidth - circleLineWidth) * cos(currentDegree * Double.pi / 180)) + clockRightSideStartWidth + (clockWidth / 2)
+            let lineSecondXCoord = CGFloat(Double(clockWidth / 2 - circleLineWidth) * cos(currentDegree * Double.pi / 180)) + clockRightSideStartWidth + (clockWidth / 2)
 
-            let lineSecondYCoord = CGFloat(Double(clockWidth / 2 - hourBorderIndicatorWidth - circleLineWidth) * sin(currentDegree * Double.pi / 180)) + clockStartHeight + (clockWidth / 2)
+            let lineSecondYCoord = CGFloat(Double(clockWidth / 2 - circleLineWidth) * sin(currentDegree * Double.pi / 180)) + clockStartHeight + (clockWidth / 2)
 
             hourNamesAndPositions.append((String(hourName), textXCoord, textYCoord, lineFirstXCoord, lineFirstYCoord, lineSecondXCoord, lineSecondYCoord))
 
             currentDegree += 30
         }
-
+        
         return ZStack {
-            Path { path in
-                path.addArc(center: center, radius: (clockWidth / 2) - circleLineWidth, startAngle: .degrees(0), endAngle: .degrees(360), clockwise: false)
-                path.addArc(center: center, radius: clockWidth / 2, startAngle: .degrees(360), endAngle: .degrees(0), clockwise: true)
-            }
-            .foregroundColor(colorScheme == .light ? Color.black : Color.white)
+            Circle()
+                .foregroundColor(Color.white)
+                .frame(width: clockWidth + circleLineWidth + 2 * textPaddingToClock + 45)
+                .shadow(radius: 20)
 
+//            Path { path in
+//                path.addArc(center: center, radius: (clockWidth / 2) - circleLineWidth, startAngle: .degrees(0), endAngle: .degrees(360), clockwise: false)
+//                path.addArc(center: center, radius: clockWidth / 2, startAngle: .degrees(360), endAngle: .degrees(0), clockwise: true)
+//            }
+//            .foregroundColor(colorScheme == .light ? Color.black : Color.white)
+            
+            Path { path in
+                path.addLine(to: CGPoint(x: 20, y: 20))
+                path.addLine(to: CGPoint(x: 60, y: 30))
+            }
+            .strokedPath(StrokeStyle(lineWidth: 10, lineCap: .square))
+            .foregroundColor(Color.black)
+            
             Path { path in
                 path.addArc(center: center, radius: middlePointRadius, startAngle: .degrees(0), endAngle: .degrees(360), clockwise: true)
             }
             .fill(colorScheme == .light ? Color.black : Color.white)
-
-            ForEach(hourNamesAndPositions, id: \.0) { hour in
-                Text(hour.0)
-                    .bold()
-                    .position(x: hour.1, y: hour.2)
-
-                Path { path in
-                    path.move(to: CGPoint(x: hour.3, y: hour.4))
-                    path.addLine(to: CGPoint(x: hour.5, y: hour.6))
-                }
-                .strokedPath(.init(lineWidth: hourIndicatorLineWidth, lineCap: .round))
-                .foregroundColor(colorScheme == .light ? Color.black : Color.white)
-            }
 
             Path { path in
                 path.addArc(center: center, radius: hourMarkerRadius - (hourMarkerLineWidth / 2), startAngle: .degrees(0), endAngle: .degrees(360), clockwise: false)
@@ -180,6 +179,33 @@ struct ConsumptionClockView: View {
             }
             .strokedPath(.init(lineWidth: hourMarkerLineWidth, lineCap: .round))
             .foregroundColor(Color(hue: 0.3786, saturation: 0.6959, brightness: 0.8510))
+
+            ForEach(hourNamesAndPositions, id: \.0) { hour in
+                Text(hour.0)
+                    .bold()
+                    .position(x: hour.1, y: hour.2)
+
+                Path { path in
+                    path.move(to: CGPoint(x: hour.3, y: hour.4))
+                    path.addLine(to: CGPoint(x: hour.5, y: hour.6))
+                }
+                .strokedPath(.init(lineWidth: hourIndicatorLineWidth, lineCap: .round))
+                .foregroundColor(colorScheme == .light ? Color.black : Color.white)
+            }
+            
+//            Text("10.10.2020")
+//                .bold()
+//                .padding(5)
+//                .background(RoundedRectangle(cornerRadius: 25).foregroundColor(Color.white).shadow(radius: 3))
+//                .offset(x: 0, y: -38)
+
+            Text("10.10.2020")
+                .bold()
+                .font(.title2)
+                .foregroundColor(Color.black)
+                .padding(5)
+                .background(RoundedRectangle(cornerRadius: 25).foregroundColor(Color.white)                .shadow(radius: 4))
+                .offset(x: 0, y: -185)
 
             Path { path in
                 path.move(to: center)

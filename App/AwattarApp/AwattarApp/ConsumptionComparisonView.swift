@@ -196,7 +196,7 @@ struct ConsumptionComparisonView: View {
                                 Button(action: {
                                     calculateAction = 1
                                 }) {
-                                    Text("calculate")
+                                    Text("viewResults")
                                 }.buttonStyle(DoneButtonStyle())
                             }
                         } else {

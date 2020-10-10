@@ -25,7 +25,7 @@
 "taxOption2" = "Electricity prices are shown without VAT throughout the app.";
 "usage" = "Usage";
 "comparerInfoText" = "This allows you to find the hours when electricity is cheapest. For example, to charge your electric car, turn on the washing machine or run other electrical consumers.";
-"calculate" = "Calculate";
+"viewResults" = "Ergebnisse Anzeigen";
 "startOfUse" = "Start of use:";
 "endOfUse" = "End of use:";
 "lengthOfUse" = "Length of use:";

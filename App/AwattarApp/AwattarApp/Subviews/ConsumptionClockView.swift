@@ -25,24 +25,19 @@ struct ConsumptionClockView: View {
         let maxItemIndex = cheapestHour.associatedPricePoints.count - 1
         
         if cheapestHour.associatedPricePoints.count >= 2 {
-            var relativeStartTimestamp = cheapestHour.associatedPricePoints[minItemIndex].startTimestamp
-            var relativeEndTimestamp = cheapestHour.associatedPricePoints[maxItemIndex].endTimestamp
-            
+            print(cheapestHour.associatedPricePoints)
             var startMinute: Float = 0
             var endMinute: Float = 0
             
             if cheapestHour.differenceIsBefore {
-                relativeStartTimestamp += cheapestHour.minuteDifferenceInSeconds
                 startMinute = Float(cheapestHour.minuteDifferenceInSeconds) / 3600
             } else {
-                relativeEndTimestamp -= cheapestHour.minuteDifferenceInSeconds
                 endMinute = Float(cheapestHour.minuteDifferenceInSeconds) / 3600
             }
             
-            let startHour = Float(calendar.component(.hour, from: Date(timeIntervalSince1970: TimeInterval(relativeStartTimestamp))))
+            let startHour = Float(calendar.component(.hour, from: Date(timeIntervalSince1970: TimeInterval(cheapestHour.associatedPricePoints[minItemIndex].startTimestamp))))
+            let endHour = Float(calendar.component(.hour, from: Date(timeIntervalSince1970: TimeInterval(cheapestHour.associatedPricePoints[maxItemIndex].endTimestamp))))
 
-            let endHour = Float(calendar.component(.hour, from: Date(timeIntervalSince1970: TimeInterval(relativeEndTimestamp))))
-            
             let startDegree = Int(30 * (startHour + startMinute)) - 90
             let endDegree = Int(30 * (endHour + endMinute)) - 90
             
@@ -180,7 +175,7 @@ struct ConsumptionClockView: View {
             }
             
             Path { path in
-                path.addArc(center: center, radius: hourMarkerRadius, startAngle: .degrees(Double(hourDegree.0)), endAngle: .degrees(Double(hourDegree.1)), clockwise: false)
+                path.addArc(center: center, radius: hourMarkerRadius, startAngle: .degrees(Double(hourDegree.0)), endAngle: .degrees(Double(hourDegree.1 - Int(hourMarkerLineWidth / 2))), clockwise: false)
             }
             .strokedPath(.init(lineWidth: hourMarkerLineWidth, lineCap: .round))
             .foregroundColor(Color.green)
@@ -204,6 +199,6 @@ struct ConsumptionClockView: View {
 
 struct ConsumptionClockView_Previews: PreviewProvider {
     static var previews: some View {
-        ConsumptionClockView(cheapestHour: CheapestHourCalculator.HourPair(associatedPricePoints: [EnergyPricePoint(startTimestamp: 1601082000000, endTimestamp: 1601085600000, marketprice: 3), EnergyPricePoint(startTimestamp: 1601085600000, endTimestamp: 1601089200000, marketprice: 9)]))
+        ConsumptionClockView(cheapestHour: CheapestHourCalculator.HourPair(associatedPricePoints: [EnergyPricePoint(startTimestamp: 1601082000, endTimestamp: 1601085600, marketprice: 3), EnergyPricePoint(startTimestamp: 1601085600, endTimestamp: 1601089350, marketprice: 9)]))
     }
 }

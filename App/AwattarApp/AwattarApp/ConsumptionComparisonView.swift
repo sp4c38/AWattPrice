@@ -12,24 +12,17 @@ class CheapestHourCalculator: ObservableObject {
     
     @Published var startDate = Date() // start date of in which time interval to find cheapest hours
     @Published var endDate = Date() // end date of in which time interval to find cheapest hours
-    let relativeLengthOfUsage = Date(timeIntervalSince1970: 0)
-    @Published var lengthOfUsageDate = Date(timeIntervalSince1970: 0) // length of the usage / this date is relative to relativeLengthOfUsage to dermiter the time interval
+    @Published var relativeLengthOfUsage = Date(timeIntervalSince1970: 82800)
+    @Published var lengthOfUsageDate = Date(timeIntervalSince1970: 82800) // length of the usage / this date is relative to relativeLengthOfUsage to dermiter the time interval
     
     @Published var energyUsage = Double(0) // energy usage in kW
     @Published var timeOfUsage = TimeInterval() // time interval in seconds
     
     @Published var cheapestHoursForUsage: HourPair? = nil
     
-    init() {
-        let calendar = Calendar(identifier: .gregorian)
-        startDate = calendar.startOfDay(for: startDate)
-        endDate = calendar.startOfDay(for: startDate)
-    }
-    
     func setValues() {
         self.energyUsage = Double(self.energyUsageInput) ?? 0
         self.timeOfUsage = abs(relativeLengthOfUsage.timeIntervalSince(lengthOfUsageDate))
-        print(self.timeOfUsage)
     }
     
     class HourPair {
@@ -67,20 +60,21 @@ class CheapestHourCalculator: ObservableObject {
 
             var allPairs = [HourPair]()
             for hourIndex in 0..<energyData.prices.count {
-                if !(Date(timeIntervalSince1970: TimeInterval(energyData.prices[hourIndex].startTimestamp)) < now) {
-
-                    let newPairNode = HourPair(associatedPricePoints: [energyData.prices[hourIndex]])
-                    
-                    for nextHourIndex in 1..<nextRoundedUpHour {
-                        if (hourIndex + nextHourIndex) <= (energyData.prices.count - 1) {
-                            newPairNode.associatedPricePoints.append(energyData.prices[hourIndex + nextHourIndex])
-                        } else {
-                            break
+                if hourIndex + (nextRoundedUpHour - 1) <= energyData.prices.count - 1 {
+                    if !(Date(timeIntervalSince1970: TimeInterval(energyData.prices[hourIndex].startTimestamp)) < now) {
+                        let newPairNode = HourPair(associatedPricePoints: [energyData.prices[hourIndex]])
+                        
+                        for nextHourIndex in 1..<nextRoundedUpHour {
+                            if (hourIndex + nextHourIndex) <= (energyData.prices.count - 1) {
+                                newPairNode.associatedPricePoints.append(energyData.prices[hourIndex + nextHourIndex])
+                            } else {
+                                break
+                            }
                         }
-                    }
 
-                    newPairNode.calculateAveragePrice()
-                    allPairs.append(newPairNode)
+                        newPairNode.calculateAveragePrice()
+                        allPairs.append(newPairNode)
+                    }
                 }
             }
             
@@ -95,17 +89,24 @@ class CheapestHourCalculator: ObservableObject {
                 }
             }
             
-            let minuteDifferenceInSeconds = Int(((Float(nextRoundedUpHour) - timeOfUsageInHours) * 60 * 60 ).rounded())
+            let minuteDifferenceInSeconds = Int(((Float(nextRoundedUpHour) - timeOfUsageInHours) * 60 * 60).rounded())
             var differenceIsBefore = false
             
             if lowestPricePairIndex != nil {
                 let cheapestPair = allPairs[lowestPricePairIndex!]
+                let maxPricePointsIndex = cheapestPair.associatedPricePoints.count - 1
 
-                if cheapestPair.associatedPricePoints[0].marketprice > cheapestPair.associatedPricePoints[cheapestPair.associatedPricePoints.count - 1].marketprice {
+                if cheapestPair.associatedPricePoints[0].marketprice > cheapestPair.associatedPricePoints[maxPricePointsIndex].marketprice {
                     differenceIsBefore = true
                 }
-                
-                cheapestPair.minuteDifferenceInSeconds = minuteDifferenceInSeconds
+
+                if differenceIsBefore {
+                    cheapestPair.associatedPricePoints[0].startTimestamp += minuteDifferenceInSeconds
+                } else {
+                    cheapestPair.associatedPricePoints[maxPricePointsIndex].endTimestamp -= minuteDifferenceInSeconds
+                }
+
+                cheapestPair.minuteDifferenceInSeconds = minuteDifferenceInSeconds // Add as extra information to display Clock View correctly later
                 cheapestPair.differenceIsBefore = differenceIsBefore
             }
             
@@ -156,28 +157,6 @@ struct ConsumptionComparisonView: View {
                     VStack(alignment: .center, spacing: 0) {
                         if currentSetting.setting != nil && awattarData.energyData != nil {
                             VStack(alignment: .leading, spacing: 15) {
-    //                            VStack(alignment: .leading, spacing: 5) {
-    //                                Text("givenBasicFee")
-    //                                    .bold()
-    //
-    //                                HStack(spacing: 5) {
-    //                                    Text(String(currentSetting.setting!.awattarProfileBasicCharge))
-    //                                    Text("euroPerMonth")
-    //                                }
-    //                                .font(.callout)
-    //                            }
-    //
-    //                            VStack(alignment: .leading, spacing: 5) {
-    //                                Text("givenElecPrice")
-    //                                    .bold()
-    //
-    //                                HStack(spacing: 5) {
-    //                                    Text(String(currentSetting.setting!.awattarEnergyPrice))
-    //                                    Text("centPerKwh")
-    //                                }
-    //                                .font(.callout)
-    //                            }
-                                
                                 Divider()
                                 
                                 VStack(alignment: .leading, spacing: 5) {

@@ -12,8 +12,6 @@ struct ConsumptionResultView: View {
     
     var cheapestHourCalculator: CheapestHourCalculator
     var dateFormatter = DateFormatter()
-    @State var startOfCheapestHours: TimeInterval = 0
-    @State var endOfCheapestHours: TimeInterval = 0
     
     init(cheapestHourCalculator: CheapestHourCalculator) {
         self.cheapestHourCalculator = cheapestHourCalculator
@@ -29,19 +27,15 @@ struct ConsumptionResultView: View {
                 Spacer()
                 
                 VStack(spacing: 5) {
-                    Text(dateFormatter.string(from: Date(timeIntervalSince1970: startOfCheapestHours)))
+                    Text(dateFormatter.string(from: Date(timeIntervalSince1970:
+                                                            TimeInterval(cheapestHourCalculator.cheapestHoursForUsage!.associatedPricePoints[0].startTimestamp))))
                         .bold()
-                        .onAppear {
-                            startOfCheapestHours =  TimeInterval((cheapestHourCalculator.cheapestHoursForUsage!.associatedPricePoints[0].startTimestamp) + (cheapestHourCalculator.cheapestHoursForUsage!.differenceIsBefore ? cheapestHourCalculator.cheapestHoursForUsage!.minuteDifferenceInSeconds : 0))
-                        }
                     
                     Text("until")
                     
-                    Text(dateFormatter.string(from: Date(timeIntervalSince1970: endOfCheapestHours)))
+                    Text(dateFormatter.string(from: Date(timeIntervalSince1970:
+                                                            TimeInterval(cheapestHourCalculator.cheapestHoursForUsage!.associatedPricePoints[cheapestHourCalculator.cheapestHoursForUsage!.associatedPricePoints.count - 1].endTimestamp))))
                         .bold()
-                        .onAppear {
-                            endOfCheapestHours =  TimeInterval((cheapestHourCalculator.cheapestHoursForUsage!.associatedPricePoints[cheapestHourCalculator.cheapestHoursForUsage!.associatedPricePoints.count - 1].endTimestamp) + (cheapestHourCalculator.cheapestHoursForUsage!.differenceIsBefore ? cheapestHourCalculator.cheapestHoursForUsage!.minuteDifferenceInSeconds : 0))
-                        }
                 }
                 .font(.title2)
                 

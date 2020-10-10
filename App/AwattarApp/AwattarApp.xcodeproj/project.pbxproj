@@ -118,7 +118,6 @@
 				61C23FC9250923D600538585 /* HourPriceInfoView.swift */,
 				61D6F8782517834400027FD1 /* TimeIntervalPicker.swift */,
 				61C963A6251E2032001B3E3C /* ConsumptionClockView.swift */,
-				618A6F6D2518F8C800A8778B /* ConsumptionResultView.swift */,
 			);
 			path = Subviews;
 			sourceTree = "<group>";
@@ -152,6 +151,7 @@
 				61504CFC250FF46D00EF41D6 /* Subviews */,
 				61D196E32507F57800E57BAC /* Graphs */,
 				614E784B25068E0600A7ED83 /* Data */,
+				618A6F6D2518F8C800A8778B /* ConsumptionResultView.swift */,
 				6156A578250C2161005174A5 /* SettingsPageView.swift */,
 				617D85B325052C35009E18FB /* HomeView.swift */,
 				611D15AE251680B9000691C6 /* ConsumptionComparisonView.swift */,

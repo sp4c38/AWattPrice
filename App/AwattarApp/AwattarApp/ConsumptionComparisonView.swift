@@ -28,8 +28,6 @@ class CheapestHourCalculator: ObservableObject {
     class HourPair {
         // A pair of multiple price points
         
-        var minuteDifferenceInSeconds: Int = 0
-        var differenceIsBefore: Bool = true
         var averagePrice: Float = 0
         var associatedPricePoints: [EnergyPricePoint]
         
@@ -105,9 +103,6 @@ class CheapestHourCalculator: ObservableObject {
                 } else {
                     cheapestPair.associatedPricePoints[maxPricePointsIndex].endTimestamp -= minuteDifferenceInSeconds
                 }
-
-                cheapestPair.minuteDifferenceInSeconds = minuteDifferenceInSeconds // Add as extra information to display Clock View correctly later
-                cheapestPair.differenceIsBefore = differenceIsBefore
             }
             
             DispatchQueue.main.async {

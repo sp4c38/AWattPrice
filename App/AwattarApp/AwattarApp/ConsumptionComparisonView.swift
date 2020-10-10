@@ -10,8 +10,10 @@ import SwiftUI
 class CheapestHourCalculator: ObservableObject {
     @Published var energyUsageInput = "20"
     
-    @Published var startDate = Date(timeIntervalSince1970: 0)
-    @Published var endDate = Date(timeIntervalSince1970: 5400)
+    @Published var startDate = Date() // start date of in which time interval to find cheapest hours
+    @Published var endDate = Date() // end date of in which time interval to find cheapest hours
+    let relativeLengthOfUsage = Date(timeIntervalSince1970: 0)
+    @Published var lengthOfUsageDate = Date(timeIntervalSince1970: 0) // length of the usage / this date is relative to relativeLengthOfUsage to dermiter the time interval
     
     @Published var energyUsage = Double(0) // energy usage in kW
     @Published var timeOfUsage = TimeInterval() // time interval in seconds
@@ -26,7 +28,8 @@ class CheapestHourCalculator: ObservableObject {
     
     func setValues() {
         self.energyUsage = Double(self.energyUsageInput) ?? 0
-        self.timeOfUsage = abs(startDate.timeIntervalSince(endDate))
+        self.timeOfUsage = abs(relativeLengthOfUsage.timeIntervalSince(lengthOfUsageDate))
+        print(self.timeOfUsage)
     }
     
     class HourPair {
@@ -135,73 +138,100 @@ struct ConsumptionComparisonView: View {
     
     @State var calculateAction: Int? = 0 // Takes care of navigating to the result view
     
+    
+    var dateClosedRange: ClosedRange<Date> {
+        let maxHourIndex = awattarData.energyData!.prices.count - 1
+        
+        // Add one or subtract one to not overlap to the next or previouse day
+        let min = Date(timeIntervalSince1970: TimeInterval(awattarData.energyData!.prices[0].startTimestamp + 1))
+        let max = Date(timeIntervalSince1970: TimeInterval(awattarData.energyData!.prices[maxHourIndex].endTimestamp - 1))
+        
+        return min...max
+    }
+    
     var body: some View {
         NavigationView {
             ZStack(alignment: Alignment(horizontal: .center, vertical: .top)) {
-                VStack(alignment: .center, spacing: 0) {
-                    if currentSetting.setting != nil && awattarData.energyData != nil {
-                        VStack(alignment: .leading, spacing: 15) {
-                            VStack(alignment: .leading, spacing: 5) {
-                                Text("givenBasicFee")
-                                    .bold()
+                ScrollView {
+                    VStack(alignment: .center, spacing: 0) {
+                        if currentSetting.setting != nil && awattarData.energyData != nil {
+                            VStack(alignment: .leading, spacing: 15) {
+    //                            VStack(alignment: .leading, spacing: 5) {
+    //                                Text("givenBasicFee")
+    //                                    .bold()
+    //
+    //                                HStack(spacing: 5) {
+    //                                    Text(String(currentSetting.setting!.awattarProfileBasicCharge))
+    //                                    Text("euroPerMonth")
+    //                                }
+    //                                .font(.callout)
+    //                            }
+    //
+    //                            VStack(alignment: .leading, spacing: 5) {
+    //                                Text("givenElecPrice")
+    //                                    .bold()
+    //
+    //                                HStack(spacing: 5) {
+    //                                    Text(String(currentSetting.setting!.awattarEnergyPrice))
+    //                                    Text("centPerKwh")
+    //                                }
+    //                                .font(.callout)
+    //                            }
                                 
-                                HStack(spacing: 5) {
-                                    Text(String(currentSetting.setting!.awattarProfileBasicCharge))
-                                    Text("euroPerMonth")
-                                }
-                                .font(.callout)
-                            }
-                            
-                            VStack(alignment: .leading, spacing: 5) {
-                                Text("givenElecPrice")
-                                    .bold()
+                                Divider()
                                 
-                                HStack(spacing: 5) {
-                                    Text(String(currentSetting.setting!.awattarEnergyPrice))
-                                    Text("centPerKwh")
-                                }
-                                .font(.callout)
-                            }
-                            
-                            Divider()
-                            
-                            VStack(alignment: .leading, spacing: 5) {
-                                Text("elecUsage")
-                                    .bold()
-                                
-                                HStack(spacing: 7) {
-                                    TextField("elecUsage", text: $cheapestHourCalculator.energyUsageInput)
-                                        .keyboardType(.decimalPad)
-                                        .multilineTextAlignment(.leading)
-                                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                                VStack(alignment: .leading, spacing: 5) {
+                                    Text("elecUsage")
+                                        .bold()
                                     
-                                    Text("kWh")
+                                    HStack(spacing: 7) {
+                                        TextField("elecUsage", text: $cheapestHourCalculator.energyUsageInput)
+                                            .keyboardType(.decimalPad)
+                                            .multilineTextAlignment(.leading)
+                                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                                        
+                                        Text("kWh")
+                                    }
                                 }
-                            }
-                            
-                            VStack(alignment: .leading, spacing: 5) {
-                                Text("lengthOfUse")
-                                    .bold()
+//
+                                VStack {
+                                    DatePicker(
+                                        selection: $cheapestHourCalculator.startDate,
+                                        in: dateClosedRange,
+                                        displayedComponents: [.date, .hourAndMinute],
+                                        label: { Text("startOfUse").bold() })
+                                    
+                                    DatePicker(
+                                        selection: $cheapestHourCalculator.endDate,
+                                        in: dateClosedRange,
+                                        displayedComponents: [.date, .hourAndMinute],
+                                        label: { Text("endOfUse").bold() })
+                                }
                                 
-                                TimeIntervalPicker(selectedInterval: $cheapestHourCalculator.endDate)
-                                    .frame(maxWidth: .infinity)
+                                VStack(alignment: .leading, spacing: 5) {
+                                    Text("lengthOfUse")
+                                        .bold()
+
+                                    TimeIntervalPicker(selectedInterval: $cheapestHourCalculator.lengthOfUsageDate)
+                                        .frame(maxWidth: .infinity)
+                                }
+                                
+                                NavigationLink(destination: ConsumptionResultView(cheapestHourCalculator: cheapestHourCalculator), tag: 1, selection: $calculateAction) {
+                                }
+                                
+                                Button(action: {
+                                    calculateAction = 1
+                                }) {
+                                    Text("calculate")
+                                }.buttonStyle(DoneButtonStyle())
                             }
-                            
-                            NavigationLink(destination: ConsumptionResultView(cheapestHourCalculator: cheapestHourCalculator), tag: 1, selection: $calculateAction) {
-                            }
-                            
-                            Button(action: {
-                                calculateAction = 1
-                            }) {
-                                Text("calculate")
-                            }.buttonStyle(DoneButtonStyle())
+                        } else {
+                            Text("Fehler mit Einstellungen")
                         }
-                    } else {
-                        Text("Fehler mit Einstellungen")
                     }
+                    .padding()
+                    .opacity(showInfo ? 0.5 : 1)
                 }
-                .padding()
-                .opacity(showInfo ? 0.5 : 1)
                 
                 if showInfo {
                     Text("comparerInfoText")

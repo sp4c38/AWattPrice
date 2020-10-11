@@ -18,16 +18,16 @@ struct ConsumptionClockView: View {
 
     var hourDegree = (0, 0)
 
-    init(_ cheapestHour: CheapestHourCalculator.HourPair) {
+    init(_ pricePoints: [EnergyPricePoint]) {
         // 15 degrees is the angle for one single hour
         let minItemIndex = 0
-        let maxItemIndex = cheapestHour.associatedPricePoints.count - 1
+        let maxItemIndex = pricePoints.count - 1
 
-        if cheapestHour.associatedPricePoints.count >= 2 {
-            let startHour = Float(calendar.component(.hour, from: Date(timeIntervalSince1970: TimeInterval(cheapestHour.associatedPricePoints[minItemIndex].startTimestamp))))
-            let startMinute = Float(calendar.component(.minute, from: Date(timeIntervalSince1970: TimeInterval(cheapestHour.associatedPricePoints[minItemIndex].startTimestamp)))) / 60
-            let endHour = Float(calendar.component(.hour, from: Date(timeIntervalSince1970: TimeInterval(cheapestHour.associatedPricePoints[maxItemIndex].endTimestamp))))
-            let endMinute = Float(calendar.component(.minute, from: Date(timeIntervalSince1970: TimeInterval(cheapestHour.associatedPricePoints[maxItemIndex].endTimestamp)))) / 60
+        if pricePoints.count >= 2 {
+            let startHour = Float(calendar.component(.hour, from: Date(timeIntervalSince1970: TimeInterval(pricePoints[minItemIndex].startTimestamp))))
+            let startMinute = Float(calendar.component(.minute, from: Date(timeIntervalSince1970: TimeInterval(pricePoints[minItemIndex].startTimestamp)))) / 60
+            let endHour = Float(calendar.component(.hour, from: Date(timeIntervalSince1970: TimeInterval(pricePoints[maxItemIndex].endTimestamp))))
+            let endMinute = Float(calendar.component(.minute, from: Date(timeIntervalSince1970: TimeInterval(pricePoints[maxItemIndex].endTimestamp)))) / 60
 
             let startDegree = Int(30 * (startHour + startMinute)) - 90
             let endDegree = Int(30 * (endHour + endMinute)) - 90
@@ -153,14 +153,7 @@ struct ConsumptionClockView: View {
 //                path.addArc(center: center, radius: clockWidth / 2, startAngle: .degrees(360), endAngle: .degrees(0), clockwise: true)
 //            }
 //            .foregroundColor(colorScheme == .light ? Color.black : Color.white)
-            
-            Path { path in
-                path.addLine(to: CGPoint(x: 20, y: 20))
-                path.addLine(to: CGPoint(x: 60, y: 30))
-            }
-            .strokedPath(StrokeStyle(lineWidth: 10, lineCap: .square))
-            .foregroundColor(Color.black)
-            
+
             Path { path in
                 path.addArc(center: center, radius: middlePointRadius, startAngle: .degrees(0), endAngle: .degrees(360), clockwise: true)
             }
@@ -175,7 +168,7 @@ struct ConsumptionClockView: View {
             .opacity(0.1)
 
             Path { path in
-                path.addArc(center: center, radius: hourMarkerRadius, startAngle: .degrees(Double(hourDegree.0 + Int(hourMarkerLineWidth / 2))), endAngle: .degrees(Double(hourDegree.1 - Int(hourMarkerLineWidth / 2))), clockwise: false)
+                path.addArc(center: center, radius: hourMarkerRadius, startAngle: .degrees(Double(hourDegree.0 + Int(hourMarkerLineWidth / 4))), endAngle: .degrees(Double(hourDegree.1 - Int(hourMarkerLineWidth / 4))), clockwise: false)
             }
             .strokedPath(.init(lineWidth: hourMarkerLineWidth, lineCap: .round))
             .foregroundColor(Color(hue: 0.3786, saturation: 0.6959, brightness: 0.8510))
@@ -192,20 +185,12 @@ struct ConsumptionClockView: View {
                 .strokedPath(.init(lineWidth: hourIndicatorLineWidth, lineCap: .round))
                 .foregroundColor(colorScheme == .light ? Color.black : Color.white)
             }
-            
-//            Text("10.10.2020")
-//                .bold()
-//                .padding(5)
-//                .background(RoundedRectangle(cornerRadius: 25).foregroundColor(Color.white).shadow(radius: 3))
-//                .offset(x: 0, y: -38)
 
-            Text("10.10.2020")
+            Text("Sat 10")
                 .bold()
-                .font(.title2)
-                .foregroundColor(Color.black)
                 .padding(5)
-                .background(RoundedRectangle(cornerRadius: 25).foregroundColor(Color.white)                .shadow(radius: 4))
-                .offset(x: 0, y: -185)
+                .background(RoundedRectangle(cornerRadius: 25).foregroundColor(Color.white))
+                .offset(x: 0, y: -38)
 
             Path { path in
                 path.move(to: center)
@@ -226,6 +211,7 @@ struct ConsumptionClockView: View {
 
 struct ConsumptionClockView_Previews: PreviewProvider {
     static var previews: some View {
-        ConsumptionClockView(CheapestHourCalculator.HourPair(associatedPricePoints: [EnergyPricePoint(startTimestamp: 1602331200, endTimestamp: 1602334800, marketprice: 3), EnergyPricePoint(startTimestamp: 1602334800, endTimestamp: 1602340200, marketprice: 9)]))
+        ConsumptionClockView([EnergyPricePoint(startTimestamp: 1602363600, endTimestamp: 1602367200, marketprice: 3), EnergyPricePoint(startTimestamp: 1602367200, endTimestamp: 1602370800, marketprice: 9)])
+            .preferredColorScheme(.light)
     }
 }

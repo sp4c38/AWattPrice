@@ -29,7 +29,8 @@ class CheapestHourCalculator: ObservableObject {
         // A pair of multiple price points
         
         var averagePrice: Float = 0
-        var associatedPricePoints: [EnergyPricePoint]
+        var associatedPricePoints: [EnergyPricePoint] // Price points associated with this hour pair
+        var associatedPricePointsSorted = [[EnergyPricePoint]]()
         
         init(associatedPricePoints: [EnergyPricePoint]) {
             self.associatedPricePoints = associatedPricePoints
@@ -41,6 +42,29 @@ class CheapestHourCalculator: ObservableObject {
                 pricesTogether += pricePoint.marketprice
             }
             self.averagePrice = pricesTogether / Float(associatedPricePoints.count)
+        }
+        
+        func sortAssociatedPricePoints() {
+            var indexCounter = -1
+            var currentNextMidnight: Date? = nil
+            
+            for pricePoint in self.associatedPricePoints {
+                let pricePointStartDate = Date(timeIntervalSince1970: TimeInterval(pricePoint.startTimestamp))
+                
+                if currentNextMidnight == nil || pricePointStartDate >= currentNextMidnight! {
+                    currentNextMidnight = Calendar.current.startOfDay(for: pricePointStartDate.addingTimeInterval(86400))
+                    indexCounter += 1
+                }
+                
+                if pricePointStartDate < currentNextMidnight! {
+                    print("yes smaller")
+                    if indexCounter > (self.associatedPricePointsSorted.count - 1) {
+                        associatedPricePointsSorted.append([pricePoint])
+                    } else {
+                        self.associatedPricePointsSorted[indexCounter].append(pricePoint)
+                    }
+                }
+            }
         }
     }
     
@@ -59,7 +83,11 @@ class CheapestHourCalculator: ObservableObject {
             var allPairs = [HourPair]()
             for hourIndex in 0..<energyData.prices.count {
                 if hourIndex + (nextRoundedUpHour - 1) <= energyData.prices.count - 1 {
-                    if !(Date(timeIntervalSince1970: TimeInterval(energyData.prices[hourIndex].startTimestamp)) < now) {
+                    let hourStartDate = Date(timeIntervalSince1970: TimeInterval(energyData.prices[hourIndex].startTimestamp))
+                    
+                    let maxHourThisPairEndDate = Date(timeIntervalSince1970: TimeInterval(energyData.prices[hourIndex + (nextRoundedUpHour - 1)].endTimestamp))
+                    
+                    if hourStartDate >= now && hourStartDate >= self.startDate && maxHourThisPairEndDate <= self.endDate {
                         let newPairNode = HourPair(associatedPricePoints: [energyData.prices[hourIndex]])
                         
                         for nextHourIndex in 1..<nextRoundedUpHour {
@@ -71,10 +99,12 @@ class CheapestHourCalculator: ObservableObject {
                         }
 
                         newPairNode.calculateAveragePrice()
+                        newPairNode.sortAssociatedPricePoints()
                         allPairs.append(newPairNode)
                     }
                 }
             }
+            
             
             var lowestPricePairIndex: Int? = nil
             for pairIndex in 0..<allPairs.count {

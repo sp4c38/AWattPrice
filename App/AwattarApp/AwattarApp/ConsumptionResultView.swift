@@ -41,9 +41,9 @@ struct ConsumptionResultView: View {
                 
                 Spacer()
                 
-                HStack {
+                HStack(spacing: 10) {
                     ForEach(cheapestHourCalculator.cheapestHoursForUsage!.associatedPricePointsSorted, id: \.self) { pricePointsForDay in
-                        ConsumptionClockView(pricePointsForDay)
+                    ConsumptionClockView(pricePointsForDay)
                     }
                 }
                 

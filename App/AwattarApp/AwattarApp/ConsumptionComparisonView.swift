@@ -57,7 +57,6 @@ class CheapestHourCalculator: ObservableObject {
                 }
                 
                 if pricePointStartDate < currentNextMidnight! {
-                    print("yes smaller")
                     if indexCounter > (self.associatedPricePointsSorted.count - 1) {
                         associatedPricePointsSorted.append([pricePoint])
                     } else {

@@ -43,9 +43,7 @@ struct ConsumptionClockView: View {
             self.makeView(geometry)
         }
         .onReceive(timer) { input in
-            withAnimation {
-                now = Date()
-            }
+            now = Date()
         }
     }
 
@@ -57,7 +55,7 @@ struct ConsumptionClockView: View {
         let hourIndicatorLineWidth = CGFloat(2)
         let middlePointRadius = CGFloat(5)
 
-        let clockWidth = 3 * (width / 5)
+        let clockWidth = 4 * (width / 5)
         let hourBorderIndicatorWidth = CGFloat(4)
         let hourMarkerRadius = CGFloat(0.85 * ((clockWidth / 2) - circleLineWidth))
         let minuteIndicatorWidth = CGFloat((clockWidth / 2) - hourBorderIndicatorWidth - 10)
@@ -143,10 +141,10 @@ struct ConsumptionClockView: View {
         }
         
         return ZStack {
-            Circle()
-                .foregroundColor(Color.white)
-                .frame(width: clockWidth + circleLineWidth + 2 * textPaddingToClock + 45)
-                .shadow(radius: 20)
+//            Circle()
+//                .foregroundColor(Color.white)
+//                .frame(width: clockWidth)
+//                .shadow(radius: 20)
 
 //            Path { path in
 //                path.addArc(center: center, radius: (clockWidth / 2) - circleLineWidth, startAngle: .degrees(0), endAngle: .degrees(360), clockwise: false)
@@ -185,12 +183,12 @@ struct ConsumptionClockView: View {
                 .strokedPath(.init(lineWidth: hourIndicatorLineWidth, lineCap: .round))
                 .foregroundColor(colorScheme == .light ? Color.black : Color.white)
             }
-
-            Text("Sat 10")
-                .bold()
-                .padding(5)
-                .background(RoundedRectangle(cornerRadius: 25).foregroundColor(Color.white))
-                .offset(x: 0, y: -38)
+//
+//            Text("Sat 10")
+//                .bold()
+//                .padding(5)
+//                .background(RoundedRectangle(cornerRadius: 25).foregroundColor(Color.white))
+//                .offset(x: 0, y: -38)
 
             Path { path in
                 path.move(to: center)

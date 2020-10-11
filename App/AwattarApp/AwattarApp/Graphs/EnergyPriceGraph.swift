@@ -210,7 +210,7 @@ struct EnergyPriceSingleBar: View {
                         .fontWeight((isSelected == 1) ? .bold : ((isSelected == 2 ) ? .medium : .regular))
                 }
             }
-            .foregroundColor(colorScheme == .light ? Color.black : Color.white)
+            .foregroundColor(Color.black)
             .padding(1)
             .background(Color.white)
             .cornerRadius((isSelected == 1 || isSelected == 2) ? 3 : 1)

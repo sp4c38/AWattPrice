@@ -11,7 +11,7 @@ class CheapestHourCalculator: ObservableObject {
     @Published var energyUsageInput = "20"
     
     @Published var startDate = Date() // start date of in which time interval to find cheapest hours
-    @Published var endDate = Date() // end date of in which time interval to find cheapest hours
+    @Published var endDate = Date().addingTimeInterval(3600) // end date of in which time interval to find cheapest hours
     @Published var relativeLengthOfUsage = Date(timeIntervalSince1970: 82800)
     @Published var lengthOfUsageDate = Date(timeIntervalSince1970: 82800) // length of the usage / this date is relative to relativeLengthOfUsage to dermiter the time interval
     
@@ -19,6 +19,19 @@ class CheapestHourCalculator: ObservableObject {
     @Published var timeOfUsage = TimeInterval() // time interval in seconds
     
     @Published var cheapestHoursForUsage: HourPair? = nil
+    
+    func checkIntervalFitsInRegion() {
+        let startEndDateInterval = abs(startDate.timeIntervalSince(endDate))
+        let timeOfUsageInterval = abs(relativeLengthOfUsage.timeIntervalSince(lengthOfUsageDate))
+        
+        if startEndDateInterval < timeOfUsageInterval {
+            endDate.addTimeInterval(timeOfUsageInterval - startEndDateInterval)
+        }
+    }
+    
+    func getIntervalSelected() {
+        relativeLengthOfUsage.timeIntervalSince1970
+    }
     
     func setValues() {
         self.energyUsage = Double(self.energyUsageInput) ?? 0
@@ -215,7 +228,7 @@ struct ConsumptionComparisonView: View {
                                     Text("lengthOfUse")
                                         .bold()
 
-                                    TimeIntervalPicker(selectedInterval: $cheapestHourCalculator.lengthOfUsageDate)
+                                    TimeIntervalPicker(cheapestHourCalculator: cheapestHourCalculator)
                                         .frame(maxWidth: .infinity)
                                 }
                                 

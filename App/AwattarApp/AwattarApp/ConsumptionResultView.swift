@@ -42,9 +42,8 @@ struct ConsumptionResultView: View {
                 Spacer()
                 
                 HStack(spacing: 10) {
-                    ForEach(cheapestHourCalculator.cheapestHoursForUsage!.associatedPricePointsSorted, id: \.self) { pricePointsForDay in
-                    ConsumptionClockView(pricePointsForDay)
-                    }
+                    ConsumptionClockView(cheapestHourCalculator.cheapestHoursForUsage!)
+                        .padding(20)
                 }
                 
                 Spacer()
@@ -54,7 +53,6 @@ struct ConsumptionResultView: View {
             }
         }
         .padding(16)
-        .animation(.easeInOut)
         .onAppear {
             cheapestHourCalculator.setValues()
             cheapestHourCalculator.calculateBestHours(energyData: awattarData.energyData!)

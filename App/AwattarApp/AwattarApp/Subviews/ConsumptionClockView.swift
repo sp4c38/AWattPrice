@@ -13,10 +13,10 @@ struct ConsumptionClockView: View {
     @State var currentLevel = 0
     @State var now = Date()
 
-//    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     let calendar = Calendar.current
     var timeIsAM: Bool = true // Default value will be changed if needed
-    var startDateString: (String, String) = ("", "")
+    var startDateString: (String, String?) = ("", nil)
     var endDateString: (String, String)? = nil
 
     var hourDegree = (0, 0)
@@ -55,7 +55,11 @@ struct ConsumptionClockView: View {
             if calendar.startOfDay(for: startTimeFirstItem) == calendar.startOfDay(for: endTimeLastItem) {
                 startDateString = (dayFormatter.string(from: startTimeFirstItem), monthFormatter.string(from: startTimeFirstItem))
             } else {
-                startDateString = (dayFormatter.string(from: startTimeFirstItem), monthFormatter.string(from: startTimeFirstItem))
+                if monthFormatter.string(from: startTimeFirstItem) == monthFormatter.string(from: endTimeLastItem) {
+                    startDateString = (dayFormatter.string(from: startTimeFirstItem), nil)
+                } else {
+                    startDateString = (dayFormatter.string(from: startTimeFirstItem), monthFormatter.string(from: startTimeFirstItem))
+                }
                 endDateString = (dayFormatter.string(from: endTimeLastItem), monthFormatter.string(from: endTimeLastItem))
             }
         }
@@ -65,9 +69,9 @@ struct ConsumptionClockView: View {
         GeometryReader { geometry in
             self.makeView(geometry)
         }
-//        .onReceive(timer) { input in
-//            now = Date()
-//        }
+        .onReceive(timer) { input in
+            now = Date()
+        }
     }
 
     func makeView(_ geometry: GeometryProxy) -> some View {
@@ -78,7 +82,7 @@ struct ConsumptionClockView: View {
         let hourIndicatorLineWidth = CGFloat(2)
         let middlePointRadius = CGFloat(5)
 
-        let clockWidth = 3 * (width / 4)
+        let clockWidth = 7 * (width / 10)
         let hourBorderIndicatorWidth = CGFloat(4)
         let hourMarkerRadius = CGFloat(0.85 * ((clockWidth / 2) - circleLineWidth))
         let minuteIndicatorWidth = CGFloat((clockWidth / 2) - hourBorderIndicatorWidth - 10)
@@ -90,7 +94,6 @@ struct ConsumptionClockView: View {
         let clockStartHeight = (height / 2) - (width / 2) + clockRightSideStartWidth
 
         let textPaddingToClock = CGFloat(23)
-        let threeTextPaddingToClockAddition = CGFloat(0)
 
         let center = CGPoint(x: width / 2, y: height / 2)
 
@@ -109,8 +112,6 @@ struct ConsumptionClockView: View {
 
         var hourNamesAndPositions = [(String, CGFloat, CGFloat, CGFloat, CGFloat, CGFloat, CGFloat)]()
         var currentDegree: Double = -60
-        
-        print(clockStartHeight)
         
         for hourName in 1...12 {
             // Calculate the x coord and y coord for the text with the currentDegree and the radius of the circle
@@ -134,13 +135,11 @@ struct ConsumptionClockView: View {
             currentDegree += 30
         }
         
-        print(hourNamesAndPositions)
-        
         return ZStack {
             Circle()
                 .foregroundColor(colorScheme == .light ? Color.white : Color.black)
                 .frame(width: width)
-                .shadow(color: colorScheme == .light ? Color.black : Color(hue: 0.0000, saturation: 0.0000, brightness: 0.3020), radius: 20)
+                .shadow(color: Color.gray, radius: 20)
 
 //            Path { path in
 //                path.addArc(center: center, radius: (clockWidth / 2) - circleLineWidth, startAngle: .degrees(0), endAngle: .degrees(360), clockwise: false)
@@ -186,8 +185,10 @@ struct ConsumptionClockView: View {
                         .bold()
                         .foregroundColor(Color.red)
 
-                    Text(startDateString.1)
-                        .foregroundColor(colorScheme == .light ? Color.black : Color.white)
+                    if startDateString.1 != nil {
+                        Text(startDateString.1!)
+                            .foregroundColor(colorScheme == .light ? Color.black : Color.white)
+                    }
                 }
 
                 if endDateString != nil {

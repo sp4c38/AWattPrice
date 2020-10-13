@@ -71,9 +71,6 @@ struct VerticalDividerLineShape: Shape {
     
     func path(in rect: CGRect) -> Path {
         var path = Path()
-        if startHeight < 24 {
-            print(height)
-        }
         path.move(to: CGPoint(x: startWidth, y: startHeight))
         path.addLine(to: CGPoint(x: startWidth, y: height + startHeight))
         
@@ -123,11 +120,10 @@ struct EnergyPriceSingleBar: View {
          ownIndex: Int,
          hourDataPoint: EnergyPricePoint) {
         
-        
         self.singleBarSettings = singleBarSettings
         self.width = width
-        self.startHeight = 0
-        
+        self.startHeight = startHeight
+
         if indexSelected != nil {
             if indexSelected == ownIndex {
                 self.isSelected = 1
@@ -136,7 +132,7 @@ struct EnergyPriceSingleBar: View {
             } else {
                 self.isSelected = 0
             }
-            
+
             if ownIndex > indexSelected! {
                 if !(self.isSelected == 2) {
                     self.startHeight += 30
@@ -153,7 +149,7 @@ struct EnergyPriceSingleBar: View {
         } else {
             self.isSelected = 0
         }
-        
+
         if isSelected == 1 {
             self.height = height + 20
             self.startHeight += startHeight - 10 // Must be half of which was added to height
@@ -193,7 +189,7 @@ struct EnergyPriceSingleBar: View {
                 BarShape(isSelected: (isSelected == 1 ? true : false), startWidth: maximalNegativePriceBarWidth, startHeight: startHeight, widthOfBar: maximalNegativePriceBarWidth - negativePriceBarWidth, heightOfBar: height, lookToSide: .left)
                     .fill(LinearGradient(gradient: Gradient(colors: [Color.green, Color.gray]), startPoint: .leading, endPoint: .trailing))
             }
-//
+
             if maximalNegativePriceBarWidth != 0 {
                 VerticalDividerLineShape(width: currentDividerLineWidth, height: height, startWidth: maximalNegativePriceBarWidth, startHeight: startHeight)
                     .foregroundColor(colorScheme == .light ? Color.black : Color.white)
@@ -227,7 +223,7 @@ struct EnergyPriceSingleBar: View {
             .padding(1)
             .background(LinearGradient(gradient: Gradient(colors: [Color.white, Color(hue: 0.6111, saturation: 0.0276, brightness: 0.8510)]), startPoint: .topLeading, endPoint: .bottomTrailing))
             .cornerRadius(4)
-            .shadow(radius: 1)
+            .shadow(radius: 2)
             .position(x: ((isSelected == 1 || isSelected == 2) ? width - 20 - 16 : width - 10 - 16), y: startHeight + (height / 2))
         }
     }
@@ -269,12 +265,25 @@ struct EnergyPriceGraph: View {
     var body: some View {
         GeometryReader { geometry in
             makeView(geometry)
+                .onAppear {
+                    singleHeight = geometry.size.height / CGFloat(awattarData.energyData!.prices.count)
+
+                    graphHourPointData = []
+                    
+                    var currentHeight: CGFloat = 0
+                    for hourPointEntry in awattarData.energyData!.prices {
+                        graphHourPointData.append((hourPointEntry, currentHeight))
+                        currentHeight += singleHeight
+                    }
+
+                    singleBarSettings.minPrice = awattarData.energyData!.minPrice
+                    singleBarSettings.maxPrice = awattarData.energyData!.maxPrice
+                }
         }
     }
     
     func makeView(_ geometry: GeometryProxy) -> some View {
         let width = geometry.size.width
-        let height = geometry.size.height
 
         let graphDragGesture = DragGesture(minimumDistance: 0)
             .onChanged { location in
@@ -301,20 +310,15 @@ struct EnergyPriceGraph: View {
                     ownIndex: hourPointIndex,
                     hourDataPoint: graphHourPointData[hourPointIndex].0)
             }
+            
+//            Path { path in
+//                path.move(to: CGPoint(x: 10, y: 18.20949285))
+//                path.addLine(to: CGPoint(x: 10, y: 18.20949285))
+//            }
+//            .strokedPath(StrokeStyle(lineWidth: 5, lineCap: .round))
+//            .foregroundColor(Color.red)
         }
         .gesture(graphDragGesture)
-        .onAppear {
-            singleHeight = height / CGFloat(awattarData.energyData!.prices.count)
-            var currentHeight: CGFloat = 0
-
-            for hourPointEntry in awattarData.energyData!.prices {
-                graphHourPointData.append((hourPointEntry, currentHeight))
-                currentHeight += singleHeight
-            }
-
-            singleBarSettings.minPrice = awattarData.energyData!.minPrice
-            singleBarSettings.maxPrice = awattarData.energyData!.maxPrice
-        }
     }
 }
 

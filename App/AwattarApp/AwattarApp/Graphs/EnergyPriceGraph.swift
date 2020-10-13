@@ -122,8 +122,8 @@ struct EnergyPriceSingleBar: View {
         
         self.singleBarSettings = singleBarSettings
         self.width = width
-        self.startHeight = startHeight
-
+        
+        self.startHeight = 0
         if indexSelected != nil {
             if indexSelected == ownIndex {
                 self.isSelected = 1
@@ -160,7 +160,7 @@ struct EnergyPriceSingleBar: View {
             self.height = height
             self.startHeight += startHeight
         }
-
+        
         self.hourDataPoint = hourDataPoint
     }
 
@@ -310,13 +310,6 @@ struct EnergyPriceGraph: View {
                     ownIndex: hourPointIndex,
                     hourDataPoint: graphHourPointData[hourPointIndex].0)
             }
-            
-//            Path { path in
-//                path.move(to: CGPoint(x: 10, y: 18.20949285))
-//                path.addLine(to: CGPoint(x: 10, y: 18.20949285))
-//            }
-//            .strokedPath(StrokeStyle(lineWidth: 5, lineCap: .round))
-//            .foregroundColor(Color.red)
         }
         .gesture(graphDragGesture)
     }

@@ -139,7 +139,7 @@ struct ConsumptionClockView: View {
             Circle()
                 .foregroundColor(colorScheme == .light ? Color.white : Color.black)
                 .frame(width: width)
-                .shadow(color: Color.gray, radius: 20)
+                .shadow(color: Color.gray, radius: 10)
 
 //            Path { path in
 //                path.addArc(center: center, radius: (clockWidth / 2) - circleLineWidth, startAngle: .degrees(0), endAngle: .degrees(360), clockwise: false)

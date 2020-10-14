@@ -29,10 +29,6 @@ class CheapestHourCalculator: ObservableObject {
         }
     }
     
-    func getIntervalSelected() {
-        relativeLengthOfUsage.timeIntervalSince1970
-    }
-    
     func setValues() {
         self.energyUsage = Double(self.energyUsageInput) ?? 0
         self.timeOfUsage = abs(relativeLengthOfUsage.timeIntervalSince(lengthOfUsageDate))

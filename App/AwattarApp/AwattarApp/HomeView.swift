@@ -51,7 +51,6 @@ struct HomeView: View {
                             .font(.subheadline)
                             .padding(.trailing, 25)
                     }
-                    .shadow(color: Color.red, radius: 5)
                     .padding(.bottom, 5)
 
                     EnergyPriceGraph()

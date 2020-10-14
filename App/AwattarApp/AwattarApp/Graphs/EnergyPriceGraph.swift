@@ -43,8 +43,6 @@ struct BarShape: Shape {
             path.addRelativeArc(center: CGPoint(x: widthOfBar + radius, y: startHeight + barPadding + radius), radius: radius, startAngle: .degrees(180), delta: .degrees(90))
         } else if lookToSide == .right {
             path.move(to: CGPoint(x: startWidth + (dividerLineWidth / 2), y: startHeight + barPadding))
-//            path.addLine(to: CGPoint(x: widthOfBar - radius, y: startHeight + barPadding))
-//            path = path.strokedPath(StrokeStyle(lineWidth: 10, lineCap: .round, lineJoin: .round))
             path.addRelativeArc(center: CGPoint(x: widthOfBar - radius, y: startHeight + barPadding + radius), radius: radius, startAngle: .degrees(270), delta: .degrees(180))
             path.addLine(to: CGPoint(x: widthOfBar, y: startHeight + barPadding + radius))
             path.addRelativeArc(center: CGPoint(x: widthOfBar - radius, y: startHeight + heightOfBar - barPadding - radius), radius: radius, startAngle: .degrees(0), delta: .degrees(90))
@@ -162,6 +160,8 @@ struct EnergyPriceSingleBar: View {
         }
         
         self.hourDataPoint = hourDataPoint
+        
+        
     }
 
     var body: some View {
@@ -229,14 +229,14 @@ struct EnergyPriceSingleBar: View {
     }
 }
 
-class SingleBarSettings {
+class SingleBarSettings: ObservableObject {
     var centFormatter: NumberFormatter
     var hourFormatter: DateFormatter
     
-    var minPrice: Float = 0
-    var maxPrice: Float = 0
-        
-    init() {
+    var minPrice: Float
+    var maxPrice: Float
+    
+    init(minPrice: Float, maxPrice: Float) {
         centFormatter = NumberFormatter()
         centFormatter.numberStyle = .currency
         centFormatter.locale = Locale(identifier: "de_DE")
@@ -246,6 +246,9 @@ class SingleBarSettings {
         
         hourFormatter = DateFormatter()
         hourFormatter.dateFormat = "H"
+        
+        self.minPrice = minPrice
+        self.maxPrice = maxPrice
     }
 }
 
@@ -259,32 +262,10 @@ struct EnergyPriceGraph: View {
     
     @State var pointerHeightDeltaToBefore: CGFloat? = nil
     @State var singleHeight: CGFloat = 0
-    
-    var singleBarSettings = SingleBarSettings()
-    
+
+    @State var singleBarSettings: SingleBarSettings? = nil
+
     var body: some View {
-        GeometryReader { geometry in
-            makeView(geometry)
-                .onAppear {
-                    singleHeight = geometry.size.height / CGFloat(awattarData.energyData!.prices.count)
-
-                    graphHourPointData = []
-                    
-                    var currentHeight: CGFloat = 0
-                    for hourPointEntry in awattarData.energyData!.prices {
-                        graphHourPointData.append((hourPointEntry, currentHeight))
-                        currentHeight += singleHeight
-                    }
-
-                    singleBarSettings.minPrice = awattarData.energyData!.minPrice
-                    singleBarSettings.maxPrice = awattarData.energyData!.maxPrice
-                }
-        }
-    }
-    
-    func makeView(_ geometry: GeometryProxy) -> some View {
-        let width = geometry.size.width
-
         let graphDragGesture = DragGesture(minimumDistance: 0)
             .onChanged { location in
                 let locationHeight = location.location.y
@@ -299,26 +280,39 @@ struct EnergyPriceGraph: View {
                 }
             }
         
-        return ZStack {
-            ForEach(0..<graphHourPointData.count, id: \.self) { hourPointIndex in
-                EnergyPriceSingleBar(
-                    singleBarSettings: singleBarSettings,
-                    width: width,
-                    height: singleHeight,
-                    startHeight: graphHourPointData[hourPointIndex].1,
-                    indexSelected: currentPointerIndexSelected,
-                    ownIndex: hourPointIndex,
-                    hourDataPoint: graphHourPointData[hourPointIndex].0)
+        GeometryReader { geometry in
+            ZStack {
+                if singleBarSettings != nil {
+                    ForEach(0..<graphHourPointData.count, id: \.self) { hourPointIndex in
+                        EnergyPriceSingleBar(
+                            singleBarSettings: singleBarSettings!,
+                            width: geometry.size.width,
+                            height: singleHeight,
+                            startHeight: graphHourPointData[hourPointIndex].1,
+                            indexSelected: currentPointerIndexSelected,
+                            ownIndex: hourPointIndex,
+                            hourDataPoint: graphHourPointData[hourPointIndex].0)
+                    }
+                }
+            }
+            .onAppear {
+                singleBarSettings = SingleBarSettings(minPrice: awattarData.energyData!.minPrice, maxPrice: awattarData.energyData!.maxPrice)
+                
+                singleHeight = geometry.size.height / CGFloat(awattarData.energyData!.prices.count)
+
+                graphHourPointData = []
+                
+                var currentHeight: CGFloat = 0
+                for hourPointEntry in awattarData.energyData!.prices {
+                    graphHourPointData.append((hourPointEntry, currentHeight))
+                    currentHeight += singleHeight
+                }
             }
         }
+//        .onAppear {
+//            singleBarSettings.minPrice = awattarData.energyData!.minPrice
+//            singleBarSettings.maxPrice = awattarData.energyData!.maxPrice
+//        }
         .gesture(graphDragGesture)
-    }
-}
-
-struct EnergyPriceGraph_Previews: PreviewProvider {
-    static var previews: some View {
-        Group {
-            
-        }
     }
 }

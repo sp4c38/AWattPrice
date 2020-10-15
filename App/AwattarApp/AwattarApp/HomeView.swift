@@ -57,21 +57,7 @@ struct HomeView: View {
                         .padding(.leading, 16)
                         .padding(.trailing, 16)
                 }
-                .sheet(isPresented: $settingIsPresented) {
-                    SettingsPageView()
-                        .environment(\.managedObjectContext, managedObjectContext)
-                }
                 .navigationBarTitle("elecPrice")
-                .navigationBarItems(trailing:
-                    Button(action: {
-                        settingIsPresented = true
-                    }) {
-                        Image(systemName: "gear")
-                            .resizable()
-                            .scaledToFit()
-                            .foregroundColor(Color.blue)
-                    }
-                )
                 .navigationBarTitleDisplayMode(.large)
             } else {
                 VStack(spacing: 40) {

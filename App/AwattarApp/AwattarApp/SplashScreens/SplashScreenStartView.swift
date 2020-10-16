@@ -7,6 +7,17 @@
 
 import SwiftUI
 
+struct ContinueButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .foregroundColor(Color.white)
+            .frame(maxWidth: .infinity)
+            .padding()
+            .background(Color(hue: 0.6500, saturation: 0.6195, brightness: 0.8863))
+            .cornerRadius(11)
+    }
+}
+
 struct SplashScreenDetailNoteView: View {
     @Environment(\.colorScheme) var colorScheme
     
@@ -40,7 +51,7 @@ struct SplashScreenStartView: View {
     var body: some View {
         VStack {
             VStack(spacing: 30) {
-                Image("awattarLogo")
+                Image("appSymbol")
                     .resizable()
                     .scaledToFit()
                 
@@ -56,6 +67,12 @@ struct SplashScreenStartView: View {
                 SplashScreenDetailNoteView(title: "View prices", subTitle: "Look at the current energy prices for each hour.", imageName: "magnifyingglass")
                 
                 SplashScreenDetailNoteView(title: "Compare prices", subTitle: "Let the app find the cheapest time to use electricty.", imageName: "arrow.left.arrow.right")
+                
+                Button(action: {}) {
+                    Text("Continue")
+                }
+                .buttonStyle(ContinueButtonStyle())
+                
             }
             
             Spacer()
@@ -69,6 +86,6 @@ struct SplashScreenStartView: View {
 struct SplashScreenStartView_Previews: PreviewProvider {
     static var previews: some View {
         SplashScreenStartView()
-            .preferredColorScheme(.dark)
+            .preferredColorScheme(.light)
     }
 }

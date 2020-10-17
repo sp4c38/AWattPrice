@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+
 struct HourPriceInfoView: View {
     let priceDataPoint: EnergyPricePoint
     var numberFormatter: NumberFormatter

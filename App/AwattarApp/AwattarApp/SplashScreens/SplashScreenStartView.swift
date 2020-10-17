@@ -7,17 +7,6 @@
 
 import SwiftUI
 
-struct ContinueButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .foregroundColor(Color.white)
-            .frame(maxWidth: .infinity)
-            .padding()
-            .background(Color(hue: 0.6500, saturation: 0.6195, brightness: 0.8863))
-            .cornerRadius(11)
-    }
-}
-
 struct SplashScreenDetailNoteView: View {
     @Environment(\.colorScheme) var colorScheme
     

@@ -34,120 +34,117 @@ struct SettingsPageView: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 30) {
-            HStack {
-                Spacer()
-                Text("settings")
-                    .bold()
-                    .font(.largeTitle)
-                    
-                Spacer()
-            }
-            .padding(.bottom, 10)
-            
-            VStack(alignment: .leading, spacing: 10) {
-                Text("price")
-                    .bold()
+        NavigationView {
+            VStack {
+                Divider()
                 
-                HStack(spacing: 10) {
-                    Text("pricesWithVat")
-                        .font(.caption)
-                        .fixedSize(horizontal: false, vertical: true)
-                    
-                    Toggle(isOn: $pricesWithTaxIncluded) {
+                VStack(alignment: .leading, spacing: 30) {
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text("price")
+                            .bold()
                         
-                    }
-                    .onChange(of: pricesWithTaxIncluded) { newValue in
-                        changeTaxSelection(newTaxSelection: newValue, settingsObject: currentSetting.setting!, managedObjectContext: managedObjectContext)
-                    }
-                }
-            }
-            
-            VStack(alignment: .leading, spacing: 10) {
-                Text("awattarTariff")
-                    .bold()
-                
-                Text("tariffSelectionTip")
-                    .font(.caption)
-                    .foregroundColor(Color.gray)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .padding(.bottom, 10)
-
-                VStack(alignment: .center, spacing: 15) {
-                    Picker(selection: $awattarEnergyProfileIndex, label: Text("")) {
-                        ForEach(awattarData.profilesData.profiles, id: \.name) { profile in
-                            Text(profile.name).tag(awattarData.profilesData.profiles.firstIndex(of: profile)!)
+                        HStack(spacing: 10) {
+                            Text("pricesWithVat")
+                                .font(.caption)
+                                .fixedSize(horizontal: false, vertical: true)
+                            
+                            Toggle(isOn: $pricesWithTaxIncluded) {
+                                
+                            }
+                            .onChange(of: pricesWithTaxIncluded) { newValue in
+                                changeTaxSelection(newTaxSelection: newValue, settingsObject: currentSetting.setting!, managedObjectContext: managedObjectContext)
+                            }
                         }
                     }
-                    .frame(maxWidth: .infinity)
-                    .pickerStyle(SegmentedPickerStyle())
-                    .onChange(of: awattarEnergyProfileIndex) { newValue in
-                        changeEnergyProfileIndex(newProfileIndex: Int16(newValue), settingsObject: currentSetting.setting!, managedObjectContext: managedObjectContext)
-                    }
-
-                    VStack {
-                        Image(awattarData.profilesData.profiles[awattarEnergyProfileIndex].imageName)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 60, height: 60, alignment: .center)
-                            .padding(.top, 5)
-
-                        Text(awattarData.profilesData.profiles[awattarEnergyProfileIndex].name)
+                    
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text("awattarTariff")
                             .bold()
-                            .font(.title3)
+                        
+                        Text("tariffSelectionTip")
+                            .font(.caption)
+                            .foregroundColor(Color.gray)
+                            .fixedSize(horizontal: false, vertical: true)
                             .padding(.bottom, 10)
 
-                        VStack(alignment: .leading, spacing: 10) {
-                            Text("basicFee")
-                            HStack(spacing: 0) {
-                                TextField("", text: $basicCharge)
-                                    .keyboardType(.decimalPad)
-                                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                                    .onChange(of: basicCharge) { newValue in
-                                        let numberConverter = NumberFormatter()
-                                        if newValue.contains(",") {
-                                            numberConverter.decimalSeparator = ","
-                                        } else {
-                                            numberConverter.decimalSeparator = "."
-                                        }
-                                        
-                                        changeBasicCharge(newBasicCharge: Float(truncating: numberConverter.number(from: newValue) ?? 0), settingsObject: currentSetting.setting!, managedObjectContext: managedObjectContext)
-                                    }
-                                
-                                Text("euroPerMonth")
-                                    .padding(.leading, 5)
+                        VStack(alignment: .center, spacing: 15) {
+                            Picker(selection: $awattarEnergyProfileIndex, label: Text("")) {
+                                ForEach(awattarData.profilesData.profiles, id: \.name) { profile in
+                                    Text(profile.name).tag(awattarData.profilesData.profiles.firstIndex(of: profile)!)
+                                }
                             }
-                        }
+                            .frame(maxWidth: .infinity)
+                            .pickerStyle(SegmentedPickerStyle())
+                            .onChange(of: awattarEnergyProfileIndex) { newValue in
+                                changeEnergyProfileIndex(newProfileIndex: Int16(newValue), settingsObject: currentSetting.setting!, managedObjectContext: managedObjectContext)
+                            }
 
-                        VStack(alignment: .leading, spacing: 10) {
-                            Text("elecPriceColon")
-                            HStack(spacing: 0) {
-                                TextField("", text: $energyPrice)
-                                    .keyboardType(.decimalPad)
-                                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                                    .onChange(of: energyPrice) { newValue in
-                                        let numberConverter = NumberFormatter()
-                                        if newValue.contains(",") {
-                                            numberConverter.decimalSeparator = ","
-                                        } else {
-                                            numberConverter.decimalSeparator = "."
-                                        }
+                            VStack {
+                                Image(awattarData.profilesData.profiles[awattarEnergyProfileIndex].imageName)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 60, height: 60, alignment: .center)
+                                    .padding(.top, 5)
+
+                                Text(awattarData.profilesData.profiles[awattarEnergyProfileIndex].name)
+                                    .bold()
+                                    .font(.title3)
+                                    .padding(.bottom, 10)
+
+                                VStack(alignment: .leading, spacing: 10) {
+                                    Text("basicFee")
+                                    HStack(spacing: 0) {
+                                        TextField("", text: $basicCharge)
+                                            .keyboardType(.decimalPad)
+                                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                                            .onChange(of: basicCharge) { newValue in
+                                                let numberConverter = NumberFormatter()
+                                                if newValue.contains(",") {
+                                                    numberConverter.decimalSeparator = ","
+                                                } else {
+                                                    numberConverter.decimalSeparator = "."
+                                                }
+                                                
+                                                changeBasicCharge(newBasicCharge: Float(truncating: numberConverter.number(from: newValue) ?? 0), settingsObject: currentSetting.setting!, managedObjectContext: managedObjectContext)
+                                            }
                                         
-                                        changeEnergyCharge(newEnergyCharge: Float(truncating: numberConverter.number(from: newValue) ?? 0), settingsObject: currentSetting.setting!, managedObjectContext: managedObjectContext)
+                                        Text("euroPerMonth")
+                                            .padding(.leading, 5)
                                     }
-                                
-                                Text("centPerKwh")
-                                    .padding(.leading, 5)
+                                }
+
+                                VStack(alignment: .leading, spacing: 10) {
+                                    Text("elecPriceColon")
+                                    HStack(spacing: 0) {
+                                        TextField("", text: $energyPrice)
+                                            .keyboardType(.decimalPad)
+                                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                                            .onChange(of: energyPrice) { newValue in
+                                                let numberConverter = NumberFormatter()
+                                                if newValue.contains(",") {
+                                                    numberConverter.decimalSeparator = ","
+                                                } else {
+                                                    numberConverter.decimalSeparator = "."
+                                                }
+                                                
+                                                changeEnergyCharge(newEnergyCharge: Float(truncating: numberConverter.number(from: newValue) ?? 0), settingsObject: currentSetting.setting!, managedObjectContext: managedObjectContext)
+                                            }
+                                        
+                                        Text("centPerKwh")
+                                            .padding(.leading, 5)
+                                    }
+                                }
                             }
                         }
                     }
+                    
+                    Spacer()
                 }
+                .padding(.top, 15)
+                .navigationBarTitle("settings")
             }
-            
-            Spacer()
+            .padding([.leading, .trailing], 16)
         }
-        .padding(.top, 40)
-        .padding([.leading, .trailing], 20)
         .onAppear {
             pricesWithTaxIncluded = currentSetting.setting!.pricesWithTaxIncluded
             awattarEnergyProfileIndex = Int(currentSetting.setting!.awattarEnergyProfileIndex)

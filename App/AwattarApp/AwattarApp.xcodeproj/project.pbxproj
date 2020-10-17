@@ -120,6 +120,22 @@
 			path = SplashScreens;
 			sourceTree = "<group>";
 		};
+		61260071253B22C4009E0126 /* Styles */ = {
+			isa = PBXGroup;
+			children = (
+				61260072253B22CA009E0126 /* Button Styles */,
+			);
+			path = Styles;
+			sourceTree = "<group>";
+		};
+		61260072253B22CA009E0126 /* Button Styles */ = {
+			isa = PBXGroup;
+			children = (
+				61D6F8872517AD5500027FD1 /* ButtonStyles.swift */,
+			);
+			path = "Button Styles";
+			sourceTree = "<group>";
+		};
 		614E784B25068E0600A7ED83 /* Data */ = {
 			isa = PBXGroup;
 			children = (
@@ -129,7 +145,7 @@
 			path = Data;
 			sourceTree = "<group>";
 		};
-		61504CFC250FF46D00EF41D6 /* Subviews */ = {
+		61504CFC250FF46D00EF41D6 /* Supporting Views */ = {
 			isa = PBXGroup;
 			children = (
 				61C23FC9250923D600538585 /* HourPriceInfoView.swift */,
@@ -138,7 +154,7 @@
 				614E8566253B034F004904A9 /* LoadingView.swift */,
 				61260068253B0AB9009E0126 /* NetworkConnectionErrorView.swift */,
 			);
-			path = Subviews;
+			path = "Supporting Views";
 			sourceTree = "<group>";
 		};
 		617D85A525052C35009E18FB = {
@@ -166,17 +182,17 @@
 		617D85B025052C35009E18FB /* AwattarApp */ = {
 			isa = PBXGroup;
 			children = (
-				61D6F8872517AD5500027FD1 /* ButtonStyles.swift */,
+				61260071253B22C4009E0126 /* Styles */,
 				61200EC1253A04E600A104B1 /* SplashScreens */,
-				61504CFC250FF46D00EF41D6 /* Subviews */,
+				61504CFC250FF46D00EF41D6 /* Supporting Views */,
 				61D196E32507F57800E57BAC /* Graphs */,
 				614E784B25068E0600A7ED83 /* Data */,
-				618A6F6D2518F8C800A8778B /* ConsumptionResultView.swift */,
-				6156A578250C2161005174A5 /* SettingsPageView.swift */,
+				617D85B125052C35009E18FB /* AwattarApp.swift */,
+				61E5E050250E9AA800E2F9CC /* TabNavigatorView.swift */,
 				617D85B325052C35009E18FB /* HomeView.swift */,
 				611D15AE251680B9000691C6 /* ConsumptionComparisonView.swift */,
-				61E5E050250E9AA800E2F9CC /* TabNavigatorView.swift */,
-				617D85B125052C35009E18FB /* AwattarApp.swift */,
+				618A6F6D2518F8C800A8778B /* ConsumptionResultView.swift */,
+				6156A578250C2161005174A5 /* SettingsPageView.swift */,
 				615468552520D214004FBEF7 /* Localizable.strings */,
 				6156A571250C1F04005174A5 /* Model.xcdatamodeld */,
 				617D85B525052C37009E18FB /* Assets.xcassets */,

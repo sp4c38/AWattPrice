@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct DoneButtonStyle: ButtonStyle {
+struct ActionButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.headline)
@@ -18,5 +18,16 @@ struct DoneButtonStyle: ButtonStyle {
             .cornerRadius(10)
             .opacity(configuration.isPressed ? 0.6 : 1.0)
             .animation(.easeInOut(duration: 0.1))
+    }
+}
+
+struct ContinueButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .foregroundColor(Color.white)
+            .frame(maxWidth: .infinity)
+            .padding()
+            .background(Color(hue: 0.6500, saturation: 0.6195, brightness: 0.8863))
+            .cornerRadius(11)
     }
 }

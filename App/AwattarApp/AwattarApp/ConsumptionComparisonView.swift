@@ -199,86 +199,90 @@ struct ConsumptionComparisonView: View {
     
     var body: some View {
         NavigationView {
-            ZStack(alignment: Alignment(horizontal: .center, vertical: .top)) {
-                VStack(alignment: .center, spacing: 0) {
-                    if awattarData.energyData != nil && currentSetting.setting != nil {
-                        VStack(alignment: .leading, spacing: 15) {
-                            VStack(alignment: .leading, spacing: 5) {
-                                Text("elecUsage")
-                                    .bold()
-                                
-                                HStack(spacing: 7) {
-                                    TextField("elecUsage", text: $cheapestHourCalculator.energyUsageInput)
-                                        .keyboardType(.decimalPad)
-                                        .multilineTextAlignment(.leading)
-                                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                                    
-                                    Text("kW")
-                                }
-                            }
-//
-                            VStack {
-                                DatePicker(
-                                    selection: $cheapestHourCalculator.startDate,
-                                    in: dateClosedRange,
-                                    displayedComponents: [.date, .hourAndMinute],
-                                    label: { Text("startOfUse").bold() })
-                                
-                                DatePicker(
-                                    selection: $cheapestHourCalculator.endDate,
-                                    in: dateClosedRange,
-                                    displayedComponents: [.date, .hourAndMinute],
-                                    label: { Text("endOfUse").bold() })
-                            }
-                            
-                            VStack(alignment: .leading, spacing: 5) {
-                                Text("lengthOfUse")
-                                    .bold()
-
-                                TimeIntervalPicker(cheapestHourCalculator: cheapestHourCalculator)
-                                    .frame(maxWidth: .infinity)
-                            }
-                            
-                            NavigationLink(destination: ConsumptionResultView(cheapestHourCalculator: cheapestHourCalculator), tag: 1, selection: $calculateAction) {
-                            }
+            VStack {
+                Divider()
                 
-                            Spacer()
-                            
-                            Button(action: {
-                                calculateAction = 1
-                            }) {
-                                Text("viewResults")
-                            }.buttonStyle(DoneButtonStyle())
-                        }
-                    } else {
-                        if awattarData.networkConnectionError == false {
-                            // no network connection error
-                            // download in progress
-                            
-                            LoadingView()
+                ZStack(alignment: Alignment(horizontal: .center, vertical: .top)) {
+                    VStack(alignment: .center, spacing: 0) {
+                        if awattarData.energyData != nil && currentSetting.setting != nil {
+                            VStack(alignment: .leading, spacing: 15) {
+                                VStack(alignment: .leading, spacing: 5) {
+                                    Text("elecUsage")
+                                        .bold()
+                                    
+                                    HStack(spacing: 7) {
+                                        TextField("elecUsage", text: $cheapestHourCalculator.energyUsageInput)
+                                            .keyboardType(.decimalPad)
+                                            .multilineTextAlignment(.leading)
+                                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                                        
+                                        Text("kW")
+                                    }
+                                }
+    //
+                                VStack {
+                                    DatePicker(
+                                        selection: $cheapestHourCalculator.startDate,
+                                        in: dateClosedRange,
+                                        displayedComponents: [.date, .hourAndMinute],
+                                        label: { Text("startOfUse").bold() })
+                                    
+                                    DatePicker(
+                                        selection: $cheapestHourCalculator.endDate,
+                                        in: dateClosedRange,
+                                        displayedComponents: [.date, .hourAndMinute],
+                                        label: { Text("endOfUse").bold() })
+                                }
+                                
+                                VStack(alignment: .leading, spacing: 5) {
+                                    Text("lengthOfUse")
+                                        .bold()
+
+                                    TimeIntervalPicker(cheapestHourCalculator: cheapestHourCalculator)
+                                        .frame(maxWidth: .infinity)
+                                }
+                                
+                                NavigationLink(destination: ConsumptionResultView(cheapestHourCalculator: cheapestHourCalculator), tag: 1, selection: $calculateAction) {
+                                }
+                    
+                                Spacer()
+                                
+                                Button(action: {
+                                    calculateAction = 1
+                                }) {
+                                    Text("viewResults")
+                                }.buttonStyle(ActionButtonStyle())
+                            }
                         } else {
-                            // network connection error
-                            // can't fulfill download
-                            
-                            NetworkConnectionErrorView()
+                            if awattarData.networkConnectionError == false {
+                                // no network connection error
+                                // download in progress
+                                
+                                LoadingView()
+                            } else {
+                                // network connection error
+                                // can't fulfill download
+                                
+                                NetworkConnectionErrorView()
+                            }
                         }
                     }
-                }
-                .padding()
-                .padding(.top, 5)
-                .opacity(showInfo ? 0.5 : 1)
-                
-                if showInfo {
-                    Text("comparerInfoText")
-                        .foregroundColor(colorScheme == .light ? Color.black : Color.white)
-                        .padding()
-                        .background(colorScheme == .light ? Color.white : Color(hue: 0.5417, saturation: 0.0930, brightness: 0.1686))
-                        .cornerRadius(10)
-                        .shadow(radius: 20)
-                        .padding([.leading, .trailing], 16)
-                        .transition(.scaledOpacity)
+                    .padding(.top, 15)
+                    .padding(.bottom, 10)
+                    .opacity(showInfo ? 0.5 : 1)
+                    
+                    if showInfo {
+                        Text("comparerInfoText")
+                            .foregroundColor(colorScheme == .light ? Color.black : Color.white)
+                            .padding()
+                            .background(colorScheme == .light ? Color.white : Color(hue: 0.5417, saturation: 0.0930, brightness: 0.1686))
+                            .cornerRadius(10)
+                            .shadow(radius: 20)
+                            .transition(.scaledOpacity)
+                    }
                 }
             }
+            .padding([.leading, .trailing], 16)
             .onAppear {
                 if awattarData.energyData != nil {
                     let maxHourIndex = awattarData.energyData!.prices.count - 1

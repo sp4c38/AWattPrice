@@ -41,20 +41,17 @@ struct HomeView: View {
                 HStack {
                     Text("pricePerKwh")
                         .font(.subheadline)
-                        .padding(.leading, 10)
                         .padding(.top, 8)
 
                     Spacer()
 
                     Text("hourOfDay")
                         .font(.subheadline)
-                        .padding(.trailing, 25)
                 }
                 .padding(.bottom, 5)
 
                 if awattarData.energyData != nil && currentSetting.setting != nil {
                     EnergyPriceGraph()
-                        .padding([.leading, .trailing], 16)
                 } else {
                     if awattarData.networkConnectionError == false {
                         // no network connection error
@@ -69,6 +66,7 @@ struct HomeView: View {
                     }
                 }
             }
+            .padding([.leading, .trailing], 16)
             .navigationBarTitle("elecPrice")
             .navigationBarTitleDisplayMode(.large)
         }

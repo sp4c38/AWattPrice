@@ -61,7 +61,6 @@ struct SplashScreenStartView: View {
                     Text("Continue")
                 }
                 .buttonStyle(ContinueButtonStyle())
-                
             }
             
             Spacer()

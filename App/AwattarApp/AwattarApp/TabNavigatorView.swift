@@ -34,6 +34,10 @@ struct TabNavigatorView: View {
                     Text("usage")
                 }
                 .tag(2)
+            
+//            SplashScreenSetupView()
+//                .tabItem { Text("Splash Screen") }
+//                .tag(2)
         }
     }
 }

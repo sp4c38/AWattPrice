@@ -11,25 +11,27 @@ struct SplashScreenSetupView: View {
     @State var basicCharge: String = ""
     
     var body: some View {
-        VStack {
-            VStack(spacing: 40) {
-                Text("Setup")
-                    .font(.system(size: 40, weight: .black))
-            
-                VStack(spacing: 20) {
-                    Image(systemName: "exclamationmark.triangle")
-                        .foregroundColor(Color.red)
-                        .font(.system(size: 40))
-                    
-                    Text("Da die folgenden Preise je nach Region verschieden sind, lesen sie bitte aus aWATTar.de Ihre Gebühren ab. Dies muss nur einmal durchgeführt werden..")
-                        .font(.callout)
-                }
+        VStack(spacing: 40) {
+            Text("Setup")
+                .font(.system(size: 40, weight: .black))
+        
+            VStack(spacing: 30) {
+                Image(systemName: "exclamationmark.triangle")
+                    .foregroundColor(Color.red)
+                    .font(.system(size: 40))
                 
+                Text("Da die folgenden Preise je nach Region verschieden sind, lesen sie bitte aus aWATTar.de Ihre Gebühren ab. Dies muss nur einmal durchgeführt werden.")
+                    .font(.callout)
+                    .multilineTextAlignment(.center)
+            }
+            
+            
+            VStack(alignment: .leading, spacing: 20) {
                 VStack(alignment: .leading) {
                     Text("basicFee")
                         .font(.headline)
                     
-                    TextField("euro per year", text: $basicCharge)
+                    TextField("Euro per year", text: $basicCharge)
                         .keyboardType(.decimalPad)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .onChange(of: basicCharge) { newValue in
@@ -48,7 +50,7 @@ struct SplashScreenSetupView: View {
                     Text("elecPriceColon")
                         .font(.headline)
                     
-                    TextField("cent per kWh", text: $basicCharge)
+                    TextField("Cent per kWh", text: $basicCharge)
                         .keyboardType(.decimalPad)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .onChange(of: basicCharge) { newValue in
@@ -63,8 +65,8 @@ struct SplashScreenSetupView: View {
                     }
                 }
             }
-            .padding(.bottom, 20)
             
+            Spacer()
             Spacer()
             
             Button(action: {}) {
@@ -80,6 +82,6 @@ struct SplashScreenSetupView: View {
 struct SplashScreenSetupView_Previews: PreviewProvider {
     static var previews: some View {
         SplashScreenSetupView()
-            .preferredColorScheme(.dark)
+            .preferredColorScheme(.light)
     }
 }

@@ -32,6 +32,7 @@
 		61D6F8792517834400027FD1 /* TimeIntervalPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61D6F8782517834400027FD1 /* TimeIntervalPicker.swift */; };
 		61D6F8882517AD5500027FD1 /* ButtonStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61D6F8872517AD5500027FD1 /* ButtonStyles.swift */; };
 		61E5E051250E9AA800E2F9CC /* TabNavigatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61E5E050250E9AA800E2F9CC /* TabNavigatorView.swift */; };
+		61F38651253B38670036486E /* SplashScreenFinishView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61F38650253B38670036486E /* SplashScreenFinishView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -84,6 +85,7 @@
 		61D6F8782517834400027FD1 /* TimeIntervalPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeIntervalPicker.swift; sourceTree = "<group>"; };
 		61D6F8872517AD5500027FD1 /* ButtonStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonStyles.swift; sourceTree = "<group>"; };
 		61E5E050250E9AA800E2F9CC /* TabNavigatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabNavigatorView.swift; sourceTree = "<group>"; };
+		61F38650253B38670036486E /* SplashScreenFinishView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashScreenFinishView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -116,6 +118,7 @@
 			children = (
 				61200EC2253A050700A104B1 /* SplashScreenStartView.swift */,
 				61200ECA253A39F600A104B1 /* SplashScreenSetupView.swift */,
+				61F38650253B38670036486E /* SplashScreenFinishView.swift */,
 			);
 			path = SplashScreens;
 			sourceTree = "<group>";
@@ -368,6 +371,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6156A577250C1F5E005174A5 /* Setting+CoreDataProperties.swift in Sources */,
+				61F38651253B38670036486E /* SplashScreenFinishView.swift in Sources */,
 				61D6F8792517834400027FD1 /* TimeIntervalPicker.swift in Sources */,
 				61D196E52507F58D00E57BAC /* EnergyPriceGraph.swift in Sources */,
 				614E784D25068F6100A7ED83 /* DownloadEnergyData.swift in Sources */,

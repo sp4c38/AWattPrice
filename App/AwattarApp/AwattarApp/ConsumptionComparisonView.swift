@@ -264,6 +264,7 @@ struct ConsumptionComparisonView: View {
                                 // can't fulfill download
                                 
                                 NetworkConnectionErrorView()
+                                    .transition(.opacity)
                             }
                         }
                     }

@@ -19,7 +19,7 @@ struct NetworkConnectionErrorView: View {
                     .foregroundColor(Color.red)
                     .font(.system(size: 60, weight: .light))
                 
-                Text("Network connection\nfailed")
+                Text("Please connect to the\ninternet")
                     .font(.title3)
                     .multilineTextAlignment(.center)
             }

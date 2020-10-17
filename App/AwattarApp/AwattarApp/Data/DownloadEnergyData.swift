@@ -5,6 +5,7 @@
 //  Created by Léon Becker on 07.09.20.
 //
 
+import SwiftUI
 import Foundation
 
 struct EnergyPricePoint: Hashable, Codable {
@@ -96,7 +97,9 @@ class AwattarData: ObservableObject {
             } else {
                 if let error = error as NSError?, error.domain == NSURLErrorDomain && error.code == NSURLErrorNotConnectedToInternet {
                     DispatchQueue.main.async {
-                        self.networkConnectionError = true
+                        withAnimation {
+                            self.networkConnectionError = true
+                        }
                     }
                 }
             }

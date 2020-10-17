@@ -63,6 +63,7 @@ struct HomeView: View {
                         // can't fulfill download
                         
                         NetworkConnectionErrorView()
+                            .transition(.opacity)
                     }
                 }
             }

@@ -21,8 +21,6 @@
 "centPerKwh" = "Cent per kWh";
 "euroPerMwh" = "Euro per MWh";
 "ready" = "Ready";
-"taxOption1" = "Electricity prices are shown with VAT throughout the app.";
-"taxOption2" = "Electricity prices are shown without VAT throughout the app.";
 "usage" = "Usage";
 "comparerInfoText" = "This allows you to find the hours when electricity is cheapest. For example, to charge your electric car, turn on the washing machine or run other electrical consumers.";
 "viewResults" = "Ergebnisse Anzeigen";

@@ -34,7 +34,7 @@ struct SettingsPageView: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 40) {
+        VStack(alignment: .leading, spacing: 30) {
             HStack {
                 Spacer()
                 Text("settings")
@@ -43,6 +43,7 @@ struct SettingsPageView: View {
                     
                 Spacer()
             }
+            .padding(.bottom, 10)
             
             VStack(alignment: .leading, spacing: 10) {
                 Text("price")
@@ -60,23 +61,19 @@ struct SettingsPageView: View {
                         changeTaxSelection(newTaxSelection: newValue, settingsObject: currentSetting.setting!, managedObjectContext: managedObjectContext)
                     }
                 }
-                
-                Text(pricesWithTaxIncluded ? "taxOption1" : "taxOption2")
-                    .font(.caption)
-                    .foregroundColor(Color.gray)
-                    .fixedSize(horizontal: false, vertical: true)
             }
             
             VStack(alignment: .leading, spacing: 10) {
                 Text("awattarTariff")
                     .bold()
+                
+                Text("tariffSelectionTip")
+                    .font(.caption)
+                    .foregroundColor(Color.gray)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.bottom, 10)
 
                 VStack(alignment: .center, spacing: 15) {
-                    Text("tariffSelectionTip")
-                        .font(.caption)
-                        .foregroundColor(Color.gray)
-                        .fixedSize(horizontal: false, vertical: true)
-
                     Picker(selection: $awattarEnergyProfileIndex, label: Text("")) {
                         ForEach(awattarData.profilesData.profiles, id: \.name) { profile in
                             Text(profile.name).tag(awattarData.profilesData.profiles.firstIndex(of: profile)!)
@@ -146,9 +143,12 @@ struct SettingsPageView: View {
                     }
                 }
             }
+            
+            Spacer()
         }
-        .padding(20)
-        .padding(.trailing, 5)
+        .padding(.top, 40)
+        .padding(.leading, 20)
+        .padding(.trailing, 20)
         .onAppear {
             pricesWithTaxIncluded = currentSetting.setting!.pricesWithTaxIncluded
             awattarEnergyProfileIndex = Int(currentSetting.setting!.awattarEnergyProfileIndex)

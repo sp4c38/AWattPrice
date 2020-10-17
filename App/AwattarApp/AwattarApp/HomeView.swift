@@ -35,37 +35,43 @@ struct HomeView: View {
     
     var body: some View {
         NavigationView {
-            if awattarData.energyData != nil && currentSetting.setting != nil {
-                VStack {
-                    Divider()
+            VStack {
+                Divider()
 
-                    HStack {
-                        Text("pricePerKwh")
-                            .font(.subheadline)
-                            .padding(.leading, 10)
-                            .padding(.top, 8)
+                HStack {
+                    Text("pricePerKwh")
+                        .font(.subheadline)
+                        .padding(.leading, 10)
+                        .padding(.top, 8)
 
-                        Spacer()
+                    Spacer()
 
-                        Text("hourOfDay")
-                            .font(.subheadline)
-                            .padding(.trailing, 25)
-                    }
-                    .padding(.bottom, 5)
+                    Text("hourOfDay")
+                        .font(.subheadline)
+                        .padding(.trailing, 25)
+                }
+                .padding(.bottom, 5)
 
+                if awattarData.energyData != nil && currentSetting.setting != nil {
                     EnergyPriceGraph()
                         .padding(.leading, 16)
                         .padding(.trailing, 16)
-                }
-                .navigationBarTitle("elecPrice")
-                .navigationBarTitleDisplayMode(.large)
-            } else {
-                VStack(spacing: 40) {
-                    Spacer()
-                    ProgressView("")
-                    Spacer()
+                } else {
+                    if awattarData.networkConnectionError == false {
+                        // no network connection error
+                        // download in progress
+                        
+                        LoadingView()
+                    } else {
+                        // network connection error
+                        // can't fulfill download
+                        
+                        NetworkConnectionErrorView()
+                    }
                 }
             }
+            .navigationBarTitle("elecPrice")
+            .navigationBarTitleDisplayMode(.large)
         }
         .onAppear {
             currentSetting.setting = getSetting(managedObjectContext: managedObjectContext)

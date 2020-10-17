@@ -21,8 +21,6 @@
 "centPerKwh" = "Cent pro kWh";
 "euroPerMwh" = "Euro pro MWh";
 "ready" = "Fertig";
-"taxOption1" = "Strompreise in der App werden mit Mehrwertsteuer angezeigt.";
-"taxOption2" = "Strompreise in der App werden mit Mehrwertsteuer angezeigt.";
 "usage" = "Verbrauch";
 "comparerInfoText" = "Hiermit kannst du die Stunden finden, in denen der Strom preislich am günstigsten ist, um zum Beispiel dein Elektroauto aufzuladen, die Waschmachine einzuschalten oder andere elektrische Verbraucher laufen zu lassen.";
 "viewResults" = "Ergebnisse";

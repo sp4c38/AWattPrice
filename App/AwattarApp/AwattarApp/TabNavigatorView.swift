@@ -12,41 +12,28 @@ struct TabNavigatorView: View {
     @State var tabSelection = 1
     
     var body: some View {
-        if awattarData.energyData != nil {
-            TabView(selection: $tabSelection) {
-                SettingsPageView()
-                    .tabItem {
-                        Image(systemName: "gear")
-                        Text("settings")
-                    }
-                    .tag(0)
-                
-                
-                HomeView()
-                    .tabItem {
-                        Image(systemName: "bolt")
-                        Text("elecPrice")
-                    }
-                    .tag(1)
-                
-                ConsumptionComparisonView()
-                    .tabItem {
-                        Image(systemName: "rectangle.and.text.magnifyingglass")
-                        Text("usage")
-                    }
-                    .tag(2)
-            }
-        } else {
-            VStack(spacing: 40) {
-                if awattarData.energyData == nil {
-                    Spacer()
-                    ProgressView("")
-                    Text("loadingData")
-                        .font(.callout)
-                        .multilineTextAlignment(.center)
-                    Spacer()
+        TabView(selection: $tabSelection) {
+            SettingsPageView()
+                .tabItem {
+                    Image(systemName: "gear")
+                    Text("settings")
                 }
-            }
+                .tag(0)
+            
+            
+            HomeView()
+                .tabItem {
+                    Image(systemName: "bolt")
+                    Text("elecPrice")
+                }
+                .tag(1)
+            
+            ConsumptionComparisonView()
+                .tabItem {
+                    Image(systemName: "rectangle.and.text.magnifyingglass")
+                    Text("usage")
+                }
+                .tag(2)
         }
     }
 }

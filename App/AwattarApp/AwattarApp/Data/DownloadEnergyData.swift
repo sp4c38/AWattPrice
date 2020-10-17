@@ -45,6 +45,7 @@ class AwattarData: ObservableObject {
     // Needs to be an observable object because the data is downloaded asynchronously from the server
     // and views need to check when downloading the data finished
     
+    @Published var networkConnectionError = false
     @Published var energyData: EnergyData? = nil // Energy Data with all hours included
     @Published var profilesData = ProfilesData()
 
@@ -91,6 +92,12 @@ class AwattarData: ObservableObject {
                     }
                 } catch {
                     fatalError("Could not decode returned JSON data from server.")
+                }
+            } else {
+                if let error = error as NSError?, error.domain == NSURLErrorDomain && error.code == NSURLErrorNotConnectedToInternet {
+                    DispatchQueue.main.async {
+                        self.networkConnectionError = true
+                    }
                 }
             }
         }.resume()

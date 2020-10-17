@@ -93,8 +93,7 @@ struct HourPriceInfoView: View {
                     Spacer()
                 }
             }
-            .padding(.leading, 16)
-            .padding(.trailing, 16)
+            .padding([.leading, .trailing], 16)
         }
     }
 }

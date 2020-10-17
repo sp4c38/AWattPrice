@@ -58,10 +58,7 @@ struct ConsumptionResultView: View {
                     }
                     .foregroundColor(Color.white)
                     .shadow(radius: 4)
-                    .padding(.leading, 5)
-                    .padding(.trailing, 5)
-                    .padding(.top, 5)
-                    .padding(.bottom, 5)
+                    .padding(5)
                     .frame(maxWidth: .infinity)
                     .background(colorScheme == .light ? Color(hue: 0.3815, saturation: 0.6605, brightness: 0.8431) : Color(hue: 0.3844, saturation: 0.6293, brightness: 0.6288))
                     .padding(.top, 5)
@@ -69,8 +66,7 @@ struct ConsumptionResultView: View {
                 
                 HStack(spacing: 10) {
                     ConsumptionClockView(cheapestHourCalculator.cheapestHoursForUsage!)
-                        .padding(.leading, 20)
-                        .padding(.trailing, 20)
+                        .padding([.leading, .trailing], 20)
                 }
                 .padding(16)
             } else {

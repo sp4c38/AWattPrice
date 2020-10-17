@@ -201,10 +201,8 @@ struct ConsumptionComparisonView: View {
         NavigationView {
             ZStack(alignment: Alignment(horizontal: .center, vertical: .top)) {
                 VStack(alignment: .center, spacing: 0) {
-                    if currentSetting.setting != nil && awattarData.energyData != nil {
+                    if awattarData.energyData != nil && currentSetting.setting != nil {
                         VStack(alignment: .leading, spacing: 15) {
-                            Divider()
-                            
                             VStack(alignment: .leading, spacing: 5) {
                                 Text("elecUsage")
                                     .bold()
@@ -243,6 +241,8 @@ struct ConsumptionComparisonView: View {
                             
                             NavigationLink(destination: ConsumptionResultView(cheapestHourCalculator: cheapestHourCalculator), tag: 1, selection: $calculateAction) {
                             }
+                
+                            Spacer()
                             
                             Button(action: {
                                 calculateAction = 1
@@ -251,10 +251,21 @@ struct ConsumptionComparisonView: View {
                             }.buttonStyle(DoneButtonStyle())
                         }
                     } else {
-                        Text("Fehler mit Einstellungen")
+                        if awattarData.networkConnectionError == false {
+                            // no network connection error
+                            // download in progress
+                            
+                            LoadingView()
+                        } else {
+                            // network connection error
+                            // can't fulfill download
+                            
+                            NetworkConnectionErrorView()
+                        }
                     }
                 }
                 .padding()
+                .padding(.top, 5)
                 .opacity(showInfo ? 0.5 : 1)
                 
                 if showInfo {
@@ -264,8 +275,7 @@ struct ConsumptionComparisonView: View {
                         .background(colorScheme == .light ? Color.white : Color(hue: 0.5417, saturation: 0.0930, brightness: 0.1686))
                         .cornerRadius(10)
                         .shadow(radius: 20)
-                        .padding(.leading, 16)
-                        .padding(.trailing, 16)
+                        .padding([.leading, .trailing], 16)
                         .transition(.scaledOpacity)
                 }
             }

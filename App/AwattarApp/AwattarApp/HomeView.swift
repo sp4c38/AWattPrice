@@ -54,8 +54,7 @@ struct HomeView: View {
 
                 if awattarData.energyData != nil && currentSetting.setting != nil {
                     EnergyPriceGraph()
-                        .padding(.leading, 16)
-                        .padding(.trailing, 16)
+                        .padding([.leading, .trailing], 16)
                 } else {
                     if awattarData.networkConnectionError == false {
                         // no network connection error

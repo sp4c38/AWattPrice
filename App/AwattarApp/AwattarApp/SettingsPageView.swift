@@ -147,8 +147,7 @@ struct SettingsPageView: View {
             Spacer()
         }
         .padding(.top, 40)
-        .padding(.leading, 20)
-        .padding(.trailing, 20)
+        .padding([.leading, .trailing], 20)
         .onAppear {
             pricesWithTaxIncluded = currentSetting.setting!.pricesWithTaxIncluded
             awattarEnergyProfileIndex = Int(currentSetting.setting!.awattarEnergyProfileIndex)

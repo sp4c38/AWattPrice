@@ -9,9 +9,11 @@ import SwiftUI
 
 struct LoadingView: View {
     var body: some View {
-        VStack(spacing: 40) {
+        VStack(spacing: 20) {
             Spacer()
-            ProgressView("")
+            
+            ProgressView("loadingData")
+            
             Spacer()
         }
     }

@@ -6,7 +6,7 @@
   
 */
 
-"loadingData" = "Loading current data...";
+"loadingData" = "Loading";
 "pricePerKwh" = "Price per kWh";
 "hourOfDay" = "Hour of day";
 "elecPrice" = "Electricity Price";

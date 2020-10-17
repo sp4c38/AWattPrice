@@ -30,9 +30,7 @@ struct NetworkConnectionErrorView: View {
             )
 
             Spacer()
-            Spacer()
         }
-        .padding(20)
     }
 }
 

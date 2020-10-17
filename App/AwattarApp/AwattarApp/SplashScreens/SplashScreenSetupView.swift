@@ -73,8 +73,7 @@ struct SplashScreenSetupView: View {
             .buttonStyle(ContinueButtonStyle())
         }
         .padding(.top, 40)
-        .padding(.leading, 20)
-        .padding(.trailing, 20)
+        .padding([.leading, .trailing], 20)
     }
 }
 

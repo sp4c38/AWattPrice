@@ -1,6 +1,6 @@
 //
 //  SplashScreenSetupView.swift
-//  AwattarApp
+//
 //
 //  Created by Léon Becker on 16.10.20.
 //
@@ -8,48 +8,22 @@
 import SwiftUI
 
 struct SplashScreenSetupView: View {
+    @Environment(\.managedObjectContext) var managedObjectContext
+    @EnvironmentObject var currentSetting: CurrentSetting
+    
+    @State var redirectToNextSplashScreen: Int? = 0
     @State var basicCharge: String = ""
     
     var body: some View {
         VStack(spacing: 40) {
             Text("Setup")
-                .font(.system(size: 40, weight: .black))
-        
-            VStack(spacing: 30) {
-                Image(systemName: "exclamationmark.triangle")
-                    .foregroundColor(Color.red)
-                    .font(.system(size: 40))
-                
-                Text("Da die folgenden Preise je nach Region verschieden sind, lesen sie bitte aus aWATTar.de Ihre Gebühren ab. Dies muss nur einmal durchgeführt werden.")
-                    .font(.callout)
-                    .multilineTextAlignment(.center)
-            }
-            
-            
-            VStack(alignment: .leading, spacing: 20) {
-                VStack(alignment: .leading) {
-                    Text("basicFee")
-                        .font(.headline)
-                    
-                    TextField("Euro per year", text: $basicCharge)
-                        .keyboardType(.decimalPad)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .onChange(of: basicCharge) { newValue in
-                            let numberConverter = NumberFormatter()
-                            if newValue.contains(",") {
-                                numberConverter.decimalSeparator = ","
-                            } else {
-                                numberConverter.decimalSeparator = "."
-                            }
-                        
-    //                    changeBasicCharge(newBasicCharge: Float(truncating: numberConverter.number(from: newValue) ?? 0), settingsObject: currentSetting.setting!, managedObjectContext: managedObjectContext)
-                    }
-                }
-                
+                .font(.system(size: 40, weight: .regular))
+
+            VStack(alignment: .leading, spacing: 10) {
                 VStack(alignment: .leading) {
                     Text("elecPriceColon")
                         .font(.headline)
-                    
+
                     TextField("Cent per kWh", text: $basicCharge)
                         .keyboardType(.decimalPad)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
@@ -60,22 +34,43 @@ struct SplashScreenSetupView: View {
                             } else {
                                 numberConverter.decimalSeparator = "."
                             }
-                        
-    //                    changeBasicCharge(newBasicCharge: Float(truncating: numberConverter.number(from: newValue) ?? 0), settingsObject: currentSetting.setting!, managedObjectContext: managedObjectContext)
+
+                            changeEnergyCharge(newEnergyCharge: Float(truncating: numberConverter.number(from: newValue) ?? 0), settingsObject: currentSetting.setting!, managedObjectContext: managedObjectContext)
+                    }
+                    }
+                
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("Sie können Ihren Arbeitspreis für Ihre Region auf der aWATTar Webseite finden.")
+                    
+                    Button(action: {
+                        UIApplication.shared.open(URL(string: "https://www.awattar.de")!)
+                    }) {
+                        HStack {
+                            Text("Zur aWATTar Webseite")
+                            Image(systemName: "chevron.right")
+                        }
+                        .foregroundColor(Color.blue)
                     }
                 }
+                .font(.caption)
+                .foregroundColor(Color.gray)
             }
-            
+
             Spacer()
             Spacer()
+
+            NavigationLink("", destination: SplashScreenFinishView(), tag: 1, selection: $redirectToNextSplashScreen)
             
-            Button(action: {}) {
+            Button(action: {
+                redirectToNextSplashScreen = 1
+            }) {
                 Text("Continue")
             }
             .buttonStyle(ContinueButtonStyle())
         }
-        .padding(.top, 40)
+        .navigationBarTitleDisplayMode(.large)
         .padding([.leading, .trailing], 20)
+        .padding(.bottom, 16)
     }
 }
 

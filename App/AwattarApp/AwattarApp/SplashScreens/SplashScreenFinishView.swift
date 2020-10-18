@@ -111,15 +111,15 @@ struct CheckmarkView: View {
             secondLineStartPoint = CGPoint(x: 0.437 * checkmarkWidth + checkmarkStartWidth, y: 0.710 * checkmarkWidth + checkmarkStartHeight)
             secondLineEndPoint = secondLineStartPoint
             
-            withAnimation(Animation.easeOut(duration: 2.7)) {
+            withAnimation(Animation.easeOut(duration: 1.5)) {
                 trimAmount = 1
             }
             
-            withAnimation(Animation.easeIn(duration: 0.9)) {
+            withAnimation(Animation.easeIn(duration: 0.5)) {
                 firstLineEndPoint = secondLineStartPoint
             }
             
-            withAnimation(Animation.easeOut(duration: 1.8).delay(0.9)) {
+            withAnimation(Animation.easeOut(duration: 1).delay(0.5)) {
                 secondLineEndPoint = CGPoint(x: 0.695 * checkmarkWidth + checkmarkStartWidth, y: 0.308 * checkmarkWidth + checkmarkStartHeight)
             }
         }
@@ -133,20 +133,24 @@ struct CheckmarkView: View {
 }
 
 struct SplashScreenFinishView: View {
+    @Environment(\.managedObjectContext) var managedObjectContext
+    @EnvironmentObject var currentSetting: CurrentSetting
+    
     var body: some View {
-        ZStack {
-            VStack(spacing: 0) {
-                Spacer()
-
-                Button(action: {}) {
-                    Text("Finish")
-                }
-                .buttonStyle(ContinueButtonStyle())
-            }
-            
+        VStack {
             CheckmarkView()
+            
+            Spacer()
+
+            Button(action: {
+                changeSplashScreenFinished(newState: true, settingsObject: currentSetting.setting!, managedObjectContext: managedObjectContext)
+            }) {
+                Text("Finish")
+            }
+            .buttonStyle(ContinueButtonStyle())
         }
-        .padding()
+        .padding([.leading, .trailing], 20)
+        .padding(.bottom, 16)
     }
 }
 

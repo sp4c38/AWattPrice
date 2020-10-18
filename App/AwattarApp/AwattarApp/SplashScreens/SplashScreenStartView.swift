@@ -37,36 +37,46 @@ struct SplashScreenDetailNoteView: View {
 }
 
 struct SplashScreenStartView: View {
+    @State var redirectToNextSplashScreen: Int? = 0
+    
     var body: some View {
-        VStack {
-            VStack(spacing: 30) {
-                Image("appSymbol")
-                    .resizable()
-                    .scaledToFit()
-                
-                VStack(spacing: 5) {
-                    Text("Welcome to the")
-                        .font(.system(size: 40, weight: .black))
-                    Text("energyTo App")
-                        .foregroundColor(Color(hue: 0.5648, saturation: 1.0000, brightness: 0.6235))
-                        .font(.system(size: 36, weight: .black))
+        NavigationView {
+            VStack {
+                VStack(spacing: 30) {
+                    Image("appSymbol")
+                        .resizable()
+                        .scaledToFit()
+                    
+                    VStack(spacing: 5) {
+                        Text("Welcome to the")
+                            .font(.system(size: 40, weight: .black))
+                        Text("energyTo App")
+                            .foregroundColor(Color(hue: 0.5648, saturation: 1.0000, brightness: 0.6235))
+                            .font(.system(size: 36, weight: .black))
+                    }
+                    .padding(.bottom, 20)
+                    
+                    SplashScreenDetailNoteView(title: "View prices", subTitle: "Look at the current energy prices for each hour.", imageName: "magnifyingglass")
+                    
+                    SplashScreenDetailNoteView(title: "Compare prices", subTitle: "Let the app find the cheapest time to use electricty.", imageName: "arrow.left.arrow.right")
+                    
+                    NavigationLink("", destination: SplashScreenSetupView(), tag: 1, selection: $redirectToNextSplashScreen)
                 }
-                .padding(.bottom, 20)
                 
-                SplashScreenDetailNoteView(title: "View prices", subTitle: "Look at the current energy prices for each hour.", imageName: "magnifyingglass")
+                Spacer()
                 
-                SplashScreenDetailNoteView(title: "Compare prices", subTitle: "Let the app find the cheapest time to use electricty.", imageName: "arrow.left.arrow.right")
-                
-                Button(action: {}) {
+                Button(action: {
+                    redirectToNextSplashScreen = 1
+                }) {
                     Text("Continue")
                 }
                 .buttonStyle(ContinueButtonStyle())
             }
-            
-            Spacer()
+            .navigationBarHidden(true)
+            .padding(.top, 40)
+            .padding([.leading, .trailing], 20)
+            .padding(.bottom, 16)
         }
-        .padding(.top, 40)
-        .padding([.leading, .trailing], 20)
     }
 }
 

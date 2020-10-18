@@ -268,7 +268,7 @@ struct ConsumptionComparisonView: View {
                             }
                         }
                     }
-                    .padding(.top, 15)
+                    .padding(.top, 5)
                     .padding(.bottom, 10)
                     .opacity(showInfo ? 0.5 : 1)
                     

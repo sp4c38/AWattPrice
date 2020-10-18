@@ -24,7 +24,6 @@ struct SettingsPageView: View {
     @State var pricesWithTaxIncluded = true
     
     @State var awattarEnergyProfileIndex: Int = 0
-    @State var basicCharge = ""
     @State var energyPrice = ""
     
     let stringToNumberConverter: NumberFormatter
@@ -92,28 +91,6 @@ struct SettingsPageView: View {
                                     .padding(.bottom, 10)
 
                                 VStack(alignment: .leading, spacing: 10) {
-                                    Text("basicFee")
-                                    HStack(spacing: 0) {
-                                        TextField("", text: $basicCharge)
-                                            .keyboardType(.decimalPad)
-                                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                                            .onChange(of: basicCharge) { newValue in
-                                                let numberConverter = NumberFormatter()
-                                                if newValue.contains(",") {
-                                                    numberConverter.decimalSeparator = ","
-                                                } else {
-                                                    numberConverter.decimalSeparator = "."
-                                                }
-                                                
-                                                changeBasicCharge(newBasicCharge: Float(truncating: numberConverter.number(from: newValue) ?? 0), settingsObject: currentSetting.setting!, managedObjectContext: managedObjectContext)
-                                            }
-                                        
-                                        Text("euroPerMonth")
-                                            .padding(.leading, 5)
-                                    }
-                                }
-
-                                VStack(alignment: .leading, spacing: 10) {
                                     Text("elecPriceColon")
                                     HStack(spacing: 0) {
                                         TextField("", text: $energyPrice)
@@ -140,7 +117,7 @@ struct SettingsPageView: View {
                     
                     Spacer()
                 }
-                .padding(.top, 15)
+                .padding(.top, 5)
                 .navigationBarTitle("settings")
             }
             .padding([.leading, .trailing], 16)
@@ -148,7 +125,6 @@ struct SettingsPageView: View {
         .onAppear {
             pricesWithTaxIncluded = currentSetting.setting!.pricesWithTaxIncluded
             awattarEnergyProfileIndex = Int(currentSetting.setting!.awattarEnergyProfileIndex)
-            basicCharge = String(currentSetting.setting!.awattarProfileBasicCharge)
             energyPrice = String(currentSetting.setting!.awattarEnergyPrice)
         }
     }

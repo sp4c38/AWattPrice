@@ -71,9 +71,6 @@ struct HomeView: View {
             .navigationBarTitle("elecPrice")
             .navigationBarTitleDisplayMode(.large)
         }
-        .onAppear {
-            currentSetting.setting = getSetting(managedObjectContext: managedObjectContext)
-        }
     }
 }
 

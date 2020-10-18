@@ -28,8 +28,8 @@ func getSetting(managedObjectContext: NSManagedObjectContext) -> Setting? {
         let newSetting = Setting(context: managedObjectContext)
         newSetting.awattarEnergyProfileIndex = 0
         newSetting.pricesWithTaxIncluded = true
-        newSetting.awattarProfileBasicCharge = 0
         newSetting.awattarEnergyPrice = 0
+        newSetting.splashScreensFinished = false
         
         do {
             try managedObjectContext.save()
@@ -84,8 +84,8 @@ func changeEnergyProfileIndex(newProfileIndex: Int16, settingsObject: Setting, m
     return
 }
 
-func changeBasicCharge(newBasicCharge: Float, settingsObject: Setting, managedObjectContext: NSManagedObjectContext) {
-    settingsObject.awattarProfileBasicCharge = newBasicCharge
+func changeSplashScreenFinished(newState: Bool, settingsObject: Setting, managedObjectContext: NSManagedObjectContext) {
+    settingsObject.splashScreensFinished = newState
     do {
         try managedObjectContext.save()
     } catch {

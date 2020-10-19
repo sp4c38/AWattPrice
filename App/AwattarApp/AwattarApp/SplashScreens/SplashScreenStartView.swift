@@ -37,6 +37,8 @@ struct SplashScreenDetailNoteView: View {
 }
 
 struct SplashScreenStartView: View {
+    @Environment(\.managedObjectContext) var managedObjectContext
+    @EnvironmentObject var currentSetting: CurrentSetting
     @State var redirectToNextSplashScreen: Int? = 0
     
     var body: some View {
@@ -46,7 +48,7 @@ struct SplashScreenStartView: View {
                     Image("appSymbol")
                         .resizable()
                         .scaledToFit()
-                    
+
                     VStack(spacing: 5) {
                         Text("Welcome to the")
                             .font(.system(size: 40, weight: .black))
@@ -55,24 +57,25 @@ struct SplashScreenStartView: View {
                             .font(.system(size: 36, weight: .black))
                     }
                     .padding(.bottom, 20)
-                    
+
                     SplashScreenDetailNoteView(title: "View prices", subTitle: "Look at the current energy prices for each hour.", imageName: "magnifyingglass")
-                    
+
                     SplashScreenDetailNoteView(title: "Compare prices", subTitle: "Let the app find the cheapest time to use electricty.", imageName: "arrow.left.arrow.right")
-                    
+
                     NavigationLink("", destination: SplashScreenSetupView(), tag: 1, selection: $redirectToNextSplashScreen)
                 }
-                
+
                 Spacer()
                 
                 Button(action: {
-                    redirectToNextSplashScreen = 1
+//                    changeSplashScreenFinished(newState: true, settingsObject: currentSetting.setting!, managedObjectContext: managedObjectContext)
+                    currentSetting.changeSplashScreenFinished(newState: true)
                 }) {
                     Text("Continue")
                 }
                 .buttonStyle(ContinueButtonStyle())
             }
-            .navigationBarHidden(true)
+//            .navigationBarHidden(true)
             .padding(.top, 40)
             .padding([.leading, .trailing], 20)
             .padding(.bottom, 16)

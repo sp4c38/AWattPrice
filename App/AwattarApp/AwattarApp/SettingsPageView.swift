@@ -135,6 +135,6 @@ struct SettingsPageView_Previews: PreviewProvider {
         SettingsPageView()
             .environment(\.managedObjectContext, PersistenceManager().persistentContainer.viewContext)
             .environmentObject(AwattarData())
-            .environmentObject(CurrentSetting())
+            .environmentObject(CurrentSetting(managedObjectContext: PersistenceManager().persistentContainer.viewContext))
     }
 }

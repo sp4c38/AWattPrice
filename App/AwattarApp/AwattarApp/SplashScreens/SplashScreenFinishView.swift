@@ -143,7 +143,7 @@ struct SplashScreenFinishView: View {
             Spacer()
 
             Button(action: {
-                changeSplashScreenFinished(newState: true, settingsObject: currentSetting.setting!, managedObjectContext: managedObjectContext)
+//                changeSplashScreenFinished(newState: true, settingsObject: currentSetting.setting!, managedObjectContext: managedObjectContext)
             }) {
                 Text("Finish")
             }

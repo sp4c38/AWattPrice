@@ -21,6 +21,10 @@ extension Setting {
 
 }
 
-extension Setting : Identifiable {
-
+extension Setting {
+    static func resultsController(context: NSManagedObjectContext, sortDescriptors: [NSSortDescriptor] = []) -> NSFetchedResultsController<Setting> {
+        let request = NSFetchRequest<Setting>(entityName: "Setting")
+        request.sortDescriptors = [NSSortDescriptor(keyPath: \Setting.splashScreensFinished, ascending: true)]
+        return NSFetchedResultsController(fetchRequest: request, managedObjectContext: context, sectionNameKeyPath: nil, cacheName: nil)
+    }
 }

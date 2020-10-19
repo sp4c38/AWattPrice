@@ -39,7 +39,7 @@ class CheapestHourCalculator: ObservableObject {
             numberConverter.decimalSeparator = "."
         }
         
-        energyUsage = Float(numberConverter.number(from: energyUsageInput) ?? 10)
+        energyUsage = Float(truncating: numberConverter.number(from: energyUsageInput) ?? 10)
     }
     
     class HourPair {
@@ -316,6 +316,6 @@ struct ConsumptionComparisonView: View {
 struct ConsumptionComparatorView_Previews: PreviewProvider {
     static var previews: some View {
         ConsumptionComparisonView()
-            .environmentObject(CurrentSetting())
+            .environmentObject(CurrentSetting(managedObjectContext: PersistenceManager().persistentContainer.viewContext))
     }
 }

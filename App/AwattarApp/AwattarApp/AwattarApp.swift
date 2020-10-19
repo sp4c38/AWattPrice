@@ -22,10 +22,6 @@ class PersistenceManager {
     }
 }
 
-class CurrentSetting: ObservableObject {
-    @Published var setting: Setting? = nil
-}
-
 @main
 struct AwattarApp: App {
     var persistence = PersistenceManager()
@@ -35,7 +31,7 @@ struct AwattarApp: App {
             TabNavigatorView()
                 .environment(\.managedObjectContext, persistence.persistentContainer.viewContext)
                 .environmentObject(AwattarData())
-                .environmentObject(CurrentSetting())
+                .environmentObject(CurrentSetting(managedObjectContext: persistence.persistentContainer.viewContext))
         }
     }
 }

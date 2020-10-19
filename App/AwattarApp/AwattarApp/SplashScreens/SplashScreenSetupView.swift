@@ -35,9 +35,9 @@ struct SplashScreenSetupView: View {
                                 numberConverter.decimalSeparator = "."
                             }
 
-                            changeEnergyCharge(newEnergyCharge: Float(truncating: numberConverter.number(from: newValue) ?? 0), settingsObject: currentSetting.setting!, managedObjectContext: managedObjectContext)
+//                            changeEnergyCharge(newEnergyCharge: Float(truncating: numberConverter.number(from: newValue) ?? 0), settingsObject: currentSetting.setting!, managedObjectContext: managedObjectContext)
                     }
-                    }
+                }
                 
                 VStack(alignment: .leading, spacing: 10) {
                     Text("Sie können Ihren Arbeitspreis für Ihre Region auf der aWATTar Webseite finden.")
@@ -68,7 +68,8 @@ struct SplashScreenSetupView: View {
             }
             .buttonStyle(ContinueButtonStyle())
         }
-        .navigationBarTitleDisplayMode(.large)
+        .navigationBarHidden(true)
+        .padding(.top, 40)
         .padding([.leading, .trailing], 20)
         .padding(.bottom, 16)
     }

@@ -68,14 +68,13 @@ struct SplashScreenStartView: View {
                 Spacer()
                 
                 Button(action: {
-//                    changeSplashScreenFinished(newState: true, settingsObject: currentSetting.setting!, managedObjectContext: managedObjectContext)
-                    currentSetting.changeSplashScreenFinished(newState: true)
+                    redirectToNextSplashScreen = 1
                 }) {
                     Text("Continue")
                 }
                 .buttonStyle(ContinueButtonStyle())
             }
-//            .navigationBarHidden(true)
+            .navigationBarHidden(true)
             .padding(.top, 40)
             .padding([.leading, .trailing], 20)
             .padding(.bottom, 16)

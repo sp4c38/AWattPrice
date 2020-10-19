@@ -143,12 +143,13 @@ struct SplashScreenFinishView: View {
             Spacer()
 
             Button(action: {
-//                changeSplashScreenFinished(newState: true, settingsObject: currentSetting.setting!, managedObjectContext: managedObjectContext)
+                currentSetting.changeSplashScreenFinished(newState: true)
             }) {
                 Text("Finish")
             }
             .buttonStyle(ContinueButtonStyle())
         }
+        .navigationBarHidden(true)
         .padding([.leading, .trailing], 20)
         .padding(.bottom, 16)
     }

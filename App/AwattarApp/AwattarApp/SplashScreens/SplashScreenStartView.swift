@@ -37,7 +37,6 @@ struct SplashScreenDetailNoteView: View {
 }
 
 struct SplashScreenStartView: View {
-    @Environment(\.managedObjectContext) var managedObjectContext
     @EnvironmentObject var currentSetting: CurrentSetting
     @State var redirectToNextSplashScreen: Int? = 0
     

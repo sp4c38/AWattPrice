@@ -219,7 +219,7 @@ struct ConsumptionComparisonView: View {
                                         Text("kW")
                                     }
                                 }
-    //
+    
                                 VStack {
                                     DatePicker(
                                         selection: $cheapestHourCalculator.startDate,

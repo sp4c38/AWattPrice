@@ -26,8 +26,6 @@ struct OutSideView: View {
 
 struct TabNavigatorView: View {
     @EnvironmentObject var awattarData: AwattarData
-    
-    @Environment(\.managedObjectContext) var managedObjectContext
     @EnvironmentObject var currentSetting: CurrentSetting
     
     @State var tabSelection = 1

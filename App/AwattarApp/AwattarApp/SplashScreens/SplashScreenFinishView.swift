@@ -133,7 +133,6 @@ struct CheckmarkView: View {
 }
 
 struct SplashScreenFinishView: View {
-    @Environment(\.managedObjectContext) var managedObjectContext
     @EnvironmentObject var currentSetting: CurrentSetting
     
     var body: some View {

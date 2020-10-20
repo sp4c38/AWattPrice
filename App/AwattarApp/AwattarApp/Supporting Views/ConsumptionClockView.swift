@@ -7,6 +7,16 @@
 
 import SwiftUI
 
+extension View {
+    @ViewBuilder func ifTrue<Content: View>(_ conditional: Bool, content: (Self) -> Content) -> some View {
+        if conditional {
+            content(self)
+        } else {
+            self
+        }
+    }
+}
+
 struct ConsumptionClockView: View {
     @Environment(\.colorScheme) var colorScheme
 
@@ -139,13 +149,15 @@ struct ConsumptionClockView: View {
             Circle()
                 .foregroundColor(colorScheme == .light ? Color.white : Color.black)
                 .frame(width: width)
-                .shadow(color: Color.gray, radius: 10)
+                .ifTrue(colorScheme == .light) { content in
+                    content.shadow(color: Color.gray, radius: 10)
+                }
 
-//            Path { path in
-//                path.addArc(center: center, radius: (clockWidth / 2) - circleLineWidth, startAngle: .degrees(0), endAngle: .degrees(360), clockwise: false)
-//                path.addArc(center: center, radius: clockWidth / 2, startAngle: .degrees(360), endAngle: .degrees(0), clockwise: true)
-//            }
-//            .foregroundColor(colorScheme == .light ? Color.black : Color.white)
+            Path { path in
+                path.addArc(center: center, radius: (clockWidth / 2) - circleLineWidth, startAngle: .degrees(0), endAngle: .degrees(360), clockwise: false)
+                path.addArc(center: center, radius: clockWidth / 2, startAngle: .degrees(360), endAngle: .degrees(0), clockwise: true)
+            }
+            .foregroundColor(colorScheme == .light ? Color.black : Color.white)
 
             Path { path in
                 path.addArc(center: center, radius: middlePointRadius, startAngle: .degrees(0), endAngle: .degrees(360), clockwise: true)

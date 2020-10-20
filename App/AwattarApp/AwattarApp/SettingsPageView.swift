@@ -17,7 +17,6 @@ extension AnyTransition {
 }
 
 struct SettingsPageView: View {
-    @Environment(\.managedObjectContext) var managedObjectContext
     @EnvironmentObject var awattarData: AwattarData
     @EnvironmentObject var currentSetting: CurrentSetting
     
@@ -51,7 +50,7 @@ struct SettingsPageView: View {
                                 
                             }
                             .onChange(of: pricesWithTaxIncluded) { newValue in
-                                changeTaxSelection(newTaxSelection: newValue, settingsObject: currentSetting.setting!, managedObjectContext: managedObjectContext)
+                                currentSetting.changeTaxSelection(newTaxSelection: newValue)
                             }
                         }
                     }
@@ -75,7 +74,7 @@ struct SettingsPageView: View {
                             .frame(maxWidth: .infinity)
                             .pickerStyle(SegmentedPickerStyle())
                             .onChange(of: awattarEnergyProfileIndex) { newValue in
-                                changeEnergyProfileIndex(newProfileIndex: Int16(newValue), settingsObject: currentSetting.setting!, managedObjectContext: managedObjectContext)
+//                                changeEnergyProfileIndex(newProfileIndex: Int16(newValue), settingsObject: currentSetting.setting!, managedObjectContext: managedObjectContext)
                             }
 
                             VStack {
@@ -104,7 +103,7 @@ struct SettingsPageView: View {
                                                     numberConverter.decimalSeparator = "."
                                                 }
                                                 
-                                                changeEnergyCharge(newEnergyCharge: Float(truncating: numberConverter.number(from: newValue) ?? 0), settingsObject: currentSetting.setting!, managedObjectContext: managedObjectContext)
+//                                                changeEnergyCharge(newEnergyCharge: Float(truncating: numberConverter.number(from: newValue) ?? 0), settingsObject: currentSetting.setting!, managedObjectContext: managedObjectContext)
                                             }
                                         
                                         Text("centPerKwh")

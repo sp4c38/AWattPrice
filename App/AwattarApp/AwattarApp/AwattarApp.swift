@@ -29,7 +29,6 @@ struct AwattarApp: App {
     var body: some Scene {
         WindowGroup {
             TabNavigatorView()
-                .environment(\.managedObjectContext, persistence.persistentContainer.viewContext)
                 .environmentObject(AwattarData())
                 .environmentObject(CurrentSetting(managedObjectContext: persistence.persistentContainer.viewContext))
         }

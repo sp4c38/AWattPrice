@@ -32,6 +32,8 @@ struct ConsumptionResultView: View {
     
     var body: some View {
         VStack(alignment: .center) {
+            Divider()
+            
             if cheapestHourCalculator.cheapestHoursForUsage != nil {
                 Spacer()
                 

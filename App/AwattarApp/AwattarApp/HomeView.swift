@@ -9,7 +9,6 @@ import SwiftUI
 
 struct HomeView: View {
     @Environment(\.colorScheme) var colorScheme
-    @Environment(\.managedObjectContext) var managedObjectContext
     @EnvironmentObject var awattarData: AwattarData
     @EnvironmentObject var currentSetting: CurrentSetting
     

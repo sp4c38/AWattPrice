@@ -13,8 +13,8 @@ class CheapestHourCalculator: ObservableObject {
     
     @Published var startDate = Date() // start date of in which time interval to find cheapest hours
     @Published var endDate = Date().addingTimeInterval(3600) // end date of in which time interval to find cheapest hours
-    @Published var relativeLengthOfUsage = Date(timeIntervalSince1970: 82800)
-    @Published var lengthOfUsageDate = Date(timeIntervalSince1970: 82800) // length of the usage / this date is relative to relativeLengthOfUsage to dermiter the time interval
+    @Published var relativeLengthOfUsageDate = Date(timeIntervalSince1970: 82800)
+    @Published var lengthOfUsageDate = Date(timeIntervalSince1970: 83100) // length of the usage / this date is relative to relativeLengthOfUsage to dermiter the time interval
     
     @Published var timeOfUsage = TimeInterval() // time interval in seconds
     
@@ -22,7 +22,7 @@ class CheapestHourCalculator: ObservableObject {
     
     func checkIntervalFitsInRegion() {
         let startEndDateInterval = abs(startDate.timeIntervalSince(endDate))
-        let timeOfUsageInterval = abs(relativeLengthOfUsage.timeIntervalSince(lengthOfUsageDate))
+        let timeOfUsageInterval = abs(relativeLengthOfUsageDate.timeIntervalSince(lengthOfUsageDate))
         
         if startEndDateInterval < timeOfUsageInterval {
             endDate.addTimeInterval(timeOfUsageInterval - startEndDateInterval)
@@ -30,7 +30,9 @@ class CheapestHourCalculator: ObservableObject {
     }
     
     func setValues() {
-        self.timeOfUsage = abs(relativeLengthOfUsage.timeIntervalSince(lengthOfUsageDate))
+        print(relativeLengthOfUsageDate)
+        print(lengthOfUsageDate)
+        self.timeOfUsage = abs(relativeLengthOfUsageDate.timeIntervalSince(lengthOfUsageDate))
         
         let numberConverter = NumberFormatter()
         if energyUsageInput.contains(",") {
@@ -95,6 +97,7 @@ class CheapestHourCalculator: ObservableObject {
         DispatchQueue.global(qos: .userInitiated).async {
             let now = Date() // Used to not output values before now
             let timeOfUsageInHours: Float = Float(self.timeOfUsage / 60 / 60)
+            
             let nextRoundedUpHour = Int(timeOfUsageInHours.rounded(.up))
 
             var allPairs = [HourPair]()

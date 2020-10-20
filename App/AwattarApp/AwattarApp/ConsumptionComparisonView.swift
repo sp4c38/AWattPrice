@@ -20,7 +20,8 @@ class CheapestHourCalculator: ObservableObject {
     
     @Published var cheapestHoursForUsage: HourPair? = nil
     
-    func checkIntervalFitsInRegion() {
+    /// Checks that the interval selected by the Interval Picker is not bigger  than the time range between the start date and end date specified by the user. If the interval is bigger than the end date is adjusted accordingly.
+    func checkIntervalFitsInRange() {
         let startEndDateInterval = abs(startDate.timeIntervalSince(endDate))
         let timeOfUsageInterval = abs(relativeLengthOfUsageDate.timeIntervalSince(lengthOfUsageDate))
         
@@ -30,8 +31,6 @@ class CheapestHourCalculator: ObservableObject {
     }
     
     func setValues() {
-        print(relativeLengthOfUsageDate)
-        print(lengthOfUsageDate)
         self.timeOfUsage = abs(relativeLengthOfUsageDate.timeIntervalSince(lengthOfUsageDate))
         
         let numberConverter = NumberFormatter()

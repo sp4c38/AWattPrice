@@ -20,11 +20,3 @@ extension Setting {
     @NSManaged public var awattarEnergyPrice: Float
 
 }
-
-extension Setting {
-    static func resultsController(context: NSManagedObjectContext, sortDescriptors: [NSSortDescriptor] = []) -> NSFetchedResultsController<Setting> {
-        let request = NSFetchRequest<Setting>(entityName: "Setting")
-        request.sortDescriptors = [NSSortDescriptor(keyPath: \Setting.splashScreensFinished, ascending: true)]
-        return NSFetchedResultsController(fetchRequest: request, managedObjectContext: context, sectionNameKeyPath: nil, cacheName: nil)
-    }
-}

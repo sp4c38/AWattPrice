@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct TimeIntervalPicker: UIViewRepresentable {
+    // Time Interval Picker which uses UIDatePicker
+    
     @ObservedObject var cheapestHourCalculator: CheapestHourCalculator
 
     class Coordinator {
@@ -19,7 +21,7 @@ struct TimeIntervalPicker: UIViewRepresentable {
 
         @objc func dateChanged(_ sender: UIDatePicker) {
             self.selectedInterval.cheapestHourCalculator.lengthOfUsageDate = sender.date
-            self.selectedInterval.cheapestHourCalculator.checkIntervalFitsInRegion()
+            self.selectedInterval.cheapestHourCalculator.checkIntervalFitsInRange()
         }
     }
 

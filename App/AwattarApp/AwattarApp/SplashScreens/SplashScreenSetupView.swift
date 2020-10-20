@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct SplashScreenSetupView: View {
+    // Handles input of required information by the user
+    
     @EnvironmentObject var currentSetting: CurrentSetting
     
     @State var redirectToNextSplashScreen: Int? = 0
@@ -42,6 +44,9 @@ struct SplashScreenSetupView: View {
                     Text("Sie können Ihren Arbeitspreis für Ihre Region auf der aWATTar Webseite finden.")
                     
                     Button(action: {
+                        // Let the user visit this website for him/her to get information which depends on the users location
+                        // This isn't yet handled directly in the app
+                        
                         UIApplication.shared.open(URL(string: "https://www.awattar.de")!)
                     }) {
                         HStack {

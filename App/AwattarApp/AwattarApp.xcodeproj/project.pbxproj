@@ -26,7 +26,6 @@
 		617D85C425052C37009E18FB /* AwattarAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617D85C325052C37009E18FB /* AwattarAppTests.swift */; };
 		617D85CF25052C37009E18FB /* AwattarAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617D85CE25052C37009E18FB /* AwattarAppUITests.swift */; };
 		618A6F6E2518F8C800A8778B /* ConsumptionResultView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 618A6F6D2518F8C800A8778B /* ConsumptionResultView.swift */; };
-		61C23FCA250923D600538585 /* HourPriceInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61C23FC9250923D600538585 /* HourPriceInfoView.swift */; };
 		61C963A7251E2032001B3E3C /* ConsumptionClockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61C963A6251E2032001B3E3C /* ConsumptionClockView.swift */; };
 		61D196E52507F58D00E57BAC /* EnergyPriceGraph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61D196E42507F58D00E57BAC /* EnergyPriceGraph.swift */; };
 		61D6F8792517834400027FD1 /* TimeIntervalPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61D6F8782517834400027FD1 /* TimeIntervalPicker.swift */; };
@@ -79,7 +78,6 @@
 		617D85CE25052C37009E18FB /* AwattarAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AwattarAppUITests.swift; sourceTree = "<group>"; };
 		617D85D025052C37009E18FB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		618A6F6D2518F8C800A8778B /* ConsumptionResultView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsumptionResultView.swift; sourceTree = "<group>"; };
-		61C23FC9250923D600538585 /* HourPriceInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HourPriceInfoView.swift; sourceTree = "<group>"; };
 		61C963A6251E2032001B3E3C /* ConsumptionClockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsumptionClockView.swift; sourceTree = "<group>"; };
 		61D196E42507F58D00E57BAC /* EnergyPriceGraph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnergyPriceGraph.swift; sourceTree = "<group>"; };
 		61D6F8782517834400027FD1 /* TimeIntervalPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeIntervalPicker.swift; sourceTree = "<group>"; };
@@ -126,17 +124,9 @@
 		61260071253B22C4009E0126 /* Styles */ = {
 			isa = PBXGroup;
 			children = (
-				61260072253B22CA009E0126 /* Button Styles */,
-			);
-			path = Styles;
-			sourceTree = "<group>";
-		};
-		61260072253B22CA009E0126 /* Button Styles */ = {
-			isa = PBXGroup;
-			children = (
 				61D6F8872517AD5500027FD1 /* ButtonStyles.swift */,
 			);
-			path = "Button Styles";
+			path = Styles;
 			sourceTree = "<group>";
 		};
 		614E784B25068E0600A7ED83 /* Data */ = {
@@ -151,7 +141,6 @@
 		61504CFC250FF46D00EF41D6 /* Supporting Views */ = {
 			isa = PBXGroup;
 			children = (
-				61C23FC9250923D600538585 /* HourPriceInfoView.swift */,
 				61D6F8782517834400027FD1 /* TimeIntervalPicker.swift */,
 				61C963A6251E2032001B3E3C /* ConsumptionClockView.swift */,
 				614E8566253B034F004904A9 /* LoadingView.swift */,
@@ -381,7 +370,6 @@
 				613CFF7F250CCCA500337CB2 /* AccessSettings.swift in Sources */,
 				61200ECB253A39F600A104B1 /* SplashScreenSetupView.swift in Sources */,
 				61D6F8882517AD5500027FD1 /* ButtonStyles.swift in Sources */,
-				61C23FCA250923D600538585 /* HourPriceInfoView.swift in Sources */,
 				6156A579250C2161005174A5 /* SettingsPageView.swift in Sources */,
 				61E5E051250E9AA800E2F9CC /* TabNavigatorView.swift in Sources */,
 				61200EC3253A050700A104B1 /* SplashScreenStartView.swift in Sources */,
@@ -561,9 +549,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"AwattarApp/Preview Content\"";
-				DEVELOPMENT_TEAM = JC4B7WF2UL;
+				DEVELOPMENT_TEAM = RC32A2AMHF;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = AwattarApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
@@ -571,8 +560,9 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = me.sp4c38.AWattPrice;
+				PRODUCT_BUNDLE_IDENTIFIER = me.space8.AWattPrice;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -583,9 +573,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"AwattarApp/Preview Content\"";
-				DEVELOPMENT_TEAM = JC4B7WF2UL;
+				DEVELOPMENT_TEAM = RC32A2AMHF;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = AwattarApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
@@ -593,8 +584,9 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = me.sp4c38.AWattPrice;
+				PRODUCT_BUNDLE_IDENTIFIER = me.space8.AWattPrice;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct NetworkConnectionErrorView: View {
+    // View shown when a network connection error occurs
+    
     @Environment(\.colorScheme) var colorScheme
     
     var body: some View {

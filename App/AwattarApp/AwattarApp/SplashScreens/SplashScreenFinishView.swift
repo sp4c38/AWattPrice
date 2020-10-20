@@ -133,15 +133,20 @@ struct CheckmarkView: View {
 }
 
 struct SplashScreenFinishView: View {
+    // Last splash screen which tells the user that the setup was completed
+    
     @EnvironmentObject var currentSetting: CurrentSetting
     
     var body: some View {
         VStack {
+            // A checkmark which slowly animates in
             CheckmarkView()
             
             Spacer()
 
             Button(action: {
+                // Changes a setting in persistent storage to indicate that all splash screens were completed
+                // After that the app can be normally used
                 currentSetting.changeSplashScreenFinished(newState: true)
             }) {
                 Text("Finish")

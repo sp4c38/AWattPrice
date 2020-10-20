@@ -80,7 +80,11 @@ class CurrentSetting: NSObject, NSFetchedResultsControllerDelegate, ObservableOb
     
     init(managedObjectContext: NSManagedObjectContext) {
         self.managedObjectContext = managedObjectContext
-        settingController = Setting.resultsController(context: managedObjectContext, sortDescriptors: [])
+        
+        let fetchRequest = NSFetchRequest<Setting>(entityName: "Setting")
+        fetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \Setting.splashScreensFinished, ascending: true)]
+        settingController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: managedObjectContext, sectionNameKeyPath: nil, cacheName: nil)
+            
         super.init()
         settingController.delegate = self
         do {

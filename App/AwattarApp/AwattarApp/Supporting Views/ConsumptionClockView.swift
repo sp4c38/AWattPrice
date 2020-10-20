@@ -17,6 +17,7 @@ extension View {
     }
 }
 
+/// A clock which shows the cheapest time to use energy.
 struct ConsumptionClockView: View {
     @Environment(\.colorScheme) var colorScheme
 
@@ -98,6 +99,7 @@ struct ConsumptionClockView: View {
             self.makeView(geometry)
         }
         .onReceive(timer) { input in
+            // Update the clock to make both markers (hour and minute) point in the correct direction while time progresses
             now = Date()
         }
     }

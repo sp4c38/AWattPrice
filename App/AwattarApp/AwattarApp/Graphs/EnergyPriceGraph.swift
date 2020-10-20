@@ -252,6 +252,7 @@ class SingleBarSettings: ObservableObject {
     }
 }
 
+/// The interactive graph drawn on the home screen displaying the price for each hour
 struct EnergyPriceGraph: View {
     @EnvironmentObject var awattarData: AwattarData
     @EnvironmentObject var currentSetting: CurrentSetting

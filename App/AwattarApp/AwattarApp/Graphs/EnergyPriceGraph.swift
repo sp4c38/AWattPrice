@@ -53,6 +53,7 @@ struct BarShape: Shape {
     }
 }
 
+/// A simple line at a certain coordinate which shows the passage from positive energy prices to negative energy prices. It supports animation when the height  of this line is changed.
 struct VerticalDividerLineShape: Shape {
     let width: CGFloat
     var height: CGFloat
@@ -93,12 +94,21 @@ struct AnimatableCustomFontModifier: AnimatableModifier {
 }
 
 extension View {
+    
+    /**
+     Animates size changes of text
+     - Parameter size: The size of the text. If it gets changed those changes in text size are animated.
+     - Returns: Returns the view the modifier was applied to with the font  and properties to reflect the change of the size to animate it in the future.
+     */
     func animatableFont(size: CGFloat) -> some View {
         self.modifier(AnimatableCustomFontModifier(size: size))
     }
 
 }
 
+/**
+ A single bar with a certain length (representing the energy cost for this hour relative to other hours) and text which again shows the energy cost for this hour but helps to also show the energy price information in more legible and more accurate form.
+ */
 struct EnergyPriceSingleBar: View {
     @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var currentSetting: CurrentSetting
@@ -182,6 +192,7 @@ struct EnergyPriceSingleBar: View {
         )
         
         ZStack(alignment: Alignment(horizontal: .trailing, vertical: .center)) {
+            // Draw the bar shape
             if hourDataPoint.marketprice > 0 {
                 BarShape(isSelected: (isSelected == 1 ? true : false), startWidth: maximalNegativePriceBarWidth, startHeight: startHeight, widthOfBar: positivePriceBarWidth + currentDividerLineWidth, heightOfBar: height, lookToSide: .right)
                     .fill(LinearGradient(gradient: Gradient(colors: [Color(hue: 0.0849, saturation: 0.6797, brightness: 0.9059), Color(hue: 0.9978, saturation: 0.7163, brightness: 0.8431)]), startPoint: .leading, endPoint: .trailing))
@@ -190,11 +201,13 @@ struct EnergyPriceSingleBar: View {
                     .fill(LinearGradient(gradient: Gradient(colors: [Color.green, Color.gray]), startPoint: .leading, endPoint: .trailing))
             }
 
+            // If there are negative energy price values a vergtical divider line shape is displayed to mark the point where costs go from positive values to negative values
             if maximalNegativePriceBarWidth != 0 {
                 VerticalDividerLineShape(width: currentDividerLineWidth, height: height, startWidth: maximalNegativePriceBarWidth, startHeight: startHeight)
                     .foregroundColor(colorScheme == .light ? Color.black : Color.white)
             }
 
+            // Show the energy price as text with or without VAT/tax included
             VStack {
                 if currentSetting.setting!.pricesWithTaxIncluded {
                     // With tax
@@ -213,6 +226,7 @@ struct EnergyPriceSingleBar: View {
             .animatableFont(size: ((isSelected == 1) ? 17 : ((isSelected == 2) ? 9 : 7)))
             .position(x: ((isSelected == 1) ? maximalNegativePriceBarWidth + 16 + 22 : ((isSelected == 2) ? maximalNegativePriceBarWidth + 16 + 8 : maximalNegativePriceBarWidth + 16 + 3)), y: startHeight + (height / 2)) // 16 is padding
 
+            // Show start to end time of the hour in which the certain energy price applies
             HStack(spacing: 5) {
                 Text(singleBarSettings.hourFormatter.string(from: Date(timeIntervalSince1970: TimeInterval(hourDataPoint.startTimestamp))))
                 Text("-")
@@ -229,6 +243,7 @@ struct EnergyPriceSingleBar: View {
     }
 }
 
+/// Some single bar settings which is used by each bar
 class SingleBarSettings: ObservableObject {
     var centFormatter: NumberFormatter
     var hourFormatter: DateFormatter
@@ -252,7 +267,7 @@ class SingleBarSettings: ObservableObject {
     }
 }
 
-/// The interactive graph drawn on the home screen displaying the price for each hour
+/// The interactive graph drawn on the home screen displaying the price for each hour throughout the day
 struct EnergyPriceGraph: View {
     @EnvironmentObject var awattarData: AwattarData
     @EnvironmentObject var currentSetting: CurrentSetting
@@ -267,6 +282,12 @@ struct EnergyPriceGraph: View {
     @State var singleBarSettings: SingleBarSettings? = nil
 
     var body: some View {
+        // The drag gesture responsible for making the graph interactive.
+        // It gets active when the user presses anywhere on the graph.
+        // After that the gesture calculates the bar which the user pressed on. This bar and its
+        // associated text is than resized to be larger. This is used to display many
+        // bars on one screen and still ensure that they can be easily recognized
+
         let graphDragGesture = DragGesture(minimumDistance: 0)
             .onChanged { location in
                 let locationHeight = location.location.y
@@ -310,10 +331,6 @@ struct EnergyPriceGraph: View {
                 }
             }
         }
-//        .onAppear {
-//            singleBarSettings.minPrice = awattarData.energyData!.minPrice
-//            singleBarSettings.maxPrice = awattarData.energyData!.maxPrice
-//        }
         .gesture(graphDragGesture)
     }
 }

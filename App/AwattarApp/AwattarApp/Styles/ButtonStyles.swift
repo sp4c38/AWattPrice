@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-// Define various Button Styles used throughout the app
 
 struct ActionButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {

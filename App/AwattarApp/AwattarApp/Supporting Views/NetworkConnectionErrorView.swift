@@ -7,9 +7,8 @@
 
 import SwiftUI
 
+// A general network connection error view which is used at multiple spots throughout the application where no network connection could be established or others network problems occur
 struct NetworkConnectionErrorView: View {
-    // View shown when a network connection error occurs
-    
     @Environment(\.colorScheme) var colorScheme
     
     var body: some View {

@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-class CheapestHourCalculator: ObservableObject {
+class CheapestHourManager: ObservableObject {
     @Published var energyUsageInput = "10"
     @Published var energyUsage: Float? = nil
     
@@ -86,7 +86,7 @@ class CheapestHourCalculator: ObservableObject {
         }
     }
     
-    func calculateBestHours(energyData: EnergyData) {
+    func calculateCheapestHours(energyData: EnergyData) {
         // Energy used in a certain time interval is specified by the user
         // This function than can calculate when the cheapest hours are for the energy consumption
         // Example:
@@ -182,7 +182,7 @@ struct ConsumptionComparisonView: View {
     @EnvironmentObject var currentSetting: CurrentSetting
     @EnvironmentObject var awattarData: AwattarData
     
-    @ObservedObject var cheapestHourCalculator = CheapestHourCalculator()
+    @ObservedObject var cheapestHourManager = CheapestHourManager()
     
     @State var showInfo = false
     
@@ -213,7 +213,7 @@ struct ConsumptionComparisonView: View {
                                         .bold()
                                     
                                     HStack(spacing: 7) {
-                                        TextField("elecUsage", text: $cheapestHourCalculator.energyUsageInput)
+                                        TextField("elecUsage", text: $cheapestHourManager.energyUsageInput)
                                             .keyboardType(.decimalPad)
                                             .multilineTextAlignment(.leading)
                                             .textFieldStyle(RoundedBorderTextFieldStyle())
@@ -224,13 +224,13 @@ struct ConsumptionComparisonView: View {
     
                                 VStack {
                                     DatePicker(
-                                        selection: $cheapestHourCalculator.startDate,
+                                        selection: $cheapestHourManager.startDate,
                                         in: dateClosedRange,
                                         displayedComponents: [.date, .hourAndMinute],
                                         label: { Text("startOfUse").bold() })
                                     
                                     DatePicker(
-                                        selection: $cheapestHourCalculator.endDate,
+                                        selection: $cheapestHourManager.endDate,
                                         in: dateClosedRange,
                                         displayedComponents: [.date, .hourAndMinute],
                                         label: { Text("endOfUse").bold() })
@@ -240,11 +240,11 @@ struct ConsumptionComparisonView: View {
                                     Text("lengthOfUse")
                                         .bold()
 
-                                    TimeIntervalPicker(cheapestHourCalculator: cheapestHourCalculator)
+                                    TimeIntervalPicker(cheapestHourManager: cheapestHourManager)
                                         .frame(maxWidth: .infinity)
                                 }
                                 
-                                NavigationLink(destination: ConsumptionResultView(cheapestHourCalculator: cheapestHourCalculator), tag: 1, selection: $calculateAction) {
+                                NavigationLink(destination: ConsumptionResultView(cheapestHourManager: cheapestHourManager), tag: 1, selection: $calculateAction) {
                                 }
                     
                                 Spacer()
@@ -290,7 +290,7 @@ struct ConsumptionComparisonView: View {
                 if awattarData.energyData != nil {
                     let maxHourIndex = awattarData.energyData!.prices.count - 1
                     
-                    cheapestHourCalculator.endDate = Date(timeIntervalSince1970: TimeInterval(awattarData.energyData!.prices[maxHourIndex].endTimestamp))
+                    cheapestHourManager.endDate = Date(timeIntervalSince1970: TimeInterval(awattarData.energyData!.prices[maxHourIndex].endTimestamp))
                 }
             }
             .onTapGesture {

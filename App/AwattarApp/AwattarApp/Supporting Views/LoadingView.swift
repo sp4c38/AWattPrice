@@ -7,9 +7,8 @@
 
 import SwiftUI
 
+// A general loading view which is used at multiple spots throughout the application where date is beeing processed or downloaded
 struct LoadingView: View {
-    // Loading view used by multiple views when indicating for example that data is beeing processed or data is beeing downloaded
-    
     var body: some View {
         VStack(spacing: 20) {
             Spacer()

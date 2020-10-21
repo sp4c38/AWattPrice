@@ -7,34 +7,9 @@
 
 import SwiftUI
 
-struct CheckmarkView: View {
-    struct CheckmarkFirstLine: Shape {
-        var startPoint: CGPoint
-        var endPoint: CGPoint
-        let lineWidth: CGFloat
-        
-        var animatableData: AnimatablePair<CGFloat, CGFloat> {
-            get {
-                AnimatablePair(endPoint.x, endPoint.y)
-            }
-
-            set {
-                self.endPoint.x = newValue.first
-                self.endPoint.y = newValue.second
-            }
-        }
-        
-        func path(in rect: CGRect) -> Path {
-            var path = Path()
-            path.move(to: CGPoint(x: startPoint.x, y: startPoint.y))
-            path.addLine(to: CGPoint(x: endPoint.x, y: endPoint.y))
-            
-            path = path.strokedPath(StrokeStyle(lineWidth: lineWidth, lineCap: .round))
-            return path
-        }
-    }
-    
-    struct CheckmarkEndLine: Shape {
+/// A  checkmark which animates in
+struct AnimatingCheckmark: View {
+    struct CheckmarkLine: Shape {
         var startPoint: CGPoint
         var endPoint: CGPoint
         let lineWidth: CGFloat
@@ -56,7 +31,7 @@ struct CheckmarkView: View {
             if endPoint.x != startPoint.x && endPoint.y != startPoint.y {
                 path.move(to: CGPoint(x: startPoint.x, y: startPoint.y))
                 path.addLine(to: CGPoint(x: endPoint.x, y: endPoint.y))
-                
+            
                 path = path.strokedPath(StrokeStyle(lineWidth: lineWidth, lineCap: .round))
             }
             
@@ -82,9 +57,9 @@ struct CheckmarkView: View {
 
         return ZStack {
             ZStack {
-                CheckmarkFirstLine(startPoint: firstLineStartPoint, endPoint: firstLineEndPoint, lineWidth: lineWidth)
+                CheckmarkLine(startPoint: firstLineStartPoint, endPoint: firstLineEndPoint, lineWidth: lineWidth)
                 
-                CheckmarkEndLine(startPoint: secondLineStartPoint, endPoint: secondLineEndPoint, lineWidth: lineWidth)
+                CheckmarkLine(startPoint: secondLineStartPoint, endPoint: secondLineEndPoint, lineWidth: lineWidth)
                 
                 Circle()
                     .trim(from: 0.0, to: trimAmount)
@@ -132,21 +107,18 @@ struct CheckmarkView: View {
     }
 }
 
+/// Final splash screen which tells that the setup process was completed.
 struct SplashScreenFinishView: View {
-    // Last splash screen which tells the user that the setup was completed
-    
     @EnvironmentObject var currentSetting: CurrentSetting
     
     var body: some View {
         VStack {
-            // A checkmark which slowly animates in
-            CheckmarkView()
+            AnimatingCheckmark() // animating checkmark
             
             Spacer()
 
             Button(action: {
-                // Changes a setting in persistent storage to indicate that all splash screens were completed
-                // After that the app can be normally used
+                // Set splashScreensFinished to true so that splash screens aren't shown the next time the app opens
                 currentSetting.changeSplashScreenFinished(newState: true)
             }) {
                 Text("Finish")
@@ -161,6 +133,6 @@ struct SplashScreenFinishView: View {
 
 struct SplashScreenFinishView_Previews: PreviewProvider {
     static var previews: some View {
-        SplashScreenFinishView()
+        AnimatingCheckmark()
     }
 }

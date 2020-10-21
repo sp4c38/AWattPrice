@@ -14,9 +14,12 @@ extension Setting {
         return NSFetchRequest<Setting>(entityName: "Setting")
     }
 
-    @NSManaged public var splashScreensFinished: Bool
+    /// Index representing an energy tariff/profile
     @NSManaged public var awattarEnergyProfileIndex: Int16
+    /// Boolean which sets if prices throughout the app will be calculated with or without VAT/tax included
     @NSManaged public var pricesWithTaxIncluded: Bool
+    /// The base energy price which must be individually set by the user
     @NSManaged public var awattarEnergyPrice: Float
-
+    /// The splash screen must only be shown once. This persistent stored value ensures that this is the case.
+    @NSManaged public var splashScreensFinished: Bool
 }

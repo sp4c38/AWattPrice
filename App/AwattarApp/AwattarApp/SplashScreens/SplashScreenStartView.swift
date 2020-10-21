@@ -7,9 +7,10 @@
 
 import SwiftUI
 
+/**
+ Single detail view to show a icon, title and subtitle intended to describe a main functionality of the app.
+ */
 struct SplashScreenDetailNoteView: View {
-    // A view which is intended to presents and shortly describe a functionallity of the app
-    
     @Environment(\.colorScheme) var colorScheme
     
     var title: String
@@ -38,12 +39,10 @@ struct SplashScreenDetailNoteView: View {
     }
 }
 
-// Splash screens are shown to the user the first time he/she opens the app
-// Here they provide short information of the functionallity of the app and ask the user to input required information
-
+/**
+ Start of all splash screens. Presents and describes the main functionalities of the app briefly.
+ */
 struct SplashScreenStartView: View {
-    // The first splash screen which briefly presents multiple functionallitys of the app
-    
     @EnvironmentObject var currentSetting: CurrentSetting
     @State var redirectToNextSplashScreen: Int? = 0
     

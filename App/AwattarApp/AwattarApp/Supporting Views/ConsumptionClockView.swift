@@ -8,6 +8,7 @@
 import SwiftUI
 
 extension View {
+    /// Applies modifiers only than to the content if a conditional evaluates to true
     @ViewBuilder func ifTrue<Content: View>(_ conditional: Bool, content: (Self) -> Content) -> some View {
         if conditional {
             content(self)
@@ -17,7 +18,7 @@ extension View {
     }
 }
 
-/// A clock which shows the cheapest time to use energy.
+/// A clock which job it is to visually present the cheapest hours for the consumption so that these informations can be immediately and fastly processed by the user.
 struct ConsumptionClockView: View {
     @Environment(\.colorScheme) var colorScheme
 
@@ -32,8 +33,7 @@ struct ConsumptionClockView: View {
 
     var hourDegree = (0, 0)
 
-    init(_ cheapestHourPair: CheapestHourCalculator.HourPair) {
-        // 15 degrees is the angle for one single hour
+    init(_ cheapestHourPair: CheapestHourManager.HourPair) {
         let minItemIndex = 0
         let maxItemIndex = cheapestHourPair.associatedPricePoints.count - 1
 
@@ -46,10 +46,9 @@ struct ConsumptionClockView: View {
             let endHour = Float(calendar.component(.hour, from: endTimeLastItem))
             let endMinute = Float(calendar.component(.minute, from: endTimeLastItem)) / 60
 
+            // Subtract 90 degrees to make the cheapest hour indicator fit with the clocks alignment
             var startDegree = Int(30 * (startHour + startMinute)) - 90
             var endDegree = Int(30 * (endHour + endMinute)) - 90
-
-            // Subtract 90 degrees to make it fit with the clock alignment
 
             if startHour > 12 {
                 // Chage to PM if in PM section
@@ -62,7 +61,7 @@ struct ConsumptionClockView: View {
                 endDegree -= 360
             }
             
-            // Add or subtract some degrees to compensate the overlap of the lineCap of the hour indicator in the clock
+            // Add or subtract some degrees to compensate the overlap which occurs because of the lineCap applied to the cheapest hour indicator
             startDegree += 3
             if startHour == endHour {
                 if endMinute - startMinute >= 0.5 {
@@ -76,6 +75,7 @@ struct ConsumptionClockView: View {
             
             hourDegree = (startDegree, endDegree)
             
+            // Show the dates the cheapest hour indicator crosses
             let dayFormatter = DateFormatter()
             dayFormatter.dateFormat = "dd"
             let monthFormatter = DateFormatter()
@@ -143,6 +143,7 @@ struct ConsumptionClockView: View {
         var hourNamesAndPositions = [(String, CGFloat, CGFloat, CGFloat, CGFloat, CGFloat, CGFloat)]()
         var currentDegree: Double = -60
         
+        // Calculate text and line positions for the hours 1 to 12 which are shown on a normal clock
         for hourName in 1...12 {
             // Calculate the x coord and y coord for the text with the currentDegree and the radius of the circle
             let xCoordTextDiff = CGFloat(Double((clockWidth / 2) + textPaddingToClock) * cos(currentDegree * Double.pi / 180))
@@ -152,20 +153,21 @@ struct ConsumptionClockView: View {
             let textXCoord = clockRightSideStartWidth + (clockWidth / 2) + xCoordTextDiff
             let textYCoord = clockStartHeight + (clockWidth / 2) + yCoordTextDiff
 
-            // Calculate the start and endposition of the lines around the clock representing the hours
+            // Calculate the start and endposition of the lines around the clock representing the start point of hours
             let lineFirstXCoord = CGFloat(Double(clockWidth / 2 + hourBorderIndicatorWidth) * cos(currentDegree * Double.pi / 180)) + clockRightSideStartWidth + (clockWidth / 2)
             let lineFirstYCoord = CGFloat(Double(clockWidth / 2 + hourBorderIndicatorWidth) * sin(currentDegree * Double.pi / 180)) + clockStartHeight + (clockWidth / 2)
 
             let lineSecondXCoord = CGFloat(Double(clockWidth / 2 - circleLineWidth) * cos(currentDegree * Double.pi / 180)) + clockRightSideStartWidth + (clockWidth / 2)
             let lineSecondYCoord = CGFloat(Double(clockWidth / 2 - circleLineWidth) * sin(currentDegree * Double.pi / 180)) + clockStartHeight + (clockWidth / 2)
 
-            // Add all values the the hourNamesAndPositions array which will later be used to draw the text
+            // Add all values the the hourNamesAndPositions array which will later be used to draw the text and lines
             hourNamesAndPositions.append((String(hourName), textXCoord, textYCoord, lineFirstXCoord, lineFirstYCoord, lineSecondXCoord, lineSecondYCoord))
 
             currentDegree += 30
         }
         
         return ZStack {
+            // Outside circle which holds the clock inside of it
             Circle()
                 .foregroundColor(colorScheme == .light ? Color.white : Color.black)
                 .frame(width: width)
@@ -179,11 +181,14 @@ struct ConsumptionClockView: View {
 //            }
 //            .foregroundColor(colorScheme == .light ? Color.black : Color.white)
 
+            
+            // A little point in the direct center of the clock at which the hour indicator and the minute indicator originate from
             Path { path in
                 path.addArc(center: center, radius: middlePointRadius, startAngle: .degrees(0), endAngle: .degrees(360), clockwise: true)
             }
             .fill(colorScheme == .light ? Color.black : Color.white)
 
+            // A outline of a circle around the inner enclosure of the clock on which later the cheapest hour indicator is drawn ontop. It's just an element to improve the UI experience for the user.
             Path { path in
                 path.addArc(center: center, radius: hourMarkerRadius - (hourMarkerLineWidth / 2), startAngle: .degrees(0), endAngle: .degrees(360), clockwise: false)
 
@@ -192,12 +197,14 @@ struct ConsumptionClockView: View {
             .foregroundColor(colorScheme == .light ? Color.black : Color.white)
             .opacity(colorScheme == .light ? 0.1 : 0.3)
 
+            // The cheapest hour indicator which is ontop of the outline of the circle around the inner enclosure
             Path { path in
                 path.addArc(center: center, radius: hourMarkerRadius, startAngle: .degrees(Double(hourDegree.0)), endAngle: .degrees(Double(hourDegree.1)), clockwise: false)
             }
             .strokedPath(.init(lineWidth: hourMarkerLineWidth, lineCap: .round))
             .foregroundColor(Color(hue: 0.3786, saturation: 0.6959, brightness: 0.8510))
 
+            // The different hour texts (1 to 12) and their lines to indicate when a hour starts and to give some basic orientation on the clock
             ForEach(hourNamesAndPositions, id: \.0) { hour in
                 Text(hour.0)
                     .bold()
@@ -211,6 +218,7 @@ struct ConsumptionClockView: View {
                 .foregroundColor(colorScheme == .light ? Color.black : Color.white)
             }
 
+            // The start date and if needed also the end date which help the user understand from when to when the cheapest hours apply
             HStack(spacing: 10) {
                 HStack(spacing: 7) {
                     Text(startDateString.0)
@@ -239,12 +247,14 @@ struct ConsumptionClockView: View {
             .font(.headline)
             .position(x: clockRightSideStartWidth + clockWidth / 2, y: clockStartHeight + (clockWidth / 3) + (hourMarkerLineWidth / 2))
 
+            // Indicates if the start hour of the cheapest hours are within the am time or pm time
             Text(timeIsAM ? "am" : "pm")
                 .font(.title2)
                 .bold()
                 .foregroundColor(colorScheme == .light ? Color.black : Color.white)
                 .position(x: clockRightSideStartWidth + clockWidth / 2, y: clockStartHeight + (3 * clockWidth / 4) - (hourMarkerLineWidth / 2))
 
+            // The minute indicator which indicates which minute currently is
             Path { path in
                 path.move(to: center)
                 path.addLine(to: CGPoint(x: currentMinuteXCoord, y: currentMinuteYCoord))
@@ -252,6 +262,7 @@ struct ConsumptionClockView: View {
             .strokedPath(.init(lineWidth: 5, lineCap: .round))
             .foregroundColor(colorScheme == .light ? Color.black : Color.white)
 
+            // The hour indicator which indicates which hour currently is
             Path { path in
                 path.move(to: center)
                 path.addLine(to: CGPoint(x: currentHourXCoord, y: currentHourYCoord))
@@ -264,7 +275,7 @@ struct ConsumptionClockView: View {
 
 struct ConsumptionClockView_Previews: PreviewProvider {
     static var previews: some View {
-        ConsumptionClockView(CheapestHourCalculator.HourPair(associatedPricePoints: [EnergyPricePoint(startTimestamp: 1603184400, endTimestamp: 1603189800, marketprice: 3)]))
+        ConsumptionClockView(CheapestHourManager.HourPair(associatedPricePoints: [EnergyPricePoint(startTimestamp: 1603184400, endTimestamp: 1603189800, marketprice: 3)]))
             .preferredColorScheme(.dark)
             .padding(20)
     }

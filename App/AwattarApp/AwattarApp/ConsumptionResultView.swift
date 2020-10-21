@@ -11,12 +11,12 @@ struct ConsumptionResultView: View {
     @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var awattarData: AwattarData
     
-    var cheapestHourCalculator: CheapestHourCalculator
+    var cheapestHourManager: CheapestHourManager
     var dateFormatter: DateFormatter
     let currencyFormatter: NumberFormatter
     
-    init(cheapestHourCalculator: CheapestHourCalculator) {
-        self.cheapestHourCalculator = cheapestHourCalculator
+    init(cheapestHourManager: CheapestHourManager) {
+        self.cheapestHourManager = cheapestHourManager
   
         dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .short
@@ -34,28 +34,28 @@ struct ConsumptionResultView: View {
         VStack(alignment: .center) {
             Divider()
             
-            if cheapestHourCalculator.cheapestHoursForUsage != nil {
+            if cheapestHourManager.cheapestHoursForUsage != nil {
                 Spacer()
                 
                 VStack(alignment: .center, spacing: 5) {
                     Text(dateFormatter.string(from: Date(timeIntervalSince1970:
-                                                            TimeInterval(cheapestHourCalculator.cheapestHoursForUsage!.associatedPricePoints[0].startTimestamp))))
+                                                            TimeInterval(cheapestHourManager.cheapestHoursForUsage!.associatedPricePoints[0].startTimestamp))))
                         .bold()
 
                     Text("until")
 
                     Text(dateFormatter.string(from: Date(timeIntervalSince1970:
-                                                            TimeInterval(cheapestHourCalculator.cheapestHoursForUsage!.associatedPricePoints[cheapestHourCalculator.cheapestHoursForUsage!.associatedPricePoints.count - 1].endTimestamp))))
+                                                            TimeInterval(cheapestHourManager.cheapestHoursForUsage!.associatedPricePoints[cheapestHourManager.cheapestHoursForUsage!.associatedPricePoints.count - 1].endTimestamp))))
                         .bold()
                 }
                 .font(.title2)
                 .padding(16)
                 
-                if cheapestHourCalculator.cheapestHoursForUsage!.energyCosts != nil {
+                if cheapestHourManager.cheapestHoursForUsage!.energyCosts != nil {
                     VStack(alignment: .center, spacing: 5) {
                         Text("Insgesamter letztendlicher Preis:")
                         
-                        Text(currencyFormatter.string(from: NSNumber(value: (cheapestHourCalculator.cheapestHoursForUsage!.energyCosts!))) ?? "") // Convert to Euro
+                        Text(currencyFormatter.string(from: NSNumber(value: (cheapestHourManager.cheapestHoursForUsage!.energyCosts!))) ?? "") // Convert to Euro
                             .font(.headline)
                     }
                     .foregroundColor(Color.white)
@@ -67,7 +67,7 @@ struct ConsumptionResultView: View {
                 }
                 
                 HStack(spacing: 10) {
-                    ConsumptionClockView(cheapestHourCalculator.cheapestHoursForUsage!)
+                    ConsumptionClockView(cheapestHourManager.cheapestHoursForUsage!)
                         .padding([.leading, .trailing], 20)
                 }
                 .padding(16)
@@ -77,8 +77,8 @@ struct ConsumptionResultView: View {
             }
         }
         .onAppear {
-            cheapestHourCalculator.setValues()
-            cheapestHourCalculator.calculateBestHours(energyData: awattarData.energyData!)
+            cheapestHourManager.setValues()
+            cheapestHourManager.calculateCheapestHours(energyData: awattarData.energyData!)
         }
         .navigationBarTitle("results")
     }

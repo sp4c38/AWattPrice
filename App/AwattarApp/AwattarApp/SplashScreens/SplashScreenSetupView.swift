@@ -7,9 +7,8 @@
 
 import SwiftUI
 
+/// Splash screen which handles the input of settings which are required for the main functionality of the app.
 struct SplashScreenSetupView: View {
-    // Handles input of required information by the user
-    
     @EnvironmentObject var currentSetting: CurrentSetting
     
     @State var redirectToNextSplashScreen: Int? = 0

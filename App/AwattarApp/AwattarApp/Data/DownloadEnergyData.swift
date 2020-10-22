@@ -42,12 +42,13 @@ struct ProfilesData {
         Profile(name: "YEARLY", imageName: "yearlyProfilePicture")]
 }
 
+/// Object responsible for downloading the current energy prices from the backend, decoding this data and providing it to all views which need it. It also includes data for the different profiles/tariffs of aWATTar which don't need to be downloaded.
 class AwattarData: ObservableObject {
     // Needs to be an observable object because the data is downloaded asynchronously from the server
-    // and views need to check when downloading the data finished
+    // and views need to check whether downloading the data finished or not
     
-    @Published var networkConnectionError = false
-    @Published var energyData: EnergyData? = nil // Energy Data with all hours included
+    @Published var networkConnectionError = false // A value representing if network connection errors occurred while trying to download the data from the backend.
+    @Published var energyData: EnergyData? = nil
     @Published var profilesData = ProfilesData()
 
     init() {
@@ -87,8 +88,9 @@ class AwattarData: ObservableObject {
                         }
                     }
                     
-                    
                     DispatchQueue.main.async {
+                        // Set data in main thread
+                        
                         self.energyData = EnergyData(prices: usedPricesDecodedData, minPrice: (minPrice != nil ? minPrice! : 0), maxPrice: (maxPrice != nil ? maxPrice! : 0))
                     }
                 } catch {

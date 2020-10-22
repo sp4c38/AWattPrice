@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17192" systemVersion="20A5384c" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17192" systemVersion="20A5395g" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="Setting" representedClassName="Setting" syncable="YES">
         <attribute name="awattarEnergyPrice" optional="YES" attributeType="Float" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="awattarEnergyProfileIndex" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="awattarProfileIndex" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="pricesWithTaxIncluded" optional="YES" attributeType="Boolean" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="splashScreensFinished" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
     </entity>
     <elements>
-        <element name="Setting" positionX="13622.15289306641" positionY="-640.1206970214844" width="698.1566162109375" height="103"/>
+        <element name="Setting" positionX="13622.15289306641" positionY="-640.1206970214844" width="698.1566162109375" height="89"/>
     </elements>
 </model>

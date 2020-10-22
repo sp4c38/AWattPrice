@@ -16,7 +16,7 @@ func getSetting(managedObjectContext: NSManagedObjectContext, fetchRequestResult
     } else if fetchRequestResults.count == 0 {
         // No Settings object is yet created. Create a new Settings object with default values and save it to the persistent store
         let newSetting = Setting(context: managedObjectContext)
-        newSetting.awattarEnergyProfileIndex = 0
+        newSetting.awattarProfileIndex = 0
         newSetting.pricesWithTaxIncluded = true
         newSetting.awattarEnergyPrice = 0
         newSetting.splashScreensFinished = false
@@ -52,31 +52,10 @@ func getSetting(managedObjectContext: NSManagedObjectContext, fetchRequestResult
     }
 }
 
-func changeEnergyProfileIndex(newProfileIndex: Int16, settingsObject: Setting, managedObjectContext: NSManagedObjectContext) {
-    settingsObject.awattarEnergyProfileIndex = newProfileIndex
-    do {
-        try managedObjectContext.save()
-    } catch {
-        return
-    }
-    
-    return
-}
-
-func changeEnergyCharge(newEnergyCharge: Float, settingsObject: Setting, managedObjectContext: NSManagedObjectContext) {
-    settingsObject.awattarEnergyPrice = newEnergyCharge
-    do {
-        try managedObjectContext.save()
-    } catch {
-        return
-    }
-    
-    return
-}
-
+/// Object which holds the current Setting object. Using NSFetchedResultsController the current setting stored in this object is updated if any changes occur to it.
 class CurrentSetting: NSObject, NSFetchedResultsControllerDelegate, ObservableObject {
-    var managedObjectContext: NSManagedObjectContext
-    let settingController: NSFetchedResultsController<Setting>
+    var managedObjectContext: NSManagedObjectContext // managed object context is stored with this object because it is later needed to change settings
+    let settingController: NSFetchedResultsController<Setting> // settings controller which reports changes in the persistent stored Setting object
     
     init(managedObjectContext: NSManagedObjectContext) {
         self.managedObjectContext = managedObjectContext
@@ -99,9 +78,17 @@ class CurrentSetting: NSObject, NSFetchedResultsControllerDelegate, ObservableOb
     }
     
     var setting: Setting? {
+        // The current up-to-date Setting object. This variable is nil if any error occurred retrieving the Setting object.
+        // It shouldn't happen that no Setting object is found because getSetting handles the case that there isn't any Setting object yet stored (which always happens on the first ever launch of the app).
+        
         return getSetting(managedObjectContext: self.managedObjectContext, fetchRequestResults: settingController.fetchedObjects ?? []) ?? nil
     }
     
+    
+    /**
+    Changes the state of if the splash screen is finished to the specified new state.
+    - Parameter newState: The new state to which the setting should be changed to.
+    */
     func changeSplashScreenFinished(newState: Bool) {
         if setting != nil {
             self.setting!.splashScreensFinished = newState
@@ -114,12 +101,48 @@ class CurrentSetting: NSObject, NSFetchedResultsControllerDelegate, ObservableOb
         }
     }
     
+    /**
+    Changes the state of if prices are shown with tax/VAT included to the specified new state.
+    - Parameter newTaxSelection: The new state to which the setting should be changed to.
+    */
     func changeTaxSelection(newTaxSelection: Bool) {
         if setting != nil {
             self.setting!.pricesWithTaxIncluded = newTaxSelection
             
             do {
                 try self.managedObjectContext.save()
+            } catch {
+                return
+            }
+        }
+    }
+    
+    /**
+    Changes the price of the base energy charge to the specified new state.
+    - Parameter newEnergyCharge: The new price to which the setting should be changed to.
+    */
+    func changeEnergyCharge(newEnergyCharge: Float) {
+        if setting != nil {
+            self.setting!.awattarEnergyPrice = newEnergyCharge
+
+            do {
+                try managedObjectContext.save()
+            } catch {
+                return
+            }
+        }
+    }
+    
+    /**
+    Changes the index of which energy profile/tariff is selected to the specified new index.
+    - Parameter newProfileIndex: The new index to which the setting should be changed to.
+    */
+    func changeEnergyProfileIndex(newProfileIndex: Int16) {
+        if setting != nil {
+            self.setting!.awattarProfileIndex = newProfileIndex
+            
+            do {
+                try managedObjectContext.save()
             } catch {
                 return
             }

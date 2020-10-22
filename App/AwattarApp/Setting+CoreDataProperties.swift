@@ -15,7 +15,7 @@ extension Setting {
     }
 
     /// Index representing an energy tariff/profile
-    @NSManaged public var awattarEnergyProfileIndex: Int16
+    @NSManaged public var awattarProfileIndex: Int16
     /// Boolean which sets if prices throughout the app will be calculated with or without VAT/tax included
     @NSManaged public var pricesWithTaxIncluded: Bool
     /// The base energy price which must be individually set by the user

@@ -123,7 +123,7 @@ struct SettingsPageView: View {
         }
         .onAppear {
             pricesWithTaxIncluded = currentSetting.setting!.pricesWithTaxIncluded
-            awattarEnergyProfileIndex = Int(currentSetting.setting!.awattarEnergyProfileIndex)
+            awattarEnergyProfileIndex = Int(currentSetting.setting!.awattarProfileIndex)
             energyPrice = String(currentSetting.setting!.awattarEnergyPrice)
         }
     }

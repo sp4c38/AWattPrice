@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// The bar shape with  a certain length to represent the energy price relative to all other hours.
 struct BarShape: Shape {
     let isSelected: Bool
     let startWidth: CGFloat

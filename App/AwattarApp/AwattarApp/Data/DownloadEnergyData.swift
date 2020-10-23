@@ -8,6 +8,7 @@
 import SwiftUI
 import Foundation
 
+/// A single energy price data point. It has a start and end time. Throughout this time range a certain marketprice/energy price applies. This price is also held in this energy price data point.
 struct EnergyPricePoint: Hashable, Codable {
     var startTimestamp: Int
     var endTimestamp: Int
@@ -20,6 +21,7 @@ struct EnergyPricePoint: Hashable, Codable {
     }
 }
 
+/// A object containing all EnergyPricePoint's. It also holds two values for the smallest and the largest energy price of all containing energy data points.
 struct EnergyData: Codable {
     var prices: [EnergyPricePoint]
     var minPrice: Float = 0
@@ -30,11 +32,13 @@ struct EnergyData: Codable {
     }
 }
 
+/// A single aWATTar Profile with a name and an name of the image representing this profile.
 struct Profile: Hashable {
     var name: String
     var imageName: String
 }
 
+/// Defines all profiles that exist.
 struct ProfilesData {
     var profiles = [
         Profile(name: "HOURLY", imageName: "hourlyProfilePicture"),

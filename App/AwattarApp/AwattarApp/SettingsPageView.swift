@@ -8,6 +8,8 @@
 import SceneKit
 import SwiftUI
 
+
+
 extension AnyTransition {
     static var switchPlaces: AnyTransition {
         let insertion = AnyTransition.scale(scale: 2).combined(with: .opacity)
@@ -16,115 +18,133 @@ extension AnyTransition {
     }
 }
 
-struct SettingsPageView: View {
-    @EnvironmentObject var awattarData: AwattarData
+struct PricesWithVatIncludedSetting: View {
     @EnvironmentObject var currentSetting: CurrentSetting
     
     @State var pricesWithTaxIncluded = true
     
-    @State var awattarEnergyProfileIndex: Int = 0
-    @State var energyPrice = ""
-    
-    let stringToNumberConverter: NumberFormatter
-    
-    init() {
-        stringToNumberConverter = NumberFormatter()
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("price")
+                .bold()
+            
+            HStack(spacing: 10) {
+                Text("pricesWithVat")
+                    .font(.caption)
+                    .fixedSize(horizontal: false, vertical: true)
+                
+                Toggle(isOn: $pricesWithTaxIncluded) {
+                    
+                }
+                .onChange(of: pricesWithTaxIncluded) { newValue in
+                    currentSetting.changeTaxSelection(newTaxSelection: newValue)
+                }
+            }
+        }
+        .onAppear {
+            pricesWithTaxIncluded = currentSetting.setting!.pricesWithTaxIncluded
+        }
     }
+}
+
+struct AwattarTarifSelectionSetting: View {
+    @EnvironmentObject var currentSetting: CurrentSetting
+    @EnvironmentObject var awattarData: AwattarData
     
+    @State var awattarEnergyProfileIndex: Int = 0
+    
+    var body: some View {
+        VStack(alignment: .center, spacing: 10) {
+            Text("awattarTariff")
+                .bold()
+            
+            Text("tariffSelectionTip")
+                .font(.caption)
+                .foregroundColor(Color.gray)
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(.bottom, 10)
+
+            Picker(selection: $awattarEnergyProfileIndex, label: Text("")) {
+                ForEach(awattarData.profilesData.profiles, id: \.name) { profile in
+                    Text(profile.name).tag(awattarData.profilesData.profiles.firstIndex(of: profile)!)
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .pickerStyle(SegmentedPickerStyle())
+            .onChange(of: awattarEnergyProfileIndex) { newValue in
+            }
+
+            VStack(alignment: .center, spacing: 15) {
+                Image(awattarData.profilesData.profiles[awattarEnergyProfileIndex].imageName)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 60, height: 60, alignment: .center)
+                    .padding(.top, 5)
+                
+                Text(awattarData.profilesData.profiles[awattarEnergyProfileIndex].name)
+                    .bold()
+                    .font(.title3)
+                    .padding(.bottom, 10)
+            }
+        }
+        .onAppear {
+            awattarEnergyProfileIndex = Int(currentSetting.setting!.awattarProfileIndex)
+        }
+    }
+}
+
+struct AwattarBasicEnergyChargePriceSetting: View {
+    @EnvironmentObject var currentSetting: CurrentSetting
+    
+    @State var baseEnergyPrice = ""
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("elecPriceColon")
+            
+            HStack(spacing: 0) {
+                TextField("", text: $baseEnergyPrice)
+                    .keyboardType(.decimalPad)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .onChange(of: baseEnergyPrice) { newValue in
+                        let numberConverter = NumberFormatter()
+                        if newValue.contains(",") {
+                            numberConverter.decimalSeparator = ","
+                        } else {
+                            numberConverter.decimalSeparator = "."
+                        }
+                        
+                        currentSetting.changeBaseEnergyCharge(newBaseEnergyCharge: Float(truncating: numberConverter.number(from: newValue) ?? 0))
+                    }
+                
+                Text("centPerKwh")
+                    .padding(.leading, 5)
+            }
+        }
+        .onAppear {
+            baseEnergyPrice = String(currentSetting.setting!.awattarBaseEnergyPrice)
+        }
+    }
+}
+
+/// A place for the user to modify certain settings. Those changes are automatically stored (if modified) in persistent storage.
+struct SettingsPageView: View {
     var body: some View {
         NavigationView {
             VStack {
                 Divider()
                 
-                VStack(alignment: .leading, spacing: 30) {
-                    VStack(alignment: .leading, spacing: 10) {
-                        Text("price")
-                            .bold()
-                        
-                        HStack(spacing: 10) {
-                            Text("pricesWithVat")
-                                .font(.caption)
-                                .fixedSize(horizontal: false, vertical: true)
-                            
-                            Toggle(isOn: $pricesWithTaxIncluded) {
-                                
-                            }
-                            .onChange(of: pricesWithTaxIncluded) { newValue in
-                                currentSetting.changeTaxSelection(newTaxSelection: newValue)
-                            }
-                        }
-                    }
-                    
-                    VStack(alignment: .leading, spacing: 10) {
-                        Text("awattarTariff")
-                            .bold()
-                        
-                        Text("tariffSelectionTip")
-                            .font(.caption)
-                            .foregroundColor(Color.gray)
-                            .fixedSize(horizontal: false, vertical: true)
-                            .padding(.bottom, 10)
-
-                        VStack(alignment: .center, spacing: 15) {
-                            Picker(selection: $awattarEnergyProfileIndex, label: Text("")) {
-                                ForEach(awattarData.profilesData.profiles, id: \.name) { profile in
-                                    Text(profile.name).tag(awattarData.profilesData.profiles.firstIndex(of: profile)!)
-                                }
-                            }
-                            .frame(maxWidth: .infinity)
-                            .pickerStyle(SegmentedPickerStyle())
-                            .onChange(of: awattarEnergyProfileIndex) { newValue in
-//                                changeEnergyProfileIndex(newProfileIndex: Int16(newValue), settingsObject: currentSetting.setting!, managedObjectContext: managedObjectContext)
-                            }
-
-                            VStack {
-                                Image(awattarData.profilesData.profiles[awattarEnergyProfileIndex].imageName)
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 60, height: 60, alignment: .center)
-                                    .padding(.top, 5)
-
-                                Text(awattarData.profilesData.profiles[awattarEnergyProfileIndex].name)
-                                    .bold()
-                                    .font(.title3)
-                                    .padding(.bottom, 10)
-
-                                VStack(alignment: .leading, spacing: 10) {
-                                    Text("elecPriceColon")
-                                    HStack(spacing: 0) {
-                                        TextField("", text: $energyPrice)
-                                            .keyboardType(.decimalPad)
-                                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                                            .onChange(of: energyPrice) { newValue in
-                                                let numberConverter = NumberFormatter()
-                                                if newValue.contains(",") {
-                                                    numberConverter.decimalSeparator = ","
-                                                } else {
-                                                    numberConverter.decimalSeparator = "."
-                                                }
-                                                
-//                                                changeEnergyCharge(newEnergyCharge: Float(truncating: numberConverter.number(from: newValue) ?? 0), settingsObject: currentSetting.setting!, managedObjectContext: managedObjectContext)
-                                            }
-                                        
-                                        Text("centPerKwh")
-                                            .padding(.leading, 5)
-                                    }
-                                }
-                            }
-                        }
-                    }
+                VStack(alignment: .leading, spacing: 20) {
+                    PricesWithVatIncludedSetting()
+//                    AwattarTarifSelectionSetting()
+                    AwattarBasicEnergyChargePriceSetting()
                     
                     Spacer()
                 }
-                .padding(.top, 5)
+                .padding(.top, 10)
+                .padding([.leading, .trailing], 16)
                 .navigationBarTitle("settings")
             }
-            .padding([.leading, .trailing], 16)
-        }
-        .onAppear {
-            pricesWithTaxIncluded = currentSetting.setting!.pricesWithTaxIncluded
-            awattarEnergyProfileIndex = Int(currentSetting.setting!.awattarProfileIndex)
-            energyPrice = String(currentSetting.setting!.awattarEnergyPrice)
         }
     }
 }

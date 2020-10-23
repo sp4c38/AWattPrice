@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// A view which presents the results calculated by the CheapestHourManager of when the cheapest hours for the usage of energy are.
 struct ConsumptionResultView: View {
     @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var awattarData: AwattarData
@@ -37,6 +38,7 @@ struct ConsumptionResultView: View {
             if cheapestHourManager.cheapestHoursForUsage != nil {
                 Spacer()
                 
+                // The time range in which the cheapest hours are
                 VStack(alignment: .center, spacing: 5) {
                     Text(dateFormatter.string(from: Date(timeIntervalSince1970:
                                                             TimeInterval(cheapestHourManager.cheapestHoursForUsage!.associatedPricePoints[0].startTimestamp))))
@@ -51,9 +53,10 @@ struct ConsumptionResultView: View {
                 .font(.title2)
                 .padding(16)
                 
+                // The final price the user would have to pay
                 if cheapestHourManager.cheapestHoursForUsage!.energyCosts != nil {
                     VStack(alignment: .center, spacing: 5) {
-                        Text("Insgesamter letztendlicher Preis:")
+                        Text("Letztendlicher Preis:")
                         
                         Text(currencyFormatter.string(from: NSNumber(value: (cheapestHourManager.cheapestHoursForUsage!.energyCosts!))) ?? "") // Convert to Euro
                             .font(.headline)
@@ -66,19 +69,21 @@ struct ConsumptionResultView: View {
                     .padding(.top, 5)
                 }
                 
+                // The clock which visually presents the results.
                 HStack(spacing: 10) {
                     ConsumptionClockView(cheapestHourManager.cheapestHoursForUsage!)
                         .padding([.leading, .trailing], 20)
                 }
                 .padding(16)
             } else {
+                // If calculations haven't finished yet display this progress view
                 ProgressView()
                     .progressViewStyle(CircularProgressViewStyle())
             }
         }
         .onAppear {
             cheapestHourManager.setValues()
-            cheapestHourManager.calculateCheapestHours(energyData: awattarData.energyData!)
+            cheapestHourManager.calculateCheapestHours(energyData: awattarData.energyData!) // Initiate the calculations to calculate the cheapest hours for consumption
         }
         .navigationBarTitle("results")
     }

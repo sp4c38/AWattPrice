@@ -18,7 +18,7 @@ func getSetting(managedObjectContext: NSManagedObjectContext, fetchRequestResult
         let newSetting = Setting(context: managedObjectContext)
         newSetting.awattarProfileIndex = 0
         newSetting.pricesWithTaxIncluded = true
-        newSetting.awattarEnergyPrice = 0
+        newSetting.awattarBaseEnergyPrice = 0
         newSetting.splashScreensFinished = false
         
         do {
@@ -119,11 +119,11 @@ class CurrentSetting: NSObject, NSFetchedResultsControllerDelegate, ObservableOb
     
     /**
     Changes the price of the base energy charge to the specified new state.
-    - Parameter newEnergyCharge: The new price to which the setting should be changed to.
+    - Parameter newBaseEnergyCharge: The new price to which the setting should be changed to.
     */
-    func changeEnergyCharge(newEnergyCharge: Float) {
+    func changeBaseEnergyCharge(newBaseEnergyCharge: Float) {
         if setting != nil {
-            self.setting!.awattarEnergyPrice = newEnergyCharge
+            self.setting!.awattarBaseEnergyPrice = newBaseEnergyCharge
 
             do {
                 try managedObjectContext.save()

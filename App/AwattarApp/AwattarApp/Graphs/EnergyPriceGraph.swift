@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-/// The bar shape with  a certain length to represent the energy price relative to all other hours.
+/// A single bar with a certain length to represent the energy price relative to all other hours
 struct BarShape: Shape {
     let isSelected: Bool
     let startWidth: CGFloat
@@ -82,15 +82,18 @@ struct VerticalDividerLineShape: Shape {
 
 struct AnimatableCustomFontModifier: AnimatableModifier {
     var size: CGFloat
+    var weight: Font.Weight
     
     var animatableData: CGFloat {
         get { size }
-        set { size = newValue }
+        set {
+            size = newValue
+        }
     }
     
     func body(content: Content) -> some View {
         content
-            .font(.system(size: size))
+            .font(.system(size: size, weight: weight))
     }
 }
 
@@ -101,8 +104,8 @@ extension View {
      - Parameter size: The size of the text. If it gets changed those changes in text size are animated.
      - Returns: Returns the view the modifier was applied to with the font  and properties to reflect the change of the size to animate it in the future.
      */
-    func animatableFont(size: CGFloat) -> some View {
-        self.modifier(AnimatableCustomFontModifier(size: size))
+    func animatableFont(size: CGFloat, weight: Font.Weight) -> some View {
+        self.modifier(AnimatableCustomFontModifier(size: size, weight: weight))
     }
 
 }
@@ -213,18 +216,17 @@ struct EnergyPriceSingleBar: View {
                 if currentSetting.setting!.pricesWithTaxIncluded {
                     // With tax
                     Text(singleBarSettings.centFormatter.string(from: NSNumber(value: (hourDataPoint.marketprice * 100 * 0.001 * 1.16)))!)
-                        .fontWeight((isSelected == 1) ? .bold : ((isSelected == 2 ) ? .medium : .regular))
                 } else if !currentSetting.setting!.pricesWithTaxIncluded {
                     // Without tax
                     Text(singleBarSettings.centFormatter.string(from: NSNumber(value: (hourDataPoint.marketprice * 100 * 0.001)))!)
-                        .fontWeight((isSelected == 1) ? .bold : ((isSelected == 2 ) ? .medium : .regular))
                 }
             }
             .foregroundColor(Color.black)
             .padding(1)
             .background(Color.white)
             .cornerRadius((isSelected == 1 || isSelected == 2) ? 3 : 1)
-            .animatableFont(size: ((isSelected == 1) ? 17 : ((isSelected == 2) ? 9 : 7)))
+            .animatableFont(size: ((isSelected == 1) ? 17 : ((isSelected == 2) ? 9 : 7)),
+                            weight: (isSelected == 1) ? .heavy : ((isSelected == 2 ) ? .medium : .regular))
             .position(x: ((isSelected == 1) ? maximalNegativePriceBarWidth + 16 + 22 : ((isSelected == 2) ? maximalNegativePriceBarWidth + 16 + 8 : maximalNegativePriceBarWidth + 16 + 3)), y: startHeight + (height / 2)) // 16 is padding
 
             // Show start to end time of the hour in which the certain energy price applies
@@ -233,7 +235,8 @@ struct EnergyPriceSingleBar: View {
                 Text("-")
                 Text(singleBarSettings.hourFormatter.string(from: Date(timeIntervalSince1970: TimeInterval(hourDataPoint.endTimestamp))))
             }
-            .animatableFont(size: ((isSelected == 1) ? 20 : ((isSelected == 2) ? 13 : 10)))
+            .animatableFont(size: ((isSelected == 1) ? 17 : ((isSelected == 2) ? 13 : 10)),
+                            weight: (isSelected == 1) ? .heavy : ((isSelected == 2 ) ? .medium : .regular))
             .foregroundColor(Color.black)
             .padding(1)
             .background(LinearGradient(gradient: Gradient(colors: [Color.white, Color(hue: 0.6111, saturation: 0.0276, brightness: 0.8510)]), startPoint: .topLeading, endPoint: .bottomTrailing))

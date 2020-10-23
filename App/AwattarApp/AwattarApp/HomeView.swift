@@ -7,30 +7,11 @@
 
 import SwiftUI
 
+/// The home view mainly holds the graph which represents energy costs for each hour throughout the day.
 struct HomeView: View {
     @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var awattarData: AwattarData
     @EnvironmentObject var currentSetting: CurrentSetting
-    
-    @State var hourPriceInfoViewNavControl: Int? = 0
-    @State var settingIsPresented: Bool = false
-    
-    @GestureState var isPressed = false
-    
-    var hourFormatter: DateFormatter
-    var numberFormatter: NumberFormatter
-    
-    init() {
-        hourFormatter = DateFormatter()
-        hourFormatter.dateFormat = "H"
-        
-        numberFormatter = NumberFormatter()
-        numberFormatter.numberStyle = .currency
-        numberFormatter.locale = Locale(identifier: "de_DE")
-        numberFormatter.currencySymbol = "ct"
-        numberFormatter.maximumFractionDigits = 2
-        numberFormatter.minimumFractionDigits = 2
-    }
     
     var body: some View {
         NavigationView {
@@ -53,13 +34,12 @@ struct HomeView: View {
                     EnergyPriceGraph()
                 } else {
                     if awattarData.networkConnectionError == false {
-                        // no network connection error
                         // download in progress
                         
                         LoadingView()
                     } else {
-                        // network connection error
-                        // can't fulfill download
+                        // there is a network connection error
+                        // and the download can't be fulfilled
                         
                         NetworkConnectionErrorView()
                             .transition(.opacity)

@@ -1,6 +1,6 @@
 # ⚡️ AWattPrice ⚡️
 
-A app that displays data retrieved from the public aWATTar API.
+An app that displays data retrieved from the public aWATTar API.
 
 aWATTar is an electricty provider who offers the customer to not pay a fixed price for electricity. Instead the customer only needs to pay as much for the electricity as it currently costs at stock exchange 📉. This is possible because the electricity price changes every hour. There are different tariffs which all have different degrees of risk.
 

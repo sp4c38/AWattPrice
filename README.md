@@ -6,13 +6,13 @@ aWATTar is an electricty provider who offers the customer to not pay a fixed pri
 
 🌍 Supported regions: Germany 🇩🇪 and Austria 🇦🇹
 
+Current features are:
+
+* View electricity prices throughout the day
+* Find the hours when electricity is cheapest (e.g.: find cheapest time to charge electric car, turn on the washing machine or run other electrical consumers)
+
 #### Current demo:
 ![App Demo](https://github.com/sp4c38/AwattarApp/blob/master/demo.gif?raw=true)
 
 #### Request Scheme:
 ![Request Scheme](https://raw.githubusercontent.com/sp4c38/AwattarApp/master/request_scheme.png)
-
-Current features are:
-
-* View the electricity price throughout the day
-* Let the app find the hours when electricity is cheapest (e.g.: find cheapest time to charge electric car, turn on the washing machine or run other electrical consumers)

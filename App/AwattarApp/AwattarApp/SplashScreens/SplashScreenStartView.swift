@@ -13,8 +13,8 @@ import SwiftUI
 struct SplashScreenDetailNoteView: View {
     @Environment(\.colorScheme) var colorScheme
     
-    var title: String
-    var subTitle: String
+    var title: LocalizedStringKey
+    var subTitle: LocalizedStringKey
     var imageName: String
     
     var body: some View {
@@ -55,17 +55,17 @@ struct SplashScreenStartView: View {
                         .scaledToFit()
 
                     VStack(spacing: 5) {
-                        Text("Welcome to the")
+                        Text("splashScreenWelcome")
                             .font(.system(size: 40, weight: .black))
-                        Text("energyTo App")
+                        Text("AWattPrice App")
                             .foregroundColor(Color(hue: 0.5648, saturation: 1.0000, brightness: 0.6235))
                             .font(.system(size: 36, weight: .black))
                     }
                     .padding(.bottom, 20)
 
-                    SplashScreenDetailNoteView(title: "View prices", subTitle: "Look at the current energy prices for each hour.", imageName: "magnifyingglass")
+                    SplashScreenDetailNoteView(title: "splashScreenViewPrices", subTitle: "splashScreenViewPricesInfo", imageName: "magnifyingglass")
 
-                    SplashScreenDetailNoteView(title: "Compare prices", subTitle: "Let the app find the cheapest time to use electricty.", imageName: "arrow.left.arrow.right")
+                    SplashScreenDetailNoteView(title: "splashScreenComparePrices", subTitle: "splashScreenComparePricesInfo", imageName: "arrow.left.arrow.right")
 
                     NavigationLink("", destination: SplashScreenSetupView(), tag: 1, selection: $redirectToNextSplashScreen)
                 }
@@ -75,7 +75,7 @@ struct SplashScreenStartView: View {
                 Button(action: {
                     redirectToNextSplashScreen = 1
                 }) {
-                    Text("Continue")
+                    Text("splashScreenContinueButton")
                 }
                 .buttonStyle(ContinueButtonStyle())
             }

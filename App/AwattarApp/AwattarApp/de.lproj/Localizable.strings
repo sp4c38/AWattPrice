@@ -6,6 +6,19 @@
   
 */
 
+"splashScreenWelcome" = "Willkommen zur";
+"splashScreenViewPrices" = "Preise ansehen";
+"splashScreenViewPricesInfo" = "Sehen Sie sich die aktuellen Strompreise für jede Stunde des Tages an.";
+"splashScreenComparePrices" = "Preise vergleichen";
+"splashScreenComparePricesInfo" = "Finden Sie die preislich günstigsten Stunden für Ihren Stromverbrauch.";
+"splashScreenContinueButton" = "Weiter";
+"splashScreenSetupTitle" = "Einrichtung";
+"splashScreenSetupFinished" = "Einrichtung abgeschlossen";
+"splashScreenCanChangeSettingsLater" = "Du kannst deine Einstellungen\nspäter noch ändern";
+
+"baseElectricityPriceHint" = "Sie können Ihren Grundarbeitspreis für Ihre Region auf der aWATTar Webseite finden.";
+"toAwattarWebsite" = "Zur aWATTar Webseite";
+
 "loadingData" = "Lädt";
 "pricePerKwh" = "Preis pro kWh";
 "hourOfDay" = "Uhrzeit";

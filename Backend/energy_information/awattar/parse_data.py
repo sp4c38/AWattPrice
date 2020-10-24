@@ -10,8 +10,8 @@ import requests
 def parse_awattar_energy_prices(config):
     # Downloads and parses the energy prices
 
-    # Prices for the next day are first avalible from 14 o'clock on of the current day
-
+    # Officially electricity prices for the next day are available from 14 o'clock on of the current day
+    # but often they can also be retrieved a little bit earlier
 
     awattar_raw_url = config["awattar"]["download_url"]
     awattar_data = {"prices": []}
@@ -20,13 +20,7 @@ def parse_awattar_energy_prices(config):
     cet_now = arrow.utcnow().to("CET") # Current time
 
     first_cet_timestamp = cet_now.replace(hour = 0, minute = 0, second = 0, microsecond = 0) # CET Today at midnight
-
-    if cet_now.hour >= 14:
-        # New prices are already avalible for next day
-        second_cet_timestamp = first_cet_timestamp.shift(hours = +48)
-    else:
-        # New prices for next day aren't yet avalible
-        second_cet_timestamp = first_cet_timestamp.shift(hours = +24)
+    second_cet_timestamp = first_cet_timestamp.shift(hours = +48) # This will only include data for the next day if already available
 
     params = {"start": first_cet_timestamp.timestamp * 1000, "end": second_cet_timestamp.timestamp * 1000}
     data_request = requests.get(awattar_raw_url, params = params)
@@ -37,10 +31,10 @@ def parse_awattar_energy_prices(config):
 
             for price in json_response["data"]:
                 if "Eur/MWh" in price["unit"]:
-                    # Only send marketprice results as Euro per MWh
                     price.pop("unit")
                     price["start_timestamp"] = int(price["start_timestamp"] / 1000) # Divide through 1000 to not display miliseconds
                     price["end_timestamp"] = int(price["end_timestamp"] / 1000)
+                    price["marketprice"] = price["marketprice"] * 100 * 0.001 # Convert MWh to kWh
                     awattar_data["prices"].append(price)
 
             return awattar_data

@@ -77,7 +77,8 @@ class AwattarData: ObservableObject {
                     
                     for hourPoint in decodedData.prices {
                         if Date(timeIntervalSince1970: TimeInterval(hourPoint.startTimestamp)) >= currentHour {
-                            usedPricesDecodedData.append(hourPoint)
+                            usedPricesDecodedData.append(EnergyPricePoint(startTimestamp: hourPoint.startTimestamp, endTimestamp: hourPoint.endTimestamp, marketprice: hourPoint.marketprice))
+                            
                             if maxPrice == nil || hourPoint.marketprice > maxPrice! {
                                 maxPrice = hourPoint.marketprice
                             }

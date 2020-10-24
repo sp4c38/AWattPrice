@@ -175,7 +175,7 @@ class CheapestHourManager: ObservableObject {
                 
                 if self.energyUsage != nil {
                     // Only calculate if an energy usage was specified
-                    cheapestPair.energyCosts = (self.energyUsage! * timeOfUsageInHours) * (cheapestPair.averagePrice * 100 * 0.001)
+                    cheapestPair.energyCosts = (self.energyUsage! * timeOfUsageInHours) * cheapestPair.averagePrice
                 }
             }
             

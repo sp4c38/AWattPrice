@@ -6,6 +6,19 @@
   
 */
 
+"splashScreenWelcome" = "Welcome to the";
+"splashScreenViewPrices" = "View prices";
+"splashScreenViewPricesInfo" = "Check the current electricity prices for each hour throughout the day.";
+"splashScreenComparePrices" = "Compare prices";
+"splashScreenComparePricesInfo" = "Find the cheapest hours to consume electricity.";
+"splashScreenContinueButton" = "Continue";
+"splashScreenSetupTitle" = "Setup";
+"splashScreenSetupFinished" = "Setup finished";
+"splashScreenCanChangeSettingsLater" = "You still can change\nyour settings later";
+
+"baseElectricityPriceHint" = "You can find your base electricity price for your region on the aWATTar website.";
+"toAwattarWebsite" = "To the aWATTar website";
+
 "loadingData" = "Loading";
 "pricePerKwh" = "Price per kWh";
 "hourOfDay" = "Hour of day";

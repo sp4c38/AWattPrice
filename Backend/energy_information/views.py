@@ -1,7 +1,7 @@
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 
-from . import merge_data
+from .awattar import parse_data as awattar_parse_data
 
 def get_all_data(request):
-    return JsonResponse(merge_data.main())
+    return JsonResponse(awattar_parse_data.main())

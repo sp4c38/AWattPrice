@@ -16,15 +16,15 @@ struct SplashScreenSetupView: View {
     
     var body: some View {
         VStack(spacing: 40) {
-            Text("Setup")
-                .font(.system(size: 40, weight: .regular))
+            Text("splashScreenSetupTitle")
+                .font(.system(size: 40, weight: .black))
 
             VStack(alignment: .leading, spacing: 10) {
                 VStack(alignment: .leading) {
                     Text("elecPriceColon")
                         .font(.headline)
 
-                    TextField("Cent per kWh", text: $basicCharge)
+                    TextField("centPerKwh", text: $basicCharge)
                         .keyboardType(.decimalPad)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .onChange(of: basicCharge) { newValue in
@@ -40,7 +40,7 @@ struct SplashScreenSetupView: View {
                 }
                 
                 VStack(alignment: .leading, spacing: 10) {
-                    Text("Sie können Ihren Arbeitspreis für Ihre Region auf der aWATTar Webseite finden.")
+                    Text("baseElectricityPriceHint")
                     
                     Button(action: {
                         // Let the user visit this website for him/her to get information which depends on the users location
@@ -49,7 +49,7 @@ struct SplashScreenSetupView: View {
                         UIApplication.shared.open(URL(string: "https://www.awattar.de")!)
                     }) {
                         HStack {
-                            Text("Zur aWATTar Webseite")
+                            Text("toAwattarWebsite")
                             Image(systemName: "chevron.right")
                         }
                         .foregroundColor(Color.blue)
@@ -67,7 +67,7 @@ struct SplashScreenSetupView: View {
             Button(action: {
                 redirectToNextSplashScreen = 1
             }) {
-                Text("Continue")
+                Text("splashScreenContinueButton")
             }
             .buttonStyle(ContinueButtonStyle())
         }

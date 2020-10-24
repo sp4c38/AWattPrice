@@ -70,14 +70,15 @@ struct AnimatingCheckmark: View {
             .foregroundColor(Color.green)
             
             VStack(spacing: 30) {
-               Text("Setup finished")
-                   .font(.system(size: 30, weight: .black))
-                   .padding(.bottom, 5)
+                Text("splashScreenSetupFinished")
+                    .multilineTextAlignment(.center)
+                    .font(.system(size: 30, weight: .black))
+                    .padding(.bottom, 5)
 
-               Text("You still can change your\n settings later.")
-                   .multilineTextAlignment(.center)
-           }
-           .position(x: width / 2, y: checkmarkStartHeight + 2 * checkmarkWidth)
+                Text("splashScreenCanChangeSettingsLater")
+                    .multilineTextAlignment(.center)
+            }
+            .position(x: width / 2, y: checkmarkStartHeight + 2 * checkmarkWidth)
         }
         .onAppear {
             firstLineStartPoint = CGPoint(x: 0.294 * checkmarkWidth + checkmarkStartWidth, y: 0.530 * checkmarkWidth + checkmarkStartHeight)

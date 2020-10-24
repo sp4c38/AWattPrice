@@ -37,8 +37,9 @@
 "usage" = "Verbrauch";
 "comparerInfoText" = "Hiermit kannst du die Stunden finden, in denen der Strom preislich am günstigsten ist, um zum Beispiel dein Elektroauto aufzuladen, die Waschmachine einzuschalten oder andere elektrische Verbraucher laufen zu lassen.";
 "showResults" = "Ergebnisse anzeigen";
-"startOfUse" = "Start des Verbrauches:";
-"endOfUse" = "Ende des Verbrauches:";
+"searchInTimeRange" = "In Zeitfenster suchen";
+"startTime" = "Startzeit";
+"endTime" = "Endzeit";
 "lengthOfUsage" = "Dauer des Verbrauches";
 "elecPower" = "Gebrauchte Leistung";
 "givenElecPrice" = "Dein angegebener Strompreis:";

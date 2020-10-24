@@ -155,8 +155,6 @@
 		617D85A525052C35009E18FB = {
 			isa = PBXGroup;
 			children = (
-				6156A574250C1F5E005174A5 /* Setting+CoreDataClass.swift */,
-				6156A575250C1F5E005174A5 /* Setting+CoreDataProperties.swift */,
 				617D85B025052C35009E18FB /* AwattarApp */,
 				617D85C225052C37009E18FB /* AwattarAppTests */,
 				617D85CD25052C37009E18FB /* AwattarAppUITests */,
@@ -188,6 +186,8 @@
 				611D15AE251680B9000691C6 /* ConsumptionComparisonView.swift */,
 				618A6F6D2518F8C800A8778B /* ConsumptionResultView.swift */,
 				6156A578250C2161005174A5 /* SettingsPageView.swift */,
+				6156A575250C1F5E005174A5 /* Setting+CoreDataProperties.swift */,
+				6156A574250C1F5E005174A5 /* Setting+CoreDataClass.swift */,
 				615468552520D214004FBEF7 /* Localizable.strings */,
 				6156A571250C1F04005174A5 /* Model.xcdatamodeld */,
 				617D85B525052C37009E18FB /* Assets.xcassets */,

@@ -16,25 +16,26 @@ extension AnyTransition {
     }
 }
 
-/// A input field for the electric power required in the consumption comparison view.
-struct PowerNeededInputField: View {
-    @State var someText: String = ""
+/// Input field for the power output of the consumer
+struct PowerOutputInputField: View {
+    @EnvironmentObject var cheapestHourManager: CheapestHourManager
+    
     var body: some View {
-        VStack(alignment: .leading, spacing: 25) {
+        VStack(alignment: .leading, spacing: 10) {
             HStack {
-                Text("elecPower")
+                Text("powerOutput")
                     .font(.title3)
                     .bold()
                 Spacer()
             }
             
             HStack {
-                TextField("in kW", text: $someText.animation())
+                TextField("inKw", text: $cheapestHourManager.powerOutputString.animation())
                     .keyboardType(.decimalPad)
                     .multilineTextAlignment(.leading)
                     .padding(.trailing, 5)
-
-                if someText != "" {
+                
+                if cheapestHourManager.powerOutputString != "" {
                     Text("kW")
                         .transition(.opacity)
                 }
@@ -48,35 +49,52 @@ struct PowerNeededInputField: View {
             )
         }
         .frame(maxWidth: .infinity)
-        .padding(15)
-        .padding(.bottom, 4)
-        .background(Color.white)
-        .cornerRadius(10)
-        .shadow(radius: 4)
+    }
+}
+
+/// Input field for the energy usage which the consumer shall consume
+struct EnergyUsageInputField: View {
+    @EnvironmentObject var cheapestHourManager: CheapestHourManager
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Text("energyUsage")
+                    .font(.title3)
+                    .bold()
+                Spacer()
+            }
+            
+            HStack {
+                TextField("inKwh", text: $cheapestHourManager.energyUsageString.animation())
+                    .keyboardType(.decimalPad)
+                    .multilineTextAlignment(.leading)
+                    .padding(.trailing, 5)
+                
+                if cheapestHourManager.energyUsageString != "" {
+                    Text("kWh")
+                        .transition(.opacity)
+                }
+            }
+            .padding(.leading, 17)
+            .padding(.trailing, 14)
+            .padding([.top, .bottom], 10)
+            .background(
+                RoundedRectangle(cornerRadius: 40)
+                    .stroke(Color(hue: 0.0000, saturation: 0.0000, brightness: 0.8706), lineWidth: 2)
+            )
+        }
+        .frame(maxWidth: .infinity)
     }
 }
 
 /// A input field for the length of the usage in the consumption comparison view.
 struct LengthOfUsageInputField: View {
-    @State var showTimeIntervalPicker: Bool = false
+    @EnvironmentObject var cheapestHourManager: CheapestHourManager
         
     var body: some View {
         VStack(alignment: .leading, spacing: 5) {
             HStack(spacing: 5) {
-                Button(action: {
-                    withAnimation(.easeInOut(duration: 1)) {
-                        showTimeIntervalPicker.toggle()
-                    }
-                }) {
-                    VStack {
-                        Image(systemName: "chevron.forward.circle")
-                            .font(.system(size: 22, weight: .medium))
-                            .foregroundColor(Color.blue)
-                            .rotationEffect(.degrees(showTimeIntervalPicker == true ? 90 : 0))
-                    }
-                    .padding([.trailing], 10)
-                }
-
                 Text("lengthOfUsage")
                     .font(.title3)
                     .bold()
@@ -84,28 +102,21 @@ struct LengthOfUsageInputField: View {
                 Spacer()
             }
 
-            if showTimeIntervalPicker {
-                TimeIntervalPicker(cheapestHourManager: CheapestHourManager())
-                    .transition(.opacity)
-            }
+            TimeIntervalPicker()
+                .transition(.opacity)
         }
         .frame(maxWidth: .infinity)
-        .padding(11)
-        .background(Color.white)
-        .cornerRadius(10)
-        .shadow(radius: 4)
     }
 }
 
 /// A input field for the time range in the consumption comparison view.
 struct TimeRangeInputField: View {
-    @State var startDate: Date = Date()
-    @State var endDate: Date = Date()
+    @EnvironmentObject var cheapestHourManager: CheapestHourManager
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             HStack {
-                Text("searchInTimeRange")
+                Text("timeRange")
                     .font(.title3)
                     .bold()
                 Spacer()
@@ -113,14 +124,14 @@ struct TimeRangeInputField: View {
             
             VStack(alignment: .leading, spacing: 10) {
                 HStack {
-                    Text("startTime")
+                    Text("from")
                         .bold()
                         .font(.callout)
                         .foregroundColor(Color(hue: 0.0000, saturation: 0.0000, brightness: 0.4314))
                     
                     Spacer()
                     
-                    DatePicker(selection: $startDate, displayedComponents: [.date, .hourAndMinute], label: {})
+                    DatePicker(selection: $cheapestHourManager.startDate, displayedComponents: [.date, .hourAndMinute], label: {})
                         .labelsHidden()
                 }
                 .padding(5)
@@ -129,20 +140,16 @@ struct TimeRangeInputField: View {
                     Color(hue: 0.6667, saturation: 0.0083, brightness: 0.9412)
                 )
                 .cornerRadius(7)
-                
-                Text("to")
-                    .bold()
-                    .padding([.leading, .trailing], 3)
-                
+ 
                 HStack {
-                    Text("endTime")
+                    Text("to")
                         .bold()
                         .font(.callout)
                         .foregroundColor(Color(hue: 0.0000, saturation: 0.0000, brightness: 0.4314))
                     
                     Spacer()
                     
-                    DatePicker(selection: $startDate, displayedComponents: [.date, .hourAndMinute], label: {})
+                    DatePicker(selection: $cheapestHourManager.endDate, displayedComponents: [.date, .hourAndMinute], label: {})
                         .labelsHidden()
                 }
                 .padding(5)
@@ -155,10 +162,6 @@ struct TimeRangeInputField: View {
             .padding([.leading, .trailing], 3)
         }
         .frame(maxWidth: .infinity)
-        .padding(11)
-        .background(Color.white)
-        .cornerRadius(10)
-        .shadow(radius: 4)
     }
 }
 
@@ -168,8 +171,7 @@ struct ConsumptionComparisonView: View {
     
     @EnvironmentObject var currentSetting: CurrentSetting
     @EnvironmentObject var awattarData: AwattarData
-    
-    @ObservedObject var cheapestHourManager = CheapestHourManager()
+    @EnvironmentObject var cheapestHourManager: CheapestHourManager
     
     /// State variable which if set to true triggers that extra informations is shown of what this view does because it may not be exactly clear to the user at first usage.
     @State var showInfo = false
@@ -194,17 +196,19 @@ struct ConsumptionComparisonView: View {
             VStack {
                 if awattarData.energyData != nil && currentSetting.setting != nil {
                     ScrollView {
-                        VStack(alignment: .center, spacing: 30) {
-                            PowerNeededInputField()
-                            LengthOfUsageInputField()
+                        VStack(alignment: .center, spacing: 15) {
+                            PowerOutputInputField()
+                            EnergyUsageInputField()
+//                            LengthOfUsageInputField()
                             TimeRangeInputField()
                         }
                         .padding(.top, 20)
                         .padding([.leading, .trailing], 15)
+                        .padding(.bottom, 10)
                     }
-//
 
-                    NavigationLink(destination: ConsumptionResultView(cheapestHourManager: cheapestHourManager), tag: 1, selection: $redirectToComparisonResults) {
+
+                    NavigationLink(destination: ConsumptionResultView(), tag: 1, selection: $redirectToComparisonResults) {
                     }
 
                     // Button to perform calculations to find cheapest hours and to redirect to the result view to show the results calculated
@@ -216,6 +220,7 @@ struct ConsumptionComparisonView: View {
                     .buttonStyle(ActionButtonStyle())
                     .padding(.bottom, 16)
                     .padding([.leading, .trailing], 15)
+                    .padding(.top, 10)
                 } else {
                     if awattarData.networkConnectionError == false {
                         // no network connection error
@@ -249,14 +254,16 @@ struct ConsumptionComparisonView: View {
                     Image(systemName: "info.circle")
                 }
             )
+            .onTapGesture {
+                self.hideKeyboard()
+            }
         }
     }
 }
 
 struct ConsumptionComparatorView_Previews: PreviewProvider {
     static var previews: some View {
-        ConsumptionComparisonView()
-            .environmentObject(CurrentSetting(managedObjectContext: PersistenceManager().persistentContainer.viewContext))
-            .environmentObject(AwattarData())
+        TimeRangeInputField()
+            .environmentObject(CheapestHourManager())
     }
 }

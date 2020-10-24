@@ -11,14 +11,12 @@ import SwiftUI
 struct ConsumptionResultView: View {
     @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var awattarData: AwattarData
+    @EnvironmentObject var cheapestHourManager: CheapestHourManager
     
-    var cheapestHourManager: CheapestHourManager
     var dateFormatter: DateFormatter
     let currencyFormatter: NumberFormatter
     
-    init(cheapestHourManager: CheapestHourManager) {
-        self.cheapestHourManager = cheapestHourManager
-  
+    init() {
         dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .short
         dateFormatter.timeStyle = .short
@@ -33,8 +31,6 @@ struct ConsumptionResultView: View {
     
     var body: some View {
         VStack(alignment: .center) {
-            Divider()
-            
             if cheapestHourManager.cheapestHoursForUsage != nil {
                 Spacer()
                 
@@ -75,6 +71,10 @@ struct ConsumptionResultView: View {
                         .padding([.leading, .trailing], 20)
                 }
                 .padding(16)
+            } else if cheapestHourManager.errorOccurredFindingCheapestHours == true {
+                Text("An error occurred. Please try again later.")
+                    .multilineTextAlignment(.center)
+                    .font(.caption)
             } else {
                 // If calculations haven't finished yet display this progress view
                 ProgressView()
@@ -83,7 +83,7 @@ struct ConsumptionResultView: View {
         }
         .onAppear {
             cheapestHourManager.setValues()
-            cheapestHourManager.calculateCheapestHours(energyData: awattarData.energyData!) // Initiate the calculations to calculate the cheapest hours for consumption
+            cheapestHourManager.calculateCheapestHours(energyData: awattarData.energyData!)
         }
         .navigationBarTitle("results")
     }

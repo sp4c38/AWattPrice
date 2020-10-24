@@ -201,7 +201,7 @@ struct EnergyPriceSingleBar: View {
                 ? CGFloat(abs(hourDataPoint.marketprice) / (abs(singleBarSettings.minPrice) + abs(singleBarSettings.maxPrice))) * width + maximalNegativePriceBarWidth : 0)
 
         let currentDividerLineWidth: CGFloat = (
-            maximalNegativePriceBarWidth == 0 ? 0 : 3
+            maximalNegativePriceBarWidth == 0 ? 0 : 1
         )
 
         ZStack(alignment: Alignment(horizontal: .trailing, vertical: .center)) {
@@ -335,6 +335,7 @@ struct EnergyPriceGraph: View {
                 }
             }
         }
+        .contentShape(Rectangle())
         .gesture(graphDragGesture)
     }
 }

@@ -16,8 +16,6 @@ struct HomeView: View {
     var body: some View {
         NavigationView {
             VStack {
-                Divider()
-
                 HStack {
                     Text("pricePerKwh")
                         .font(.subheadline)

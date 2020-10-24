@@ -7,15 +7,36 @@
 
 import Foundation
 
+extension String {
+    static let numberFormatter = NumberFormatter()
+    
+    var doubleValue: Double? {
+        String.numberFormatter.decimalSeparator = "."
+        
+        if let result = String.numberFormatter.number(from: self) {
+            return Double(truncating: result)
+        } else {
+            String.numberFormatter.decimalSeparator = ","
+            
+            if let result = String.numberFormatter.number(from: self) {
+                return Double(truncating: result)
+            }
+        }
+        
+        return nil
+    }
+}
+
 /// An object which manages the calculation of when the cheapest hours are for energy consumption
 class CheapestHourManager: ObservableObject {
-    /// Input of how much kW the electric consumer operates with
-    @Published var energyUsageInput = "10"
-    @Published var energyUsage: Float? = nil // Raw text input in energyUsageInput will be later converted to a float and this variable will be responsible for holding that value
+    @Published var powerOutputString = ""
+    @Published var powerOutput: Double = 0
     
-    /// Start date of time range in which to find cheapest hours
+    @Published var energyUsageString = ""
+    @Published var energyUsage: Double = 0
+    
+    // Time range from startDate to endDate in which to find the cheapest hours
     @Published var startDate = Date()
-    /// End date of time range in which to find cheapest hours
     @Published var endDate = Date().addingTimeInterval(3600)
     
     /// This value won't be changed. Its purpose is to serve as a reference point to dermiter the time range set in the time interval picker (lengthOfUsageDate).
@@ -27,6 +48,8 @@ class CheapestHourManager: ObservableObject {
     
     /// The results of the calculation of the cheapest hours for usage which are represented in an HourPair object.
     @Published var cheapestHoursForUsage: HourPair? = nil
+    /// A variable set to true if calculations have been performed but no cheapest hours were found.
+    @Published var errorOccurredFindingCheapestHours = false
     
     /// Checks that the interval selected by the Interval Picker is not bigger than the time range between the start date and end date specified by the user. If the interval is bigger than the end date is adjusted accordingly.
     func checkIntervalFitsInRange() {
@@ -38,18 +61,11 @@ class CheapestHourManager: ObservableObject {
         }
     }
     
-    /// Sets the values after the user entered them. This includes calculating a time interval and formatting a raw text string to a float.
+    /// Sets the values after the user entered them. This includes calculating time intervals and formatting raw text strings to floats.
     func setValues() {
         self.timeOfUsage = abs(relativeLengthOfUsageDate.timeIntervalSince(lengthOfUsageDate))
-        
-        let numberConverter = NumberFormatter()
-        if energyUsageInput.contains(",") {
-            numberConverter.decimalSeparator = ","
-        } else {
-            numberConverter.decimalSeparator = "."
-        }
-        
-        energyUsage = Float(truncating: numberConverter.number(from: energyUsageInput) ?? 10)
+        powerOutput = powerOutputString.doubleValue ?? 0
+        energyUsage = energyUsageString.doubleValue ?? 0
     }
     
     /// A pair of one, two, three or more EnergyPricePoints. This object supports functionallity to calculate the average price or to sort the associated price points for day.
@@ -115,7 +131,7 @@ class CheapestHourManager: ObservableObject {
         DispatchQueue.global(qos: .userInitiated).async {
             let now = Date()
             
-            let timeOfUsageInHours: Float = Float(self.timeOfUsage / 60 / 60) // Exact time of usage in hours (e.g.: 3,1817 hours)
+            let timeOfUsageInHours = self.timeOfUsage / 60 / 60 // Exact time of usage in hours (e.g.: 3,1817 hours)
             let nextRoundedUpHour = Int(timeOfUsageInHours.rounded(.up))
 
             // Create all HourPair's for later comparison
@@ -145,22 +161,24 @@ class CheapestHourManager: ObservableObject {
             }
             
             // Compare all hour pairs to find the index of the hour pair with the smallest average price
-            var lowestPricePairIndex: Int? = nil
+            var cheapestHourPairIndex: Int? = nil
             for pairIndex in 0..<allPairs.count {
-                if lowestPricePairIndex != nil {
-                    if allPairs[pairIndex].averagePrice < allPairs[lowestPricePairIndex!].averagePrice {
-                        lowestPricePairIndex = pairIndex
+                if cheapestHourPairIndex != nil {
+                    if allPairs[pairIndex].averagePrice < allPairs[cheapestHourPairIndex!].averagePrice {
+                        cheapestHourPairIndex = pairIndex
                     }
                 } else {
-                    lowestPricePairIndex = pairIndex
+                    cheapestHourPairIndex = pairIndex
                 }
             }
             
-            let minuteDifferenceInSeconds = Int(((Float(nextRoundedUpHour) - timeOfUsageInHours) * 60 * 60).rounded())
+            let minuteDifferenceInSeconds = Int(((Double(nextRoundedUpHour) - timeOfUsageInHours) * 60 * 60).rounded())
             var differenceIsBefore = false
             
-            if lowestPricePairIndex != nil {
-                let cheapestPair = allPairs[lowestPricePairIndex!]
+            if cheapestHourPairIndex != nil {
+                // A index was found for the cheapest HourPair
+                
+                let cheapestPair = allPairs[cheapestHourPairIndex!]
                 let maxAssociatedPricePointsIndex = cheapestPair.associatedPricePoints.count - 1
 
                 if cheapestPair.associatedPricePoints[0].marketprice > cheapestPair.associatedPricePoints[maxAssociatedPricePointsIndex].marketprice {
@@ -172,16 +190,12 @@ class CheapestHourManager: ObservableObject {
                 } else {
                     cheapestPair.associatedPricePoints[maxAssociatedPricePointsIndex].endTimestamp -= minuteDifferenceInSeconds
                 }
-                
-                if self.energyUsage != nil {
-                    // Only calculate if an energy usage was specified
-                    cheapestPair.energyCosts = (self.energyUsage! * timeOfUsageInHours) * cheapestPair.averagePrice
-                }
             }
             
             DispatchQueue.main.async {
-                if lowestPricePairIndex != nil {
-                    self.cheapestHoursForUsage = allPairs[lowestPricePairIndex!]
+                if cheapestHourPairIndex != nil {
+                    self.cheapestHoursForUsage = allPairs[cheapestHourPairIndex!]
+                    self.errorOccurredFindingCheapestHours = true
                 }
             }
         }

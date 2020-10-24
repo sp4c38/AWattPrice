@@ -35,6 +35,7 @@ struct AwattarApp: App {
             TabNavigatorView()
                 .environmentObject(AwattarData())
                 .environmentObject(CurrentSetting(managedObjectContext: persistence.persistentContainer.viewContext))
+                .environmentObject(CheapestHourManager())
         }
     }
 }

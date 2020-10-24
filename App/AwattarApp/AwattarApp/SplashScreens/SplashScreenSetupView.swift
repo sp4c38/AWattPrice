@@ -7,6 +7,12 @@
 
 import SwiftUI
 
+extension View {
+    func hideKeyboard() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
+}
+
 /// Splash screen which handles the input of settings which are required for the main functionality of the app.
 struct SplashScreenSetupView: View {
     @EnvironmentObject var currentSetting: CurrentSetting
@@ -22,8 +28,7 @@ struct SplashScreenSetupView: View {
             AwattarBasicEnergyChargePriceSetting()
 
             Spacer()
-            Spacer()
-
+            
             NavigationLink("", destination: SplashScreenFinishView(), tag: 1, selection: $redirectToNextSplashScreen)
             
             Button(action: {
@@ -37,6 +42,10 @@ struct SplashScreenSetupView: View {
         .padding(.top, 40)
         .padding([.leading, .trailing], 20)
         .padding(.bottom, 16)
+        .contentShape(Rectangle())
+        .onTapGesture {
+            self.hideKeyboard()
+        }
     }
 }
 

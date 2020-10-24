@@ -8,8 +8,6 @@
 import SceneKit
 import SwiftUI
 
-
-
 extension AnyTransition {
     static var switchPlaces: AnyTransition {
         let insertion = AnyTransition.scale(scale: 2).combined(with: .opacity)
@@ -148,19 +146,19 @@ struct AwattarBasicEnergyChargePriceSetting: View {
 struct SettingsPageView: View {
     var body: some View {
         NavigationView {
-            VStack {
-                Divider()
+            VStack(alignment: .leading, spacing: 20) {
+                PricesWithVatIncludedSetting()
+//                AwattarTarifSelectionSetting()
+                AwattarBasicEnergyChargePriceSetting()
                 
-                VStack(alignment: .leading, spacing: 20) {
-                    PricesWithVatIncludedSetting()
-//                    AwattarTarifSelectionSetting()
-                    AwattarBasicEnergyChargePriceSetting()
-                    
-                    Spacer()
-                }
-                .padding(.top, 10)
-                .padding([.leading, .trailing], 16)
-                .navigationBarTitle("settings")
+                Spacer()
+            }
+            .padding(.top, 10)
+            .padding([.leading, .trailing], 16)
+            .navigationBarTitle("settings")
+            .contentShape(Rectangle())
+            .onTapGesture {
+                self.hideKeyboard()
             }
         }
     }

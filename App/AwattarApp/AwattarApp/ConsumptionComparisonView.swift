@@ -16,34 +16,84 @@ extension AnyTransition {
     }
 }
 
-struct ElectricityUsageInputField: View {
+/// A input field for the electric power required
+struct PowerNeededInputField: View {
     @State var someText: String = ""
     var body: some View {
         VStack(alignment: .leading, spacing: 25) {
             HStack {
-                Text("elecUsage")
+                Text("elecPower")
                     .font(.title3)
                     .bold()
                 Spacer()
             }
             
-            TextField("", text: $someText)
-                .keyboardType(.decimalPad)
-                .multilineTextAlignment(.leading)
-                .padding(.leading, 17)
-                .padding(.trailing, 14)
-                .padding([.top, .bottom], 10)
-                .background(
-                    RoundedRectangle(cornerRadius: 40)
-                        .stroke(Color(hue: 0.0000, saturation: 0.0000, brightness: 0.8706), lineWidth: 2)
-                )
+            HStack {
+                TextField("in kW", text: $someText.animation())
+                    .keyboardType(.decimalPad)
+                    .multilineTextAlignment(.leading)
+                    .padding(.trailing, 5)
+
+                if someText != "" {
+                    Text("kW")
+                        .transition(.opacity)
+                }
+            }
+            .padding(.leading, 17)
+            .padding(.trailing, 14)
+            .padding([.top, .bottom], 10)
+            .background(
+                RoundedRectangle(cornerRadius: 40)
+                    .stroke(Color(hue: 0.0000, saturation: 0.0000, brightness: 0.8706), lineWidth: 2)
+            )
         }
         .frame(maxWidth: .infinity)
         .padding(15)
-        .padding([.top, .bottom], 9)
+        .padding(.bottom, 4)
         .background(Color.white)
         .cornerRadius(10)
-        .shadow(radius: 10)
+        .shadow(radius: 4)
+    }
+}
+
+/// A input field for the electric power required
+struct LengthOfUsageInputField: View {
+    @State var showTimeIntervalPicker: Bool = false
+        
+    var body: some View {
+        VStack(alignment: .leading, spacing: 5) {
+            HStack(spacing: 5) {
+                Button(action: {
+                    withAnimation(.easeInOut(duration: 1)) {
+                        showTimeIntervalPicker.toggle()
+                    }
+                }) {
+                    VStack {
+                        Image(systemName: "chevron.forward.circle")
+                            .font(.system(size: 22, weight: .medium))
+                            .foregroundColor(Color.blue)
+                            .rotationEffect(.degrees(showTimeIntervalPicker == true ? 90 : 0))
+                    }
+                    .padding([.trailing], 10)
+                }
+
+                Text("lengthOfUsage")
+                    .font(.title3)
+                    .bold()
+
+                Spacer()
+            }
+
+            if showTimeIntervalPicker {
+                TimeIntervalPicker(cheapestHourManager: CheapestHourManager())
+                    .transition(.opacity)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .padding(11)
+        .background(Color.white)
+        .cornerRadius(10)
+        .shadow(radius: 4)
     }
 }
 
@@ -76,11 +126,10 @@ struct ConsumptionComparisonView: View {
     
     var body: some View {
         NavigationView {
-            VStack(alignment: .center, spacing: 0) {
-                Divider()
-                    .padding(.bottom, 10)
-
+            VStack(alignment: .center, spacing: 20) {
                 if awattarData.energyData != nil && currentSetting.setting != nil {
+                    PowerNeededInputField()
+                    LengthOfUsageInputField()
 //                    VStack(alignment: .leading, spacing: 15) {
 //                        // Input of what the power (in kW) is of the electric consumer for which to find the cheapest hours to operate it
 //                        VStack(alignment: .leading, spacing: 5) {
@@ -121,17 +170,17 @@ struct ConsumptionComparisonView: View {
 //                                .frame(maxWidth: .infinity)
 //                        }
 //
-//                        Spacer()
-//
-//                        NavigationLink(destination: ConsumptionResultView(cheapestHourManager: cheapestHourManager), tag: 1, selection: $redirectToComparisonResults) {
-//                        }
-//
-//                        // Button to perform calculations to find cheapest hours and to redirect to the result view to show the results calculated
-//                        Button(action: {
-//                            redirectToComparisonResults = 1
-//                        }) {
-//                            Text("showResults")
-//                        }.buttonStyle(ActionButtonStyle())
+                        Spacer()
+
+                        NavigationLink(destination: ConsumptionResultView(cheapestHourManager: cheapestHourManager), tag: 1, selection: $redirectToComparisonResults) {
+                        }
+
+                        // Button to perform calculations to find cheapest hours and to redirect to the result view to show the results calculated
+                        Button(action: {
+                            redirectToComparisonResults = 1
+                        }) {
+                            Text("showResults")
+                        }.buttonStyle(ActionButtonStyle())
 //                    }
                 } else {
                     if awattarData.networkConnectionError == false {
@@ -148,8 +197,9 @@ struct ConsumptionComparisonView: View {
                     }
                 }
             }
-            .padding(.bottom, 10)
-            .padding([.leading, .trailing], 16)
+            .padding(.top, 20)
+            .padding(.bottom, 16)
+            .padding([.leading, .trailing], 15)
             .onAppear {
                 if awattarData.energyData != nil {
                     let maxHourIndex = awattarData.energyData!.prices.count - 1
@@ -174,7 +224,10 @@ struct ConsumptionComparisonView: View {
 
 struct ConsumptionComparatorView_Previews: PreviewProvider {
     static var previews: some View {
-        ElectricityUsageInputField()
-//            .environmentObject(CurrentSetting(managedObjectContext: PersistenceManager().persistentContainer.viewContext))
+//        LengthOfUsageInputField()
+//            .padding()
+        ConsumptionComparisonView()
+            .environmentObject(CurrentSetting(managedObjectContext: PersistenceManager().persistentContainer.viewContext))
+            .environmentObject(AwattarData())
     }
 }

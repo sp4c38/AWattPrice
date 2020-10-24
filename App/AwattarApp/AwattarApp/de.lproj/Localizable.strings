@@ -39,8 +39,8 @@
 "showResults" = "Ergebnisse anzeigen";
 "startOfUse" = "Start des Verbrauches:";
 "endOfUse" = "Ende des Verbrauches:";
-"lengthOfUse" = "Dauer des Verbrauches:";
-"elecUsage" = "Stromverbrauch:";
+"lengthOfUsage" = "Dauer des Verbrauches";
+"elecPower" = "Gebrauchte Leistung";
 "givenElecPrice" = "Dein angegebener Strompreis:";
 "givenBasicFee" = "Deine angegebene Grundgebühr:";
 "until" = "bis";

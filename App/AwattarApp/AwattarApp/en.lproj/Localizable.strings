@@ -39,8 +39,8 @@
 "showResults" = "Show results";
 "startOfUse" = "Start of use:";
 "endOfUse" = "End of use:";
-"lengthOfUse" = "Length of use:";
-"elecUsage" = "Electricity usage";
+"lengthOfUsage" = "Length of usage";
+"elecPower" = "Power needed";
 "givenElecPrice" = "Your specified electricity price:";
 "givenBasicFee" = "Your specified basic fee:";
 "until" = "until";

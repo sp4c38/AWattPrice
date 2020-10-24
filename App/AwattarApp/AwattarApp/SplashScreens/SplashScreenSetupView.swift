@@ -19,45 +19,7 @@ struct SplashScreenSetupView: View {
             Text("splashScreenSetupTitle")
                 .font(.system(size: 40, weight: .black))
 
-            VStack(alignment: .leading, spacing: 10) {
-                VStack(alignment: .leading) {
-                    Text("elecPriceColon")
-                        .font(.headline)
-
-                    TextField("centPerKwh", text: $basicCharge)
-                        .keyboardType(.decimalPad)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .onChange(of: basicCharge) { newValue in
-                            let numberConverter = NumberFormatter()
-                            if newValue.contains(",") {
-                                numberConverter.decimalSeparator = ","
-                            } else {
-                                numberConverter.decimalSeparator = "."
-                            }
-
-//                            changeEnergyCharge(newEnergyCharge: Float(truncating: numberConverter.number(from: newValue) ?? 0), settingsObject: currentSetting.setting!, managedObjectContext: managedObjectContext)
-                    }
-                }
-                
-                VStack(alignment: .leading, spacing: 10) {
-                    Text("baseElectricityPriceHint")
-                    
-                    Button(action: {
-                        // Let the user visit this website for him/her to get information which depends on the users location
-                        // This isn't yet handled directly in the app
-                        
-                        UIApplication.shared.open(URL(string: "https://www.awattar.de")!)
-                    }) {
-                        HStack {
-                            Text("toAwattarWebsite")
-                            Image(systemName: "chevron.right")
-                        }
-                        .foregroundColor(Color.blue)
-                    }
-                }
-                .font(.caption)
-                .foregroundColor(Color.gray)
-            }
+            AwattarBasicEnergyChargePriceSetting()
 
             Spacer()
             Spacer()

@@ -36,14 +36,15 @@
 "ready" = "Ready";
 "usage" = "Usage";
 "comparerInfoText" = "This allows you to find the hours when electricity is cheapest. For example, to charge your electric car, turn on the washing machine or run other electrical consumers.";
-"viewResults" = "Ergebnisse Anzeigen";
+"showResults" = "Show results";
 "startOfUse" = "Start of use:";
 "endOfUse" = "End of use:";
 "lengthOfUse" = "Length of use:";
-"elecUsage" = "Electricity usage:";
+"elecUsage" = "Electricity usage";
 "givenElecPrice" = "Your specified electricity price:";
 "givenBasicFee" = "Your specified basic fee:";
 "until" = "until";
 "results" = "Results";
 "pm" = "PM";
 "am" = "AM";
+"elecCosts" = "Electricity costs";

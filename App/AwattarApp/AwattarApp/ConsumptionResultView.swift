@@ -56,7 +56,7 @@ struct ConsumptionResultView: View {
                 // The final price the user would have to pay
                 if cheapestHourManager.cheapestHoursForUsage!.energyCosts != nil {
                     VStack(alignment: .center, spacing: 5) {
-                        Text("Letztendlicher Preis:")
+                        Text("elecCosts")
                         
                         Text(currencyFormatter.string(from: NSNumber(value: (cheapestHourManager.cheapestHoursForUsage!.energyCosts!))) ?? "") // Convert to Euro
                             .font(.headline)

@@ -100,10 +100,11 @@ struct AwattarBasicEnergyChargePriceSetting: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("elecPriceColon")
-            
-            HStack(spacing: 0) {
-                TextField("", text: $baseEnergyPrice)
+            VStack(alignment: .leading) {
+                Text("elecPriceColon")
+                    .font(.headline)
+
+                TextField("centPerKwh", text: $baseEnergyPrice)
                     .keyboardType(.decimalPad)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .onChange(of: baseEnergyPrice) { newValue in
@@ -114,15 +115,31 @@ struct AwattarBasicEnergyChargePriceSetting: View {
                             numberConverter.decimalSeparator = "."
                         }
                         
-                        currentSetting.changeBaseEnergyCharge(newBaseEnergyCharge: Float(truncating: numberConverter.number(from: newValue) ?? 0))
+                        currentSetting.changeBaseElectricityCharge(newBaseElectricityCharge: Float(truncating: numberConverter.number(from: newValue) ?? 0))
                     }
-                
-                Text("centPerKwh")
-                    .padding(.leading, 5)
             }
+            
+            VStack(alignment: .leading, spacing: 10) {
+                Text("baseElectricityPriceHint")
+                
+                Button(action: {
+                    // Let the user visit this website for him/her to get information which depends on the users location
+                    // This isn't yet handled directly in the app
+                    
+                    UIApplication.shared.open(URL(string: "https://www.awattar.de")!)
+                }) {
+                    HStack {
+                        Text("toAwattarWebsite")
+                        Image(systemName: "chevron.right")
+                    }
+                    .foregroundColor(Color.blue)
+                }
+            }
+            .font(.caption)
+            .foregroundColor(Color.gray)
         }
         .onAppear {
-            baseEnergyPrice = String(currentSetting.setting!.awattarBaseEnergyPrice)
+            baseEnergyPrice = String(currentSetting.setting!.awattarBaseElectricityPrice)
         }
     }
 }

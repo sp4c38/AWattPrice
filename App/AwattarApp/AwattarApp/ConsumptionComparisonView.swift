@@ -16,6 +16,37 @@ extension AnyTransition {
     }
 }
 
+struct ElectricityUsageInputField: View {
+    @State var someText: String = ""
+    var body: some View {
+        VStack(alignment: .leading, spacing: 25) {
+            HStack {
+                Text("elecUsage")
+                    .font(.title3)
+                    .bold()
+                Spacer()
+            }
+            
+            TextField("", text: $someText)
+                .keyboardType(.decimalPad)
+                .multilineTextAlignment(.leading)
+                .padding(.leading, 17)
+                .padding(.trailing, 14)
+                .padding([.top, .bottom], 10)
+                .background(
+                    RoundedRectangle(cornerRadius: 40)
+                        .stroke(Color(hue: 0.0000, saturation: 0.0000, brightness: 0.8706), lineWidth: 2)
+                )
+        }
+        .frame(maxWidth: .infinity)
+        .padding(15)
+        .padding([.top, .bottom], 9)
+        .background(Color.white)
+        .cornerRadius(10)
+        .shadow(radius: 10)
+    }
+}
+
 /// A view which allows the user to find the cheapest hours for using energy. It optionally can also show the final price which the user would have to pay to aWATTar if consuming the specified amount of energy.
 struct ConsumptionComparisonView: View {
     @Environment(\.colorScheme) var colorScheme
@@ -45,110 +76,86 @@ struct ConsumptionComparisonView: View {
     
     var body: some View {
         NavigationView {
-            VStack {
+            VStack(alignment: .center, spacing: 0) {
                 Divider()
-                
-                ZStack(alignment: Alignment(horizontal: .center, vertical: .top)) {
-                    VStack(alignment: .center, spacing: 0) {
-                        if awattarData.energyData != nil && currentSetting.setting != nil {
-                            VStack(alignment: .leading, spacing: 15) {
-                                // Input of what the power (in kW) is of the electric consumer for which to find the cheapest hours to operate it
-                                VStack(alignment: .leading, spacing: 5) {
-                                    Text("elecUsage")
-                                        .bold()
-                                    
-                                    HStack(spacing: 7) {
-                                        TextField("elecUsage", text: $cheapestHourManager.energyUsageInput)
-                                            .keyboardType(.decimalPad)
-                                            .multilineTextAlignment(.leading)
-                                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                                        
-                                        Text("kW")
-                                    }
-                                }
-    
-                                // Input for the start and end date which present the range in which cheapest hours should be found
-                                VStack {
-                                    DatePicker(
-                                        selection: $cheapestHourManager.startDate,
-                                        in: energyDataTimeRange,
-                                        displayedComponents: [.date, .hourAndMinute],
-                                        label: { Text("startOfUse").bold() })
-                                    
-                                    DatePicker(
-                                        selection: $cheapestHourManager.endDate,
-                                        in: energyDataTimeRange,
-                                        displayedComponents: [.date, .hourAndMinute],
-                                        label: { Text("endOfUse").bold() })
-                                }
-                                
-                                // The time picker to select the length of how long the user wants to use energy
-                                VStack(alignment: .leading, spacing: 5) {
-                                    Text("lengthOfUse")
-                                        .bold()
-
-                                    TimeIntervalPicker(cheapestHourManager: cheapestHourManager)
-                                        .frame(maxWidth: .infinity)
-                                }
-                                
-                                Spacer()
-                                
-                                NavigationLink(destination: ConsumptionResultView(cheapestHourManager: cheapestHourManager), tag: 1, selection: $redirectToComparisonResults) {
-                                }
-                                
-                                // Button to perform calculations to find cheapest hours and to redirect to the result view to show the results calculated
-                                Button(action: {
-                                    redirectToComparisonResults = 1
-                                }) {
-                                    Text("viewResults")
-                                }.buttonStyle(ActionButtonStyle())
-                            }
-                        } else {
-                            if awattarData.networkConnectionError == false {
-                                // no network connection error
-                                // download in progress
-                                
-                                LoadingView()
-                            } else {
-                                // network connection error
-                                // can't fulfill download
-                                
-                                NetworkConnectionErrorView()
-                                    .transition(.opacity)
-                            }
-                        }
-                    }
-                    .padding(.top, 5)
                     .padding(.bottom, 10)
-                    .opacity(showInfo ? 0.5 : 1)
-                    
-                    if showInfo {
-                        // Shows information of functionallity if it may not be clear to the user at first usage
-                        Text("comparerInfoText")
-                            .foregroundColor(colorScheme == .light ? Color.black : Color.white)
-                            .padding()
-                            .background(colorScheme == .light ? Color.white : Color(hue: 0.5417, saturation: 0.0930, brightness: 0.1686))
-                            .cornerRadius(15)
-                            .shadow(radius: 7)
-                            .transition(.extraInformationTransition)
-                            .padding(.top, 10)
+
+                if awattarData.energyData != nil && currentSetting.setting != nil {
+//                    VStack(alignment: .leading, spacing: 15) {
+//                        // Input of what the power (in kW) is of the electric consumer for which to find the cheapest hours to operate it
+//                        VStack(alignment: .leading, spacing: 5) {
+//                            Text("elecUsage")
+//                                .bold()
+//
+//                            HStack(spacing: 7) {
+//                                TextField("elecUsage", text: $cheapestHourManager.energyUsageInput)
+//                                    .keyboardType(.decimalPad)
+//                                    .multilineTextAlignment(.leading)
+//                                    .textFieldStyle(RoundedBorderTextFieldStyle())
+//
+//                                Text("kW")
+//                            }
+//                        }
+//
+//                        // Input for the start and end date which present the range in which cheapest hours should be found
+//                        VStack {
+//                            DatePicker(
+//                                selection: $cheapestHourManager.startDate,
+//                                in: energyDataTimeRange,
+//                                displayedComponents: [.date, .hourAndMinute],
+//                                label: { Text("startOfUse").bold() })
+//
+//                            DatePicker(
+//                                selection: $cheapestHourManager.endDate,
+//                                in: energyDataTimeRange,
+//                                displayedComponents: [.date, .hourAndMinute],
+//                                label: { Text("endOfUse").bold() })
+//                        }
+//
+//                        // The time picker to select the length of how long the user wants to use energy
+//                        VStack(alignment: .leading, spacing: 5) {
+//                            Text("lengthOfUse")
+//                                .bold()
+//
+//                            TimeIntervalPicker(cheapestHourManager: cheapestHourManager)
+//                                .frame(maxWidth: .infinity)
+//                        }
+//
+//                        Spacer()
+//
+//                        NavigationLink(destination: ConsumptionResultView(cheapestHourManager: cheapestHourManager), tag: 1, selection: $redirectToComparisonResults) {
+//                        }
+//
+//                        // Button to perform calculations to find cheapest hours and to redirect to the result view to show the results calculated
+//                        Button(action: {
+//                            redirectToComparisonResults = 1
+//                        }) {
+//                            Text("showResults")
+//                        }.buttonStyle(ActionButtonStyle())
+//                    }
+                } else {
+                    if awattarData.networkConnectionError == false {
+                        // no network connection error
+                        // download in progress
+
+                        LoadingView()
+                    } else {
+                        // network connection error
+                        // can't fulfill download
+
+                        NetworkConnectionErrorView()
+                            .transition(.opacity)
                     }
                 }
             }
+            .padding(.bottom, 10)
             .padding([.leading, .trailing], 16)
             .onAppear {
                 if awattarData.energyData != nil {
                     let maxHourIndex = awattarData.energyData!.prices.count - 1
-                    
+
                     // Set end date of the end date time picker to the maximal currently time where energy price data points exist
                     cheapestHourManager.endDate = Date(timeIntervalSince1970: TimeInterval(awattarData.energyData!.prices[maxHourIndex].endTimestamp))
-                }
-            }
-            .onTapGesture {
-                if showInfo {
-                    withAnimation {
-                        showInfo = false
-                    }
                 }
             }
             .navigationBarTitle("usage")
@@ -167,7 +174,7 @@ struct ConsumptionComparisonView: View {
 
 struct ConsumptionComparatorView_Previews: PreviewProvider {
     static var previews: some View {
-        ConsumptionComparisonView()
-            .environmentObject(CurrentSetting(managedObjectContext: PersistenceManager().persistentContainer.viewContext))
+        ElectricityUsageInputField()
+//            .environmentObject(CurrentSetting(managedObjectContext: PersistenceManager().persistentContainer.viewContext))
     }
 }

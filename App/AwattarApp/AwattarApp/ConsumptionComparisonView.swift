@@ -11,13 +11,19 @@ import SwiftUI
 struct PowerOutputInputField: View {
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
     
-    let inputError: Bool
+    let emptyFieldError: Bool
+    let wrongInputError: Bool
     
     init(errorValues: [Int]) {
         if errorValues.contains(1) {
-            inputError = true
+            emptyFieldError = true
+            wrongInputError = false
+        } else if errorValues.contains(2) {
+            emptyFieldError = false
+            wrongInputError = true
         } else {
-            inputError = false
+            emptyFieldError = false
+            wrongInputError = false
         }
     }
     
@@ -46,11 +52,17 @@ struct PowerOutputInputField: View {
             .padding([.top, .bottom], 10)
             .background(
                 RoundedRectangle(cornerRadius: 8)
-                    .stroke(inputError ? Color.red : Color(hue: 0.0000, saturation: 0.0000, brightness: 0.8706), lineWidth: 2)
+                    .stroke((emptyFieldError || wrongInputError) ? Color.red : Color(hue: 0.0000, saturation: 0.0000, brightness: 0.8706), lineWidth: 2)
             )
             
-            if inputError {
-                Text("fillOutField")
+            if emptyFieldError {
+                Text("emptyFieldError")
+                    .font(.caption)
+                    .foregroundColor(Color.red)
+            }
+            
+            if wrongInputError {
+                Text("wrongInputError")
                     .font(.caption)
                     .foregroundColor(Color.red)
             }
@@ -63,13 +75,19 @@ struct PowerOutputInputField: View {
 struct EnergyUsageInputField: View {
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
     
-    let inputError: Bool
+    let emptyFieldError: Bool
+    let wrongInputError: Bool
     
     init(errorValues: [Int]) {
-        if errorValues.contains(2) {
-            inputError = true
+        if errorValues.contains(3) {
+            emptyFieldError = true
+            wrongInputError = false
+        } else if errorValues.contains(4) {
+            emptyFieldError = false
+            wrongInputError = true
         } else {
-            inputError = false
+            emptyFieldError = false
+            wrongInputError = false
         }
     }
     
@@ -98,11 +116,17 @@ struct EnergyUsageInputField: View {
             .padding([.top, .bottom], 10)
             .background(
                 RoundedRectangle(cornerRadius: 8)
-                    .stroke(inputError ? Color.red : Color(hue: 0.0000, saturation: 0.0000, brightness: 0.8706), lineWidth: 2)
+                    .stroke((emptyFieldError || wrongInputError) ? Color.red : Color(hue: 0.0000, saturation: 0.0000, brightness: 0.8706), lineWidth: 2)
             )
             
-            if inputError {
-                Text("fillOutField")
+            if emptyFieldError {
+                Text("emptyFieldError")
+                    .font(.caption)
+                    .foregroundColor(Color.red)
+            }
+            
+            if wrongInputError {
+                Text("wrongInputError")
                     .font(.caption)
                     .foregroundColor(Color.red)
             }
@@ -244,7 +268,7 @@ struct ConsumptionComparisonView: View {
 
                     // Button to perform calculations to find cheapest hours and to redirect to the result view to show the results calculated
                     Button(action: {
-                        fieldsEnteredErrorValues = cheapestHourManager.checkRequirementsSatisfied()
+                        fieldsEnteredErrorValues = cheapestHourManager.setValues()
                         if fieldsEnteredErrorValues.contains(0) {
                             // All requirements are satisfied
                             redirectToComparisonResults = 1

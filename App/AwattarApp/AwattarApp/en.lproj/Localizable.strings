@@ -47,4 +47,5 @@
 "pm" = "PM";
 "am" = "AM";
 "elecCosts" = "Electricity costs";
-"fillOutField" = "Please fill out this field"
+"emptyFieldError" = "Please fill out this field";
+"wrongInputError" = "This field may only contain numbers and \",\" or \".\"";

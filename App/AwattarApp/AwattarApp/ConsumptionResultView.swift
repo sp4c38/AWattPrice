@@ -82,7 +82,6 @@ struct ConsumptionResultView: View {
             }
         }
         .onAppear {
-            cheapestHourManager.setValues()
             cheapestHourManager.calculateCheapestHours(energyData: awattarData.energyData!)
         }
         .navigationBarTitle("results")

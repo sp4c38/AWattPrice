@@ -41,35 +41,42 @@ class CheapestHourManager: ObservableObject {
 //        }
     }
     
-    /// Sets the values after the user entered them. This includes calculating time intervals and formatting raw text strings to floats.
-    func setValues() {
-        self.cheapestHoursForUsage = nil
-        self.powerOutput = powerOutputString.doubleValue ?? 0
-        self.energyUsage = energyUsageString.doubleValue ?? 0
-        self.timeOfUsage = self.energyUsage / self.powerOutput
-    }
+    /// Sets the values after the user entered them. This includes calculating time intervals and formatting raw text strings to floats. If errors occur because of wrong input of the user and values cannot be set correctly a list is returned with error values.
+    /// - Returns: Returns a list with error values if any occur. If no errors occur a list is also returned but with a success value
+    ///     - [0] all values were entered correctly
+    ///     - [1] powerOutputString is empty
+    ///     - [2] powerOutputString contains wrong characters
+    ///     - [3] energyUsageString is empty
+    ///     - [4] energyUsageString contains wrong characters
     
-    /// Checks if all requirements are satisfied for continuing with calculating the cheapest hours for usage
-    /// - Returns: Returns a list with [0] if all requirements are satisfied, with [1] at error with powerOutputString, with [2] at error with energyUsageString and [3] if there is a error with timeOfUsage. Multiple error values can be returned in the list.
-    func checkRequirementsSatisfied() -> [Int] {
-        self.setValues()
-        
+    func setValues() -> [Int] {
+        self.cheapestHoursForUsage = nil
         var errorValues = [Int]()
         
-        if self.powerOutput == 0 {
+        if powerOutputString.replacingOccurrences(of: " ", with: "") == "" {
             errorValues.append(1)
+        } else {
+            if let powerOutputConverted = powerOutputString.doubleValue {
+                self.powerOutput = powerOutputConverted
+            } else {
+                errorValues.append(2)
+            }
         }
         
-        if self.energyUsage == 0{
-            errorValues.append(2)
+        if energyUsageString.replacingOccurrences(of: " ", with: "") == "" {
+            errorValues.append(3)
+        } else {
+            if let energyUsageConverted = energyUsageString.doubleValue {
+                self.energyUsage = energyUsageConverted
+            } else {
+                errorValues.append(4)
+            }
         }
-        
-        if self.timeOfUsage == 0 {
-            errorValues.append(2)
-        }
-        
+
         if !(errorValues.count > 0) {
             errorValues.append(0)
+            
+            self.timeOfUsage = self.energyUsage / self.powerOutput
         }
         
         return errorValues
@@ -160,7 +167,6 @@ class CheapestHourManager: ObservableObject {
                         }
 
                         newPairNode.calculateAveragePrice()
-//                        newPairNode.sortAssociatedPricePoints()
                         allPairs.append(newPairNode)
                     }
                 }

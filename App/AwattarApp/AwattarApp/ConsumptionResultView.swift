@@ -72,9 +72,9 @@ struct ConsumptionResultView: View {
                 }
                 .padding(16)
             } else if cheapestHourManager.errorOccurredFindingCheapestHours == true {
-                Text("An error occurred. Please try again later.")
+                Text("An error occurred.\nPlease try again later.")
                     .multilineTextAlignment(.center)
-                    .font(.caption)
+                    .font(.callout)
             } else {
                 // If calculations haven't finished yet display this progress view
                 ProgressView()

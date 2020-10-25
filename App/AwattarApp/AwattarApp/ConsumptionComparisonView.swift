@@ -89,25 +89,25 @@ struct EnergyUsageInputField: View {
 }
 
 /// A input field for the length of the usage in the consumption comparison view.
-struct LengthOfUsageInputField: View {
-    @EnvironmentObject var cheapestHourManager: CheapestHourManager
-        
-    var body: some View {
-        VStack(alignment: .leading, spacing: 5) {
-            HStack(spacing: 5) {
-                Text("lengthOfUsage")
-                    .font(.title3)
-                    .bold()
-
-                Spacer()
-            }
-
-            TimeIntervalPicker()
-                .transition(.opacity)
-        }
-        .frame(maxWidth: .infinity)
-    }
-}
+//struct LengthOfUsageInputField: View {
+//    @EnvironmentObject var cheapestHourManager: CheapestHourManager
+//        
+//    var body: some View {
+//        VStack(alignment: .leading, spacing: 5) {
+//            HStack(spacing: 5) {
+//                Text("lengthOfUsage")
+//                    .font(.title3)
+//                    .bold()
+//
+//                Spacer()
+//            }
+//
+//            TimeIntervalPicker()
+//                .transition(.opacity)
+//        }
+//        .frame(maxWidth: .infinity)
+//    }
+//}
 
 /// A input field for the time range in the consumption comparison view.
 struct TimeRangeInputField: View {
@@ -196,14 +196,14 @@ struct ConsumptionComparisonView: View {
             VStack {
                 if awattarData.energyData != nil && currentSetting.setting != nil {
                     ScrollView {
-                        VStack(alignment: .center, spacing: 15) {
+                        VStack(alignment: .center, spacing: 20) {
                             PowerOutputInputField()
                             EnergyUsageInputField()
 //                            LengthOfUsageInputField()
                             TimeRangeInputField()
                         }
                         .padding(.top, 20)
-                        .padding([.leading, .trailing], 15)
+                        .padding([.leading, .trailing], 20)
                         .padding(.bottom, 10)
                     }
 

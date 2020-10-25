@@ -39,12 +39,12 @@ class CheapestHourManager: ObservableObject {
     @Published var startDate = Date()
     @Published var endDate = Date().addingTimeInterval(3600)
     
-    /// This value won't be changed. Its purpose is to serve as a reference point to dermiter the time range set in the time interval picker (lengthOfUsageDate).
-    var relativeLengthOfUsageDate = Date(timeIntervalSince1970: 82800)
-    /// A time selected with a time interval picker. It serves as second point to dermiter the time range for how long the electrical consumer shall operate.
-    @Published var lengthOfUsageDate = Date(timeIntervalSince1970: 83100)
-    /// The actual time interval which is the difference of relativeLengthOfUsageDate and lengthOfUsageDate defined in CheapestHourManager.
-    @Published var timeOfUsage = TimeInterval()
+    // This value won't be changed. Its purpose is to serve as a reference point to dermiter the time range set in the time interval picker (lengthOfUsageDate).
+//    var relativeLengthOfUsageDate = Date(timeIntervalSince1970: 82800)
+    // A time selected with a time interval picker. It serves as second point to dermiter the time range for how long the electrical consumer shall operate.
+//    @Published var lengthOfUsageDate = Date(timeIntervalSince1970: 83100)
+    
+    @Published var timeOfUsage: Double = 0
     
     /// The results of the calculation of the cheapest hours for usage which are represented in an HourPair object.
     @Published var cheapestHoursForUsage: HourPair? = nil
@@ -53,19 +53,20 @@ class CheapestHourManager: ObservableObject {
     
     /// Checks that the interval selected by the Interval Picker is not bigger than the time range between the start date and end date specified by the user. If the interval is bigger than the end date is adjusted accordingly.
     func checkIntervalFitsInRange() {
-        let startEndDateInterval = abs(startDate.timeIntervalSince(endDate))
-        let timeOfUsageInterval = abs(relativeLengthOfUsageDate.timeIntervalSince(lengthOfUsageDate))
-        
-        if startEndDateInterval < timeOfUsageInterval {
-            endDate.addTimeInterval(timeOfUsageInterval - startEndDateInterval)
-        }
+//        let startEndDateInterval = abs(startDate.timeIntervalSince(endDate))
+//        let timeOfUsageInterval = abs(relativeLengthOfUsageDate.timeIntervalSince(lengthOfUsageDate))
+//
+//        if startEndDateInterval < timeOfUsageInterval {
+//            endDate.addTimeInterval(timeOfUsageInterval - startEndDateInterval)
+//        }
     }
     
     /// Sets the values after the user entered them. This includes calculating time intervals and formatting raw text strings to floats.
     func setValues() {
-        self.timeOfUsage = abs(relativeLengthOfUsageDate.timeIntervalSince(lengthOfUsageDate))
-        powerOutput = powerOutputString.doubleValue ?? 0
-        energyUsage = energyUsageString.doubleValue ?? 0
+        self.cheapestHoursForUsage = nil
+        self.powerOutput = powerOutputString.doubleValue ?? 0
+        self.energyUsage = energyUsageString.doubleValue ?? 0
+        self.timeOfUsage = self.energyUsage / self.powerOutput
     }
     
     /// A pair of one, two, three or more EnergyPricePoints. This object supports functionallity to calculate the average price or to sort the associated price points for day.
@@ -131,8 +132,7 @@ class CheapestHourManager: ObservableObject {
         DispatchQueue.global(qos: .userInitiated).async {
             let now = Date()
             
-            let timeOfUsageInHours = self.timeOfUsage / 60 / 60 // Exact time of usage in hours (e.g.: 3,1817 hours)
-            let nextRoundedUpHour = Int(timeOfUsageInHours.rounded(.up))
+            let nextRoundedUpHour = Int(self.timeOfUsage.rounded(.up))
 
             // Create all HourPair's for later comparison
             var allPairs = [HourPair]()
@@ -172,7 +172,7 @@ class CheapestHourManager: ObservableObject {
                 }
             }
             
-            let minuteDifferenceInSeconds = Int(((Double(nextRoundedUpHour) - timeOfUsageInHours) * 60 * 60).rounded())
+            let minuteDifferenceInSeconds = Int(((Double(nextRoundedUpHour) - self.timeOfUsage) * 60 * 60).rounded())
             var differenceIsBefore = false
             
             if cheapestHourPairIndex != nil {

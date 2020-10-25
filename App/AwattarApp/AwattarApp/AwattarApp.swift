@@ -23,9 +23,16 @@ class PersistenceManager {
     }
 }
 
+class AppDelegate: NSObject, UIApplicationDelegate {
+    func applicationDidFinishLaunching(_ application: UIApplication) {
+    }
+}
+
 /// Entry point of the app
 @main
 struct AwattarApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    
     var persistence = PersistenceManager()
 
     var body: some Scene {

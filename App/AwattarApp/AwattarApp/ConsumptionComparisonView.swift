@@ -111,6 +111,7 @@ struct EnergyUsageInputField: View {
 
 /// A input field for the time range in the consumption comparison view.
 struct TimeRangeInputField: View {
+    @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
     
     var body: some View {
@@ -137,7 +138,9 @@ struct TimeRangeInputField: View {
                 .padding(5)
                 .padding([.leading, .trailing], 2)
                 .background(
-                    Color(hue: 0.6667, saturation: 0.0083, brightness: 0.9412)
+                    colorScheme == .light ?
+                        Color(hue: 0.6667, saturation: 0.0083, brightness: 0.9412) :
+                        Color(hue: 0.0000, saturation: 0.0000, brightness: 0.1429)
                 )
                 .cornerRadius(7)
  
@@ -155,7 +158,9 @@ struct TimeRangeInputField: View {
                 .padding(5)
                 .padding([.leading, .trailing], 2)
                 .background(
-                    Color(hue: 0.6667, saturation: 0.0083, brightness: 0.9412)
+                    colorScheme == .light ?
+                        Color(hue: 0.6667, saturation: 0.0083, brightness: 0.9412) :
+                        Color(hue: 0.0000, saturation: 0.0000, brightness: 0.1429)
                 )
                 .cornerRadius(7)
             }
@@ -215,7 +220,12 @@ struct ConsumptionComparisonView: View {
                     Button(action: {
                         redirectToComparisonResults = 1
                     }) {
-                        Text("showResults")
+                        HStack {
+                            Text("showResults")
+                            Image(systemName: "chevron.right")
+                                .foregroundColor(Color.white)
+                                .padding(.leading, 10)
+                        }
                     }
                     .buttonStyle(ActionButtonStyle())
                     .padding(.bottom, 16)
@@ -263,7 +273,14 @@ struct ConsumptionComparisonView: View {
 
 struct ConsumptionComparatorView_Previews: PreviewProvider {
     static var previews: some View {
-        TimeRangeInputField()
+//        TimeRangeInputField()
+//            .environmentObject(CheapestHourManager())
+//            .preferredColorScheme(.dark)
+        
+        ConsumptionComparisonView()
             .environmentObject(CheapestHourManager())
+            .environmentObject(AwattarData())
+            .environmentObject(CurrentSetting(managedObjectContext: PersistenceManager().persistentContainer.viewContext))
+            .preferredColorScheme(.dark)
     }
 }

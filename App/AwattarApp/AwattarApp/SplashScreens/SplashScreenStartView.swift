@@ -50,7 +50,7 @@ struct SplashScreenStartView: View {
         NavigationView {
             VStack {
                 VStack(spacing: 30) {
-                    Image("appSymbol")
+                    Image("BigAppIcon")
                         .resizable()
                         .scaledToFit()
 

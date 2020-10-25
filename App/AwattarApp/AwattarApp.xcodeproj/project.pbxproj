@@ -33,6 +33,8 @@
 		61E2DFD7254214B100473E20 /* CheapestHourManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61E2DFD6254214B100473E20 /* CheapestHourManager.swift */; };
 		61E5E051250E9AA800E2F9CC /* TabNavigatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61E5E050250E9AA800E2F9CC /* TabNavigatorView.swift */; };
 		61F38651253B38670036486E /* SplashScreenFinishView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61F38650253B38670036486E /* SplashScreenFinishView.swift */; };
+		61F983E02545B40B00A253CC /* SettingViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61F983DF2545B40B00A253CC /* SettingViews.swift */; };
+		61F983FA2545BC4600A253CC /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 61F983F92545BC4600A253CC /* Launch Screen.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -86,6 +88,8 @@
 		61E2DFD6254214B100473E20 /* CheapestHourManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheapestHourManager.swift; sourceTree = "<group>"; };
 		61E5E050250E9AA800E2F9CC /* TabNavigatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabNavigatorView.swift; sourceTree = "<group>"; };
 		61F38650253B38670036486E /* SplashScreenFinishView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashScreenFinishView.swift; sourceTree = "<group>"; };
+		61F983DF2545B40B00A253CC /* SettingViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViews.swift; sourceTree = "<group>"; };
+		61F983F92545BC4600A253CC /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -148,6 +152,7 @@
 				61C963A6251E2032001B3E3C /* ConsumptionClockView.swift */,
 				614E8566253B034F004904A9 /* LoadingView.swift */,
 				61260068253B0AB9009E0126 /* NetworkConnectionErrorView.swift */,
+				61F983DF2545B40B00A253CC /* SettingViews.swift */,
 			);
 			path = "Supporting Views";
 			sourceTree = "<group>";
@@ -188,6 +193,7 @@
 				6156A578250C2161005174A5 /* SettingsPageView.swift */,
 				6156A575250C1F5E005174A5 /* Setting+CoreDataProperties.swift */,
 				6156A574250C1F5E005174A5 /* Setting+CoreDataClass.swift */,
+				61F983F92545BC4600A253CC /* Launch Screen.storyboard */,
 				615468552520D214004FBEF7 /* Localizable.strings */,
 				6156A571250C1F04005174A5 /* Model.xcdatamodeld */,
 				617D85B525052C37009E18FB /* Assets.xcassets */,
@@ -337,6 +343,7 @@
 			files = (
 				617D85B925052C37009E18FB /* Preview Assets.xcassets in Resources */,
 				615468532520D214004FBEF7 /* Localizable.strings in Resources */,
+				61F983FA2545BC4600A253CC /* Launch Screen.storyboard in Resources */,
 				617D85B625052C37009E18FB /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -376,6 +383,7 @@
 				61D6F8882517AD5500027FD1 /* ButtonStyles.swift in Sources */,
 				6156A579250C2161005174A5 /* SettingsPageView.swift in Sources */,
 				61E5E051250E9AA800E2F9CC /* TabNavigatorView.swift in Sources */,
+				61F983E02545B40B00A253CC /* SettingViews.swift in Sources */,
 				61200EC3253A050700A104B1 /* SplashScreenStartView.swift in Sources */,
 				61C963A7251E2032001B3E3C /* ConsumptionClockView.swift in Sources */,
 				617D85B425052C35009E18FB /* HomeView.swift in Sources */,
@@ -552,10 +560,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_ASSET_PATHS = "\"AwattarApp/Preview Content\"";
 				DEVELOPMENT_TEAM = RC32A2AMHF;
 				ENABLE_PREVIEWS = YES;
@@ -577,10 +584,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_ASSET_PATHS = "\"AwattarApp/Preview Content\"";
 				DEVELOPMENT_TEAM = RC32A2AMHF;
 				ENABLE_PREVIEWS = YES;

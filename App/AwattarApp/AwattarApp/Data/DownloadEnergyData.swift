@@ -41,9 +41,9 @@ struct Profile: Hashable {
 /// Defines all profiles that exist.
 struct ProfilesData {
     var profiles = [
-        Profile(name: "HOURLY", imageName: "hourlyProfilePicture"),
-        Profile(name: "HOURLY-CAP", imageName: "hourlyCapProfilePicture"),
-        Profile(name: "YEARLY", imageName: "yearlyProfilePicture")]
+        Profile(name: "HOURLY", imageName: "HourlyProfilePicture"),
+        Profile(name: "HOURLY-CAP", imageName: "HourlyCapProfilePicture"),
+        Profile(name: "YEARLY", imageName: "YearlyProfilePicture")]
 }
 
 /// Object responsible for downloading the current energy prices from the backend, decoding this data and providing it to all views which need it. It also includes data for the different profiles/tariffs of aWATTar which don't need to be downloaded.

@@ -7,17 +7,6 @@
 
 import SwiftUI
 
-extension View {
-    /// Applies modifiers only than to the content if a conditional evaluates to true
-    @ViewBuilder func ifTrue<Content: View>(_ conditional: Bool, content: (Self) -> Content) -> some View {
-        if conditional {
-            content(self)
-        } else {
-            self
-        }
-    }
-}
-
 /// A clock which job it is to visually present the cheapest hours for the consumption so that these informations can be immediately and fastly processed by the user.
 struct ConsumptionClockView: View {
     @Environment(\.colorScheme) var colorScheme

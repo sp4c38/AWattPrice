@@ -1,0 +1,70 @@
+//
+//  Extensions.swift
+//  AwattarApp
+//
+//  Created by Léon Becker on 25.10.20.
+//
+
+import SwiftUI
+
+// View extensions
+extension View {
+    /// Hides the keyboard from the screen
+    func hideKeyboard() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
+}
+
+extension View {
+    /// Applies modifiers only than to the content if a conditional evaluates to true
+    @ViewBuilder func ifTrue<Content: View>(_ conditional: Bool, content: (Self) -> Content) -> some View {
+        if conditional {
+            content(self)
+        } else {
+            self
+        }
+    }
+}
+
+extension View {
+    /**
+     Animates size changes of text
+     - Parameter size: The size of the text. If it gets changed those changes in text size are animated.
+     - Returns: Returns the view the modifier was applied to with the font  and properties to reflect the change of the size to animate it in the future.
+     */
+    func animatableFont(size: CGFloat, weight: Font.Weight) -> some View {
+        self.modifier(AnimatableCustomFontModifier(size: size, weight: weight))
+    }
+
+}
+
+// AnyTransition extensions
+extension AnyTransition {
+    /// A transition used for presenting a view with extra information to the screen.
+    static var extraInformationTransition: AnyTransition {
+        let insertion = AnyTransition.opacity // AnyTransition.scale(scale: 2).combined(with: .opacity)
+        let removal = AnyTransition.opacity // AnyTransition.scale(scale: 2).combined(with: .opacity)
+        return .asymmetric(insertion: insertion, removal: removal)
+    }
+}
+
+// String extensions
+extension String {
+    static let numberFormatter = NumberFormatter()
+    
+    var doubleValue: Double? {
+        String.numberFormatter.decimalSeparator = "."
+        
+        if let result = String.numberFormatter.number(from: self) {
+            return Double(truncating: result)
+        } else {
+            String.numberFormatter.decimalSeparator = ","
+            
+            if let result = String.numberFormatter.number(from: self) {
+                return Double(truncating: result)
+            }
+        }
+        
+        return nil
+    }
+}

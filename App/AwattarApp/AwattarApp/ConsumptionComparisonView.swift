@@ -7,18 +7,19 @@
 
 import SwiftUI
 
-extension AnyTransition {
-    /// A transition used for presenting a view with extra information to the screen.
-    static var extraInformationTransition: AnyTransition {
-        let insertion = AnyTransition.opacity // AnyTransition.scale(scale: 2).combined(with: .opacity)
-        let removal = AnyTransition.opacity // AnyTransition.scale(scale: 2).combined(with: .opacity)
-        return .asymmetric(insertion: insertion, removal: removal)
-    }
-}
-
 /// Input field for the power output of the consumer
 struct PowerOutputInputField: View {
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
+    
+    let inputError: Bool
+    
+    init(errorValues: [Int]) {
+        if errorValues.contains(1) {
+            inputError = true
+        } else {
+            inputError = false
+        }
+    }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -44,9 +45,15 @@ struct PowerOutputInputField: View {
             .padding(.trailing, 14)
             .padding([.top, .bottom], 10)
             .background(
-                RoundedRectangle(cornerRadius: 40)
-                    .stroke(Color(hue: 0.0000, saturation: 0.0000, brightness: 0.8706), lineWidth: 2)
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(inputError ? Color.red : Color(hue: 0.0000, saturation: 0.0000, brightness: 0.8706), lineWidth: 2)
             )
+            
+            if inputError {
+                Text("fillOutField")
+                    .font(.caption)
+                    .foregroundColor(Color.red)
+            }
         }
         .frame(maxWidth: .infinity)
     }
@@ -55,6 +62,16 @@ struct PowerOutputInputField: View {
 /// Input field for the energy usage which the consumer shall consume
 struct EnergyUsageInputField: View {
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
+    
+    let inputError: Bool
+    
+    init(errorValues: [Int]) {
+        if errorValues.contains(2) {
+            inputError = true
+        } else {
+            inputError = false
+        }
+    }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -80,9 +97,15 @@ struct EnergyUsageInputField: View {
             .padding(.trailing, 14)
             .padding([.top, .bottom], 10)
             .background(
-                RoundedRectangle(cornerRadius: 40)
-                    .stroke(Color(hue: 0.0000, saturation: 0.0000, brightness: 0.8706), lineWidth: 2)
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(inputError ? Color.red : Color(hue: 0.0000, saturation: 0.0000, brightness: 0.8706), lineWidth: 2)
             )
+            
+            if inputError {
+                Text("fillOutField")
+                    .font(.caption)
+                    .foregroundColor(Color.red)
+            }
         }
         .frame(maxWidth: .infinity)
     }
@@ -114,6 +137,8 @@ struct TimeRangeInputField: View {
     @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
     
+    let errorValues: [Int]
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             HStack {
@@ -128,7 +153,7 @@ struct TimeRangeInputField: View {
                     Text("from")
                         .bold()
                         .font(.callout)
-                        .foregroundColor(Color(hue: 0.0000, saturation: 0.0000, brightness: 0.4314))
+                        .foregroundColor(colorScheme == .light ? Color(hue: 0.0000, saturation: 0.0000, brightness: 0.4314) : Color(hue: 0.0000, saturation: 0.0000, brightness: 0.8311))
                     
                     Spacer()
                     
@@ -148,7 +173,7 @@ struct TimeRangeInputField: View {
                     Text("to")
                         .bold()
                         .font(.callout)
-                        .foregroundColor(Color(hue: 0.0000, saturation: 0.0000, brightness: 0.4314))
+                        .foregroundColor(colorScheme == .light ? Color(hue: 0.0000, saturation: 0.0000, brightness: 0.4314) : Color(hue: 0.0000, saturation: 0.0000, brightness: 0.8311))
                     
                     Spacer()
                     
@@ -179,8 +204,9 @@ struct ConsumptionComparisonView: View {
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
     
     /// State variable which if set to true triggers that extra informations is shown of what this view does because it may not be exactly clear to the user at first usage.
-    @State var showInfo = false
     @State var redirectToComparisonResults: Int? = 0
+    /// A list to which values representing different types of errors are added if any occur
+    @State var fieldsEnteredErrorValues = [Int]()
     
     /**
      A time range which goes from the start time of the first energy price data point to the end time of the last energy price data point downloaded from the server
@@ -202,11 +228,11 @@ struct ConsumptionComparisonView: View {
                 if awattarData.energyData != nil && currentSetting.setting != nil {
                     ScrollView {
                         VStack(alignment: .center, spacing: 20) {
-                            PowerOutputInputField()
-                            EnergyUsageInputField()
-//                            LengthOfUsageInputField()
-                            TimeRangeInputField()
+                            PowerOutputInputField(errorValues: fieldsEnteredErrorValues)
+                            EnergyUsageInputField(errorValues: fieldsEnteredErrorValues)
+                            TimeRangeInputField(errorValues: fieldsEnteredErrorValues)
                         }
+                        .animation(.easeInOut)
                         .padding(.top, 20)
                         .padding([.leading, .trailing], 20)
                         .padding(.bottom, 10)
@@ -218,7 +244,12 @@ struct ConsumptionComparisonView: View {
 
                     // Button to perform calculations to find cheapest hours and to redirect to the result view to show the results calculated
                     Button(action: {
-                        redirectToComparisonResults = 1
+                        fieldsEnteredErrorValues = cheapestHourManager.checkRequirementsSatisfied()
+                        if fieldsEnteredErrorValues.contains(0) {
+                            // All requirements are satisfied
+                            redirectToComparisonResults = 1
+                            self.hideKeyboard()
+                        }
                     }) {
                         HStack {
                             Text("showResults")
@@ -228,17 +259,14 @@ struct ConsumptionComparisonView: View {
                         }
                     }
                     .buttonStyle(ActionButtonStyle())
-                    .padding(.bottom, 16)
-                    .padding([.leading, .trailing], 15)
+                    .padding([.leading, .trailing, .bottom], 16)
                     .padding(.top, 10)
                 } else {
                     if awattarData.networkConnectionError == false {
-                        // no network connection error
                         // download in progress
 
                         LoadingView()
                     } else {
-                        // network connection error
                         // can't fulfill download
 
                         NetworkConnectionErrorView()
@@ -255,15 +283,6 @@ struct ConsumptionComparisonView: View {
                 }
             }
             .navigationBarTitle("usage")
-            .navigationBarItems(trailing:
-                Button(action: {
-                    withAnimation {
-                        showInfo.toggle()
-                    }
-                }) {
-                    Image(systemName: "info.circle")
-                }
-            )
             .onTapGesture {
                 self.hideKeyboard()
             }
@@ -273,14 +292,15 @@ struct ConsumptionComparisonView: View {
 
 struct ConsumptionComparatorView_Previews: PreviewProvider {
     static var previews: some View {
-//        TimeRangeInputField()
-//            .environmentObject(CheapestHourManager())
-//            .preferredColorScheme(.dark)
-        
-        ConsumptionComparisonView()
+        EnergyUsageInputField(errorValues: [2])
             .environmentObject(CheapestHourManager())
-            .environmentObject(AwattarData())
-            .environmentObject(CurrentSetting(managedObjectContext: PersistenceManager().persistentContainer.viewContext))
             .preferredColorScheme(.dark)
+            .padding()
+        
+//        ConsumptionComparisonView()
+//            .environmentObject(CheapestHourManager())
+//            .environmentObject(AwattarData())
+//            .environmentObject(CurrentSetting(managedObjectContext: PersistenceManager().persistentContainer.viewContext))
+//            .preferredColorScheme(.dark)
     }
 }

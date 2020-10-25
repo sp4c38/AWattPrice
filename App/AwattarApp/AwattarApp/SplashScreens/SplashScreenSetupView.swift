@@ -7,12 +7,6 @@
 
 import SwiftUI
 
-extension View {
-    func hideKeyboard() {
-        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-    }
-}
-
 /// Splash screen which handles the input of settings which are required for the main functionality of the app.
 struct SplashScreenSetupView: View {
     @EnvironmentObject var currentSetting: CurrentSetting

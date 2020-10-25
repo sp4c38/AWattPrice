@@ -97,19 +97,6 @@ struct AnimatableCustomFontModifier: AnimatableModifier {
     }
 }
 
-extension View {
-    
-    /**
-     Animates size changes of text
-     - Parameter size: The size of the text. If it gets changed those changes in text size are animated.
-     - Returns: Returns the view the modifier was applied to with the font  and properties to reflect the change of the size to animate it in the future.
-     */
-    func animatableFont(size: CGFloat, weight: Font.Weight) -> some View {
-        self.modifier(AnimatableCustomFontModifier(size: size, weight: weight))
-    }
-
-}
-
 /**
  A single bar with a certain length (representing the energy cost for this hour relative to other hours) and text which again shows the energy cost for this hour but helps to also show the energy price information in more legible and more accurate form.
  */

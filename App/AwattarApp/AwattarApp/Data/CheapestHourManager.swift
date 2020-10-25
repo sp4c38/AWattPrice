@@ -7,26 +7,6 @@
 
 import Foundation
 
-extension String {
-    static let numberFormatter = NumberFormatter()
-    
-    var doubleValue: Double? {
-        String.numberFormatter.decimalSeparator = "."
-        
-        if let result = String.numberFormatter.number(from: self) {
-            return Double(truncating: result)
-        } else {
-            String.numberFormatter.decimalSeparator = ","
-            
-            if let result = String.numberFormatter.number(from: self) {
-                return Double(truncating: result)
-            }
-        }
-        
-        return nil
-    }
-}
-
 /// An object which manages the calculation of when the cheapest hours are for energy consumption
 class CheapestHourManager: ObservableObject {
     @Published var powerOutputString = ""
@@ -67,6 +47,32 @@ class CheapestHourManager: ObservableObject {
         self.powerOutput = powerOutputString.doubleValue ?? 0
         self.energyUsage = energyUsageString.doubleValue ?? 0
         self.timeOfUsage = self.energyUsage / self.powerOutput
+    }
+    
+    /// Checks if all requirements are satisfied for continuing with calculating the cheapest hours for usage
+    /// - Returns: Returns a list with [0] if all requirements are satisfied, with [1] at error with powerOutputString, with [2] at error with energyUsageString and [3] if there is a error with timeOfUsage. Multiple error values can be returned in the list.
+    func checkRequirementsSatisfied() -> [Int] {
+        self.setValues()
+        
+        var errorValues = [Int]()
+        
+        if self.powerOutput == 0 {
+            errorValues.append(1)
+        }
+        
+        if self.energyUsage == 0{
+            errorValues.append(2)
+        }
+        
+        if self.timeOfUsage == 0 {
+            errorValues.append(2)
+        }
+        
+        if !(errorValues.count > 0) {
+            errorValues.append(0)
+        }
+        
+        return errorValues
     }
     
     /// A pair of one, two, three or more EnergyPricePoints. This object supports functionallity to calculate the average price or to sort the associated price points for day.

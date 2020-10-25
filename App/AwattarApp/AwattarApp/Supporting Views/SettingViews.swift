@@ -7,14 +7,6 @@
 
 import SwiftUI
 
-extension AnyTransition {
-    static var switchPlaces: AnyTransition {
-        let insertion = AnyTransition.scale(scale: 2).combined(with: .opacity)
-        let removal = AnyTransition.move(edge: .bottom).combined(with: .opacity)
-        return .asymmetric(insertion: insertion, removal: removal)
-    }
-}
-
 struct PricesWithVatIncludedSetting: View {
     @EnvironmentObject var currentSetting: CurrentSetting
     
@@ -125,7 +117,7 @@ struct AwattarBasicEnergyChargePriceSetting: View {
                 .padding(.trailing, 14)
                 .padding([.top, .bottom], 10)
                 .background(
-                    RoundedRectangle(cornerRadius: 40)
+                    RoundedRectangle(cornerRadius: 8)
                         .stroke(Color(hue: 0.0000, saturation: 0.0000, brightness: 0.8706), lineWidth: 2)
                 )
             }

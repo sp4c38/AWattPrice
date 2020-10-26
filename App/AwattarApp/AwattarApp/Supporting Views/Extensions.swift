@@ -26,6 +26,23 @@ extension View {
     }
 }
 
+struct AnimatableCustomFontModifier: AnimatableModifier {
+    var size: CGFloat
+    var weight: Font.Weight
+    
+    var animatableData: CGFloat {
+        get { size }
+        set {
+            size = newValue
+        }
+    }
+    
+    func body(content: Content) -> some View {
+        content
+            .font(.system(size: size, weight: weight))
+    }
+}
+
 extension View {
     /**
      Animates size changes of text

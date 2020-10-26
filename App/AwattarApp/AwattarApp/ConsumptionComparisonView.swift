@@ -311,6 +311,7 @@ struct ConsumptionComparisonView: View {
                 self.hideKeyboard()
             }
         }
+        .navigationViewStyle(StackNavigationViewStyle())
     }
 }
 

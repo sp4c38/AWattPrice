@@ -32,7 +32,7 @@ struct BarShape: Shape {
     
     func path(in rect: CGRect) -> Path {
         let radius: CGFloat = 2
-        let barPadding: CGFloat = 3
+        let barPadding: CGFloat = 1
         let dividerLineWidth: CGFloat = 3
         
         var path = Path()
@@ -77,23 +77,6 @@ struct VerticalDividerLineShape: Shape {
         path = path.strokedPath(StrokeStyle(lineWidth: width, lineCap: .square))
 
         return path
-    }
-}
-
-struct AnimatableCustomFontModifier: AnimatableModifier {
-    var size: CGFloat
-    var weight: Font.Weight
-    
-    var animatableData: CGFloat {
-        get { size }
-        set {
-            size = newValue
-        }
-    }
-    
-    func body(content: Content) -> some View {
-        content
-            .font(.system(size: size, weight: weight))
     }
 }
 
@@ -210,11 +193,11 @@ struct EnergyPriceSingleBar: View {
             // Show the energy price as text with or without VAT/tax included
             Text(singleBarSettings.centFormatter.string(from: NSNumber(value: (hourDataPoint.marketprice * (currentSetting.setting!.pricesWithTaxIncluded ? 1.16 : 1))))!)
             .foregroundColor(Color.black)
-                .animatableFont(size: fontSize, weight: fontWeight)
+            .animatableFont(size: fontSize, weight: fontWeight)
             .padding(1)
             .background(Color.white)
             .cornerRadius((isSelected == 1 || isSelected == 2) ? 3 : 1)
-            .position(x: ((isSelected == 1) ? maximalNegativePriceBarWidth + 16 + 22 : ((isSelected == 2) ? maximalNegativePriceBarWidth + 16 + 8 : maximalNegativePriceBarWidth + 16 + 3)), y: startHeight + (height / 2)) // 16 is padding
+            .position(x: ((isSelected == 1) ? 26 + 22 : ((isSelected == 2) ? 26 + 8 : 26 + 3)), y: startHeight + (height / 2)) // 16 is padding
             .shadow(radius: 2)
 
             // Show start to end time of the hour in which the certain energy price applies
@@ -264,12 +247,8 @@ struct EnergyPriceGraph: View {
     @EnvironmentObject var currentSetting: CurrentSetting
     
     @State var graphHourPointData = [(EnergyPricePoint, CGFloat)]()
-
     @State var currentPointerIndexSelected: Int? = nil
-    
-    @State var pointerHeightDeltaToBefore: CGFloat? = nil
     @State var singleHeight: CGFloat = 0
-
     @State var singleBarSettings: SingleBarSettings? = nil
 
     var body: some View {
@@ -283,12 +262,12 @@ struct EnergyPriceGraph: View {
             .onChanged { location in
                 let locationHeight = location.location.y
                 
-                withAnimation(.easeInOut(duration: 0.3)) {
+                withAnimation(.easeInOut(duration: 0.4)) {
                     currentPointerIndexSelected = Int(((locationHeight / singleHeight) - 1).rounded(.up))
                 }
             }
             .onEnded {_ in
-                withAnimation(.easeInOut(duration: 0.3)) {
+                withAnimation(.easeInOut(duration: 0.4)) {
                     currentPointerIndexSelected = nil
                 }
             }
@@ -308,6 +287,7 @@ struct EnergyPriceGraph: View {
                     }
                 }
             }
+            .drawingGroup()
             .onAppear {
                 singleBarSettings = SingleBarSettings(minPrice: awattarData.energyData!.minPrice, maxPrice: awattarData.energyData!.maxPrice)
                 

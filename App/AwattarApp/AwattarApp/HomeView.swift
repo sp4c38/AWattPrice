@@ -48,6 +48,7 @@ struct HomeView: View {
             .navigationBarTitle("elecPrice")
             .navigationBarTitleDisplayMode(.large)
         }
+        .navigationViewStyle(StackNavigationViewStyle())
     }
 }
 

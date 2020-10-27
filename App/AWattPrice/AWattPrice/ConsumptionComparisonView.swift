@@ -306,7 +306,7 @@ struct ConsumptionComparisonView: View {
                     cheapestHourManager.endDate = Date(timeIntervalSince1970: TimeInterval(awattarData.energyData!.prices[maxHourIndex].endTimestamp))
                 }
             }
-            .navigationBarTitle("usage")
+            .navigationTitle("usage")
             .onTapGesture {
                 self.hideKeyboard()
             }

@@ -48,3 +48,4 @@
 "elecCosts" = "Electricity costs";
 "emptyFieldError" = "Please fill out this field";
 "wrongInputError" = "This field may only contain numbers and \",\" or \".\"";
+"help" = "Help";

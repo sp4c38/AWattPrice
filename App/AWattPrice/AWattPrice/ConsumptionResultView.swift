@@ -84,6 +84,6 @@ struct ConsumptionResultView: View {
         .onAppear {
             cheapestHourManager.calculateCheapestHours(energyData: awattarData.energyData!)
         }
-        .navigationBarTitle("results")
+        .navigationTitle("results")
     }
 }

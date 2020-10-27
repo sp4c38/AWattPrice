@@ -48,7 +48,7 @@ struct HomeView: View {
                 }
             }
             .padding(.trailing, 16)
-            .navigationBarTitle("elecPrice")
+            .navigationTitle("elecPrice")
             .navigationBarTitleDisplayMode(.large)
             .fullScreenCover(isPresented: $showSettingsPage) {
                 SettingsPageView()

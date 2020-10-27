@@ -22,19 +22,21 @@ struct SettingsPageView: View {
                     PricesWithVatIncludedSetting()
                     
                     AwattarBasicEnergyChargePriceSetting()
+                        .onTapGesture {
+                            self.hideKeyboard()
+                        }
                         
+                    GetHelpView()
+                    
                     AppVersionView()
                         .listRowBackground(colorScheme == .light ? Color(hue: 0.6667, saturation: 0.0202, brightness: 0.9686) : Color.black)
                 }
                 .listStyle(InsetGroupedListStyle())
                 .environment(\.defaultMinListHeaderHeight, 36)
             }
-            .navigationBarTitle("settings")
+            .navigationTitle("settings")
             .navigationViewStyle(StackNavigationViewStyle())
             .contentShape(Rectangle())
-            .onTapGesture {
-                self.hideKeyboard()
-            }
             .navigationBarItems(trailing: DoneNavigationBarItem(presentationMode: presentationMode))
         }
     }

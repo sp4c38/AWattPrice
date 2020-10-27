@@ -184,7 +184,7 @@ struct AppVersionView: View {
 struct SettingViews_Previews: PreviewProvider {
     static var previews: some View {
         List {
-            AwattarBasicEnergyChargePriceSetting()
+            PricesWithVatIncludedSetting()
                 .environmentObject(CurrentSetting(managedObjectContext: PersistenceManager().persistentContainer.viewContext))
         }
         .listStyle(InsetGroupedListStyle())

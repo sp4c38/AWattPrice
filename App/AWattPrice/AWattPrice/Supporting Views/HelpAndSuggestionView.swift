@@ -8,9 +8,10 @@
 import MessageUI
 import SwiftUI
 
-struct HelpSuggestionButtonStyle: ButtonStyle {
+struct HelpAndSuggestionButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
+            .opacity(configuration.isPressed ? 0.3 : 1)
             .foregroundColor(Color.white)
             .frame(maxWidth: .infinity)
             .padding([.top, .bottom], 16)
@@ -54,7 +55,7 @@ struct HelpView: View {
                         .bold()
                 }
             }
-            .buttonStyle(HelpSuggestionButtonStyle())
+            .buttonStyle(HelpAndSuggestionButtonStyle())
         }
         .padding()
         .background(colorScheme == .light ? Color(hue: 0.6667, saturation: 0.0340, brightness: 0.8985) : Color(hue: 0.6667, saturation: 0.0340, brightness: 0.1015))
@@ -98,7 +99,7 @@ struct SuggestionView: View {
                         .bold()
                 }
             }
-            .buttonStyle(HelpSuggestionButtonStyle())
+            .buttonStyle(HelpAndSuggestionButtonStyle())
         }
         .padding()
         .background(colorScheme == .light ? Color(hue: 0.6667, saturation: 0.0340, brightness: 0.8985) : Color(hue: 0.6667, saturation: 0.0340, brightness: 0.1015))
@@ -136,19 +137,27 @@ struct HelpAndSuggestionView: View {
 struct GetHelpView: View {
     @Environment(\.colorScheme) var colorScheme
     
+    @State var redirectToHelpAndSuggestionView: Int? = 0
+    
     var body: some View {
-//        Section {
-            NavigationLink(destination: HelpAndSuggestionView()) {
-                HStack {
-                    Image(systemName: "questionmark.circle")
-                        .font(.title2)
-                    
-                    Text("helpAndSuggestions")
-                        .font(.subheadline)
-                }
-                .foregroundColor(colorScheme == .light ? Color.black : Color.white)
+        ZStack {
+            NavigationLink("", destination: HelpAndSuggestionView(), tag: 1, selection: $redirectToHelpAndSuggestionView)
+            
+            HStack {
+                Image(systemName: "questionmark.circle")
+                    .font(.title2)
+                
+                Text("helpAndSuggestions")
+                    .font(.subheadline)
+                
+                Spacer()
             }
-//        }
+            .foregroundColor(colorScheme == .light ? Color.black : Color.white)
+        }
+        .onTapGesture {
+            self.hideKeyboard()
+            redirectToHelpAndSuggestionView = 1
+        }
     }
 }
 
@@ -164,7 +173,7 @@ struct HelpView_Previews: PreviewProvider {
 //        .preferredColorScheme(.light)
         
         NavigationView {
-            HelpAndSuggestionView()
+            GetHelpView()
         }
         .preferredColorScheme(.light)
     }

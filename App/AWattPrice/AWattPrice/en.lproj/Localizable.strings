@@ -6,50 +6,62 @@
   
 */
 
+// Welcome Splash Screen localizations
 "splashScreenWelcome" = "Welcome to the";
 "splashScreenViewPrices" = "View prices";
 "splashScreenViewPricesInfo" = "Check the current electricity prices for each hour throughout the day.";
 "splashScreenComparePrices" = "Compare prices";
 "splashScreenComparePricesInfo" = "Find the cheapest hours to consume electricity.";
-"splashScreenContinueButton" = "Continue";
+
+// Setup Splash Screen localizations
 "splashScreenSetupTitle" = "Setup";
 "splashScreenSetupFinished" = "Setup finished";
+
+// Finished Splash Screen localizations
 "splashScreenCanChangeSettingsLater" = "You still can change\nyour settings later";
 
-"baseElectricityPriceHint" = "You can find your base electricity price for your region on the aWATTar website.";
-"toAwattarWebsite" = "To the aWATTar website";
-
-"loadingData" = "Loading";
-"pricePerKwh" = "Price per kWh";
-"hourOfDay" = "Hour of day";
-"elecPrice" = "Electricity Price";
-"settings" = "Settings";
-"price" = "Price";
-"pricesWithVat" = "Prices with VAT";
 "awattarTariff" = "aWATTar Tariff";
 "tariffSelectionTip" = "If you already are an aWATTar customer, you can select your tariff here to view costs more accurately for you.";
-"centPerKwh" = "Cent per kWh";
-"usage" = "Usage";
-"showResults" = "Show results";
+
+// Electricity Price page localizations
+"elecPrice" = "Electricity Price";
+"pricePerKwh" = "Price per kWh";
+"hourOfDay" = "Hour of day";
+
+// Cheapest Price page localizations
+"cheapestPrice" = "Cheapest Price";
+"emptyFieldError" = "Please fill out this field";
+"wrongInputError" = "This field may only contain numbers and \",\" or \".\"";
+"totalConsumption" = "Total consumption";
 "timeRange" = "Time range";
-"startTime" = "Start time";
-"endTime" = "End time";
-"lengthOfUsage" = "Length of usage";
-"powerOutput" = "Power output";
+
+// Cheapest Price Result page localizations
+"elecCosts" = "Electricity costs";
+
+// Settings Page and Help & Suggestions page localizations
+"settings" = "Settings";
+"priceWithVat" = "Price with VAT";
+"baseElectricityPriceHint" = "You can find your base electricity price for your region on the aWATTar website.";
+"toAwattarWebsite" = "To the aWATTar website";
+"helpAndSuggestions" = "Help & Suggestions";
+"version" = "Version";
+"help" = "Help";
+"suggestion" = "Suggestions";
+"helpByEmail" = "Get help by email";
+"suggestionByEmail" = "Send suggestions by email";
+
+
+// General localizations
 "inKw" = "in kW";
-"energyUsage" = "Energy usage";
 "inKwh" = "in kWh";
+"centPerKwh" = "Cent per kWh";
 "until" = "until";
-"results" = "Results";
 "from" = "from";
 "to" = "to";
 "pm" = "PM";
 "am" = "AM";
-"elecCosts" = "Electricity costs";
-"emptyFieldError" = "Please fill out this field";
-"wrongInputError" = "This field may only contain numbers and \",\" or \".\"";
-"helpAndSuggestions" = "Help & Suggestions";
-"helpByEmail" = "Get help by email";
-"help" = "Help";
-"suggestion" = "Suggestions";
-"suggestionByEmail" = "Send suggestions by email";
+"result" = "Result";
+"loading" = "Loading";
+"price" = "Price";
+"continue" = "Continue";
+"power" = "Power";

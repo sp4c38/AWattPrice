@@ -19,7 +19,7 @@ struct PricesWithVatIncludedSetting: View {
             header: Text("price")
         ) {
             HStack(spacing: 10) {
-                Text("pricesWithVat")
+                Text("priceWithVat")
                     .font(.subheadline)
                     .fixedSize(horizontal: false, vertical: true)
                 
@@ -152,6 +152,12 @@ struct AwattarBasicEnergyChargePriceSetting: View {
     }
 }
 
+extension String {
+    func localized(withComment: String? = nil) -> String {
+        return NSLocalizedString(self, comment: withComment ?? "")
+    }
+}
+
 struct AppVersionView: View {
     var body: some View {
         Section {
@@ -169,7 +175,8 @@ struct AppVersionView: View {
                     
                     if let currentVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String {
                         if let currentBuild = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String {
-                            Text("Version \(currentVersion) (\(currentBuild))")
+                            
+                            Text("\("version".localized()) \(currentVersion) (\(currentBuild))")
                                 .font(.footnote)
                         }
                     }

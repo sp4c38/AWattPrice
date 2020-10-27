@@ -30,7 +30,7 @@ struct PowerOutputInputField: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
-                Text("powerOutput")
+                Text("Power")
                     .font(.title3)
                     .bold()
                 Spacer()
@@ -94,7 +94,7 @@ struct EnergyUsageInputField: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
-                Text("energyUsage")
+                Text("totalConsumption")
                     .font(.title3)
                     .bold()
                 Spacer()
@@ -276,7 +276,7 @@ struct ConsumptionComparisonView: View {
                         }
                     }) {
                         HStack {
-                            Text("showResults")
+                            Text("result")
                             Image(systemName: "chevron.right")
                                 .foregroundColor(Color.white)
                                 .padding(.leading, 10)
@@ -306,7 +306,7 @@ struct ConsumptionComparisonView: View {
                     cheapestHourManager.endDate = Date(timeIntervalSince1970: TimeInterval(awattarData.energyData!.prices[maxHourIndex].endTimestamp))
                 }
             }
-            .navigationTitle("usage")
+            .navigationTitle("cheapestPrice")
             .onTapGesture {
                 self.hideKeyboard()
             }

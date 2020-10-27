@@ -54,7 +54,7 @@ struct TabNavigatorView: View {
                         ConsumptionComparisonView()
                             .tabItem {
                                 Image(systemName: "rectangle.and.text.magnifyingglass")
-                                Text("usage")
+                                Text("cheapestPrice")
                             }
                             .tag(2)
                     }

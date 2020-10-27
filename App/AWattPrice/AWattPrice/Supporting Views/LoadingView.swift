@@ -13,7 +13,7 @@ struct LoadingView: View {
         VStack(spacing: 20) {
             Spacer()
             
-            ProgressView("loadingData")
+            ProgressView("loading")
             
             Spacer()
         }

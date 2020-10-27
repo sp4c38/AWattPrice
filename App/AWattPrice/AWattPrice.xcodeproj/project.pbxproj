@@ -69,7 +69,7 @@
 		6156A574250C1F5E005174A5 /* Setting+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Setting+CoreDataClass.swift"; sourceTree = "<group>"; };
 		6156A575250C1F5E005174A5 /* Setting+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Setting+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		6156A578250C2161005174A5 /* SettingsPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPageView.swift; sourceTree = "<group>"; };
-		617D85AE25052C35009E18FB /* AwattarApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AwattarApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		617D85AE25052C35009E18FB /* AWattPrice.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AWattPrice.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		617D85B125052C35009E18FB /* AwattarApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AwattarApp.swift; sourceTree = "<group>"; };
 		617D85B325052C35009E18FB /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		617D85B525052C37009E18FB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -163,9 +163,9 @@
 		617D85A525052C35009E18FB = {
 			isa = PBXGroup;
 			children = (
-				617D85B025052C35009E18FB /* AwattarApp */,
-				617D85C225052C37009E18FB /* AwattarAppTests */,
-				617D85CD25052C37009E18FB /* AwattarAppUITests */,
+				617D85B025052C35009E18FB /* AWattPrice */,
+				617D85C225052C37009E18FB /* AWattPriceAppTests */,
+				617D85CD25052C37009E18FB /* AWattPriceAppUITests */,
 				617D85AF25052C35009E18FB /* Products */,
 			);
 			sourceTree = "<group>";
@@ -173,14 +173,14 @@
 		617D85AF25052C35009E18FB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				617D85AE25052C35009E18FB /* AwattarApp.app */,
+				617D85AE25052C35009E18FB /* AWattPrice.app */,
 				617D85BF25052C37009E18FB /* AwattarAppTests.xctest */,
 				617D85CA25052C37009E18FB /* AwattarAppUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		617D85B025052C35009E18FB /* AwattarApp */ = {
+		617D85B025052C35009E18FB /* AWattPrice */ = {
 			isa = PBXGroup;
 			children = (
 				61260071253B22C4009E0126 /* Styles */,
@@ -203,7 +203,7 @@
 				617D85BA25052C37009E18FB /* Info.plist */,
 				617D85B725052C37009E18FB /* Preview Content */,
 			);
-			path = AwattarApp;
+			path = AWattPrice;
 			sourceTree = "<group>";
 		};
 		617D85B725052C37009E18FB /* Preview Content */ = {
@@ -214,22 +214,22 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
-		617D85C225052C37009E18FB /* AwattarAppTests */ = {
+		617D85C225052C37009E18FB /* AWattPriceAppTests */ = {
 			isa = PBXGroup;
 			children = (
 				617D85C325052C37009E18FB /* AwattarAppTests.swift */,
 				617D85C525052C37009E18FB /* Info.plist */,
 			);
-			path = AwattarAppTests;
+			path = AWattPriceAppTests;
 			sourceTree = "<group>";
 		};
-		617D85CD25052C37009E18FB /* AwattarAppUITests */ = {
+		617D85CD25052C37009E18FB /* AWattPriceAppUITests */ = {
 			isa = PBXGroup;
 			children = (
 				617D85CE25052C37009E18FB /* AwattarAppUITests.swift */,
 				617D85D025052C37009E18FB /* Info.plist */,
 			);
-			path = AwattarAppUITests;
+			path = AWattPriceAppUITests;
 			sourceTree = "<group>";
 		};
 		61D196E32507F57800E57BAC /* Graphs */ = {
@@ -243,9 +243,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		617D85AD25052C35009E18FB /* AwattarApp */ = {
+		617D85AD25052C35009E18FB /* AWattPrice */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 617D85D325052C37009E18FB /* Build configuration list for PBXNativeTarget "AwattarApp" */;
+			buildConfigurationList = 617D85D325052C37009E18FB /* Build configuration list for PBXNativeTarget "AWattPrice" */;
 			buildPhases = (
 				617D85AA25052C35009E18FB /* Sources */,
 				617D85AB25052C35009E18FB /* Frameworks */,
@@ -255,9 +255,9 @@
 			);
 			dependencies = (
 			);
-			name = AwattarApp;
+			name = AWattPrice;
 			productName = AwattarApp;
-			productReference = 617D85AE25052C35009E18FB /* AwattarApp.app */;
+			productReference = 617D85AE25052C35009E18FB /* AWattPrice.app */;
 			productType = "com.apple.product-type.application";
 		};
 		617D85BE25052C37009E18FB /* AwattarAppTests */ = {
@@ -332,7 +332,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				617D85AD25052C35009E18FB /* AwattarApp */,
+				617D85AD25052C35009E18FB /* AWattPrice */,
 				617D85BE25052C37009E18FB /* AwattarAppTests */,
 				617D85C925052C37009E18FB /* AwattarAppUITests */,
 			);
@@ -419,12 +419,12 @@
 /* Begin PBXTargetDependency section */
 		617D85C125052C37009E18FB /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 617D85AD25052C35009E18FB /* AwattarApp */;
+			target = 617D85AD25052C35009E18FB /* AWattPrice */;
 			targetProxy = 617D85C025052C37009E18FB /* PBXContainerItemProxy */;
 		};
 		617D85CC25052C37009E18FB /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 617D85AD25052C35009E18FB /* AwattarApp */;
+			target = 617D85AD25052C35009E18FB /* AWattPrice */;
 			targetProxy = 617D85CB25052C37009E18FB /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -567,10 +567,11 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 4;
-				DEVELOPMENT_ASSET_PATHS = "\"AwattarApp/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"AWattPrice/Preview Content\"";
 				DEVELOPMENT_TEAM = RC32A2AMHF;
 				ENABLE_PREVIEWS = YES;
-				INFOPLIST_FILE = AwattarApp/Info.plist;
+				GCC_PREFIX_HEADER = AWattPrice;
+				INFOPLIST_FILE = AWattPrice/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -591,10 +592,11 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 4;
-				DEVELOPMENT_ASSET_PATHS = "\"AwattarApp/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"AWattPrice/Preview Content\"";
 				DEVELOPMENT_TEAM = RC32A2AMHF;
 				ENABLE_PREVIEWS = YES;
-				INFOPLIST_FILE = AwattarApp/Info.plist;
+				GCC_PREFIX_HEADER = AWattPrice;
+				INFOPLIST_FILE = AWattPrice/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -704,7 +706,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		617D85D325052C37009E18FB /* Build configuration list for PBXNativeTarget "AwattarApp" */ = {
+		617D85D325052C37009E18FB /* Build configuration list for PBXNativeTarget "AWattPrice" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				617D85D425052C37009E18FB /* Debug */,

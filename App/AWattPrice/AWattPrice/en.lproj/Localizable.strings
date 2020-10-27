@@ -48,4 +48,8 @@
 "elecCosts" = "Electricity costs";
 "emptyFieldError" = "Please fill out this field";
 "wrongInputError" = "This field may only contain numbers and \",\" or \".\"";
+"helpAndSuggestions" = "Help & Suggestions";
+"helpByEmail" = "Get help by email";
 "help" = "Help";
+"suggestion" = "Suggestions";
+"suggestionByEmail" = "Send suggestions by email";

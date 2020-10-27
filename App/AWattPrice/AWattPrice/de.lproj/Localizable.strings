@@ -1,4 +1,4 @@
-/* 
+/*
   Localizable.strings
   AwattarApp
 
@@ -6,45 +6,58 @@
   
 */
 
+// Welcome Splash Screen localizations
 "splashScreenWelcome" = "Willkommen zur";
 "splashScreenViewPrices" = "Preise ansehen";
 "splashScreenViewPricesInfo" = "Sehen Sie sich die aktuellen Strompreise für jede Stunde des Tages an.";
 "splashScreenComparePrices" = "Preise vergleichen";
 "splashScreenComparePricesInfo" = "Finden Sie die preislich günstigsten Stunden für Ihren Stromverbrauch.";
-"splashScreenContinueButton" = "Weiter";
+
+// Setup Splash Screen localizations
 "splashScreenSetupTitle" = "Einrichtung";
 "splashScreenSetupFinished" = "Einrichtung abgeschlossen";
-"splashScreenCanChangeSettingsLater" = "Du kannst deine Einstellungen\nspäter noch ändern";
 
+// Finished Splash Screen localizations
+"splashScreenCanChangeSettingsLater" = "Sie können Ihre Einstellungen\nspäter noch ändern";
+
+// Electricity Price page localizations
+"elecPrice" = "Strompreis";
+"hourOfDay" = "Uhrzeit";
+
+// Cheapest Price page localizations
+"cheapestPrice" = "Günstigster Preis";
+"emptyFieldError" = "Bitte füllen Sie dieses Feld aus";
+"wrongInputError" = "Dieses Feld darf nur Zahlen und \",\" oder \".\" enthalten.";
+"totalConsumption" = "Gesamtverbrauch";
+"timeRange" = "Zeitfenster";
+
+// Cheapest Price Result page localizations
+"elecCosts" = "Stromkosten";
+
+// Settings Page and Help & Suggestions page localizations
+"settings" = "Einstellungen";
+"priceWithVat" = "Preise mit MwSt.";
 "baseElectricityPriceHint" = "Sie können Ihren Grundarbeitspreis für Ihre Region auf der aWATTar Webseite finden.";
 "toAwattarWebsite" = "Zur aWATTar Webseite";
+"helpAndSuggestions" = "Hilfe & Vorschläge";
+"version" = "Version";
+"help" = "Hilfe";
+"suggestion" = "Vorschläge";
+"helpByEmail" = "Hilfe per E-Mail";
+"suggestionByEmail" = "Vorschläge per E-Mail";
 
-"loadingData" = "Lädt";
-"pricePerKwh" = "Preis pro kWh";
-"hourOfDay" = "Uhrzeit";
-"elecPrice" = "Strompreis";
-"settings" = "Einstellung";
-"price" = "Preis:";
-"pricesWithVat" = "Preise mit Mehrwertsteuer anzeigen";
-"awattarTariff" = "aWATTar Tarif:";
-"tariffSelectionTip" = "Wenn du bereits ein aWATTar Kunde bist, kannst du hier deinen Tarif auswählen, um Kosten genauer für dich anzuzeigen.";
-"basicFee" = "Grundgebühr:";
-"euroPerMonth" = "Euro pro Month";
+
+// General localizations
+"inKw" = "in kW";
+"inKwh" = "in kWh";
 "centPerKwh" = "Cent pro kWh";
-"euroPerMwh" = "Euro pro MWh";
-"ready" = "Fertig";
-"usage" = "Verbrauch";
-"comparerInfoText" = "Hiermit kannst du die Stunden finden, in denen der Strom preislich am günstigsten ist, um zum Beispiel dein Elektroauto aufzuladen, die Waschmachine einzuschalten oder andere elektrische Verbraucher laufen zu lassen.";
-"showResults" = "Ergebnisse anzeigen";
-"timeRange" = "Zeitfenster";
-"startTime" = "Startzeit";
-"endTime" = "Endzeit";
-"lengthOfUsage" = "Dauer des Verbrauches";
-"elecPower" = "Gebrauchte Leistung";
-"givenElecPrice" = "Dein angegebener Strompreis:";
-"givenBasicFee" = "Deine angegebene Grundgebühr:";
 "until" = "bis";
-"results" = "Ergebnisse";
-"pm" = "Nachmittags";
-"am" = "Vormittags";
-"elecCosts" = "Stromkosten";
+"from" = "von";
+"to" = "bis";
+"pm" = "Nachm.";
+"am" = "Vorm.";
+"result" = "Ergebnis";
+"loading" = "Lädt";
+"price" = "Preise";
+"continue" = "Weiter";
+"power" = "Leistung";

@@ -19,7 +19,7 @@ struct HomeView: View {
         NavigationView {
             VStack {
                 HStack {
-                    Text("pricePerKwh")
+                    Text("centPerKwh")
                         .font(.subheadline)
                         .padding(.top, 8)
 

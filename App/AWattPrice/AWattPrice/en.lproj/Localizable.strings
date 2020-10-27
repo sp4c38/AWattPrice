@@ -11,7 +11,7 @@
 "splashScreenViewPrices" = "View prices";
 "splashScreenViewPricesInfo" = "Check the current electricity prices for each hour throughout the day.";
 "splashScreenComparePrices" = "Compare prices";
-"splashScreenComparePricesInfo" = "Find the cheapest hours to consume electricity.";
+"splashScreenComparePricesInfo" = "Find the cheapest hours for your electricity consumption.";
 
 // Setup Splash Screen localizations
 "splashScreenSetupTitle" = "Setup";
@@ -20,12 +20,8 @@
 // Finished Splash Screen localizations
 "splashScreenCanChangeSettingsLater" = "You still can change\nyour settings later";
 
-"awattarTariff" = "aWATTar Tariff";
-"tariffSelectionTip" = "If you already are an aWATTar customer, you can select your tariff here to view costs more accurately for you.";
-
 // Electricity Price page localizations
 "elecPrice" = "Electricity Price";
-"pricePerKwh" = "Price per kWh";
 "hourOfDay" = "Hour of day";
 
 // Cheapest Price page localizations

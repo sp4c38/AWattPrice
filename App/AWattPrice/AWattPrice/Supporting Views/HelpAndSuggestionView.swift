@@ -140,24 +140,42 @@ struct GetHelpView: View {
     @State var redirectToHelpAndSuggestionView: Int? = 0
     
     var body: some View {
-        ZStack {
-            NavigationLink("", destination: HelpAndSuggestionView(), tag: 1, selection: $redirectToHelpAndSuggestionView)
-            
-            HStack {
-                Image(systemName: "questionmark.circle")
-                    .font(.title2)
+        Section {
+            ZStack {
+                HStack {
+                    Image(systemName: "questionmark.circle")
+                        .font(.title2)
+                    
+                    Text("helpAndSuggestions")
+                        .font(.subheadline)
+                    
+                    Spacer()
+                }
+                .foregroundColor(colorScheme == .light ? Color.black : Color.white)
                 
-                Text("helpAndSuggestions")
-                    .font(.subheadline)
-                
-                Spacer()
+                NavigationLink("", destination: HelpAndSuggestionView(), tag: 1, selection: $redirectToHelpAndSuggestionView)
             }
-            .foregroundColor(colorScheme == .light ? Color.black : Color.white)
+            .contentShape(Rectangle())
+            .onTapGesture {
+                self.hideKeyboard()
+                redirectToHelpAndSuggestionView = 1
+            }
+        }
+    }
+}
+
+struct demoPreview: View {
+    var body: some View {
+        NavigationView {
+            List {
+                GetHelpView()
+            }
+            .listStyle(InsetGroupedListStyle())
         }
         .onTapGesture {
             self.hideKeyboard()
-            redirectToHelpAndSuggestionView = 1
         }
+        .preferredColorScheme(.light)
     }
 }
 
@@ -172,9 +190,6 @@ struct HelpView_Previews: PreviewProvider {
 //        }
 //        .preferredColorScheme(.light)
         
-        NavigationView {
-            GetHelpView()
-        }
-        .preferredColorScheme(.light)
+        demoPreview()
     }
 }

@@ -24,11 +24,10 @@
 "hourOfDay" = "Hour of day";
 "elecPrice" = "Electricity Price";
 "settings" = "Settings";
-"price" = "Price:";
-"pricesWithVat" = "Show prices with VAT included";
+"price" = "Price";
+"pricesWithVat" = "Prices with VAT";
 "awattarTariff" = "aWATTar Tariff";
 "tariffSelectionTip" = "If you already are an aWATTar customer, you can select your tariff here to view costs more accurately for you.";
-"elecPriceColon" = "Electricity Price:";
 "centPerKwh" = "Cent per kWh";
 "usage" = "Usage";
 "showResults" = "Show results";

@@ -13,6 +13,8 @@ struct HomeView: View {
     @EnvironmentObject var awattarData: AwattarData
     @EnvironmentObject var currentSetting: CurrentSetting
     
+    @State var showSettingsPage: Bool = false
+    
     var body: some View {
         NavigationView {
             VStack {
@@ -26,6 +28,7 @@ struct HomeView: View {
                     Text("hourOfDay")
                         .font(.subheadline)
                 }
+                .padding(.leading, 16)
                 .padding(.bottom, 5)
 
                 if awattarData.energyData != nil && currentSetting.setting != nil {
@@ -44,9 +47,16 @@ struct HomeView: View {
                     }
                 }
             }
-            .padding([.leading, .trailing], 16)
+            .padding(.trailing, 16)
             .navigationBarTitle("elecPrice")
             .navigationBarTitleDisplayMode(.large)
+            .fullScreenCover(isPresented: $showSettingsPage) {
+                SettingsPageView()
+            }
+            .navigationBarItems(trailing:
+                Button(action: { showSettingsPage.toggle() }) {
+                    Image(systemName: "gear")
+                })
         }
         .navigationViewStyle(StackNavigationViewStyle())
     }

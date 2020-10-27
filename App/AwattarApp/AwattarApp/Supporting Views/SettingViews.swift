@@ -8,23 +8,27 @@
 import SwiftUI
 
 struct PricesWithVatIncludedSetting: View {
+    @Environment(\.colorScheme) var colorScheme
+    
     @EnvironmentObject var currentSetting: CurrentSetting
     
     @State var pricesWithTaxIncluded = true
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("price")
-                .bold()
-            
+        Section(
+            header: Text("price")
+        ) {
             HStack(spacing: 10) {
                 Text("pricesWithVat")
-                    .font(.caption)
+                    .font(.subheadline)
                     .fixedSize(horizontal: false, vertical: true)
+                
+                Spacer()
                 
                 Toggle(isOn: $pricesWithTaxIncluded) {
                     
                 }
+                .labelsHidden()
                 .onChange(of: pricesWithTaxIncluded) { newValue in
                     currentSetting.changeTaxSelection(newTaxSelection: newValue)
                 }
@@ -83,45 +87,14 @@ struct AwattarTarifSelectionSetting: View {
 }
 
 struct AwattarBasicEnergyChargePriceSetting: View {
+    @Environment(\.colorScheme) var colorScheme
+    
     @EnvironmentObject var currentSetting: CurrentSetting
     
     @State var baseEnergyPriceString = ""
     
-    var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            VStack(alignment: .leading) {
-                Text("elecPriceColon")
-                    .font(.headline)
-                
-                HStack {
-                    TextField("centPerKwh", text: $baseEnergyPriceString.animation())
-                        .keyboardType(.decimalPad)
-                        .onChange(of: baseEnergyPriceString) { newValue in
-                            let numberConverter = NumberFormatter()
-
-                            if newValue.contains(",") {
-                                numberConverter.decimalSeparator = ","
-                            } else {
-                                numberConverter.decimalSeparator = "."
-                            }
-                            
-                            currentSetting.changeBaseElectricityCharge(newBaseElectricityCharge: Float(truncating: numberConverter.number(from: newValue) ?? 0))
-                        }
-                    
-                    if baseEnergyPriceString != "" {
-                        Text("Cent")
-                            .transition(.opacity)
-                    }
-                }
-                .padding(.leading, 17)
-                .padding(.trailing, 14)
-                .padding([.top, .bottom], 10)
-                .background(
-                    RoundedRectangle(cornerRadius: 8)
-                        .stroke(Color(hue: 0.0000, saturation: 0.0000, brightness: 0.8706), lineWidth: 2)
-                )
-            }
-            
+    struct SettingFooter: View {
+        var body: some View {
             VStack(alignment: .leading, spacing: 10) {
                 Text("baseElectricityPriceHint")
                 
@@ -141,16 +114,39 @@ struct AwattarBasicEnergyChargePriceSetting: View {
             .font(.caption)
             .foregroundColor(Color.gray)
         }
-        .onAppear {
-            let numberFormatter = NumberFormatter()
-            numberFormatter.numberStyle = .decimal
-            numberFormatter.maximumFractionDigits = 2
-            
-            let baseEnergyPrice = currentSetting.setting!.awattarBaseElectricityPrice
-            if baseEnergyPrice == 0 {
-                baseEnergyPriceString = ""
-            } else {
-                baseEnergyPriceString = numberFormatter.string(from: NSNumber(value: baseEnergyPrice)) ?? ""
+    }
+    
+    var body: some View {
+        Section(
+            header: Text("elecPrice"),
+            footer: SettingFooter()
+        ) {
+            VStack(alignment: .leading, spacing: 10) {
+                HStack {
+                    TextField("centPerKwh", text: $baseEnergyPriceString.animation())
+                        .keyboardType(.decimalPad)
+                        .onChange(of: baseEnergyPriceString) { newValue in
+                            currentSetting.changeBaseElectricityCharge(newBaseElectricityCharge: Float( newValue.doubleValue ?? 0))
+                        }
+                        .padding([.top, .bottom], 5)
+                    
+                    if baseEnergyPriceString != "" {
+                        Text("centPerKwh")
+                            .transition(.opacity)
+                    }
+                }
+            }
+            .onAppear {
+                let numberFormatter = NumberFormatter()
+                numberFormatter.numberStyle = .decimal
+                numberFormatter.maximumFractionDigits = 2
+                
+                let baseEnergyPrice = currentSetting.setting!.awattarBaseElectricityPrice
+                if baseEnergyPrice == 0 {
+                    baseEnergyPriceString = ""
+                } else {
+                    baseEnergyPriceString = numberFormatter.string(from: NSNumber(value: baseEnergyPrice)) ?? ""
+                }
             }
         }
     }
@@ -158,25 +154,27 @@ struct AwattarBasicEnergyChargePriceSetting: View {
 
 struct AppVersionView: View {
     var body: some View {
-        VStack(spacing: 4) {
-            Spacer()
-            
-            Image("SmallAppIcon")
-                .resizable()
-                .frame(width: 70, height: 70)
-                .saturation(0)
-                .opacity(0.6)
-            
-            VStack(spacing: 2) {
-                Text("AWattPrice")
-                    .font(.headline)
-                
-                if let currentVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String {
-                    if let currentBuild = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String {
-                        Text("Version \(currentVersion) (\(currentBuild))")
-                            .font(.footnote)
+        Section {
+            HStack {
+                Spacer()
+                VStack(spacing: 2) {
+                    Image("BigAppIcon")
+                        .resizable()
+                        .frame(width: 60, height: 60)
+                        .saturation(0)
+                        .opacity(0.6)
+
+                    Text("AWattPrice")
+                        .font(.headline)
+                    
+                    if let currentVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String {
+                        if let currentBuild = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String {
+                            Text("Version \(currentVersion) (\(currentBuild))")
+                                .font(.footnote)
+                        }
                     }
                 }
+                Spacer()
             }
         }
         .foregroundColor(Color(hue: 0.6667, saturation: 0.0448, brightness: 0.5255))
@@ -185,7 +183,10 @@ struct AppVersionView: View {
 
 struct SettingViews_Previews: PreviewProvider {
     static var previews: some View {
-        AppVersionView()
-            
+        List {
+            AwattarBasicEnergyChargePriceSetting()
+                .environmentObject(CurrentSetting(managedObjectContext: PersistenceManager().persistentContainer.viewContext))
+        }
+        .listStyle(InsetGroupedListStyle())
     }
 }

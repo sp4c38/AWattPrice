@@ -262,12 +262,12 @@ struct EnergyPriceGraph: View {
             .onChanged { location in
                 let locationHeight = location.location.y
                 
-                withAnimation(.easeInOut(duration: 0.4)) {
+                withAnimation(.easeInOut(duration: 0.3)) {
                     currentPointerIndexSelected = Int(((locationHeight / singleHeight) - 1).rounded(.up))
                 }
             }
             .onEnded {_ in
-                withAnimation(.easeInOut(duration: 0.4)) {
+                withAnimation(.easeInOut(duration: 0.3)) {
                     currentPointerIndexSelected = nil
                 }
             }

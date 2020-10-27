@@ -10,24 +10,51 @@ import SwiftUI
 
 /// A place for the user to modify certain settings. Those changes are automatically stored (if modified) in persistent storage.
 struct SettingsPageView: View {
+    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.colorScheme) var colorScheme
+    
     var body: some View {
-        VStack(alignment: .center, spacing: 20) {
-            PricesWithVatIncludedSetting()
-//            AwattarTarifSelectionSetting()
-            AwattarBasicEnergyChargePriceSetting()
+        NavigationView {
+            VStack(alignment: .center, spacing: 20) {
+    //            AwattarTarifSelectionSetting()
 
-            Spacer()
-
-            AppVersionView()
+                List {
+                    PricesWithVatIncludedSetting()
+                    
+                    AwattarBasicEnergyChargePriceSetting()
+                        
+                    AppVersionView()
+                        .listRowBackground(colorScheme == .light ? Color(hue: 0.6667, saturation: 0.0202, brightness: 0.9686) : Color.black)
+                }
+                .listStyle(InsetGroupedListStyle())
+                .environment(\.defaultMinListHeaderHeight, 36)
+            }
+            .navigationBarTitle("settings")
+            .navigationViewStyle(StackNavigationViewStyle())
+            .contentShape(Rectangle())
+            .onTapGesture {
+                self.hideKeyboard()
+            }
+            .navigationBarItems(trailing: DoneNavigationBarItem(presentationMode: presentationMode))
         }
-        .padding(.bottom, 20)
-        .padding(.top, 15)
-        .padding([.leading, .trailing], 16)
-        .navigationBarTitle("settings")
-        .navigationViewStyle(StackNavigationViewStyle())
-        .contentShape(Rectangle())
-        .onTapGesture {
-            self.hideKeyboard()
+    }
+    
+    struct DoneNavigationBarItem: View {
+        @Binding var presentationMode: PresentationMode
+        
+        var body: some View {
+            Button(action: {
+                presentationMode.dismiss()
+            }) {
+                HStack {
+                    Text("Done")
+                        .bold()
+                        .font(.subheadline)
+                }
+                .foregroundColor(Color.blue)
+                .padding(5)
+                .padding([.leading, .trailing], 3)
+            }
         }
     }
 }
@@ -38,5 +65,6 @@ struct SettingsPageView_Previews: PreviewProvider {
             .environment(\.managedObjectContext, PersistenceManager().persistentContainer.viewContext)
             .environmentObject(AwattarData())
             .environmentObject(CurrentSetting(managedObjectContext: PersistenceManager().persistentContainer.viewContext))
+            .preferredColorScheme(.dark)
     }
 }

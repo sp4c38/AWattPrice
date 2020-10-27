@@ -318,7 +318,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 617D85A925052C35009E18FB /* Build configuration list for PBXProject "AwattarApp" */;
+			buildConfigurationList = 617D85A925052C35009E18FB /* Build configuration list for PBXProject "AWattPrice" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -695,7 +695,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		617D85A925052C35009E18FB /* Build configuration list for PBXProject "AwattarApp" */ = {
+		617D85A925052C35009E18FB /* Build configuration list for PBXProject "AWattPrice" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				617D85D125052C37009E18FB /* Debug */,

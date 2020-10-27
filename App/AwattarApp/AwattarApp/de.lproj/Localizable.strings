@@ -30,7 +30,6 @@
 "tariffSelectionTip" = "Wenn du bereits ein aWATTar Kunde bist, kannst du hier deinen Tarif auswählen, um Kosten genauer für dich anzuzeigen.";
 "basicFee" = "Grundgebühr:";
 "euroPerMonth" = "Euro pro Month";
-"elecPriceColon" = "Strompreis:";
 "centPerKwh" = "Cent pro kWh";
 "euroPerMwh" = "Euro pro MWh";
 "ready" = "Fertig";

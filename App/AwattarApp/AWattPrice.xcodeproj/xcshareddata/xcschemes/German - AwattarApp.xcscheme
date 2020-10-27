@@ -17,7 +17,7 @@
                BlueprintIdentifier = "617D85AD25052C35009E18FB"
                BuildableName = "AwattarApp.app"
                BlueprintName = "AwattarApp"
-               ReferencedContainer = "container:AwattarApp.xcodeproj">
+               ReferencedContainer = "container:AWattPrice.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -48,7 +48,7 @@
             BlueprintIdentifier = "617D85AD25052C35009E18FB"
             BuildableName = "AwattarApp.app"
             BlueprintName = "AwattarApp"
-            ReferencedContainer = "container:AwattarApp.xcodeproj">
+            ReferencedContainer = "container:AWattPrice.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -65,7 +65,7 @@
             BlueprintIdentifier = "617D85AD25052C35009E18FB"
             BuildableName = "AwattarApp.app"
             BlueprintName = "AwattarApp"
-            ReferencedContainer = "container:AwattarApp.xcodeproj">
+            ReferencedContainer = "container:AWattPrice.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

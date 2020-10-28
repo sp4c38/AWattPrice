@@ -28,7 +28,7 @@ struct SplashScreenSetupView: View {
             Button(action: {
                 redirectToNextSplashScreen = 1
             }) {
-                Text("splashScreenContinueButton")
+                Text("continue")
             }
             .buttonStyle(ContinueButtonStyle())
         }

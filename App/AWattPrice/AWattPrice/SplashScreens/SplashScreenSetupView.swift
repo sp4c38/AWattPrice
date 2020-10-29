@@ -9,43 +9,57 @@ import SwiftUI
 
 /// Splash screen which handles the input of settings which are required for the main functionality of the app.
 struct SplashScreenSetupView: View {
+    @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var currentSetting: CurrentSetting
     
     @State var redirectToNextSplashScreen: Int? = 0
     @State var basicCharge: String = ""
     
     var body: some View {
-        VStack(spacing: 40) {
-            Text("splashScreenSetupTitle")
-                .font(.system(size: 40, weight: .black))
-
-            AwattarBasicEnergyChargePriceSetting()
-
-            Spacer()
-            
-            NavigationLink("", destination: SplashScreenFinishView(), tag: 1, selection: $redirectToNextSplashScreen)
-            
-            Button(action: {
-                redirectToNextSplashScreen = 1
-            }) {
-                Text("continue")
+        ZStack {
+            if colorScheme == .light {
+                Color(hue: 0.6667, saturation: 0.0202, brightness: 0.9686)
+                    .ignoresSafeArea()
+            } else {
+                Color.black
+                    .ignoresSafeArea()
             }
-            .buttonStyle(ContinueButtonStyle())
-        }
-        .navigationBarHidden(true)
-        .padding(.top, 40)
-        .padding([.leading, .trailing], 20)
-        .padding(.bottom, 16)
-        .contentShape(Rectangle())
-        .onTapGesture {
-            self.hideKeyboard()
+            
+            VStack(spacing: 40) {
+                List {
+                    AwattarBasicEnergyChargePriceSetting()
+                }
+                .environment(\.defaultMinListHeaderHeight, 36)
+                .listStyle(InsetGroupedListStyle())
+                
+                NavigationLink("", destination: SplashScreenFinishView(), tag: 1, selection: $redirectToNextSplashScreen)
+                    .hidden()
+                
+                Button(action: {
+                    redirectToNextSplashScreen = 1
+                }) {
+                    Text("continue")
+                }
+                .buttonStyle(ContinueButtonStyle())
+                .padding(.bottom, 16)
+                .padding([.leading, .trailing], 16)
+            }
+            .navigationViewStyle(StackNavigationViewStyle())
+            .navigationBarTitle("splashScreenSetupTitle")
+            .contentShape(Rectangle())
+            .onTapGesture {
+                self.hideKeyboard()
+            }
         }
     }
 }
 
 struct SplashScreenSetupView_Previews: PreviewProvider {
     static var previews: some View {
-        SplashScreenSetupView()
-            .preferredColorScheme(.light)
+        NavigationView {
+            SplashScreenSetupView()
+                .preferredColorScheme(.light)
+                .environmentObject(CurrentSetting(managedObjectContext: PersistenceManager().persistentContainer.viewContext))
+        }
     }
 }

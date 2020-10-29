@@ -68,7 +68,7 @@ struct AnimatingCheckmark: View {
                     .position(x: width / 2, y: checkmarkStartHeight + (checkmarkWidth / 2))
             }
             .foregroundColor(Color.green)
-            
+
             VStack(spacing: 30) {
                 Text("splashScreenSetupFinished")
                     .multilineTextAlignment(.center)
@@ -82,6 +82,7 @@ struct AnimatingCheckmark: View {
         }
         .onAppear {
             firstLineStartPoint = CGPoint(x: 0.294 * checkmarkWidth + checkmarkStartWidth, y: 0.530 * checkmarkWidth + checkmarkStartHeight)
+
             firstLineEndPoint = firstLineStartPoint
             
             secondLineStartPoint = CGPoint(x: 0.437 * checkmarkWidth + checkmarkStartWidth, y: 0.710 * checkmarkWidth + checkmarkStartHeight)
@@ -115,8 +116,6 @@ struct SplashScreenFinishView: View {
     var body: some View {
         VStack {
             AnimatingCheckmark() // animating checkmark
-            
-            Spacer()
 
             Button(action: {
                 // Set splashScreensFinished to true so that splash screens aren't shown the next time the app opens
@@ -125,15 +124,19 @@ struct SplashScreenFinishView: View {
                 Text("Finish")
             }
             .buttonStyle(ContinueButtonStyle())
+            .padding([.leading, .trailing], 20)
         }
-        .navigationBarHidden(true)
-        .padding([.leading, .trailing], 20)
+        .edgesIgnoringSafeArea(.top)
+        .navigationBarTitle("")
         .padding(.bottom, 16)
     }
 }
 
 struct SplashScreenFinishView_Previews: PreviewProvider {
     static var previews: some View {
-        AnimatingCheckmark()
+        NavigationView {
+            SplashScreenFinishView()
+                .environmentObject(CurrentSetting(managedObjectContext: PersistenceManager().persistentContainer.viewContext))
+        }
     }
 }

@@ -25,7 +25,7 @@
 "hourOfDay" = "Hour of day";
 
 // Cheapest Price page localizations
-"cheapestPrice" = "Cheapest Price";
+"cheapestPrice" = "Cheapest Time";
 "emptyFieldError" = "Please fill out this field";
 "wrongInputError" = "This field may only contain numbers and \",\" or \".\"";
 "totalConsumption" = "Total consumption";

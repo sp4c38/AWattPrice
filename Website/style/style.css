@@ -11,6 +11,23 @@ body {
     overflow: hidden;
 }
 
+.title h3 {
+    text-align: center;
+	color: #fff;
+	font-size: 1em;
+	font-family: "arial";
+	text-transform: uppercase;
+	font-weight: 700;
+	background: linear-gradient(to right, #D72322, #FF8D17 50%);
+	background-size: auto auto;
+	background-size: 200% auto;
+	color: #fff;
+	background-clip: text;
+	text-fill-color: transparent;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
 .title h1 {
     color: #FFFFFF;
     text-align: center;
@@ -35,10 +52,11 @@ body {
 .navigation_bar {
     overflow: hidden;
     display: table;
+    padding-top: 20px;
     padding-left: 10px;
     padding-right: 10px;
+    padding-bottom: 30px;
     margin: 0 auto;
-    padding-bottom: 20px;
 }
 
 .navigation_bar a {
@@ -47,11 +65,13 @@ body {
 	background-color: #599bb3;
 	display: inline-block;
 	color: #ffffff;
+    width: 7em;
 	font-family: Arial;
 	font-size: 0.8em;
 	font-weight: bold;
 	padding: 13px 32px;
 	text-decoration: none;
+    text-align: center;
     opacity: 1;
     border-style: solid;
     border-radius: 18px;
@@ -59,6 +79,7 @@ body {
     -webkit-transition: ease-in-out 0.5s;
     -moz-transition: ease-in-out 0.5s;
     transition: ease-in-out 0.5s;
+    margin: 0 10px;
 }
 
 .navigation_bar a:hover {
@@ -77,8 +98,9 @@ body {
 
 .preview_image_row {
     display: flex;
-    margin: 10px;
+    margin: 0px;
     overflow-x: auto;
+    padding-bottom: 20px;
 }
 
 .preview_image_column {
@@ -89,8 +111,8 @@ body {
     text-align: center;
     font-family: arial;
     font-weight: bold;
-    padding-left: 5em;
-    padding-right: 5em;
+    padding-left: 3em;
+    padding-right: 3em;
     color: #000000;
-    text-decoration: none;
+    transition: ease-in-out 0.5s;
 }

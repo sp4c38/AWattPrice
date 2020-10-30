@@ -52,7 +52,7 @@ body{
   display:block;
   text-decoration:none;
   text-transform: capitalize;
- font-family: 'Arvo', serif;
+  font-family: 'Arial', serif;
   color:#fff;
   margin: 0 15px;
 }
@@ -93,15 +93,15 @@ span.menu {
   margin-bottom: 1em;
   color: #fff;
   font-weight: 100;
-  font-family: 'Arvo', serif;
+  font-family: 'Arial', serif;
 }
 a.button1 {
   margin-right: 1em;
 }
 .center-img {
   text-align: center;
-  margin-top: 4em;
-  margin-bottom: 2em;
+  padding-top: 2em;
+  padding-bottom: 2em;
 }
 
 .service-section {
@@ -111,7 +111,7 @@ a.button1 {
 }
 .service-section h3 {
   font-size: 2.5em;
-  font-family: 'Arvo', serif;
+  font-family: 'Arial', serif;
   text-transform: capitalize;
   color:#000;
 }
@@ -140,7 +140,7 @@ a.button1 {
 }
 .video h3 {
   font-size: 2.5em;
-  font-family: 'Arvo', serif;
+  font-family: 'Arial', serif;
   text-transform: capitalize;
   color:#fff;
 }
@@ -158,7 +158,7 @@ a.button1 {
 }
 .feature h3 {
   font-size: 2.8em;
-  font-family: 'Arvo', serif;
+  font-family: 'Arial', serif;
   text-transform: capitalize;
   text-align:center;
 }
@@ -167,10 +167,10 @@ a.button1 {
 }
 
 .feature-grids {
-  padding-top: 3em;
+  padding-top: 0em;
 }
 .feature-grid1 {
-  margin-top: 8em;
+  margin-top: 1em;
 }
 .feature-grid1 h4 {
   font-size: 2em;
@@ -188,7 +188,7 @@ a.button1 {
 
 }
 .feature-grid2 {
-  margin-top: 8em;
+  padding-top: 3em;
 }
 .feature-grid2 h4 {
   font-size: 2em;
@@ -212,7 +212,7 @@ a.button1 {
 }
 
 .feature2 {
-   margin: 2em 0;
+   margin-top: 3em;
 }
 .team-section{
 padding:4em 0;
@@ -220,7 +220,7 @@ background:#eee;
 }
 .team-section h3 {
   font-size: 2.5em;
-  font-family: 'Arvo', serif;
+  font-family: 'Arial', serif;
   text-transform:capitalize;
   text-align: center;
 }
@@ -256,7 +256,7 @@ background:#eee;
   margin-top: 2em;
 }
 .footer-section {
-	padding: 4em 0px;
+	padding: 2em 0px;
 	background: #2e3e4e;
 }
 .contact-header {
@@ -266,7 +266,7 @@ background:#eee;
 }
 .contact-header h3 {
 	font-size: 2.5em;
-	font-family: 'Arvo', serif;
+	font-family: 'Arial', serif;
 	text-transform: capitalize;
 	font-weight: 400;
 	color: #31C3DB;
@@ -346,7 +346,7 @@ padding:30px 0;
 	background-position:-280px -40px;
 }
 .contact {
-	padding-bottom:3em;
+	/* padding-bottom:3em; */
 
 }
 .contactgrid {
@@ -429,7 +429,7 @@ padding-bottom: 2em;
 /*-- responsive-design --*/
 @media only screen and (max-width:1024px) {
 .button h2 {
-  font-size: 2em;
+  font-size: 4em;
 }
 .service-section h3 {
   font-size: 2em;
@@ -446,9 +446,11 @@ padding-bottom: 2em;
 
 .feature-grid1 h4 {
   font-size: 1.6em;
+  text-align: center;
 }
 .feature-grid1 p {
   font-size: 0.965em;
+  text-align: center;
 }
 .feature-grid2 h4 {
   font-size: 1.6em;
@@ -527,7 +529,7 @@ display:block;
 		display: block;
 	}
 .button h2 {
-  font-size: 1.6em;
+  font-size: 2.5em;
 }
 .button {
   text-align: center;
@@ -603,7 +605,7 @@ display:block;
   font-size: 1.6em;
 }
 .footer-section {
-	padding: 3em 0px;
+	/* padding: 3em 0px; */
 }
 .contactgrid {
   float: left;
@@ -619,14 +621,16 @@ display:block;
 }
 @media only screen and (max-width: 640px){
 .logo a {
-  font-size: 1.7em;
+  font-size: 2em;
 }
 .header {
   min-height: 725px;
 }
 .center-img img {
-  width: 46%;
+  width: 50%;
   height: 100%;
+  padding-top: 2em;
+  padding-bottom: 2em;
 }
 .top-menu ul {
   width: 95%;
@@ -641,8 +645,8 @@ span.menu {
     margin-top: 0.3em;
 }
 .center-img {
-  margin-top: 3em;
-  padding-bottom: 3em;
+    padding-top: 2em;
+    padding-bottom: 2em;
 }
 .service-section h3 {
   font-size: 1.4em;
@@ -664,7 +668,7 @@ span.menu {
 }
 
 .feature-grids {
-  padding-top: 2em;
+  padding-top: 0em;
 }
 .feature-grid1 h4 {
   font-size: 1.3em;
@@ -699,14 +703,13 @@ span.menu {
 .header {
   min-height: 530px;
 }
-a.button1 img {
-  width: 25%;
-}
+
 a.button2 img {
   width: 25%;
 }
 .center-img img {
-  width: 30%;
+    padding-top: 2em;
+    padding-bottom: 2em;
 }
 .service-section h3 {
   font-size: 1.25em;
@@ -781,7 +784,7 @@ a.button2 img {
   font-size: 1.25em;
 }
 .footer-section {
-  padding: 2em 0px;
+  /* padding: 2em 0px; */
 }
 .social-icon {
   padding: 15px 0;
@@ -800,7 +803,7 @@ a.button2 img {
   padding: 0;
 }
 .contact {
-  padding-bottom: 2em;
+  /* padding-bottom: 2em; */
 }
 .contactgrid2 input[type="button"] {
     font-size: 13px;
@@ -832,11 +835,12 @@ span.menu {
   min-height: 400px;
 }
 .center-img img {
-  width: 35%;
+    padding-top: 2em;
+    padding-bottom: 2em;
 }
 .center-img {
-  margin-top: 2em;
-  margin-bottom: 2em;
+    padding-top: 2em;
+    padding-bottom: 2em;
 }
 .service-section h3 {
   font-size: 1.3em;

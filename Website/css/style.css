@@ -39,7 +39,7 @@ body{
 .header {
   background: url("../images/banner.png") no-repeat 0px 0px;
   background-size: cover;
-  min-height: 890px;
+  min-height: 590px;
 }
 .header-top {
   padding: 1em 0;
@@ -56,9 +56,11 @@ body{
   color:#fff;
   margin: 0 15px;
 }
-.logo span {
-  color: #31C3DB;
+
+.logo img {
+    margin-right: 0.5em;
 }
+
 .top-menu {
   float: right;
    margin-top: 0.5em;
@@ -89,7 +91,7 @@ span.menu {
 }
 .button h2 {
   font-size: 2.5em;
-  text-transform: capitalize;
+  text-transform: none;
   margin-bottom: 1em;
   color: #fff;
   font-weight: 100;
@@ -624,7 +626,7 @@ display:block;
   font-size: 2em;
 }
 .header {
-  min-height: 725px;
+  min-height: 525px;
 }
 .center-img img {
   width: 50%;
@@ -832,7 +834,7 @@ span.menu {
  margin-top: 1.5em;
 }
 .header {
-  min-height: 400px;
+  min-height: 100px;
 }
 .center-img img {
     padding-top: 2em;

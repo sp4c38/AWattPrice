@@ -56,6 +56,8 @@ struct HomeView: View {
             .navigationBarItems(trailing:
                 Button(action: { showSettingsPage.toggle() }) {
                     Image(systemName: "gear")
+                        .resizable()
+                        .frame(width: 20, height: 20)
                 })
         }
         .navigationViewStyle(StackNavigationViewStyle())

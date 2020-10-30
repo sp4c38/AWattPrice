@@ -28,6 +28,7 @@ struct SplashScreenSetupView: View {
             VStack(spacing: 40) {
                 List {
                     AwattarBasicEnergyChargePriceSetting()
+                    AwattarTarifSelectionSetting()
                 }
                 .environment(\.defaultMinListHeaderHeight, 36)
                 .listStyle(InsetGroupedListStyle())

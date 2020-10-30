@@ -16,7 +16,7 @@ func getSetting(managedObjectContext: NSManagedObjectContext, fetchRequestResult
     } else if fetchRequestResults.count == 0 {
         // No Settings object is yet created. Create a new Settings object with default values and save it to the persistent store
         let newSetting = Setting(context: managedObjectContext)
-        newSetting.awattarProfileIndex = 0
+        newSetting.awattarTariffIndex = 0
         newSetting.pricesWithTaxIncluded = true
         newSetting.awattarBaseElectricityPrice = 0
         newSetting.splashScreensFinished = false
@@ -137,9 +137,9 @@ class CurrentSetting: NSObject, NSFetchedResultsControllerDelegate, ObservableOb
     Changes the index of which energy profile/tariff is selected to the specified new index.
     - Parameter newProfileIndex: The new index to which the setting should be changed to.
     */
-    func changeEnergyProfileIndex(newProfileIndex: Int16) {
+    func changeAwattarTariffIndex(newTariffIndex: Int16) {
         if setting != nil {
-            self.setting!.awattarProfileIndex = newProfileIndex
+            self.setting!.awattarTariffIndex = newTariffIndex
             
             do {
                 try managedObjectContext.save()

@@ -86,3 +86,9 @@ extension String {
         return nil
     }
 }
+
+extension String {
+    func localized(withComment: String? = nil) -> String {
+        return NSLocalizedString(self, comment: withComment ?? "")
+    }
+}

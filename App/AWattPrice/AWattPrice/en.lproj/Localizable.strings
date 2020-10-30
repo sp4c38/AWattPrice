@@ -40,12 +40,11 @@
 "baseElectricityPriceHint" = "You can find your base electricity price for your region on the aWATTar website.";
 "toAwattarWebsite" = "To the aWATTar website";
 "helpAndSuggestions" = "Help & Suggestions";
-"version" = "Version";
 "help" = "Help";
 "suggestion" = "Suggestions";
 "helpByEmail" = "Get help by email";
 "suggestionByEmail" = "Send suggestions by email";
-
+"version" = "Version";
 
 // General localizations
 "inKw" = "in kW";

@@ -23,6 +23,8 @@ struct SettingsPageView: View {
                     
                     AwattarBasicEnergyChargePriceSetting()
                         
+                    AwattarTarifSelectionSetting()
+                    
                     GetHelpView()
                     
                     AppVersionView()
@@ -35,9 +37,9 @@ struct SettingsPageView: View {
             .navigationViewStyle(StackNavigationViewStyle())
             .contentShape(Rectangle())
             .navigationBarItems(trailing: DoneNavigationBarItem(presentationMode: presentationMode))
-            .onTapGesture {
-                self.hideKeyboard()
-            }
+//            .onTapGesture {
+//                self.hideKeyboard()
+//            }
         }
     }
     

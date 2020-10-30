@@ -1,48 +1,187 @@
-<!DOCTYPE html>
-
+<!--
+Au<!--
+Author: W3layouts
+Author URL: http://w3layouts.com
+License: Creative Commons Attribution 3.0 Unported
+License URL: http://creativecommons.org/licenses/by/3.0/
+-->
+<!DOCTYPE HTML>
 <html>
     <head>
         <title>AWattPrice</title>
-        <link href="style/style.css" type="text/css" rel="stylesheet" media="all">
-        <meta name=”viewport” content=”width=device-width, initial-scale=1″>
-        <link rel="shortcut icon" type="image/jpg" href=”images/favicon/app_icon.png”>
+        <link href="css/bootstrap.css" rel="stylesheet" type="text/css" media="all">
+        <link href="css/style.css" rel="stylesheet" type="text/css" media="all" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="keywords" content="Max App  Responsive web template, Bootstrap Web Templates, Flat Web Templates, Andriod Compatible web template,
+        Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, SonyErricsson, Motorola web design" />
+        <script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+        <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+        <link href='http://fonts.googleapis.com/css?family=Stardos+Stencil:400,700' rel='stylesheet' type='text/css'>
+        <link href='http://fonts.googleapis.com/css?family=Arvo:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+        <script src="js/jquery-1.11.1.min.js"></script>
+
+        <!---- start-smoth-scrolling---->
+        <script type="text/javascript" src="js/move-top.js"></script>
+        <script type="text/javascript" src="js/easing.js"></script>
+         <script type="text/javascript">
+        		jQuery(document).ready(function($) {
+        			$(".scroll").click(function(event){
+        				event.preventDefault();
+        				$('html,body').animate({scrollTop:$(this.hash).offset().top},1200);
+        			});
+        		});
+        	</script>
+        <!---End-smoth-scrolling---->
     </head>
+<body>
+<div class="header">
+	<div class="container">
+		<div class="header-top">
+		<div class="logo">
+		<a href="index.html"><span>[</span> AWattPrice <span>]</span></a>
+		</div>
+		<div class="top-menu">
+    		<span class="menu"><img src="images/nav.png" alt="" width=40 height=40/></span>
+    		<ul>
+		    <li><a class="active" href="#home" class="scroll">Home</a></li>
+			<!-- <li><a href="#services" class="scroll">Services</a></li> -->
+			<!-- <li><a href="#video" class="scroll">Video</a></li> -->
+		    <li><a href="#features" class="scroll">Features</a></li>
+		    <li><a href="#contact" class="scroll">Contact</a></li>
+		</div>
+				 <!-- script for menu -->
 
-    <body>
-        <div class="title">
-            <h1>AWattPrice</h1>
-            <h3 class="wrapper">Shows the varying prices of the aWATTar electricty provider</h3>
+		 <script>
+		 $("span.menu").click(function(){
+		 $(".top-menu ul").slideToggle("slow" , function(){
+		 });
+		 });
+		 </script>
 
-            <div class="navigation_bar">
-                <a href="privacy_policy.html">Privacy Policy</a>
-                <a href="contact.html">Contact</a>
-            </div>
+		<!-- //script for menu -->
+
+
+					<div class="clearfix"></div>
+			</div>
+			<div class="button">
+			<h2>Download Now!</h2>
+    			<a class="button1" href="#"><img src="images/download_on_appstore.png" width=150 height=50></a>
+			</div>
+			<div class="center-img">
+    			<img src="images/Electricity Price Page.png" height=540 width=267>
+			</div>
+		</div>
+	</div>
+		<div class="content">
+			<!-- <div class="service-section" id="services">
+				<div class="container">
+    				<h3><span>[</span> services <span>]</span></h3>
+					<div class="service-grids">
+						<div class="col-md-3 service-grid">
+							<img src="images/res-1.png">
+							 <h4>Very Smart</h4>
+							 <p>We really believe that apps and websites should  adipiscing</p>
+							</div>
+							<div class="col-md-3 service-grid">
+							<img src="images/res-2.png">
+							 <h4>Apple store</h4>
+							 <p>We really believe that apps and websites should  adipiscing</p>
+							</div>
+							<div class="col-md-3 service-grid">
+							<img src="images/res-3.png">
+							 <h4>Your Filters</h4>
+							 <p>We really believe that apps and websites should  adipiscing</p>
+							</div>
+							<div class="col-md-3 service-grid">
+							<img src="images/res-4.png">
+							 <h4>user friendly</h4>
+							 <p>We really believe that apps and websites should  adipiscing</p>
+							</div>
+
+								<div class="clearfix"></div>
+					</div>
+				</div>
+			</div> -->
+    <!-- <div class="video" id="video">
+		<div class="container">
+			<h3><span>[</span> video demo <span>]</span></h3>
+                <iframe src=""></iframe>
         </div>
+	</div> -->
+			<div class="feature" id="features">
+				<div class="container">
+					<h3><span>[</span> features <span>]</span></h3>
+					<div class="feature-grids">
+                        <div class="feature2">
+                            <div class="col-md-6 feature-grid1">
+                                <h4>See electricity prices throughout the day displayed in an interactive graph.</h4>
+                                <p></p>
+                            </div>
+                            <div class="col-md-6 feature-grid3">
+                                <img src="images/Electricity Price Page.png" width=240>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
 
-        <div class="preview_image_row">
-            <div class="preview_image_column">
-                <p class="preview_text">See electricity prices for each hour throughout the day</p>
-                <img class="iphone_preview" src="images/Electricity Price Page.png"
-                     alt="Electricity Price Page Preview">
+                        <div class="feature2">
+                            <div class="col-md-6 feature-grid1">
+                                <h4>Find the hours of the day where electricity is cheapest.</h4>
+                                <p></p>
+                            </div>
+                            <div class="col-md-6 feature-grid3">
+                                <img src="images/Cheapest Price Page.png" width=240>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+
+                        <div class="feature2">
+                            <div class="col-md-6 feature-grid1">
+                                <h4>Visually view the hours where electricity prices are cheapest.</h4>
+                                <p></p>
+                            </div>
+                            <div class="col-md-6 feature-grid3">
+                                <img src="images/Cheapest Price Result Page.png" width=240>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+
+                        <div class="feature2">
+                            <div class="col-md-6 feature-grid1">
+                                <h4>Customize your app experience to fit your needs.</h4>
+                                <p></p>
+                            </div>
+                            <div class="col-md-6 feature-grid3">
+                                <img src="images/Settings Page.png" width=240>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+					</div>
+						<div class="clearfix"></div>
+					</div>
+				</div>
+		</div>
+
+	<div class="footer-section" id="contact" id="contact">
+		<div class="container">
+			<div class="contact-header">
+				<h3><span>[</span> contact <span>]</span></h3>
+			</div>
+            <div class="contact">
+                <br><br><br>
+                <div class="footer-bottom">
+                    <h3>E-Mail: </h3><p>support-awattprice@space8.me</p>
+                </div>
             </div>
 
-            <div class="preview_image_column">
-                <p class="preview_text">Find the cheapest hours for energy consumption</p>
-                <img class="iphone_preview" src="images/Cheapest Price Page.png"
-                    alt="Cheapest Price Page Preview">
+			<div class="contact">
+    		    <div class="clearfix"></div>
+				<div class="footer-bottom">
+					<p> Copyright &copy; 2020  All rights  Reserved | Template by<a href="http://w3layouts.com" target="target_blank">W3Layouts</a></p>
+				</div>
             </div>
 
-            <div class="preview_image_column">
-                <p class="preview_text">Visually get the cheapest hours displayed in a clock</p>
-                <img class="iphone_preview" src="images/Cheapest Price Result Page.png"
-                    alt="Cheapest Price Result Page Preview">
-            </div>
+		</div>
 
-            <div class="preview_image_column">
-                <p class="preview_text">Customize you app experience</p>
-                <img class="iphone_preview" src="images/Settings Page.png"
-                    alt="Settings Page Preview">
-            </div>
-        </div>
-    </body>
+     </body>
 </html>

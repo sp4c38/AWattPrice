@@ -23,15 +23,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'fain*)c8x&$20ua3pr392rhoa**b%vl7)gdlrdjqw=3_$r@car'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ["space8.me", "www.space8.me", "127.0.0.1"]
+ALLOWED_HOSTS = ["awattprice.space8.me", "www.awattprice.space8.me", "127.0.0.1"]
 
 
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
+    # 'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -118,5 +118,5 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
-STATIC_URL = '/awattar_app/static/'
+STATIC_URL = '/awattprice/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "static")

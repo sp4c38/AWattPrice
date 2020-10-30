@@ -39,6 +39,8 @@
 "priceWithVat" = "Preise mit MwSt.";
 "baseElectricityPriceHint" = "Sie können Ihren Grundarbeitspreis für Ihre Region auf der aWATTar Webseite finden.";
 "toAwattarWebsite" = "Zur aWATTar Webseite";
+"awattarTariff" = "Awattar Tarif";
+"awattarTariffSelectionTip" = "Hier können Sie optionall Ihren aWATTar Tarif auswählen.";
 "helpAndSuggestions" = "Hilfe & Vorschläge";
 "version" = "Version";
 "help" = "Hilfe";

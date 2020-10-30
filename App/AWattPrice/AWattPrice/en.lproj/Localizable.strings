@@ -39,7 +39,9 @@
 "priceWithVat" = "Price with VAT";
 "baseElectricityPriceHint" = "You can find your base electricity price for your region on the aWATTar website.";
 "toAwattarWebsite" = "To the aWATTar website";
-"helpAndSuggest ions" = "Help & Suggestions";
+"awattarTariff" = "Awattar Tariff";
+"awattarTariffSelectionTip" = "Here you can optionally select your aWATTar Tariff.";
+"helpAndSuggestions" = "Help & Suggestions";
 "help" = "Help";
 "suggestion" = "Suggestions";
 "helpByEmail" = "Get help by email";

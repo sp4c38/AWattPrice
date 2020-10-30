@@ -36,7 +36,7 @@
 		61E2DFD7254214B100473E20 /* CheapestHourManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61E2DFD6254214B100473E20 /* CheapestHourManager.swift */; };
 		61E5E051250E9AA800E2F9CC /* TabNavigatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61E5E050250E9AA800E2F9CC /* TabNavigatorView.swift */; };
 		61EC1C00254B41B100324ADA /* PricesWithVatIncludedSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61EC1BFF254B41B100324ADA /* PricesWithVatIncludedSetting.swift */; };
-		61EC1C08254B41D800324ADA /* AwattarTarifSelectionSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61EC1C07254B41D800324ADA /* AwattarTarifSelectionSettings.swift */; };
+		61EC1C08254B41D800324ADA /* AwattarTariffSelectionSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61EC1C07254B41D800324ADA /* AwattarTariffSelectionSettings.swift */; };
 		61EC1C0D254B420700324ADA /* AwattarBasicEnergyChargePriceSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61EC1C0C254B420700324ADA /* AwattarBasicEnergyChargePriceSetting.swift */; };
 		61EC1C12254B425B00324ADA /* AppVersionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61EC1C11254B425B00324ADA /* AppVersionView.swift */; };
 		61F38651253B38670036486E /* SplashScreenFinishView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61F38650253B38670036486E /* SplashScreenFinishView.swift */; };
@@ -97,7 +97,7 @@
 		61E2DFD6254214B100473E20 /* CheapestHourManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheapestHourManager.swift; sourceTree = "<group>"; };
 		61E5E050250E9AA800E2F9CC /* TabNavigatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabNavigatorView.swift; sourceTree = "<group>"; };
 		61EC1BFF254B41B100324ADA /* PricesWithVatIncludedSetting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PricesWithVatIncludedSetting.swift; sourceTree = "<group>"; };
-		61EC1C07254B41D800324ADA /* AwattarTarifSelectionSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AwattarTarifSelectionSettings.swift; sourceTree = "<group>"; };
+		61EC1C07254B41D800324ADA /* AwattarTariffSelectionSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AwattarTariffSelectionSettings.swift; sourceTree = "<group>"; };
 		61EC1C0C254B420700324ADA /* AwattarBasicEnergyChargePriceSetting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AwattarBasicEnergyChargePriceSetting.swift; sourceTree = "<group>"; };
 		61EC1C11254B425B00324ADA /* AppVersionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppVersionView.swift; sourceTree = "<group>"; };
 		61F38650253B38670036486E /* SplashScreenFinishView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashScreenFinishView.swift; sourceTree = "<group>"; };
@@ -257,7 +257,7 @@
 			children = (
 				61EC1C0C254B420700324ADA /* AwattarBasicEnergyChargePriceSetting.swift */,
 				61EC1BFF254B41B100324ADA /* PricesWithVatIncludedSetting.swift */,
-				61EC1C07254B41D800324ADA /* AwattarTarifSelectionSettings.swift */,
+				61EC1C07254B41D800324ADA /* AwattarTariffSelectionSettings.swift */,
 				61EC1C11254B425B00324ADA /* AppVersionView.swift */,
 			);
 			path = "Setting Views";
@@ -417,7 +417,7 @@
 				61200EC3253A050700A104B1 /* SplashScreenStartView.swift in Sources */,
 				61C963A7251E2032001B3E3C /* ConsumptionClockView.swift in Sources */,
 				61BA0A592548764400951321 /* HelpMailView.swift in Sources */,
-				61EC1C08254B41D800324ADA /* AwattarTarifSelectionSettings.swift in Sources */,
+				61EC1C08254B41D800324ADA /* AwattarTariffSelectionSettings.swift in Sources */,
 				617D85B425052C35009E18FB /* HomeView.swift in Sources */,
 				611D15AF251680B9000691C6 /* ConsumptionComparisonView.swift in Sources */,
 				617D85B225052C35009E18FB /* AwattarApp.swift in Sources */,

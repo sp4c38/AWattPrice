@@ -1,5 +1,5 @@
 //
-//  AwattarTarifSelectionSettings.swift
+//  AwattarTariffSelectionSettings.swift
 //  AWattPrice
 //
 //  Created by Léon Becker on 29.10.20.
@@ -21,8 +21,8 @@ struct AwattarTarifSelectionSetting: View {
     
     var body: some View {
         Section(
-            header: Text("Awattar Tarif"),
-            footer: Text("tariffSelectionTip")
+            header: Text("awattarTariff"),
+            footer: Text("awattarTariffSelectionTip")
         ) {
             VStack(alignment: .center, spacing: 10) {
                 Picker(selection: $placeHolderPickerSelection, label: Text("")) {

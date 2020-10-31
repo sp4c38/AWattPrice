@@ -29,10 +29,10 @@
 
 // Settings Page and Help & Suggestions page localizations
 "settings" = "Settings";
-"priceWithVat" = "Price with VAT";
+"priceWithVat" = "Prices with VAT";
 "baseElectricityPriceHint" = "You can find your base electricity price for your region on the aWATTar website.";
 "toAwattarWebsite" = "To the aWATTar website";
-"awattarTariff" = "Awattar Tariff";
+"awattarTariff" = "aWATTar Tariff";
 "awattarTariffSelectionTip" = "If you are an aWATTar customer and have the HOURLY Tariff you can select it here. This will show the final price you would pay in the cheapest time finder.";
 "helpAndSuggestions" = "Help & Suggestions";
 "help" = "Help";

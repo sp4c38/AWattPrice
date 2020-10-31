@@ -36,6 +36,6 @@ struct AppVersionView: View {
             }
             .foregroundColor(Color(hue: 0.6667, saturation: 0.0448, brightness: 0.5255))
         }
-        
+        .customBackgroundColor(colorScheme == .light ? Color(hue: 0.6667, saturation: 0.0202, brightness: 0.9686) : Color.black)
     }
 }

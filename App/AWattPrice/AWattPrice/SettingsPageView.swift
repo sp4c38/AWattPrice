@@ -11,30 +11,30 @@ import SwiftUI
 /// A place for the user to modify certain settings. Those changes are automatically stored (if modified) in persistent storage.
 struct SettingsPageView: View {
     @Environment(\.presentationMode) var presentationMode
+    @State var textFieldCurrentlySelected = false
     
     var body: some View {
         NavigationView {
-            VStack(alignment: .center, spacing: 20) {
-    //            AwattarTarifSelectionSetting()
-
-                CustomInsetGroupedList {
-                    PricesWithVatIncludedSetting()
-                        
-                    AwattarTariffSelectionSetting()
+            CustomInsetGroupedList {
+                PricesWithVatIncludedSetting()
                     
-                    GetHelpView()
-                    
-                    AppVersionView()
-                }
-                .environment(\.defaultMinListHeaderHeight, 36)
+                AwattarTariffSelectionSetting(textFieldCurrentlySelected: $textFieldCurrentlySelected)
+                
+                GetHelpView()
+                
+                AppVersionView()
             }
+            .hideKeyboardWhenBackgroundTapped()
             .navigationTitle("settings")
             .navigationViewStyle(StackNavigationViewStyle())
             .contentShape(Rectangle())
             .navigationBarItems(trailing: DoneNavigationBarItem(presentationMode: presentationMode))
-//            .onTapGesture {
-//                self.hideKeyboard()
-//            }
+            .ifTrue(textFieldCurrentlySelected) { content in
+                content
+                    .onTapGesture {
+                        self.hideKeyboard()
+                    }
+            }
         }
     }
     

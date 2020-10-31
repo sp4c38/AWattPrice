@@ -11,55 +11,84 @@ import SwiftUI
 struct CustomInsetGroupedList<Content: View>: View {
     @Environment(\.colorScheme) var colorScheme
     let content: Content
+    var hideKeyboardWhenBackgroundTappedActivated = false
     
     init(@ViewBuilder content: () -> Content) {
         self.content = content()
     }
     
     var body: some View {
-        VStack {
-            content
+        ZStack {
+            VStack {
+                if colorScheme == .light {
+                    Color(hue: 0.6667, saturation: 0.0202, brightness: 0.9686)
+                } else {
+                    Color.black
+                }
+            }
+            .ignoresSafeArea()
+            .onTapGesture {
+//                if hideKeyboardWhenBackgroundTappedActivated {
+//                    self.hideKeyboard()
+//                }
+            }
+            
+            ScrollView {
+                VStack(spacing: 20) {
+                    content
+                        .padding(.top, 10)
+                }
+            }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(colorScheme == .light ? Color(hue: 0.6667, saturation: 0.0202, brightness: 0.9686) : Color.black)
-        .ignoresSafeArea()
+    }
+    
+    func hideKeyboardWhenBackgroundTapped() -> Self {
+        var copy = self
+        copy.hideKeyboardWhenBackgroundTappedActivated = true
+        return copy
     }
 }
 
 struct CustomInsetGroupedListItem<Content: View>: View { // All content which is parsed must only conform to View
     @Environment(\.colorScheme) var colorScheme
-    let header: Text
-    let footer: Text
+    let header: Text?
+    let footer: Text?
     let content: Content
     var backgroundColor: Color?
     
-    init(header: Text = Text(""), footer: Text = Text(""), @ViewBuilder content: () -> Content, backgroundColor: Color? = nil) {
+    init(header: Text? = nil, footer: Text? = nil, @ViewBuilder content: () -> Content) {
         self.header = header
         self.footer = footer
         self.content = content()
-        self.backgroundColor = backgroundColor
     }
     
     var body: some View {
-        VStack(alignment: .leading) {
-            header
-                .textCase(.uppercase)
-                .font(.caption)
-                .foregroundColor(Color(hue: 0.7083, saturation: 0.0312, brightness: 0.5020))
+        VStack(alignment: .leading, spacing: 8) {
+            if header != nil {
+                header
+                    .textCase(.uppercase)
+                    .font(.caption)
+                    .foregroundColor(Color(hue: 0.7083, saturation: 0.0312, brightness: 0.5020))
+            }
             
             VStack {
                 content
             }
-            .padding()
+            .padding([.leading, .trailing], 15)
+            .padding([.top, .bottom], 9)
             .frame(maxWidth: .infinity)
             .background(backgroundColor != nil ? backgroundColor : (colorScheme == .light ? Color.white : Color(hue: 0.6667, saturation: 0.0667, brightness: 0.1176)))
             .cornerRadius(10)
             
-            footer
-                .font(.caption2)
-                .foregroundColor(Color(hue: 0.7083, saturation: 0.0312, brightness: 0.5020))
+            if footer != nil {
+                footer
+                    .font(.caption2)
+                    .foregroundColor(Color(hue: 0.7083, saturation: 0.0213, brightness: 0.5973))
+                    .lineSpacing(2)
+                    .padding(.trailing, 10)
+            }
         }
-        .padding([.leading, .trailing], 30)
+        .padding([.leading, .trailing], 16)
     }
     
     func customBackgroundColor(_ color: Color) -> Self {
@@ -71,16 +100,18 @@ struct CustomInsetGroupedListItem<Content: View>: View { // All content which is
 
 struct ListItem_Previews: PreviewProvider {
     static var previews: some View {
-        CustomInsetGroupedList {
-            CustomInsetGroupedListItem(
-                header: Text("Test Header"),
-                footer: Text("d")
-            ) {
-                VStack {
-                    Text("Test Text")
+        NavigationView {
+            CustomInsetGroupedList {
+                CustomInsetGroupedListItem(
+                    header: Text("Test Header"),
+                    footer: Text("d")
+                ) {
+                    VStack {
+                        Text("Test Text")
+                    }
                 }
             }
-            .preferredColorScheme(.dark)
+            .navigationBarTitle("Test")
         }
     }
 }

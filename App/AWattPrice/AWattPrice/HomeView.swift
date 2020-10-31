@@ -34,16 +34,14 @@ struct HomeView: View {
                 if awattarData.energyData != nil && currentSetting.setting != nil {
                     EnergyPriceGraph()
                 } else {
-                    if awattarData.networkConnectionError == false {
-                        // download in progress
-                        
-                        LoadingView()
-                    } else {
-                        // there is a network connection error
-                        // and the download can't be fulfilled
-                        
+                    if awattarData.severeDataRetrievalError == true {
+                        SevereDataRetrievalError()
+                            .transition(.opacity)
+                    } else if awattarData.networkConnectionError == true {
                         NetworkConnectionErrorView()
                             .transition(.opacity)
+                    } else {
+                        LoadingView()
                     }
                 }
             }

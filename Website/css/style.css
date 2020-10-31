@@ -168,10 +168,11 @@ a.button1 {
   font-size: 2.8em;
   font-family: 'Arial', serif;
   text-transform: capitalize;
-  text-align:center;
+  text-align: center;
+  color: #000000;
 }
 .feature span {
-  color:#31C3DB;
+  color: #31C3DB;
 }
 
 .feature-grids {

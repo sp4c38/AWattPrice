@@ -42,8 +42,7 @@ struct Profile: Hashable {
 struct ProfilesData {
     var profiles = [
         Profile(name: "HOURLY", imageName: "HourlyProfilePicture"),
-        Profile(name: "HOURLY-CAP", imageName: "HourlyCapProfilePicture"),
-        Profile(name: "YEARLY", imageName: "YearlyProfilePicture")]
+        Profile(name: "HOURLY-CAP", imageName: "HourlyCapProfilePicture")]
 }
 
 /// Object responsible for downloading the current energy prices from the backend, decoding this data and providing it to all views which need it. It also includes data for the different profiles/tariffs of aWATTar which don't need to be downloaded.
@@ -52,12 +51,13 @@ class AwattarData: ObservableObject {
     // and views need to check whether downloading the data finished or not
     
     @Published var networkConnectionError = false // A value representing if network connection errors occurred while trying to download the data from the backend.
+    @Published var severeDataRetrievalError = false // A value representing if a servere data retrieval error occurred while trying to download and decode the data from the backend. E.g. data couldn't be decoded correctly
     @Published var energyData: EnergyData? = nil
     @Published var profilesData = ProfilesData()
 
     init() {
         var energyRequest = URLRequest(
-                        url: URL(string: "https://awattprice.space8.me/awattprice/data/")!,
+                        url: URL(string: "https://awattprice.space8.me/data/")!,
                         cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy)
         
         energyRequest.httpMethod = "GET"
@@ -99,15 +99,23 @@ class AwattarData: ObservableObject {
                         self.energyData = EnergyData(prices: usedPricesDecodedData, minPrice: (minPrice != nil ? minPrice! : 0), maxPrice: (maxPrice != nil ? maxPrice! : 0))
                     }
                 } catch {
-                    fatalError("Could not decode returned JSON data from server.")
+                    print("Could not decode returned JSON data from server.")
+                    DispatchQueue.main.async {
+                        self.severeDataRetrievalError = true
+                    }
                 }
             } else {
+                print("A internet connection error occurred.")
                 if let error = error as NSError?, error.domain == NSURLErrorDomain && error.code == NSURLErrorNotConnectedToInternet {
+                    print("The internet connection appears to be offline.")
                     DispatchQueue.main.async {
                         withAnimation {
                             self.networkConnectionError = true
                         }
                     }
+                } else {
+                    print("The internet connection error couldn't be classified.")
+                    self.severeDataRetrievalError = true
                 }
             }
         }.resume()

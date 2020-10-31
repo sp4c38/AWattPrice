@@ -7,133 +7,6 @@
 
 import SwiftUI
 
-/// Input field for the power output of the consumer
-struct PowerOutputInputField: View {
-    @EnvironmentObject var cheapestHourManager: CheapestHourManager
-    
-    let emptyFieldError: Bool
-    let wrongInputError: Bool
-    
-    init(errorValues: [Int]) {
-        if errorValues.contains(1) {
-            emptyFieldError = true
-            wrongInputError = false
-        } else if errorValues.contains(2) {
-            emptyFieldError = false
-            wrongInputError = true
-        } else {
-            emptyFieldError = false
-            wrongInputError = false
-        }
-    }
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack {
-                Text("Power")
-                    .font(.title3)
-                    .bold()
-                Spacer()
-            }
-            
-            HStack {
-                TextField("inKw", text: $cheapestHourManager.powerOutputString.animation())
-                    .keyboardType(.decimalPad)
-                    .multilineTextAlignment(.leading)
-                    .padding(.trailing, 5)
-                
-                if cheapestHourManager.powerOutputString != "" {
-                    Text("kW")
-                        .transition(.opacity)
-                }
-            }
-            .padding(.leading, 17)
-            .padding(.trailing, 14)
-            .padding([.top, .bottom], 10)
-            .background(
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke((emptyFieldError || wrongInputError) ? Color.red : Color(hue: 0.0000, saturation: 0.0000, brightness: 0.8706), lineWidth: 2)
-            )
-            
-            if emptyFieldError {
-                Text("emptyFieldError")
-                    .font(.caption)
-                    .foregroundColor(Color.red)
-            }
-            
-            if wrongInputError {
-                Text("wrongInputError")
-                    .font(.caption)
-                    .foregroundColor(Color.red)
-            }
-        }
-        .frame(maxWidth: .infinity)
-    }
-}
-
-/// Input field for the energy usage which the consumer shall consume
-struct EnergyUsageInputField: View {
-    @EnvironmentObject var cheapestHourManager: CheapestHourManager
-    
-    let emptyFieldError: Bool
-    let wrongInputError: Bool
-    
-    init(errorValues: [Int]) {
-        if errorValues.contains(3) {
-            emptyFieldError = true
-            wrongInputError = false
-        } else if errorValues.contains(4) {
-            emptyFieldError = false
-            wrongInputError = true
-        } else {
-            emptyFieldError = false
-            wrongInputError = false
-        }
-    }
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack {
-                Text("totalConsumption")
-                    .font(.title3)
-                    .bold()
-                Spacer()
-            }
-            
-            HStack {
-                TextField("inKwh", text: $cheapestHourManager.energyUsageString.animation())
-                    .keyboardType(.decimalPad)
-                    .multilineTextAlignment(.leading)
-                    .padding(.trailing, 5)
-                
-                if cheapestHourManager.energyUsageString != "" {
-                    Text("kWh")
-                        .transition(.opacity)
-                }
-            }
-            .padding(.leading, 17)
-            .padding(.trailing, 14)
-            .padding([.top, .bottom], 10)
-            .background(
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke((emptyFieldError || wrongInputError) ? Color.red : Color(hue: 0.0000, saturation: 0.0000, brightness: 0.8706), lineWidth: 2)
-            )
-            
-            if emptyFieldError {
-                Text("emptyFieldError")
-                    .font(.caption)
-                    .foregroundColor(Color.red)
-            }
-            
-            if wrongInputError {
-                Text("wrongInputError")
-                    .font(.caption)
-                    .foregroundColor(Color.red)
-            }
-        }
-        .frame(maxWidth: .infinity)
-    }
-}
 
 /// A input field for the length of the usage in the consumption comparison view.
 //struct LengthOfUsageInputField: View {
@@ -155,69 +28,6 @@ struct EnergyUsageInputField: View {
 //        .frame(maxWidth: .infinity)
 //    }
 //}
-
-/// A input field for the time range in the consumption comparison view.
-struct TimeRangeInputField: View {
-    @Environment(\.colorScheme) var colorScheme
-    @EnvironmentObject var cheapestHourManager: CheapestHourManager
-    
-    let errorValues: [Int]
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            HStack {
-                Text("timeRange")
-                    .font(.title3)
-                    .bold()
-                Spacer()
-            }
-            
-            VStack(alignment: .leading, spacing: 10) {
-                HStack {
-                    Text("from")
-                        .bold()
-                        .font(.callout)
-                        .foregroundColor(colorScheme == .light ? Color(hue: 0.0000, saturation: 0.0000, brightness: 0.4314) : Color(hue: 0.0000, saturation: 0.0000, brightness: 0.8311))
-                    
-                    Spacer()
-                    
-                    DatePicker(selection: $cheapestHourManager.startDate, displayedComponents: [.date, .hourAndMinute], label: {})
-                        .labelsHidden()
-                }
-                .padding(5)
-                .padding([.leading, .trailing], 2)
-                .background(
-                    colorScheme == .light ?
-                        Color(hue: 0.6667, saturation: 0.0083, brightness: 0.9412) :
-                        Color(hue: 0.0000, saturation: 0.0000, brightness: 0.1429)
-                )
-                .cornerRadius(7)
- 
-                HStack {
-                    Text("to")
-                        .bold()
-                        .font(.callout)
-                        .foregroundColor(colorScheme == .light ? Color(hue: 0.0000, saturation: 0.0000, brightness: 0.4314) : Color(hue: 0.0000, saturation: 0.0000, brightness: 0.8311))
-                    
-                    Spacer()
-                    
-                    DatePicker(selection: $cheapestHourManager.endDate, displayedComponents: [.date, .hourAndMinute], label: {})
-                        .labelsHidden()
-                }
-                .padding(5)
-                .padding([.leading, .trailing], 2)
-                .background(
-                    colorScheme == .light ?
-                        Color(hue: 0.6667, saturation: 0.0083, brightness: 0.9412) :
-                        Color(hue: 0.0000, saturation: 0.0000, brightness: 0.1429)
-                )
-                .cornerRadius(7)
-            }
-            .padding([.leading, .trailing], 3)
-        }
-        .frame(maxWidth: .infinity)
-    }
-}
 
 /// A view which allows the user to find the cheapest hours for using energy. It optionally can also show the final price which the user would have to pay to aWATTar if consuming the specified amount of energy.
 struct ConsumptionComparisonView: View {
@@ -286,24 +96,15 @@ struct ConsumptionComparisonView: View {
                     .padding([.leading, .trailing, .bottom], 16)
                     .padding(.top, 10)
                 } else {
-                    if awattarData.networkConnectionError == false {
-                        // download in progress
-
-                        LoadingView()
-                    } else {
-                        // can't fulfill download
-
+                    if awattarData.severeDataRetrievalError == true {
+                        SevereDataRetrievalError()
+                            .transition(.opacity)
+                    } else if awattarData.networkConnectionError == true {
                         NetworkConnectionErrorView()
                             .transition(.opacity)
+                    } else {
+                        LoadingView()
                     }
-                }
-            }
-            .onAppear {
-                if awattarData.energyData != nil {
-                    let maxHourIndex = awattarData.energyData!.prices.count - 1
-
-                    // Set end date of the end date time picker to the maximal currently time where energy price data points exist
-                    cheapestHourManager.endDate = Date(timeIntervalSince1970: TimeInterval(awattarData.energyData!.prices[maxHourIndex].endTimestamp))
                 }
             }
             .navigationTitle("cheapestPrice")

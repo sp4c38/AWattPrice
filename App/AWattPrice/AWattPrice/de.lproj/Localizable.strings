@@ -13,13 +13,6 @@
 "splashScreenComparePrices" = "Preise vergleichen";
 "splashScreenComparePricesInfo" = "Finden Sie die preislich günstigsten Stunden für Ihren Stromverbrauch.";
 
-// Setup Splash Screen localizations
-"splashScreenSetupTitle" = "Einrichtung";
-"splashScreenSetupFinished" = "Einrichtung abgeschlossen";
-
-// Finished Splash Screen localizations
-"splashScreenCanChangeSettingsLater" = "Sie können Ihre Einstellungen\nspäter noch ändern";
-
 // Electricity Price page localizations
 "elecPrice" = "Strompreis";
 "hourOfDay" = "Uhrzeit";
@@ -63,3 +56,6 @@
 "price" = "Preise";
 "continue" = "Weiter";
 "power" = "Leistung";
+"none" = "Keiner";
+"today" = "Heute:";
+"tonight" = "Heute Nacht";

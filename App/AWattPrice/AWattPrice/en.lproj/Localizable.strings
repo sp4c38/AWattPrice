@@ -13,13 +13,6 @@
 "splashScreenComparePrices" = "Compare prices";
 "splashScreenComparePricesInfo" = "Find the cheapest hours for your electricity consumption.";
 
-// Setup Splash Screen localizations
-"splashScreenSetupTitle" = "Setup";
-"splashScreenSetupFinished" = "Setup finished";
-
-// Finished Splash Screen localizations
-"splashScreenCanChangeSettingsLater" = "You still can change\nyour settings later";
-
 // Electricity Price page localizations
 "elecPrice" = "Electricity Price";
 "hourOfDay" = "Hour of day";
@@ -62,3 +55,6 @@
 "price" = "Price";
 "continue" = "Continue";
 "power" = "Power";
+"none" = "None";
+"today" = "Today:";
+"tonight" = "Tonight";

@@ -14,12 +14,17 @@ struct ConsumptionResultView: View {
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
     
     var dateFormatter: DateFormatter
+    var todayDateFormatter: DateFormatter
     let currencyFormatter: NumberFormatter
     
     init() {
         dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .short
         dateFormatter.timeStyle = .short
+        
+        todayDateFormatter = DateFormatter()
+        todayDateFormatter.dateStyle = .long
+        todayDateFormatter.timeStyle = .none
         
         currencyFormatter = NumberFormatter()
         currencyFormatter.numberStyle = .currency
@@ -49,7 +54,16 @@ struct ConsumptionResultView: View {
                 .font(.title2)
                 .padding(16)
                 
-                // The final price the user would have to pay
+                HStack {
+                    Text("today")
+                    Text(todayDateFormatter.string(from: Date()))
+                        .bold()
+                        .foregroundColor(Color.red)
+                }
+                .font(.callout)
+                .padding(16)
+                
+                // The final price the user would need to pay
                 if cheapestHourManager.cheapestHoursForUsage!.energyCosts != nil {
                     VStack(alignment: .center, spacing: 5) {
                         Text("elecCosts")
@@ -85,5 +99,14 @@ struct ConsumptionResultView: View {
             cheapestHourManager.calculateCheapestHours(energyData: awattarData.energyData!)
         }
         .navigationTitle("result")
+    }
+}
+
+struct ConsumptionResultView_Previews: PreviewProvider {
+    static var previews: some View {
+        ConsumptionResultView()
+            .environmentObject(AwattarData())
+            .environmentObject(CheapestHourManager())
+            .preferredColorScheme(.light)
     }
 }

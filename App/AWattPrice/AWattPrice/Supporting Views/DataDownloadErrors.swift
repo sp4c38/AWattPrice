@@ -35,9 +35,37 @@ struct NetworkConnectionErrorView: View {
     }
 }
 
+struct SevereDataRetrievalError: View {
+    @Environment(\.colorScheme) var colorScheme
+    
+    var body: some View {
+        VStack(alignment: .center) {
+            Spacer()
+            
+            VStack(spacing: 30) {
+                Image(systemName: "exclamationmark.triangle")
+                    .foregroundColor(Color.orange)
+                    .font(.system(size: 60, weight: .light))
+                
+                Text("Please try again later")
+                    .font(.title3)
+                    .multilineTextAlignment(.center)
+            }
+            .padding(25)
+            .background(
+                RoundedRectangle(cornerRadius: 20)
+                    .stroke(colorScheme == .light ? Color(hue: 0.0000, saturation: 0.0000, brightness: 0.9137) : Color(hue: 0.0000, saturation: 0.0000, brightness: 0.2446), lineWidth: 5)
+            )
+
+            Spacer()
+        }
+    }
+}
+
+
 struct NetworkConnectionErrorView_Previews: PreviewProvider {
     static var previews: some View {
-        NetworkConnectionErrorView()
+        SevereDataRetrievalError()
             .preferredColorScheme(.dark)
     }
 }

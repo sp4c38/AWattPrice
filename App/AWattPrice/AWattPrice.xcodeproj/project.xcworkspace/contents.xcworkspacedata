@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:/Users/sp4c38/computers/code/swift/app-dev/Apps/AwattarApp/App/AwattarApp/AWattPrice.xcodeproj">
+      location = "self:">
    </FileRef>
 </Workspace>

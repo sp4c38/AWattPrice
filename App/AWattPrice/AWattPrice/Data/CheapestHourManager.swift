@@ -31,6 +31,12 @@ class CheapestHourManager: ObservableObject {
     /// A variable set to true if calculations have been performed but no cheapest hours were found.
     @Published var errorOccurredFindingCheapestHours = false
     
+    func setTimeIntervalThisNight() {
+        self.startDate = Calendar.current.date(bySettingHour: 20, minute: 0, second: 0, of: Date())!
+        let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: Date())!
+        self.endDate = Calendar.current.date(bySettingHour: 7, minute: 0, second: 0, of: tomorrow)!
+    }
+    
     /// Checks that the interval selected by the Interval Picker is not bigger than the time range between the start date and end date specified by the user. If the interval is bigger than the end date is adjusted accordingly.
     func checkIntervalFitsInRange() {
 //        let startEndDateInterval = abs(startDate.timeIntervalSince(endDate))
@@ -124,6 +130,10 @@ class CheapestHourManager: ObservableObject {
 //                }
 //            }
 //        }
+    }
+    
+    func calculateHourlyPrice() {
+        
     }
     
     /**

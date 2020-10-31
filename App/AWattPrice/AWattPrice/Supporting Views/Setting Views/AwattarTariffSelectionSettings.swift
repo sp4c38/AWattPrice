@@ -8,16 +8,10 @@
 import SwiftUI
 
 struct AwattarTarifSelectionSetting: View {
-    @EnvironmentObject var currentSetting: CurrentSetting
     @EnvironmentObject var awattarData: AwattarData
+    @EnvironmentObject var currentSetting: CurrentSetting
     
-    @State var awattarEnergyProfileFirstIndex: Int = 0
-    @State var awattarEnergyProfileSecondIndex: Int = 0
-    @State var placeHolderPickerSelection: Int = 0
-    
-    @State var firstContentOffset: CGFloat = 0
-    @State var secondContentOffset: CGFloat = +250
-    @State var waitBeforeExecution: UInt64 = 0
+    @State var awattarEnergyTariffIndex: Int = 0
     
     var body: some View {
         Section(
@@ -25,103 +19,51 @@ struct AwattarTarifSelectionSetting: View {
             footer: Text("awattarTariffSelectionTip")
         ) {
             VStack(alignment: .center, spacing: 10) {
-                Picker(selection: $placeHolderPickerSelection, label: Text("")) {
+                Picker(selection: $awattarEnergyTariffIndex, label: Text("")) {
+                    Text("none").tag(-1)
                     ForEach(awattarData.profilesData.profiles, id: \.name) { profile in
                         Text(profile.name).tag(awattarData.profilesData.profiles.firstIndex(of: profile)!)
                     }
                 }
-                .onChange(of: placeHolderPickerSelection) { newValue in
-                    currentSetting.changeAwattarTariffIndex(newTariffIndex: Int16(newValue))
-                    
-                    DispatchQueue.main.asyncAfter(deadline: DispatchTime(uptimeNanoseconds: DispatchTime.now().uptimeNanoseconds + waitBeforeExecution)) {
-                        var sideOffset: CGFloat = 0
-                        
-                        var valuesBetween = [(Int, Int)]()
-                        
-                        if newValue > awattarEnergyProfileSecondIndex {
-                            for profileValue in awattarEnergyProfileSecondIndex..<newValue {
-                                valuesBetween.append((profileValue, profileValue + 1))
-                            }
-                        } else {
-                            for profileValue in newValue..<awattarEnergyProfileSecondIndex {
-                                valuesBetween.append((profileValue + 1, profileValue))
-                            }
-                            valuesBetween.reverse()
-                        }
-
-                        waitBeforeExecution = UInt64(405000000 * valuesBetween.count)
-
-                        var index = 0
-                        for transitionValues in valuesBetween {
-                            let executingTime = DispatchTime(uptimeNanoseconds: DispatchTime.now().uptimeNanoseconds + UInt64(index * 405000000))
-                            DispatchQueue.main.asyncAfter(deadline: executingTime) {
-                                if transitionValues.1 < transitionValues.0 {
-                                    sideOffset = 250
-                                } else {
-                                    sideOffset = -250
-                                }
-                                
-                                secondContentOffset = -(sideOffset)
-                                awattarEnergyProfileSecondIndex = transitionValues.1
-                                
-                                withAnimation(.easeIn(duration: 0.4)) {
-                                    secondContentOffset = 0
-                                    firstContentOffset = sideOffset
-                                }
-                                
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                                    awattarEnergyProfileFirstIndex = transitionValues.1
-                                    firstContentOffset = 0
-                                }
-                            }
-                            index += 1
-                        }
-                        
-                        DispatchQueue.main.asyncAfter(deadline: DispatchTime(uptimeNanoseconds: DispatchTime.now().uptimeNanoseconds + waitBeforeExecution)) {
-                            waitBeforeExecution -= waitBeforeExecution
-                        }
-                    }
+                .onChange(of: awattarEnergyTariffIndex) { newValue in
                 }
                 .labelsHidden()
                 .frame(maxWidth: .infinity)
                 .pickerStyle(SegmentedPickerStyle())
                 .zIndex(0)
 
-                ZStack {
+                if awattarEnergyTariffIndex != -1 {
                     VStack(alignment: .center, spacing: 15) {
-                        Image(awattarData.profilesData.profiles[awattarEnergyProfileFirstIndex].imageName)
+                        Image(awattarData.profilesData.profiles[awattarEnergyTariffIndex].imageName)
                             .resizable()
                             .scaledToFit()
                             .frame(width: 60, height: 60, alignment: .center)
                             .padding(.top, 5)
-                        
-                        Text(awattarData.profilesData.profiles[awattarEnergyProfileFirstIndex].name)
-                            .bold()
-                            .font(.title3)
-                    }
-                    .offset(x: firstContentOffset)
 
+                        Text(awattarData.profilesData.profiles[awattarEnergyTariffIndex].name)
+                            .bold()
+                            .font(.title3)
+                    }
+                } else {
                     VStack(alignment: .center, spacing: 15) {
-                        Image(awattarData.profilesData.profiles[awattarEnergyProfileSecondIndex].imageName)
+                        Image(systemName: "multiply.circle")
                             .resizable()
                             .scaledToFit()
                             .frame(width: 60, height: 60, alignment: .center)
                             .padding(.top, 5)
-                        
-                        Text(awattarData.profilesData.profiles[awattarEnergyProfileSecondIndex].name)
+
+                        Text("none")
                             .bold()
                             .font(.title3)
                     }
-                    .offset(x: secondContentOffset)
                 }
             }
+            .animation(.easeInOut)
             .padding(.top, 10)
             .padding(.bottom, 10)
         }
         .onAppear {
-            awattarEnergyProfileFirstIndex = Int(currentSetting.setting!.awattarTariffIndex)
-            awattarEnergyProfileSecondIndex = awattarEnergyProfileFirstIndex
-            placeHolderPickerSelection = awattarEnergyProfileFirstIndex
+            awattarEnergyTariffIndex = Int(currentSetting.setting!.awattarTariffIndex)
         }
     }
 }
@@ -131,8 +73,8 @@ struct AwattarTarifSelectionSettings_Previews: PreviewProvider {
         NavigationView {
             List {
                 AwattarTarifSelectionSetting()
-                    .environmentObject(CurrentSetting(managedObjectContext: PersistenceManager().persistentContainer.viewContext))
                     .environmentObject(AwattarData())
+                    .environmentObject(CurrentSetting(managedObjectContext: PersistenceManager().persistentContainer.viewContext))
             }.listStyle(InsetGroupedListStyle())
         }
     }

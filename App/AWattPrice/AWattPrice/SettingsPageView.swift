@@ -11,26 +11,21 @@ import SwiftUI
 /// A place for the user to modify certain settings. Those changes are automatically stored (if modified) in persistent storage.
 struct SettingsPageView: View {
     @Environment(\.presentationMode) var presentationMode
-    @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
         NavigationView {
             VStack(alignment: .center, spacing: 20) {
     //            AwattarTarifSelectionSetting()
 
-                List {
+                CustomInsetGroupedList {
                     PricesWithVatIncludedSetting()
-                    
-                    AwattarBasicEnergyChargePriceSetting()
                         
-                    AwattarTarifSelectionSetting()
+                    AwattarTariffSelectionSetting()
                     
                     GetHelpView()
                     
                     AppVersionView()
-                        .listRowBackground(colorScheme == .light ? Color(hue: 0.6667, saturation: 0.0202, brightness: 0.9686) : Color.black)
                 }
-                .listStyle(InsetGroupedListStyle())
                 .environment(\.defaultMinListHeaderHeight, 36)
             }
             .navigationTitle("settings")
@@ -69,6 +64,5 @@ struct SettingsPageView_Previews: PreviewProvider {
             .environment(\.managedObjectContext, PersistenceManager().persistentContainer.viewContext)
             .environmentObject(AwattarData())
             .environmentObject(CurrentSetting(managedObjectContext: PersistenceManager().persistentContainer.viewContext))
-            .preferredColorScheme(.dark)
     }
 }

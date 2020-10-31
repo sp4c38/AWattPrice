@@ -140,7 +140,7 @@ struct GetHelpView: View {
     @State var redirectToHelpAndSuggestionView: Int? = 0
     
     var body: some View {
-        Section {
+        CustomInsetGroupedListItem {
             ZStack {
                 HStack {
                     Image(systemName: "questionmark.circle")

@@ -28,6 +28,7 @@
 		6198BD4B254C7F7100356A0F /* TimeRangeInputField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6198BD4A254C7F7100356A0F /* TimeRangeInputField.swift */; };
 		6198BD53254C7FA700356A0F /* EnergyUsageInputField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6198BD52254C7FA700356A0F /* EnergyUsageInputField.swift */; };
 		6198BD5B254C7FD700356A0F /* PowerOutputInputField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6198BD5A254C7FD700356A0F /* PowerOutputInputField.swift */; };
+		61AA2D5E254DA4CD00C13D42 /* ListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61AA2D5D254DA4CD00C13D42 /* ListItem.swift */; };
 		61BA0A542548467F00951321 /* HelpAndSuggestionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61BA0A532548467F00951321 /* HelpAndSuggestionView.swift */; };
 		61BA0A592548764400951321 /* HelpMailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61BA0A582548764400951321 /* HelpMailView.swift */; };
 		61C963A7251E2032001B3E3C /* ConsumptionClockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61C963A6251E2032001B3E3C /* ConsumptionClockView.swift */; };
@@ -39,7 +40,6 @@
 		61E5E051250E9AA800E2F9CC /* TabNavigatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61E5E050250E9AA800E2F9CC /* TabNavigatorView.swift */; };
 		61EC1C00254B41B100324ADA /* PricesWithVatIncludedSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61EC1BFF254B41B100324ADA /* PricesWithVatIncludedSetting.swift */; };
 		61EC1C08254B41D800324ADA /* AwattarTariffSelectionSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61EC1C07254B41D800324ADA /* AwattarTariffSelectionSettings.swift */; };
-		61EC1C0D254B420700324ADA /* AwattarBasicEnergyChargePriceSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61EC1C0C254B420700324ADA /* AwattarBasicEnergyChargePriceSetting.swift */; };
 		61EC1C12254B425B00324ADA /* AppVersionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61EC1C11254B425B00324ADA /* AppVersionView.swift */; };
 		61F983FA2545BC4600A253CC /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 61F983F92545BC4600A253CC /* Launch Screen.storyboard */; };
 /* End PBXBuildFile section */
@@ -90,6 +90,7 @@
 		6198BD4A254C7F7100356A0F /* TimeRangeInputField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeRangeInputField.swift; sourceTree = "<group>"; };
 		6198BD52254C7FA700356A0F /* EnergyUsageInputField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnergyUsageInputField.swift; sourceTree = "<group>"; };
 		6198BD5A254C7FD700356A0F /* PowerOutputInputField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PowerOutputInputField.swift; sourceTree = "<group>"; };
+		61AA2D5D254DA4CD00C13D42 /* ListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListItem.swift; sourceTree = "<group>"; };
 		61BA0A532548467F00951321 /* HelpAndSuggestionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpAndSuggestionView.swift; sourceTree = "<group>"; };
 		61BA0A582548764400951321 /* HelpMailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpMailView.swift; sourceTree = "<group>"; };
 		61C963A6251E2032001B3E3C /* ConsumptionClockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsumptionClockView.swift; sourceTree = "<group>"; };
@@ -101,7 +102,6 @@
 		61E5E050250E9AA800E2F9CC /* TabNavigatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabNavigatorView.swift; sourceTree = "<group>"; };
 		61EC1BFF254B41B100324ADA /* PricesWithVatIncludedSetting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PricesWithVatIncludedSetting.swift; sourceTree = "<group>"; };
 		61EC1C07254B41D800324ADA /* AwattarTariffSelectionSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AwattarTariffSelectionSettings.swift; sourceTree = "<group>"; };
-		61EC1C0C254B420700324ADA /* AwattarBasicEnergyChargePriceSetting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AwattarBasicEnergyChargePriceSetting.swift; sourceTree = "<group>"; };
 		61EC1C11254B425B00324ADA /* AppVersionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppVersionView.swift; sourceTree = "<group>"; };
 		61F983F92545BC4600A253CC /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -266,10 +266,10 @@
 		61EC1BFE254B419500324ADA /* Setting Views */ = {
 			isa = PBXGroup;
 			children = (
-				61EC1C0C254B420700324ADA /* AwattarBasicEnergyChargePriceSetting.swift */,
 				61EC1BFF254B41B100324ADA /* PricesWithVatIncludedSetting.swift */,
 				61EC1C07254B41D800324ADA /* AwattarTariffSelectionSettings.swift */,
 				61EC1C11254B425B00324ADA /* AppVersionView.swift */,
+				61AA2D5D254DA4CD00C13D42 /* ListItem.swift */,
 			);
 			path = "Setting Views";
 			sourceTree = "<group>";
@@ -409,7 +409,6 @@
 				61D88C0B2545EF9800DA2088 /* Extensions.swift in Sources */,
 				61E2DFD7254214B100473E20 /* CheapestHourManager.swift in Sources */,
 				6156A577250C1F5E005174A5 /* Setting+CoreDataProperties.swift in Sources */,
-				61EC1C0D254B420700324ADA /* AwattarBasicEnergyChargePriceSetting.swift in Sources */,
 				61D6F8792517834400027FD1 /* TimeIntervalPicker.swift in Sources */,
 				61D196E52507F58D00E57BAC /* EnergyPriceGraph.swift in Sources */,
 				614E784D25068F6100A7ED83 /* DownloadEnergyData.swift in Sources */,
@@ -417,6 +416,7 @@
 				618A6F6E2518F8C800A8778B /* ConsumptionResultView.swift in Sources */,
 				6156A576250C1F5E005174A5 /* Setting+CoreDataClass.swift in Sources */,
 				613CFF7F250CCCA500337CB2 /* AccessSettings.swift in Sources */,
+				61AA2D5E254DA4CD00C13D42 /* ListItem.swift in Sources */,
 				6198BD4B254C7F7100356A0F /* TimeRangeInputField.swift in Sources */,
 				61EC1C00254B41B100324ADA /* PricesWithVatIncludedSetting.swift in Sources */,
 				61EC1C12254B425B00324ADA /* AppVersionView.swift in Sources */,

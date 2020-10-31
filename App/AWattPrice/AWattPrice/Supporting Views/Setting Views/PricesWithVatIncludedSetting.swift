@@ -15,7 +15,7 @@ struct PricesWithVatIncludedSetting: View {
     @State var pricesWithTaxIncluded = true
     
     var body: some View {
-        Section(
+        CustomInsetGroupedListItem(
             header: Text("price")
         ) {
             HStack(spacing: 10) {

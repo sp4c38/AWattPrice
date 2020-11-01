@@ -58,7 +58,7 @@ struct HelpView: View {
             .buttonStyle(HelpAndSuggestionButtonStyle())
         }
         .padding()
-        .background(colorScheme == .light ? Color(hue: 0.6667, saturation: 0.0340, brightness: 0.8985) : Color(hue: 0.6667, saturation: 0.0340, brightness: 0.1015))
+        .background(colorScheme == .light ? Color(hue: 0.6667, saturation: 0.0202, brightness: 0.9686) : Color(hue: 0.6667, saturation: 0.0340, brightness: 0.1424))
         .cornerRadius(20)
         .padding()
         .sheet(isPresented: $isShowingMailView) {
@@ -102,7 +102,7 @@ struct SuggestionView: View {
             .buttonStyle(HelpAndSuggestionButtonStyle())
         }
         .padding()
-        .background(colorScheme == .light ? Color(hue: 0.6667, saturation: 0.0340, brightness: 0.8985) : Color(hue: 0.6667, saturation: 0.0340, brightness: 0.1015))
+        .background(colorScheme == .light ? Color(hue: 0.6667, saturation: 0.0202, brightness: 0.9686) : Color(hue: 0.6667, saturation: 0.0340, brightness: 0.1424))
         .cornerRadius(20)
         .padding()
         .sheet(isPresented: $isShowingMailView) {
@@ -116,19 +116,9 @@ struct HelpAndSuggestionView: View {
     @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
-        ZStack(alignment: Alignment(horizontal: .center, vertical: .center)) {
-            if colorScheme == .light {
-                Color(hue: 0.6667, saturation: 0.0202, brightness: 0.9686)
-                    .ignoresSafeArea()
-            } else {
-                Color.black
-                    .ignoresSafeArea()
-            }
-
-            VStack {
-                HelpView()
-                SuggestionView()
-            }
+        VStack {
+            HelpView()
+            SuggestionView()
         }
         .navigationTitle("helpAndSuggestions")
     }
@@ -163,7 +153,7 @@ struct GetHelpView: View {
                 redirectToHelpAndSuggestionView = 1
             }
         }
-        .customBackgroundColor(Color(hue: 0.6667, saturation: 0.0202, brightness: 0.9786))
+        .customBackgroundColor(colorScheme == .light ? Color(hue: 0.6667, saturation: 0.0202, brightness: 0.9886) : Color(hue: 0.6667, saturation: 0.0340, brightness: 0.1424))
     }
 }
 
@@ -193,6 +183,7 @@ struct HelpView_Previews: PreviewProvider {
 //        }
 //        .preferredColorScheme(.light)
         
-        demoPreview()
+        HelpAndSuggestionView()
+            .preferredColorScheme(.dark)
     }
 }

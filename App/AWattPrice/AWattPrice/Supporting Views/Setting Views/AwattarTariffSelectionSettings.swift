@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct AwattarBasicEnergyChargePriceSetting: View {
-    @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var currentSetting: CurrentSetting
     @EnvironmentObject var textFieldSelected: TextFieldCurrentlySelected
     
@@ -80,6 +79,7 @@ struct AwattarBasicEnergyChargePriceSetting: View {
 
 
 struct AwattarTariffSelectionSetting: View {
+    @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var awattarData: AwattarData
     @EnvironmentObject var currentSetting: CurrentSetting
     
@@ -144,7 +144,7 @@ struct AwattarTariffSelectionSetting: View {
                 awattarEnergyTariffIndex = Int(currentSetting.setting!.awattarTariffIndex)
             }
         }
-        .customBackgroundColor(Color(hue: 0.6667, saturation: 0.0202, brightness: 0.9886))
+        .customBackgroundColor(colorScheme == .light ? Color(hue: 0.6667, saturation: 0.0202, brightness: 0.9886) : Color(hue: 0.6667, saturation: 0.0340, brightness: 0.1424))
     }
 }
 

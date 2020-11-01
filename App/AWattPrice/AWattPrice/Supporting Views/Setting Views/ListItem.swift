@@ -9,7 +9,6 @@ import SwiftUI
 
 
 struct CustomInsetGroupedList<Content: View>: View {
-    @Environment(\.colorScheme) var colorScheme
     let content: Content
     
     init(@ViewBuilder content: () -> Content) {

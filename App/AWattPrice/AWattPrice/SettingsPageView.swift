@@ -36,13 +36,12 @@ struct SettingsPageView: View {
 
                 AppVersionView()
                     .onTapGesture {
-                            self.hideKeyboard()
+                        self.hideKeyboard()
                     }
             }
             .navigationTitle("settings")
             .navigationViewStyle(StackNavigationViewStyle())
             .navigationBarItems(trailing: DoneNavigationBarItem(presentationMode: presentationMode))
-            .contentShape(Rectangle())
         }
     }
     

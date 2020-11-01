@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct AppVersionView: View {
+    @Environment(\.colorScheme) var colorScheme
+    
     var body: some View {
         CustomInsetGroupedListItem {
             HStack {
@@ -34,5 +36,6 @@ struct AppVersionView: View {
             }
             .foregroundColor(Color(hue: 0.6667, saturation: 0.0448, brightness: 0.5255))
         }
+        .customBackgroundColor(colorScheme == .light ? Color.white : Color.black)
     }
 }

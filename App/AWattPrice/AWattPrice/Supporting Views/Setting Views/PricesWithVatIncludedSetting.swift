@@ -34,6 +34,7 @@ struct PricesWithVatIncludedSetting: View {
                 }
             }
         }
+        .customBackgroundColor(Color(hue: 0.6667, saturation: 0.0202, brightness: 0.9786))
         .onAppear {
             pricesWithTaxIncluded = currentSetting.setting!.pricesWithTaxIncluded
         }

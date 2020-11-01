@@ -11,41 +11,18 @@ import SwiftUI
 struct CustomInsetGroupedList<Content: View>: View {
     @Environment(\.colorScheme) var colorScheme
     let content: Content
-    var hideKeyboardWhenBackgroundTappedActivated = false
     
     init(@ViewBuilder content: () -> Content) {
         self.content = content()
     }
     
     var body: some View {
-        ZStack {
-            VStack {
-                if colorScheme == .light {
-                    Color(hue: 0.6667, saturation: 0.0202, brightness: 0.9686)
-                } else {
-                    Color.black
-                }
-            }
-            .ignoresSafeArea()
-            .onTapGesture {
-//                if hideKeyboardWhenBackgroundTappedActivated {
-//                    self.hideKeyboard()
-//                }
-            }
-            
-            ScrollView {
-                VStack(spacing: 20) {
-                    content
-                        .padding(.top, 10)
-                }
+        ScrollView {
+            VStack(spacing: 20) {
+                content
+                    .padding(.top, 10)
             }
         }
-    }
-    
-    func hideKeyboardWhenBackgroundTapped() -> Self {
-        var copy = self
-        copy.hideKeyboardWhenBackgroundTappedActivated = true
-        return copy
     }
 }
 
@@ -69,6 +46,7 @@ struct CustomInsetGroupedListItem<Content: View>: View { // All content which is
                     .textCase(.uppercase)
                     .font(.caption)
                     .foregroundColor(Color(hue: 0.7083, saturation: 0.0312, brightness: 0.5020))
+                    .fixedSize(horizontal: false, vertical: true)
             }
             
             VStack {
@@ -86,6 +64,7 @@ struct CustomInsetGroupedListItem<Content: View>: View { // All content which is
                     .foregroundColor(Color(hue: 0.7083, saturation: 0.0213, brightness: 0.5973))
                     .lineSpacing(2)
                     .padding(.trailing, 10)
+                    .fixedSize(horizontal: false, vertical: true)
             }
         }
         .padding([.leading, .trailing], 16)

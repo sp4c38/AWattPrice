@@ -8,33 +8,41 @@
 import SceneKit
 import SwiftUI
 
+class TextFieldCurrentlySelected: ObservableObject {
+    @Published var selected = false
+    @Published var isFirstSelected = false
+}
+
 /// A place for the user to modify certain settings. Those changes are automatically stored (if modified) in persistent storage.
 struct SettingsPageView: View {
     @Environment(\.presentationMode) var presentationMode
-    @State var textFieldCurrentlySelected = false
+    @EnvironmentObject var textFieldSelected: TextFieldCurrentlySelected
     
     var body: some View {
         NavigationView {
             CustomInsetGroupedList {
                 PricesWithVatIncludedSetting()
-                    
-                AwattarTariffSelectionSetting(textFieldCurrentlySelected: $textFieldCurrentlySelected)
-                
-                GetHelpView()
-                
-                AppVersionView()
-            }
-            .hideKeyboardWhenBackgroundTapped()
-            .navigationTitle("settings")
-            .navigationViewStyle(StackNavigationViewStyle())
-            .contentShape(Rectangle())
-            .navigationBarItems(trailing: DoneNavigationBarItem(presentationMode: presentationMode))
-            .ifTrue(textFieldCurrentlySelected) { content in
-                content
                     .onTapGesture {
-                        self.hideKeyboard()
+                            self.hideKeyboard()
+                    }
+
+                AwattarTariffSelectionSetting()
+                    .environmentObject(textFieldSelected)
+
+                GetHelpView()
+                    .onTapGesture {
+                            self.hideKeyboard()
+                    }
+
+                AppVersionView()
+                    .onTapGesture {
+                            self.hideKeyboard()
                     }
             }
+            .navigationTitle("settings")
+            .navigationViewStyle(StackNavigationViewStyle())
+            .navigationBarItems(trailing: DoneNavigationBarItem(presentationMode: presentationMode))
+            .contentShape(Rectangle())
         }
     }
     

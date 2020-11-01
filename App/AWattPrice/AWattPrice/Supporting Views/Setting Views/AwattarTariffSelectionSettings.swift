@@ -10,10 +10,9 @@ import SwiftUI
 struct AwattarBasicEnergyChargePriceSetting: View {
     @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var currentSetting: CurrentSetting
+    @EnvironmentObject var textFieldSelected: TextFieldCurrentlySelected
     
     @State var baseEnergyPriceString = ""
-    
-    @Binding var textFieldCurrentlySelected: Bool
     
     struct SettingFooter: View {
         var body: some View {
@@ -44,7 +43,8 @@ struct AwattarBasicEnergyChargePriceSetting: View {
                 TextField("centPerKwh",
                           text: $baseEnergyPriceString.animation(),
                           onEditingChanged: { value in
-                              textFieldCurrentlySelected = value
+                              textFieldSelected.selected = value
+                              textFieldSelected.isFirstSelected = true
                           })
                     .keyboardType(.decimalPad)
                     .onChange(of: baseEnergyPriceString) { newValue in
@@ -85,8 +85,6 @@ struct AwattarTariffSelectionSetting: View {
     
     @State var awattarEnergyTariffIndex: Int = 0
     
-    @Binding var textFieldCurrentlySelected: Bool
-    
     var body: some View {
         CustomInsetGroupedListItem(
             header: Text("awattarTariff"),
@@ -99,7 +97,6 @@ struct AwattarTariffSelectionSetting: View {
                         Text(profile.name).tag(awattarData.profilesData.profiles.firstIndex(of: profile)!)
                     }
                 }
-//                .allowsHitTesting(false)
                 .onChange(of: awattarEnergyTariffIndex) { newValue in
                 }
                 .frame(maxWidth: .infinity)
@@ -118,8 +115,13 @@ struct AwattarTariffSelectionSetting: View {
                                 .bold()
                                 .font(.title3)
                         }
+                        .frame(maxWidth: .infinity)
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                                self.hideKeyboard()
+                        }
                     
-                        AwattarBasicEnergyChargePriceSetting(textFieldCurrentlySelected: $textFieldCurrentlySelected)
+                        AwattarBasicEnergyChargePriceSetting()
                     }
                 } else {
                     VStack(alignment: .center, spacing: 15) {
@@ -139,16 +141,17 @@ struct AwattarTariffSelectionSetting: View {
             .padding(.top, 10)
             .padding(.bottom, 10)
             .onAppear {
-                awattarEnergyTariffIndex = 0//Int(currentSetting.setting!.awattarTariffIndex)
+                awattarEnergyTariffIndex = Int(currentSetting.setting!.awattarTariffIndex)
             }
         }
+        .customBackgroundColor(Color(hue: 0.6667, saturation: 0.0202, brightness: 0.9886))
     }
 }
 
 struct AwattarTarifSelectionSettings_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            AwattarTariffSelectionSetting(textFieldCurrentlySelected: .constant(false))
+            AwattarTariffSelectionSetting()
                 .environmentObject(AwattarData())
                 .environmentObject(CurrentSetting(managedObjectContext: PersistenceManager().persistentContainer.viewContext))
         }

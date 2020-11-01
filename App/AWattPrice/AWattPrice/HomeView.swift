@@ -49,13 +49,14 @@ struct HomeView: View {
             .navigationTitle("elecPrice")
             .navigationBarTitleDisplayMode(.large)
             .fullScreenCover(isPresented: $showSettingsPage) {
-                SettingsPageView()
+                SettingsPageView().environmentObject(TextFieldCurrentlySelected())
             }
             .navigationBarItems(trailing:
                 Button(action: { showSettingsPage.toggle() }) {
                     Image(systemName: "gear")
                         .resizable()
-                        .frame(width: 20, height: 20)
+                        .frame(width: 22, height: 22)
+                        .padding(.trailing, 5)
                 })
         }
         .navigationViewStyle(StackNavigationViewStyle())

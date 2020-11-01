@@ -141,26 +141,29 @@ struct GetHelpView: View {
     
     var body: some View {
         CustomInsetGroupedListItem {
-            ZStack {
-                HStack {
-                    Image(systemName: "questionmark.circle")
-                        .font(.title2)
-                    
-                    Text("helpAndSuggestions")
-                        .font(.subheadline)
-                    
-                    Spacer()
-                }
-                .foregroundColor(colorScheme == .light ? Color.black : Color.white)
-                
+            HStack {
                 NavigationLink("", destination: HelpAndSuggestionView(), tag: 1, selection: $redirectToHelpAndSuggestionView)
+                
+                Image(systemName: "questionmark.circle")
+                    .font(.title2)
+                
+                Text("helpAndSuggestions")
+                    .font(.subheadline)
+                
+                Spacer()
+                
+                Image(systemName: "chevron.right")
+                    .font(.caption)
+                    .foregroundColor(Color.gray)
             }
+            .foregroundColor(colorScheme == .light ? Color.black : Color.white)
             .contentShape(Rectangle())
             .onTapGesture {
                 self.hideKeyboard()
                 redirectToHelpAndSuggestionView = 1
             }
         }
+        .customBackgroundColor(Color(hue: 0.6667, saturation: 0.0202, brightness: 0.9786))
     }
 }
 

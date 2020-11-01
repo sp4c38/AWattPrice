@@ -18,10 +18,14 @@ extension View {
 extension View {
     /// Applies modifiers only than to the content if a conditional evaluates to true
     @ViewBuilder func ifTrue<Content: View>(_ conditional: Bool, content: (Self) -> Content) -> some View {
-        if conditional {
-            content(self)
-        } else {
-            self
+        print(String(describing: conditional))
+        
+        return VStack {
+            if conditional {
+                content(self)
+            } else {
+                self
+            }
         }
     }
 }

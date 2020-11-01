@@ -26,7 +26,7 @@ class MailContent {
 
 class HelpMailContent: MailContent {
     init() {
-        let recipientEmails = "help-awattprice@space8.me"
+        let recipientEmails = "contact-awattprice@space8.me"
         let subject = "AWattPrice Help"
         let encodedSubject = subject.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!
     
@@ -59,7 +59,7 @@ class HelpMailContent: MailContent {
 
 class SuggestionMailContent: MailContent {
     init() {
-        let recipientEmails = "suggestion-awattprice@space8.me"
+        let recipientEmails = "contact-awattprice@space8.me"
         let subject = "AWattPrice Suggestion"
         let encodedSubject = subject.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!
         

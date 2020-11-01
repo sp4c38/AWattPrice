@@ -7,28 +7,6 @@
 
 import SwiftUI
 
-
-/// A input field for the length of the usage in the consumption comparison view.
-//struct LengthOfUsageInputField: View {
-//    @EnvironmentObject var cheapestHourManager: CheapestHourManager
-//        
-//    var body: some View {
-//        VStack(alignment: .leading, spacing: 5) {
-//            HStack(spacing: 5) {
-//                Text("lengthOfUsage")
-//                    .font(.title3)
-//                    .bold()
-//
-//                Spacer()
-//            }
-//
-//            TimeIntervalPicker()
-//                .transition(.opacity)
-//        }
-//        .frame(maxWidth: .infinity)
-//    }
-//}
-
 /// A view which allows the user to find the cheapest hours for using energy. It optionally can also show the final price which the user would have to pay to aWATTar if consuming the specified amount of energy.
 struct ConsumptionComparisonView: View {
     @Environment(\.colorScheme) var colorScheme

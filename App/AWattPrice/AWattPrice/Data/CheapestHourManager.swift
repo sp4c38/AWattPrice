@@ -86,7 +86,7 @@ class CheapestHourManager: ObservableObject {
             self.associatedPricePoints = associatedPricePoints
         }
         
-        /// Caluclates the average price from the energy price of all to this HourPair associated price points.
+        /// Caluclates the average price from the energy price of all to this HourPair associated price points without VAT included.
         func calculateAveragePrice() {
             var pricesTogether: Float = 0
             for pricePoint in self.associatedPricePoints {
@@ -94,12 +94,30 @@ class CheapestHourManager: ObservableObject {
             }
             self.averagePrice = pricesTogether / Float(associatedPricePoints.count)
         }
+        
+        /// Calculates the average price from the energy price of all to this HourPair associated price points with VAT included.
+        func countAllPricesTogether(withVat: Bool) -> Float {
+            var pricesTogether: Float = 0
+            for pricePoint in self.associatedPricePoints {
+                if withVat {
+                    pricesTogether += (pricePoint.marketprice * 1.16)
+                } else {
+                    pricesTogether += pricePoint.marketprice
+                }
+            }
+            return pricesTogether
+        }
     }
     
     func calculateHourlyPrice(cheapestHourPair: HourPair, currentSetting: CurrentSetting) -> HourPair {
         if currentSetting.setting!.awattarTariffIndex == 0 {
             let electricityPriceNoBonus = Float(cheapestHourPair.associatedPricePoints.count) * currentSetting.setting!.awattarBaseElectricityPrice
-            cheapestHourPair.hourlyEnergyCosts = electricityPriceNoBonus + cheapestHourPair.averagePrice
+            if currentSetting.setting!.pricesWithTaxIncluded {
+                cheapestHourPair.hourlyEnergyCosts = electricityPriceNoBonus + cheapestHourPair.countAllPricesTogether(withVat: true)
+                
+            } else {
+                cheapestHourPair.hourlyEnergyCosts = electricityPriceNoBonus + cheapestHourPair.countAllPricesTogether(withVat: false)
+            }
         }
         return cheapestHourPair
     }

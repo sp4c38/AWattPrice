@@ -12,6 +12,7 @@ struct ConsumptionResultView: View {
     @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var awattarData: AwattarData
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
+    @EnvironmentObject var currentSetting: CurrentSetting
     
     var dateFormatter: DateFormatter
     var todayDateFormatter: DateFormatter
@@ -64,19 +65,21 @@ struct ConsumptionResultView: View {
                 .padding(16)
                 
                 // The final price the user would need to pay
-                if cheapestHourManager.cheapestHoursForUsage!.energyCosts != nil {
-                    VStack(alignment: .center, spacing: 5) {
-                        Text("elecCosts")
-                        
-                        Text(currencyFormatter.string(from: NSNumber(value: (cheapestHourManager.cheapestHoursForUsage!.energyCosts!))) ?? "") // Convert to Euro
-                            .font(.headline)
+                if cheapestHourManager.cheapestHoursForUsage!.hourlyEnergyCosts != nil {
+                    if let hourlyCostString = currencyFormatter.string(from: NSNumber(value: cheapestHourManager.cheapestHoursForUsage!.hourlyEnergyCosts!)) {
+                        VStack(alignment: .center, spacing: 5) {
+                            Text("elecCosts")
+                            
+                            Text(hourlyCostString) // Convert to Euro
+                                .font(.headline)
+                        }
+                        .foregroundColor(Color.white)
+                        .shadow(radius: 4)
+                        .padding(5)
+                        .frame(maxWidth: .infinity)
+                        .background(colorScheme == .light ? Color(hue: 0.3815, saturation: 0.6605, brightness: 0.8431) : Color(hue: 0.3844, saturation: 0.6293, brightness: 0.6288))
+                        .padding(.top, 5)
                     }
-                    .foregroundColor(Color.white)
-                    .shadow(radius: 4)
-                    .padding(5)
-                    .frame(maxWidth: .infinity)
-                    .background(colorScheme == .light ? Color(hue: 0.3815, saturation: 0.6605, brightness: 0.8431) : Color(hue: 0.3844, saturation: 0.6293, brightness: 0.6288))
-                    .padding(.top, 5)
                 }
                 
                 // The clock which visually presents the results.
@@ -96,7 +99,7 @@ struct ConsumptionResultView: View {
             }
         }
         .onAppear {
-            cheapestHourManager.calculateCheapestHours(energyData: awattarData.energyData!)
+            cheapestHourManager.calculateCheapestHours(energyData: awattarData.energyData!, currentSetting: currentSetting)
         }
         .navigationTitle("result")
     }

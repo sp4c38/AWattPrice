@@ -9,20 +9,17 @@ import Foundation
 
 /// An object which manages the calculation of when the cheapest hours are for energy consumption
 class CheapestHourManager: ObservableObject {
+    // The power output of the electric device in kW
     @Published var powerOutputString = ""
     @Published var powerOutput: Double = 0
     
+    // The energy usage the electric device shall consume in kWh
     @Published var energyUsageString = ""
     @Published var energyUsage: Double = 0
     
     // Time range from startDate to endDate in which to find the cheapest hours
     @Published var startDate = Date()
     @Published var endDate = Date().addingTimeInterval(3600)
-    
-    // This value won't be changed. Its purpose is to serve as a reference point to dermiter the time range set in the time interval picker (lengthOfUsageDate).
-//    var relativeLengthOfUsageDate = Date(timeIntervalSince1970: 82800)
-    // A time selected with a time interval picker. It serves as second point to dermiter the time range for how long the electrical consumer shall operate.
-//    @Published var lengthOfUsageDate = Date(timeIntervalSince1970: 83100)
     
     @Published var timeOfUsage: Double = 0
     
@@ -35,16 +32,6 @@ class CheapestHourManager: ObservableObject {
         self.startDate = Calendar.current.date(bySettingHour: 20, minute: 0, second: 0, of: Date())!
         let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: Date())!
         self.endDate = Calendar.current.date(bySettingHour: 7, minute: 0, second: 0, of: tomorrow)!
-    }
-    
-    /// Checks that the interval selected by the Interval Picker is not bigger than the time range between the start date and end date specified by the user. If the interval is bigger than the end date is adjusted accordingly.
-    func checkIntervalFitsInRange() {
-//        let startEndDateInterval = abs(startDate.timeIntervalSince(endDate))
-//        let timeOfUsageInterval = abs(relativeLengthOfUsageDate.timeIntervalSince(lengthOfUsageDate))
-//
-//        if startEndDateInterval < timeOfUsageInterval {
-//            endDate.addTimeInterval(timeOfUsageInterval - startEndDateInterval)
-//        }
     }
     
     /// Sets the values after the user entered them. This includes calculating time intervals and formatting raw text strings to floats. If errors occur because of wrong input of the user and values cannot be set correctly a list is returned with error values.
@@ -92,9 +79,8 @@ class CheapestHourManager: ObservableObject {
     class HourPair {
         var averagePrice: Float = 0
         var associatedPricePoints: [EnergyPricePoint]
-//        var associatedPricePointsSorted = [[EnergyPricePoint]]()
         /// Final energy cost which is calculated with a certain power (kW) a electrical consumer uses and the time of the usage.
-        var energyCosts: Float? = nil
+        var hourlyEnergyCosts: Float? = nil
         
         init(associatedPricePoints: [EnergyPricePoint]) {
             self.associatedPricePoints = associatedPricePoints
@@ -108,32 +94,14 @@ class CheapestHourManager: ObservableObject {
             }
             self.averagePrice = pricesTogether / Float(associatedPricePoints.count)
         }
-        
-//        func sortAssociatedPricePoints() {
-//            var indexCounter = -1
-//            var currentNextMidnight: Date? = nil
-//
-//            for pricePoint in self.associatedPricePoints {
-//                let pricePointStartDate = Date(timeIntervalSince1970: TimeInterval(pricePoint.startTimestamp))
-//
-//                if currentNextMidnight == nil || pricePointStartDate >= currentNextMidnight! {
-//                    currentNextMidnight = Calendar.current.startOfDay(for: pricePointStartDate.addingTimeInterval(86400))
-//                    indexCounter += 1
-//                }
-//
-//                if pricePointStartDate < currentNextMidnight! {
-//                    if indexCounter > (self.associatedPricePointsSorted.count - 1) {
-//                        associatedPricePointsSorted.append([pricePoint])
-//                    } else {
-//                        self.associatedPricePointsSorted[indexCounter].append(pricePoint)
-//                    }
-//                }
-//            }
-//        }
     }
     
-    func calculateHourlyPrice() {
-        
+    func calculateHourlyPrice(cheapestHourPair: HourPair, currentSetting: CurrentSetting) -> HourPair {
+        if currentSetting.setting!.awattarTariffIndex == 0 {
+            let electricityPriceNoBonus = Float(cheapestHourPair.associatedPricePoints.count) * currentSetting.setting!.awattarBaseElectricityPrice
+            cheapestHourPair.hourlyEnergyCosts = electricityPriceNoBonus + cheapestHourPair.averagePrice
+        }
+        return cheapestHourPair
     }
     
     /**
@@ -141,7 +109,7 @@ class CheapestHourManager: ObservableObject {
      - Returns: Doesn't return value directly. Instead sets cheapestHoursForUsage of CheapestHourManager to the result HourPair.
      - Parameter energyData: Current energy data (data downloaded from the server)
      */
-    func calculateCheapestHours(energyData: EnergyData) {
+    func calculateCheapestHours(energyData: EnergyData, currentSetting: CurrentSetting) {
         /*
          Description of how the cheapest hours are found:
             1. The algorithm firstly creates hour pairs.
@@ -200,7 +168,7 @@ class CheapestHourManager: ObservableObject {
             if cheapestHourPairIndex != nil {
                 // A index was found for the cheapest HourPair
                 
-                let cheapestPair = allPairs[cheapestHourPairIndex!]
+                var cheapestPair = allPairs[cheapestHourPairIndex!]
                 let maxAssociatedPricePointsIndex = cheapestPair.associatedPricePoints.count - 1
 
                 if cheapestPair.associatedPricePoints[0].marketprice > cheapestPair.associatedPricePoints[maxAssociatedPricePointsIndex].marketprice {
@@ -212,6 +180,8 @@ class CheapestHourManager: ObservableObject {
                 } else {
                     cheapestPair.associatedPricePoints[maxAssociatedPricePointsIndex].endTimestamp -= minuteDifferenceInSeconds
                 }
+                
+                cheapestPair = self.calculateHourlyPrice(cheapestHourPair: cheapestPair, currentSetting: currentSetting)
             }
             
             DispatchQueue.main.async {

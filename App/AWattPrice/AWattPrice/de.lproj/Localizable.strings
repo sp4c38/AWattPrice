@@ -26,6 +26,8 @@
 
 // Cheapest Price Result page localizations
 "elecCosts" = "Stromkosten";
+"priceWithVatNote" = "(Preis mit MwSt., änderbar in Einstellungen)";
+"priceWithoutVatNote" = "(Preis ohne MwSt., änderbar in Einstellungen)";
 
 // Settings Page and Help & Suggestions page localizations
 "settings" = "Einstellungen";

@@ -26,6 +26,8 @@
 
 // Cheapest Price Result page localizations
 "elecCosts" = "Electricity costs";
+"priceWithVatNote" = "(price with VAT, changeable in settings)";
+"priceWithoutVatNote" = "(price without VAT, changeable in settings)";
 
 // Settings Page and Help & Suggestions page localizations
 "settings" = "Settings";

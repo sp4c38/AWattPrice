@@ -62,7 +62,8 @@ struct ConsumptionResultView: View {
                         .foregroundColor(Color.red)
                 }
                 .font(.callout)
-                .padding(16)
+                .padding([.leading, .trailing], 16)
+                .padding([.top, .bottom], 5)
                 
                 // The final price the user would need to pay
                 if cheapestHourManager.cheapestHoursForUsage!.hourlyEnergyCosts != nil {
@@ -70,8 +71,17 @@ struct ConsumptionResultView: View {
                         VStack(alignment: .center, spacing: 5) {
                             Text("elecCosts")
                             
-                            Text(hourlyCostString) // Convert to Euro
-                                .font(.headline)
+                            Text(hourlyCostString)
+                                .bold()
+                                .font(.title3)
+                            
+                            if currentSetting.setting!.pricesWithTaxIncluded {
+                                Text("priceWithVatNote")
+                                    .font(.caption)
+                            } else {
+                                Text("priceWithoutVatNote")
+                                    .font(.caption)
+                            }
                         }
                         .foregroundColor(Color.white)
                         .shadow(radius: 4)

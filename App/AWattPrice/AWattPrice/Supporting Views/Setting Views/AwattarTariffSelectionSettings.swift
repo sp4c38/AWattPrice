@@ -98,6 +98,7 @@ struct AwattarTariffSelectionSetting: View {
                     }
                 }
                 .onChange(of: awattarEnergyTariffIndex) { newValue in
+                    currentSetting.changeAwattarTariffIndex(newTariffIndex: Int16(newValue))
                 }
                 .frame(maxWidth: .infinity)
                 .pickerStyle(SegmentedPickerStyle())

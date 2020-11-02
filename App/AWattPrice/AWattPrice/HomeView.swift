@@ -60,6 +60,9 @@ struct HomeView: View {
                 })
         }
         .navigationViewStyle(StackNavigationViewStyle())
+        .onAppear {
+            currentSetting.validateTariffAndEnergyPriceSet()
+        }
     }
 }
 

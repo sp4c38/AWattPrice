@@ -16,7 +16,7 @@ func getSetting(managedObjectContext: NSManagedObjectContext, fetchRequestResult
     } else if fetchRequestResults.count == 0 {
         // No Settings object is yet created. Create a new Settings object with default values and save it to the persistent store
         let newSetting = Setting(context: managedObjectContext)
-        newSetting.awattarTariffIndex = 0
+        newSetting.awattarTariffIndex = -1
         newSetting.pricesWithTaxIncluded = true
         newSetting.awattarBaseElectricityPrice = 0
         newSetting.splashScreensFinished = false
@@ -81,9 +81,28 @@ class CurrentSetting: NSObject, NSFetchedResultsControllerDelegate, ObservableOb
         // The current up-to-date Setting object. This variable is nil if any error occurred retrieving the Setting object.
         // It shouldn't happen that no Setting object is found because getSetting handles the case that there isn't any Setting object yet stored (which always happens on the first ever launch of the app).
         
-        return getSetting(managedObjectContext: self.managedObjectContext, fetchRequestResults: settingController.fetchedObjects ?? []) ?? nil
+        let currentSetting = getSetting(managedObjectContext: self.managedObjectContext, fetchRequestResults: settingController.fetchedObjects ?? []) ?? nil
+        
+        return currentSetting
     }
     
+    /// This will check that when a tariff is selected that also a non-empty electricity price was set
+    func validateTariffAndEnergyPriceSet() {
+        if self.setting != nil {
+            if self.setting!.awattarTariffIndex > -1 {
+                if self.setting!.awattarBaseElectricityPrice == 0 {
+                    self.setting!.awattarTariffIndex = -1
+                    
+                    
+                    do {
+                        try self.managedObjectContext.save()
+                    } catch {
+                        print("Tried to change the awattar tariff index in Setting because no base electricity was given. This failed.")
+                    }
+                }
+            }
+        }
+    }
     
     /**
     Changes the state of if the splash screen is finished to the specified new state.

@@ -46,10 +46,12 @@ struct SettingsPageView: View {
     }
     
     struct DoneNavigationBarItem: View {
+        @EnvironmentObject var currentSetting: CurrentSetting
         @Binding var presentationMode: PresentationMode
         
         var body: some View {
             Button(action: {
+                currentSetting.validateTariffAndEnergyPriceSet()
                 presentationMode.dismiss()
             }) {
                 HStack {

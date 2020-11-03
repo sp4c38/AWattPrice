@@ -44,7 +44,6 @@ struct ConsumptionComparisonView: View {
                             EnergyUsageInputField(errorValues: fieldsEnteredErrorValues)
                             TimeRangeInputField(errorValues: fieldsEnteredErrorValues)
                         }
-                        .animation(.easeInOut)
                         .padding(.top, 20)
                         .padding([.leading, .trailing], 20)
                         .padding(.bottom, 10)

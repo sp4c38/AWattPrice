@@ -302,6 +302,7 @@ struct EnergyPriceGraph: View {
                 }
             }
         }
+        .ignoresSafeArea(.keyboard) // Ignore the keyboard. In the past without this this had led the graph to be very squeezed together
         .contentShape(Rectangle())
         .gesture(graphDragGesture)
     }

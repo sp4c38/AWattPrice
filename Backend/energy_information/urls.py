@@ -1,7 +1,7 @@
 from django.urls import path
 
-from .views import get_all_data
+from .awattar.get_data import get_data
 
 urlpatterns = [
-    path("", get_all_data),
+    path("", get_data)
 ]

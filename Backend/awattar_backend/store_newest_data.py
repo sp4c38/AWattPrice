@@ -1,14 +1,19 @@
-# Download and parse data from the different data sources
-
-from django.conf import settings
-
 import arrow
 import configparser
 import json
+import os
 import requests
 
-def parse_awattar_energy_prices(config):
-    # Downloads and parses the energy prices
+from pathlib import Path
+
+def main():
+    base_dir = Path(__file__).resolve().parent.parent
+
+    config_file_path = base_dir.joinpath("energy_information", "awattar", "data_config.ini").as_posix()
+    config = configparser.ConfigParser()
+    config.read(config_file_path)
+
+    # Downloads and stores the newest energy prices
 
     # Officially electricity prices for the next day are available from 14 o'clock on of the current day
     # but often they can also be retrieved a little bit earlier
@@ -36,24 +41,14 @@ def parse_awattar_energy_prices(config):
                     price["end_timestamp"] = int(price["end_timestamp"] / 1000)
                     price["marketprice"] = price["marketprice"] * 100 * 0.001 # Convert MWh to kWh
                     awattar_data["prices"].append(price)
-
-            return awattar_data
         except:
             print("Exception parsing JSON data returned from awattar.")
-            return awattar_data
     else:
         print(f"Error downloading prices data from awattar. Request returned with status code: {data_request.status_code}")
-        return awattar_data
 
-def main():
-    config_file_path = settings.BASE_DIR.joinpath("energy_information", "awattar", "data_config.ini").as_posix()
-    config = configparser.ConfigParser()
-    config.read(config_file_path)
+    store_file_path = os.path.expanduser(config["store"]["store_file_path"])
+    with open(store_file_path, "w") as fp:
+        json.dump(awattar_data, fp)
 
-    # Download prices for today and for tomorrow (if there are already prices for tomorrow) for tomorrow day from the aWATTar API
-    awattar_data = parse_awattar_energy_prices(config)
-
-    return awattar_data
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

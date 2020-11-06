@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'fain*)c8x&$20ua3pr392rhoa**b%vl7)gdlrdjqw=3_$r@car'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ["awattprice.space8.me", "www.awattprice.space8.me", "127.0.0.1"]
 

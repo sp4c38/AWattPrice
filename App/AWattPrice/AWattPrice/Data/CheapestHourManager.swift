@@ -28,10 +28,17 @@ class CheapestHourManager: ObservableObject {
     /// A variable set to true if calculations have been performed but no cheapest hours were found.
     @Published var errorOccurredFindingCheapestHours = false
     
+    /// Sets the selected time interval to tonight from 20pm first day to 7am next day
     func setTimeIntervalThisNight() {
         self.startDate = Calendar.current.date(bySettingHour: 20, minute: 0, second: 0, of: Date())!
         let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: Date())!
         self.endDate = Calendar.current.date(bySettingHour: 7, minute: 0, second: 0, of: tomorrow)!
+    }
+    
+    /// Sets the selected time interval to tonight from 20pm first day to 7am next day
+    func setTimeIntervalNextThreeHours() {
+        self.startDate = Date()
+        self.endDate = Calendar.current.date(byAdding: .hour, value: 3, to: Date())!
     }
     
     /// Sets the values after the user entered them. This includes calculating time intervals and formatting raw text strings to floats. If errors occur because of wrong input of the user and values cannot be set correctly a list is returned with error values.
@@ -41,7 +48,7 @@ class CheapestHourManager: ObservableObject {
     ///     - [2] powerOutputString contains wrong characters
     ///     - [3] energyUsageString is empty
     ///     - [4] energyUsageString contains wrong characters
-    
+    ///     - [5] the time which is needed with current power output and energy usage is smaller than the time range specified
     func setValues() -> [Int] {
         self.cheapestHoursForUsage = nil
         var errorValues = [Int]()
@@ -67,9 +74,18 @@ class CheapestHourManager: ObservableObject {
         }
 
         if !(errorValues.count > 0) {
-            errorValues.append(0)
+            let timeOfUsageInSeconds = (self.energyUsage / self.powerOutput) * 60 * 60
+            let timeRangeMax = abs(self.startDate.timeIntervalSince(endDate))
             
-            self.timeOfUsage = self.energyUsage / self.powerOutput
+            if (timeOfUsageInSeconds) <= timeRangeMax {
+                self.timeOfUsage = timeOfUsageInSeconds / 60 / 60 // Convert time of usage back to hours
+            } else {
+                errorValues.append(5)
+            }
+        }
+
+        if !(errorValues.count > 0) {
+            errorValues.append(0)
         }
         
         return errorValues
@@ -140,7 +156,6 @@ class CheapestHourManager: ObservableObject {
         
         DispatchQueue.global(qos: .userInitiated).async {
             let now = Date()
-            
             let nextRoundedUpHour = Int(self.timeOfUsage.rounded(.up))
 
             // Create all HourPair's for later comparison

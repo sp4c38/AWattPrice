@@ -68,13 +68,32 @@ struct TimeRangeInputField: View {
                 )
                 .cornerRadius(7)
                 
-                Button(action: {
-                    cheapestHourManager.setTimeIntervalThisNight()
-                }) {
-                    Text("tonight")
-                        .bold()
+                if errorValues.contains(5) {
+                    let currentInterval = cheapestHourManager.
+                    
+                    Text("Please adjust the time range to fit with your power and total consumption")
+                        .font(.caption)
+                        .foregroundColor(Color.red)
                 }
-                .buttonStyle(TimeRangeButtonStyle())
+                
+                HStack {
+                    Button(action: {
+                        cheapestHourManager.setTimeIntervalThisNight()
+                    }) {
+                        Text("tonight")
+                            .bold()
+                    }
+                    .buttonStyle(TimeRangeButtonStyle())
+                    
+                    Button(action: {
+                        cheapestHourManager.setTimeIntervalNextThreeHours()
+                    }) {
+                        Text("Next 3 hours")
+                            .bold()
+                    }
+                    .buttonStyle(TimeRangeButtonStyle())
+                }
+                .padding(.top, 3)
             }
             .padding([.leading, .trailing], 3)
         }

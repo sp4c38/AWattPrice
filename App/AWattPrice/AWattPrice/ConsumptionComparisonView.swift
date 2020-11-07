@@ -47,6 +47,7 @@ struct ConsumptionComparisonView: View {
                         .padding(.top, 20)
                         .padding([.leading, .trailing], 20)
                         .padding(.bottom, 10)
+                        .animation(.easeInOut)
                     }
 
 

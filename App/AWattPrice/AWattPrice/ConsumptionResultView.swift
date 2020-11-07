@@ -88,7 +88,7 @@ struct ConsumptionResultView: View {
                         .padding(5)
                         .frame(maxWidth: .infinity)
                         .background(colorScheme == .light ? Color(hue: 0.3815, saturation: 0.6605, brightness: 0.8431) : Color(hue: 0.3844, saturation: 0.6293, brightness: 0.6288))
-                        .padding(.top, 5)
+                        .padding([.top, .bottom], 5)
                     }
                 }
                 

@@ -7,13 +7,13 @@ import requests
 from pathlib import Path
 
 def main():
-    base_dir = Path(__file__).resolve().parent.parent
+    # Downloads and stores the newest energy prices
+
+    base_dir = Path(__file__).resolve().parent
 
     config_file_path = base_dir.joinpath("energy_information", "awattar", "data_config.ini").as_posix()
     config = configparser.ConfigParser()
     config.read(config_file_path)
-
-    # Downloads and stores the newest energy prices
 
     # Officially electricity prices for the next day are available from 14 o'clock on of the current day
     # but often they can also be retrieved a little bit earlier

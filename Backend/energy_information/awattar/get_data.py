@@ -8,6 +8,8 @@ import json
 import os
 
 def get_data(request):
+    # Gets the current cached data
+
     config_file_path = settings.BASE_DIR.joinpath("energy_information", "awattar", "data_config.ini").as_posix()
     config = configparser.ConfigParser()
     config.read(config_file_path)

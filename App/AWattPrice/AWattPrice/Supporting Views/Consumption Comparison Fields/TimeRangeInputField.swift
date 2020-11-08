@@ -15,6 +15,7 @@ struct TimeRangeInputField: View {
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
     
     @State var inputDateRange: ClosedRange<Date> = Date()...Date()
+    @State var setOnlyOnce: Bool = true // Makes sure that the inputDateRange is set only once to default in onAppear
     
     let errorValues: [Int]
     let timeIntervalFormatter: NumberFormatter
@@ -122,12 +123,15 @@ struct TimeRangeInputField: View {
         }
         .frame(maxWidth: .infinity)
         .onAppear {
-            let maxHourIndex = awattarData.energyData!.prices.count - 1
+            if setOnlyOnce {
+                let maxHourIndex = awattarData.energyData!.prices.count - 1
 
-            if awattarData.energyData!.prices.count > 0 {
-                let inputDateRangeStartPoint = Date(timeIntervalSince1970: TimeInterval(awattarData.energyData!.prices[0].startTimestamp + 1))
-                cheapestHourManager.endDate = Date(timeIntervalSince1970: TimeInterval(awattarData.energyData!.prices[maxHourIndex].endTimestamp - 1))
-                inputDateRange = inputDateRangeStartPoint...cheapestHourManager.endDate
+                if awattarData.energyData!.prices.count > 0 {
+                    let inputDateRangeStartPoint = Date(timeIntervalSince1970: TimeInterval(awattarData.energyData!.prices[0].startTimestamp + 1))
+                    cheapestHourManager.endDate = Date(timeIntervalSince1970: TimeInterval(awattarData.energyData!.prices[maxHourIndex].endTimestamp - 1))
+                    inputDateRange = inputDateRangeStartPoint...cheapestHourManager.endDate
+                }
+                setOnlyOnce = false
             }
         }
     }

@@ -37,7 +37,7 @@
 "baseElectricityPriceHint" = "Sie können Ihren Grundarbeitspreis für Ihre Region auf der aWATTar Webseite finden.";
 "toAwattarWebsite" = "Zur aWATTar Webseite";
 "awattarTariff" = "Awattar Tarif";
-"awattarTariffSelectionTip" = "Wenn Sie ein aWATTar Kunde sind und den HOURLY Tarif haben, können Sie diesen hier auswählen. Dies wird Ihnen im günstigsten Zeit Finder den finalen Preis anzeigen, den sie bezahlen würden.";
+"awattarTariffSelectionTip" = "Wenn Sie ein aWATTar Kunde sind und den HOURLY Tarif haben, können Sie diesen hier auswählen. Dadurch können Sie auf der \"Günstigste Zeit\" Seite sehen, wieviel sie bezahlen würden.";
 "helpAndSuggestions" = "Hilfe & Vorschläge";
 "version" = "Version";
 "help" = "Hilfe";

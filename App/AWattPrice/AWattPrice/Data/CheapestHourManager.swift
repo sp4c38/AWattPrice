@@ -156,7 +156,6 @@ class CheapestHourManager: ObservableObject {
          */
         
         DispatchQueue.global(qos: .userInitiated).async {
-            let now = Date()
             let nextRoundedUpHour = Int(self.timeOfUsage.rounded(.up))
 
             // Create all HourPair's for later comparison
@@ -167,7 +166,14 @@ class CheapestHourManager: ObservableObject {
                     
                     let maxHourThisPairEndDate = Date(timeIntervalSince1970: TimeInterval(energyData.prices[hourIndex + (nextRoundedUpHour - 1)].endTimestamp))
                     
-                    if hourStartDate >= now && hourStartDate >= self.startDate && maxHourThisPairEndDate <= self.endDate {
+                    print(hourStartDate)
+                    print(self.startDate)
+                    print(maxHourThisPairEndDate)
+                    print(self.endDate)
+                    
+                    print(hourStartDate >= self.startDate)
+                    print(maxHourThisPairEndDate <= self.endDate)
+                    if hourStartDate >= self.startDate && maxHourThisPairEndDate <= self.endDate {
                         let newPairNode = HourPair(associatedPricePoints: [energyData.prices[hourIndex]])
                         
                         for nextHourIndex in 1..<nextRoundedUpHour {
@@ -221,6 +227,7 @@ class CheapestHourManager: ObservableObject {
             DispatchQueue.main.async {
                 if cheapestHourPairIndex != nil {
                     self.cheapestHoursForUsage = allPairs[cheapestHourPairIndex!]
+                } else {
                     self.errorOccurredFindingCheapestHours = true
                 }
             }

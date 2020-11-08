@@ -38,44 +38,46 @@ struct ConsumptionComparisonView: View {
         NavigationView {
             if awattarData.energyData != nil && currentSetting.setting != nil {
                 ScrollView {
-                    VStack(alignment: .center, spacing: 20) {
-                        PowerOutputInputField(errorValues: fieldsEnteredErrorValues)
-                        EnergyUsageInputField(errorValues: fieldsEnteredErrorValues)
-                        TimeRangeInputField(errorValues: fieldsEnteredErrorValues)
-                    }
-                    .animation(.easeInOut)
-                    .padding(.top, 20)
-                    .padding([.leading, .trailing], 20)
-                    .padding(.bottom, 10)
-
-                    Spacer()
-                    
-                    NavigationLink(destination: ConsumptionResultView(), tag: 1, selection: $redirectToComparisonResults) {
-                    }
-
-                    // Button to perform calculations to find cheapest hours and to redirect to the result view to show the results calculated
-                    Button(action: {
-                        fieldsEnteredErrorValues = cheapestHourManager.setValues()
-                        if fieldsEnteredErrorValues.contains(0) {
-                            // All requirements are satisfied
-                            redirectToComparisonResults = 1
-                            self.hideKeyboard()
+                    VStack(spacing: 0) {
+                        VStack(alignment: .center, spacing: 20) {
+                            PowerOutputInputField(errorValues: fieldsEnteredErrorValues)
+                            EnergyUsageInputField(errorValues: fieldsEnteredErrorValues)
+                            TimeRangeInputField(errorValues: fieldsEnteredErrorValues)
                         }
-                    }) {
-                        HStack {
-                            Text("result")
-                            Image(systemName: "chevron.right")
-                                .foregroundColor(Color.white)
-                                .padding(.leading, 10)
+                        .animation(.easeInOut)
+                        .padding(.top, 20)
+                        .padding([.leading, .trailing], 20)
+                        .padding(.bottom, 10)
+
+                        Spacer()
+                        
+                        NavigationLink(destination: ConsumptionResultView(), tag: 1, selection: $redirectToComparisonResults) {
                         }
+
+                        // Button to perform calculations to find cheapest hours and to redirect to the result view to show the results calculated
+                        Button(action: {
+                            fieldsEnteredErrorValues = cheapestHourManager.setValues()
+                            if fieldsEnteredErrorValues.contains(0) {
+                                // All requirements are satisfied
+                                redirectToComparisonResults = 1
+                                self.hideKeyboard()
+                            }
+                        }) {
+                            HStack {
+                                Text("result")
+                                Image(systemName: "chevron.right")
+                                    .foregroundColor(Color.white)
+                                    .padding(.leading, 10)
+                            }
+                        }
+                        .buttonStyle(ActionButtonStyle())
+                        .padding([.leading, .trailing, .bottom], 16)
+                        .padding(.top, 10)
                     }
-                    .buttonStyle(ActionButtonStyle())
-                    .padding([.leading, .trailing, .bottom], 16)
-                    .padding(.top, 10)
-                }
-                .navigationTitle("cheapestPrice")
-                .onTapGesture {
-                    self.hideKeyboard()
+                    .navigationTitle("cheapestPrice")
+                    .onTapGesture {
+                        self.hideKeyboard()
+                    }
                 }
             } else {
                 if awattarData.severeDataRetrievalError == true {
@@ -99,11 +101,5 @@ struct ConsumptionComparatorView_Previews: PreviewProvider {
             .environmentObject(CheapestHourManager())
             .preferredColorScheme(.dark)
             .padding()
-        
-//        ConsumptionComparisonView()
-//            .environmentObject(CheapestHourManager())
-//            .environmentObject(AwattarData())
-//            .environmentObject(CurrentSetting(managedObjectContext: PersistenceManager().persistentContainer.viewContext))
-//            .preferredColorScheme(.dark)
     }
 }

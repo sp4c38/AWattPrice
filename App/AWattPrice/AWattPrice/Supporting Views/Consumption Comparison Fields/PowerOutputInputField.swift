@@ -30,7 +30,7 @@ struct PowerOutputInputField: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
-                Text("Power")
+                Text("power")
                     .font(.title3)
                     .bold()
                 Spacer()

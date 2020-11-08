@@ -20,9 +20,11 @@
 // Cheapest Price page localizations
 "cheapestPrice" = "Günstigste Zeit";
 "emptyFieldError" = "Bitte füllen Sie dieses Feld aus";
-"wrongInputError" = "Dieses Feld darf nur Zahlen und \",\" oder \".\" enthalten.";
+"wrongInputError" = "Dieses Feld darf nur Zahlen und , oder . enthalten.";
 "totalConsumption" = "Gesamtverbrauch";
 "timeRange" = "Zeitfenster";
+"wrongTimeRangeError" = "Bei dieser eingestellten Leistung und Gesamtverbrauch ist ein Mindestzeitfenster von %@ Stunden erforderlich.";
+"nextThreeHours" = "Nächste 3 Stunden";
 
 // Cheapest Price Result page localizations
 "elecCosts" = "Stromkosten";

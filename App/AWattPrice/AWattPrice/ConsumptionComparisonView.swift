@@ -36,21 +36,20 @@ struct ConsumptionComparisonView: View {
     
     var body: some View {
         NavigationView {
-            VStack {
-                if awattarData.energyData != nil && currentSetting.setting != nil {
-                    ScrollView {
-                        VStack(alignment: .center, spacing: 20) {
-                            PowerOutputInputField(errorValues: fieldsEnteredErrorValues)
-                            EnergyUsageInputField(errorValues: fieldsEnteredErrorValues)
-                            TimeRangeInputField(errorValues: fieldsEnteredErrorValues)
-                        }
-                        .padding(.top, 20)
-                        .padding([.leading, .trailing], 20)
-                        .padding(.bottom, 10)
-                        .animation(.easeInOut)
+            if awattarData.energyData != nil && currentSetting.setting != nil {
+                ScrollView {
+                    VStack(alignment: .center, spacing: 20) {
+                        PowerOutputInputField(errorValues: fieldsEnteredErrorValues)
+                        EnergyUsageInputField(errorValues: fieldsEnteredErrorValues)
+                        TimeRangeInputField(errorValues: fieldsEnteredErrorValues)
                     }
+                    .animation(.easeInOut)
+                    .padding(.top, 20)
+                    .padding([.leading, .trailing], 20)
+                    .padding(.bottom, 10)
 
-
+                    Spacer()
+                    
                     NavigationLink(destination: ConsumptionResultView(), tag: 1, selection: $redirectToComparisonResults) {
                     }
 
@@ -73,21 +72,21 @@ struct ConsumptionComparisonView: View {
                     .buttonStyle(ActionButtonStyle())
                     .padding([.leading, .trailing, .bottom], 16)
                     .padding(.top, 10)
-                } else {
-                    if awattarData.severeDataRetrievalError == true {
-                        SevereDataRetrievalError()
-                            .transition(.opacity)
-                    } else if awattarData.networkConnectionError == true {
-                        NetworkConnectionErrorView()
-                            .transition(.opacity)
-                    } else {
-                        LoadingView()
-                    }
                 }
-            }
-            .navigationTitle("cheapestPrice")
-            .onTapGesture {
-                self.hideKeyboard()
+                .navigationTitle("cheapestPrice")
+                .onTapGesture {
+                    self.hideKeyboard()
+                }
+            } else {
+                if awattarData.severeDataRetrievalError == true {
+                    SevereDataRetrievalError()
+                        .transition(.opacity)
+                } else if awattarData.networkConnectionError == true {
+                    NetworkConnectionErrorView()
+                        .transition(.opacity)
+                } else {
+                    LoadingView()
+                }
             }
         }
         .navigationViewStyle(StackNavigationViewStyle())

@@ -36,14 +36,6 @@ struct TabNavigatorView: View {
             if currentSetting.setting != nil {
                 if currentSetting.setting!.splashScreensFinished == true {
                     TabView(selection: $tabSelection) {
-//                        SettingsPageView()
-//                            .tabItem {
-//                                Image(systemName: "gear")
-//                                Text("settings")
-//                            }
-//                            .tag(0)
-
-
                         HomeView() // HomeView is the selection
                             .tabItem {
                                 Image(systemName: "bolt")

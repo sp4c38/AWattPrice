@@ -80,6 +80,7 @@ class CheapestHourManager: ObservableObject {
             if (timeOfUsageInSeconds) <= timeRangeMax {
                 self.timeOfUsage = timeOfUsageInSeconds / 60 / 60 // Convert time of usage back to hours
             } else {
+                self.timeOfUsage = timeOfUsageInSeconds / 60 / 60 // Also set the time of usage even if an error occurres to help to deliver a better error message
                 errorValues.append(5)
             }
         }

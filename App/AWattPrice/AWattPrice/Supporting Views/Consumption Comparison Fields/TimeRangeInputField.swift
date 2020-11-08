@@ -14,12 +14,21 @@ struct TimeRangeInputField: View {
     @EnvironmentObject var awattarData: AwattarData
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
     
-    let errorValues: [Int]
-    
     @State var inputDateRange: ClosedRange<Date> = Date()...Date()
     
+    let errorValues: [Int]
+    let timeIntervalFormatter: NumberFormatter
+    
+    init(errorValues: [Int]) {
+        self.errorValues = errorValues
+        
+        timeIntervalFormatter = NumberFormatter()
+        timeIntervalFormatter.numberStyle = .decimal
+        timeIntervalFormatter.maximumFractionDigits = 2
+    }
+    
     var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
+        VStack(alignment: .leading, spacing: 0) {
             HStack {
                 Text("timeRange")
                     .font(.title3)
@@ -47,6 +56,13 @@ struct TimeRangeInputField: View {
                         Color(hue: 0.0000, saturation: 0.0000, brightness: 0.1429)
                 )
                 .cornerRadius(7)
+                .ifTrue(errorValues.contains(5)) { content in
+                    content
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 7)
+                                .stroke(Color.red, lineWidth: 2)
+                        )
+                }
  
                 HStack {
                     Text("to")
@@ -67,35 +83,42 @@ struct TimeRangeInputField: View {
                         Color(hue: 0.0000, saturation: 0.0000, brightness: 0.1429)
                 )
                 .cornerRadius(7)
+                .ifTrue(errorValues.contains(5)) { content in
+                    content
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 7)
+                                .stroke(Color.red, lineWidth: 2)
+                        )
+                }
                 
                 if errorValues.contains(5) {
-                    let currentInterval = cheapestHourManager.
+                    let minTimeRangeNeeded = (cheapestHourManager.timeOfUsage * 100).rounded(.up) / 100
                     
-                    Text("Please adjust the time range to fit with your power and total consumption")
+                    Text(String(format: "wrongTimeRangeError".localized(), timeIntervalFormatter.string(from: NSNumber(value: minTimeRangeNeeded))!))
                         .font(.caption)
                         .foregroundColor(Color.red)
                 }
-                
-                HStack {
-                    Button(action: {
-                        cheapestHourManager.setTimeIntervalThisNight()
-                    }) {
-                        Text("tonight")
-                            .bold()
-                    }
-                    .buttonStyle(TimeRangeButtonStyle())
-                    
-                    Button(action: {
-                        cheapestHourManager.setTimeIntervalNextThreeHours()
-                    }) {
-                        Text("Next 3 hours")
-                            .bold()
-                    }
-                    .buttonStyle(TimeRangeButtonStyle())
-                }
-                .padding(.top, 3)
             }
-            .padding([.leading, .trailing], 3)
+            .padding([.top, .bottom], 20)
+            
+            HStack {
+                Button(action: {
+                    cheapestHourManager.setTimeIntervalThisNight()
+                }) {
+                    Text("tonight")
+                        .bold()
+                }
+                .buttonStyle(TimeRangeButtonStyle())
+                
+                Button(action: {
+                    cheapestHourManager.setTimeIntervalNextThreeHours()
+                }) {
+                    Text("nextThreeHours")
+                        .bold()
+                }
+                .buttonStyle(TimeRangeButtonStyle())
+            }
+            .padding(.top, 3)
         }
         .frame(maxWidth: .infinity)
         .onAppear {

@@ -20,9 +20,11 @@
 // Cheapest Price page localizations
 "cheapestPrice" = "Cheapest Time";
 "emptyFieldError" = "Please fill out this field";
-"wrongInputError" = "This field may only contain numbers and \",\" or \".\"";
+"wrongInputError" = "This field may only contain numbers and , or .";
 "totalConsumption" = "Total consumption";
 "timeRange" = "Time range";
+"wrongTimeRangeError" = "With this power output and this total consumption set, a minimum time range of %@ hours is required.";
+"nextThreeHours" = "Next 3 hours";
 
 // Cheapest Price Result page localizations
 "elecCosts" = "Electricity costs";

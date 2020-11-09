@@ -163,14 +163,17 @@ class CheapestHourManager: ObservableObject {
             var startTimeDifference = 0
             var endTimeDifference = 0
             
+            print(startTime.timeIntervalSince1970)
+            print(endTime.timeIntervalSince1970)
+            
             if Calendar.current.component(.minute, from: startTime) != 0 {
                 startTimeDifference = Calendar.current.component(.minute, from: startTime)
                 startTime = Calendar.current.date(bySettingHour: Calendar.current.component(.hour, from: startTime), minute: 0, second: 0, of: startTime)!
             }
             
             if Calendar.current.component(.minute, from: self.endDate) != 0 {
-                endTimeDifference = 60 - Calendar.current.component(.minute, from: self.endDate)
-                endTime = Calendar.current.date(bySetting: .minute, value: 0, of: endTime)!
+                endTimeDifference = Calendar.current.component(.minute, from: self.endDate)
+                endTime = Calendar.current.date(bySettingHour: Calendar.current.component(.hour, from: endTime), minute: 0, second: 0, of: endTime)!
                 endTime = endTime.addingTimeInterval(3600)
             }
             
@@ -239,10 +242,17 @@ class CheapestHourManager: ObservableObject {
                     intervenesWithEndTimeHour = true
                 }
                 
-                if intervenesWithStartTimeHour && intervenesWithEndTimeHour {
-                    print("Double intervene")
+                if intervenesWithStartTimeHour {
+                    print("start intervene")
                     cheapestPair.associatedPricePoints[0].startTimestamp += startTimeDifference * 60
                     cheapestPair.associatedPricePoints[highestIndex].endTimestamp -= (60 - startTimeDifference) * 60
+                }
+                
+                if intervenesWithEndTimeHour {
+                    print("end intervene")
+                    
+                    cheapestPair.associatedPricePoints[highestIndex].endTimestamp -= (60 - endTimeDifference) * 60
+                    cheapestPair.associatedPricePoints[0].startTimestamp += endTimeDifference * 60
                 }
                 
 //                let maxAssociatedPricePointsIndex = cheapestPair.associatedPricePoints.count - 1

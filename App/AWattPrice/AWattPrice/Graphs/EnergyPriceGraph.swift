@@ -275,7 +275,7 @@ struct EnergyPriceGraph: View {
         GeometryReader { geometry in
             ZStack {
                 if singleBarSettings != nil {
-                    ForEach(0..<graphHourPointData.count, id: \.self) { hourPointIndex in
+                    ForEach(0..<graphHourPointData.count, id: \.self) { hourPointIndex -> EnergyPriceSingleBar in
                         EnergyPriceSingleBar(
                             singleBarSettings: singleBarSettings!,
                             width: geometry.size.width,

@@ -96,6 +96,7 @@ class AwattarData: ObservableObject {
                         // Set data in main thread
                         
                         self.energyData = EnergyData(prices: usedPricesDecodedData, minPrice: (minPrice != nil ? minPrice! : 0), maxPrice: (maxPrice != nil ? maxPrice! : 0))
+                        
                     }
                 } catch {
                     print("Could not decode returned JSON data from server.")

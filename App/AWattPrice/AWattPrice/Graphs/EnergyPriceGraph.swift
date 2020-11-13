@@ -290,11 +290,11 @@ struct EnergyPriceGraph: View {
             .drawingGroup()
             .onAppear {
                 singleBarSettings = SingleBarSettings(minPrice: awattarData.energyData!.minPrice, maxPrice: awattarData.energyData!.maxPrice)
-                
+
                 singleHeight = geometry.size.height / CGFloat(awattarData.energyData!.prices.count)
 
                 graphHourPointData = []
-                
+
                 var currentHeight: CGFloat = 0
                 for hourPointEntry in awattarData.energyData!.prices {
                     graphHourPointData.append((hourPointEntry, currentHeight))

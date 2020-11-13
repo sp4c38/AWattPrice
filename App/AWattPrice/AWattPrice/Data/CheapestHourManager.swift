@@ -172,9 +172,10 @@ class CheapestHourManager: ObservableObject {
             }
             
             if Calendar.current.component(.minute, from: self.endDate) != 0 {
-                endTimeDifference = Calendar.current.component(.minute, from: self.endDate)
+                endTimeDifference = 60 - Calendar.current.component(.minute, from: self.endDate)
                 endTime = Calendar.current.date(bySettingHour: Calendar.current.component(.hour, from: endTime), minute: 0, second: 0, of: endTime)!
                 endTime = endTime.addingTimeInterval(3600)
+                
             }
             
             if (Calendar.current.component(.minute, from: startTime) != 0) || (Calendar.current.component(.minute, from: self.endDate) != 0) {
@@ -241,18 +242,27 @@ class CheapestHourManager: ObservableObject {
                     // Intervenes with the end time hour
                     intervenesWithEndTimeHour = true
                 }
+                print(startTime.timeIntervalSince1970)
+                print(endTime.timeIntervalSince1970)
                 
-                if intervenesWithStartTimeHour {
-                    print("start intervene")
-                    cheapestPair.associatedPricePoints[0].startTimestamp += startTimeDifference * 60
-                    cheapestPair.associatedPricePoints[highestIndex].endTimestamp -= (60 - startTimeDifference) * 60
-                }
                 
-                if intervenesWithEndTimeHour {
-                    print("end intervene")
+                if intervenesWithStartTimeHour && intervenesWithEndTimeHour {
                     
-                    cheapestPair.associatedPricePoints[highestIndex].endTimestamp -= (60 - endTimeDifference) * 60
-                    cheapestPair.associatedPricePoints[0].startTimestamp += endTimeDifference * 60
+                    cheapestPair.associatedPricePoints[0].startTimestamp += startTimeDifference * 60
+                    cheapestPair.associatedPricePoints[highestIndex].endTimestamp -=  endTimeDifference * 60
+                } else {
+                    if intervenesWithStartTimeHour {
+                        print("start intervene")
+                        cheapestPair.associatedPricePoints[0].startTimestamp += startTimeDifference * 60
+                        cheapestPair.associatedPricePoints[highestIndex].endTimestamp -= (60 - startTimeDifference) * 60
+                    }
+                    
+                    if intervenesWithEndTimeHour {
+                        print("end intervene")
+                        
+                        cheapestPair.associatedPricePoints[highestIndex].endTimestamp -= endTimeDifference * 60
+                        cheapestPair.associatedPricePoints[0].startTimestamp += (60 - endTimeDifference) * 60
+                    }
                 }
                 
 //                let maxAssociatedPricePointsIndex = cheapestPair.associatedPricePoints.count - 1

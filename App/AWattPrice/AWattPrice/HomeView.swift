@@ -34,18 +34,7 @@ struct HomeView: View {
                 if awattarData.energyData != nil && currentSetting.setting != nil && (awattarData.currentlyNoData == false) {
                     EnergyPriceGraph()
                 } else {
-                    if awattarData.severeDataRetrievalError == true {
-                        SevereDataRetrievalError()
-                            .transition(.opacity)
-                    } else if awattarData.networkConnectionError == true {
-                        NetworkConnectionErrorView()
-                            .transition(.opacity)
-                    } else if awattarData.currentlyNoData == true {
-                        CurrentlyNoData()
-                            .transition(.opacity)
-                    } else {
-                        LoadingView()
-                    }
+                    DataDownloadError()
                 }
             }
             .padding(.trailing, 16)

@@ -80,14 +80,10 @@ struct ConsumptionComparisonView: View {
                     }
                 }
             } else {
-                if awattarData.severeDataRetrievalError == true {
-                    SevereDataRetrievalError()
-                        .transition(.opacity)
-                } else if awattarData.networkConnectionError == true {
-                    NetworkConnectionErrorView()
-                        .transition(.opacity)
+                if awattarData.energyData != nil && currentSetting.setting != nil && (awattarData.currentlyNoData == false) {
+                    EnergyPriceGraph()
                 } else {
-                    LoadingView()
+                    DataDownloadError()
                 }
             }
         }

@@ -48,7 +48,7 @@
 // Data download error view
 "tryAgainLater" = "Bitte versuchen Sie es später noch einmal";
 "connectToInternet" = "Keine Internetverbindung";
-"noDataAvailable" = "Derzeit keine Daten verfügbar\nBitte versuchen Sie es später erneut";
+"noDataAvailable" = "Keine Daten verfügbar\nBitte versuchen Sie es später erneut";
 
 // General localizations
 "inKw" = "in kW";
@@ -67,3 +67,4 @@
 "none" = "Keiner";
 "today" = "Heute:";
 "tonight" = "Heute Nacht";
+"retry" = "Retry";

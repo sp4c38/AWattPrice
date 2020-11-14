@@ -49,15 +49,13 @@ class AwattarData: ObservableObject {
     // Needs to be an observable object because the data is downloaded asynchronously from the server
     // and views need to check whether downloading the data finished or not
     
-    @Published var networkConnectionError = false // A value representing if network connection errors occurred while trying to download the data from the backend.
-    @Published var severeDataRetrievalError = false // A value representing if a servere data retrieval error occurred while trying to download and decode the data from the backend. E.g. data couldn't be decoded correctly
-    @Published var currentlyNoData = false // A value which is set to true if the price data in the downloaded data is empty
+    @Published var dataRetrievalError = false // A value representing if network connection errors occurred while trying to download the data from the backend.
+    @Published var currentlyNoData = false // A value which is set to true if the price data in the downloaded data is empty.
     @Published var energyData: EnergyData? = nil
     @Published var profilesData = ProfilesData()
 
     func download() {
-        self.networkConnectionError = false
-        self.severeDataRetrievalError = false
+        self.dataRetrievalError = false
         self.currentlyNoData = false
         
         var energyRequest = URLRequest(
@@ -113,24 +111,17 @@ class AwattarData: ObservableObject {
                     print("Could not decode returned JSON data from server.")
                     DispatchQueue.main.async {
                         withAnimation {
-                            self.severeDataRetrievalError = true
+                            self.dataRetrievalError = true
                         }
                     }
                 }
             } else {
                 print("A internet connection error occurred.")
-                if let error = error as NSError?, error.domain == NSURLErrorDomain && error.code == NSURLErrorNotConnectedToInternet {
+                if error != nil {
                     print("The internet connection appears to be offline.")
                     DispatchQueue.main.async {
                         withAnimation {
-                            self.networkConnectionError = true
-                        }
-                    }
-                } else {
-                    print("The internet connection error couldn't be classified.")
-                    DispatchQueue.main.async {
-                        withAnimation {
-                            self.severeDataRetrievalError = true
+                            self.dataRetrievalError = true
                         }
                     }
                 }

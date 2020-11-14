@@ -9,27 +9,18 @@ import SwiftUI
 
 /// The home view mainly holds the graph which represents energy costs for each hour throughout the day.
 struct HomeView: View {
-    @Environment(\.colorScheme) var colorScheme
+    @Environment(\.scenePhase) var scenePhase
     @EnvironmentObject var awattarData: AwattarData
     @EnvironmentObject var currentSetting: CurrentSetting
+    
+    @State var justNowUpdatedData: Bool? = nil // Shortly set to true
     
     @State var showSettingsPage: Bool = false
     
     var body: some View {
         NavigationView {
             VStack {
-                HStack {
-                    Text("centPerKwh")
-                        .font(.subheadline)
-                        .padding(.top, 8)
-
-                    Spacer()
-
-                    Text("hourOfDay")
-                        .font(.subheadline)
-                }
-                .padding(.leading, 16)
-                .padding(.bottom, 5)
+                GraphHeader(justNowUpdatedData: justNowUpdatedData)
 
                 if awattarData.energyData != nil && currentSetting.setting != nil && (awattarData.currentlyNoData == false) {
                     EnergyPriceGraph()
@@ -55,6 +46,29 @@ struct HomeView: View {
         .onAppear {
             currentSetting.validateTariffAndEnergyPriceSet()
             awattarData.download()
+        }
+        .onChange(of: scenePhase) { phase in
+            if phase == .active {
+                if justNowUpdatedData != nil {
+                    // Not called on start up of the app
+                    print("Data updated")
+                    awattarData.download()
+                    
+                    if awattarData.currentlyNoData == false || awattarData.dataRetrievalError == false {
+                        withAnimation {
+                            justNowUpdatedData = true
+                        }
+                        
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                            withAnimation {
+                                justNowUpdatedData = false
+                            }
+                        }
+                    }
+                } else {
+                    justNowUpdatedData = false
+                }
+            }
         }
     }
 }

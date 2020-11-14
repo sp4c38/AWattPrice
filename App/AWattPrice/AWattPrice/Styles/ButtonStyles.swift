@@ -45,6 +45,19 @@ struct TimeRangeButtonStyle: ButtonStyle {
             .ifTrue(configuration.isPressed) { content in
                 content.animation(.easeInOut(duration: 0.1))
             }
-//            .animation(.easeInOut(duration: 0.1))
+    }
+}
+
+struct RetryButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .foregroundColor(configuration.isPressed ? Color.blue : Color.gray)
+            .padding([.top, .bottom], 5)
+            .padding([.leading, .trailing], 40)
+            .overlay(
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(configuration.isPressed ? Color.blue : Color.gray)
+            )
+            .animation(.easeInOut(duration: 0.1))
     }
 }

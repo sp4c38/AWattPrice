@@ -51,10 +51,15 @@ class AwattarData: ObservableObject {
     
     @Published var networkConnectionError = false // A value representing if network connection errors occurred while trying to download the data from the backend.
     @Published var severeDataRetrievalError = false // A value representing if a servere data retrieval error occurred while trying to download and decode the data from the backend. E.g. data couldn't be decoded correctly
+    @Published var currentlyNoData = false // A value which is set to true if the price data in the downloaded data is empty
     @Published var energyData: EnergyData? = nil
     @Published var profilesData = ProfilesData()
 
-    init() {
+    func download() {
+        self.networkConnectionError = false
+        self.severeDataRetrievalError = false
+        self.currentlyNoData = false
+        
         var energyRequest = URLRequest(
                         url: URL(string: "https://awattprice.space8.me/data/")!,
                         cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy)
@@ -97,11 +102,19 @@ class AwattarData: ObservableObject {
                         
                         self.energyData = EnergyData(prices: usedPricesDecodedData, minPrice: (minPrice != nil ? minPrice! : 0), maxPrice: (maxPrice != nil ? maxPrice! : 0))
                         
+                        if self.energyData!.prices.isEmpty {
+                            withAnimation {
+                                self.currentlyNoData = true
+                            }
+                        }
+                        
                     }
                 } catch {
                     print("Could not decode returned JSON data from server.")
                     DispatchQueue.main.async {
-                        self.severeDataRetrievalError = true
+                        withAnimation {
+                            self.severeDataRetrievalError = true
+                        }
                     }
                 }
             } else {
@@ -115,7 +128,11 @@ class AwattarData: ObservableObject {
                     }
                 } else {
                     print("The internet connection error couldn't be classified.")
-                    self.severeDataRetrievalError = true
+                    DispatchQueue.main.async {
+                        withAnimation {
+                            self.severeDataRetrievalError = true
+                        }
+                    }
                 }
             }
         }.resume()

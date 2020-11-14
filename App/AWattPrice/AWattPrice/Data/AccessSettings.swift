@@ -93,7 +93,6 @@ class CurrentSetting: NSObject, NSFetchedResultsControllerDelegate, ObservableOb
                 if self.setting!.awattarBaseElectricityPrice == 0 {
                     self.setting!.awattarTariffIndex = -1
                     
-                    
                     do {
                         try self.managedObjectContext.save()
                     } catch {

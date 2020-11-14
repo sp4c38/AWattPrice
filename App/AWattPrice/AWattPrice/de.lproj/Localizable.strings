@@ -45,6 +45,10 @@
 "helpByEmail" = "Hilfe per E-Mail";
 "suggestionByEmail" = "Vorschläge per E-Mail";
 
+// Data download error view
+"tryAgainLater" = "Bitte versuchen Sie es später noch einmal";
+"connectToInternet" = "Keine Internetverbindung";
+"noDataAvailable" = "Derzeit keine Daten verfügbar\nBitte versuchen Sie es später erneut";
 
 // General localizations
 "inKw" = "in kW";

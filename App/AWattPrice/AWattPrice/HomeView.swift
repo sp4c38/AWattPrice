@@ -31,7 +31,7 @@ struct HomeView: View {
                 .padding(.leading, 16)
                 .padding(.bottom, 5)
 
-                if awattarData.energyData != nil && currentSetting.setting != nil {
+                if awattarData.energyData != nil && currentSetting.setting != nil && (awattarData.currentlyNoData == false) {
                     EnergyPriceGraph()
                 } else {
                     if awattarData.severeDataRetrievalError == true {
@@ -39,6 +39,9 @@ struct HomeView: View {
                             .transition(.opacity)
                     } else if awattarData.networkConnectionError == true {
                         NetworkConnectionErrorView()
+                            .transition(.opacity)
+                    } else if awattarData.currentlyNoData == true {
+                        CurrentlyNoData()
                             .transition(.opacity)
                     } else {
                         LoadingView()
@@ -62,6 +65,7 @@ struct HomeView: View {
         .navigationViewStyle(StackNavigationViewStyle())
         .onAppear {
             currentSetting.validateTariffAndEnergyPriceSet()
+            awattarData.download()
         }
     }
 }

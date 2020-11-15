@@ -95,7 +95,7 @@ struct EnergyPriceSingleBar: View {
     var body: some View {
         let maximalNegativePriceBarWidth = (
             singleBarSettings.minPrice == 0
-                ? startWidthPadding : CGFloat(abs(singleBarSettings.minPrice) / (abs(singleBarSettings.minPrice) + abs(singleBarSettings.maxPrice))) * width) + startWidthPadding
+                ? startWidthPadding : CGFloat(abs(singleBarSettings.minPrice) / (abs(singleBarSettings.minPrice) + abs(singleBarSettings.maxPrice))) * width + startWidthPadding)
 
         let negativePriceBarWidth = (
             singleBarSettings.minPrice != 0
@@ -120,7 +120,7 @@ struct EnergyPriceSingleBar: View {
             }
 
             // If there are negative energy price values a vergtical divider line shape is displayed to mark the point where costs go from positive values to negative values
-            if maximalNegativePriceBarWidth != 0 {
+            if maximalNegativePriceBarWidth - startWidthPadding != 0 {
                 VerticalDividerLineShape(width: currentDividerLineWidth, height: height, startWidth: maximalNegativePriceBarWidth, startHeight: startHeight)
                     .foregroundColor(colorScheme == .light ? Color.black : Color.white)
             }
@@ -132,7 +132,7 @@ struct EnergyPriceSingleBar: View {
             .padding(1)
             .background(Color.white)
             .cornerRadius((isSelected == 1 || isSelected == 2) ? 3 : 1)
-            .position(x: ((isSelected == 1) ? 26 + 22 : ((isSelected == 2) ? 26 + 8 : 26 + 3)), y: startHeight + (height / 2))
+            .position(x: ((isSelected == 1 || isSelected == 2) ? maximalNegativePriceBarWidth + startWidthPadding + 10 + fontSize : maximalNegativePriceBarWidth + startWidthPadding + 10), y: startHeight + (height / 2))
             .shadow(radius: 2)
 
             // Show start to end time of the hour in which the certain energy price applies
@@ -146,7 +146,7 @@ struct EnergyPriceSingleBar: View {
             .padding(1)
             .background(Color.white)
             .cornerRadius((isSelected == 1 || isSelected == 2) ? 3 : 1)
-            .position(x: ((isSelected == 1 || isSelected == 2) ? width - 20 - 16 : width - 10 - 16), y: startHeight + (height / 2))
+            .position(x: ((isSelected == 1 || isSelected == 2) ? width - 20 - fontSize : width - 20), y: startHeight + (height / 2))
             .shadow(radius: 2)
         }
     }

@@ -25,12 +25,21 @@ struct UpdatedDataView: View {
             Spacer()
             
             if awattarData.dateDataLastUpdated != nil {
-                if awattarData.currentlyUpdatingData {
-                    ProgressView()
+                HStack(spacing: 10) {
+                    if awattarData.currentlyUpdatingData {
+                        ProgressView()
+                            .transition(.opacity)
+                        
+                        Text("Updating")
+                            .foregroundColor(Color.blue)
+                            .transition(.opacity)
+                    } else {
+                        Text(dateFormatter.string(from: awattarData.dateDataLastUpdated!))
+                            .foregroundColor(awattarData.currentlyUpdatingData ? Color.gray : Color.green)
+                            .transition(.opacity)
+                    }
                 }
-                
-                Text(dateFormatter.string(from: awattarData.dateDataLastUpdated!))
-                    .foregroundColor(awattarData.currentlyUpdatingData ? Color.gray : Color.green)
+                .animation(.easeInOut)
             }
         }
         .font(.subheadline)

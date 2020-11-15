@@ -54,11 +54,9 @@ class AwattarData: ObservableObject {
     @Published var profilesData = ProfilesData()
 
     func download() {
-        withAnimation {
-            self.currentlyUpdatingData = true
-            self.currentlyNoData = false
-            self.dataRetrievalError = false
-        }
+        self.currentlyUpdatingData = true
+        self.currentlyNoData = false
+        self.dataRetrievalError = false
         
         var energyRequest = URLRequest(
                         url: URL(string: "https://awattprice.space8.me/data/")!,
@@ -131,10 +129,8 @@ class AwattarData: ObservableObject {
             }
             
             DispatchQueue.main.async {
-                withAnimation {
-                    self.currentlyUpdatingData = false
-                    self.dateDataLastUpdated = Date()
-                }
+                self.dateDataLastUpdated = Date()
+                self.currentlyUpdatingData = false
             }
         }.resume()
     }

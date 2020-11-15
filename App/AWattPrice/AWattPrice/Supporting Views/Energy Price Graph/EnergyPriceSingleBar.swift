@@ -19,7 +19,7 @@ struct EnergyPriceSingleBar: View {
     let singleBarSettings: SingleBarSettings
     let width: CGFloat
     let startWidthPadding: CGFloat // Padding to the left side
-    let height: CGFloat
+    var height: CGFloat
     var startHeight: CGFloat
     let isSelected: Int16 // 0 if not selected and 1 if main selected and 2 if co-selected (bars around the selected bar)
     let hourDataPoint: EnergyPricePoint
@@ -42,6 +42,8 @@ struct EnergyPriceSingleBar: View {
             self.width = width - 19
         }
         
+        self.height = height
+        
         self.startHeight = 0
         if indexSelected != nil {
             if indexSelected == ownIndex {
@@ -52,37 +54,40 @@ struct EnergyPriceSingleBar: View {
                 self.isSelected = 0
             }
 
-            if ownIndex > indexSelected! {
-                if !(self.isSelected == 2) {
-                    self.startHeight += 30
-                } else {
-                    self.startHeight += 20
-                }
-            } else if ownIndex < indexSelected! {
-                if !(self.isSelected == 2) {
-                    self.startHeight -= 30
-                } else {
-                    self.startHeight -= 20
-                }
+            if isSelected == 0 {
+                self.height -= 10
             }
+            
+//            if ownIndex > indexSelected! {
+//                if !(self.isSelected == 2) {
+//                    self.startHeight += 25
+//                } else {
+//                    self.startHeight += 15
+//                }
+//            } else if ownIndex < indexSelected! {
+//                if !(self.isSelected == 2) {
+//                    self.startHeight -= 20
+//                } else {
+//                    self.startHeight -= 5
+//                }
+//            }
         } else {
             self.isSelected = 0
         }
 
         if isSelected == 1 {
-            self.height = height + 20
-            self.startHeight += startHeight - 10 // Must be half of which was added to height
+            self.height += 20
+            self.startHeight += startHeight
             
             fontSize = 17
             fontWeight = .bold
         } else if isSelected == 2 {
-            self.height = height + 10
-            self.startHeight += startHeight - 5
+            self.height += 10
+            self.startHeight += startHeight + 10
             
             fontSize = 9
             fontWeight = .semibold
         } else {
-            self.height = height
             self.startHeight += startHeight
             
             fontSize = 7
@@ -132,7 +137,7 @@ struct EnergyPriceSingleBar: View {
             .padding(1)
             .background(Color.white)
             .cornerRadius((isSelected == 1 || isSelected == 2) ? 3 : 1)
-            .position(x: ((isSelected == 1 || isSelected == 2) ? maximalNegativePriceBarWidth + startWidthPadding + 10 + fontSize : maximalNegativePriceBarWidth + startWidthPadding + 10), y: startHeight + (height / 2))
+            .position(x: ((isSelected == 1 || isSelected == 2) ? maximalNegativePriceBarWidth + startWidthPadding + 25 + fontSize : maximalNegativePriceBarWidth + startWidthPadding + 20), y: startHeight + (height / 2))
             .shadow(radius: 2)
 
             // Show start to end time of the hour in which the certain energy price applies

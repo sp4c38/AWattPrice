@@ -98,7 +98,7 @@ class AwattarData: ObservableObject {
                     DispatchQueue.main.async {
                         // Set data in main thread
                         
-                        self.energyData = EnergyData(prices: usedPricesDecodedData, minPrice: (minPrice != nil ? minPrice! : 0), maxPrice: (maxPrice != nil ? maxPrice! : 0))
+                        self.energyData = EnergyData(prices: usedPricesDecodedData, minPrice: minPrice ?? 0, maxPrice: maxPrice ?? 0)
                         
                         if self.energyData!.prices.isEmpty {
                             withAnimation {

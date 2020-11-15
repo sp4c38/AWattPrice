@@ -21,14 +21,14 @@ struct GraphHeader: View {
             HStack {
                 Text("centPerKwh")
                     .font(.subheadline)
-                    .padding(.top, 8)
 
                 Spacer()
 
                 Text("hourOfDay")
                     .font(.subheadline)
             }
-            .padding(.leading, 16)
+            .padding([.leading, .trailing], 16)
+            .padding(.top, 8)
             .padding(.bottom, 5)
         }
     }
@@ -119,7 +119,7 @@ struct EnergyPriceGraph: View {
                 }
             }
         }
-        .ignoresSafeArea(.keyboard) // Ignore the keyboard. In the past without this this had led the graph to be very squeezed together
+        .ignoresSafeArea(.keyboard) // Ignore the keyboard. Without this the graph was been squeezed together when opening the keyboard somewhere in the app
         .contentShape(Rectangle())
         .gesture(graphDragGesture)
     }

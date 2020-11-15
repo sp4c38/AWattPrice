@@ -28,7 +28,6 @@ struct HomeView: View {
                     DataDownloadError()
                 }
             }
-            .padding(.trailing, 16)
             .navigationTitle("elecPrice")
             .navigationBarTitleDisplayMode(.large)
             .fullScreenCover(isPresented: $showSettingsPage) {

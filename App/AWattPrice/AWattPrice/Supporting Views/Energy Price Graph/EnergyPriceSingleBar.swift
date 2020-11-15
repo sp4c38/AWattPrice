@@ -18,6 +18,7 @@ struct EnergyPriceSingleBar: View {
     let fontWeight: Font.Weight
     let singleBarSettings: SingleBarSettings
     let width: CGFloat
+    let startWidthPadding: CGFloat // Padding to the left side
     let height: CGFloat
     var startHeight: CGFloat
     let isSelected: Int16 // 0 if not selected and 1 if main selected and 2 if co-selected (bars around the selected bar)
@@ -32,7 +33,14 @@ struct EnergyPriceSingleBar: View {
          hourDataPoint: EnergyPricePoint) {
         
         self.singleBarSettings = singleBarSettings
-        self.width = width
+        
+        if singleBarSettings.minPrice != 0 {
+            self.startWidthPadding = 8 // Set padding to the left side
+            self.width = width - 16 // Set padding to the right side
+        } else {
+            self.startWidthPadding = 3
+            self.width = width - 19
+        }
         
         self.startHeight = 0
         if indexSelected != nil {
@@ -87,7 +95,7 @@ struct EnergyPriceSingleBar: View {
     var body: some View {
         let maximalNegativePriceBarWidth = (
             singleBarSettings.minPrice == 0
-                ? 0 : CGFloat(abs(singleBarSettings.minPrice) / (abs(singleBarSettings.minPrice) + abs(singleBarSettings.maxPrice))) * width)
+                ? startWidthPadding : CGFloat(abs(singleBarSettings.minPrice) / (abs(singleBarSettings.minPrice) + abs(singleBarSettings.maxPrice))) * width) + startWidthPadding
 
         let negativePriceBarWidth = (
             singleBarSettings.minPrice != 0
@@ -124,7 +132,7 @@ struct EnergyPriceSingleBar: View {
             .padding(1)
             .background(Color.white)
             .cornerRadius((isSelected == 1 || isSelected == 2) ? 3 : 1)
-            .position(x: ((isSelected == 1) ? 26 + 22 : ((isSelected == 2) ? 26 + 8 : 26 + 3)), y: startHeight + (height / 2)) // 16 is padding
+            .position(x: ((isSelected == 1) ? 26 + 22 : ((isSelected == 2) ? 26 + 8 : 26 + 3)), y: startHeight + (height / 2))
             .shadow(radius: 2)
 
             // Show start to end time of the hour in which the certain energy price applies

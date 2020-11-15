@@ -31,7 +31,7 @@ struct BarShape: Shape {
     }
     
     func path(in rect: CGRect) -> Path {
-        let radius: CGFloat = 8
+        let radius: CGFloat = heightOfBar / 14
         let barPadding: CGFloat = 1
         let dividerLineWidth: CGFloat = 3
         

@@ -86,6 +86,7 @@ struct EnergyPriceGraph: View {
                             startHeight: graphHourPointData[hourPointIndex].1,
                             indexSelected: currentPointerIndexSelected,
                             ownIndex: hourPointIndex,
+                            maxIndex: graphHourPointData.count - 1,
                             hourDataPoint: graphHourPointData[hourPointIndex].0)
                     }
                 }

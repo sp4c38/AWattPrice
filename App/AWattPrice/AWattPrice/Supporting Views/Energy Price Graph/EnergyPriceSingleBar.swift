@@ -30,6 +30,7 @@ struct EnergyPriceSingleBar: View {
          startHeight: CGFloat,
          indexSelected: Int?,
          ownIndex: Int,
+         maxIndex: Int,
          hourDataPoint: EnergyPricePoint) {
         
         self.singleBarSettings = singleBarSettings
@@ -42,6 +43,7 @@ struct EnergyPriceSingleBar: View {
             self.width = width - 19
         }
         
+        let barSpacingWhenSelected: Double = Double(40 / (maxIndex - 2))
         self.height = height
         
         self.startHeight = 0
@@ -53,24 +55,30 @@ struct EnergyPriceSingleBar: View {
             } else {
                 self.isSelected = 0
             }
-
+            
             if isSelected == 0 {
-                self.height -= 10
+                self.height -= 4.44
+                
+                if ownIndex > indexSelected! {
+                    self.startHeight += CGFloat(4.44 * Double(maxIndex - (ownIndex - 1)))
+                } else if ownIndex < indexSelected! {
+                    self.startHeight -= CGFloat(Double(ownIndex) * barSpacingWhenSelected)
+                }
             }
             
-//            if ownIndex > indexSelected! {
-//                if !(self.isSelected == 2) {
-//                    self.startHeight += 25
-//                } else {
-//                    self.startHeight += 15
-//                }
-//            } else if ownIndex < indexSelected! {
-//                if !(self.isSelected == 2) {
-//                    self.startHeight -= 20
-//                } else {
-//                    self.startHeight -= 5
-//                }
-//            }
+            if isSelected == 1 {
+                self.startHeight += 10
+                self.startHeight -= CGFloat(Double(ownIndex - 1) * barSpacingWhenSelected)
+            }
+            
+            if isSelected == 2 {
+                if ownIndex > indexSelected! {
+                    self.startHeight += 30
+                    self.startHeight -= CGFloat(Double(ownIndex - 2) * barSpacingWhenSelected)
+                } else {
+                    self.startHeight -= CGFloat(Double(ownIndex) * barSpacingWhenSelected)
+                }
+            }
         } else {
             self.isSelected = 0
         }
@@ -83,7 +91,7 @@ struct EnergyPriceSingleBar: View {
             fontWeight = .bold
         } else if isSelected == 2 {
             self.height += 10
-            self.startHeight += startHeight + 10
+            self.startHeight += startHeight
             
             fontSize = 9
             fontWeight = .semibold

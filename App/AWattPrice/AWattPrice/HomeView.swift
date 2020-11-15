@@ -13,21 +13,26 @@ struct HomeView: View {
     @EnvironmentObject var awattarData: AwattarData
     @EnvironmentObject var currentSetting: CurrentSetting
     
-    @State var justNowUpdatedData: Bool? = nil // Shortly set to true
-    
     @State var showSettingsPage: Bool = false
     
     var body: some View {
         NavigationView {
             VStack {
-                GraphHeader(justNowUpdatedData: justNowUpdatedData)
-
                 if awattarData.energyData != nil && currentSetting.setting != nil && (awattarData.currentlyNoData == false) {
+                    VStack(spacing: 3) {
+                        UpdatedDataView()
+                        GraphHeader()
+                    }
+                    .padding([.leading, .trailing], 16)
+                    .padding(.top, 8)
+                    .padding(.bottom, 5)
+                    
                     EnergyPriceGraph()
                 } else {
-                    DataDownloadError()
+                    DataDownloadAndError()
                 }
             }
+            .zIndex(0)
             .navigationTitle("elecPrice")
             .navigationBarTitleDisplayMode(.large)
             .fullScreenCover(isPresented: $showSettingsPage) {
@@ -44,29 +49,11 @@ struct HomeView: View {
         .navigationViewStyle(StackNavigationViewStyle())
         .onAppear {
             currentSetting.validateTariffAndEnergyPriceSet()
-            awattarData.download()
         }
         .onChange(of: scenePhase) { phase in
             if phase == .active {
-                if justNowUpdatedData != nil {
-                    // Not called on start up of the app
-                    print("Data updated")
-                    awattarData.download()
-                    
-                    if awattarData.currentlyNoData == false || awattarData.dataRetrievalError == false {
-                        withAnimation {
-                            justNowUpdatedData = true
-                        }
-                        
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                            withAnimation {
-                                justNowUpdatedData = false
-                            }
-                        }
-                    }
-                } else {
-                    justNowUpdatedData = false
-                }
+                print("Updating data")
+                awattarData.download()
             }
         }
     }

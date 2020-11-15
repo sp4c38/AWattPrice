@@ -14,6 +14,7 @@
 "splashScreenComparePricesInfo" = "Find the cheapest hours for your electricity consumption.";
 
 // Electricity Price page localizations
+"lastUpdated" = "Last updated";
 "elecPrice" = "Electricity Price";
 "hourOfDay" = "Hour of day";
 

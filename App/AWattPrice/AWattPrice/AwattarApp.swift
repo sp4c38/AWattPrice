@@ -23,8 +23,6 @@ class PersistenceManager {
     }
 }
 
-
-
 /// Entry point of the app
 @main
 struct AwattarApp: App {

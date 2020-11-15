@@ -1,11 +1,23 @@
 //
-//  NetworkConnectionErrorView.swift
+//  DataDownloadAndError.swift
 //  AwattarApp
 //
 //  Created by Léon Becker on 17.10.20.
 //
 
 import SwiftUI
+
+struct DataRetrievalLoadingView: View {
+    var body: some View {
+        VStack(spacing: 20) {
+            Spacer()
+            
+            ProgressView("loading")
+            
+            Spacer()
+        }
+    }
+}
 
 struct DataRetrievalError: View {
     @Environment(\.colorScheme) var colorScheme
@@ -76,7 +88,7 @@ struct CurrentlyNoData: View {
 }
 
 /// Classify network errors
-struct DataDownloadError: View {
+struct DataDownloadAndError: View {
     @EnvironmentObject var awattarData: AwattarData
     
     var body: some View {
@@ -87,8 +99,8 @@ struct DataDownloadError: View {
             } else if awattarData.currentlyNoData == true {
                 CurrentlyNoData()
                     .transition(.opacity)
-            } else {
-                LoadingView()
+            } else if awattarData.currentlyUpdatingData == true {
+                DataRetrievalLoadingView()
             }
         }
     }

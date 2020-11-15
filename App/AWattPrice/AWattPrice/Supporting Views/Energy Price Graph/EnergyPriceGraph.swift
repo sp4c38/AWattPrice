@@ -8,29 +8,15 @@
 import SwiftUI
 
 struct GraphHeader: View {
-    var justNowUpdatedData: Bool?
-    
     var body: some View {
-        VStack {
-            if justNowUpdatedData == true {
-                UpdatedDataView()
-                    .padding(.top, 12)
-                    .padding(.bottom, 3)
-            }
-            
-            HStack {
-                Text("centPerKwh")
-                    .font(.subheadline)
+        HStack {
+            Text("centPerKwh")
 
-                Spacer()
+            Spacer()
 
-                Text("hourOfDay")
-                    .font(.subheadline)
-            }
-            .padding([.leading, .trailing], 16)
-            .padding(.top, 8)
-            .padding(.bottom, 5)
+            Text("hourOfDay")
         }
+        .font(.subheadline)
     }
 }
 

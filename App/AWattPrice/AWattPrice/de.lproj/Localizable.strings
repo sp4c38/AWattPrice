@@ -14,6 +14,7 @@
 "splashScreenComparePricesInfo" = "Finden Sie die preislich günstigsten Stunden für Ihren Stromverbrauch.";
 
 // Electricity Price page localizations
+"lastUpdated" = "Zuletzt aktualisiert";
 "elecPrice" = "Strompreis";
 "hourOfDay" = "Uhrzeit";
 

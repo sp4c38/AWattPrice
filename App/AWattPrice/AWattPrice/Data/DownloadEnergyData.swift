@@ -46,17 +46,19 @@ struct ProfilesData {
 
 /// Object responsible for downloading the current energy prices from the backend, decoding this data and providing it to all views which need it. It also includes data for the different profiles/tariffs of aWATTar which don't need to be downloaded.
 class AwattarData: ObservableObject {
-    // Needs to be an observable object because the data is downloaded asynchronously from the server
-    // and views need to check whether downloading the data finished or not
-    
-    @Published var dataRetrievalError = false // A value representing if network connection errors occurred while trying to download the data from the backend.
-    @Published var currentlyNoData = false // A value which is set to true if the price data in the downloaded data is empty.
+    @Published var currentlyNoData = false // Set to true if the price data in the downloaded data is empty.
+    @Published var currentlyUpdatingData = false
+    @Published var dateDataLastUpdated: Date? = nil
+    @Published var dataRetrievalError = false
     @Published var energyData: EnergyData? = nil
     @Published var profilesData = ProfilesData()
 
     func download() {
-        self.dataRetrievalError = false
-        self.currentlyNoData = false
+        withAnimation {
+            self.currentlyUpdatingData = true
+            self.currentlyNoData = false
+            self.dataRetrievalError = false
+        }
         
         var energyRequest = URLRequest(
                         url: URL(string: "https://awattprice.space8.me/data/")!,
@@ -105,7 +107,6 @@ class AwattarData: ObservableObject {
                                 self.currentlyNoData = true
                             }
                         }
-                        
                     }
                 } catch {
                     print("Could not decode returned JSON data from server.")
@@ -115,8 +116,10 @@ class AwattarData: ObservableObject {
                         }
                     }
                 }
+                
+                
             } else {
-                print("A internet connection error occurred.")
+                print("A data retrieval error occurred.")
                 if error != nil {
                     print("The internet connection appears to be offline.")
                     DispatchQueue.main.async {
@@ -124,6 +127,13 @@ class AwattarData: ObservableObject {
                             self.dataRetrievalError = true
                         }
                     }
+                }
+            }
+            
+            DispatchQueue.main.async {
+                withAnimation {
+                    self.currentlyUpdatingData = false
+                    self.dateDataLastUpdated = Date()
                 }
             }
         }.resume()

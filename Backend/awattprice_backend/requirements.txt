@@ -1,0 +1,9 @@
+arrow
+configupdater
+fastapi
+filelock
+httpx
+loguru
+python-box
+tenacity
+uvicorn

@@ -55,8 +55,6 @@ class AwattarData: ObservableObject {
 
     func download() {
         self.currentlyUpdatingData = true
-        self.currentlyNoData = false
-        self.dataRetrievalError = false
         
         var energyRequest = URLRequest(
                         url: URL(string: "https://awattprice.space8.me/data/")!,
@@ -101,10 +99,13 @@ class AwattarData: ObservableObject {
                         self.energyData = EnergyData(prices: usedPricesDecodedData, minPrice: minPrice ?? 0, maxPrice: maxPrice ?? 0)
                         
                         if self.energyData!.prices.isEmpty {
+                            print("No prices can be shown, because either there are none or they are outdated.")
                             withAnimation {
                                 self.currentlyNoData = true
                             }
                         }
+                        
+                        self.dataRetrievalError = false
                     }
                 } catch {
                     print("Could not decode returned JSON data from server.")

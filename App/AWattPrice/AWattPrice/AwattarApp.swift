@@ -27,13 +27,19 @@ class PersistenceManager {
 @main
 struct AwattarApp: App {
     var persistence = PersistenceManager()
-
+    var awattarData: AwattarData
+    
+    init() {
+        awattarData = AwattarData()
+        awattarData.download()
+    }
+    
     var body: some Scene {
         WindowGroup {
             // The managedObjectContext from PersistenceManager mustn't be parsed to the views directly as environment value because views will only access it indirectly through CurrentSetting.
             
             TabNavigatorView()
-                .environmentObject(AwattarData())
+                .environmentObject(awattarData)
                 .environmentObject(CurrentSetting(managedObjectContext: persistence.persistentContainer.viewContext))
                 .environmentObject(CheapestHourManager())
         }

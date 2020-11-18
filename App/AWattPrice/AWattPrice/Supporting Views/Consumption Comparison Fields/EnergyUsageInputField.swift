@@ -10,6 +10,7 @@ import SwiftUI
 /// Input field for the energy usage which the consumer shall consume
 struct EnergyUsageInputField: View {
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
+    @EnvironmentObject var currentSetting: CurrentSetting
     
     let emptyFieldError: Bool
     let wrongInputError: Bool
@@ -41,6 +42,9 @@ struct EnergyUsageInputField: View {
                     .keyboardType(.decimalPad)
                     .multilineTextAlignment(.leading)
                     .padding(.trailing, 5)
+                    .onChange(of: cheapestHourManager.energyUsageString) { newValue in
+                        currentSetting.changeCheapestTimeLastConsumption(newLastConsumption: newValue.doubleValue ?? 0)
+                    }
                 
                 if cheapestHourManager.energyUsageString != "" {
                     Text("kWh")
@@ -68,6 +72,17 @@ struct EnergyUsageInputField: View {
             }
         }
         .frame(maxWidth: .infinity)
+        .onAppear {
+            if currentSetting.setting!.cheapestTimeLastConsumption != 0 {
+                if let energyUsageString = currentSetting.setting!.cheapestTimeLastConsumption.priceString {
+                    cheapestHourManager.energyUsageString = energyUsageString
+                } else {
+                    cheapestHourManager.energyUsageString = ""
+                }
+            } else {
+                cheapestHourManager.energyUsageString = ""
+            }
+        }
     }
 }
 

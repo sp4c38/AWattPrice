@@ -8,15 +8,9 @@
 import SceneKit
 import SwiftUI
 
-class TextFieldCurrentlySelected: ObservableObject {
-    @Published var selected = false
-    @Published var isFirstSelected = false
-}
-
 /// A place for the user to modify certain settings. Those changes are automatically stored (if modified) in persistent storage.
 struct SettingsPageView: View {
     @Environment(\.presentationMode) var presentationMode
-    @EnvironmentObject var textFieldSelected: TextFieldCurrentlySelected
     
     var body: some View {
         NavigationView {
@@ -27,7 +21,6 @@ struct SettingsPageView: View {
                     }
 
                 AwattarTariffSelectionSetting()
-                    .environmentObject(textFieldSelected)
 
                 GetHelpView()
                     .onTapGesture {

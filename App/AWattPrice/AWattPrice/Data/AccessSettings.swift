@@ -20,6 +20,8 @@ func getSetting(managedObjectContext: NSManagedObjectContext, fetchRequestResult
         newSetting.pricesWithTaxIncluded = true
         newSetting.awattarBaseElectricityPrice = 0
         newSetting.splashScreensFinished = false
+        newSetting.cheapestTimeLastPower = 0
+        newSetting.cheapestTimeLastConsumption = 0
         
         do {
             try managedObjectContext.save()
@@ -139,7 +141,7 @@ class CurrentSetting: NSObject, NSFetchedResultsControllerDelegate, ObservableOb
     Changes the price of the base energy charge to the specified new state.
     - Parameter newBaseEnergyCharge: The new price to which the setting should be changed to.
     */
-    func changeBaseElectricityCharge(newBaseElectricityCharge: Float) {
+    func changeBaseElectricityCharge(newBaseElectricityCharge: Double) {
         if setting != nil {
             self.setting!.awattarBaseElectricityPrice = newBaseElectricityCharge
 
@@ -158,6 +160,37 @@ class CurrentSetting: NSObject, NSFetchedResultsControllerDelegate, ObservableOb
     func changeAwattarTariffIndex(newTariffIndex: Int16) {
         if setting != nil {
             self.setting!.awattarTariffIndex = newTariffIndex
+            
+            do {
+                try managedObjectContext.save()
+            } catch {
+                return
+            }
+        }
+    }
+    
+    /**
+    Changes the last power usage setting which is used on the cheapest time page.
+    - Parameter newLastPower: The new last power usage to which the setting should be changed to.
+    */
+    func changeCheapestTimeLastPower(newLastPower: Double) {
+        if setting != nil {
+            self.setting!.cheapestTimeLastPower = newLastPower
+            
+            do {
+                try managedObjectContext.save()
+            } catch {
+                return
+            }
+        }
+    }
+    
+    /* Changes the last total consumption setting which is used on the cheapest time page.
+    - Parameter newTimeLastPower: The new last power usage to which the setting should be changed to.
+    */
+    func changeCheapestTimeLastConsumption(newLastConsumption: Double) {
+        if setting != nil {
+            self.setting!.cheapestTimeLastConsumption = newLastConsumption
             
             do {
                 try managedObjectContext.save()

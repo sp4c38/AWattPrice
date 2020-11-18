@@ -145,7 +145,6 @@ struct EnergyPriceSingleBar: View {
             .background(Color.white)
             .cornerRadius((isSelected == 1 || isSelected == 2) ? 3 : 1)
             .position(x: ((isSelected == 1 || isSelected == 2) ? maximalNegativePriceBarWidth + startWidthPadding + 25 + fontSize : maximalNegativePriceBarWidth + startWidthPadding + 20), y: startHeight + (height / 2))
-            .shadow(radius: 2)
 
             // Show start to end time of the hour in which the certain energy price applies
             HStack(spacing: 5) {
@@ -159,7 +158,6 @@ struct EnergyPriceSingleBar: View {
             .background(Color.white)
             .cornerRadius((isSelected == 1 || isSelected == 2) ? 3 : 1)
             .position(x: ((isSelected == 1 || isSelected == 2) ? width - 20 - fontSize : width - 20), y: startHeight + (height / 2))
-            .shadow(radius: 2)
         }
     }
 }

@@ -226,37 +226,65 @@ class CheapestHourManager: ObservableObject {
                     intervenesWithEndHour = true
                 }
                 
-                if intervenesWithStartHour && !intervenesWithEndHour {
+                func searchAndAddFollowingItem(timestamp: Int) {
                     // Find next following energy price point
                     for item in energyData.prices {
-                        if item.startTimestamp == Int(endDateLastItem.timeIntervalSince1970) {
+                        if item.startTimestamp == timestamp {
                             cheapestPair.associatedPricePoints.append(item)
                             print("Found the missing energy price point with start timestamp \(item.startTimestamp).")
                             break
                         }
                     }
+                }
+                
+                if intervenesWithStartHour && !intervenesWithEndHour {
+                    searchAndAddFollowingItem(timestamp: Int(endDateLastItem.timeIntervalSince1970))
                     maxPointIndex = cheapestPair.associatedPricePoints.count - 1
                     
                     cheapestPair.associatedPricePoints[0].startTimestamp += startTimeDifference * 60
                     cheapestPair.associatedPricePoints[maxPointIndex].endTimestamp -= (60 - startTimeDifference) * 60
                 }
                 
-                if intervenesWithEndHour && !intervenesWithStartHour {
+                func searchAndAddPreFollowingItem(timestamp: Int) {
                     // Find the pre-following price point
                     for item in energyData.prices {
-                        if item.endTimestamp == Int(startDateFirstItem.timeIntervalSince1970) {
+                        if item.endTimestamp == timestamp {
                             print("Found the missing energy proce point with end timestamp \(item.endTimestamp).")
                             cheapestPair.associatedPricePoints.insert(item, at: 0)
                             break
                         }
                     }
+                }
+                
+                if intervenesWithEndHour && !intervenesWithStartHour {
+                    searchAndAddPreFollowingItem(timestamp: Int(startDateFirstItem.timeIntervalSince1970))
                     maxPointIndex = cheapestPair.associatedPricePoints.count - 1
                     
                     cheapestPair.associatedPricePoints[maxPointIndex].endTimestamp -= (60 - endTimeDifference) * 60
                     cheapestPair.associatedPricePoints[0].startTimestamp += endTimeDifference * 60
                 }
                 
-                print("")
+                if intervenesWithStartHour && intervenesWithEndHour {
+                    var allItems = [EnergyPricePoint]()
+                    for item in energyData.prices {
+                        let itemStartTime = Date(timeIntervalSince1970: TimeInterval(item.startTimestamp))
+                        let itemEndTime = Date(timeIntervalSince1970: TimeInterval(item.endTimestamp))
+                        if itemStartTime >= startTime && itemEndTime <= endTime {
+                            allItems.append(item)
+                        }
+                    }
+                    
+                    if allItems[0].startTimestamp == cheapestPair.associatedPricePoints[0].startTimestamp {
+                        
+                        allItems[0].startTimestamp += startTimeDifference * 60
+                        allItems[allItems.count - 1].endTimestamp -= (60 - startTimeDifference) * 60
+                    } else if allItems[allItems.count - 1].endTimestamp == cheapestPair.associatedPricePoints[maxPointIndex].endTimestamp {
+                        allItems[allItems.count - 1].endTimestamp -= (60 - endTimeDifference) * 60
+                        allItems[0].startTimestamp += endTimeDifference * 60
+                    }
+                    
+                    cheapestPair.associatedPricePoints = allItems
+                }
             }
 
             DispatchQueue.main.async {

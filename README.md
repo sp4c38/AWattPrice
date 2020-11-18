@@ -1,8 +1,6 @@
 # ⚡️ AWattPrice ⚡️
 
 <p>
-    <img src="https://img.shields.io/website?down_color=red&down_message=offline&label=backend%20online&up_color=green&up_message=online&url=https%3A%2F%2Fawattprice.space8.me%2Fdata" />
-    <img src="https://img.shields.io/github/commit-activity/m/sp4c38/AWattPrice" />
     <img src="https://img.shields.io/github/last-commit/sp4c38/AWattPrice?label=last%20modified" />
     <img src="https://img.shields.io/tokei/lines/github/sp4c38/AWattPrice?label=total%20lines%20of%20code" />
 </p>

@@ -145,16 +145,6 @@ class CheapestHourManager: ObservableObject {
      - Parameter energyData: Current energy data (data downloaded from the server)
      */
     func calculateCheapestHours(energyData: EnergyData, currentSetting: CurrentSetting) {
-        /*
-         Description of how the cheapest hours are found:
-            1. The algorithm firstly creates hour pairs.
-                For example:
-                    The user wants to find the most cheapest hours for a duration of 3 hours. The algorithm than would pack the EnergyPricePoint's held in energyData at 0, 1, 2 index in one HourPair. Than the items at 1, 2, 3 index. Than the items at 2, 3, 4 index and so on. Notice that always three items are packed together because the user wants to find cheapest hours for a duration of 3 hours. If there is a HourPair which can't be filled with exactly 3 energy price data points it won't be created (this can just happen at the end of the iteration).
-                    Also while these HourPair's are created the average price of all with the HourPair associated EnergyPricePoint's are calculated.
-            2. The algorithm find the cheapest HourPair by comparing all average prices of all HourPair's with each other. The HourPair with the smallest average price is the cheapest HourPair.
-            3. If the user for example specified to find the cheapest hours for the duration of 3,5 hours, HourPairs with 4 items are created. Then the algorithm checks if the first 30 minutes or the last 30 minutes are cheaper and accordingly takes away 30 minutes of the first EnergyPricePoint or 30 minutes of the last EnergyPricePoint. If the user only wants to find the cheapest energy prices for full hours than this step doesn't matter.
-         */
-        
         DispatchQueue.global(qos: .userInitiated).async {
             var startTime = self.startDate
             var endTime = self.endDate

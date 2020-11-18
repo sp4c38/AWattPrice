@@ -53,7 +53,7 @@ struct EnergyPriceGraph: View {
     @State var currentPointerIndexSelected: Int? = nil
     @State var singleHeight: CGFloat = 0
     @State var singleBarSettings: SingleBarSettings? = nil
-
+    
     var body: some View {
         // The drag gesture responsible for making the graph interactive.
         // It gets active when the user presses anywhere on the graph.
@@ -104,6 +104,21 @@ struct EnergyPriceGraph: View {
                     graphHourPointData.append((hourPointEntry, currentHeight))
                     currentHeight += singleHeight
                 }
+            }
+            .onReceive(awattarData.$energyData) { newEnergyData in
+                print("Changed")
+                singleBarSettings = SingleBarSettings(minPrice: newEnergyData!.minPrice, maxPrice: newEnergyData!.maxPrice)
+
+                singleHeight = geometry.size.height / CGFloat(newEnergyData!.prices.count)
+
+                graphHourPointData = []
+
+                var currentHeight: CGFloat = 0
+                for hourPointEntry in newEnergyData!.prices {
+                    graphHourPointData.append((hourPointEntry, currentHeight))
+                    currentHeight += singleHeight
+                }
+
             }
         }
         .ignoresSafeArea(.keyboard) // Ignore the keyboard. Without this the graph was been squeezed together when opening the keyboard somewhere in the app

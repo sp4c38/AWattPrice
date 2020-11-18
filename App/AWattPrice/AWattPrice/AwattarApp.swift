@@ -31,7 +31,6 @@ struct AwattarApp: App {
     
     init() {
         awattarData = AwattarData()
-        awattarData.download()
     }
     
     var body: some Scene {

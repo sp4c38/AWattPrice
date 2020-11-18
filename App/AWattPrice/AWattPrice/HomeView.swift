@@ -48,6 +48,7 @@ struct HomeView: View {
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .onAppear {
+            awattarData.download()
             currentSetting.validateTariffAndEnergyPriceSet()
         }
         .onChange(of: scenePhase) { phase in

@@ -237,7 +237,8 @@ class CheapestHourManager: ObservableObject {
                     }
                 }
                 
-                if intervenesWithStartHour && !intervenesWithEndHour {
+                if intervenesWithStartHour && !intervenesWithEndHour && startTimeDifference != 0 {
+                    print("Intervenes with start hour")
                     searchAndAddFollowingItem(timestamp: Int(endDateLastItem.timeIntervalSince1970))
                     maxPointIndex = cheapestPair.associatedPricePoints.count - 1
                     
@@ -256,7 +257,8 @@ class CheapestHourManager: ObservableObject {
                     }
                 }
                 
-                if intervenesWithEndHour && !intervenesWithStartHour {
+                if intervenesWithEndHour && !intervenesWithStartHour && endTimeDifference != 0 {
+                    print("Intervenes with end hour")
                     searchAndAddPreFollowingItem(timestamp: Int(startDateFirstItem.timeIntervalSince1970))
                     maxPointIndex = cheapestPair.associatedPricePoints.count - 1
                     
@@ -265,6 +267,7 @@ class CheapestHourManager: ObservableObject {
                 }
                 
                 if intervenesWithStartHour && intervenesWithEndHour {
+                    print("Intervenes with both start and end hour")
                     var allItems = [EnergyPricePoint]()
                     for item in energyData.prices {
                         let itemStartTime = Date(timeIntervalSince1970: TimeInterval(item.startTimestamp))
@@ -274,16 +277,24 @@ class CheapestHourManager: ObservableObject {
                         }
                     }
                     
-                    if allItems[0].startTimestamp == cheapestPair.associatedPricePoints[0].startTimestamp {
-                        
-                        allItems[0].startTimestamp += startTimeDifference * 60
-                        allItems[allItems.count - 1].endTimestamp -= (60 - startTimeDifference) * 60
-                    } else if allItems[allItems.count - 1].endTimestamp == cheapestPair.associatedPricePoints[maxPointIndex].endTimestamp {
-                        allItems[allItems.count - 1].endTimestamp -= (60 - endTimeDifference) * 60
-                        allItems[0].startTimestamp += endTimeDifference * 60
-                    }
                     
-                    cheapestPair.associatedPricePoints = allItems
+                    if (startTimeDifference != 0) || (endTimeDifference != 0) {
+                        var returnModifiedAllItems = false
+                        if allItems[0].startTimestamp == cheapestPair.associatedPricePoints[0].startTimestamp {
+                            allItems[0].startTimestamp += startTimeDifference * 60
+                            allItems[allItems.count - 1].endTimestamp -= (60 - startTimeDifference) * 60
+                            returnModifiedAllItems = true
+                            
+                        } else if allItems[allItems.count - 1].endTimestamp == cheapestPair.associatedPricePoints[maxPointIndex].endTimestamp {
+                            allItems[allItems.count - 1].endTimestamp -= (60 - endTimeDifference) * 60
+                            allItems[0].startTimestamp += endTimeDifference * 60
+                            returnModifiedAllItems = true
+                        }
+                        
+                        if returnModifiedAllItems {
+                            cheapestPair.associatedPricePoints = allItems
+                        }
+                    }
                 }
             }
 

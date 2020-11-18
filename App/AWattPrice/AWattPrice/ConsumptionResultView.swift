@@ -99,7 +99,7 @@ struct ConsumptionResultView: View {
                 }
                 .padding(16)
             } else if cheapestHourManager.errorOccurredFindingCheapestHours == true {
-                Text("An error occurred.\nPlease try again later.")
+                Text("cheapestTimeErrorOccurred")
                     .multilineTextAlignment(.center)
                     .font(.callout)
             } else {

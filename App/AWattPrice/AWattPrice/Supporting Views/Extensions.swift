@@ -87,8 +87,24 @@ extension String {
     }
 }
 
+extension Double {
+    var priceString: String? {
+        let numberFormatter = NumberFormatter()
+        numberFormatter.numberStyle = .decimal
+        numberFormatter.maximumFractionDigits = 2
+    
+        if let result = numberFormatter.string(from: NSNumber(value: self)) {
+            return result
+        } else {
+            return nil
+        }
+    }
+}
+
 extension String {
     func localized(withComment: String? = nil) -> String {
         return NSLocalizedString(self, comment: withComment ?? "")
     }
 }
+
+

@@ -128,12 +128,12 @@ class CheapestHourManager: ObservableObject {
     
     func calculateHourlyPrice(cheapestHourPair: HourPair, currentSetting: CurrentSetting) -> HourPair {
         if currentSetting.setting!.awattarTariffIndex == 0 {
-            let electricityPriceNoBonus = Float(cheapestHourPair.associatedPricePoints.count) * currentSetting.setting!.awattarBaseElectricityPrice
+            let electricityPriceNoBonus = Double(cheapestHourPair.associatedPricePoints.count) * currentSetting.setting!.awattarBaseElectricityPrice
             if currentSetting.setting!.pricesWithTaxIncluded {
-                cheapestHourPair.hourlyEnergyCosts = electricityPriceNoBonus + cheapestHourPair.countAllPricesTogether(withVat: true)
+                cheapestHourPair.hourlyEnergyCosts = Float(electricityPriceNoBonus) + cheapestHourPair.countAllPricesTogether(withVat: true)
                 
             } else {
-                cheapestHourPair.hourlyEnergyCosts = electricityPriceNoBonus + cheapestHourPair.countAllPricesTogether(withVat: false)
+                cheapestHourPair.hourlyEnergyCosts = Float(electricityPriceNoBonus) + cheapestHourPair.countAllPricesTogether(withVat: false)
             }
         }
         return cheapestHourPair

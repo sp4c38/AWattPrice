@@ -36,7 +36,7 @@ struct HomeView: View {
             .navigationTitle("elecPrice")
             .navigationBarTitleDisplayMode(.large)
             .fullScreenCover(isPresented: $showSettingsPage) {
-                SettingsPageView().environmentObject(TextFieldCurrentlySelected())
+                SettingsPageView()
             }
             .navigationBarItems(trailing:
                 Button(action: { showSettingsPage.toggle() }) {

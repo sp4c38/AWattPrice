@@ -9,7 +9,6 @@ import SwiftUI
 
 struct AwattarBasicEnergyChargePriceSetting: View {
     @EnvironmentObject var currentSetting: CurrentSetting
-    @EnvironmentObject var textFieldSelected: TextFieldCurrentlySelected
     
     @State var baseEnergyPriceString = ""
     
@@ -40,16 +39,12 @@ struct AwattarBasicEnergyChargePriceSetting: View {
         VStack(alignment: .leading, spacing: 15) {
             HStack {
                 TextField("centPerKwh",
-                          text: $baseEnergyPriceString.animation(),
-                          onEditingChanged: { value in
-                              textFieldSelected.selected = value
-                              textFieldSelected.isFirstSelected = true
-                          })
+                          text: $baseEnergyPriceString.animation())
                     .keyboardType(.decimalPad)
                     .onChange(of: baseEnergyPriceString) { newValue in
                         print("base electricity charge changed")
                         print(newValue)
-                        currentSetting.changeBaseElectricityCharge(newBaseElectricityCharge: Float( newValue.doubleValue ?? 0))
+                        currentSetting.changeBaseElectricityCharge(newBaseElectricityCharge: newValue.doubleValue ?? 0)
                     }
                 
                 

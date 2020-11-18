@@ -19,7 +19,13 @@ extension Setting {
     /// Boolean which sets if prices throughout the app will be calculated with or without VAT/tax included
     @NSManaged public var pricesWithTaxIncluded: Bool
     /// The base energy price which must be individually set by the user
-    @NSManaged public var awattarBaseElectricityPrice: Float
+    @NSManaged public var awattarBaseElectricityPrice: Double
+    
     /// The splash screen must only be shown once. This persistent stored value ensures that this is the case.
     @NSManaged public var splashScreensFinished: Bool
+    
+    /// The last power usage which was typed in on the cheapest time page
+    @NSManaged public var cheapestTimeLastPower: Double
+    /// The last total consumption which was typed in on the cheapest time page
+    @NSManaged public var cheapestTimeLastConsumption: Double
 }

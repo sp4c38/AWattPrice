@@ -158,7 +158,7 @@ class CheapestHourManager: ObservableObject {
         DispatchQueue.global(qos: .userInitiated).async {
             var startTime = self.startDate
             var endTime = self.endDate
-            var timeRangeNumber = Int(self.timeOfUsage.rounded(.up))
+            let timeRangeNumber = Int(self.timeOfUsage.rounded(.up))
             
             var startTimeDifference = 0
             var endTimeDifference = 0
@@ -174,10 +174,6 @@ class CheapestHourManager: ObservableObject {
                 endTime = endTime.addingTimeInterval(3600)
                 
             }
-            
-//            if (Calendar.current.component(.minute, from: self.startDate) != 0) || (Calendar.current.component(.minute, from: self.endDate) != 0) {
-//                timeRangeNumber += 1
-//            }
             
             // Create all HourPair's for later comparison
             var allPairs = [HourPair]()
@@ -214,12 +210,12 @@ class CheapestHourManager: ObservableObject {
 
             if cheapestHourPairIndex != nil {
                 let cheapestPair = allPairs[cheapestHourPairIndex!]
-                let maxPricePointIndex = cheapestPair.associatedPricePoints.count - 1
+                var maxPointIndex = cheapestPair.associatedPricePoints.count - 1
                 
                 let startTimeHourEnd = startTime.addingTimeInterval(3600)
                 let endTimeHourStart = endTime.addingTimeInterval(-3600)
                 let startDateFirstItem = Date(timeIntervalSince1970: TimeInterval(cheapestPair.associatedPricePoints[0].startTimestamp))
-                let endDateLastItem = Date(timeIntervalSince1970: TimeInterval(cheapestPair.associatedPricePoints[maxPricePointIndex].endTimestamp))
+                let endDateLastItem = Date(timeIntervalSince1970: TimeInterval(cheapestPair.associatedPricePoints[maxPointIndex].endTimestamp))
                 
                 var intervenesWithStartHour = false
                 if startDateFirstItem >= startTime && startDateFirstItem <= startTimeHourEnd {
@@ -230,8 +226,22 @@ class CheapestHourManager: ObservableObject {
                     intervenesWithEndHour = true
                 }
                 
-                if intervenesWithStartHour || intervenesWithEndHour {
-                    print("Intervenes with both")
+                if intervenesWithStartHour {
+                    // Find next following energy price point
+                    for item in energyData.prices {
+                        if item.startTimestamp == Int(endDateLastItem.timeIntervalSince1970) {
+                            cheapestPair.associatedPricePoints.append(item)
+                            print("Found the missing energy price point with start timestamp \(item.startTimestamp)")
+                            break
+                        }
+                    }
+                    
+                    maxPointIndex = cheapestPair.associatedPricePoints.count - 1
+                    
+                    if cheapestPair.associatedPricePoints[0].marketprice < cheapestPair.associatedPricePoints[maxPointIndex].marketprice {
+                        cheapestPair.associatedPricePoints[0].startTimestamp += startTimeDifference * 60
+                        cheapestPair.associatedPricePoints[maxPointIndex].endTimestamp -= (60 - startTimeDifference) * 60
+                    }
                 }
             }
 

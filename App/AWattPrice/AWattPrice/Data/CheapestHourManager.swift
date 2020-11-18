@@ -169,7 +169,7 @@ class CheapestHourManager: ObservableObject {
             }
             
             if Calendar.current.component(.minute, from: self.endDate) != 0 {
-                endTimeDifference = 60 - Calendar.current.component(.minute, from: self.endDate)
+                endTimeDifference = Calendar.current.component(.minute, from: self.endDate)
                 endTime = Calendar.current.date(bySettingHour: Calendar.current.component(.hour, from: endTime), minute: 0, second: 0, of: endTime)!
                 endTime = endTime.addingTimeInterval(3600)
                 
@@ -226,23 +226,37 @@ class CheapestHourManager: ObservableObject {
                     intervenesWithEndHour = true
                 }
                 
-                if intervenesWithStartHour {
+                if intervenesWithStartHour && !intervenesWithEndHour {
                     // Find next following energy price point
                     for item in energyData.prices {
                         if item.startTimestamp == Int(endDateLastItem.timeIntervalSince1970) {
                             cheapestPair.associatedPricePoints.append(item)
-                            print("Found the missing energy price point with start timestamp \(item.startTimestamp)")
+                            print("Found the missing energy price point with start timestamp \(item.startTimestamp).")
                             break
                         }
                     }
-                    
                     maxPointIndex = cheapestPair.associatedPricePoints.count - 1
                     
-                    if cheapestPair.associatedPricePoints[0].marketprice < cheapestPair.associatedPricePoints[maxPointIndex].marketprice {
-                        cheapestPair.associatedPricePoints[0].startTimestamp += startTimeDifference * 60
-                        cheapestPair.associatedPricePoints[maxPointIndex].endTimestamp -= (60 - startTimeDifference) * 60
-                    }
+                    cheapestPair.associatedPricePoints[0].startTimestamp += startTimeDifference * 60
+                    cheapestPair.associatedPricePoints[maxPointIndex].endTimestamp -= (60 - startTimeDifference) * 60
                 }
+                
+                if intervenesWithEndHour && !intervenesWithStartHour {
+                    // Find the pre-following price point
+                    for item in energyData.prices {
+                        if item.endTimestamp == Int(startDateFirstItem.timeIntervalSince1970) {
+                            print("Found the missing energy proce point with end timestamp \(item.endTimestamp).")
+                            cheapestPair.associatedPricePoints.insert(item, at: 0)
+                            break
+                        }
+                    }
+                    maxPointIndex = cheapestPair.associatedPricePoints.count - 1
+                    
+                    cheapestPair.associatedPricePoints[maxPointIndex].endTimestamp -= (60 - endTimeDifference) * 60
+                    cheapestPair.associatedPricePoints[0].startTimestamp += endTimeDifference * 60
+                }
+                
+                print("")
             }
 
             DispatchQueue.main.async {

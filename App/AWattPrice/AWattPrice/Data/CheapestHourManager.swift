@@ -163,9 +163,6 @@ class CheapestHourManager: ObservableObject {
             var startTimeDifference = 0
             var endTimeDifference = 0
             
-            print(startTime.timeIntervalSince1970)
-            print(endTime.timeIntervalSince1970)
-            
             if Calendar.current.component(.minute, from: startTime) != 0 {
                 startTimeDifference = Calendar.current.component(.minute, from: startTime)
                 startTime = Calendar.current.date(bySettingHour: Calendar.current.component(.hour, from: startTime), minute: 0, second: 0, of: startTime)!
@@ -178,9 +175,9 @@ class CheapestHourManager: ObservableObject {
                 
             }
             
-            if (Calendar.current.component(.minute, from: startTime) != 0) || (Calendar.current.component(.minute, from: self.endDate) != 0) {
-                timeRangeNumber += 1
-            }
+//            if (Calendar.current.component(.minute, from: self.startDate) != 0) || (Calendar.current.component(.minute, from: self.endDate) != 0) {
+//                timeRangeNumber += 1
+//            }
             
             // Create all HourPair's for later comparison
             var allPairs = [HourPair]()
@@ -214,72 +211,30 @@ class CheapestHourManager: ObservableObject {
                     cheapestHourPairIndex = pairIndex
                 }
             }
-//
-//            let minuteDifferenceInSeconds = Int(((Double(nextRoundedUpHour) - self.timeOfUsage) * 60 * 60).rounded())
-//            var differenceIsBefore = false
-//
-            if cheapestHourPairIndex != nil {
-                // A index was found for the cheapest HourPair
 
-                var cheapestPair = allPairs[cheapestHourPairIndex!]
-                let highestIndex = cheapestPair.associatedPricePoints.count - 1
+            if cheapestHourPairIndex != nil {
+                let cheapestPair = allPairs[cheapestHourPairIndex!]
+                let maxPricePointIndex = cheapestPair.associatedPricePoints.count - 1
                 
                 let startTimeHourEnd = startTime.addingTimeInterval(3600)
                 let endTimeHourStart = endTime.addingTimeInterval(-3600)
-                
                 let startDateFirstItem = Date(timeIntervalSince1970: TimeInterval(cheapestPair.associatedPricePoints[0].startTimestamp))
-                let endDateLastItem = Date(timeIntervalSince1970: TimeInterval(cheapestPair.associatedPricePoints[highestIndex].endTimestamp))
+                let endDateLastItem = Date(timeIntervalSince1970: TimeInterval(cheapestPair.associatedPricePoints[maxPricePointIndex].endTimestamp))
                 
-                var intervenesWithStartTimeHour = false
-                var intervenesWithEndTimeHour = false
-                
+                var intervenesWithStartHour = false
                 if startDateFirstItem >= startTime && startDateFirstItem <= startTimeHourEnd {
-                    // Intervenes with the start time hour
-                    intervenesWithStartTimeHour = true
+                    intervenesWithStartHour = true
                 }
-                
+                var intervenesWithEndHour = false
                 if endDateLastItem >= endTimeHourStart && endDateLastItem <= endTime {
-                    // Intervenes with the end time hour
-                    intervenesWithEndTimeHour = true
-                }
-                print(startTime.timeIntervalSince1970)
-                print(endTime.timeIntervalSince1970)
-                
-                
-                if intervenesWithStartTimeHour && intervenesWithEndTimeHour {
-                    
-                    cheapestPair.associatedPricePoints[0].startTimestamp += startTimeDifference * 60
-                    cheapestPair.associatedPricePoints[highestIndex].endTimestamp -=  endTimeDifference * 60
-                } else {
-                    if intervenesWithStartTimeHour {
-                        print("start intervene")
-                        cheapestPair.associatedPricePoints[0].startTimestamp += startTimeDifference * 60
-                        cheapestPair.associatedPricePoints[highestIndex].endTimestamp -= (60 - startTimeDifference) * 60
-                    }
-                    
-                    if intervenesWithEndTimeHour {
-                        print("end intervene")
-                        
-                        cheapestPair.associatedPricePoints[highestIndex].endTimestamp -= endTimeDifference * 60
-                        cheapestPair.associatedPricePoints[0].startTimestamp += (60 - endTimeDifference) * 60
-                    }
+                    intervenesWithEndHour = true
                 }
                 
-//                let maxAssociatedPricePointsIndex = cheapestPair.associatedPricePoints.count - 1
-//
-//                if cheapestPair.associatedPricePoints[0].marketprice > cheapestPair.associatedPricePoints[maxAssociatedPricePointsIndex].marketprice {
-//                    differenceIsBefore = true
-//                }
-//
-//                if differenceIsBefore {
-//                    cheapestPair.associatedPricePoints[0].startTimestamp += minuteDifferenceInSeconds
-//                } else {
-//                    cheapestPair.associatedPricePoints[maxAssociatedPricePointsIndex].endTimestamp -= minuteDifferenceInSeconds
-//                }
-//
-//                cheapestPair = self.calculateHourlyPrice(cheapestHourPair: cheapestPair, currentSetting: currentSetting)
+                if intervenesWithStartHour || intervenesWithEndHour {
+                    print("Intervenes with both")
+                }
             }
-//
+
             DispatchQueue.main.async {
                 if cheapestHourPairIndex != nil {
                     self.cheapestHoursForUsage = allPairs[cheapestHourPairIndex!]

@@ -120,10 +120,10 @@ async def get_data(config: Box, region: Optional[Region] = None, force: bool = F
                 must_write_data = True
                 data.prices.append(entry)
         if must_write_data:
-            data.meta.update_ts = arrow.utcnow().timestamp
+            data.meta.update_ts = now.timestamp
     elif fetched_data:
         data = Box({"prices": [], "meta": {}}, box_dots=True)
-        data.meta["update_ts"] = arrow.utcnow().timestamp
+        data.meta["update_ts"] = now.timestamp
         for entry in fetched_data:
             entry = transform_entry(entry)
             if entry:

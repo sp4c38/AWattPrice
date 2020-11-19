@@ -113,7 +113,7 @@ async def get_data(config: Box, region: Optional[Region] = None, force: bool = F
         max_existing_data_start_timestamp = max([d.start_timestamp for d in data.prices]) * TIME_CORRECT
         for entry in fetched_data:
             ts = entry.start_timestamp
-            if ts < max_existing_data_start_timestamp:
+            if ts <= max_existing_data_start_timestamp:
                 continue
             entry = transform_entry(entry)
             if entry:

@@ -115,11 +115,12 @@ async def get_data(config: Box, region: Optional[Region] = None, force: bool = F
             ts = entry.start_timestamp
             if ts < max_existing_data_start_timestamp:
                 continue
-            # awattar_data["prices"].append(price)
             entry = transform_entry(entry)
             if entry:
                 must_write_data = True
                 data.prices.append(entry)
+        if must_write_data:
+            data.meta.update_ts = arrow.utcnow().timestamp
     elif fetched_data:
         data = Box({"prices": [], "meta": {}}, box_dots=True)
         data.meta["update_ts"] = arrow.utcnow().timestamp

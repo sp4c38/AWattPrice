@@ -24,11 +24,17 @@ from .defaults import Region
 from .utils import before_log
 
 
-async def get(*, config: Box, region: Region) -> Optional[List[Any]]:
+async def get(
+        *,
+        config: Box,
+        region: Region,
+        start: Optional[int] = None,
+        end: Optional[int] = None,
+) -> Optional[List[Any]]:
     """Fetch and write Awattar data."""
     start_ts = arrow.utcnow()
     try:
-        data = await get_data(config=config, region=region)
+        data = await get_data(config=config, region=region, start=start, end=end)
     except Exception as e:
         log.warning("Could not fetch Awattar data: {}.".format(str(e)))
     else:
@@ -66,6 +72,7 @@ async def get_data(
         url = endpoint.format("")
     timeout = 10.0
 
+    log.debug(f"Awattar URL: {url}")
     try:
         async with httpx.AsyncClient() as client:
             response = await client.get(url, timeout=timeout)

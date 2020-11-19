@@ -80,7 +80,7 @@ async def get_data(config: Box, region: Optional[Region] = None, force: bool = F
         region = Region.DE
     # 1) Read the data file.
     file_path = Path(config.file_location.data_dir).expanduser() / Path(f"awattar-data-{region.name.lower()}.json")
-    data = read_data(file_path=file_path)
+    data = await read_data(file_path=file_path)
     fetched_data = None
     need_update = True
     last_update = 0

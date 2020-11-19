@@ -49,6 +49,7 @@ class CheapestHourManager: ObservableObject {
     ///     - [3] energyUsageString is empty
     ///     - [4] energyUsageString contains wrong characters
     ///     - [5] the time which is needed with current power output and energy usage is smaller than the time range specified
+    ///     - [6] not supported in this beta release
     func setValues() -> [Int] {
         self.cheapestHoursForUsage = nil
         var errorValues = [Int]()
@@ -84,7 +85,11 @@ class CheapestHourManager: ObservableObject {
                 errorValues.append(5)
             }
         }
-
+        
+        if (self.energyUsage / self.powerOutput).truncatingRemainder(dividingBy: 1) != 0 {
+            errorValues.append(6)
+        }
+        
         if !(errorValues.count > 0) {
             errorValues.append(0)
         }

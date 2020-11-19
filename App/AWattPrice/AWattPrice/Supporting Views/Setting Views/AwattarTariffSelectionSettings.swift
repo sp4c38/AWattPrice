@@ -43,7 +43,6 @@ struct AwattarBasicEnergyChargePriceSetting: View {
                     .keyboardType(.decimalPad)
                     .onChange(of: baseEnergyPriceString) { newValue in
                         print("base electricity charge changed")
-                        print(newValue)
                         currentSetting.changeBaseElectricityCharge(newBaseElectricityCharge: newValue.doubleValue ?? 0)
                     }
                 

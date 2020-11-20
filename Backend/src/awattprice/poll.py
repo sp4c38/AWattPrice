@@ -102,7 +102,7 @@ async def get_data(config: Box, region: Optional[Region] = None, force: bool = F
     if need_update or force:
         # By default the Awattar API returns data for the next 24h. It can provide
         # data until tomorrow midnight. Let's ask for that. Further, set the start
-        # time to the last full hour. The Awattar API expects microsecond time stamps.
+        # time to the last full hour. The Awattar API expects microsecond timestamps.
         start = now.replace(minute=0, second=0, microsecond=0).timestamp * TIME_CORRECT
         end = now.shift(days=+2).replace(hour=0, minute=0, second=0, microsecond=0).timestamp * TIME_CORRECT
         future = awattar_read_task(config=config, region=region, start=start, end=end)

@@ -20,6 +20,8 @@ from pathlib import Path
 from timeit import default_timer
 from typing import Any, Callable, Dict, List, NamedTuple, Optional, Union
 
+import aiofiles
+
 from box import Box  # type: ignore
 from filelock import FileLock
 from loguru import logger as log
@@ -123,16 +125,19 @@ def verify_file_permissions(path: Path) -> bool:
     return False
 
 
-def read_data(*, file_path: Path) -> Optional[Box]:
+async def read_data(*, file_path: Path) -> Optional[Box]:
     """Return the data read from file_path."""
     if not file_path.is_file():
         return None
-    with file_path.open() as fh:
-        try:
-            data = json.load(fh)
-        except Exception as e:
-            log.warning(f"Could not read and parse data from {file_path}: {e}.")
-            return None
+    async with aiofiles.open(file_path) as fh:
+        raw_data = ""
+        async for line in fh:
+            raw_data += line
+    try:
+        data = json.loads(raw_data)
+    except Exception as e:
+        log.warning(f"Could not read and parse data from {file_path}: {e}.")
+        return None
     return Box(data)
 
 

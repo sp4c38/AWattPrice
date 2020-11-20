@@ -45,11 +45,18 @@ def transform_entry(entry: Box) -> Optional[Box]:
     return None
 
 
-async def awattar_read_task(*, config: Box, region: Region) -> Optional[List[Box]]:
+async def awattar_read_task(
+        *,
+        config: Box,
+        region: Region,
+        start: Optional[int] = None,
+        end: Optional[int] = None,
+) -> Optional[List[Box]]:
     """Async worker to read the Awattar data. If too old, poll the
-    Awattar API."""
+    Awattar API.
+    """
     try:
-        data = await awattar.get(config=config, region=region)
+        data = await awattar.get(config=config, region=region, start=start, end=end)
     except Exception as e:
         log.warning(f"Error in Awattar data poller: {e}")
     else:
@@ -73,7 +80,7 @@ async def get_data(config: Box, region: Optional[Region] = None, force: bool = F
         region = Region.DE
     # 1) Read the data file.
     file_path = Path(config.file_location.data_dir).expanduser() / Path(f"awattar-data-{region.name.lower()}.json")
-    data = read_data(file_path=file_path)
+    data = await read_data(file_path=file_path)
     fetched_data = None
     need_update = True
     last_update = 0
@@ -93,7 +100,12 @@ async def get_data(config: Box, region: Optional[Region] = None, force: bool = F
         else:
             need_update = False
     if need_update or force:
-        future = awattar_read_task(config=config, region=region)
+        # By default the Awattar API returns data for the next 24h. It can provide
+        # data until tomorrow midnight. Let's ask for that. Further, set the start
+        # time to the last full hour. The Awattar API expects microsecond timestamps.
+        start = now.replace(minute=0, second=0, microsecond=0).timestamp * TIME_CORRECT
+        end = now.shift(days=+2).replace(hour=0, minute=0, second=0, microsecond=0).timestamp * TIME_CORRECT
+        future = awattar_read_task(config=config, region=region, start=start, end=end)
         if future is None:
             return None
         # results = asyncio.run(await_tasks([future]))
@@ -120,10 +132,10 @@ async def get_data(config: Box, region: Optional[Region] = None, force: bool = F
                 must_write_data = True
                 data.prices.append(entry)
         if must_write_data:
-            data.meta.update_ts = arrow.utcnow().timestamp
+            data.meta.update_ts = now.timestamp
     elif fetched_data:
         data = Box({"prices": [], "meta": {}}, box_dots=True)
-        data.meta["update_ts"] = arrow.utcnow().timestamp
+        data.meta["update_ts"] = now.timestamp
         for entry in fetched_data:
             entry = transform_entry(entry)
             if entry:

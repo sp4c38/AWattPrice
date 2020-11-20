@@ -85,11 +85,7 @@ class CheapestHourManager: ObservableObject {
                 errorValues.append(5)
             }
         }
-        
-        if (self.energyUsage / self.powerOutput).truncatingRemainder(dividingBy: 1) != 0 {
-            errorValues.append(6)
-        }
-        
+
         if !(errorValues.count > 0) {
             errorValues.append(0)
         }
@@ -160,13 +156,14 @@ class CheapestHourManager: ObservableObject {
             
             if Calendar.current.component(.minute, from: startTime) != 0 {
                 startTimeDifference = Calendar.current.component(.minute, from: startTime)
-                startTime = Calendar.current.date(bySettingHour: Calendar.current.component(.hour, from: startTime), minute: 0, second: 0, of: startTime)!
+                startTime = Calendar.current.date(bySettingHour: Calendar.current.component(.hour, from: startTime), minute: 0, second: 0, of: startTime)! // Set the minute and second of the start time both to zero
             }
             
             if Calendar.current.component(.minute, from: self.endDate) != 0 {
                 endTimeDifference = Calendar.current.component(.minute, from: self.endDate)
                 endTime = Calendar.current.date(bySettingHour: Calendar.current.component(.hour, from: endTime), minute: 0, second: 0, of: endTime)!
                 endTime = endTime.addingTimeInterval(3600)
+                // Set the end time to the start of the next following hour
                 
             }
             
@@ -289,6 +286,19 @@ class CheapestHourManager: ObservableObject {
                         if returnModifiedAllItems {
                             cheapestPair.associatedPricePoints = allItems
                         }
+                    }
+                }
+                
+                let timeRangeDifference = (Double(timeRangeNumber) - self.timeOfUsage) * 60
+                if timeRangeDifference != 0 {
+                    // If the user searches for a time with hours and minutes like 2,3h or 1h 40min than this if statment triggers
+                    // It makes sure that the start timestamp and end timestamp is set correctly to met the users wished output (hours and minutes)
+                    if cheapestPair.associatedPricePoints[0].marketprice <= cheapestPair.associatedPricePoints[maxPointIndex].marketprice {
+                        print("First price point is cheaper than last")
+                        cheapestPair.associatedPricePoints[maxPointIndex].endTimestamp -= Int(timeRangeDifference * 60)
+                    } else {
+                        print("Last price point is cheaper than first")
+                        cheapestPair.associatedPricePoints[0].startTimestamp += Int(timeRangeDifference * 60)
                     }
                 }
             }

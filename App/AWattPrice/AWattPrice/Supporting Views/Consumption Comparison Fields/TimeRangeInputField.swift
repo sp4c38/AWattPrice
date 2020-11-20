@@ -102,28 +102,22 @@ struct TimeRangeInputField: View {
             }
             .padding([.top, .bottom], 20)
             
-            VStack(alignment: .leading) {
-                HStack {
-                    Button(action: {
-                        cheapestHourManager.setTimeIntervalThisNight()
-                    }) {
-                        Text("tonight")
-                            .bold()
-                    }
-                    .buttonStyle(TimeRangeButtonStyle())
-                    
-                    Button(action: {
-                        cheapestHourManager.setTimeIntervalNextThreeHours()
-                    }) {
-                        Text("nextThreeHours")
-                            .bold()
-                    }
-                    .buttonStyle(TimeRangeButtonStyle())
+            HStack {
+                Button(action: {
+                    cheapestHourManager.setTimeIntervalThisNight()
+                }) {
+                    Text("tonight")
+                        .bold()
                 }
+                .buttonStyle(TimeRangeButtonStyle())
                 
-                Text("Beta only message: Disabled in this beta version.")
-                    .font(.caption)
-                    .fixedSize(horizontal: false, vertical: true)
+                Button(action: {
+                    cheapestHourManager.setTimeIntervalNextThreeHours()
+                }) {
+                    Text("nextThreeHours")
+                        .bold()
+                }
+                .buttonStyle(TimeRangeButtonStyle())
             }
             .padding(.top, 3)
             .opacity(0.7)

@@ -42,13 +42,6 @@ struct ConsumptionComparisonView: View {
                         VStack(alignment: .center, spacing: 20) {
                             PowerOutputInputField(errorValues: fieldsEnteredErrorValues)
                             EnergyUsageInputField(errorValues: fieldsEnteredErrorValues)
-                            if fieldsEnteredErrorValues.contains(6) {
-                                Text("Beta only message: In this beta version only a Power and a Total consumption can be used which results in full hours (Total consumption / Power = straight number). Please change these values accordingly to continue.")
-                                    .font(.caption)
-                                    .opacity(0.7)
-                                    .transition(.opacity)
-                                    .fixedSize(horizontal: false, vertical: true)
-                            }
                             TimeRangeInputField(errorValues: fieldsEnteredErrorValues)
                         }
                         .animation(.easeInOut)

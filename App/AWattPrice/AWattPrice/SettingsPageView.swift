@@ -11,26 +11,35 @@ import SwiftUI
 /// A place for the user to modify certain settings. Those changes are automatically stored (if modified) in persistent storage.
 struct SettingsPageView: View {
     @Environment(\.presentationMode) var presentationMode
+    @EnvironmentObject var currentSetting: CurrentSetting
     
     var body: some View {
         NavigationView {
-            CustomInsetGroupedList {
-                PricesWithVatIncludedSetting()
-                    .onTapGesture {
-                            self.hideKeyboard()
-                    }
+            VStack {
+                if currentSetting.setting != nil {
+                    CustomInsetGroupedList {
+                        RegionSelection()
+                        
+                        PricesWithVatIncludedSetting()
+                            .onTapGesture {
+                                    self.hideKeyboard()
+                            }
 
-                AwattarTariffSelectionSetting()
+                        AwattarTariffSelectionSetting()
 
-                GetHelpView()
-                    .onTapGesture {
-                            self.hideKeyboard()
-                    }
+                        GetHelpView()
+                            .onTapGesture {
+                                    self.hideKeyboard()
+                            }
 
-                AppVersionView()
-                    .onTapGesture {
-                        self.hideKeyboard()
+                        AppVersionView()
+                            .onTapGesture {
+                                self.hideKeyboard()
+                            }
                     }
+                } else {
+                    Text("notLoadedSettings")
+                }
             }
             .navigationTitle("settings")
             .navigationViewStyle(StackNavigationViewStyle())
@@ -44,6 +53,7 @@ struct SettingsPageView: View {
         
         var body: some View {
             Button(action: {
+                self.hideKeyboard()
                 currentSetting.validateTariffAndEnergyPriceSet()
                 presentationMode.dismiss()
             }) {

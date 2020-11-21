@@ -35,6 +35,9 @@
 
 // Settings Page and Help & Suggestions page localizations
 "settings" = "Settings";
+"notLoadedSettings" = "Couldn't load settings.";
+"region" = "Region";
+"regionToGetPrices" = "Select the region for which you would like to get aWATTar prices.";
 "priceWithVat" = "Prices with VAT";
 "baseElectricityPriceHint" = "You can find your base electricity price for your region on the aWATTar website.";
 "toAwattarWebsite" = "To the aWATTar website";

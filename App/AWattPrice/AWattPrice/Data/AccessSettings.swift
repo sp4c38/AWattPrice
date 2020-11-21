@@ -16,10 +16,11 @@ func getSetting(managedObjectContext: NSManagedObjectContext, fetchRequestResult
     } else if fetchRequestResults.count == 0 {
         // No Settings object is yet created. Create a new Settings object with default values and save it to the persistent store
         let newSetting = Setting(context: managedObjectContext)
-        newSetting.awattarTariffIndex = -1
-        newSetting.pricesWithTaxIncluded = true
-        newSetting.awattarBaseElectricityPrice = 0
         newSetting.splashScreensFinished = false
+        newSetting.regionSelection = 0
+        newSetting.pricesWithTaxIncluded = true
+        newSetting.awattarTariffIndex = -1
+        newSetting.awattarBaseElectricityPrice = 0
         newSetting.cheapestTimeLastPower = 0
         newSetting.cheapestTimeLastConsumption = 0
         
@@ -191,6 +192,18 @@ class CurrentSetting: NSObject, NSFetchedResultsControllerDelegate, ObservableOb
     func changeCheapestTimeLastConsumption(newLastConsumption: Double) {
         if setting != nil {
             self.setting!.cheapestTimeLastConsumption = newLastConsumption
+            
+            do {
+                try managedObjectContext.save()
+            } catch {
+                return
+            }
+        }
+    }
+    
+    func changeRegionSelection(newRegionSelection: Int16) {
+        if setting != nil {
+            self.setting!.regionSelection = newRegionSelection
             
             do {
                 try managedObjectContext.save()

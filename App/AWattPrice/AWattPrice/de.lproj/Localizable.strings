@@ -35,6 +35,9 @@
 
 // Settings Page and Help & Suggestions page localizations
 "settings" = "Einstellungen";
+"notLoadedSettings" = "Einstellungen konnten nicht geladen werden.";
+"region" = "Region";
+"regionToGetPrices" = "Wählen Sie die Region aus, für die Sie aWATTar Preise erhalten möchten.";
 "priceWithVat" = "Preise mit MwSt.";
 "baseElectricityPriceHint" = "Sie können Ihren Grundarbeitspreis für Ihre Region auf der aWATTar Webseite finden.";
 "toAwattarWebsite" = "Zur aWATTar Webseite";

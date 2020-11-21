@@ -106,7 +106,6 @@ struct EnergyPriceGraph: View {
                 }
             }
             .onReceive(awattarData.$energyData) { newEnergyData in
-                print("Changed")
                 singleBarSettings = SingleBarSettings(minPrice: newEnergyData!.minPrice, maxPrice: newEnergyData!.maxPrice)
 
                 singleHeight = geometry.size.height / CGFloat(newEnergyData!.prices.count)

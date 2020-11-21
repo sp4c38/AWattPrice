@@ -57,7 +57,7 @@ class AwattarData: ObservableObject {
         self.currentlyUpdatingData = true
         
         var energyRequest = URLRequest(
-                        url: URL(string: "https://awattprice.space8.me/data/test")!,
+                        url: URL(string: "https://awattprice.space8.me/data/")!,
                         cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy)
         
         energyRequest.httpMethod = "GET"
@@ -120,7 +120,6 @@ class AwattarData: ObservableObject {
             } else {
                 print("A data retrieval error occurred.")
                 if error != nil {
-                    print("The internet connection appears to be offline.")
                     DispatchQueue.main.async {
                         withAnimation {
                             self.dataRetrievalError = true

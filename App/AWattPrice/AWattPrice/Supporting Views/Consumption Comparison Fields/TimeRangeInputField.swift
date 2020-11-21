@@ -120,8 +120,6 @@ struct TimeRangeInputField: View {
                 .buttonStyle(TimeRangeButtonStyle())
             }
             .padding(.top, 3)
-            .opacity(0.7)
-            .disabled(true)
         }
         .frame(maxWidth: .infinity)
         .onAppear {

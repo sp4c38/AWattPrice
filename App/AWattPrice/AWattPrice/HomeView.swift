@@ -48,14 +48,17 @@ struct HomeView: View {
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .onAppear {
-            awattarData.download()
+            awattarData.download(forRegion: currentSetting.setting?.regionSelection ?? 0)
             currentSetting.validateTariffAndEnergyPriceSet()
         }
         .onChange(of: scenePhase) { phase in
             if phase == .active {
                 print("Updating data")
-                awattarData.download()
+                awattarData.download(forRegion: currentSetting.setting?.regionSelection ?? 0)
             }
+        }
+        .onChange(of: currentSetting.setting?.regionSelection) { newRegionSelection in
+            awattarData.download(forRegion: currentSetting.setting?.regionSelection ?? 0)
         }
     }
 }

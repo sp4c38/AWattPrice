@@ -53,11 +53,18 @@ class AwattarData: ObservableObject {
     @Published var energyData: EnergyData? = nil
     @Published var profilesData = ProfilesData()
 
-    func download() {
+    func download(forRegion regionIdentifier: Int16 = 0) {
         self.currentlyUpdatingData = true
         
+        var downloadUrl = ""
+        if regionIdentifier == 1 {
+            downloadUrl = "https://awattprice.space8.me/data/AT"
+        } else {
+            downloadUrl = "https://awattprice.space8.me/data/DE"
+        }
+        
         var energyRequest = URLRequest(
-                        url: URL(string: "https://awattprice.space8.me/data/")!,
+                        url: URL(string: downloadUrl)!,
                         cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy)
         
         energyRequest.httpMethod = "GET"

@@ -27,9 +27,12 @@ class PersistenceManager {
 @main
 struct AwattarApp: App {
     var persistence = PersistenceManager()
+    var currentSetting: CurrentSetting
+    
     var awattarData: AwattarData
     
     init() {
+        currentSetting = CurrentSetting(managedObjectContext: persistence.persistentContainer.viewContext)
         awattarData = AwattarData()
     }
     
@@ -39,7 +42,7 @@ struct AwattarApp: App {
             
             TabNavigatorView()
                 .environmentObject(awattarData)
-                .environmentObject(CurrentSetting(managedObjectContext: persistence.persistentContainer.viewContext))
+                .environmentObject(currentSetting)
                 .environmentObject(CheapestHourManager())
         }
     }

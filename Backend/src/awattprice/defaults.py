@@ -16,13 +16,17 @@ DEFAULT_CONFIG = """
 host: https://api.awattar.de
 url: /v1/marketdata
 
+[awattar.at]
+host: https://api.awattar.at
+url: /v1/marketdata
+
 [file_location]
 data_dir:   ~/awattprice/data/
 log_dir: ~/awattprice/log/
 
 [poll]
 # Do not poll more frequent than this in seconds
-awattar: 300
+awattar: 30
 """
 
 

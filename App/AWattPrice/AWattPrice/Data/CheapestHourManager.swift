@@ -325,19 +325,23 @@ class CheapestHourManager: ObservableObject {
             let results = recursiveSearch(with: allPairs)
             let cheapestHourPairIndex = results
 
-//
-//            let timeRangeDifference = (Double(timeRangeNumber) - self.timeOfUsage) * 60
-//            if timeRangeDifference != 0 {
-//                // If the user searches for a time with hours and minutes like 2,3h or 1h 40min than this if statment triggers
-//                // It makes sure that the start timestamp and end timestamp is set correctly to met the users wished output (hours and minutes)
-//                if cheapestPair.associatedPricePoints[0].marketprice <= cheapestPair.associatedPricePoints[maxPointIndex].marketprice {
-//                    print("First price point is cheaper than last")
-//                    cheapestPair.associatedPricePoints[maxPointIndex].endTimestamp -= Int(timeRangeDifference * 60)
-//                } else {
-//                    print("Last price point is cheaper than first")
-//                    cheapestPair.associatedPricePoints[0].startTimestamp += Int(timeRangeDifference * 60)
-//                }
-//            }
+            if cheapestHourPairIndex != nil {
+                let timeRangeDifference = (Double(timeRangeNumber) - self.timeOfUsage) * 60
+                if timeRangeDifference != 0 {
+                    let cheapestPair = allPairs[cheapestHourPairIndex!]
+                    let maxPointIndex = cheapestPair.associatedPricePoints.count - 1
+                    
+                    // If the user searches for a time with hours and minutes like 2,3h or 1h 40min than this if statment triggers
+                    // It makes sure that the start timestamp and end timestamp is set correctly to met the users wished output (hours and minutes)
+                    if cheapestPair.associatedPricePoints[0].marketprice <= cheapestPair.associatedPricePoints[maxPointIndex].marketprice {
+                        print("First price point is cheaper than last")
+                        cheapestPair.associatedPricePoints[maxPointIndex].endTimestamp -= Int(timeRangeDifference * 60)
+                    } else {
+                        print("Last price point is cheaper than first")
+                        cheapestPair.associatedPricePoints[0].startTimestamp += Int(timeRangeDifference * 60)
+                    }
+                }
+            }
             
             DispatchQueue.main.async {
                 if cheapestHourPairIndex != nil {

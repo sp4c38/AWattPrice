@@ -107,10 +107,13 @@ class CheapestHourManager: ObservableObject {
         /// Caluclates the average price from the energy price of all to this HourPair associated price points without VAT included.
         func calculateAveragePrice() {
             var pricesTogether: Float = 0
+            var totalMinutes: Float = 0
             for pricePoint in self.associatedPricePoints {
-                pricesTogether += pricePoint.marketprice
+                let pricePointMinuteLength: Float = Float(Date(timeIntervalSince1970: TimeInterval(pricePoint.startTimestamp)).timeIntervalSince(Date(timeIntervalSince1970: TimeInterval(pricePoint.endTimestamp))) / 60)
+                pricesTogether += pricePointMinuteLength * pricePoint.marketprice
+                totalMinutes += pricePointMinuteLength
             }
-            self.averagePrice = pricesTogether / Float(associatedPricePoints.count)
+            self.averagePrice = pricesTogether / totalMinutes
         }
         
         /// Calculates the average price from the energy price of all to this HourPair associated price points with VAT included.
@@ -140,7 +143,7 @@ class CheapestHourManager: ObservableObject {
         return cheapestHourPair
     }
     
-    func findCheapestHourPair(forHours timeRangeNumber: Int, fromStartTime startTime: Date, toEndTime endTime: Date, with energyData: EnergyData) -> ([HourPair], Int?) {
+    func createHourPairs(forHours timeRangeNumber: Int, fromStartTime startTime: Date, toEndTime endTime: Date, with energyData: EnergyData) -> [HourPair] {
         // Create all HourPair's for later comparison
         var allPairs = [HourPair]()
         for hourIndex in 0..<energyData.prices.count {
@@ -162,19 +165,23 @@ class CheapestHourManager: ObservableObject {
             }
         }
         
+        return allPairs
+    }
+    
+    func compareHourPairs(allPairs: [HourPair]) -> Int? {
         // Compare all hour pairs to find the index of the hour pair with the smallest average price
-        var cheapestHourPairIndex: Int? = nil
+        var cheapestPairIndex: Int? = nil
         for pairIndex in 0..<allPairs.count {
-            if cheapestHourPairIndex != nil {
-                if allPairs[pairIndex].averagePrice < allPairs[cheapestHourPairIndex!].averagePrice {
-                    cheapestHourPairIndex = pairIndex
+            if cheapestPairIndex != nil {
+                if allPairs[pairIndex].averagePrice < allPairs[cheapestPairIndex!].averagePrice {
+                    cheapestPairIndex = pairIndex
                 }
             } else {
-                cheapestHourPairIndex = pairIndex
+                cheapestPairIndex = pairIndex
             }
         }
         
-        return (allPairs, cheapestHourPairIndex)
+        return cheapestPairIndex
     }
     
     /**
@@ -204,113 +211,134 @@ class CheapestHourManager: ObservableObject {
                 
             }
             
-            let results = self.findCheapestHourPair(forHours: timeRangeNumber, fromStartTime: startTime, toEndTime: endTime, with: energyData)
-            let allPairs = results.0
-            let cheapestHourPairIndex = results.1
-            
-            if cheapestHourPairIndex != nil {
-                let cheapestPair = allPairs[cheapestHourPairIndex!]
-                var maxPointIndex = cheapestPair.associatedPricePoints.count - 1
+            func recursiveSearch(with allPairs: [HourPair], lastCheapestPairIndex: Int? = nil) -> Int? {
+                print("Running recursive search to find cheapest time")
+                var cheapestPairIndex = self.compareHourPairs(allPairs: allPairs)
                 
-                let startTimeHourEnd = startTime.addingTimeInterval(3600)
-                let endTimeHourStart = endTime.addingTimeInterval(-3600)
-                let startDateFirstItem = Date(timeIntervalSince1970: TimeInterval(cheapestPair.associatedPricePoints[0].startTimestamp))
-                let endDateLastItem = Date(timeIntervalSince1970: TimeInterval(cheapestPair.associatedPricePoints[maxPointIndex].endTimestamp))
-                
-                var intervenesWithStartHour = false
-                if startDateFirstItem >= startTime && startDateFirstItem < startTimeHourEnd {
-                    intervenesWithStartHour = true
-                }
-                var intervenesWithEndHour = false
-                if endDateLastItem > endTimeHourStart && endDateLastItem <= endTime {
-                    intervenesWithEndHour = true
-                }
-                
-                func searchAndAddFollowingItem(timestamp: Int) {
-                    // Find next following energy price point
-                    for item in energyData.prices {
-                        if item.startTimestamp == timestamp {
-                            cheapestPair.associatedPricePoints.append(item)
-                            print("Found the missing energy price point with start timestamp \(item.startTimestamp).")
-                            break
+                if cheapestPairIndex != nil {
+                    if lastCheapestPairIndex != cheapestPairIndex {
+                        var performAnotherSearch = false
+                        
+                        let cheapestPair = allPairs[cheapestPairIndex!]
+                        var maxPointIndex = cheapestPair.associatedPricePoints.count - 1
+                        
+                        let startTimeHourEnd = startTime.addingTimeInterval(3600)
+                        let endTimeHourStart = endTime.addingTimeInterval(-3600)
+                        let startDateFirstItem = Date(timeIntervalSince1970: TimeInterval(cheapestPair.associatedPricePoints[0].startTimestamp))
+                        let endDateLastItem = Date(timeIntervalSince1970: TimeInterval(cheapestPair.associatedPricePoints[maxPointIndex].endTimestamp))
+                        
+                        var intervenesWithStartHour = false
+                        if startDateFirstItem >= startTime && startDateFirstItem < startTimeHourEnd {
+                            intervenesWithStartHour = true
                         }
-                    }
-                }
-                
-                if intervenesWithStartHour && !intervenesWithEndHour && startTimeDifference != 0 {
-                    print("Intervenes with start hour")
-                    searchAndAddFollowingItem(timestamp: Int(endDateLastItem.timeIntervalSince1970))
-                    maxPointIndex = cheapestPair.associatedPricePoints.count - 1
-                    
-                    cheapestPair.associatedPricePoints[0].startTimestamp += startTimeDifference * 60
-                    cheapestPair.associatedPricePoints[maxPointIndex].endTimestamp -= (60 - startTimeDifference) * 60
-                }
-                
-                func searchAndAddPreFollowingItem(timestamp: Int) {
-                    // Find the pre-following price point
-                    for item in energyData.prices {
-                        if item.endTimestamp == timestamp {
-                            print("Found the missing energy proce point with end timestamp \(item.endTimestamp).")
-                            cheapestPair.associatedPricePoints.insert(item, at: 0)
-                            break
-                        }
-                    }
-                }
-                
-                if intervenesWithEndHour && !intervenesWithStartHour && endTimeDifference != 0 {
-                    print("Intervenes with end hour")
-                    searchAndAddPreFollowingItem(timestamp: Int(startDateFirstItem.timeIntervalSince1970))
-                    maxPointIndex = cheapestPair.associatedPricePoints.count - 1
-                    
-                    cheapestPair.associatedPricePoints[maxPointIndex].endTimestamp -= (60 - endTimeDifference) * 60
-                    cheapestPair.associatedPricePoints[0].startTimestamp += endTimeDifference * 60
-                }
-                
-                if intervenesWithStartHour && intervenesWithEndHour {
-                    print("Intervenes with both start and end hour")
-                    var allItems = [EnergyPricePoint]()
-                    for item in energyData.prices {
-                        let itemStartTime = Date(timeIntervalSince1970: TimeInterval(item.startTimestamp))
-                        let itemEndTime = Date(timeIntervalSince1970: TimeInterval(item.endTimestamp))
-                        if itemStartTime >= startTime && itemEndTime <= endTime {
-                            allItems.append(item)
-                        }
-                    }
-                    
-                    
-                    if (startTimeDifference != 0) || (endTimeDifference != 0) {
-                        var returnModifiedAllItems = false
-                        if allItems[0].startTimestamp == cheapestPair.associatedPricePoints[0].startTimestamp {
-                            allItems[0].startTimestamp += startTimeDifference * 60
-                            allItems[allItems.count - 1].endTimestamp -= (60 - startTimeDifference) * 60
-                            returnModifiedAllItems = true
-                            
-                        } else if allItems[allItems.count - 1].endTimestamp == cheapestPair.associatedPricePoints[maxPointIndex].endTimestamp {
-                            allItems[allItems.count - 1].endTimestamp -= (60 - endTimeDifference) * 60
-                            allItems[0].startTimestamp += endTimeDifference * 60
-                            returnModifiedAllItems = true
+                        var intervenesWithEndHour = false
+                        if endDateLastItem > endTimeHourStart && endDateLastItem <= endTime {
+                            intervenesWithEndHour = true
                         }
                         
-                        if returnModifiedAllItems {
-                            cheapestPair.associatedPricePoints = allItems
+                        func searchAndAddFollowingItem(timestamp: Int) {
+                            // Find next following energy price point
+                            for item in energyData.prices {
+                                if item.startTimestamp == timestamp {
+                                    cheapestPair.associatedPricePoints.append(item)
+                                    print("Found the missing energy price point with start timestamp \(item.startTimestamp).")
+                                    break
+                                }
+                            }
+                        }
+                        
+                        if intervenesWithStartHour && !intervenesWithEndHour && startTimeDifference != 0 {
+                            print("Intervenes with start hour")
+                            searchAndAddFollowingItem(timestamp: Int(endDateLastItem.timeIntervalSince1970))
+                            maxPointIndex = cheapestPair.associatedPricePoints.count - 1
+                            
+                            cheapestPair.associatedPricePoints[0].startTimestamp += startTimeDifference * 60
+                            cheapestPair.associatedPricePoints[maxPointIndex].endTimestamp -= (60 - startTimeDifference) * 60
+                            performAnotherSearch = true
+                        }
+                        
+                        func searchAndAddPreFollowingItem(timestamp: Int) {
+                            // Find the pre-following price point
+                            for item in energyData.prices {
+                                if item.endTimestamp == timestamp {
+                                    print("Found the missing energy proce point with end timestamp \(item.endTimestamp).")
+                                    cheapestPair.associatedPricePoints.insert(item, at: 0)
+                                    break
+                                }
+                            }
+                        }
+                        
+                        if intervenesWithEndHour && !intervenesWithStartHour && endTimeDifference != 0 {
+                            print("Intervenes with end hour")
+                            searchAndAddPreFollowingItem(timestamp: Int(startDateFirstItem.timeIntervalSince1970))
+                            maxPointIndex = cheapestPair.associatedPricePoints.count - 1
+                            
+                            cheapestPair.associatedPricePoints[maxPointIndex].endTimestamp -= (60 - endTimeDifference) * 60
+                            cheapestPair.associatedPricePoints[0].startTimestamp += endTimeDifference * 60
+                            performAnotherSearch = true
+                        }
+                        
+                        if intervenesWithStartHour && intervenesWithEndHour {
+                            print("Intervenes with both start and end hour")
+                            var allItems = [EnergyPricePoint]()
+                            for item in energyData.prices {
+                                let itemStartTime = Date(timeIntervalSince1970: TimeInterval(item.startTimestamp))
+                                let itemEndTime = Date(timeIntervalSince1970: TimeInterval(item.endTimestamp))
+                                if itemStartTime >= startTime && itemEndTime <= endTime {
+                                    allItems.append(item)
+                                }
+                            }
+                            
+                            
+                            if (startTimeDifference != 0) || (endTimeDifference != 0) {
+                                var returnModifiedAllItems = false
+                                if allItems[0].startTimestamp == cheapestPair.associatedPricePoints[0].startTimestamp {
+                                    allItems[0].startTimestamp += startTimeDifference * 60
+                                    allItems[allItems.count - 1].endTimestamp -= (60 - startTimeDifference) * 60
+                                    returnModifiedAllItems = true
+                                    
+                                } else if allItems[allItems.count - 1].endTimestamp == cheapestPair.associatedPricePoints[maxPointIndex].endTimestamp {
+                                    allItems[allItems.count - 1].endTimestamp -= (60 - endTimeDifference) * 60
+                                    allItems[0].startTimestamp += endTimeDifference * 60
+                                    returnModifiedAllItems = true
+                                }
+                                
+                                if returnModifiedAllItems {
+                                    cheapestPair.associatedPricePoints = allItems
+                                }
+                            }
+                        }
+                        
+                        if performAnotherSearch {
+                            cheapestPair.calculateAveragePrice()
+                            cheapestPairIndex = recursiveSearch(with: allPairs, lastCheapestPairIndex: cheapestPairIndex)
                         }
                     }
+                } else {
+                    return nil
                 }
                 
-                let timeRangeDifference = (Double(timeRangeNumber) - self.timeOfUsage) * 60
-                if timeRangeDifference != 0 {
-                    // If the user searches for a time with hours and minutes like 2,3h or 1h 40min than this if statment triggers
-                    // It makes sure that the start timestamp and end timestamp is set correctly to met the users wished output (hours and minutes)
-                    if cheapestPair.associatedPricePoints[0].marketprice <= cheapestPair.associatedPricePoints[maxPointIndex].marketprice {
-                        print("First price point is cheaper than last")
-                        cheapestPair.associatedPricePoints[maxPointIndex].endTimestamp -= Int(timeRangeDifference * 60)
-                    } else {
-                        print("Last price point is cheaper than first")
-                        cheapestPair.associatedPricePoints[0].startTimestamp += Int(timeRangeDifference * 60)
-                    }
-                }
+                return cheapestPairIndex
             }
+            
+            let allPairs = self.createHourPairs(forHours: timeRangeNumber, fromStartTime: startTime, toEndTime: endTime, with: energyData)
+            let results = recursiveSearch(with: allPairs)
+            let cheapestHourPairIndex = results
 
+//
+//            let timeRangeDifference = (Double(timeRangeNumber) - self.timeOfUsage) * 60
+//            if timeRangeDifference != 0 {
+//                // If the user searches for a time with hours and minutes like 2,3h or 1h 40min than this if statment triggers
+//                // It makes sure that the start timestamp and end timestamp is set correctly to met the users wished output (hours and minutes)
+//                if cheapestPair.associatedPricePoints[0].marketprice <= cheapestPair.associatedPricePoints[maxPointIndex].marketprice {
+//                    print("First price point is cheaper than last")
+//                    cheapestPair.associatedPricePoints[maxPointIndex].endTimestamp -= Int(timeRangeDifference * 60)
+//                } else {
+//                    print("Last price point is cheaper than first")
+//                    cheapestPair.associatedPricePoints[0].startTimestamp += Int(timeRangeDifference * 60)
+//                }
+//            }
+            
             DispatchQueue.main.async {
                 if cheapestHourPairIndex != nil {
                     self.cheapestHoursForUsage = allPairs[cheapestHourPairIndex!]

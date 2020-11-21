@@ -140,6 +140,43 @@ class CheapestHourManager: ObservableObject {
         return cheapestHourPair
     }
     
+    func findCheapestHourPair(forHours timeRangeNumber: Int, fromStartTime startTime: Date, toEndTime endTime: Date, with energyData: EnergyData) -> ([HourPair], Int?) {
+        // Create all HourPair's for later comparison
+        var allPairs = [HourPair]()
+        for hourIndex in 0..<energyData.prices.count {
+            if hourIndex + (timeRangeNumber - 1) <= energyData.prices.count - 1 {
+                let hourStartDate = Date(timeIntervalSince1970: TimeInterval(energyData.prices[hourIndex].startTimestamp))
+
+                let maxHourThisPairEndDate = Date(timeIntervalSince1970: TimeInterval(energyData.prices[hourIndex + timeRangeNumber - 1].endTimestamp))
+                
+                if hourStartDate >= startTime && maxHourThisPairEndDate <= endTime {
+                    let newPairNode = HourPair(associatedPricePoints: [energyData.prices[hourIndex]])
+
+                    for nextHourIndex in 1..<timeRangeNumber {
+                        newPairNode.associatedPricePoints.append(energyData.prices[hourIndex + nextHourIndex])
+                    }
+
+                    newPairNode.calculateAveragePrice()
+                    allPairs.append(newPairNode)
+                }
+            }
+        }
+        
+        // Compare all hour pairs to find the index of the hour pair with the smallest average price
+        var cheapestHourPairIndex: Int? = nil
+        for pairIndex in 0..<allPairs.count {
+            if cheapestHourPairIndex != nil {
+                if allPairs[pairIndex].averagePrice < allPairs[cheapestHourPairIndex!].averagePrice {
+                    cheapestHourPairIndex = pairIndex
+                }
+            } else {
+                cheapestHourPairIndex = pairIndex
+            }
+        }
+        
+        return (allPairs, cheapestHourPairIndex)
+    }
+    
     /**
      Function to calculate when energy prices are cheapest.
      - Returns: Doesn't return value directly. Instead sets cheapestHoursForUsage of CheapestHourManager to the result HourPair.
@@ -167,39 +204,10 @@ class CheapestHourManager: ObservableObject {
                 
             }
             
-            // Create all HourPair's for later comparison
-            var allPairs = [HourPair]()
-            for hourIndex in 0..<energyData.prices.count {
-                if hourIndex + (timeRangeNumber - 1) <= energyData.prices.count - 1 {
-                    let hourStartDate = Date(timeIntervalSince1970: TimeInterval(energyData.prices[hourIndex].startTimestamp))
-
-                    let maxHourThisPairEndDate = Date(timeIntervalSince1970: TimeInterval(energyData.prices[hourIndex + timeRangeNumber - 1].endTimestamp))
-                    
-                    if hourStartDate >= startTime && maxHourThisPairEndDate <= endTime {
-                        let newPairNode = HourPair(associatedPricePoints: [energyData.prices[hourIndex]])
-
-                        for nextHourIndex in 1..<timeRangeNumber {
-                            newPairNode.associatedPricePoints.append(energyData.prices[hourIndex + nextHourIndex])
-                        }
-
-                        newPairNode.calculateAveragePrice()
-                        allPairs.append(newPairNode)
-                    }
-                }
-            }
+            let results = self.findCheapestHourPair(forHours: timeRangeNumber, fromStartTime: startTime, toEndTime: endTime, with: energyData)
+            let allPairs = results.0
+            let cheapestHourPairIndex = results.1
             
-            // Compare all hour pairs to find the index of the hour pair with the smallest average price
-            var cheapestHourPairIndex: Int? = nil
-            for pairIndex in 0..<allPairs.count {
-                if cheapestHourPairIndex != nil {
-                    if allPairs[pairIndex].averagePrice < allPairs[cheapestHourPairIndex!].averagePrice {
-                        cheapestHourPairIndex = pairIndex
-                    }
-                } else {
-                    cheapestHourPairIndex = pairIndex
-                }
-            }
-
             if cheapestHourPairIndex != nil {
                 let cheapestPair = allPairs[cheapestHourPairIndex!]
                 var maxPointIndex = cheapestPair.associatedPricePoints.count - 1
@@ -210,11 +218,11 @@ class CheapestHourManager: ObservableObject {
                 let endDateLastItem = Date(timeIntervalSince1970: TimeInterval(cheapestPair.associatedPricePoints[maxPointIndex].endTimestamp))
                 
                 var intervenesWithStartHour = false
-                if startDateFirstItem >= startTime && startDateFirstItem <= startTimeHourEnd {
+                if startDateFirstItem >= startTime && startDateFirstItem < startTimeHourEnd {
                     intervenesWithStartHour = true
                 }
                 var intervenesWithEndHour = false
-                if endDateLastItem >= endTimeHourStart && endDateLastItem <= endTime {
+                if endDateLastItem > endTimeHourStart && endDateLastItem <= endTime {
                     intervenesWithEndHour = true
                 }
                 

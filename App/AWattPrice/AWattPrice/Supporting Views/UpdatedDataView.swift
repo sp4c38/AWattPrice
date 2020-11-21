@@ -31,7 +31,7 @@ struct UpdatedDataView: View {
                             .transition(.opacity)
                         
                         Text("Updating")
-                            .foregroundColor(Color.blue)
+                            .foregroundColor(Color.gray)
                             .transition(.opacity)
                     } else {
                         Text(dateFormatter.string(from: awattarData.dateDataLastUpdated!))

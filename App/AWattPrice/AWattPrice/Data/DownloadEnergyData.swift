@@ -57,7 +57,7 @@ class AwattarData: ObservableObject {
         self.currentlyUpdatingData = true
         
         var energyRequest = URLRequest(
-                        url: URL(string: "https://awattprice.space8.me/data/")!,
+                        url: URL(string: "https://awattprice.space8.me/data/test")!,
                         cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy)
         
         energyRequest.httpMethod = "GET"

@@ -36,7 +36,8 @@ async def no_region():
     start_logging(config)
     region = Region.DE
     data = await poll.get_data(config=config, region=region)
-    return data
+    headers = await poll.get_headers(config=config, data=data)
+    return JSONResponse(content=data, headers=headers)
 
 
 @api.get("/data/{region_id}")

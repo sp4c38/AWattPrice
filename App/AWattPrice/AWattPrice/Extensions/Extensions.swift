@@ -92,6 +92,7 @@ extension Double {
         let numberFormatter = NumberFormatter()
         numberFormatter.numberStyle = .decimal
         numberFormatter.maximumFractionDigits = 2
+        numberFormatter.minimumFractionDigits = 2
     
         if let result = numberFormatter.string(from: NSNumber(value: self)) {
             return result

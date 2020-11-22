@@ -11,6 +11,7 @@ struct AwattarBasicEnergyChargePriceSetting: View {
     @EnvironmentObject var currentSetting: CurrentSetting
     
     @State var baseEnergyPriceString = ""
+    @State var firstAppear = true
     
     struct SettingFooter: View {
         var body: some View {
@@ -41,11 +42,22 @@ struct AwattarBasicEnergyChargePriceSetting: View {
                 TextField("centPerKwh",
                           text: $baseEnergyPriceString.animation())
                     .keyboardType(.decimalPad)
-                    .onChange(of: baseEnergyPriceString) { newValue in
-                        print("base electricity charge changed")
-                        currentSetting.changeBaseElectricityCharge(newBaseElectricityCharge: newValue.doubleValue ?? 0)
+                    .ifTrue(firstAppear == false) { content in
+                        content
+                            .onChange(of: baseEnergyPriceString) { newValue in
+                                if firstAppear == false {
+                                    currentSetting.changeBaseElectricityCharge(newBaseElectricityCharge: newValue.doubleValue ?? 0)
+                                }
+                            }
                     }
-                
+                    .onAppear {
+                        if currentSetting.setting!.awattarBaseElectricityPrice != 0 {
+                            if let priceString = currentSetting.setting!.awattarBaseElectricityPrice.priceString {
+                                baseEnergyPriceString = priceString
+                            }
+                        }
+                        firstAppear = false
+                    }
                 
                 if baseEnergyPriceString != "" {
                     Text("centPerKwh")
@@ -55,20 +67,8 @@ struct AwattarBasicEnergyChargePriceSetting: View {
             .padding([.top, .bottom], 7)
             .padding([.leading, [.trailing]], 10)
             .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color(hue: 0.6667, saturation: 0.0202, brightness: 0.8686), lineWidth: 2))
-            
+
             SettingFooter()
-        }
-        .onAppear {
-            let numberFormatter = NumberFormatter()
-            numberFormatter.numberStyle = .decimal
-            numberFormatter.maximumFractionDigits = 2
-            
-            let baseEnergyPrice = currentSetting.setting!.awattarBaseElectricityPrice
-            if baseEnergyPrice == 0 {
-                baseEnergyPriceString = ""
-            } else {
-                baseEnergyPriceString = numberFormatter.string(from: NSNumber(value: baseEnergyPrice)) ?? ""
-            }
         }
     }
 }
@@ -115,7 +115,7 @@ struct AwattarTariffSelectionSetting: View {
                         .frame(maxWidth: .infinity)
                         .contentShape(Rectangle())
                         .onTapGesture {
-                                self.hideKeyboard()
+                            self.hideKeyboard()
                         }
                     
                         AwattarBasicEnergyChargePriceSetting()
@@ -137,9 +137,6 @@ struct AwattarTariffSelectionSetting: View {
             }
             .padding(.top, 10)
             .padding(.bottom, 10)
-            .onAppear {
-                awattarEnergyTariffIndex = Int(currentSetting.setting!.awattarTariffIndex)
-            }
         }
         .customBackgroundColor(colorScheme == .light ? Color(hue: 0.6667, saturation: 0.0202, brightness: 0.9886) : Color(hue: 0.6667, saturation: 0.0340, brightness: 0.1424))
     }

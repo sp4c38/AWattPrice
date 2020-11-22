@@ -12,6 +12,8 @@ struct EnergyUsageInputField: View {
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
     @EnvironmentObject var currentSetting: CurrentSetting
     
+    @State var firstAppear = true
+    
     let emptyFieldError: Bool
     let wrongInputError: Bool
     
@@ -42,8 +44,22 @@ struct EnergyUsageInputField: View {
                     .keyboardType(.decimalPad)
                     .multilineTextAlignment(.leading)
                     .padding(.trailing, 5)
-                    .onChange(of: cheapestHourManager.energyUsageString) { newValue in
-                        currentSetting.changeCheapestTimeLastConsumption(newLastConsumption: newValue.doubleValue ?? 0)
+                    .ifTrue(firstAppear == false) { content in
+                        content
+                            .onChange(of: cheapestHourManager.energyUsageString) { newValue in
+                                currentSetting.changeCheapestTimeLastConsumption(newLastConsumption: newValue.doubleValue ?? 0)
+                            }
+                    }
+                    .onAppear {
+                        
+                    }
+                    .onAppear {
+                        if currentSetting.setting!.cheapestTimeLastConsumption != 0 {
+                            if let energyUsageString = currentSetting.setting!.cheapestTimeLastConsumption.priceString {
+                                cheapestHourManager.energyUsageString = energyUsageString
+                            }
+                        }
+                        firstAppear = false
                     }
                 
                 if cheapestHourManager.energyUsageString != "" {
@@ -72,17 +88,6 @@ struct EnergyUsageInputField: View {
             }
         }
         .frame(maxWidth: .infinity)
-        .onAppear {
-            if currentSetting.setting!.cheapestTimeLastConsumption != 0 {
-                if let energyUsageString = currentSetting.setting!.cheapestTimeLastConsumption.priceString {
-                    cheapestHourManager.energyUsageString = energyUsageString
-                } else {
-                    cheapestHourManager.energyUsageString = ""
-                }
-            } else {
-                cheapestHourManager.energyUsageString = ""
-            }
-        }
     }
 }
 

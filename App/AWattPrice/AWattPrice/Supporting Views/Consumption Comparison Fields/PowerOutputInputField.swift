@@ -12,6 +12,8 @@ struct PowerOutputInputField: View {
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
     @EnvironmentObject var currentSetting: CurrentSetting
     
+    @State var firstAppear = false
+    
     let emptyFieldError: Bool
     let wrongInputError: Bool
     
@@ -42,8 +44,19 @@ struct PowerOutputInputField: View {
                     .keyboardType(.decimalPad)
                     .multilineTextAlignment(.leading)
                     .padding(.trailing, 5)
-                    .onChange(of: cheapestHourManager.powerOutputString) { newValue in
-                        currentSetting.changeCheapestTimeLastPower(newLastPower: newValue.doubleValue ?? 0)
+                    .ifTrue(firstAppear == false) { content in
+                        content
+                            .onChange(of: cheapestHourManager.powerOutputString) { newValue in
+                                currentSetting.changeCheapestTimeLastPower(newLastPower: newValue.doubleValue ?? 0)
+                            }
+                    }
+                    .onAppear {
+                        if currentSetting.setting!.cheapestTimeLastPower != 0 {
+                            if let powerOutputString = currentSetting.setting!.cheapestTimeLastPower.priceString {
+                                cheapestHourManager.powerOutputString = powerOutputString
+                            }
+                        }
+                        firstAppear = false
                     }
                 
                 if cheapestHourManager.powerOutputString != "" {
@@ -72,17 +85,6 @@ struct PowerOutputInputField: View {
             }
         }
         .frame(maxWidth: .infinity)
-        .onAppear {
-            if currentSetting.setting!.cheapestTimeLastPower != 0 {
-                if let powerOutputString = currentSetting.setting!.cheapestTimeLastPower.priceString {
-                    cheapestHourManager.powerOutputString = powerOutputString
-                } else {
-                    cheapestHourManager.powerOutputString = ""
-                }
-            } else {
-                cheapestHourManager.powerOutputString = ""
-            }
-        }
     }
 }
 

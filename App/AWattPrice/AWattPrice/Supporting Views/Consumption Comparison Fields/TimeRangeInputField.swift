@@ -48,6 +48,7 @@ struct TimeRangeInputField: View {
                     
                     DatePicker(selection: $cheapestHourManager.startDate, in: inputDateRange, displayedComponents: [.date, .hourAndMinute], label: {})
                         .labelsHidden()
+                        .id(UUID())
                 }
                 .padding(5)
                 .padding([.leading, .trailing], 2)
@@ -75,6 +76,7 @@ struct TimeRangeInputField: View {
                     
                     DatePicker(selection: $cheapestHourManager.endDate, in: inputDateRange, displayedComponents: [.date, .hourAndMinute], label: {})
                         .labelsHidden()
+                        .id(UUID())
                 }
                 .padding(5)
                 .padding([.leading, .trailing], 2)

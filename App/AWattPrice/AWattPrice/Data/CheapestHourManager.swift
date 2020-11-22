@@ -29,16 +29,39 @@ class CheapestHourManager: ObservableObject {
     @Published var errorOccurredFindingCheapestHours = false
     
     /// Sets the selected time interval to tonight from 20pm first day to 7am next day
-    func setTimeIntervalThisNight() {
-        self.startDate = Calendar.current.date(bySettingHour: 20, minute: 0, second: 0, of: Date())!
+    func setTimeIntervalThisNight(energyData: EnergyData) {
+        let possibleStartDate = Calendar.current.date(bySettingHour: 20, minute: 0, second: 0, of: Date())!
+        var firstPossibleStartDate = Date(timeIntervalSince1970: TimeInterval(energyData.prices[0].startTimestamp))
+        
         let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: Date())!
-        self.endDate = Calendar.current.date(bySettingHour: 7, minute: 0, second: 0, of: tomorrow)!
+        let possibleEndDate = Calendar.current.date(bySettingHour: 7, minute: 0, second: 0, of: tomorrow)!
+        let lastPossibleEndDate = Date(timeIntervalSince1970: TimeInterval(energyData.prices[energyData.prices.count - 1].endTimestamp))
+        
+        if possibleStartDate >= firstPossibleStartDate && possibleStartDate <= lastPossibleEndDate {
+            self.startDate = possibleStartDate
+        } else {
+            firstPossibleStartDate = Date()
+            self.startDate = firstPossibleStartDate
+        }
+        
+        if possibleEndDate > lastPossibleEndDate {
+            self.endDate = lastPossibleEndDate
+        } else {
+            self.endDate = possibleEndDate
+        }
     }
     
     /// Sets the selected time interval to tonight from 20pm first day to 7am next day
-    func setTimeIntervalNextThreeHours() {
+    func setTimeInterval(forNextHourAmount hourAmount: Int, energyData: EnergyData) {
         self.startDate = Date()
-        self.endDate = Calendar.current.date(byAdding: .hour, value: 3, to: Date())!
+        let possibleEndDate = Calendar.current.date(byAdding: .hour, value: hourAmount, to: Date())!
+        let lastPossibleEndDate = Date(timeIntervalSince1970: TimeInterval(energyData.prices[energyData.prices.count - 1].endTimestamp))
+        
+        if possibleEndDate > lastPossibleEndDate {
+            self.endDate = lastPossibleEndDate
+        } else {
+            self.endDate = possibleEndDate
+        }
     }
     
     /// Sets the values after the user entered them. This includes calculating time intervals and formatting raw text strings to floats. If errors occur because of wrong input of the user and values cannot be set correctly a list is returned with error values.

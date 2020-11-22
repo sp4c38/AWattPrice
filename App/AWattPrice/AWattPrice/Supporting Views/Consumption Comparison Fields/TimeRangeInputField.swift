@@ -102,7 +102,7 @@ struct TimeRangeInputField: View {
             
             HStack {
                 Button(action: {
-                    cheapestHourManager.setTimeIntervalThisNight()
+                    cheapestHourManager.setTimeIntervalThisNight(energyData: awattarData.energyData!)
                 }) {
                     Text("tonight")
                         .bold()
@@ -110,7 +110,7 @@ struct TimeRangeInputField: View {
                 .buttonStyle(TimeRangeButtonStyle())
                 
                 Button(action: {
-                    cheapestHourManager.setTimeIntervalNextThreeHours()
+                    cheapestHourManager.setTimeInterval(forNextHourAmount: 3, energyData: awattarData.energyData!)
                 }) {
                     Text("nextThreeHours")
                         .bold()

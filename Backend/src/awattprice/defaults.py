@@ -25,7 +25,10 @@ data_dir:   ~/awattprice/data/
 log_dir: ~/awattprice/log/
 
 [poll]
-# Do not poll more frequent than this in seconds
+# Try to update the data if there are less or equal this number of future energy price points.
+# This uses the CET timezone to find how many future energy price points there are.
+if_less_than: 12
+# Do not poll the aWATTar API more frequent than this in seconds
 awattar: 30
 """
 

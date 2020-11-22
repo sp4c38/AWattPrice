@@ -13,6 +13,7 @@ __license__ = "mit"
 from typing import Any, Dict, List, Optional, Union
 
 from fastapi import FastAPI
+from fastapi.responses import JSONResponse
 
 from awattprice import poll
 from awattprice.config import read_config
@@ -47,4 +48,5 @@ async def with_region(region_id):
     if not region:
         return {"prices": []}
     data = await poll.get_data(config=config, region=region)
-    return data
+    headers = await poll.get_headers(config=config, data=data)
+    return JSONResponse(content=data, headers=headers)

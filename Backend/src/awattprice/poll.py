@@ -93,8 +93,9 @@ async def get_data(config: Box, region: Optional[Region] = None, force: bool = F
             need_update = any(
                 [
                     now.timestamp > last_entry,
-                    # Should trigger after 14 h or if data was missing.
-                    len([True for e in data.prices if e.start_timestamp > now.timestamp]) <= 12,
+                    # Should trigger if there are less than this amount of future energy price points.
+                    len([True for e in data.prices if e.start_timestamp > now.timestamp]) <
+                        int(config.poll.if_less_than),
                 ]
             )
         else:
@@ -108,7 +109,6 @@ async def get_data(config: Box, region: Optional[Region] = None, force: bool = F
         future = awattar_read_task(config=config, region=region, start=start, end=end)
         if future is None:
             return None
-        # results = asyncio.run(await_tasks([future]))
         results = await asyncio.gather(*[future])
         if results:
             log.info("Successfully fetched fresh data from Awattar.")
@@ -152,6 +152,38 @@ async def get_data(config: Box, region: Optional[Region] = None, force: bool = F
         data = Box({"prices": []})
     return data
 
+async def get_headers(config: Box, data: Dict) -> Dict:
+    data = Box(data)
+    headers = {"Cache-Control": "public, max-age={}"}
+    max_age = 0
+
+    now = arrow.utcnow()
+    price_points_in_future = 0
+    for price_point in data.prices:
+        if price_point.start_timestamp > now.timestamp:
+            price_points_in_future += 1
+
+    if price_points_in_future < int(config.poll.if_less_than):
+        # Runs when the data is fetched at every call and the aWATTar data
+        # will probably update soon.
+        # In that case the client shall only cache data for up to 5 minutes.
+        max_age = 300
+    else:
+        if (price_points_in_future - int(config.poll.if_less_than)) == 0:
+            # Runs when it is currently the hour before the backend
+            # will continuously look for new price data.
+            # max_age is set so that the client only caches until the backend
+            # will start continuous requesting for new price data.
+            next_hour_start = now.replace(hour=now.hour+1, minute=0, second=1)
+            difference = next_hour_start - now
+            max_age = difference.timedelt
+        else:
+            # Runs on default when server doesn't continuously look for new price data.
+            # and it isn't the hour before continouse updating will occur.
+            max_age = 900
+
+    headers["Cache-Control"] = headers["Cache-Control"].format(max_age)
+    return headers
 
 def main() -> Box:
     """Entry point for the data poller."""

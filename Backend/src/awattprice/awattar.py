@@ -29,7 +29,7 @@ async def get(
         config: Box,
         region: Region,
         start: Optional[int] = None,
-        end: Optional[int] = None,
+        end: Optional[int] = None
 ) -> Optional[List[Any]]:
     """Fetch and write Awattar data."""
     start_ts = arrow.utcnow()

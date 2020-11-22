@@ -26,7 +26,7 @@ struct HomeView: View {
                     .padding([.leading, .trailing], 16)
                     .padding(.top, 8)
                     .padding(.bottom, 5)
-                    
+
                     EnergyPriceGraph()
                 } else {
                     DataDownloadAndError()
@@ -37,6 +37,7 @@ struct HomeView: View {
             .navigationBarTitleDisplayMode(.large)
             .fullScreenCover(isPresented: $showSettingsPage) {
                 SettingsPageView()
+                    .environmentObject(currentSetting)
             }
             .navigationBarItems(trailing:
                 Button(action: { showSettingsPage.toggle() }) {

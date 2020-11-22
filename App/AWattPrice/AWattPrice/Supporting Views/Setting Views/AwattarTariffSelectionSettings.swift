@@ -40,14 +40,12 @@ struct AwattarBasicEnergyChargePriceSetting: View {
         VStack(alignment: .leading, spacing: 15) {
             HStack {
                 TextField("centPerKwh",
-                          text: $baseEnergyPriceString.animation())
+                          text: $baseEnergyPriceString)
                     .keyboardType(.decimalPad)
                     .ifTrue(firstAppear == false) { content in
                         content
                             .onChange(of: baseEnergyPriceString) { newValue in
-                                if firstAppear == false {
-                                    currentSetting.changeBaseElectricityCharge(newBaseElectricityCharge: newValue.doubleValue ?? 0)
-                                }
+                                currentSetting.changeBaseElectricityCharge(newBaseElectricityCharge: newValue.doubleValue ?? 0)
                             }
                     }
                     .onAppear {
@@ -58,7 +56,7 @@ struct AwattarBasicEnergyChargePriceSetting: View {
                         }
                         firstAppear = false
                     }
-                
+
                 if baseEnergyPriceString != "" {
                     Text("centPerKwh")
                         .transition(.opacity)
@@ -80,6 +78,7 @@ struct AwattarTariffSelectionSetting: View {
     @EnvironmentObject var currentSetting: CurrentSetting
     
     @State var awattarEnergyTariffIndex: Int = 0
+    @State var firstAppear = true
     
     var body: some View {
         CustomInsetGroupedListItem(
@@ -93,8 +92,15 @@ struct AwattarTariffSelectionSetting: View {
                         Text(profile.name).tag(awattarData.profilesData.profiles.firstIndex(of: profile)!)
                     }
                 }
-                .onChange(of: awattarEnergyTariffIndex) { newValue in
-                    currentSetting.changeAwattarTariffIndex(newTariffIndex: Int16(newValue))
+                .ifTrue(firstAppear == false) { content in
+                    content
+                        .onChange(of: awattarEnergyTariffIndex) { newValue in
+                            currentSetting.changeAwattarTariffIndex(newTariffIndex: Int16(newValue))
+                        }
+                }
+                .onAppear {
+                    awattarEnergyTariffIndex = Int(currentSetting.setting!.awattarTariffIndex)
+                    firstAppear = false
                 }
                 .frame(maxWidth: .infinity)
                 .pickerStyle(SegmentedPickerStyle())
@@ -117,7 +123,7 @@ struct AwattarTariffSelectionSetting: View {
                         .onTapGesture {
                             self.hideKeyboard()
                         }
-                    
+
                         AwattarBasicEnergyChargePriceSetting()
                     }
                 } else {

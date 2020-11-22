@@ -19,7 +19,7 @@ struct SettingsPageView: View {
                 if currentSetting.setting != nil {
                     CustomInsetGroupedList {
                         RegionSelection()
-                        
+
                         PricesWithVatIncludedSetting()
                             .onTapGesture {
                                     self.hideKeyboard()

@@ -12,6 +12,7 @@ struct RegionSelection: View {
     @EnvironmentObject var currentSetting: CurrentSetting
     
     @State var selectedRegion: Int = 0
+    @State var firstAppear = true
     
     var body: some View {
         CustomInsetGroupedListItem(
@@ -26,15 +27,19 @@ struct RegionSelection: View {
                         .tag(1)
                 }
                 .pickerStyle(SegmentedPickerStyle())
-                .onChange(of: selectedRegion) { newRegionSelection in
-                    currentSetting.changeRegionSelection(newRegionSelection: Int16(newRegionSelection))
+                .ifTrue(firstAppear == false) { content in
+                    content
+                        .onChange(of: selectedRegion) { newRegionSelection in
+                            currentSetting.changeRegionSelection(newRegionSelection: Int16(newRegionSelection))
+                        }
+                }
+                .onAppear {
+                    selectedRegion = Int(currentSetting.setting!.regionSelection)
+                    firstAppear = false
                 }
             }
         }
         .customBackgroundColor(colorScheme == .light ? Color(hue: 0.6667, saturation: 0.0202, brightness: 0.9886) : Color(hue: 0.6667, saturation: 0.0340, brightness: 0.1424))
-        .onAppear {
-            selectedRegion = Int(currentSetting.setting!.regionSelection)
-        }
     }
 }
 

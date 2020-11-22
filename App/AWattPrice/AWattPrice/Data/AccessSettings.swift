@@ -59,6 +59,7 @@ func getSetting(managedObjectContext: NSManagedObjectContext, fetchRequestResult
 class CurrentSetting: NSObject, NSFetchedResultsControllerDelegate, ObservableObject {
     var managedObjectContext: NSManagedObjectContext // managed object context is stored with this object because it is later needed to change settings
     let settingController: NSFetchedResultsController<Setting> // settings controller which reports changes in the persistent stored Setting object
+    var setting: Setting?
     
     init(managedObjectContext: NSManagedObjectContext) {
         self.managedObjectContext = managedObjectContext
@@ -74,20 +75,23 @@ class CurrentSetting: NSObject, NSFetchedResultsControllerDelegate, ObservableOb
         } catch {
             print("Error performing fetch request on Setting-Item out of Core Data.")
         }
+
+        setting = getSetting(managedObjectContext: self.managedObjectContext, fetchRequestResults: settingController.fetchedObjects ?? []) ?? nil
     }
     
     func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        print("Updating data")
         objectWillChange.send()
     }
     
-    var setting: Setting? {
-        // The current up-to-date Setting object. This variable is nil if any error occurred retrieving the Setting object.
-        // It shouldn't happen that no Setting object is found because getSetting handles the case that there isn't any Setting object yet stored (which always happens on the first ever launch of the app).
-        
-        let currentSetting = getSetting(managedObjectContext: self.managedObjectContext, fetchRequestResults: settingController.fetchedObjects ?? []) ?? nil
-        
-        return currentSetting
-    }
+//    var setting: Setting? {
+//        // The current up-to-date Setting object. This variable is nil if any error occurred retrieving the Setting object.
+//        // It shouldn't happen that no Setting object is found because getSetting handles the case that there isn't any Setting object yet stored (which always happens on the first ever launch of the app).
+//
+//        let currentSetting = getSetting(managedObjectContext: self.managedObjectContext, fetchRequestResults: settingController.fetchedObjects ?? []) ?? nil
+//
+//        return currentSetting
+//    }
     
     /// This will check that when a tariff is selected that also a non-empty electricity price was set
     func validateTariffAndEnergyPriceSet() {

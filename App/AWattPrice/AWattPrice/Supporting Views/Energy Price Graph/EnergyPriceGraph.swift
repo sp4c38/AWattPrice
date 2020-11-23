@@ -31,7 +31,6 @@ class SingleBarSettings: ObservableObject {
     init(minPrice: Float, maxPrice: Float) {
         centFormatter = NumberFormatter()
         centFormatter.numberStyle = .currency
-        centFormatter.locale = Locale(identifier: "de_DE")
         centFormatter.currencySymbol = "ct"
         centFormatter.maximumFractionDigits = 2
         centFormatter.minimumFractionDigits = 2

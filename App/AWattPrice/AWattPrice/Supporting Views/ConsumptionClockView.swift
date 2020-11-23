@@ -101,7 +101,7 @@ struct ConsumptionClockView: View {
         let hourIndicatorLineWidth = CGFloat(2)
         let middlePointRadius = CGFloat(5)
 
-        let clockWidth = 7 * (width / 10)
+        let clockWidth = 6.5 * (width / 10)
         let hourBorderIndicatorWidth = CGFloat(4)
         let hourMarkerRadius = CGFloat(0.85 * ((clockWidth / 2) - circleLineWidth))
         let minuteIndicatorWidth = CGFloat((clockWidth / 2) - hourBorderIndicatorWidth - 10)
@@ -159,10 +159,8 @@ struct ConsumptionClockView: View {
             // Outside circle which holds the clock inside of it
             Circle()
                 .foregroundColor(colorScheme == .light ? Color.white : Color.black)
-                .frame(width: width)
-                .ifTrue(colorScheme == .light) { content in
-                    content.shadow(color: Color.gray, radius: 10)
-                }
+                .frame(width: width, height: height)
+                .shadow(color: colorScheme == .light ? Color.gray : Color(red: 0.45, green: 0.45, blue: 0.45), radius: 10)
 
 //            Path { path in
 //                path.addArc(center: center, radius: (clockWidth / 2) - circleLineWidth, startAngle: .degrees(0), endAngle: .degrees(360), clockwise: false)

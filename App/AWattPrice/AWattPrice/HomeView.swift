@@ -43,7 +43,7 @@ struct HomeView: View {
                 Button(action: { showSettingsPage.toggle() }) {
                     Image(systemName: "gear")
                         .resizable()
-                        .frame(width: 22, height: 22)
+                        .frame(width: 24, height: 24)
                         .padding(.trailing, 5)
                 })
         }

@@ -36,10 +36,8 @@ struct ConsumptionResultView: View {
     }
     
     var body: some View {
-        VStack(alignment: .center) {
+        VStack(alignment: .center, spacing: 0) {
             if cheapestHourManager.cheapestHoursForUsage != nil {
-                Spacer()
-                
                 // The time range in which the cheapest hours are
                 VStack(alignment: .center, spacing: 5) {
                     Text(dateFormatter.string(from: Date(timeIntervalSince1970:
@@ -63,7 +61,7 @@ struct ConsumptionResultView: View {
                 }
                 .font(.callout)
                 .padding([.leading, .trailing], 16)
-                .padding([.top, .bottom], 5)
+                .padding(.top, 5)
                 
                 // The final price the user would need to pay
                 if cheapestHourManager.cheapestHoursForUsage!.hourlyEnergyCosts != nil {
@@ -88,16 +86,21 @@ struct ConsumptionResultView: View {
                         .padding(5)
                         .frame(maxWidth: .infinity)
                         .background(colorScheme == .light ? Color(hue: 0.3815, saturation: 0.6605, brightness: 0.8431) : Color(hue: 0.3844, saturation: 0.6293, brightness: 0.6288))
-                        .padding([.top, .bottom], 5)
+                        .padding(.top, 5)
                     }
                 }
                 
+                Spacer()
                 // The clock which visually presents the results.
                 HStack(spacing: 10) {
                     ConsumptionClockView(cheapestHourManager.cheapestHoursForUsage!)
                         .padding([.leading, .trailing], 20)
+                        .frame(width: 330, height: 330)
                 }
                 .padding(16)
+                
+                Spacer()
+                Spacer()
             } else if cheapestHourManager.errorOccurredFindingCheapestHours == true {
                 Text("cheapestTimeErrorOccurred")
                     .multilineTextAlignment(.center)

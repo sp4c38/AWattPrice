@@ -14,6 +14,20 @@ struct EnergyPriceSingleBar: View {
     @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var currentSetting: CurrentSetting
 
+    static func getPriceString(marketprice: Float, currentSetting: CurrentSetting) -> String {
+        let centFormatter = NumberFormatter()
+        centFormatter.numberStyle = .currency
+        centFormatter.currencySymbol = "ct"
+        centFormatter.maximumFractionDigits = 2
+        centFormatter.minimumFractionDigits = 2
+        
+        if currentSetting.setting!.pricesWithTaxIncluded {
+            return centFormatter.string(from: NSNumber(value: marketprice * 1.16)) ?? "NaN"
+        } else {
+            return centFormatter.string(from: NSNumber(value: marketprice)) ?? "NaN"
+        }
+    }
+    
     let fontSize: CGFloat
     let fontWeight: Font.Weight
     let singleBarSettings: SingleBarSettings
@@ -138,7 +152,7 @@ struct EnergyPriceSingleBar: View {
             }
 
             // Show the energy price as text with or without VAT/tax included
-            Text(singleBarSettings.centFormatter.string(from: NSNumber(value: (hourDataPoint.marketprice * (currentSetting.setting!.pricesWithTaxIncluded ? 1.16 : 1))))!)
+            Text(EnergyPriceSingleBar.getPriceString(marketprice: hourDataPoint.marketprice, currentSetting: currentSetting))
             .foregroundColor(Color.black)
             .animatableFont(size: fontSize, weight: fontWeight)
             .padding(1)

@@ -357,10 +357,8 @@ class CheapestHourManager: ObservableObject {
                     // If the user searches for a time with hours and minutes like 2,3h or 1h 40min than this if statment triggers
                     // It makes sure that the start timestamp and end timestamp is set correctly to met the users wished output (hours and minutes)
                     if cheapestPair.associatedPricePoints[0].marketprice <= cheapestPair.associatedPricePoints[maxPointIndex].marketprice {
-                        print("First price point is cheaper than last")
                         cheapestPair.associatedPricePoints[maxPointIndex].endTimestamp -= Int(timeRangeDifference * 60)
                     } else {
-                        print("Last price point is cheaper than first")
                         cheapestPair.associatedPricePoints[0].startTimestamp += Int(timeRangeDifference * 60)
                     }
                 }

@@ -80,19 +80,9 @@ class CurrentSetting: NSObject, NSFetchedResultsControllerDelegate, ObservableOb
     }
     
     func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        print("Updating data")
         objectWillChange.send()
     }
-    
-//    var setting: Setting? {
-//        // The current up-to-date Setting object. This variable is nil if any error occurred retrieving the Setting object.
-//        // It shouldn't happen that no Setting object is found because getSetting handles the case that there isn't any Setting object yet stored (which always happens on the first ever launch of the app).
-//
-//        let currentSetting = getSetting(managedObjectContext: self.managedObjectContext, fetchRequestResults: settingController.fetchedObjects ?? []) ?? nil
-//
-//        return currentSetting
-//    }
-    
+
     /// This will check that when a tariff is selected that also a non-empty electricity price was set
     func validateTariffAndEnergyPriceSet() {
         if self.setting != nil {

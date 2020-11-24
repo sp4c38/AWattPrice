@@ -46,7 +46,8 @@ struct TimeRangeInputField: View {
                     
                     Spacer()
                     
-                    DatePicker(selection: $cheapestHourManager.startDate, in: inputDateRange, displayedComponents: [.date, .hourAndMinute], label: {})
+                    ComparisonDatePicker(selection: $cheapestHourManager.startDate, in: inputDateRange)
+                        .frame(width: 160, height: 40)
                 }
                 .padding(5)
                 .padding([.leading, .trailing], 2)
@@ -72,7 +73,8 @@ struct TimeRangeInputField: View {
                     
                     Spacer()
                     
-                    DatePicker(selection: $cheapestHourManager.endDate, in: inputDateRange, displayedComponents: [.date, .hourAndMinute], label: {})
+                    ComparisonDatePicker(selection: $cheapestHourManager.endDate, in: inputDateRange)
+                        .frame(width: 160, height: 40)
                 }
                 .padding(5)
                 .padding([.leading, .trailing], 2)

@@ -18,7 +18,8 @@ Current features are:
 * Find the hours when electricity is cheapest (e.g.: find cheapest time to charge electric car, turn on the washing machine or run other electrical consumers)
 
 #### Current demo:
-![App Demo](https://github.com/sp4c38/AwattarApp/blob/master/demo.gif?raw=true)
+<img src="https://github.com/sp4c38/AwattarApp/blob/master/demo.gif?raw=true" width="400"/>
+
 
 #### Request Scheme:
 ![Request Scheme](https://raw.githubusercontent.com/sp4c38/AwattarApp/master/request_scheme.png)

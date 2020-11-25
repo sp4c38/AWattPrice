@@ -5,6 +5,7 @@
 //  Created by Léon Becker on 08.09.20.
 //
 
+import CoreHaptics
 import SwiftUI
 
 struct GraphHeader: View {
@@ -49,9 +50,58 @@ struct EnergyPriceGraph: View {
     @EnvironmentObject var currentSetting: CurrentSetting
     
     @State var graphHourPointData = [(EnergyPricePoint, CGFloat)]()
+    @State var hapticEngine: CHHapticEngine? = nil
     @State var currentPointerIndexSelected: Int? = nil
     @State var singleHeight: CGFloat = 0
     @State var singleBarSettings: SingleBarSettings? = nil
+    
+    func setGraphValues(geometry: GeometryProxy) {
+        self.singleBarSettings = SingleBarSettings(minPrice: awattarData.energyData!.minPrice, maxPrice: awattarData.energyData!.maxPrice)
+
+        self.singleHeight = geometry.size.height / CGFloat(awattarData.energyData!.prices.count)
+
+        self.graphHourPointData = []
+
+        var currentHeight: CGFloat = 0
+        for hourPointEntry in awattarData.energyData!.prices {
+            graphHourPointData.append((hourPointEntry, currentHeight))
+            currentHeight += singleHeight
+        }
+    }
+    
+    func initCHEngine() {
+        guard CHHapticEngine.capabilitiesForHardware().supportsHaptics else { return }
+        
+        do {
+            self.hapticEngine = try CHHapticEngine()
+            do {
+                try hapticEngine?.start()
+            } catch {
+                self.hapticEngine = nil
+            }
+        } catch {
+            print("There was an error initiating the engine: \(error)")
+        }
+    }
+    
+    func shortTapHaptic() {
+        guard (self.hapticEngine != nil) else { return }
+    
+        var hapticEvents = [CHHapticEvent]()
+        
+        let intensity = CHHapticEventParameter(parameterID: .hapticIntensity, value: 0.4)
+        let sharpness = CHHapticEventParameter(parameterID: .hapticSharpness, value: 1.0)
+        let hapticEvent = CHHapticEvent(eventType: .hapticTransient, parameters: [intensity, sharpness], relativeTime: 0)
+        hapticEvents.append(hapticEvent)
+        
+        do {
+            let pattern = try CHHapticPattern(events: hapticEvents, parameters: [])
+            let player = try hapticEngine!.makePlayer(with: pattern)
+            try player.start(atTime: 0)
+        } catch {
+            print("Failed to play haptic pattern: \(error)")
+        }
+    }
     
     var body: some View {
         // The drag gesture responsible for making the graph interactive.
@@ -64,8 +114,13 @@ struct EnergyPriceGraph: View {
             .onChanged { location in
                 let locationHeight = location.location.y
                 
-                withAnimation(.easeInOut(duration: 0.3)) {
-                    currentPointerIndexSelected = Int(((locationHeight / singleHeight) - 1).rounded(.up))
+                let newPointerIndexSelected = Int(((locationHeight / singleHeight) - 1).rounded(.up))
+                
+                if newPointerIndexSelected != currentPointerIndexSelected {
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        currentPointerIndexSelected = newPointerIndexSelected
+                    }
+                    shortTapHaptic()
                 }
             }
             .onEnded {_ in
@@ -92,31 +147,11 @@ struct EnergyPriceGraph: View {
             }
             .drawingGroup()
             .onAppear {
-                singleBarSettings = SingleBarSettings(minPrice: awattarData.energyData!.minPrice, maxPrice: awattarData.energyData!.maxPrice)
-
-                singleHeight = geometry.size.height / CGFloat(awattarData.energyData!.prices.count)
-
-                graphHourPointData = []
-
-                var currentHeight: CGFloat = 0
-                for hourPointEntry in awattarData.energyData!.prices {
-                    graphHourPointData.append((hourPointEntry, currentHeight))
-                    currentHeight += singleHeight
-                }
+                setGraphValues(geometry: geometry)
+                initCHEngine()
             }
             .onReceive(awattarData.$energyData) { newEnergyData in
-                singleBarSettings = SingleBarSettings(minPrice: newEnergyData!.minPrice, maxPrice: newEnergyData!.maxPrice)
-
-                singleHeight = geometry.size.height / CGFloat(newEnergyData!.prices.count)
-
-                graphHourPointData = []
-
-                var currentHeight: CGFloat = 0
-                for hourPointEntry in newEnergyData!.prices {
-                    graphHourPointData.append((hourPointEntry, currentHeight))
-                    currentHeight += singleHeight
-                }
-
+                setGraphValues(geometry: geometry)
             }
         }
         .ignoresSafeArea(.keyboard) // Ignore the keyboard. Without this the graph was been squeezed together when opening the keyboard somewhere in the app

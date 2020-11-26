@@ -57,6 +57,7 @@ class AwattarData: ObservableObject {
         self.currentlyUpdatingData = true
         
         var downloadUrl = ""
+        print(regionIdentifier)
         if regionIdentifier == 1 {
             downloadUrl = "https://awattprice.space8.me/data/AT"
         } else {

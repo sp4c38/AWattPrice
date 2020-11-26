@@ -55,15 +55,15 @@ struct EnergyPriceGraph: View {
     @State var singleHeight: CGFloat = 0
     @State var singleBarSettings: SingleBarSettings? = nil
     
-    func setGraphValues(geometry: GeometryProxy) {
-        self.singleBarSettings = SingleBarSettings(minPrice: awattarData.energyData!.minPrice, maxPrice: awattarData.energyData!.maxPrice)
+    func setGraphValues(energyData: EnergyData, geometry: GeometryProxy) {
+        self.singleBarSettings = SingleBarSettings(minPrice: energyData.minPrice, maxPrice: energyData.maxPrice)
 
-        self.singleHeight = geometry.size.height / CGFloat(awattarData.energyData!.prices.count)
+        self.singleHeight = geometry.size.height / CGFloat(energyData.prices.count)
 
         self.graphHourPointData = []
 
         var currentHeight: CGFloat = 0
-        for hourPointEntry in awattarData.energyData!.prices {
+        for hourPointEntry in energyData.prices {
             graphHourPointData.append((hourPointEntry, currentHeight))
             currentHeight += singleHeight
         }
@@ -90,7 +90,7 @@ struct EnergyPriceGraph: View {
         var hapticEvents = [CHHapticEvent]()
         
         let intensity = CHHapticEventParameter(parameterID: .hapticIntensity, value: 0.4)
-        let sharpness = CHHapticEventParameter(parameterID: .hapticSharpness, value: 1.0)
+        let sharpness = CHHapticEventParameter(parameterID: .hapticSharpness, value: 0.6)
         let hapticEvent = CHHapticEvent(eventType: .hapticTransient, parameters: [intensity, sharpness], relativeTime: 0)
         hapticEvents.append(hapticEvent)
         
@@ -147,11 +147,13 @@ struct EnergyPriceGraph: View {
             }
             .drawingGroup()
             .onAppear {
-                setGraphValues(geometry: geometry)
+                guard let energyData = awattarData.energyData else { return }
+                setGraphValues(energyData: energyData, geometry: geometry)
                 initCHEngine()
             }
             .onReceive(awattarData.$energyData) { newEnergyData in
-                setGraphValues(geometry: geometry)
+                guard let energyData = newEnergyData else { return }
+                setGraphValues(energyData: energyData, geometry: geometry)
             }
         }
         .ignoresSafeArea(.keyboard) // Ignore the keyboard. Without this the graph was been squeezed together when opening the keyboard somewhere in the app

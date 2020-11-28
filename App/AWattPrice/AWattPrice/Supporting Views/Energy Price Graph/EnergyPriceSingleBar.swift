@@ -7,6 +7,79 @@
 
 import SwiftUI
 
+
+/// Calculates multiple sizes which are needed to draw a single price bar.
+/// - Returns: (Start height of bar,
+///             the is selected identifier,
+///             height of the bar,
+///             font size of the text,
+///             font weight of the text)
+func calcSingleBarSizes(_ indexSelected: Int?, _ startHeight: CGFloat,  _ ownIndex: Int, _ maxIndex: Int, _ height: CGFloat) -> (CGFloat, Int16, CGFloat, CGFloat, Font.Weight) {
+    
+    var height = height
+    var isSelected: Int16 = 0
+    var resultStartHeight: CGFloat = 0
+    let barSpacingWhenSelected = 40 / Double(maxIndex - 2)
+    var fontSize: CGFloat = 0
+    var fontWeight: Font.Weight = .regular
+
+    if indexSelected != nil {
+        if indexSelected == ownIndex {
+            isSelected = 1
+        } else if ownIndex == indexSelected! - 1 || ownIndex == indexSelected! + 1 {
+            isSelected = 2
+        } else {
+            isSelected = 0
+        }
+        
+        if isSelected == 0 {
+            height -= CGFloat(barSpacingWhenSelected)
+            
+            if ownIndex > indexSelected! {
+                resultStartHeight += CGFloat(barSpacingWhenSelected * Double(maxIndex - (ownIndex - 1)))
+            } else if ownIndex < indexSelected! {
+                resultStartHeight -= CGFloat(Double(ownIndex) * barSpacingWhenSelected)
+            }
+        }
+        
+        if isSelected == 1 {
+            resultStartHeight += 10
+            resultStartHeight -= CGFloat(Double(ownIndex - 1) * barSpacingWhenSelected)
+        }
+        
+        if isSelected == 2 {
+            if ownIndex > indexSelected! {
+                resultStartHeight += 30
+                resultStartHeight -= CGFloat(Double(ownIndex - 2) * barSpacingWhenSelected)
+            } else {
+                resultStartHeight -= CGFloat(Double(ownIndex) * barSpacingWhenSelected)
+            }
+        }
+    } else {
+        isSelected = 0
+    }
+
+    if isSelected == 1 {
+        height += 20
+        resultStartHeight += startHeight
+        
+        fontSize = 17
+        fontWeight = .bold
+    } else if isSelected == 2 {
+        height += 10
+        resultStartHeight += startHeight
+        
+        fontSize = 9
+        fontWeight = .semibold
+    } else {
+        resultStartHeight += startHeight
+        fontSize = 7
+        fontWeight = .regular
+    }
+
+    return (resultStartHeight, isSelected, height, fontSize, fontWeight)
+}
+
 /**
  A single bar with a certain length (representing the energy cost for this hour relative to other hours) and text which again shows the energy cost for this hour but helps to also show the energy price information in more legible and more accurate form.
  */
@@ -48,7 +121,7 @@ struct EnergyPriceSingleBar: View {
          hourDataPoint: EnergyPricePoint) {
         
         self.singleBarSettings = singleBarSettings
-        
+
         if singleBarSettings.minPrice != 0 {
             self.startWidthPadding = 8 // Set padding to the left side
             self.width = width - 16 // Set padding to the right side
@@ -56,64 +129,13 @@ struct EnergyPriceSingleBar: View {
             self.startWidthPadding = 3
             self.width = width - 19
         }
-        
-        let barSpacingWhenSelected = 40 / Double(maxIndex - 2)
-        self.height = height
-        
-        self.startHeight = 0
-        if indexSelected != nil {
-            if indexSelected == ownIndex {
-                self.isSelected = 1
-            } else if ownIndex == indexSelected! - 1 || ownIndex == indexSelected! + 1 {
-                self.isSelected = 2
-            } else {
-                self.isSelected = 0
-            }
-            
-            if isSelected == 0 {
-                self.height -= CGFloat(barSpacingWhenSelected)
                 
-                if ownIndex > indexSelected! {
-                    self.startHeight += CGFloat(barSpacingWhenSelected * Double(maxIndex - (ownIndex - 1)))
-                } else if ownIndex < indexSelected! {
-                    self.startHeight -= CGFloat(Double(ownIndex) * barSpacingWhenSelected)
-                }
-            }
-            
-            if isSelected == 1 {
-                self.startHeight += 10
-                self.startHeight -= CGFloat(Double(ownIndex - 1) * barSpacingWhenSelected)
-            }
-            
-            if isSelected == 2 {
-                if ownIndex > indexSelected! {
-                    self.startHeight += 30
-                    self.startHeight -= CGFloat(Double(ownIndex - 2) * barSpacingWhenSelected)
-                } else {
-                    self.startHeight -= CGFloat(Double(ownIndex) * barSpacingWhenSelected)
-                }
-            }
-        } else {
-            self.isSelected = 0
-        }
-
-        if isSelected == 1 {
-            self.height += 20
-            self.startHeight += startHeight
-            
-            fontSize = 17
-            fontWeight = .bold
-        } else if isSelected == 2 {
-            self.height += 10
-            self.startHeight += startHeight
-            
-            fontSize = 9
-            fontWeight = .semibold
-        } else {
-            self.startHeight += startHeight
-            fontSize = 7
-            fontWeight = .regular
-        }
+        let results = calcSingleBarSizes(indexSelected, startHeight, ownIndex, maxIndex, height)
+        self.startHeight = results.0
+        self.isSelected = results.1
+        self.height = results.2
+        self.fontSize = results.3
+        self.fontWeight = results.4
         
         self.hourDataPoint = hourDataPoint
     }

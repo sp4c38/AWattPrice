@@ -79,3 +79,30 @@ struct VerticalDividerLineShape: Shape {
         return path
     }
 }
+
+struct DayMarkLineShape: Shape {
+//    var graphPointItem: (EnergyPricePoint, CGFloat)
+    var startHeight: CGFloat
+    
+    var animatableData: CGFloat {
+        get { self.startHeight }
+        set { self.startHeight = newValue }
+    }
+    
+    init(graphPointItem: (EnergyPricePoint, CGFloat), indexSelected: Int?, ownIndex: Int, maxIndex: Int, height: CGFloat) {
+//        self.graphPointItem = graphPointItem
+        let results = calcSingleBarSizes(indexSelected, graphPointItem.1, ownIndex, maxIndex, height)
+        self.startHeight = results.0
+        print("Hi")
+    }
+    
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        path.move(to: CGPoint(x: 0, y: startHeight))
+        path.addLine(to: CGPoint(x: rect.width, y: startHeight))
+        
+        path = path.strokedPath(StrokeStyle(lineWidth: 1.5, lineCap: .square))
+        
+        return path
+    }
+}

@@ -61,7 +61,7 @@ class AwattarData: ObservableObject {
         if regionIdentifier == 1 {
             downloadUrl = "https://awattprice.space8.me/data/AT"
         } else {
-            downloadUrl = "https://awattprice.space8.me/data/DE"
+            downloadUrl = "https://awattprice.space8.me/data/"
         }
         
         var energyRequest = URLRequest(

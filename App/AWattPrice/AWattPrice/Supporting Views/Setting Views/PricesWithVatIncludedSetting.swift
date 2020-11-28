@@ -11,7 +11,8 @@ struct PricesWithVatIncludedSetting: View {
     @Environment(\.colorScheme) var colorScheme
     
     @EnvironmentObject var currentSetting: CurrentSetting
-    
+
+    @State var firstAppear = true
     @State var pricesWithTaxIncluded = true
     
     var body: some View {
@@ -29,14 +30,18 @@ struct PricesWithVatIncludedSetting: View {
                     
                 }
                 .labelsHidden()
-                .onChange(of: pricesWithTaxIncluded) { newValue in
-                    currentSetting.changeTaxSelection(newTaxSelection: newValue)
+                .onAppear {
+                    pricesWithTaxIncluded = currentSetting.setting!.pricesWithTaxIncluded
+                    firstAppear = false
+                }
+                .ifTrue(firstAppear == false) { content in
+                    content
+                        .onChange(of: pricesWithTaxIncluded) { newValue in
+                            currentSetting.changeTaxSelection(newTaxSelection: newValue)
+                        }
                 }
             }
         }
         .customBackgroundColor(colorScheme == .light ? Color(hue: 0.6667, saturation: 0.0202, brightness: 0.9886) : Color(hue: 0.6667, saturation: 0.0340, brightness: 0.1424))
-        .onAppear {
-            pricesWithTaxIncluded = currentSetting.setting!.pricesWithTaxIncluded
-        }
     }
 }

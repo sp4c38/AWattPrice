@@ -56,6 +56,7 @@ struct EnergyPriceGraph: View {
     @State var currentPointerIndexSelected: Int? = nil
     @State var singleHeight: CGFloat = 0
     @State var singleBarSettings: SingleBarSettings? = nil
+    @State var dateMarkPointIndex: Int? = nil
     
     func setGraphValues(energyData: EnergyData, geometry: GeometryProxy) {
         self.singleBarSettings = SingleBarSettings(minPrice: energyData.minPrice, maxPrice: energyData.maxPrice)
@@ -63,10 +64,18 @@ struct EnergyPriceGraph: View {
         self.singleHeight = geometry.size.height / CGFloat(energyData.prices.count)
 
         self.graphHourPointData = []
-
+        
+        let firstItemDate = Date(timeIntervalSince1970: TimeInterval(energyData.prices[0].startTimestamp))
         var currentHeight: CGFloat = 0
         for hourPointEntry in energyData.prices {
             graphHourPointData.append((hourPointEntry, currentHeight))
+            
+            let currentItemDate = Date(timeIntervalSince1970: TimeInterval(hourPointEntry.startTimestamp))
+
+            if !(Calendar.current.compare(firstItemDate, to: currentItemDate, toGranularity: .day) == .orderedSame) && self.dateMarkPointIndex == nil {
+                self.dateMarkPointIndex = Int((currentHeight / singleHeight).rounded(.up))
+            }
+            
             currentHeight += singleHeight
         }
     }
@@ -146,11 +155,13 @@ struct EnergyPriceGraph: View {
                             hourDataPoint: graphHourPointData[hourPointIndex].0)
                     }
                 }
+                if dateMarkPointIndex != nil {
+                    DayMarkLineShape(graphPointItem: graphHourPointData[dateMarkPointIndex!], indexSelected: currentPointerIndexSelected, ownIndex: dateMarkPointIndex!, maxIndex: graphHourPointData.count - 1, height: singleHeight)
+                        .foregroundColor(Color.red)
+                }
             }
             .drawingGroup()
             .onAppear {
-                guard let energyData = awattarData.energyData else { return }
-                setGraphValues(energyData: energyData, geometry: geometry)
                 initCHEngine()
             }
             .onChange(of: scenePhase) { newScenePhase in

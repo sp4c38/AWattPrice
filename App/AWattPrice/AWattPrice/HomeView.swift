@@ -18,7 +18,7 @@ struct HomeView: View {
     var body: some View {
         NavigationView {
             VStack {
-                if awattarData.energyData != nil && currentSetting.setting != nil && (awattarData.currentlyNoData == false) {
+                if awattarData.energyData != nil && currentSetting.setting != nil && awattarData.currentlyNoData == false {
                     VStack(spacing: 3) {
                         UpdatedDataView()
                         GraphHeader()

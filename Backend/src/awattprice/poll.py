@@ -46,11 +46,11 @@ def transform_entry(entry: Box) -> Optional[Box]:
 
 
 async def awattar_read_task(
-        *,
-        config: Box,
-        region: Region,
-        start: Optional[int] = None,
-        end: Optional[int] = None,
+    *,
+    config: Box,
+    region: Region,
+    start: Optional[int] = None,
+    end: Optional[int] = None,
 ) -> Optional[List[Box]]:
     """Async worker to read the Awattar data. If too old, poll the
     Awattar API.

@@ -75,7 +75,7 @@ struct EnergyPriceGraph: View {
             if !(Calendar.current.compare(firstItemDate, to: currentItemDate, toGranularity: .day) == .orderedSame) && self.dateMarkPointIndex == nil {
                 self.dateMarkPointIndex = Int((currentHeight / singleHeight).rounded(.up))
             }
-            
+             
             currentHeight += singleHeight
         }
     }
@@ -125,13 +125,20 @@ struct EnergyPriceGraph: View {
             .onChanged { location in
                 let locationHeight = location.location.y
                 
-                let newPointerIndexSelected = Int(((locationHeight / singleHeight) - 1).rounded(.up))
-                
-                if newPointerIndexSelected != currentPointerIndexSelected {
-                    withAnimation(.easeInOut(duration: 0.3)) {
-                        currentPointerIndexSelected = newPointerIndexSelected
+                var newPointerIndexSelected: Int? = Int(((locationHeight / singleHeight) - 1).rounded(.up))
+
+                if newPointerIndexSelected != nil {
+                    if newPointerIndexSelected! < 0 || newPointerIndexSelected! > graphHourPointData.count - 1 {
+                        newPointerIndexSelected = nil
                     }
-                    shortTapHaptic()
+                    
+                    if newPointerIndexSelected != currentPointerIndexSelected {
+                        shortTapHaptic()
+                    }
+                }
+                
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    currentPointerIndexSelected = newPointerIndexSelected
                 }
             }
             .onEnded {_ in
@@ -156,8 +163,7 @@ struct EnergyPriceGraph: View {
                     }
                 }
                 if dateMarkPointIndex != nil {
-                    DayMarkLineShape(graphPointItem: graphHourPointData[dateMarkPointIndex!], indexSelected: currentPointerIndexSelected, ownIndex: dateMarkPointIndex!, maxIndex: graphHourPointData.count - 1, height: singleHeight)
-                        .foregroundColor(Color.red)
+                    DayMarkView(graphPointItem: graphHourPointData[dateMarkPointIndex!], indexSelected: currentPointerIndexSelected, ownIndex: dateMarkPointIndex!, maxIndex: graphHourPointData.count - 1, height: singleHeight)
                 }
             }
             .drawingGroup()

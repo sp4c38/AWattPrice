@@ -10,7 +10,7 @@ import SwiftUI
 
 /// Calculates multiple sizes which are needed to draw a single price bar.
 /// - Returns: (Start height of bar,
-///             the is selected identifier,
+///             is selected identifier,
 ///             height of the bar,
 ///             font size of the text,
 ///             font weight of the text)

@@ -46,6 +46,8 @@ class SingleBarSettings: ObservableObject {
 
 /// The interactive graph drawn on the home screen displaying the price for each hour throughout the day
 struct EnergyPriceGraph: View {
+    @Environment(\.scenePhase) var scenePhase
+    
     @EnvironmentObject var awattarData: AwattarData
     @EnvironmentObject var currentSetting: CurrentSetting
     
@@ -150,6 +152,11 @@ struct EnergyPriceGraph: View {
                 guard let energyData = awattarData.energyData else { return }
                 setGraphValues(energyData: energyData, geometry: geometry)
                 initCHEngine()
+            }
+            .onChange(of: scenePhase) { newScenePhase in
+                if newScenePhase == .active {
+                    initCHEngine()
+                }
             }
             .onReceive(awattarData.$energyData) { newEnergyData in
                 guard let energyData = newEnergyData else { return }

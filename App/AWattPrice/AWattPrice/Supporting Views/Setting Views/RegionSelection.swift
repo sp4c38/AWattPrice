@@ -30,7 +30,6 @@ struct RegionSelection: View {
                 .ifTrue(firstAppear == false) { content in
                     content
                         .onChange(of: selectedRegion) { newRegionSelection in
-                            print("Changed to region selection: \(newRegionSelection).")
                             currentSetting.changeRegionSelection(newRegionSelection: Int16(newRegionSelection))
                         }
                 }

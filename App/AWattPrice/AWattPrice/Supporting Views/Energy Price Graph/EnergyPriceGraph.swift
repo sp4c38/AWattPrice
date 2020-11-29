@@ -64,9 +64,11 @@ struct EnergyPriceGraph: View {
         self.singleHeight = geometry.size.height / CGFloat(energyData.prices.count)
 
         self.graphHourPointData = []
+        self.dateMarkPointIndex = nil
         
         let firstItemDate = Date(timeIntervalSince1970: TimeInterval(energyData.prices[0].startTimestamp))
         var currentHeight: CGFloat = 0
+        
         for hourPointEntry in energyData.prices {
             graphHourPointData.append((hourPointEntry, currentHeight))
             
@@ -173,6 +175,7 @@ struct EnergyPriceGraph: View {
             .onChange(of: scenePhase) { newScenePhase in
                 if newScenePhase == .active {
                     initCHEngine()
+                    setGraphValues(energyData: awattarData.energyData!, geometry: geometry)
                 }
             }
             .onReceive(awattarData.$energyData) { newEnergyData in

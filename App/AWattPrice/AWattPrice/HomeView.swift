@@ -13,6 +13,7 @@ struct HomeView: View {
     @EnvironmentObject var awattarData: AwattarData
     @EnvironmentObject var currentSetting: CurrentSetting
     
+    @State var firstEverAppear: Bool = true
     @State var showSettingsPage: Bool = false
     
     var body: some View {
@@ -49,8 +50,11 @@ struct HomeView: View {
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .onAppear {
-            awattarData.download(forRegion: currentSetting.setting?.regionSelection ?? 0)
-            currentSetting.validateTariffAndEnergyPriceSet()
+            if firstEverAppear == true {
+                awattarData.download(forRegion: currentSetting.setting?.regionSelection ?? 0)
+                currentSetting.validateTariffAndEnergyPriceSet()
+                firstEverAppear = false
+            }
         }
         .onChange(of: scenePhase) { phase in
             if phase == .active {

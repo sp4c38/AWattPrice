@@ -40,7 +40,7 @@ struct AwattarApp: App {
         WindowGroup {
             // The managedObjectContext from PersistenceManager mustn't be parsed to the views directly as environment value because views will only access it indirectly through CurrentSetting.
             
-            TabNavigatorView()
+            TabBar()
                 .environmentObject(awattarData)
                 .environmentObject(currentSetting)
                 .environmentObject(CheapestHourManager())

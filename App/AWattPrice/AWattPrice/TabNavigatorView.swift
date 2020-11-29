@@ -7,23 +7,6 @@
 
 import SwiftUI
 
-struct OutSideView: View {
-    @Binding var test: Bool
-    
-    var body: some View {
-        VStack {
-            Image(systemName: "rectangle.and.pencil.and.ellipsis")
-                .font(.largeTitle)
-            
-            Button(action: {
-                test = false
-            }) {
-                Text("Is true switch to false")
-            }
-        }
-    }
-}
-
 /// Allows the user to select between different tabs to access different functionalities/views of the app. This tab navigator view is shown at the very bottom of the screen.
 struct TabNavigatorView: View {
     @EnvironmentObject var awattarData: AwattarData

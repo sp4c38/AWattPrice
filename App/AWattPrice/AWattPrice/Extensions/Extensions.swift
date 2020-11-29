@@ -103,8 +103,10 @@ extension Double {
 }
 
 extension String {
-    func localized(withComment: String? = nil) -> String {
-        return NSLocalizedString(self, comment: withComment ?? "")
+    /// Returns the localized string of a string.
+    /// If you wish to format a localized string use String(format: String.localized(), value)
+    func localized() -> String {
+        return NSLocalizedString(self, comment: "")
     }
 }
 

@@ -20,7 +20,7 @@ struct HomeView: View {
         NavigationView {
             VStack {
                 if awattarData.energyData != nil && currentSetting.setting != nil && awattarData.currentlyNoData == false {
-                    VStack(spacing: 3) {
+                    VStack(spacing: 5) {
                         UpdatedDataView()
                         GraphHeader()
                     }

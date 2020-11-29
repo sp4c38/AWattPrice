@@ -51,7 +51,7 @@ struct TabBar: View {
                     }
                 }
             }
-            .frame(height: 50)
+            .frame(height: 60)
         }
     }
 }

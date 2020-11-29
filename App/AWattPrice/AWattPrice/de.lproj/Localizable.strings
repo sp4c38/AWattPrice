@@ -14,7 +14,15 @@
 "splashScreenComparePricesInfo" = "Finden Sie die preislich günstigsten Stunden für Ihren Stromverbrauch.";
 
 // Electricity Price page localizations
-"lastUpdated" = "Zuletzt aktualisiert";
+"lessThanOneMinuteAgo" = "Vor weniger als einer Minute";
+"moreThanMMAgoSingular" = "Vor mehr als %@ Minute";
+"moreThanMMAgoPlural" = "Vor mehr als %@ Minuten";
+
+"lessThanOneMinuteAgo" = "Vor weniger als einer Minute aktualisiert";
+"moreThanMMAgoSingular" = "Vor %@ Minute aktualisiert";
+"moreThanMMAgoPlural" = "Vor %@ Minuten aktualisiert";
+
+"updating" = "Aktualisiert";
 "elecPrice" = "Strompreis";
 "hourOfDay" = "Uhrzeit";
 

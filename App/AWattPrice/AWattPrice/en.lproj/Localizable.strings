@@ -17,7 +17,6 @@
 "lessThanOneMinuteAgo" = "Updated less than a minute ago";
 "moreThanMMAgoSingular" = "Updated %@ minute ago";
 "moreThanMMAgoPlural" = "Updated %@ minutes ago";
-"updatingData" = "Updating data";
 "elecPrice" = "Electricity Price";
 "hourOfDay" = "Hour of day";
 

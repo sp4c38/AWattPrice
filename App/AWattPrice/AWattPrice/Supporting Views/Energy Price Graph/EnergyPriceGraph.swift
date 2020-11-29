@@ -172,6 +172,11 @@ struct EnergyPriceGraph: View {
             .onAppear {
                 initCHEngine()
             }
+            .onChange(of: awattarData.dataRetrievalError) { newValue in
+                if newValue == true {
+                    setGraphValues(energyData: awattarData.energyData!, geometry: geometry)
+                }
+            }
             .onChange(of: scenePhase) { newScenePhase in
                 if newScenePhase == .active {
                     initCHEngine()

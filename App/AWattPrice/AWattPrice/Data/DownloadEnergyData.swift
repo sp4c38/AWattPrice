@@ -5,8 +5,8 @@
 //  Created by Léon Becker on 07.09.20.
 //
 
-import SwiftUI
 import Foundation
+import SwiftUI
 
 /// A single energy price data point. It has a start and end time. Throughout this time range a certain marketprice/energy price applies. This price is also held in this energy price data point.
 struct EnergyPricePoint: Hashable, Codable {
@@ -61,15 +61,21 @@ class AwattarData: ObservableObject {
         if regionIdentifier == 1 {
             downloadUrl = "https://awattprice.space8.me/data/AT"
         } else {
-            downloadUrl = "https://awattprice.space8.me/data/"
+            downloadUrl = "https://awattprice.space8.me/data/DE"
         }
         
         var energyRequest = URLRequest(
                         url: URL(string: downloadUrl)!,
-                        cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy)
+            cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy)
         
         energyRequest.httpMethod = "GET"
         
+//        var dataComesFromCache = false
+//        if URLCache.shared.cachedResponse(for: energyRequest) != nil {
+//            dataComesFromCache = true
+//        }
+        
+        let beforeTime = Date()
         let _ = URLSession.shared.dataTask(with: energyRequest) { data, response, error in
             let jsonDecoder = JSONDecoder()
             var decodedData = EnergyData(prices: [], minPrice: 0, maxPrice: 0)
@@ -137,8 +143,19 @@ class AwattarData: ObservableObject {
             }
             
             DispatchQueue.main.async {
-                self.dateDataLastUpdated = Date()
-                self.currentlyUpdatingData = false
+                if self.dataRetrievalError == false {
+                    self.dateDataLastUpdated = Date()
+                }
+                
+                if Date().timeIntervalSince(beforeTime) < 0.6 {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + (0.6 - Date().timeIntervalSince(beforeTime))) {
+                        // If the data could be retrieved very fast (< 0.6s) than changes to text, ... could look very sudden.
+                        // Thats why add a small delay to result in a 0.6s delay.
+                        self.currentlyUpdatingData = false
+                    }
+                } else {
+                    self.currentlyUpdatingData = false
+                }
             }
         }.resume()
     }

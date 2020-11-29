@@ -38,7 +38,7 @@ struct TabBar: View {
                                     .aspectRatio(contentMode: .fit)
                                     .frame(width: 20, height: 20)
 
-                                Text(tabBarItems.items[i].itemSubtitle)
+                                Text(tabBarItems.items[i].itemSubtitle.localized())
                                     .font(.caption)
                             }
                             .foregroundColor(i == tabBarItems.selectedItemIndex ? Color.blue : Color(red: 0.56, green: 0.56, blue: 0.56))

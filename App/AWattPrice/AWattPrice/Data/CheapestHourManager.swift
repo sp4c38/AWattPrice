@@ -284,7 +284,7 @@ class CheapestHourManager: ObservableObject {
                             // Find the pre-following price point
                             for item in energyData.prices {
                                 if item.endTimestamp == timestamp {
-                                    print("Found the missing energy proce point with end timestamp \(item.endTimestamp).")
+                                    print("Found the missing energy price point with end timestamp \(item.endTimestamp).")
                                     cheapestPair.associatedPricePoints.insert(item, at: 0)
                                     break
                                 }

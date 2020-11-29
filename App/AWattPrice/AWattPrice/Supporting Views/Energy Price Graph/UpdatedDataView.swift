@@ -9,6 +9,7 @@ import SwiftUI
 
 struct UpdatedDataView: View {
     @EnvironmentObject var awattarData: AwattarData
+    @EnvironmentObject var currentSetting: CurrentSetting
     
     @State var firstAppear = true
     @State var localizedTimeIntervalString: String = ""
@@ -24,17 +25,28 @@ struct UpdatedDataView: View {
         if awattarData.dateDataLastUpdated != nil {
             HStack(spacing: 10) {
                 if awattarData.currentlyUpdatingData {
-                    Text("updatingData")
+                    Text("loading")
+                        .foregroundColor(Color.blue)
                         .transition(.opacity)
                     
                     ProgressView()
+                        .foregroundColor(Color.blue)
                         .transition(.opacity)
                         .frame(width: 13, height: 13)
                         .scaleEffect(0.7, anchor: .center)
+                        .progressViewStyle(CircularProgressViewStyle(tint: Color.blue))
                 } else {
-                    Text(localizedTimeIntervalString)
-                        .foregroundColor(Color.gray)
-                        .transition(.opacity)
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(localizedTimeIntervalString)
+                            .foregroundColor(Color.gray)
+                            .transition(.opacity)
+                            .animation(nil)
+                        
+                        if awattarData.dataRetrievalError == true {
+                            Text("Couldn't download new data")
+                                .foregroundColor(Color.red)
+                        }
+                    }
                 }
                 
                 Spacer()
@@ -46,6 +58,10 @@ struct UpdatedDataView: View {
             }
             .onReceive(timer) { _ in
                 localizedTimeIntervalString = dateFormatter.localizedTimeString(for: Date(), relativeTo: awattarData.dateDataLastUpdated!)
+            }
+            .contentShape(Rectangle())
+            .onTapGesture {
+                awattarData.download(forRegion: currentSetting.setting!.regionSelection)
             }
         }
     }

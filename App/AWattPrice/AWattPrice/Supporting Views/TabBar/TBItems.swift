@@ -20,8 +20,8 @@ class TBItem {
 
 class TBItems: ObservableObject {
     let items = [
-        TBItem(imageName: "bolt", itemSubtitle: "!E. Price"),
-        TBItem(imageName: "rectangle.and.text.magnifyingglass", itemSubtitle: "!S. Prices")
+        TBItem(imageName: "bolt", itemSubtitle: "elecPrice"),
+        TBItem(imageName: "rectangle.and.text.magnifyingglass", itemSubtitle: "cheapestPrice")
     ]
     
     @Published var selectedItemIndex: Int = 0

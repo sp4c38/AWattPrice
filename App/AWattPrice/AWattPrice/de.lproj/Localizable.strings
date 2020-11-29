@@ -21,8 +21,6 @@
 "lessThanOneMinuteAgo" = "Vor weniger als einer Minute aktualisiert";
 "moreThanMMAgoSingular" = "Vor %@ Minute aktualisiert";
 "moreThanMMAgoPlural" = "Vor %@ Minuten aktualisiert";
-
-"updating" = "Aktualisiert";
 "elecPrice" = "Strompreis";
 "hourOfDay" = "Uhrzeit";
 

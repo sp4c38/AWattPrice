@@ -80,7 +80,7 @@ def find_cheapest_price(price_data, timeframe, power):
     :type price_data: Dict[int, float]
     :param timeframe: time span for which we want to consume power
     :type price_data: int
-    :param power: time span for which we want to consume power
+    :param power: the total power consumption (kWh) which occurres in the timeframe
     :type power: float
 
     :rtype: tuple(int, float)

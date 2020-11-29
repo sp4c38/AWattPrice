@@ -39,6 +39,7 @@ struct HomeView: View {
             .fullScreenCover(isPresented: $showSettingsPage) {
                 SettingsPageView()
                     .environmentObject(currentSetting)
+                    .environmentObject(awattarData)
             }
             .navigationBarItems(trailing:
                 Button(action: { showSettingsPage.toggle() }) {

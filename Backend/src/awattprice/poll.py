@@ -174,9 +174,9 @@ async def get_headers(config: Box, data: Dict) -> Dict:
             # will continuously look for new price data.
             # max_age is set so that the client only caches until the backend
             # will start continuous requesting for new price data.
-            next_hour_start = now.replace(hour=now.hour+1, minute=0, second=1)
+            next_hour_start = now.replace(hour=now.hour+1, minute=0, second=0, microsecond=0)
             difference = next_hour_start - now
-            max_age = difference.timedelt
+            max_age = difference.seconds
         else:
             # Runs on default when server doesn't continuously look for new price data.
             # and it isn't the hour before continouse updating will occur.

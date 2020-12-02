@@ -13,6 +13,9 @@
 "splashScreenComparePrices" = "Preise vergleichen";
 "splashScreenComparePricesInfo" = "Finden Sie die preislich günstigsten Stunden für Ihren Stromverbrauch.";
 
+// Features and Consent Splash Screen localizations
+"features" = "Funktionen";
+
 // Electricity Price page localizations
 "lessThanOneMinuteAgo" = "Vor weniger als einer Minute";
 "moreThanMMAgoSingular" = "Vor mehr als %@ Minute";

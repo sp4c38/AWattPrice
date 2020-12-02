@@ -13,6 +13,9 @@
 "splashScreenComparePrices" = "Compare prices";
 "splashScreenComparePricesInfo" = "Find the cheapest hours for your electricity consumption.";
 
+// Features and Consent Splash Screen localizations
+"features" = "Features";
+
 // Electricity Price page localizations
 "lessThanOneMinuteAgo" = "Updated less than a minute ago";
 "moreThanMMAgoSingular" = "Updated %@ minute ago";

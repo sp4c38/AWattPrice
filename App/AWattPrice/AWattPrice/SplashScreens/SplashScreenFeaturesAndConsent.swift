@@ -42,7 +42,7 @@ struct AppFeatureView: View {
 struct PrivacyPolicyConsentView: View {
     @Environment(\.colorScheme) var colorScheme
     
-    @State var isChecked: Bool = false
+    @Binding var isChecked: Bool
     
     var body: some View {
         HStack(spacing: 20) {
@@ -77,7 +77,10 @@ struct PrivacyPolicyConsentView: View {
  */
 struct SplashScreenFeaturesAndConsentView: View {
     @EnvironmentObject var currentSetting: CurrentSetting
+    
     @State var redirectToNextSplashScreen: Int? = 0
+    
+    @State var consentIsChecked: Bool = false
     
     var body: some View {
         VStack(spacing: 25) {
@@ -89,10 +92,12 @@ struct SplashScreenFeaturesAndConsentView: View {
 
             Spacer()
             
-            PrivacyPolicyConsentView()
+            PrivacyPolicyConsentView(isChecked: $consentIsChecked)
             
             Button(action: {
-                currentSetting.changeSplashScreenFinished(newState: true)
+                if consentIsChecked {
+                    currentSetting.changeSplashScreenFinished(newState: true)
+                }
             }) {
                 Text("continue")
             }

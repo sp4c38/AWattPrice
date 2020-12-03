@@ -19,9 +19,9 @@ In order to make the Mobile Application and Services available to you, or to mee
 - Improve user experience
 - Respond to legal requests and prevent harm
 - Run and operate the Mobile Application and Services
-- Create and analyse statistical information
+- Create, analyze and possibly publish statistical information
 
-Statistical information will never include any information which could harm the users privacy or could identify any individual using our Mobile Application or Services.
+Statistical information will never include any information which could harm the users privacy or could identify any individual using our Mobile Application or Services. Statictical information will only include general numbers about the usage of the Mobile Application or Services.
 
 ### Disclosure of information
 

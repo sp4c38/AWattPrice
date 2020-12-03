@@ -75,7 +75,9 @@ struct EnergyPriceGraph: View {
             let currentItemDate = Date(timeIntervalSince1970: TimeInterval(hourPointEntry.startTimestamp))
 
             if !(Calendar.current.compare(firstItemDate, to: currentItemDate, toGranularity: .day) == .orderedSame) && self.dateMarkPointIndex == nil {
-                self.dateMarkPointIndex = Int((currentHeight / singleHeight).rounded(.up))
+                if singleHeight != 0 {
+                    self.dateMarkPointIndex = Int((currentHeight / singleHeight).rounded(.up))
+                }
             }
              
             currentHeight += singleHeight

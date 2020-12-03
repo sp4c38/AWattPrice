@@ -1,4 +1,4 @@
-# AWattPrice App Privacy Policy
+# AWattPrice App and Website Privacy Policy
 
 This privacy policy ("Policy") describes how the personally identifiable information ("Personal Information") you may provide in the "AWattPrice" mobile application ("Mobile Application" or "Service") and website is collected, protected and used. This Policy is a legally binding agreement between you ("User", "you" or "your") and this Mobile Application developer ("Operator", "we", "us" or "our"). By accessing and using the Mobile Application and Services, you acknowledge that you have read, understood, and agree to be bound by the terms of this Agreement.
 

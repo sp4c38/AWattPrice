@@ -41,6 +41,13 @@ body{
   background-size: cover;
   min-height: 590px;
 }
+
+.header-policy {
+  background: url("../images/banner.png") no-repeat 0px 0px;
+  background-size: cover;
+  min-height: 90px;
+}
+
 .header-top {
   padding: 1em 0;
   }
@@ -421,6 +428,15 @@ padding-bottom: 2em;
 .footer-bottom p a {
 	margin: 0 6px 0 6px;
 }
+
+.footer-attr {
+    text-align: center;
+}
+
+.footer-attr a {
+    color: #31C3DB;
+}
+
 #toTop {
 	display: none;
 	text-decoration: none;
@@ -634,6 +650,7 @@ display:block;
 .header {
   min-height: 525px;
 }
+
 .center-img img {
   width: 50%;
   height: 100%;

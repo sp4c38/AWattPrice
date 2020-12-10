@@ -45,8 +45,8 @@ struct PrivacyPolicyConsentView: View {
     @Binding var isChecked: Bool
     @Binding var showConsentNotChecked: Bool
     
-    func getForegroundColor(isCheckmark: Bool = false) -> Color {
-        if showConsentNotChecked == true && isCheckmark == true {
+    func getForegroundColor(isCheckmark: Bool = false, isText: Bool = false) -> Color {
+        if showConsentNotChecked == true && (isCheckmark == true || isText == true) {
             return Color.red
         }
         
@@ -82,7 +82,8 @@ struct PrivacyPolicyConsentView: View {
             VStack(alignment: .leading, spacing: 5) {
                 Text("agreePrivacyPolicy")
                     .font(.subheadline)
-                    .foregroundColor(getForegroundColor())
+                    .foregroundColor(Color.white)
+                    .colorMultiply(getForegroundColor(isText: true))
                 
                 Button(action: {
                     var privacyPolicyUrl = URL(string: "https://awattprice.space8.me/privacy_policy_german.html")

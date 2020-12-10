@@ -16,7 +16,7 @@
 // Features and Consent Splash Screen localizations
 "features" = "Features";
 "agreePrivacyPolicy" = "I agree to the Privacy Policy of the AWattPrice App.";
-"seePrivacyPolicy" = "See Privacy Policy";
+"seePrivacyPolicy" = "View Privacy Policy";
 
 // Electricity Price page localizations
 "lessThanOneMinuteAgo" = "Updated less than a minute ago";
@@ -31,7 +31,7 @@
 "wrongInputError" = "This field may only contain numbers and , or .";
 "totalConsumption" = "Total consumption";
 "timeRange" = "Time range";
-"wrongTimeRangeError" = "With this power output and this total consumption set, a minimum time range of %@ hours is required.";
+"wrongTimeRangeError" = "With this power output and this total consumption a minimum time range of %@ hours and is required.";
 "nextThreeHours" = "Next 3 hours";
 
 // Cheapest Price Result page localizations

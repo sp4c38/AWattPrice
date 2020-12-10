@@ -1,4 +1,4 @@
-# AWattPrice App und Website Datenschutzrichtlinie
+# Datenschutzrichtline für die AWattPrice App und die AWattPrice Website
 
 Diese Datenschutzrichtlinie ("Richtlinie") beschreibt, wie die persönlich identifizierbaren Informationen ("Persönliche Daten"), die Sie in der mobilen Anwendung "AWattPrice" ("mobile Anwendung" oder "Dienste") und der Website erfasst, geschützt und verwendet werden. Diese Richtlinie ist eine rechtsverbindliche Vereinbarung zwischen Ihnen ("Benutzer", "Sie" oder "Ihr") und diesem Entwickler der Mobilanwendung ("Betreiber", "wir", "uns" oder "unser"). Durch den Zugriff auf die Mobilen Anwendungen und Dienste und deren Nutzung bestätigen Sie, dass Sie die Bedingungen dieser Vereinbarung gelesen und verstanden haben und damit einverstanden sind, an sie gebunden zu sein.
 

@@ -43,34 +43,62 @@ struct PrivacyPolicyConsentView: View {
     @Environment(\.colorScheme) var colorScheme
     
     @Binding var isChecked: Bool
+    @Binding var showConsentNotChecked: Bool
+    
+    func getForegroundColor(isCheckmark: Bool = false) -> Color {
+        if showConsentNotChecked == true && isCheckmark == true {
+            return Color.red
+        }
+        
+        if isCheckmark {
+            return Color.blue
+        }
+        
+        if colorScheme == .light {
+            return Color.black
+        } else {
+            return Color.white
+        }
+    }
     
     var body: some View {
         HStack(spacing: 20) {
-            if isChecked {
+            if isChecked == true {
                 Image(systemName: "checkmark.square")
                     .resizable()
-                    .foregroundColor(Color.blue)
+                    .foregroundColor(Color.white)
+                    .colorMultiply(getForegroundColor(isCheckmark: true))
                     .frame(width: 27, height: 27)
                     .transition(.opacity)
             } else {
                 Image(systemName: "square")
                     .resizable()
-                    .foregroundColor(Color.blue)
+                    .foregroundColor(Color.white)
+                    .colorMultiply(getForegroundColor(isCheckmark: true))
                     .frame(width: 27, height: 27)
                     .transition(.opacity)
             }
             
-            VStack {
+            VStack(alignment: .leading, spacing: 5) {
                 Text("agreePrivacyPolicy")
+                    .font(.subheadline)
+                    .foregroundColor(getForegroundColor())
                 
                 Button(action: {
-                    // Let the user visit this website for him/her to get information which depends on the users location
-                    // This isn't yet handled directly in the app
+                    var privacyPolicyUrl = URL(string: "https://awattprice.space8.me/privacy_policy_german.html")
+                    if Locale.current.languageCode == "de" {
+                        privacyPolicyUrl = URL(string: "https://awattprice.space8.me/privacy_policy_german.html")
+                    } else if Locale.current.languageCode == "en" {
+                        privacyPolicyUrl = URL(string: "https://awattprice.space8.me/privacy_policy_english.html")
+                    }
 
-                    UIApplication.shared.open(URL(string: "")!)
+                    if privacyPolicyUrl != nil {
+                        UIApplication.shared.open(privacyPolicyUrl!)
+                    }
                 }) {
                     HStack {
                         Text("seePrivacyPolicy")
+                            .font(.subheadline)
                         Image(systemName: "chevron.right")
                     }
                     .foregroundColor(Color.blue)
@@ -83,6 +111,9 @@ struct PrivacyPolicyConsentView: View {
         .contentShape(Rectangle())
         .onTapGesture {
             isChecked.toggle()
+            if isChecked == true {
+                showConsentNotChecked = false
+            }
         }
     }
 }
@@ -96,6 +127,7 @@ struct SplashScreenFeaturesAndConsentView: View {
     @State var redirectToNextSplashScreen: Int? = 0
     
     @State var consentIsChecked: Bool = false
+    @State var showConsentNotChecked: Bool = false
     
     var body: some View {
         VStack(spacing: 25) {
@@ -107,11 +139,14 @@ struct SplashScreenFeaturesAndConsentView: View {
 
             Spacer()
             
-            PrivacyPolicyConsentView(isChecked: $consentIsChecked)
+            PrivacyPolicyConsentView(isChecked: $consentIsChecked, showConsentNotChecked: $showConsentNotChecked)
             
             Button(action: {
-                if consentIsChecked {
+                if consentIsChecked == true {
+                    showConsentNotChecked = false
                     currentSetting.changeSplashScreenFinished(newState: true)
+                } else {
+                    showConsentNotChecked = true
                 }
             }) {
                 Text("continue")

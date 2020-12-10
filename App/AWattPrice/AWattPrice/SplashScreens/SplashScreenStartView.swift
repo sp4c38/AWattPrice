@@ -46,6 +46,7 @@ struct SplashScreenStartView: View {
             .padding([.leading, .trailing], 20)
             .padding(.bottom, 16)
         }
+        .navigationViewStyle(StackNavigationViewStyle())
     }
 }
 

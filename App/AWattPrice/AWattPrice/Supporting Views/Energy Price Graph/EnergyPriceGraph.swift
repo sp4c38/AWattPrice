@@ -63,24 +63,24 @@ struct EnergyPriceGraph: View {
 
         self.singleHeight = geometry.size.height / CGFloat(energyData.prices.count)
 
-        self.graphHourPointData = []
-        self.dateMarkPointIndex = nil
-        
-        let firstItemDate = Date(timeIntervalSince1970: TimeInterval(energyData.prices[0].startTimestamp))
-        var currentHeight: CGFloat = 0
-        
-        for hourPointEntry in energyData.prices {
-            graphHourPointData.append((hourPointEntry, currentHeight))
+        if self.singleHeight != 0 {
+            self.graphHourPointData = []
+            self.dateMarkPointIndex = nil
             
-            let currentItemDate = Date(timeIntervalSince1970: TimeInterval(hourPointEntry.startTimestamp))
+            let firstItemDate = Date(timeIntervalSince1970: TimeInterval(energyData.prices[0].startTimestamp))
+            var currentHeight: CGFloat = 0
+            
+            for hourPointEntry in energyData.prices {
+                graphHourPointData.append((hourPointEntry, currentHeight))
+                
+                let currentItemDate = Date(timeIntervalSince1970: TimeInterval(hourPointEntry.startTimestamp))
 
-            if !(Calendar.current.compare(firstItemDate, to: currentItemDate, toGranularity: .day) == .orderedSame) && self.dateMarkPointIndex == nil {
-                if singleHeight != 0 {
+                if !(Calendar.current.compare(firstItemDate, to: currentItemDate, toGranularity: .day) == .orderedSame) && self.dateMarkPointIndex == nil {
                     self.dateMarkPointIndex = Int((currentHeight / singleHeight).rounded(.up))
                 }
+                 
+                currentHeight += singleHeight
             }
-             
-            currentHeight += singleHeight
         }
     }
     

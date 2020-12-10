@@ -60,7 +60,22 @@ struct PrivacyPolicyConsentView: View {
                     .transition(.opacity)
             }
             
-            Text("I agree to the Privacy Policy of the AWattPrice App.")
+            VStack {
+                Text("agreePrivacyPolicy")
+                
+                Button(action: {
+                    // Let the user visit this website for him/her to get information which depends on the users location
+                    // This isn't yet handled directly in the app
+
+                    UIApplication.shared.open(URL(string: "")!)
+                }) {
+                    HStack {
+                        Text("seePrivacyPolicy")
+                        Image(systemName: "chevron.right")
+                    }
+                    .foregroundColor(Color.blue)
+                }
+            }
             
             Spacer()
         }
@@ -103,7 +118,7 @@ struct SplashScreenFeaturesAndConsentView: View {
             }
             .buttonStyle(ContinueButtonStyle())
         }
-        .padding(.top, 40)
+        .padding(.top, 20)
         .padding([.leading, .trailing], 20)
         .padding(.bottom, 16)
         .navigationBarTitle("features")

@@ -60,6 +60,7 @@ struct TabBar: View {
                 }
             }
         }
+        .ignoresSafeArea(.keyboard)
     }
 }
 

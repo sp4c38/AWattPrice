@@ -7,7 +7,8 @@
 
 import SwiftUI
 
-struct TabBar: View {
+/// Start of the application.
+struct ContentView: View {
     @EnvironmentObject var currentSetting: CurrentSetting
     @Environment(\.colorScheme) var colorScheme
     
@@ -61,11 +62,5 @@ struct TabBar: View {
             }
         }
         .ignoresSafeArea(.keyboard)
-    }
-}
-
-struct TabBar_Previews: PreviewProvider {
-    static var previews: some View {
-        TabBar()
     }
 }

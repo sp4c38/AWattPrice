@@ -33,14 +33,8 @@ struct HomeView: View {
                     DataDownloadAndError()
                 }
             }
-            .zIndex(0)
             .navigationTitle("elecPrice")
             .navigationBarTitleDisplayMode(.large)
-            .fullScreenCover(isPresented: $showSettingsPage) {
-                SettingsPageView()
-                    .environmentObject(currentSetting)
-                    .environmentObject(awattarData)
-            }
             .navigationBarItems(trailing:
                 Button(action: { showSettingsPage.toggle() }) {
                     Image(systemName: "gear")
@@ -48,6 +42,11 @@ struct HomeView: View {
                         .frame(width: 24, height: 24)
                         .padding(.trailing, 5)
                 })
+            .fullScreenCover(isPresented: $showSettingsPage) {
+                SettingsPageView()
+                    .environmentObject(currentSetting)
+                    .environmentObject(awattarData)
+            }
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .onAppear {

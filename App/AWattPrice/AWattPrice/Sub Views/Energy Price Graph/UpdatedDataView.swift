@@ -59,6 +59,11 @@ struct UpdatedDataView: View {
             .onReceive(timer) { _ in
                 localizedTimeIntervalString = dateFormatter.localizedTimeString(for: Date(), relativeTo: awattarData.dateDataLastUpdated!)
             }
+            .onChange(of: awattarData.currentlyUpdatingData) { newValue in
+                if newValue == false {
+                    localizedTimeIntervalString = dateFormatter.localizedTimeString(for: Date(), relativeTo: awattarData.dateDataLastUpdated!)
+                }
+            }
             .contentShape(Rectangle())
             .onTapGesture {
                 awattarData.download(forRegion: currentSetting.setting!.regionSelection)

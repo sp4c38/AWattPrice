@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Network
 import SwiftUI
 
 /// A single energy price data point. It has a start and end time. Throughout this time range a certain marketprice/energy price applies. This price is also held in this energy price data point.
@@ -53,8 +54,18 @@ class AwattarData: ObservableObject {
     @Published var energyData: EnergyData? = nil
     @Published var profilesData = ProfilesData()
 
+    let internetMonitorer = NWPathMonitor()
+    
+    init() {
+        internetMonitorer.pathUpdateHandler = { path in
+        }
+        internetMonitorer.start(queue: DispatchQueue(label: "Network Monitor"))
+    }
+    
     func download(forRegion regionIdentifier: Int16 = 0) {
         self.currentlyUpdatingData = true
+        self.dateDataLastUpdated = Date()
+        self.dataRetrievalError = true
         
         var downloadUrl = ""
 
@@ -70,10 +81,10 @@ class AwattarData: ObservableObject {
         
         energyRequest.httpMethod = "GET"
         
-//        var dataComesFromCache = false
-//        if URLCache.shared.cachedResponse(for: energyRequest) != nil {
-//            dataComesFromCache = true
-//        }
+        var dataComesFromCache = false
+        if URLCache.shared.cachedResponse(for: energyRequest) != nil {
+            dataComesFromCache = true
+        }
         
         let beforeTime = Date()
         let _ = URLSession.shared.dataTask(with: energyRequest) { data, response, error in
@@ -143,8 +154,12 @@ class AwattarData: ObservableObject {
             }
             
             DispatchQueue.main.async {
+                if dataComesFromCache == true && (self.internetMonitorer.currentPath.status == .unsatisfied) {
+                    self.dataRetrievalError = true
+                }
+                
                 if self.dataRetrievalError == false {
-                    self.dateDataLastUpdated = Date()
+                    self.dateDataLastUpdated = Date(timeIntervalSince1970: 1607727600)
                 }
                 
                 if Date().timeIntervalSince(beforeTime) < 0.6 {

@@ -27,7 +27,8 @@ struct ContentView: View {
                     
                     Spacer(minLength: 0)
                     
-                    TabBar(tabBarItems: tabBarItems)
+                    TabBar()
+                        .environmentObject(tabBarItems)
                 } else {
                     SplashScreenStartView()
                 }

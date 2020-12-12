@@ -22,6 +22,7 @@
 "lessThanOneMinuteAgo" = "Updated less than a minute ago";
 "moreThanMMAgoSingular" = "Updated %@ minute ago";
 "moreThanMMAgoPlural" = "Updated %@ minutes ago";
+"updateNewDataFailed" = "Couldn't get new data. Tap to retry.";
 "elecPrice" = "Electricity Price";
 "hourOfDay" = "Hour of day";
 

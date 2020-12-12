@@ -20,7 +20,7 @@ struct TBBarShape: Shape {
 struct TabBar: View {
     @Environment(\.colorScheme) var colorScheme
     
-    var tabBarItems: TBItems
+    @EnvironmentObject var tabBarItems: TBItems
     
     var body: some View {
         ZStack {
@@ -57,6 +57,7 @@ struct TabBar: View {
 
 struct TabBar_Previews: PreviewProvider {
     static var previews: some View {
-        TabBar(tabBarItems: TBItems())
+        TabBar()
+            .environmentObject(TBItems())
     }
 }

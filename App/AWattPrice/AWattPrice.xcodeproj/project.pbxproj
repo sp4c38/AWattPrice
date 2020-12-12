@@ -160,8 +160,8 @@
 			isa = PBXGroup;
 			children = (
 				61D196E42507F58D00E57BAC /* EnergyPriceGraph.swift */,
-				61190585256081A9007C04D3 /* Shapes.swift */,
 				61190590256081E8007C04D3 /* EnergyPriceSingleBar.swift */,
+				61190585256081A9007C04D3 /* Shapes.swift */,
 				61190595256083FE007C04D3 /* UpdatedDataView.swift */,
 				614C55822573D421009B5241 /* UpdateDataTimeFormatter.swift */,
 			);

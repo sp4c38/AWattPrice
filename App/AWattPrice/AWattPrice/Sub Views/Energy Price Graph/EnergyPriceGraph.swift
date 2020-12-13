@@ -81,36 +81,42 @@ struct EnergyPriceGraph: View {
     @Binding var headerSize: CGSize
     
     func updateBarHeights(localHeaderSize: CGSize) {
-        self.singleHeight = (sizeRect.height - headerSize.height) / CGFloat(awattarData.energyData!.prices.count)
-        var currentHeight: CGFloat = localHeaderSize.height
+        if graphHourPointData.count > 0 {
+            self.singleHeight = (sizeRect.height - headerSize.height) / CGFloat(awattarData.energyData!.prices.count)
+            var currentHeight: CGFloat = localHeaderSize.height
 
-        for hourPointIndex in 0...(graphHourPointData.count - 1) {
-            withAnimation {
-                graphHourPointData[hourPointIndex].1 = currentHeight
+            for hourPointIndex in 0...(graphHourPointData.count - 1) {
+                withAnimation {
+                    graphHourPointData[hourPointIndex].1 = currentHeight
+                }
+                currentHeight += singleHeight
             }
-            currentHeight += singleHeight
         }
     }
     
     func setGraphValues(energyData: EnergyData, localSizeRect: CGRect, localHeaderSize: CGSize) {
-        self.singleBarSettings = SingleBarSettings(minPrice: energyData.minPrice, maxPrice: energyData.maxPrice)
-        self.singleHeight = (localSizeRect.height - localHeaderSize.height) / CGFloat(energyData.prices.count)
-        
-        if self.singleHeight != 0 {
-            self.graphHourPointData = []
-            self.dateMarkPointIndex = nil
+        if !(localSizeRect.width == 0 || localSizeRect.height == 0) {
+            self.singleBarSettings = SingleBarSettings(minPrice: energyData.minPrice, maxPrice: energyData.maxPrice)
+            self.singleHeight = (localSizeRect.height - localHeaderSize.height) / CGFloat(energyData.prices.count)
             
-            let firstItemDate = Date(timeIntervalSince1970: TimeInterval(energyData.prices[0].startTimestamp))
-            var currentHeight: CGFloat = localHeaderSize.height
-            for hourPointEntry in energyData.prices {
-                graphHourPointData.append((hourPointEntry, currentHeight))
-                let currentItemDate = Date(timeIntervalSince1970: TimeInterval(hourPointEntry.startTimestamp))
+            if self.singleHeight != 0 {
+                self.graphHourPointData = []
+                self.dateMarkPointIndex = nil
+                
+                let firstItemDate = Date(timeIntervalSince1970: TimeInterval(energyData.prices[0].startTimestamp))
+                var currentHeight: CGFloat = localHeaderSize.height
+                for hourPointEntry in energyData.prices {
+                    graphHourPointData.append((hourPointEntry, currentHeight))
+                    let currentItemDate = Date(timeIntervalSince1970: TimeInterval(hourPointEntry.startTimestamp))
 
-                if !(Calendar.current.compare(firstItemDate, to: currentItemDate, toGranularity: .day) == .orderedSame) && self.dateMarkPointIndex == nil {
-                    self.dateMarkPointIndex = Int((currentHeight / singleHeight).rounded(.up))
+                    if !(Calendar.current.compare(firstItemDate, to: currentItemDate, toGranularity: .day) == .orderedSame) && self.dateMarkPointIndex == nil {
+                        var hourPointEntryIndex = (currentHeight - localHeaderSize.height) / singleHeight
+                        hourPointEntryIndex = ((hourPointEntryIndex * 100).rounded() / 100).rounded(.up)
+                        self.dateMarkPointIndex = Int(hourPointEntryIndex)
+                    }
+                     
+                    currentHeight += singleHeight
                 }
-                 
-                currentHeight += singleHeight
             }
         }
     }
@@ -126,7 +132,7 @@ struct EnergyPriceGraph: View {
                 self.hapticEngine = nil
             }
         } catch {
-            print("There was an error initiating the engine: \(error)")
+            print("There was an error initiating the haptic engine: \(error)")
         }
     }
     
@@ -149,22 +155,13 @@ struct EnergyPriceGraph: View {
         }
     }
     
-    /// Gets the available size for the graph view
-    func rectReader(_ bindingRect: Binding<CGRect>) -> some View {
-        return GeometryReader { (geometry) -> AnyView in
-            let rect = geometry.frame(in: .global)
-            print("100")
-            DispatchQueue.main.async {
-                bindingRect.wrappedValue = rect
-            }
-            return AnyView(Rectangle().fill(Color.clear))
-        }
-    }
-    
     func readRectSize(preference: GraphSizePreferenceKey.SizeBounds, geo: GeometryProxy) -> some View {
+        let newSizeRect = geo[preference.bounds]
+        
         DispatchQueue.main.async {
-            self.sizeRect = geo[preference.bounds]
-            print("Set graph size to \(sizeRect)")
+            guard (newSizeRect != self.sizeRect) else { return }
+            self.sizeRect = newSizeRect
+            print("Set graph size to \(newSizeRect)")
         }
         return Color.clear
     }
@@ -218,9 +215,10 @@ struct EnergyPriceGraph: View {
                                 hourDataPoint: graphHourPointData[hourPointIndex].0)
                         }
                     }
-//                    if dateMarkPointIndex != nil && graphHourPointData.isEmpty == false {
-//                        DayMarkView(graphPointItem: graphHourPointData[dateMarkPointIndex!], indexSelected: currentPointerIndexSelected, ownIndex: dateMarkPointIndex!, maxIndex: graphHourPointData.count - 1, height: singleHeight)
-//                    }
+                    
+                    if dateMarkPointIndex != nil && graphHourPointData.isEmpty == false {
+                        DayMarkView(graphPointItem: graphHourPointData[dateMarkPointIndex!], indexSelected: currentPointerIndexSelected, ownIndex: dateMarkPointIndex!, maxIndex: graphHourPointData.count - 1, height: singleHeight)
+                    }
                 }
             }
             .onAppear {
@@ -250,21 +248,12 @@ struct EnergyPriceGraph: View {
                     }
                 }
             }
-//            .background(rectReader($sizeRect).animation(.easeInOut))
             .ignoresSafeArea(.keyboard) // Ignore the keyboard. Without this the graph was been squeezed together when opening the keyboard somewhere in the app
             .drawingGroup()
             
             VStack {
                 if sizeRect.height != 0 {
                     Color.clear
-                        .onAppear {
-                            print(sizeRect.height)
-                            print(headerSize.height)
-                        }
-                        .onChange(of: sizeRect) { _ in
-                            print(sizeRect.height)
-                            print(headerSize.height)
-                        }
                         .frame(width: sizeRect.width, height: sizeRect.height)
                         .contentShape(Rectangle())
                         .gesture(graphDragGesture)

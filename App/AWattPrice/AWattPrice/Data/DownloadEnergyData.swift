@@ -158,7 +158,7 @@ class AwattarData: ObservableObject {
                 }
                 
                 if self.dataRetrievalError == false {
-                    self.dateDataLastUpdated = Date()
+                    self.dateDataLastUpdated = Date( )
                 }
                 
                 if Date().timeIntervalSince(beforeTime) < 0.6 {

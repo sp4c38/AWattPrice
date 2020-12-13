@@ -22,7 +22,7 @@
 "lessThanOneMinuteAgo" = "Vor weniger als einer Minute aktualisiert";
 "moreThanMMAgoSingular" = "Vor %@ Minute aktualisiert";
 "moreThanMMAgoPlural" = "Vor %@ Minuten aktualisiert";
-"updateNewDataFailed" = "Neue Daten konnten nicht heruntergeladen werden. Tippen, um erneut zu versuchen.";
+"updateNewDataFailed" = "Neue Daten konnten nicht heruntergeladen werden. Tippe, um erneut zu versuchen.";
 "elecPrice" = "Strompreis";
 "hourOfDay" = "Uhrzeit";
 
@@ -80,4 +80,4 @@
 "none" = "Keiner";
 "today" = "Heute:";
 "tonight" = "Heute Nacht";
-"retry" = "Retry";
+"retry" = "Erneut versuchen";

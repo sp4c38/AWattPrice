@@ -36,8 +36,9 @@ struct HomeView: View {
     @State var headerSize: CGSize = CGSize(width: 0, height: 0)
     
     func parseHeaderSize(preference: HeaderSizePreferenceKey.SizeBounds, geo: GeometryProxy) -> some View {
-        self.headerSize = geo[preference.bounds].size
-        print("Set header size to \(headerSize)")
+        let newHeaderSize = geo[preference.bounds].size
+        guard (newHeaderSize != headerSize) else { return Color.clear }
+        self.headerSize = newHeaderSize
         return Color.clear
     }
     

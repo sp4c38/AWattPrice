@@ -37,7 +37,7 @@ struct HomeView: View {
     
     func parseHeaderSize(preference: HeaderSizePreferenceKey.SizeBounds, geo: GeometryProxy) -> some View {
         self.headerSize = geo[preference.bounds].size
-        print("Setted header size to \(headerSize)")
+        print("Set header size to \(headerSize)")
         return Color.clear
     }
     

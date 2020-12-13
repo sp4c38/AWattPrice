@@ -64,8 +64,7 @@ class AwattarData: ObservableObject {
     
     func download(forRegion regionIdentifier: Int16 = 0) {
         self.currentlyUpdatingData = true
-        self.dateDataLastUpdated = Date()
-        self.dataRetrievalError = true
+        self.dataRetrievalError = false
         
         var downloadUrl = ""
 
@@ -159,7 +158,7 @@ class AwattarData: ObservableObject {
                 }
                 
                 if self.dataRetrievalError == false {
-                    self.dateDataLastUpdated = Date(timeIntervalSince1970: 1607727600)
+                    self.dateDataLastUpdated = Date()
                 }
                 
                 if Date().timeIntervalSince(beforeTime) < 0.6 {

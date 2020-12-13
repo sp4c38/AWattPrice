@@ -22,6 +22,23 @@ struct GraphHeader: View {
     }
 }
 
+struct GraphSizePreferenceKey: PreferenceKey {
+    struct SizeBounds: Equatable {
+        static func == (lhs: GraphSizePreferenceKey.SizeBounds, rhs: GraphSizePreferenceKey.SizeBounds) -> Bool {
+            return false
+        }
+        
+        var bounds: Anchor<CGRect>
+    }
+    
+    typealias Value = SizeBounds?
+    static var defaultValue: Value = nil
+    
+    static func reduce(value: inout Value, nextValue: () -> Value) {
+        value = nextValue()
+    }
+}
+
 /// Some single bar settings which is used by each bar
 class SingleBarSettings: ObservableObject {
     var centFormatter: NumberFormatter
@@ -143,6 +160,14 @@ struct EnergyPriceGraph: View {
             return AnyView(Rectangle().fill(Color.clear))
         }
     }
+    
+    func readRectSize(preference: GraphSizePreferenceKey.SizeBounds, geo: GeometryProxy) -> some View {
+        DispatchQueue.main.async {
+            self.sizeRect = geo[preference.bounds]
+            print("Set graph size to \(sizeRect)")
+        }
+        return Color.clear
+    }
 
     var body: some View {
         // The drag gesture responsible for making the graph interactive.
@@ -217,16 +242,34 @@ struct EnergyPriceGraph: View {
             .onChange(of: headerSize) { newHeaderSize in
                 updateBarHeights(localHeaderSize: newHeaderSize)
             }
-            .background(rectReader($sizeRect).animation(.easeInOut))
+            .anchorPreference(key: GraphSizePreferenceKey.self, value: .bounds, transform: { GraphSizePreferenceKey.SizeBounds(bounds: $0) })
+            .backgroundPreferenceValue(GraphSizePreferenceKey.self) { preference in
+                if preference != nil {
+                    GeometryReader { geo in
+                        self.readRectSize(preference: preference!, geo: geo)
+                    }
+                }
+            }
+//            .background(rectReader($sizeRect).animation(.easeInOut))
             .ignoresSafeArea(.keyboard) // Ignore the keyboard. Without this the graph was been squeezed together when opening the keyboard somewhere in the app
             .drawingGroup()
             
             VStack {
-                Spacer()
-                Color.clear
-                    .frame(width: sizeRect.width, height: sizeRect.height)
-                    .contentShape(Rectangle())
-                    .gesture(graphDragGesture)
+                if sizeRect.height != 0 {
+                    Color.clear
+                        .onAppear {
+                            print(sizeRect.height)
+                            print(headerSize.height)
+                        }
+                        .onChange(of: sizeRect) { _ in
+                            print(sizeRect.height)
+                            print(headerSize.height)
+                        }
+                        .frame(width: sizeRect.width, height: sizeRect.height)
+                        .contentShape(Rectangle())
+                        .gesture(graphDragGesture)
+                        .position(x: sizeRect.width / 2, y: (headerSize.height) + (sizeRect.height / 2))
+                }
             }
         }
     }

@@ -61,18 +61,30 @@ struct EnergyPriceGraph: View {
     
     @State var sizeRect: CGRect = CGRect(x: 0, y: 0, width: 0, height: 0)
     
-    func setGraphValues(energyData: EnergyData) {
+    @Binding var headerSize: CGSize
+    
+    func updateBarHeights(localHeaderSize: CGSize) {
+        self.singleHeight = (sizeRect.height - headerSize.height) / CGFloat(awattarData.energyData!.prices.count)
+        var currentHeight: CGFloat = localHeaderSize.height
+        
+        for hourPointIndex in 0...(graphHourPointData.count - 1) {
+            withAnimation {
+                graphHourPointData[hourPointIndex].1 = currentHeight
+            }
+            currentHeight += singleHeight
+        }
+    }
+    
+    func setGraphValues(energyData: EnergyData, localHeaderSize: CGSize) {
         self.singleBarSettings = SingleBarSettings(minPrice: energyData.minPrice, maxPrice: energyData.maxPrice)
-
-        self.singleHeight = sizeRect.height / CGFloat(energyData.prices.count)
+        self.singleHeight = (sizeRect.height - headerSize.height) / CGFloat(energyData.prices.count)
 
         if self.singleHeight != 0 {
             self.graphHourPointData = []
             self.dateMarkPointIndex = nil
             
             let firstItemDate = Date(timeIntervalSince1970: TimeInterval(energyData.prices[0].startTimestamp))
-            var currentHeight: CGFloat = 0
-            
+            var currentHeight: CGFloat = localHeaderSize.height
             for hourPointEntry in energyData.prices {
                 graphHourPointData.append((hourPointEntry, currentHeight))
                 let currentItemDate = Date(timeIntervalSince1970: TimeInterval(hourPointEntry.startTimestamp))
@@ -163,46 +175,62 @@ struct EnergyPriceGraph: View {
                     currentPointerIndexSelected = nil
                 }
             }
-        GeometryReader { _ in
-            ZStack {
-                if singleBarSettings != nil {
-                    ForEach(0..<graphHourPointData.count, id: \.self) { hourPointIndex -> EnergyPriceSingleBar in
-                        EnergyPriceSingleBar(
-                            singleBarSettings: singleBarSettings!,
-                            width: sizeRect.width,
-                            height: singleHeight,
-                            startHeight: graphHourPointData[hourPointIndex].1,
-                            indexSelected: currentPointerIndexSelected,
-                            ownIndex: hourPointIndex,
-                            maxIndex: graphHourPointData.count - 1,
-                            hourDataPoint: graphHourPointData[hourPointIndex].0)
+        ZStack {
+            GeometryReader { _ in
+                ZStack {
+                    if singleBarSettings != nil {
+                        ForEach(0..<graphHourPointData.count, id: \.self) { hourPointIndex -> EnergyPriceSingleBar in
+                            EnergyPriceSingleBar(
+                                singleBarSettings: singleBarSettings!,
+                                width: sizeRect.width,
+                                height: singleHeight,
+                                startHeight: graphHourPointData[hourPointIndex].1,
+                                indexSelected: currentPointerIndexSelected,
+                                ownIndex: hourPointIndex,
+                                maxIndex: graphHourPointData.count - 1,
+                                hourDataPoint: graphHourPointData[hourPointIndex].0)
+                        }
+                    }
+                    if dateMarkPointIndex != nil {
+                        DayMarkView(graphPointItem: graphHourPointData[dateMarkPointIndex!], indexSelected: currentPointerIndexSelected, ownIndex: dateMarkPointIndex!, maxIndex: graphHourPointData.count - 1, height: singleHeight)
                     }
                 }
-                if dateMarkPointIndex != nil {
-                    DayMarkView(graphPointItem: graphHourPointData[dateMarkPointIndex!], indexSelected: currentPointerIndexSelected, ownIndex: dateMarkPointIndex!, maxIndex: graphHourPointData.count - 1, height: singleHeight)
+            }
+            .onAppear {
+                initCHEngine()
+            }
+            .onChange(of: scenePhase) { newScenePhase in
+                if newScenePhase == .active {
+                    initCHEngine()
+                    print("0")
+                    setGraphValues(energyData: awattarData.energyData!, localHeaderSize: headerSize)
                 }
             }
-        }
-        .onAppear {
-            initCHEngine()
-        }
-        .onChange(of: scenePhase) { newScenePhase in
-            if newScenePhase == .active {
-                initCHEngine()
-                setGraphValues(energyData: awattarData.energyData!)
+            .onReceive(awattarData.$energyData) { newEnergyData in
+                guard let energyData = newEnergyData else { return }
+                print("1")
+                setGraphValues(energyData: energyData, localHeaderSize: headerSize)
+            }
+            .onChange(of: sizeRect) { newSizeRect in
+                print("2")
+                setGraphValues(energyData: awattarData.energyData!, localHeaderSize: headerSize)
+            }
+            .onChange(of: headerSize) { newHeaderSize in
+                print("3")
+//                setGraphValues(energyData: awattarData.energyData!, localHeaderSize: newHeaderSize)
+                updateBarHeights(localHeaderSize: newHeaderSize)
+            }
+            .background(rectReader($sizeRect).animation(.easeInOut))
+            .ignoresSafeArea(.keyboard) // Ignore the keyboard. Without this the graph was been squeezed together when opening the keyboard somewhere in the app
+            .drawingGroup()
+            
+            VStack {
+                Spacer()
+                Color.clear
+                    .frame(width: sizeRect.width, height: sizeRect.height - headerSize.height)
+                    .contentShape(Rectangle())
+                    .gesture(graphDragGesture)
             }
         }
-        .onReceive(awattarData.$energyData) { newEnergyData in
-            guard let energyData = newEnergyData else { return }
-            setGraphValues(energyData: energyData)
-        }
-        .onChange(of: sizeRect) { newSizeRect in
-            setGraphValues(energyData: awattarData.energyData!)
-        }
-        .background(rectReader($sizeRect).animation(.easeInOut))
-        .ignoresSafeArea(.keyboard) // Ignore the keyboard. Without this the graph was been squeezed together when opening the keyboard somewhere in the app
-        .contentShape(Rectangle())
-        .drawingGroup()
-        .gesture(graphDragGesture)
     }
 }

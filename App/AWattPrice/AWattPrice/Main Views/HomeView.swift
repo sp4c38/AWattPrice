@@ -7,6 +7,20 @@
 
 import SwiftUI
 
+struct MyTextPreferenceData {
+    let viewIndex: Int
+    let bounds: Anchor<CGRect>
+}
+
+struct MyTextPreferenceKey: PreferenceKey {
+    typealias Value = [MyTextPreferenceData]
+    static var defaultValue: Value = []
+    
+    static func reduce(value: inout Value, nextValue: () -> Value) {
+        value.append(contentsOf: nextValue())
+    }
+}
+
 /// The home view mainly holds the graph which represents energy costs for each hour throughout the day.
 struct HomeView: View {
     @Environment(\.scenePhase) var scenePhase
@@ -16,19 +30,37 @@ struct HomeView: View {
     @State var firstEverAppear: Bool = true
     @State var showSettingsPage: Bool = false
     
+    @State var headerSize: CGSize = CGSize(width: 0, height: 0)
+    
     var body: some View {
         NavigationView {
             VStack {
                 if awattarData.energyData != nil && currentSetting.setting != nil && awattarData.currentlyNoData == false {
-                    VStack(spacing: 5) {
-                        UpdatedDataView()
-                        GraphHeader()
+                    ZStack {
+                        VStack(spacing: 5) {
+                            GeometryReader { geo in
+                                VStack(spacing: 5) {
+                                    UpdatedDataView()
+                                    GraphHeader()
+                                }
+                                .padding([.leading, .trailing], 16)
+                                .padding(.top, 8)
+                                .padding(.bottom, 5)
+                                .background(
+                                    GeometryReader { geo in
+                                        Color.clear
+                                            .onChange(of: geo.size) { newSize in
+                                                print("Size changed to \(newSize)")
+                                                self.headerSize = newSize
+                                            }
+                                    }
+                                )
+                            }
+                            Spacer()
+                        }
+                        
+                        EnergyPriceGraph(headerSize: self.$headerSize)
                     }
-                    .padding([.leading, .trailing], 16)
-                    .padding(.top, 8)
-                    .padding(.bottom, 5)
-
-                    EnergyPriceGraph()
                 } else {
                     DataDownloadAndError()
                 }

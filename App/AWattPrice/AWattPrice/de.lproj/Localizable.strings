@@ -59,7 +59,7 @@
 "suggestionByEmail" = "Vorschläge per E-Mail";
 
 // Data download error view
-"tryAgainLater" = "Bitte versuchen Sie es später noch einmal";
+"tryAgainLater" = "Bitte versuchen Sie es\nspäter noch einmal";
 "connectToInternet" = "Keine Internetverbindung";
 "noDataAvailable" = "Keine Daten verfügbar\nBitte versuchen Sie es später erneut";
 

@@ -66,7 +66,7 @@ struct EnergyPriceGraph: View {
     func updateBarHeights(localHeaderSize: CGSize) {
         self.singleHeight = (sizeRect.height - headerSize.height) / CGFloat(awattarData.energyData!.prices.count)
         var currentHeight: CGFloat = localHeaderSize.height
-        
+
         for hourPointIndex in 0...(graphHourPointData.count - 1) {
             withAnimation {
                 graphHourPointData[hourPointIndex].1 = currentHeight
@@ -75,10 +75,10 @@ struct EnergyPriceGraph: View {
         }
     }
     
-    func setGraphValues(energyData: EnergyData, localHeaderSize: CGSize) {
+    func setGraphValues(energyData: EnergyData, localSizeRect: CGRect, localHeaderSize: CGSize) {
         self.singleBarSettings = SingleBarSettings(minPrice: energyData.minPrice, maxPrice: energyData.maxPrice)
-        self.singleHeight = (sizeRect.height - headerSize.height) / CGFloat(energyData.prices.count)
-
+        self.singleHeight = (localSizeRect.height - localHeaderSize.height) / CGFloat(energyData.prices.count)
+        
         if self.singleHeight != 0 {
             self.graphHourPointData = []
             self.dateMarkPointIndex = nil
@@ -136,6 +136,7 @@ struct EnergyPriceGraph: View {
     func rectReader(_ bindingRect: Binding<CGRect>) -> some View {
         return GeometryReader { (geometry) -> AnyView in
             let rect = geometry.frame(in: .global)
+            print("100")
             DispatchQueue.main.async {
                 bindingRect.wrappedValue = rect
             }
@@ -175,6 +176,7 @@ struct EnergyPriceGraph: View {
                     currentPointerIndexSelected = nil
                 }
             }
+
         ZStack {
             GeometryReader { _ in
                 ZStack {
@@ -191,9 +193,9 @@ struct EnergyPriceGraph: View {
                                 hourDataPoint: graphHourPointData[hourPointIndex].0)
                         }
                     }
-                    if dateMarkPointIndex != nil {
-                        DayMarkView(graphPointItem: graphHourPointData[dateMarkPointIndex!], indexSelected: currentPointerIndexSelected, ownIndex: dateMarkPointIndex!, maxIndex: graphHourPointData.count - 1, height: singleHeight)
-                    }
+//                    if dateMarkPointIndex != nil && graphHourPointData.isEmpty == false {
+//                        DayMarkView(graphPointItem: graphHourPointData[dateMarkPointIndex!], indexSelected: currentPointerIndexSelected, ownIndex: dateMarkPointIndex!, maxIndex: graphHourPointData.count - 1, height: singleHeight)
+//                    }
                 }
             }
             .onAppear {
@@ -202,22 +204,17 @@ struct EnergyPriceGraph: View {
             .onChange(of: scenePhase) { newScenePhase in
                 if newScenePhase == .active {
                     initCHEngine()
-                    print("0")
-                    setGraphValues(energyData: awattarData.energyData!, localHeaderSize: headerSize)
+                    setGraphValues(energyData: awattarData.energyData!, localSizeRect: sizeRect, localHeaderSize: headerSize)
                 }
             }
             .onReceive(awattarData.$energyData) { newEnergyData in
                 guard let energyData = newEnergyData else { return }
-                print("1")
-                setGraphValues(energyData: energyData, localHeaderSize: headerSize)
+                setGraphValues(energyData: energyData, localSizeRect: sizeRect, localHeaderSize: headerSize)
             }
             .onChange(of: sizeRect) { newSizeRect in
-                print("2")
-                setGraphValues(energyData: awattarData.energyData!, localHeaderSize: headerSize)
+                setGraphValues(energyData: awattarData.energyData!, localSizeRect: newSizeRect, localHeaderSize: headerSize)
             }
             .onChange(of: headerSize) { newHeaderSize in
-                print("3")
-//                setGraphValues(energyData: awattarData.energyData!, localHeaderSize: newHeaderSize)
                 updateBarHeights(localHeaderSize: newHeaderSize)
             }
             .background(rectReader($sizeRect).animation(.easeInOut))
@@ -227,7 +224,7 @@ struct EnergyPriceGraph: View {
             VStack {
                 Spacer()
                 Color.clear
-                    .frame(width: sizeRect.width, height: sizeRect.height - headerSize.height)
+                    .frame(width: sizeRect.width, height: sizeRect.height)
                     .contentShape(Rectangle())
                     .gesture(graphDragGesture)
             }

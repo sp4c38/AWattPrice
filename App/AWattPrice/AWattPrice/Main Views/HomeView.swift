@@ -7,17 +7,20 @@
 
 import SwiftUI
 
-struct MyTextPreferenceData {
-    let viewIndex: Int
-    let bounds: Anchor<CGRect>
-}
-
-struct MyTextPreferenceKey: PreferenceKey {
-    typealias Value = [MyTextPreferenceData]
-    static var defaultValue: Value = []
+struct HeaderSizePreferenceKey: PreferenceKey {
+    struct SizeBounds: Equatable {
+        static func == (lhs: HeaderSizePreferenceKey.SizeBounds, rhs: HeaderSizePreferenceKey.SizeBounds) -> Bool {
+            return false
+        }
+        
+        var bounds: Anchor<CGRect>
+    }
+    
+    typealias Value = SizeBounds?
+    static var defaultValue: Value = nil
     
     static func reduce(value: inout Value, nextValue: () -> Value) {
-        value.append(contentsOf: nextValue())
+        value = nextValue()
     }
 }
 
@@ -32,30 +35,34 @@ struct HomeView: View {
     
     @State var headerSize: CGSize = CGSize(width: 0, height: 0)
     
+    func parseHeaderSize(preference: HeaderSizePreferenceKey.SizeBounds, geo: GeometryProxy) -> some View {
+        self.headerSize = geo[preference.bounds].size
+        print("Setted header size to \(headerSize)")
+        return Color.clear
+    }
+    
     var body: some View {
         NavigationView {
             VStack {
                 if awattarData.energyData != nil && currentSetting.setting != nil && awattarData.currentlyNoData == false {
                     ZStack {
-                        VStack(spacing: 5) {
-                            GeometryReader { geo in
-                                VStack(spacing: 5) {
-                                    UpdatedDataView()
-                                    GraphHeader()
-                                }
-                                .padding([.leading, .trailing], 16)
-                                .padding(.top, 8)
-                                .padding(.bottom, 5)
-                                .background(
-                                    GeometryReader { geo in
-                                        Color.clear
-                                            .onChange(of: geo.size) { newSize in
-                                                print("Size changed to \(newSize)")
-                                                self.headerSize = newSize
-                                            }
-                                    }
-                                )
+                        VStack {
+                            VStack(spacing: 5) {
+                                UpdatedDataView()
+                                GraphHeader()
                             }
+                            .padding([.leading, .trailing], 16)
+                            .padding(.top, 8)
+                            .padding(.bottom, 5)
+                            .anchorPreference(key: HeaderSizePreferenceKey.self, value: .bounds, transform: { HeaderSizePreferenceKey.SizeBounds(bounds: $0) })
+                            .backgroundPreferenceValue(HeaderSizePreferenceKey.self) { headerSize in
+                                if headerSize != nil {
+                                    GeometryReader { geo in
+                                        self.parseHeaderSize(preference: headerSize!, geo: geo)
+                                    }
+                                }
+                            }
+                            
                             Spacer()
                         }
                         

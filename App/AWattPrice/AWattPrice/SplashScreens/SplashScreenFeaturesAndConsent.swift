@@ -7,6 +7,20 @@
 
 import SwiftUI
 
+/// Opens the apps privacy policy in the browser in the correct language depending on the device language.
+func openPrivacyPolicyInBrowser() {
+    var privacyPolicyUrl = URL(string: "https://awattprice.space8.me/privacy_policy_german.html")
+    if Locale.current.languageCode == "de" {
+        privacyPolicyUrl = URL(string: "https://awattprice.space8.me/privacy_policy_german.html")
+    } else if Locale.current.languageCode == "en" {
+        privacyPolicyUrl = URL(string: "https://awattprice.space8.me/privacy_policy_english.html")
+    }
+
+    if privacyPolicyUrl != nil {
+        UIApplication.shared.open(privacyPolicyUrl!)
+    }
+}
+
 /**
  Single detail view to show a icon, title and subtitle intended to describe a main functionality of the app.
  */
@@ -86,16 +100,7 @@ struct PrivacyPolicyConsentView: View {
                     .colorMultiply(getForegroundColor(isText: true))
                 
                 Button(action: {
-                    var privacyPolicyUrl = URL(string: "https://awattprice.space8.me/privacy_policy_german.html")
-                    if Locale.current.languageCode == "de" {
-                        privacyPolicyUrl = URL(string: "https://awattprice.space8.me/privacy_policy_german.html")
-                    } else if Locale.current.languageCode == "en" {
-                        privacyPolicyUrl = URL(string: "https://awattprice.space8.me/privacy_policy_english.html")
-                    }
-
-                    if privacyPolicyUrl != nil {
-                        UIApplication.shared.open(privacyPolicyUrl!)
-                    }
+                    openPrivacyPolicyInBrowser()
                 }) {
                     HStack {
                         Text("seePrivacyPolicy")

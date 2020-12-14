@@ -31,6 +31,8 @@ struct SettingsPageView: View {
                             .onTapGesture {
                                     self.hideKeyboard()
                             }
+                        
+                        PrivacyPolicyView()
 
                         AppVersionView()
                             .onTapGesture {

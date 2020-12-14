@@ -16,13 +16,6 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="BigAppIcon" translatesAutoresizingMaskIntoConstraints="NO" id="IXB-qO-7rw">
-                                <rect key="frame" x="62.5" y="208.5" width="250" height="250"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="250" id="E2S-dN-ne3"/>
-                                    <constraint firstAttribute="height" constant="250" id="fTx-sb-drL"/>
-                                </constraints>
-                            </imageView>
                             <tabBar contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Y5j-wm-g5U">
                                 <rect key="frame" x="0.0" y="607" width="375" height="60"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -41,8 +34,6 @@
                             <constraint firstItem="Y5j-wm-g5U" firstAttribute="leading" secondItem="oqp-hW-0r0" secondAttribute="leading" id="3JT-E1-vca"/>
                             <constraint firstItem="oqp-hW-0r0" firstAttribute="trailing" secondItem="Y5j-wm-g5U" secondAttribute="trailing" id="K6H-zt-Qxl"/>
                             <constraint firstItem="Y5j-wm-g5U" firstAttribute="leading" secondItem="oqp-hW-0r0" secondAttribute="leading" id="MQK-iV-po7"/>
-                            <constraint firstItem="IXB-qO-7rw" firstAttribute="centerY" secondItem="XF8-L9-VXI" secondAttribute="centerY" id="c61-Y7-SPI"/>
-                            <constraint firstItem="IXB-qO-7rw" firstAttribute="centerX" secondItem="XF8-L9-VXI" secondAttribute="centerX" id="cZm-RD-JO9"/>
                             <constraint firstItem="Y5j-wm-g5U" firstAttribute="bottom" secondItem="oqp-hW-0r0" secondAttribute="bottom" id="rx8-Fl-g1C"/>
                         </constraints>
                     </view>
@@ -53,7 +44,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="BigAppIcon" width="2000" height="2000"/>
         <image name="bolt" catalog="system" width="101" height="128"/>
         <image name="rectangle.and.text.magnifyingglass" catalog="system" width="128" height="95"/>
         <systemColor name="systemBackgroundColor">

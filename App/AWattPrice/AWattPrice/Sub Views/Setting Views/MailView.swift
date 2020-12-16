@@ -26,14 +26,13 @@ class MailContent {
 
 class HelpMailContent: MailContent {
     init() {
-        let recipientEmails = "contact-awattprice@space8.me"
-        let subject = "AWattPrice Help"
-        let encodedSubject = subject.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!
-    
+        var recipientEmails = "contact-awattprice@space8.me"
+        var subject = "AWattPrice Hilfe"
+        var encodedSubject = subject.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!
         var messageBody = ""
         
         if let currentVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String {
-            messageBody += "\n\nApp version number: "
+            messageBody += "\n\nApp Versionsnummer: "
             
             if let currentAppName = Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String {
                 messageBody += "\(currentAppName) "
@@ -43,6 +42,26 @@ class HelpMailContent: MailContent {
         
         if let currentBuild = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String {
             messageBody += " (\(currentBuild))"
+        }
+        
+        if Locale.current.languageCode == "en" {
+            recipientEmails = "contact-awattprice@space8.me"
+            subject = "AWattPrice Help"
+            encodedSubject = subject.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!
+            messageBody = ""
+            
+            if let currentVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String {
+                messageBody += "\n\nApp version number: "
+                
+                if let currentAppName = Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String {
+                    messageBody += "\(currentAppName) "
+                }
+                messageBody += "\(currentVersion)"
+            }
+            
+            if let currentBuild = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String {
+                messageBody += " (\(currentBuild))"
+            }
         }
         
         let body = messageBody
@@ -59,12 +78,21 @@ class HelpMailContent: MailContent {
 
 class SuggestionMailContent: MailContent {
     init() {
-        let recipientEmails = "contact-awattprice@space8.me"
-        let subject = "AWattPrice Suggestion"
-        let encodedSubject = subject.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!
+        var recipientEmails = "contact-awattprice@space8.me"
+        var subject = "AWattPrice Vorschlag"
+        var encodedSubject = subject.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!
         
-        let body = ""
-        let encodedBody = ""
+        var body = ""
+        var encodedBody = ""
+        
+        if Locale.current.languageCode == "en" {
+            recipientEmails = "contact-awattprice@space8.me"
+            subject = "AWattPrice Suggestion"
+            encodedSubject = subject.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!
+            
+            body = ""
+            encodedBody = ""
+        }
 
         super.init(
             recipientEmails: recipientEmails,

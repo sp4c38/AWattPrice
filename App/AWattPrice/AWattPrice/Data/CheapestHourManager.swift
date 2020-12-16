@@ -139,18 +139,6 @@ class CheapestHourManager: ObservableObject {
             self.averagePrice = pricesTogether / totalMinutes
         }
         
-//        func countAllPricesTogether(withVat: Bool) -> Float {
-//            var pricesTogether: Float = 0
-//            for pricePoint in self.associatedPricePoints {
-//                if withVat {
-//                    pricesTogether += (pricePoint.marketprice * 1.16)
-//                } else {
-//                    pricesTogether += pricePoint.marketprice
-//                }
-//            }
-//            return pricesTogether
-//        }
-        
         func calculateHourlyPrice(currentSetting: CurrentSetting) {
             self.hourlyEnergyCosts = nil
             var hourlyPrice: Double = 0
@@ -371,9 +359,9 @@ class CheapestHourManager: ObservableObject {
                     }
                 }
                 
-                if currentSetting.setting != nil {
-                    cheapestPair.calculateHourlyPrice(currentSetting: currentSetting)
-                }
+//                if currentSetting.setting != nil {
+//                    cheapestPair.calculateHourlyPrice(currentSetting: currentSetting)
+//                }
             }
             
             DispatchQueue.main.async {

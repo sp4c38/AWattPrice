@@ -21,7 +21,7 @@ struct SplashScreenSetupView: View {
                 CustomInsetGroupedList {
                     RegionAndVatSelection()
 
-                    AwattarTariffSelectionSetting()
+//                    AwattarTariffSelectionSetting()
                 }
                 
                 NavigationLink("", destination: SplashScreenFinishView(), tag: 1, selection: $redirectToNextSplashScreen)

@@ -20,7 +20,7 @@ struct SettingsPageView: View {
                     CustomInsetGroupedList {
                         RegionAndVatSelection()
 
-                        AwattarTariffSelectionSetting()
+//                        AwattarTariffSelectionSetting()
 
                         GetHelpView()
                             .onTapGesture {

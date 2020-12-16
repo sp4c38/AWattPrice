@@ -87,7 +87,7 @@ struct EnergyPriceSingleBar: View {
     @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var currentSetting: CurrentSetting
 
-    static func getPriceString(marketprice: Float, currentSetting: CurrentSetting) -> String {
+    static func getPriceString(marketprice: Double, currentSetting: CurrentSetting) -> String {
         let centFormatter = NumberFormatter()
         centFormatter.numberStyle = .currency
         centFormatter.currencySymbol = "ct"

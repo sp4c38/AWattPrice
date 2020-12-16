@@ -13,7 +13,7 @@ import SwiftUI
 struct EnergyPricePoint: Hashable, Codable {
     var startTimestamp: Int
     var endTimestamp: Int
-    var marketprice: Float
+    var marketprice: Double
     
     enum CodingKeys: String, CodingKey {
         case startTimestamp = "start_timestamp"
@@ -25,8 +25,8 @@ struct EnergyPricePoint: Hashable, Codable {
 /// A object containing all EnergyPricePoint's. It also holds two values for the smallest and the largest energy price of all containing energy data points.
 struct EnergyData: Codable {
     var prices: [EnergyPricePoint]
-    var minPrice: Float = 0
-    var maxPrice: Float = 0
+    var minPrice: Double = 0
+    var maxPrice: Double = 0
     
     enum CodingKeys: String, CodingKey {
         case prices = "prices"
@@ -96,8 +96,8 @@ class AwattarData: ObservableObject {
                     let currentHour = Calendar.current.date(bySettingHour: Calendar.current.component(.hour, from: Date()), minute: 0, second: 0, of: Date())!
 
                     var usedPricesDecodedData = [EnergyPricePoint]()
-                    var minPrice: Float? = nil
-                    var maxPrice: Float? = nil
+                    var minPrice: Double? = nil
+                    var maxPrice: Double? = nil
                     
                     for hourPoint in decodedData.prices {
                         if Date(timeIntervalSince1970: TimeInterval(hourPoint.startTimestamp)) >= currentHour {

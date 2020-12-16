@@ -118,10 +118,10 @@ class CheapestHourManager: ObservableObject {
     
     /// A pair of one, two, three or more EnergyPricePoints. This object supports functionallity to calculate the average price or to sort the associated price points for day.
     class HourPair {
-        var averagePrice: Float = 0
+        var averagePrice: Double = 0
         var associatedPricePoints: [EnergyPricePoint]
         /// Final energy cost which is calculated with a certain power (kW) a electrical consumer uses and the time of the usage.
-        var hourlyEnergyCosts: Float? = nil
+        var hourlyEnergyCosts: Double? = nil
         
         init(associatedPricePoints: [EnergyPricePoint]) {
             self.associatedPricePoints = associatedPricePoints
@@ -129,10 +129,10 @@ class CheapestHourManager: ObservableObject {
         
         /// Caluclates the average price from the energy price of all to this HourPair associated price points without VAT included.
         func calculateAveragePrice() {
-            var pricesTogether: Float = 0
-            var totalMinutes: Float = 0
+            var pricesTogether: Double = 0
+            var totalMinutes: Double = 0
             for pricePoint in self.associatedPricePoints {
-                let pricePointMinuteLength: Float = Float(Date(timeIntervalSince1970: TimeInterval(pricePoint.startTimestamp)).timeIntervalSince(Date(timeIntervalSince1970: TimeInterval(pricePoint.endTimestamp))) / 60)
+                let pricePointMinuteLength: Double = Date(timeIntervalSince1970: TimeInterval(pricePoint.startTimestamp)).timeIntervalSince(Date(timeIntervalSince1970: TimeInterval(pricePoint.endTimestamp))) / 60
                 pricesTogether += pricePointMinuteLength * pricePoint.marketprice
                 totalMinutes += pricePointMinuteLength
             }
@@ -151,19 +151,22 @@ class CheapestHourManager: ObservableObject {
 //            return pricesTogether
 //        }
         
-        func calculateHourlyPrice(cheapestHourPair: HourPair, currentSetting: CurrentSetting) {
-            var hourlyPrice: Float = 0
+        func calculateHourlyPrice(currentSetting: CurrentSetting) {
+            self.hourlyEnergyCosts = nil
+            var hourlyPrice: Double = 0
             
             if currentSetting.setting!.awattarTariffIndex == 0 {
-                for hourPair in cheapestHourPair.associatedPricePoints {
-                    let lengthOfIntervene: Float = Float(abs(hourPair.endTimestamp - hourPair.startTimestamp)) / 60 / 60 // In hours
+                for hourPair in self.associatedPricePoints {
+                    let lengthOfIntervene: Double = Double(abs(hourPair.endTimestamp - hourPair.startTimestamp)) / 60 / 60 // In hours
                     var price = hourPair.marketprice
                     
                     if currentSetting.setting!.pricesWithTaxIncluded {
                         price *= 1.16
                     }
                     
-                    hourlyPrice += lengthOfIntervene * price
+                    let basePrice: Double = lengthOfIntervene * currentSetting.setting!.awattarBaseElectricityPrice
+                    
+                    hourlyPrice += (lengthOfIntervene * price) + basePrice
                 }
                 
                 self.hourlyEnergyCosts = hourlyPrice
@@ -236,7 +239,6 @@ class CheapestHourManager: ObservableObject {
                 endTime = Calendar.current.date(bySettingHour: Calendar.current.component(.hour, from: endTime), minute: 0, second: 0, of: endTime)!
                 endTime = endTime.addingTimeInterval(3600)
                 // Set the end time to the start of the next following hour
-                
             }
             
             func recursiveSearch(with allPairs: [HourPair], lastCheapestPairIndex: Int? = nil) -> Int? {
@@ -370,7 +372,7 @@ class CheapestHourManager: ObservableObject {
                 }
                 
                 if currentSetting.setting != nil {
-                    cheapestPair.calculateHourlyPrice(cheapestHourPair: cheapestPair, currentSetting: currentSetting)
+                    cheapestPair.calculateHourlyPrice(currentSetting: currentSetting)
                 }
             }
             

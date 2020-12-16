@@ -44,10 +44,10 @@ class SingleBarSettings: ObservableObject {
     var centFormatter: NumberFormatter
     var hourFormatter: DateFormatter
     
-    var minPrice: Float
-    var maxPrice: Float
+    var minPrice: Double
+    var maxPrice: Double
     
-    init(minPrice: Float, maxPrice: Float) {
+    init(minPrice: Double, maxPrice: Double) {
         centFormatter = NumberFormatter()
         centFormatter.numberStyle = .currency
         centFormatter.currencySymbol = "ct"

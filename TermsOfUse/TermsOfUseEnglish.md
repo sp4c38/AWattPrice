@@ -4,11 +4,9 @@
 
 AWattPrice is licensed to You (End-User) by Frank Becker (hereinafter: Licensor), for use only under the terms of this License Agreement.
 
-By downloading the Application from the Apple App Store or TestFlight, and any update thereto (as permitted by this License Agreement), You indicate that You agree to be bound by all of the terms and conditions of this License Agreement, and that You accept this License Agreement.
+By downloading the Application from the Apple App Store or TestFlight, and any update thereto, You indicate that You agree to be bound by all of the terms and conditions of this License Agreement, and that You accept this License Agreement.
 
 The parties of this License Agreement acknowledge that Apple is not a Party to this License Agreement and is not bound by any provisions or obligations with regard to the Application, such as warranty, liability, maintenance and support thereof. Frank Becker, not Apple, is solely responsible for the licensed Application and the content thereof.
-
-This License Agreement may not provide for usage rules for the Application that are in conflict with the latest App Store Terms of Service.
 
 ##### All rights not expressly granted to You are reserved.
 
@@ -33,7 +31,7 @@ Frank Becker and the End-User acknowledge that Apple has no obligation whatsoeve
 
 ### 5. USE OF DATA
 
-The use and creation of data which is collected by the application is specified in the apps privacy policy: https://awattprice.space8.me/privacy_policy_english.html
+The use and creation of data which is collected by the application is specified in the apps privacy policy: https://awattprice.space8.me/privacy_policy/english.html.
 
 
 ### 6. CONTRIBUTION LICENSE

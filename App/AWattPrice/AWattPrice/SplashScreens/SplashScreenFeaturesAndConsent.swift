@@ -8,16 +8,17 @@
 import SwiftUI
 
 /// Opens the apps privacy policy in the browser in the correct language depending on the device language.
-func openPrivacyPolicyInBrowser() {
-    var privacyPolicyUrl = URL(string: "https://awattprice.space8.me/privacy_policy_german.html")
-    if Locale.current.languageCode == "de" {
-        privacyPolicyUrl = URL(string: "https://awattprice.space8.me/privacy_policy_german.html")
-    } else if Locale.current.languageCode == "en" {
-        privacyPolicyUrl = URL(string: "https://awattprice.space8.me/privacy_policy_english.html")
+func openAgreementLink(_ agreementLinks: (String, String)) {
+    var agreementLink = URL(string: agreementLinks.0)
+    
+    if Locale.current.languageCode == "en" {
+        agreementLink = URL(string: agreementLinks.1)
     }
 
-    if privacyPolicyUrl != nil {
-        UIApplication.shared.open(privacyPolicyUrl!)
+    if agreementLink != nil {
+        if agreementLink!.absoluteString != "" {
+            UIApplication.shared.open(agreementLink!)
+        }
     }
 }
 
@@ -38,7 +39,7 @@ struct AppFeatureView: View {
                 .foregroundColor(Color(hue: 0.5648, saturation: 1.0000, brightness: 0.6235))
                 .padding()
             
-            VStack(alignment: .leading, spacing: 3) {
+            VStack(alignment: .leading, spacing: 5) {
                 Text(title)
                     .font(.headline)
                     .foregroundColor(colorScheme == .light ? Color.black : Color.white)
@@ -54,8 +55,12 @@ struct AppFeatureView: View {
     }
 }
 
-struct PrivacyPolicyConsentView: View {
+struct AgreementConsentView: View {
     @Environment(\.colorScheme) var colorScheme
+    
+    var agreeText: String
+    var seeAgreementText: String
+    var agreementLinks: (String, String) // First item is the default link, second item is the link when the device language is english
     
     @Binding var isChecked: Bool
     @Binding var showConsentNotChecked: Bool
@@ -95,16 +100,16 @@ struct PrivacyPolicyConsentView: View {
             }
             
             VStack(alignment: .leading, spacing: 5) {
-                Text("agreePrivacyPolicy")
+                Text(agreeText.localized())
                     .font(.subheadline)
                     .foregroundColor(Color.white)
                     .colorMultiply(getForegroundColor(isText: true))
                 
                 Button(action: {
-                    openPrivacyPolicyInBrowser()
+                    openAgreementLink(agreementLinks)
                 }) {
                     HStack {
-                        Text("seePrivacyPolicy")
+                        Text(seeAgreementText.localized())
                             .font(.subheadline)
                         Image(systemName: "chevron.right")
                     }
@@ -133,8 +138,11 @@ struct SplashScreenFeaturesAndConsentView: View {
     
     @State var redirectToNextSplashScreen: Int? = 0
     
-    @State var consentIsChecked: Bool = false
-    @State var showConsentNotChecked: Bool = false
+    @State var termsOfUseIsChecked: Bool = false
+    @State var privacyPolicyIsChecked: Bool = false
+    
+    @State var showTermsOfUseNotChecked: Bool = false
+    @State var showPrivacyPolicyNotChecked: Bool = false
     
     var body: some View {
         VStack(spacing: 0) {
@@ -150,15 +158,38 @@ struct SplashScreenFeaturesAndConsentView: View {
 
             Spacer()
             
-            PrivacyPolicyConsentView(isChecked: $consentIsChecked, showConsentNotChecked: $showConsentNotChecked)
+            AgreementConsentView(
+                agreeText: "agreeTermsOfUse",
+                seeAgreementText: "seeTermsOfUse",
+                agreementLinks: ("https://awattprice.space8.me/terms_of_use/german.html",
+                                 "https://awattprice.space8.me/terms_of_use/english.html"),
+                isChecked: $termsOfUseIsChecked,
+                showConsentNotChecked: $showTermsOfUseNotChecked)
                 .padding(.bottom, 25)
             
+            AgreementConsentView(
+                agreeText: "agreePrivacyPolicy",
+                seeAgreementText: "seePrivacyPolicy",
+                agreementLinks: ("https://awattprice.space8.me/privacy_policy/german.html",
+                                 "https://awattprice.space8.me/privacy_policy/english.html"),
+                isChecked: $privacyPolicyIsChecked,
+                showConsentNotChecked: $showPrivacyPolicyNotChecked)
+                .padding(.bottom, 25)
+
+            
             Button(action: {
-                if consentIsChecked == true {
-                    showConsentNotChecked = false
+                if privacyPolicyIsChecked == true && termsOfUseIsChecked == true {
+                    showTermsOfUseNotChecked = false
+                    showPrivacyPolicyNotChecked = false
                     redirectToNextSplashScreen = 1
                 } else {
-                    showConsentNotChecked = true
+                    if termsOfUseIsChecked == false {
+                        showTermsOfUseNotChecked = true
+                    }
+                    
+                    if privacyPolicyIsChecked == false {
+                        showPrivacyPolicyNotChecked = true
+                    }
                 }
             }) {
                 Text("continue")

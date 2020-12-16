@@ -1,5 +1,5 @@
 //
-//  PrivacyPolicyView.swift
+//  AgreementSettingView.swift
 //  AWattPrice
 //
 //  Created by Léon Becker on 14.12.20.
@@ -7,16 +7,20 @@
 
 import SwiftUI
 
-struct PrivacyPolicyView: View {
+struct AgreementSettingView: View {
     @Environment(\.colorScheme) var colorScheme
+    
+    var agreementIconName: String
+    var agreementName: String
+    var agreementLinks: (String, String)
     
     var body: some View {
         CustomInsetGroupedListItem {
             HStack {
-                Image(systemName: "hand.raised.fill")
+                Image(systemName: agreementIconName)
                     .font(.title2)
                 
-                Text("privacyPolicy")
+                Text(agreementName.localized())
                     .font(.subheadline)
                 
                 Spacer()
@@ -28,7 +32,7 @@ struct PrivacyPolicyView: View {
             .foregroundColor(colorScheme == .light ? Color.black : Color.white)
             .contentShape(Rectangle())
             .onTapGesture {
-                openPrivacyPolicyInBrowser()
+                openAgreementLink(agreementLinks)
             }
         }
         .customBackgroundColor(colorScheme == .light ? Color(hue: 0.6667, saturation: 0.0202, brightness: 0.9886) : Color(hue: 0.6667, saturation: 0.0340, brightness: 0.1424))
@@ -37,6 +41,9 @@ struct PrivacyPolicyView: View {
 
 struct PrivacyPolicyView_Previews: PreviewProvider {
     static var previews: some View {
-        PrivacyPolicyView()
+        AgreementSettingView(agreementIconName: "hand.raised.fill",
+                             agreementName: "privacyPolicy",
+                             agreementLinks: ("https://awattprice.space8.me/privacy_policy/german.html",
+                                              "https://awattprice.space8.me/privacy_policy/english.html"))
     }
 }

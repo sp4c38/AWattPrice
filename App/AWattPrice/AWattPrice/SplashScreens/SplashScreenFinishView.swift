@@ -112,8 +112,13 @@ struct SplashScreenFinishView: View {
     
     var body: some View {
         VStack {
+            Spacer()
+            
             AnimatingCheckmark() // animating checkmark
+                .frame(width: 330, height: 330)
 
+            Spacer()
+            
             Button(action: {
                 // Set splashScreensFinished to true so that splash screens aren't shown the next time the app opens
                 currentSetting.changeSplashScreenFinished(newState: true)

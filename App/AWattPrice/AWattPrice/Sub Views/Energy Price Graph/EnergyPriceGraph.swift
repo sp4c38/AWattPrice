@@ -248,7 +248,7 @@ struct EnergyPriceGraph: View {
                     }
                 }
             }
-            .ignoresSafeArea(.keyboard) // Ignore the keyboard. Without this the graph was been squeezed together when opening the keyboard somewhere in the app
+            .ignoresSafeArea(.keyboard)
             .drawingGroup()
             
             VStack {

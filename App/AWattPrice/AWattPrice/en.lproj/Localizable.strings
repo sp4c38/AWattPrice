@@ -15,14 +15,16 @@
 
 // Features and Consent Splash Screen localizations
 "features" = "Features";
-"agreePrivacyPolicy" = "I agree to the Privacy Policy of the AWattPrice App.";
+"agreeTermsOfUse" = "I agree to the Terms Of Use.";
+"seeTermsOfUse" = "View Terms Of Use";
+"agreePrivacyPolicy" = "I agree to the Privacy Policy.";
 "seePrivacyPolicy" = "View Privacy Policy";
 
 // Setup splash screen localization
 "splashScreenSetupTitle" = "Setup";
 
 // Finish splash screen localization
-"splashScreenSetupFinished" = "Finished";
+"splashScreenSetupFinished" = "Setup finished";
 "splashScreenFinishButton" = "Enter app";
 
 // Electricity Price page localizations
@@ -88,5 +90,6 @@
 "today" = "Today:";
 "tonight" = "Tonight";
 "retry" = "Retry";
+"termsOfUse" = "Terms Of Use";
 "privacyPolicy" = "Privacy Policy";
 "on" = "on";

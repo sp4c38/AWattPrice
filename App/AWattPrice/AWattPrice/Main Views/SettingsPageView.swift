@@ -27,7 +27,15 @@ struct SettingsPageView: View {
                                     self.hideKeyboard()
                             }
                         
-                        PrivacyPolicyView()
+                        AgreementSettingView(agreementIconName: "doc.text.fill",
+                                             agreementName: "termsOfUse",
+                                             agreementLinks: ("https://awattprice.space8.me/terms_of_use/german.html",
+                                                              "https://awattprice.space8.me/terms_of_use/english.html"))
+                        
+                        AgreementSettingView(agreementIconName: "hand.raised.fill",
+                                             agreementName: "privacyPolicy",
+                                             agreementLinks: ("https://awattprice.space8.me/privacy_policy/german.html",
+                                                              "https://awattprice.space8.me/privacy_policy/english.html"))
 
                         AppVersionView()
                             .onTapGesture {

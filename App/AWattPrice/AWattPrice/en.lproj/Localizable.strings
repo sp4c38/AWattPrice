@@ -18,6 +18,9 @@
 "agreePrivacyPolicy" = "I agree to the Privacy Policy of the AWattPrice App.";
 "seePrivacyPolicy" = "View Privacy Policy";
 
+// Setup splash screen localization
+"splashScreenSetupTitle" = "Setup";
+
 // Electricity Price page localizations
 "lessThanOneMinuteAgo" = "Updated less than a minute ago";
 "moreThanMMAgoSingular" = "Updated %@ minute ago";
@@ -50,7 +53,7 @@
 "baseElectricityPriceHint" = "You can find your base electricity price for your region on the aWATTar website.";
 "toAwattarWebsite" = "To the aWATTar website";
 "awattarTariff" = "aWATTar Tariff";
-"awattarTariffSelectionTip" = "If you are an aWATTar customer and have the HOURLY Tariff you can select it here. This will show the price you would pay on the \"Cheapest Time\" page.";
+"awattarTariffSelectionTip" = "It isn't required to be an aWATTar customer to use the app, but if you have the aWATTar HOURLY Tariff, you can select it here. In the app you can search for the cheapest time for an electricity consumption. With this setting the final price you would pay will be displayed.";
 "helpAndSuggestions" = "Help & Suggestions";
 "help" = "Help";
 "suggestion" = "Suggestions";

@@ -1,6 +1,6 @@
 # Datenschutzrichtline für die AWattPrice App und die AWattPrice Website
 
-Diese Datenschutzrichtlinie ("Richtlinie") beschreibt, wie die persönlich identifizierbaren Informationen ("Persönliche Daten"), die Sie in der mobilen Anwendung "AWattPrice" ("mobile Anwendung" oder "Dienste") und der Website erfasst, geschützt und verwendet werden. Diese Richtlinie ist eine rechtsverbindliche Vereinbarung zwischen Ihnen ("Benutzer", "Sie" oder "Ihr") und diesem Entwickler der Mobilanwendung ("Betreiber", "wir", "uns" oder "unser"). Durch den Zugriff auf die Mobilen Anwendungen und Dienste und deren Nutzung bestätigen Sie, dass Sie die Bedingungen dieser Vereinbarung gelesen und verstanden haben und damit einverstanden sind, an sie gebunden zu sein.
+Diese Datenschutzrichtlinie ("Richtlinie") beschreibt, wie die persönlich identifizierbaren Informationen ("Persönliche Daten"), die Sie in der mobilen Anwendung "AWattPrice" und der Webseite ("mobile Anwendung" und "Dienste") erfasst, geschützt und verwendet werden. Diese Richtlinie ist eine rechtsverbindliche Vereinbarung zwischen Ihnen ("Benutzer", "Sie" oder "Ihr") und diesem Entwickler der Mobilanwendung ("Betreiber", "wir", "uns" oder "unser"). Durch den Zugriff auf die Mobilen Anwendungen und Dienste und deren Nutzung bestätigen Sie, dass Sie die Bedingungen dieser Vereinbarung gelesen und verstanden haben und damit einverstanden sind, an sie gebunden zu sein.
 
 ### Automatische Sammlung von Informationen
 
@@ -10,7 +10,7 @@ Die automatisch gesammelten Informationen werden nur dazu verwendet, statistisch
 
 ### Sammlung persönlicher Informationen
 
-Sie können auf die mobile Anwendung und die mobilen Dienste zugreifen und sie nutzen, ohne uns mitzuteilen, wer Sie sind, und ohne persönliche Informationen preiszugeben, durch die jemand Sie als eine bestimmte, identifizierbare Person identifizieren könnte. Wenn Sie jedoch einige der Funktionen der Mobilen Anwendung nutzen möchten, werden Sie möglicherweise aufgefordert, bestimmte persönliche Daten anzugeben (z. B. Ihren Namen und Ihre E-Mail-Adresse). Wir erhalten und speichern alle Informationen, die Sie uns beim Ausfüllen von Online-Formularen in der Mobilen Anwendung wissentlich zur Verfügung stellen.
+Sie können auf die mobile Anwendung und die Dienste zugreifen und sie nutzen, ohne uns mitzuteilen, wer Sie sind, und ohne persönliche Informationen preiszugeben, durch die jemand Sie als eine bestimmte, identifizierbare Person identifizieren könnte. Wenn Sie jedoch einige der Funktionen der Mobilen Anwendung nutzen möchten, werden Sie möglicherweise aufgefordert, bestimmte persönliche Daten anzugeben (z. B. Ihren Namen und Ihre E-Mail-Adresse). Wir erhalten und speichern alle Informationen, die Sie uns beim Ausfüllen von Online-Formularen in der Mobilen Anwendung wissentlich zur Verfügung stellen.
 
 ### Verwendung und Verarbeitung der gesammelten Informationen
 
@@ -47,7 +47,7 @@ Die Mobile Anwendung und Dienste enthalten Links zu anderen Ressourcen, die nich
 
 Die gesamte Kommunikation mit der Anwendung verwendet HTTPS als Sicherheitsmaßnahme.
 
-Wir sichern Informationen, die Sie uns auf Computerservern hinterlassen, in einer kontrollierten sicheren Umgebung, in der unerlaubter Zugriff, Verwendung oder Veröffentlichung verhindert wird. Es kann jedoch keine Datenübertragung über das Internet oder ein drahtloses Netzwerk garantiert werden. Obwohl wir uns bemühen, Ihre persönlichen Daten zu schützen, erkennen Sie daher an, dass (i) es Sicherheits- und Datenschutzeinschränkungen des Internets gibt, die außerhalb von unserem Kontrollbereich liegen; und (ii) die Sicherheit, Integrität und Vertraulichkeit aller Informationen und Daten, die zwischen Ihnen und der mobilen Anwendung und den mobilen Diensten ausgetauscht werden, nicht garantiert werden kann.
+Wir sichern Informationen, die Sie uns auf Computerservern hinterlassen, in einer kontrollierten sicheren Umgebung, in der unerlaubter Zugriff, Verwendung oder Veröffentlichung verhindert wird. Es kann jedoch keine Datenübertragung über das Internet oder ein drahtloses Netzwerk garantiert werden. Obwohl wir uns bemühen, Ihre persönlichen Daten zu schützen, erkennen Sie daher an, dass (i) es Sicherheits- und Datenschutzeinschränkungen des Internets gibt, die außerhalb von unserem Kontrollbereich liegen; und (ii) die Sicherheit, Integrität und Vertraulichkeit aller Informationen und Daten, die zwischen Ihnen und der mobilen Anwendung und den Diensten ausgetauscht werden, nicht garantiert werden kann.
 
 ### Änderungen und Ergänzungen
 
@@ -55,7 +55,7 @@ Wir behalten uns das Recht vor, diese Richtlinie oder die Bedingungen in Bezug a
 
 ### Annahme dieser Richtlinie
 
-Sie bestätigen, dass Sie diese Richtlinie gelesen haben und mit allen Bedingungen und Konditionen einverstanden sind. Durch den Zugriff und die Nutzung der mobilen Anwendung und Dienste erklären Sie sich mit dieser Richtlinie einverstanden. Wenn Sie nicht damit einverstanden sind, sich an die Bedingungen dieser Richtlinie zu halten, sind Sie nicht berechtigt, auf die mobile Anwendung und die mobilen Dienste zuzugreifen oder diese zu nutzen.
+Sie bestätigen, dass Sie diese Richtlinie gelesen haben und mit allen Bedingungen und Konditionen einverstanden sind. Durch den Zugriff und die Nutzung der mobilen Anwendung und Dienste erklären Sie sich mit dieser Richtlinie einverstanden. Wenn Sie nicht damit einverstanden sind, sich an die Bedingungen dieser Richtlinie zu halten, sind Sie nicht berechtigt, auf die mobile Anwendung und die Dienste zuzugreifen oder diese zu nutzen.
 
 ### Kontaktaufnahme mit uns
 

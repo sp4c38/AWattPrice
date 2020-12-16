@@ -50,7 +50,7 @@
 "baseElectricityPriceHint" = "Sie können Ihren Grundarbeitspreis für Ihre Region auf der aWATTar Webseite finden.";
 "toAwattarWebsite" = "Zur aWATTar Webseite";
 "awattarTariff" = "Awattar Tarif";
-"awattarTariffSelectionTip" = "Wenn Sie ein aWATTar Kunde sind und den HOURLY Tarif haben, können Sie diesen hier auswählen. Dies wird Ihnen auf der \"Günstigste Zeit\"-Seite den endgültigen Preis, den sie zahlen würden, zeigen.";
+"awattarTariffSelectionTip" = "Es ist nicht erforderlich, aWATTar-Kunde zu sein, um die App nutzen zu können. Aber wenn Sie den aWATTar HOURLY Tarif besitzen, können Sie diesen hier auswählen. In der App können sie nach den billigsten Zeitpunkt für einen Stromverbrauch suchen. Mit dieser Einstellung wird Ihnen hierbei der Endpreis angezeigt, den Sie bezahlen würden.";
 "helpAndSuggestions" = "Hilfe & Vorschläge";
 "version" = "Version";
 "help" = "Hilfe";

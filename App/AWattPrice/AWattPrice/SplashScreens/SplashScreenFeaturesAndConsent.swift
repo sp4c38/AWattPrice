@@ -46,6 +46,7 @@ struct AppFeatureView: View {
                 Text(subTitle)
                     .font(.subheadline)
                     .foregroundColor(colorScheme == .light ? Color.black : Color.white)
+                    .fixedSize(horizontal: false, vertical: true)
             }
             
             Spacer()
@@ -136,7 +137,11 @@ struct SplashScreenFeaturesAndConsentView: View {
     @State var showConsentNotChecked: Bool = false
     
     var body: some View {
-        VStack(spacing: 25) {
+        VStack(spacing: 0) {
+            NavigationLink("", destination: SplashScreenSetupView(), tag: 1, selection: $redirectToNextSplashScreen)
+                .frame(width: 0, height: 0)
+                .hidden()
+            
             VStack(spacing: 30) {
                 AppFeatureView(title: "splashScreenViewPrices", subTitle: "splashScreenViewPricesInfo", imageName: "magnifyingglass")
 
@@ -146,11 +151,12 @@ struct SplashScreenFeaturesAndConsentView: View {
             Spacer()
             
             PrivacyPolicyConsentView(isChecked: $consentIsChecked, showConsentNotChecked: $showConsentNotChecked)
+                .padding(.bottom, 25)
             
             Button(action: {
                 if consentIsChecked == true {
                     showConsentNotChecked = false
-                    currentSetting.changeSplashScreenFinished(newState: true)
+                    redirectToNextSplashScreen = 1
                 } else {
                     showConsentNotChecked = true
                 }

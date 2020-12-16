@@ -133,7 +133,7 @@ struct AwattarTariffSelectionSetting: View {
                             .scaledToFit()
                             .frame(width: 60, height: 60, alignment: .center)
                             .padding(.top, 5)
-                            .foregroundColor(Color.orange)
+                            .foregroundColor(Color.red)
 
                         Text("none")
                             .bold()

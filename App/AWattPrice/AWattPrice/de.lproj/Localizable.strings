@@ -18,6 +18,13 @@
 "agreePrivacyPolicy" = "Ich stimme der Datenschutzrichtlinie der AWattPrice App zu.";
 "seePrivacyPolicy" = "Zur Datenschutzrichtlinie";
 
+// Setup splash screen localization
+"splashScreenSetupTitle" = "Setup";
+
+// Finish splash screen localization
+"splashScreenSetupFinished" = "Finished";
+"splashScreenFinishButton" = "Zur App";
+
 // Electricity Price page localizations
 "lessThanOneMinuteAgo" = "Vor weniger als einer Minute aktualisiert";
 "moreThanMMAgoSingular" = "Vor %@ Minute aktualisiert";
@@ -45,7 +52,7 @@
 "settings" = "Einstellungen";
 "notLoadedSettings" = "Einstellungen konnten nicht geladen werden.";
 "region" = "Region";
-"regionToGetPrices" = "Wählen Sie die Region aus, für die Sie aWATTar Preise erhalten möchten.";
+"regionToGetPrices" = "Wählen Sie die Region aus, für die Sie Strompreise erhalten möchten.";
 "priceWithVat" = "Preise mit MwSt.";
 "baseElectricityPriceHint" = "Sie können Ihren Grundarbeitspreis für Ihre Region auf der aWATTar Webseite finden.";
 "toAwattarWebsite" = "Zur aWATTar Webseite";

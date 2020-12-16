@@ -74,9 +74,6 @@ struct AnimatingCheckmark: View {
                     .multilineTextAlignment(.center)
                     .font(.system(size: 30, weight: .black))
                     .padding(.bottom, 5)
-
-                Text("splashScreenCanChangeSettingsLater")
-                    .multilineTextAlignment(.center)
             }
             .position(x: width / 2, y: checkmarkStartHeight + 2 * checkmarkWidth)
         }
@@ -121,7 +118,7 @@ struct SplashScreenFinishView: View {
                 // Set splashScreensFinished to true so that splash screens aren't shown the next time the app opens
                 currentSetting.changeSplashScreenFinished(newState: true)
             }) {
-                Text("Finish")
+                Text("splashScreenFinishButton")
             }
             .buttonStyle(ContinueButtonStyle())
             .padding([.leading, .trailing], 20)

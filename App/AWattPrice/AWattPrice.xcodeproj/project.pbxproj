@@ -336,8 +336,8 @@
 		61EC1BFE254B419500324ADA /* Setting Views */ = {
 			isa = PBXGroup;
 			children = (
-				61EC1BFF254B41B100324ADA /* PricesWithVatIncludedSetting.swift */,
 				6184828025699DEE004F3F62 /* RegionSelection.swift */,
+				61EC1BFF254B41B100324ADA /* PricesWithVatIncludedSetting.swift */,
 				61EC1C07254B41D800324ADA /* AwattarTariffSelectionSettings.swift */,
 				61BA0A532548467F00951321 /* HelpAndSuggestionView.swift */,
 				61BA0A582548764400951321 /* MailView.swift */,

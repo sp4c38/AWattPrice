@@ -21,6 +21,10 @@
 // Setup splash screen localization
 "splashScreenSetupTitle" = "Setup";
 
+// Finish splash screen localization
+"splashScreenSetupFinished" = "Finished";
+"splashScreenFinishButton" = "Enter app";
+
 // Electricity Price page localizations
 "lessThanOneMinuteAgo" = "Updated less than a minute ago";
 "moreThanMMAgoSingular" = "Updated %@ minute ago";
@@ -48,7 +52,7 @@
 "settings" = "Settings";
 "notLoadedSettings" = "Couldn't load settings.";
 "region" = "Region";
-"regionToGetPrices" = "Select the region for which you would like to get aWATTar prices.";
+"regionToGetPrices" = "Select the region for which you would like to get electricity prices.";
 "priceWithVat" = "Prices with VAT";
 "baseElectricityPriceHint" = "You can find your base electricity price for your region on the aWATTar website.";
 "toAwattarWebsite" = "To the aWATTar website";

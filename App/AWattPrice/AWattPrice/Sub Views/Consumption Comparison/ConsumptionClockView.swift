@@ -207,14 +207,21 @@ struct ConsumptionClockView: View {
 
             // The start date and if needed also the end date which help the user understand from when to when the cheapest hours apply
             HStack(spacing: 10) {
-                HStack(spacing: 7) {
-                    Text(startDateString.0)
-                        .bold()
-                        .foregroundColor(Color.red)
+                VStack(spacing: 0) {
+                    if endDateString == nil {
+                        Text("on")
+                            .padding(.bottom, 3)
+                    }
+                    
+                    HStack(spacing: 7) {
+                        Text(startDateString.0)
+                            .bold()
+                            .foregroundColor(Color.red)
 
-                    if startDateString.1 != nil {
-                        Text(startDateString.1!)
-                            .foregroundColor(colorScheme == .light ? Color.black : Color.white)
+                        if startDateString.1 != nil {
+                            Text(startDateString.1!)
+                                .foregroundColor(colorScheme == .light ? Color.black : Color.white)
+                        }
                     }
                 }
 
@@ -232,14 +239,15 @@ struct ConsumptionClockView: View {
                 }
             }
             .font(.headline)
-            .position(x: clockRightSideStartWidth + clockWidth / 2, y: clockStartHeight + (clockWidth / 3) + (hourMarkerLineWidth / 2))
+            .position(x: clockRightSideStartWidth + clockWidth / 2,
+                      y: endDateString == nil ? clockStartHeight + (clockWidth / 4) + (hourMarkerLineWidth / 2) : clockStartHeight + (clockWidth / 3) + (hourMarkerLineWidth / 2))
 
             // Indicates if the start hour of the cheapest hours are within the am time or pm time
-            Text(timeIsAM ? "am" : "pm")
-                .font(.title2)
-                .bold()
-                .foregroundColor(colorScheme == .light ? Color.black : Color.white)
-                .position(x: clockRightSideStartWidth + clockWidth / 2, y: clockStartHeight + (3 * clockWidth / 4) - (hourMarkerLineWidth / 2))
+//            Text(timeIsAM ? "am" : "pm")
+//                .font(.title2)
+//                .bold()
+//                .foregroundColor(colorScheme == .light ? Color.black : Color.white)
+//                .position(x: clockRightSideStartWidth + clockWidth / 2, y: clockStartHeight + (3 * clockWidth / 4) - (hourMarkerLineWidth / 2))
 
             // The minute indicator which indicates which minute currently is
             Path { path in

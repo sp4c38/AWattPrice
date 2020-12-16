@@ -19,12 +19,7 @@ struct SplashScreenSetupView: View {
         VStack {
             if currentSetting.setting != nil {
                 CustomInsetGroupedList {
-                    RegionSelection()
-
-                    PricesWithVatIncludedSetting()
-                        .onTapGesture {
-                                self.hideKeyboard()
-                        }
+                    RegionAndVatSelection()
 
                     AwattarTariffSelectionSetting()
                 }

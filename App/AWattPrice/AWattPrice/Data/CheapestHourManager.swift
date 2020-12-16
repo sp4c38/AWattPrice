@@ -139,31 +139,36 @@ class CheapestHourManager: ObservableObject {
             self.averagePrice = pricesTogether / totalMinutes
         }
         
-        /// Calculates the average price from the energy price of all to this HourPair associated price points with VAT included.
-        func countAllPricesTogether(withVat: Bool) -> Float {
-            var pricesTogether: Float = 0
-            for pricePoint in self.associatedPricePoints {
-                if withVat {
-                    pricesTogether += (pricePoint.marketprice * 1.16)
-                } else {
-                    pricesTogether += pricePoint.marketprice
+//        func countAllPricesTogether(withVat: Bool) -> Float {
+//            var pricesTogether: Float = 0
+//            for pricePoint in self.associatedPricePoints {
+//                if withVat {
+//                    pricesTogether += (pricePoint.marketprice * 1.16)
+//                } else {
+//                    pricesTogether += pricePoint.marketprice
+//                }
+//            }
+//            return pricesTogether
+//        }
+        
+        func calculateHourlyPrice(cheapestHourPair: HourPair, currentSetting: CurrentSetting) {
+            var hourlyPrice: Float = 0
+            
+            if currentSetting.setting!.awattarTariffIndex == 0 {
+                for hourPair in cheapestHourPair.associatedPricePoints {
+                    let lengthOfIntervene: Float = Float(abs(hourPair.endTimestamp - hourPair.startTimestamp)) / 60 / 60 // In hours
+                    var price = hourPair.marketprice
+                    
+                    if currentSetting.setting!.pricesWithTaxIncluded {
+                        price *= 1.16
+                    }
+                    
+                    hourlyPrice += lengthOfIntervene * price
                 }
-            }
-            return pricesTogether
-        }
-    }
-    
-    func calculateHourlyPrice(cheapestHourPair: HourPair, currentSetting: CurrentSetting) -> HourPair {
-        if currentSetting.setting!.awattarTariffIndex == 0 {
-            let electricityPriceNoBonus = Double(cheapestHourPair.associatedPricePoints.count) * currentSetting.setting!.awattarBaseElectricityPrice
-            if currentSetting.setting!.pricesWithTaxIncluded {
-                cheapestHourPair.hourlyEnergyCosts = Float(electricityPriceNoBonus) + cheapestHourPair.countAllPricesTogether(withVat: true)
                 
-            } else {
-                cheapestHourPair.hourlyEnergyCosts = Float(electricityPriceNoBonus) + cheapestHourPair.countAllPricesTogether(withVat: false)
+                self.hourlyEnergyCosts = hourlyPrice
             }
         }
-        return cheapestHourPair
     }
     
     func createHourPairs(forHours timeRangeNumber: Int, fromStartTime startTime: Date, toEndTime endTime: Date, with energyData: EnergyData) -> [HourPair] {
@@ -349,9 +354,10 @@ class CheapestHourManager: ObservableObject {
             let cheapestHourPairIndex = results
 
             if cheapestHourPairIndex != nil {
+                let cheapestPair = allPairs[cheapestHourPairIndex!]
                 let timeRangeDifference = (Double(timeRangeNumber) - self.timeOfUsage) * 60
+                
                 if timeRangeDifference != 0 {
-                    let cheapestPair = allPairs[cheapestHourPairIndex!]
                     let maxPointIndex = cheapestPair.associatedPricePoints.count - 1
                     
                     // If the user searches for a time with hours and minutes like 2,3h or 1h 40min than this if statment triggers
@@ -361,6 +367,10 @@ class CheapestHourManager: ObservableObject {
                     } else {
                         cheapestPair.associatedPricePoints[0].startTimestamp += Int(timeRangeDifference * 60)
                     }
+                }
+                
+                if currentSetting.setting != nil {
+                    cheapestPair.calculateHourlyPrice(cheapestHourPair: cheapestPair, currentSetting: currentSetting)
                 }
             }
             

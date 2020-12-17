@@ -131,20 +131,24 @@ struct GetHelpView: View {
     
     var body: some View {
         CustomInsetGroupedListItem {
-            HStack {
+            HStack(spacing: 0) {
                 NavigationLink("", destination: HelpAndSuggestionView(), tag: 1, selection: $redirectToHelpAndSuggestionView)
+                    .frame(width: 0, height: 0)
+                    .hidden()
                 
-                Image(systemName: "questionmark.circle")
-                    .font(.title2)
-                
-                Text("helpAndSuggestions")
-                    .font(.subheadline)
-                
-                Spacer()
-                
-                Image(systemName: "chevron.right")
-                    .font(.caption)
-                    .foregroundColor(Color.gray)
+                HStack {
+                    Image(systemName: "questionmark.circle.fill")
+                        .font(.title2)
+                    
+                    Text("helpAndSuggestions")
+                        .font(.subheadline)
+                    
+                    Spacer()
+                    
+                    Image(systemName: "chevron.right")
+                        .font(.caption)
+                        .foregroundColor(Color.gray)
+                }
             }
             .foregroundColor(colorScheme == .light ? Color.black : Color.white)
             .contentShape(Rectangle())

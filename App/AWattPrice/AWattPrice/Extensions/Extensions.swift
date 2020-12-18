@@ -67,18 +67,32 @@ extension AnyTransition {
 
 // String extensions
 extension String {
-    static let numberFormatter = NumberFormatter()
-    
     /// The double value of a string. This supports , and . as seperator. This attribute is nil if the string can't be converted to a double and a double if conversion was successful.
     var doubleValue: Double? {
-        String.numberFormatter.decimalSeparator = "."
+        let numberFormatter = NumberFormatter()
         
-        if let result = String.numberFormatter.number(from: self) {
+        numberFormatter.decimalSeparator = "."
+
+        numberFormatter.decimalSeparator = Locale.current.decimalSeparator
+        numberFormatter.groupingSeparator = Locale.current.groupingSeparator
+        numberFormatter.numberStyle = .decimal
+
+        if let result = numberFormatter.number(from: self) {
             return Double(truncating: result)
         } else {
-            String.numberFormatter.decimalSeparator = ","
+            if numberFormatter.decimalSeparator == "." {
+                numberFormatter.decimalSeparator = ","
+            } else {
+                numberFormatter.decimalSeparator = "."
+            }
             
-            if let result = String.numberFormatter.number(from: self) {
+            if numberFormatter.groupingSeparator == "." {
+                numberFormatter.groupingSeparator = ","
+            } else {
+                numberFormatter.groupingSeparator = "."
+            }
+            
+            if let result = numberFormatter.number(from: self) {
                 return Double(truncating: result)
             }
         }

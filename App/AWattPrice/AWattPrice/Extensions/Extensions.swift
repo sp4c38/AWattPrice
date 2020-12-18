@@ -71,10 +71,8 @@ extension String {
     var doubleValue: Double? {
         let numberFormatter = NumberFormatter()
         
-        numberFormatter.decimalSeparator = "."
-
-        numberFormatter.decimalSeparator = Locale.current.decimalSeparator
         numberFormatter.groupingSeparator = Locale.current.groupingSeparator
+        numberFormatter.decimalSeparator = Locale.current.decimalSeparator
         numberFormatter.numberStyle = .decimal
 
         if let result = numberFormatter.number(from: self) {

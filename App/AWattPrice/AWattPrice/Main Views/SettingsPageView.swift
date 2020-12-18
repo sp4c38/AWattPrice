@@ -27,16 +27,19 @@ struct SettingsPageView: View {
                                     self.hideKeyboard()
                             }
                         
-                        AgreementSettingView(agreementIconName: "doc.text.fill",
+                        AgreementSettingView(agreementIconName: "doc.text",
                                              agreementName: "termsOfUse",
                                              agreementLinks: ("https://awattprice.space8.me/terms_of_use/german.html",
                                                               "https://awattprice.space8.me/terms_of_use/english.html"))
-                        
-                        AgreementSettingView(agreementIconName: "hand.raised.fill",
+                            
+                        AgreementSettingView(agreementIconName: "hand.raised",
                                              agreementName: "privacyPolicy",
                                              agreementLinks: ("https://awattprice.space8.me/privacy_policy/german.html",
                                                               "https://awattprice.space8.me/privacy_policy/english.html"))
 
+                        NotAffiliatedView(showGrayedOut: true)
+                            .padding([.leading, .trailing], 16)
+                        
                         AppVersionView()
                             .onTapGesture {
                                 self.hideKeyboard()

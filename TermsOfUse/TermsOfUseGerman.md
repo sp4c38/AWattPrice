@@ -1,4 +1,4 @@
-# ENDBENUTZER-LIZENZVERTRAG
+# NUTZUNGSBEDINGUNGEN
 
 ##### Zuletzt aktualisiert am 16.12.2020
 

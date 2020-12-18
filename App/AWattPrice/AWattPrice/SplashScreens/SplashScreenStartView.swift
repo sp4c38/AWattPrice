@@ -34,6 +34,11 @@ struct SplashScreenStartView: View {
                 Spacer()
                 
                 NavigationLink("", destination: SplashScreenFeaturesAndConsentView(), tag: 1, selection: $redirectToNextSplashScreen)
+                    .frame(width: 0, height: 0)
+                    .hidden()
+                
+                NotAffiliatedView(showGrayedOut: false)
+                    .padding(.bottom, 10)
                 
                 Button(action: {
                     redirectToNextSplashScreen = 1

@@ -87,7 +87,6 @@ class CheapestHourManager: ObservableObject {
             }
         }
         
-        print(self.energyUsageString)
         if energyUsageString.replacingOccurrences(of: " ", with: "") == "" {
             errorValues.append(3)
         } else {

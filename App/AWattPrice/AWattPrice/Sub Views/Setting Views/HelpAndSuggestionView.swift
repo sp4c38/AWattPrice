@@ -137,7 +137,7 @@ struct GetHelpView: View {
                     .hidden()
                 
                 HStack {
-                    Image(systemName: "questionmark.circle.fill")
+                    Image(systemName: "questionmark.circle")
                         .font(.title2)
                     
                     Text("helpAndSuggestions")

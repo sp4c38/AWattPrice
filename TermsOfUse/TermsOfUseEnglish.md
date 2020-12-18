@@ -1,4 +1,4 @@
-# END USER LICENSE AGREEMENT
+# TERMS OF USE
 
 ##### Last updated 16.12.2020
 

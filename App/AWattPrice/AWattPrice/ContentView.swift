@@ -23,6 +23,7 @@ struct ContentView: View {
                                 
                         ConsumptionComparisonView()
                             .opacity(tabBarItems.selectedItemIndex == 1 ? 1 : 0)
+                            .environmentObject(tabBarItems)
                     }
                     
                     Spacer(minLength: 0)

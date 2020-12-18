@@ -11,8 +11,8 @@ import SwiftUI
 struct ConsumptionComparisonView: View {
     @Environment(\.colorScheme) var colorScheme
     
-    @EnvironmentObject var currentSetting: CurrentSetting
     @EnvironmentObject var awattarData: AwattarData
+    @EnvironmentObject var currentSetting: CurrentSetting
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
     
     /// State variable which if set to true triggers that extra informations is shown of what this view does because it may not be exactly clear to the user at first usage.

@@ -11,6 +11,7 @@ import SwiftUI
 struct PowerOutputInputField: View {
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
     @EnvironmentObject var currentSetting: CurrentSetting
+    @EnvironmentObject var tabBarItems: TBItems
     
     @State var firstAppear = false
     
@@ -27,6 +28,14 @@ struct PowerOutputInputField: View {
         } else {
             emptyFieldError = false
             wrongInputError = false
+        }
+    }
+    
+    func setPowerOutputString() {
+        if currentSetting.setting!.cheapestTimeLastPower != 0 {
+            if let powerOutputString = currentSetting.setting!.cheapestTimeLastPower.priceString {
+                cheapestHourManager.powerOutputString = powerOutputString
+            }
         }
     }
     
@@ -51,12 +60,13 @@ struct PowerOutputInputField: View {
                             }
                     }
                     .onAppear {
-                        if currentSetting.setting!.cheapestTimeLastPower != 0 {
-                            if let powerOutputString = currentSetting.setting!.cheapestTimeLastPower.priceString {
-                                cheapestHourManager.powerOutputString = powerOutputString
-                            }
-                        }
+                        setPowerOutputString()
                         firstAppear = false
+                    }
+                    .onChange(of: tabBarItems.selectedItemIndex) { newSelectedItemIndex in
+                        if newSelectedItemIndex == 1 {
+                            setPowerOutputString()
+                        }
                     }
                 
                 if cheapestHourManager.powerOutputString != "" {

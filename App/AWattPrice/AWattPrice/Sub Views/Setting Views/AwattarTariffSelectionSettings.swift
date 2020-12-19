@@ -120,9 +120,6 @@ struct AwattarTariffSelectionSetting: View {
                         }
                         .frame(maxWidth: .infinity)
                         .contentShape(Rectangle())
-                        .onTapGesture {
-                            self.hideKeyboard()
-                        }
 
                         AwattarBasicEnergyChargePriceSetting()
                     }

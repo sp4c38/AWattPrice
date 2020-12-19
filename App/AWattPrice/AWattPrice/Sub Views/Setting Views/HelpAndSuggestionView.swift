@@ -153,7 +153,6 @@ struct GetHelpView: View {
             .foregroundColor(colorScheme == .light ? Color.black : Color.white)
             .contentShape(Rectangle())
             .onTapGesture {
-                self.hideKeyboard()
                 redirectToHelpAndSuggestionView = 1
             }
         }
@@ -168,9 +167,6 @@ struct demoPreview: View {
                 GetHelpView()
             }
             .listStyle(InsetGroupedListStyle())
-        }
-        .onTapGesture {
-            self.hideKeyboard()
         }
         .preferredColorScheme(.light)
     }

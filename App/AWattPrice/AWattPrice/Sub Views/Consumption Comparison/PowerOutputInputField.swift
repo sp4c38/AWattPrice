@@ -14,7 +14,7 @@ struct PowerOutputInputField: View {
     @EnvironmentObject var keyboardObserver: KeyboardObserver
     @EnvironmentObject var tabBarItems: TBItems
     
-    @State var firstAppear = false
+    @State var firstAppear = true
     
     let emptyFieldError: Bool
     let wrongInputError: Bool
@@ -48,11 +48,10 @@ struct PowerOutputInputField: View {
                     .bold()
                 Spacer()
             }
-            
+
             HStack {
-                TextField("inKw", text: $cheapestHourManager.powerOutputString.animation())
-                    .keyboardType(.decimalPad)
-                    .multilineTextAlignment(.leading)
+                DecimalTextFieldWithDoneButton(text: $cheapestHourManager.powerOutputString.animation(), placeholder: "inKw".localized())
+                    .fixedSize(horizontal: false, vertical: true)
                     .padding(.trailing, 5)
                     .ifTrue(firstAppear == false) { content in
                         content
@@ -65,12 +64,9 @@ struct PowerOutputInputField: View {
                         firstAppear = false
                     }
                     .onChange(of: tabBarItems.selectedItemIndex) { newSelectedItemIndex in
-                        if newSelectedItemIndex == 1 {
+                        if newSelectedItemIndex == 1 && firstAppear == false {
                             setPowerOutputString()
                         }
-                    }
-                    .onReceive(keyboardObserver.keyboardHeight) { newKeyboardHeight in
-                        print(newKeyboardHeight)
                     }
                 
                 if cheapestHourManager.powerOutputString != "" {

@@ -31,7 +31,7 @@ struct EnergyUsageInputField: View {
         }
     }
     
-    func updateEnergyUsageString() {
+    func setEnergyUsageString() {
         if currentSetting.setting!.cheapestTimeLastConsumption != 0 {
             if let energyUsageString = currentSetting.setting!.cheapestTimeLastConsumption.priceString {
                 cheapestHourManager.energyUsageString = energyUsageString
@@ -49,23 +49,25 @@ struct EnergyUsageInputField: View {
             }
             
             HStack {
-                TextField("inKwh", text: $cheapestHourManager.energyUsageString.animation())
-                    .keyboardType(.decimalPad)
-                    .multilineTextAlignment(.leading)
+                DecimalTextFieldWithDoneButton(text: $cheapestHourManager.energyUsageString.animation(), placeholder: "inKw".localized())
+                    .fixedSize(horizontal: false, vertical: true)
                     .padding(.trailing, 5)
                     .ifTrue(firstAppear == false) { content in
                         content
                             .onChange(of: cheapestHourManager.energyUsageString) { newValue in
                                 currentSetting.changeCheapestTimeLastConsumption(newLastConsumption: newValue.doubleValue ?? 0)
+                                if let energyUsageString = currentSetting.setting!.cheapestTimeLastConsumption.priceString {
+                                    cheapestHourManager.energyUsageString = energyUsageString
+                                }
                             }
                     }
                     .onAppear {
-                        updateEnergyUsageString()
+                        setEnergyUsageString()
                         firstAppear = false
                     }
                     .onChange(of: tabBarItems.selectedItemIndex) { newSelectedItemIndex in
-                        if newSelectedItemIndex == 1 {
-                            updateEnergyUsageString()
+                        if newSelectedItemIndex == 1 && firstAppear == false {
+                            setEnergyUsageString()
                         }
                     }
                 

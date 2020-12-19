@@ -39,6 +39,9 @@ struct ConsumptionClockView: View {
             var startDegree = Int(30 * (startHour + startMinuteFraction)) - 90
             var endDegree = Int(30 * (endHour + endMinuteFraction)) - 90
 
+            print(startDegree)
+            print(endDegree)
+            
             if (startHour + startMinuteFraction) > 12 {
                 // Change to PM if in PM section
                 timeIsAM = false
@@ -51,7 +54,7 @@ struct ConsumptionClockView: View {
             }
             
             // Add or subtract some degrees to compensate the overlap which occurs because of the lineCap applied to the cheapest hour indicator
-            if endDegree - startDegree > 12 {
+            if endDegree - startDegree > 7 {
                 startDegree += 3
                 if startHour == endHour {
                     if endMinuteFraction - startMinuteFraction >= 0.5 {
@@ -65,6 +68,9 @@ struct ConsumptionClockView: View {
             } else if endDegree - startDegree == 0 {
                 startDegree -= 1
             }
+//            } else if endDegree - startDegree > 3 {
+//                startDegree += 3
+//            }
 
             hourDegree = (startDegree, endDegree)
             

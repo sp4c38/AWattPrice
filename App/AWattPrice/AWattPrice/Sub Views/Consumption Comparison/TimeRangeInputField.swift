@@ -98,6 +98,7 @@ struct TimeRangeInputField: View {
                     Text(String(format: "wrongTimeRangeError".localized(), timeIntervalFormatter.string(from: NSNumber(value: minTimeRangeNeeded))!))
                         .font(.caption)
                         .foregroundColor(Color.red)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
             }
             .padding([.top, .bottom], 20)

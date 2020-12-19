@@ -23,9 +23,6 @@ struct SettingsPageView: View {
 //                        AwattarTariffSelectionSetting()
 
                         GetHelpView()
-                            .onTapGesture {
-                                    self.hideKeyboard()
-                            }
                         
                         AgreementSettingView(agreementIconName: "doc.text",
                                              agreementName: "termsOfUse",
@@ -41,9 +38,6 @@ struct SettingsPageView: View {
                             .padding([.leading, .trailing], 16)
                         
                         AppVersionView()
-                            .onTapGesture {
-                                self.hideKeyboard()
-                            }
                     }
                 } else {
                     Text("notLoadedSettings")

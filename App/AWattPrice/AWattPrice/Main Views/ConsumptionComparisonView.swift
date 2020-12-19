@@ -7,6 +7,19 @@
 
 import SwiftUI
 
+struct ViewSizePreferenceKey: PreferenceKey {
+    struct SizeBounds {
+        var bounds: Anchor<CGRect>
+    }
+    
+    typealias Value = SizeBounds?
+    var defaultValue: Value = nil
+    
+    static func reduce(value: inout SizeBounds?, nextValue: () -> SizeBounds?) {
+        value = nextValue()
+    }
+}
+
 /// A view which allows the user to find the cheapest hours for using energy. It optionally can also show the final price which the user would have to pay to aWATTar if consuming the specified amount of energy.
 struct ConsumptionComparisonView: View {
     @Environment(\.colorScheme) var colorScheme
@@ -15,10 +28,10 @@ struct ConsumptionComparisonView: View {
     @EnvironmentObject var currentSetting: CurrentSetting
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
     
-    /// State variable which if set to true triggers that extra informations is shown of what this view does because it may not be exactly clear to the user at first usage.
-    @State var redirectToComparisonResults: Int? = 0
     /// A list to which values representing different types of errors are added if any occur
     @State var fieldsEnteredErrorValues = [Int]()
+    /// State variable which if set to true triggers that extra informations is shown of what this view does because it may not be exactly clear to the user at first usage.
+    @State var redirectToComparisonResults: Int? = 0
     
     /**
      A time range which goes from the start time of the first energy price data point to the end time of the last energy price data point downloaded from the server
@@ -60,7 +73,6 @@ struct ConsumptionComparisonView: View {
                                 if fieldsEnteredErrorValues.contains(0) {
                                     // All requirements are satisfied
                                     redirectToComparisonResults = 1
-                                    self.hideKeyboard()
                                 }
                             }) {
                                 HStack {
@@ -73,9 +85,6 @@ struct ConsumptionComparisonView: View {
                             .buttonStyle(ActionButtonStyle())
                             .padding([.leading, .trailing, .bottom], 16)
                             .padding(.top, 10)
-                        }
-                        .onTapGesture {
-                            self.hideKeyboard()
                         }
                     }
                 } else {

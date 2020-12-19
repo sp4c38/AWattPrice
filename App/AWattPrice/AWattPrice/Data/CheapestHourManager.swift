@@ -319,7 +319,8 @@ class CheapestHourManager: ObservableObject {
 
             if cheapestHourPairIndex != nil {
                 let cheapestPair = allPairs[cheapestHourPairIndex!]
-                let timeRangeDifference = (Double(timeRangeNumber) - self.timeOfUsage) * 60
+
+                let timeRangeDifference = ((Double(timeRangeNumber) - self.timeOfUsage) * 60).rounded(.up)
                 
                 if timeRangeDifference != 0 {
                     let maxPointIndex = cheapestPair.associatedPricePoints.count - 1
@@ -329,6 +330,12 @@ class CheapestHourManager: ObservableObject {
                     if cheapestPair.associatedPricePoints[0].marketprice <= cheapestPair.associatedPricePoints[maxPointIndex].marketprice {
                         cheapestPair.associatedPricePoints[maxPointIndex].endTimestamp -= Int(timeRangeDifference * 60)
                     } else {
+                        print("***** Happy Christmas *****")
+                        print(cheapestPair.associatedPricePoints[0].startTimestamp)
+                        print(timeRangeDifference)
+                        print(timeRangeDifference * 60)
+                        print("***************************")
+                        
                         cheapestPair.associatedPricePoints[0].startTimestamp += Int(timeRangeDifference * 60)
                     }
                 }
@@ -336,6 +343,8 @@ class CheapestHourManager: ObservableObject {
 //                if currentSetting.setting != nil {
 //                    cheapestPair.calculateHourlyPrice(currentSetting: currentSetting)
 //                }
+                
+                print(cheapestPair.associatedPricePoints)
             }
             
             DispatchQueue.main.async {

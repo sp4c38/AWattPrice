@@ -95,4 +95,8 @@
 "termsOfUse" = "Nutzungsbedingungen";
 "privacyPolicy" = "Datenschutzrichtlinie";
 "on" = "am";
+
+// Total Time Formatter localizations
+"onlyHour"  = "%@h";
+"onlyMinute" = "%@min";
 "hourCommaMinute" =  "%@h, %@min";

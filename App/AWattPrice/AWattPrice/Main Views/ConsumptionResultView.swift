@@ -36,14 +36,12 @@ struct ConsumptionResultView: View {
     }
     
     func getTotalTime() -> String {
-        let numberFormatter = NumberFormatter()
-        numberFormatter.numberStyle = .none
+        print(TimeInterval(cheapestHourManager.cheapestHoursForUsage!.associatedPricePoints[cheapestHourManager.cheapestHoursForUsage!.associatedPricePoints.count - 1].endTimestamp))
+        print(TimeInterval(cheapestHourManager.cheapestHoursForUsage!.associatedPricePoints[0].startTimestamp))
+        
         let hours = cheapestHourManager.timeOfUsage.rounded(.down)
         let minutes = 60 * (cheapestHourManager.timeOfUsage - hours)
-        let hoursString = numberFormatter.string(for: hours) ?? "0"
-        let minutesString = numberFormatter.string(for: minutes) ?? "0"
-        let resultString = String(format: "hourCommaMinute".localized(), hoursString, minutesString)
-        return resultString
+        return TotalTimeFormatter().localizedTotalTimeString(hour: hours, minute: minutes)
     }
     
     var body: some View {

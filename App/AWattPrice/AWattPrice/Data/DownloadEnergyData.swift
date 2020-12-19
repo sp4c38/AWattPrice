@@ -71,7 +71,7 @@ class AwattarData: ObservableObject {
         if regionIdentifier == 1 {
             downloadUrl = "https://awattprice.space8.me/data/AT"
         } else {
-            downloadUrl = "https://awattprice.space8.me/data/DE"
+            downloadUrl = "https://awattprice.space8.me/data/"
         }
         
         var energyRequest = URLRequest(
@@ -100,7 +100,7 @@ class AwattarData: ObservableObject {
                     var maxPrice: Double? = nil
                     
                     for hourPoint in decodedData.prices {
-                        if Date(timeIntervalSince1970: TimeInterval(hourPoint.startTimestamp)) >= currentHour {
+//                        if Date(timeIntervalSince1970: TimeInterval(hourPoint.startTimestamp)) >= currentHour {
                             let marketprice: Double = (hourPoint.marketprice * 100).rounded() / 100
                             usedPricesDecodedData.append(EnergyPricePoint(startTimestamp: hourPoint.startTimestamp, endTimestamp: hourPoint.endTimestamp, marketprice: marketprice))
                             
@@ -115,7 +115,7 @@ class AwattarData: ObservableObject {
                             } else if hourPoint.marketprice < minPrice! {
                                 minPrice = hourPoint.marketprice
                             }
-                        }
+//                        }
                     }
                     
                     DispatchQueue.main.async {

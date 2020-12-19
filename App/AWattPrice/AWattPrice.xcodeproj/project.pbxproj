@@ -212,9 +212,9 @@
 		61504CFC250FF46D00EF41D6 /* Sub Views */ = {
 			isa = PBXGroup;
 			children = (
+				610E64982573075600C1BAD9 /* TabBar */,
 				618518E72585060F00120D81 /* Data Error */,
 				6119058425608174007C04D3 /* Energy Price Graph */,
-				610E64982573075600C1BAD9 /* TabBar */,
 				6198BD49254C7F4C00356A0F /* Consumption Comparison */,
 				61EC1BFE254B419500324ADA /* Setting Views */,
 			);

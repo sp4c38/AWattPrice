@@ -18,8 +18,8 @@ class CheapestHourManager: ObservableObject {
     @Published var energyUsage: Double = 0
     
     // Time range from startDate to endDate in which to find the cheapest hours
-    @Published var startDate = Date()
-    @Published var endDate = Date().addingTimeInterval(3600)
+    @Published var startDate = Date(timeIntervalSince1970: 1608450240)//Date()
+    @Published var endDate = Date(timeIntervalSince1970: 1608451200)//Date().addingTimeInterval(3600)
     
     @Published var timeOfUsage: Double = 0
     
@@ -183,7 +183,7 @@ class CheapestHourManager: ObservableObject {
                 }
             }
         }
-        
+        print(allPairs)
         return allPairs
     }
     
@@ -239,7 +239,7 @@ class CheapestHourManager: ObservableObject {
                         
                         let cheapestPair = allPairs[cheapestPairIndex!]
                         var maxPointIndex = cheapestPair.associatedPricePoints.count - 1
-                        
+
                         let startTimeHourEnd = startTime.addingTimeInterval(3600)
                         let endTimeHourStart = endTime.addingTimeInterval(-3600)
                         let startDateFirstItem = Date(timeIntervalSince1970: TimeInterval(cheapestPair.associatedPricePoints[0].startTimestamp))
@@ -298,33 +298,7 @@ class CheapestHourManager: ObservableObject {
                         
                         if intervenesWithStartHour && intervenesWithEndHour {
                             print("Intervenes with both start and end hour")
-                            var allItems = [EnergyPricePoint]()
-                            for item in energyData.prices {
-                                let itemStartTime = Date(timeIntervalSince1970: TimeInterval(item.startTimestamp))
-                                let itemEndTime = Date(timeIntervalSince1970: TimeInterval(item.endTimestamp))
-                                if itemStartTime >= startTime && itemEndTime <= endTime {
-                                    allItems.append(item)
-                                }
-                            }
-                            
-                            
-                            if (startTimeDifference != 0) || (endTimeDifference != 0) {
-                                var returnModifiedAllItems = false
-                                if allItems[0].startTimestamp == cheapestPair.associatedPricePoints[0].startTimestamp {
-                                    allItems[0].startTimestamp += startTimeDifference * 60
-                                    allItems[allItems.count - 1].endTimestamp -= (60 - startTimeDifference) * 60
-                                    returnModifiedAllItems = true
-                                    
-                                } else if allItems[allItems.count - 1].endTimestamp == cheapestPair.associatedPricePoints[maxPointIndex].endTimestamp {
-                                    allItems[allItems.count - 1].endTimestamp -= (60 - endTimeDifference) * 60
-                                    allItems[0].startTimestamp += endTimeDifference * 60
-                                    returnModifiedAllItems = true
-                                }
-                                
-                                if returnModifiedAllItems {
-                                    cheapestPair.associatedPricePoints = allItems
-                                }
-                            }
+                            // No need to change something
                         }
                         
                         if performAnotherSearch {
@@ -349,7 +323,7 @@ class CheapestHourManager: ObservableObject {
                 
                 if timeRangeDifference != 0 {
                     let maxPointIndex = cheapestPair.associatedPricePoints.count - 1
-                    
+
                     // If the user searches for a time with hours and minutes like 2,3h or 1h 40min than this if statment triggers
                     // It makes sure that the start timestamp and end timestamp is set correctly to met the users wished output (hours and minutes)
                     if cheapestPair.associatedPricePoints[0].marketprice <= cheapestPair.associatedPricePoints[maxPointIndex].marketprice {

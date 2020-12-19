@@ -29,39 +29,43 @@ struct ConsumptionClockView: View {
         if cheapestHourPair.associatedPricePoints.count >= 1 {
             let startTimeFirstItem = Date(timeIntervalSince1970: TimeInterval(cheapestHourPair.associatedPricePoints[minItemIndex].startTimestamp))
             let startHour = Float(calendar.component(.hour, from: startTimeFirstItem))
-            let startMinute = Float(calendar.component(.minute, from: startTimeFirstItem)) / 60
-            
+            let startMinuteFraction = Float(calendar.component(.minute, from: startTimeFirstItem)) / 60
+
             let endTimeLastItem = Date(timeIntervalSince1970: TimeInterval(cheapestHourPair.associatedPricePoints[maxItemIndex].endTimestamp))
             let endHour = Float(calendar.component(.hour, from: endTimeLastItem))
-            let endMinute = Float(calendar.component(.minute, from: endTimeLastItem)) / 60
+            let endMinuteFraction = Float(calendar.component(.minute, from: endTimeLastItem)) / 60
 
             // Subtract 90 degrees to make the cheapest hour indicator fit with the clocks alignment
-            var startDegree = Int(30 * (startHour + startMinute)) - 90
-            var endDegree = Int(30 * (endHour + endMinute)) - 90
+            var startDegree = Int(30 * (startHour + startMinuteFraction)) - 90
+            var endDegree = Int(30 * (endHour + endMinuteFraction)) - 90
 
-            if startHour > 12 {
-                // Chage to PM if in PM section
+            if (startHour + startMinuteFraction) > 12 {
+                // Change to PM if in PM section
                 timeIsAM = false
                 
                 startDegree -= 360
             }
             
-            if endHour > 12 {
+            if (endHour + endMinuteFraction) > 12 {
                 endDegree -= 360
             }
             
             // Add or subtract some degrees to compensate the overlap which occurs because of the lineCap applied to the cheapest hour indicator
-            startDegree += 3
-            if startHour == endHour {
-                if endMinute - startMinute >= 0.5 {
+            if endDegree - startDegree > 12 {
+                startDegree += 3
+                if startHour == endHour {
+                    if endMinuteFraction - startMinuteFraction >= 0.5 {
+                        endDegree -= 3
+                    } else {
+                        endDegree += 2
+                    }
+                } else if startHour != endHour {
                     endDegree -= 3
-                } else {
-                    endDegree += 2
                 }
-            } else if startHour != endHour {
-                endDegree -= 3
+            } else if endDegree - startDegree == 0 {
+                startDegree -= 1
             }
-            
+
             hourDegree = (startDegree, endDegree)
             
             // Show the dates the cheapest hour indicator crosses

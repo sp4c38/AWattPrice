@@ -26,14 +26,15 @@ class PersistenceManager {
 /// Entry point of the app
 @main
 struct AwattarApp: App {
-    var persistence = PersistenceManager()
-    var currentSetting: CurrentSetting
-    
     var awattarData: AwattarData
+    var currentSetting: CurrentSetting
+    var keyboardObserver: KeyboardObserver
+    var persistence = PersistenceManager()
     
     init() {
-        currentSetting = CurrentSetting(managedObjectContext: persistence.persistentContainer.viewContext)
         awattarData = AwattarData()
+        currentSetting = CurrentSetting(managedObjectContext: persistence.persistentContainer.viewContext)
+        keyboardObserver = KeyboardObserver()
     }
     
     var body: some Scene {
@@ -44,6 +45,7 @@ struct AwattarApp: App {
                 .environmentObject(awattarData)
                 .environmentObject(currentSetting)
                 .environmentObject(CheapestHourManager())
+                .environmentObject(keyboardObserver)
         }
     }
 }

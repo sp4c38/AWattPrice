@@ -11,6 +11,7 @@ import SwiftUI
 struct PowerOutputInputField: View {
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
     @EnvironmentObject var currentSetting: CurrentSetting
+    @EnvironmentObject var keyboardObserver: KeyboardObserver
     @EnvironmentObject var tabBarItems: TBItems
     
     @State var firstAppear = false
@@ -67,6 +68,9 @@ struct PowerOutputInputField: View {
                         if newSelectedItemIndex == 1 {
                             setPowerOutputString()
                         }
+                    }
+                    .onReceive(keyboardObserver.keyboardHeight) { newKeyboardHeight in
+                        print(newKeyboardHeight)
                     }
                 
                 if cheapestHourManager.powerOutputString != "" {

@@ -16,7 +16,7 @@ struct AwattarBasicEnergyChargePriceSetting: View {
     struct SettingFooter: View {
         var body: some View {
             VStack(alignment: .leading, spacing: 12) {
-                Text("baseElectricityPriceHint")
+                Text("settingsPage.baseElectricityPriceHint")
 
                 Button(action: {
                     // Let the user visit this website for him/her to get information which depends on the users location
@@ -25,7 +25,7 @@ struct AwattarBasicEnergyChargePriceSetting: View {
                     UIApplication.shared.open(URL(string: "https://www.awattar.de")!)
                 }) {
                     HStack {
-                        Text("toAwattarWebsite")
+                        Text("settingsPage.toAwattarWebsite")
                         Image(systemName: "chevron.right")
                     }
                     .foregroundColor(Color.blue)
@@ -82,12 +82,12 @@ struct AwattarTariffSelectionSetting: View {
     
     var body: some View {
         CustomInsetGroupedListItem(
-            header: Text("awattarTariff"),
-            footer: Text("awattarTariffSelectionTip")
+            header: Text("settingsPage.awattarTariff"),
+            footer: Text("settingsPage.awattarTariffSelectionTip")
         ) {
             VStack(alignment: .center, spacing: 20) {
                 Picker(selection: $awattarEnergyTariffIndex.animation(), label: Text("")) {
-                    Text("none").tag(-1)
+                    Text("general.none").tag(-1)
                     ForEach(awattarData.profilesData.profiles, id: \.name) { profile in
                         Text(profile.name).tag(awattarData.profilesData.profiles.firstIndex(of: profile)!)
                     }
@@ -132,7 +132,7 @@ struct AwattarTariffSelectionSetting: View {
                             .padding(.top, 5)
                             .foregroundColor(Color.red)
 
-                        Text("none")
+                        Text("general.none")
                             .bold()
                             .font(.title3)
                     }

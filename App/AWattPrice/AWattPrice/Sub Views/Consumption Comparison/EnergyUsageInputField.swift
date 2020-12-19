@@ -42,14 +42,14 @@ struct EnergyUsageInputField: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
-                Text("totalConsumption")
+                Text("cheapestPricePage.totalConsumption")
                     .font(.title3)
                     .bold()
                 Spacer()
             }
             
             HStack {
-                DecimalTextFieldWithDoneButton(text: $cheapestHourManager.energyUsageString.animation(), placeholder: "inKw".localized())
+                DecimalTextFieldWithDoneButton(text: $cheapestHourManager.energyUsageString.animation(), placeholder: "general.inKw".localized())
                     .fixedSize(horizontal: false, vertical: true)
                     .padding(.trailing, 5)
                     .ifTrue(firstAppear == false) { content in
@@ -85,13 +85,13 @@ struct EnergyUsageInputField: View {
             )
             
             if emptyFieldError {
-                Text("emptyFieldError")
+                Text("cheapestPricePage.emptyFieldError")
                     .font(.caption)
                     .foregroundColor(Color.red)
             }
             
             if wrongInputError {
-                Text("wrongInputError")
+                Text("cheapestPricePage.wrongInputError")
                     .font(.caption)
                     .foregroundColor(Color.red)
             }

@@ -12,7 +12,7 @@ struct DataRetrievalLoadingView: View {
         VStack(spacing: 20) {
             Spacer()
             
-            ProgressView("loading")
+            ProgressView("general.loading")
             
             Spacer()
         }
@@ -32,14 +32,14 @@ struct DataRetrievalError: View {
                     .foregroundColor(Color.orange)
                     .font(.system(size: 60, weight: .light))
                 
-                Text("tryAgainLater")
+                Text("dataDownloadError.tryAgainLater")
                     .font(.title3)
                     .multilineTextAlignment(.center)
                 
                 Button(action: {
                     awattarData.download()
                 }) {
-                    Text("retry")
+                    Text("general.retry")
                 }.buttonStyle(RetryButtonStyle())
             }
             .padding(25)
@@ -66,14 +66,14 @@ struct CurrentlyNoData: View {
                     .foregroundColor(Color(red: 0.99, green: 0.74, blue: 0.04, opacity: 1.0))
                     .font(.system(size: 60, weight: .light))
                 
-                Text("noDataAvailable")
+                Text("dataDownloadError.noDataAvailable")
                     .font(.title3)
                     .multilineTextAlignment(.center)
                 
                 Button(action: {
                     awattarData.download()
                 }) {
-                    Text("retry")
+                    Text("general.retry")
                 }.buttonStyle(RetryButtonStyle())
             }
             .padding(25)

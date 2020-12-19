@@ -53,7 +53,6 @@
 		61D6F8882517AD5500027FD1 /* ButtonStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61D6F8872517AD5500027FD1 /* ButtonStyles.swift */; };
 		61D88C0B2545EF9800DA2088 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61D88C0A2545EF9800DA2088 /* Extensions.swift */; };
 		61E2DFD7254214B100473E20 /* CheapestHourManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61E2DFD6254214B100473E20 /* CheapestHourManager.swift */; };
-		61EC1C00254B41B100324ADA /* PricesWithVatIncludedSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61EC1BFF254B41B100324ADA /* PricesWithVatIncludedSetting.swift */; };
 		61EC1C08254B41D800324ADA /* AwattarTariffSelectionSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61EC1C07254B41D800324ADA /* AwattarTariffSelectionSettings.swift */; };
 		61EC1C12254B425B00324ADA /* AppVersionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61EC1C11254B425B00324ADA /* AppVersionView.swift */; };
 		61F983FA2545BC4600A253CC /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 61F983F92545BC4600A253CC /* Launch Screen.storyboard */; };
@@ -130,7 +129,6 @@
 		61D6F8872517AD5500027FD1 /* ButtonStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonStyles.swift; sourceTree = "<group>"; };
 		61D88C0A2545EF9800DA2088 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		61E2DFD6254214B100473E20 /* CheapestHourManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheapestHourManager.swift; sourceTree = "<group>"; };
-		61EC1BFF254B41B100324ADA /* PricesWithVatIncludedSetting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PricesWithVatIncludedSetting.swift; sourceTree = "<group>"; };
 		61EC1C07254B41D800324ADA /* AwattarTariffSelectionSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AwattarTariffSelectionSettings.swift; sourceTree = "<group>"; };
 		61EC1C11254B425B00324ADA /* AppVersionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppVersionView.swift; sourceTree = "<group>"; };
 		61F983F92545BC4600A253CC /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
@@ -348,7 +346,6 @@
 			isa = PBXGroup;
 			children = (
 				6184828025699DEE004F3F62 /* RegionAndVatSelection.swift */,
-				61EC1BFF254B41B100324ADA /* PricesWithVatIncludedSetting.swift */,
 				61EC1C07254B41D800324ADA /* AwattarTariffSelectionSettings.swift */,
 				61BA0A532548467F00951321 /* HelpAndSuggestionView.swift */,
 				61BA0A582548764400951321 /* MailView.swift */,
@@ -512,7 +509,6 @@
 				61190596256083FE007C04D3 /* UpdatedDataView.swift in Sources */,
 				6198BD4B254C7F7100356A0F /* TimeRangeInputField.swift in Sources */,
 				61B214B225881CCF00DC1499 /* AgreementSettingView.swift in Sources */,
-				61EC1C00254B41B100324ADA /* PricesWithVatIncludedSetting.swift in Sources */,
 				61EC1C12254B425B00324ADA /* AppVersionView.swift in Sources */,
 				61D6F8882517AD5500027FD1 /* ButtonStyles.swift in Sources */,
 				618518F4258518EB00120D81 /* TabBar.swift in Sources */,

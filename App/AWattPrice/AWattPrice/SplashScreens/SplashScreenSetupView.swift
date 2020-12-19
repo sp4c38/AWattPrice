@@ -30,16 +30,16 @@ struct SplashScreenSetupView: View {
                 Button(action: {
                     redirectToNextSplashScreen = 1
                 }) {
-                    Text("continue")
+                    Text("general.continue")
                 }
                 .buttonStyle(ContinueButtonStyle())
                 .padding(.bottom, 16)
                 .padding([.leading, .trailing], 16)
             } else {
-                Text("notLoadedSettings")
+                Text("settingsPage.notLoadedSettings")
             }
         }
-        .navigationBarTitle("splashScreenSetupTitle")
+        .navigationBarTitle("splashScreen.setup.title")
         .navigationViewStyle(StackNavigationViewStyle())
     }
 }

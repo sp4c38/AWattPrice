@@ -7,96 +7,98 @@
 */
 
 // Welcome Splash Screen localizations
-"splashScreenWelcome" = "Welcome to the";
-"splashScreenViewPrices" = "View prices";
-"splashScreenViewPricesInfo" = "Check the current electricity prices for each hour throughout the day.";
-"splashScreenComparePrices" = "Compare prices";
-"splashScreenComparePricesInfo" = "Find the cheapest hours for your electricity consumption.";
+"splashScreen.start.welcome" = "Welcome to the";
+"splashScreen.start.notAffiliatedNote" = "Please note that AWattPrice is an independent app and is in no way affiliated with the aWATTar company.";
 
 // Features and Consent Splash Screen localizations
-"features" = "Features";
-"agreeTermsOfUse" = "I agree to the Terms Of Use.";
-"seeTermsOfUse" = "View Terms Of Use";
-"notAffliatedNote" = "Please note that AWattPrice is an independent app and is in no way affiliated with the aWATTar company.";
-"agreePrivacyPolicy" = "I agree to the Privacy Policy.";
-"seePrivacyPolicy" = "View Privacy Policy";
+"splashScreen.featuresAndConsent.features" = "Features";
+"splashScreen.featuresAndConsent.viewPrices" = "View prices";
+"splashScreen.featuresAndConsent.viewPrices.info" = "Check the current electricity prices for each hour throughout the day.";
+"splashScreen.featuresAndConsent.comparePrices" = "Compare prices";
+"splashScreen.featuresAndConsent.comparePrices.info" = "Find the cheapest hours for your electricity consumption.";
+"splashScreen.featuresAndConsent.termsOfUse.agree" = "I agree to the Terms Of Use.";
+"splashScreen.featuresAndConsent.termsOfUse.see" = "View Terms Of Use";
+"splashScreen.featuresAndConsent.privacyPolicy.agree" = "I agree to the Privacy Policy.";
+"splashScreen.featuresAndConsent.privacyPolicy.see" = "View Privacy Policy";
 
 // Setup splash screen localization
-"splashScreenSetupTitle" = "Setup";
+"splashScreen.setup.title" = "Setup";
 
 // Finish splash screen localization
-"splashScreenSetupFinished" = "Setup finished";
-"splashScreenFinishButton" = "Enter app";
+"splashScreen.finish.setupFinished" = "Setup finished";
+"splashScreen.finish.toApp" = "Enter app";
 
 // Electricity Price page localizations
-"lessThanOneMinuteAgo" = "Updated less than a minute ago";
-"moreThanMMAgoSingular" = "Updated %@ minute ago";
-"moreThanMMAgoPlural" = "Updated %@ minutes ago";
-"updateNewDataFailed" = "Couldn't get new data. Tap to retry.";
-"elecPrice" = "Electricity Price";
-"hourOfDay" = "Hour of day";
+"electricityPage.elecPrice" = "Electricity Price";
+"electricityPage.hourOfDay" = "Hour of day";
 
 // Cheapest Price page localizations
-"cheapestPrice" = "Cheapest Time";
-"emptyFieldError" = "Please fill out this field";
-"wrongInputError" = "This field may only contain numbers and , or .";
-"totalConsumption" = "Total consumption";
-"timeRange" = "Time range";
-"wrongTimeRangeError" = "With this power output and this total consumption a minimum time range of %@ hours and is required.";
-"nextThreeHours" = "Next 3 hours";
+"cheapestPricePage.cheapestPrice" = "Cheapest Time";
+"cheapestPricePage.emptyFieldError" = "Please fill out this field";
+"cheapestPricePage.wrongInputError" = "This field may only contain numbers and , or .";
+"cheapestPricePage.totalConsumption" = "Total consumption";
+"cheapestPricePage.timeRange" = "Time range";
+"cheapestPricePage.wrongTimeRangeError" = "With this power output and this total consumption a minimum time range of %@ hours and is required.";
+"cheapestPricePage.nextThreeHours" = "Next 3 hours";
 
 // Cheapest Price Result page localizations
-"cheapestTimeErrorOccurred" = "An error occurred.\nPlease try again later.";
-"totalTime" = "Total time:";
-"elecCosts" = "Electricity costs";
-"priceWithVatNote" = "(price with VAT, changeable in settings)";
-"priceWithoutVatNote" = "(price without VAT, changeable in settings)";
+"cheapestPriceResultPage.cheapestTimeErrorOccurred" = "An error occurred.\nPlease try again later.";
+"cheapestPriceResultPage.totalTime" = "Total time:";
+"cheapestPriceResultPage.elecCosts" = "Electricity costs";
+"cheapestPriceResultPage.priceWithVatNote" = "(price with VAT, changeable in settings)";
+"cheapestPriceResultPage.priceWithoutVatNote" = "(price without VAT, changeable in settings)";
 
 // Settings Page and Help & Suggestions page localizations
-"settings" = "Settings";
-"notLoadedSettings" = "Couldn't load settings.";
-"region" = "Region";
-"regionToGetPrices" = "Select the region for which you would like to get electricity prices.";
-"priceWithVat" = "Prices with VAT";
-"baseElectricityPriceHint" = "You can find your base electricity price for your region on the aWATTar website.";
-"toAwattarWebsite" = "To the aWATTar website";
-"awattarTariff" = "aWATTar Tariff";
-"awattarTariffSelectionTip" = "It isn't required to be an aWATTar customer to use the app, but if you have the aWATTar HOURLY Tariff, you can select it here. In the app you can search for the cheapest time for an electricity consumption. With this setting the final price you would pay will be displayed.";
-"helpAndSuggestions" = "Help & Suggestions";
-"help" = "Help";
-"suggestion" = "Suggestions";
-"helpByEmail" = "Get help by email";
-"suggestionByEmail" = "Send suggestions by email";
-"version" = "Version";
+"settingsPage.settings" = "Settings";
+"settingsPage.notLoadedSettings" = "Couldn't load settings.";
+"settingsPage.region" = "Region";
+"settingsPage.region.germany" = "🇩🇪 Germany";
+"settingsPage.region.austria" = "🇦🇹 Austria";
+"settingsPage.priceWithVat" = "Prices with VAT";
+"settingsPage.regionToGetPrices" = "Select the region for which you would like to get electricity prices.";
+"settingsPage.baseElectricityPriceHint" = "You can find your base electricity price for your region on the aWATTar website.";
+"settingsPage.toAwattarWebsite" = "To the aWATTar website";
+"settingsPage.awattarTariff" = "aWATTar Tariff";
+"settingsPage.awattarTariffSelectionTip" = "It isn't required to be an aWATTar customer to use the app, but if you have the aWATTar HOURLY Tariff, you can select it here. In the app you can search for the cheapest time for an electricity consumption. With this setting the final price you would pay will be displayed.";
+"settingsPage.helpAndSuggestions" = "Help & Suggestions";
+"settingsPage.help" = "Help";
+"settingsPage.suggestion" = "Suggestions";
+"settingsPage.helpByEmail" = "Get help by email";
+"settingsPage.suggestionByEmail" = "Send suggestions by email";
+"settingsPage.version" = "Version";
 
 // Data download error view
-"tryAgainLater" = "Please try again later";
-"connectToInternet" = "No internet connection";
-"noDataAvailable" = "No data available\nPlease try again later";
+"dataDownloadError.tryAgainLater" = "Please try again later";
+"dataDownloadError.noDataAvailable" = "No data available\nPlease try again later";
 
 // General localizations
-"inKw" = "in kW";
-"inKwh" = "in kWh";
-"centPerKwh" = "Cent per kWh";
-"until" = "until";
-"from" = "from";
-"to" = "to";
-"pm" = "PM";
-"am" = "AM";
-"result" = "Result";
-"loading" = "Loading";
-"price" = "Price";
-"continue" = "Continue";
-"power" = "Power";
-"none" = "None";
-"today" = "Today:";
-"tonight" = "Tonight";
-"retry" = "Retry";
-"termsOfUse" = "Terms Of Use";
-"privacyPolicy" = "Privacy Policy";
-"on" = "on";
+"general.loading" = "Loading";
+"general.continue" = "Continue";
+"general.centPerKwh" = "Cent per kWh";
+"general.inKw" = "in kW";
+"general.inKwh" = "in kWh";
+"general.until" = "until";
+"general.from" = "from";
+"general.to" = "to";
+"general.pm" = "PM";
+"general.am" = "AM";
+"general.result" = "Result";
+"general.power" = "Power";
+"general.none" = "None";
+"general.today" = "Today:";
+"general.tonight" = "Tonight";
+"general.retry" = "Retry";
+"general.termsOfUse" = "Terms Of Use";
+"general.privacyPolicy" = "Privacy Policy";
+"general.on" = "on";
 
 // Total Time Formatter localizations
-"onlyHour"  = "%@h";
-"onlyMinute" = "%@min";
-"hourCommaMinute" =  "%@h, %@min";
+"totalTimeFormatter.onlyHour"  = "%@h";
+"totalTimeFormatter.onlyMinute" = "%@min";
+"totalTimeFormatter.hourCommaMinute" =  "%@h, %@min";
+
+// Update Data Time Formatter localizations
+"updateDataTimeFormatter.lessThanOneMinuteAgo" = "Updated less than a minute ago";
+"updateDataTimeFormatter.moreThanMMAgoSingular" = "Updated %@ minute ago";
+"updateDataTimeFormatter.moreThanMMAgoPlural" = "Updated %@ minutes ago";
+"updateDataTimeFormatter.updateNewDataFailed" = "Couldn't get new data. Tap to retry.";

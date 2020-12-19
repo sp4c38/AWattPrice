@@ -82,10 +82,10 @@ struct ListItem_Previews: PreviewProvider {
             CustomInsetGroupedList {
                 CustomInsetGroupedListItem(
                     header: Text("Test Header"),
-                    footer: Text("d")
+                    footer: Text("Test footer")
                 ) {
                     VStack {
-                        Text("Test Text")
+                        Text("Test Content")
                     }
                 }
             }

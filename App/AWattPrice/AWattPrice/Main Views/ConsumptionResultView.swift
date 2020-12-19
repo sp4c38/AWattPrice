@@ -54,7 +54,7 @@ struct ConsumptionResultView: View {
                         .bold()
                         .font(.title2)
 
-                    Text("until")
+                    Text("general.until")
                         .font(.title2)
 
                     Text(dateFormatter.string(from: Date(timeIntervalSince1970:
@@ -66,7 +66,7 @@ struct ConsumptionResultView: View {
                 Spacer()
                 
                 HStack(alignment: .center) {
-                    Text("totalTime")
+                    Text("cheapestPriceResultPage.totalTime")
                     Text(getTotalTime())
                         .bold()
                 }
@@ -74,7 +74,7 @@ struct ConsumptionResultView: View {
                 Spacer()
                 
                 HStack(alignment: .center) {
-                    Text("today")
+                    Text("general.today")
                     Text(todayDateFormatter.string(from: Date()))
                         .bold()
                         .foregroundColor(Color.red)
@@ -87,17 +87,17 @@ struct ConsumptionResultView: View {
                         Spacer()
                         
                         VStack(alignment: .center, spacing: 5) {
-                            Text("elecCosts")
+                            Text("cheapestPriceResultPage.elecCosts")
                             
                             Text(hourlyCostString)
                                 .bold()
                                 .font(.title3)
                             
                             if currentSetting.setting!.pricesWithTaxIncluded {
-                                Text("priceWithVatNote")
+                                Text("cheapestPriceResultPage.priceWithVatNote")
                                     .font(.caption)
                             } else {
-                                Text("priceWithoutVatNote")
+                                Text("cheapestPriceResultPage.priceWithoutVatNote")
                                     .font(.caption)
                             }
                         }
@@ -120,7 +120,7 @@ struct ConsumptionResultView: View {
                 Spacer()
                 Spacer()
             } else if cheapestHourManager.errorOccurredFindingCheapestHours == true {
-                Text("cheapestTimeErrorOccurred")
+                Text("cheapestPriceResultPage.cheapestTimeErrorOccurred")
                     .multilineTextAlignment(.center)
                     .font(.callout)
             } else {
@@ -145,7 +145,7 @@ struct ConsumptionResultView: View {
                 cheapestHourManager.cheapestHoursForUsage!.calculateHourlyPrice(currentSetting: currentSetting)
             }
         }
-        .navigationTitle("result")
+        .navigationTitle("general.result")
     }
 }
 

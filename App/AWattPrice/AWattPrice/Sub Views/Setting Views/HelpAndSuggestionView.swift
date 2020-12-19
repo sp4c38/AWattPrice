@@ -33,7 +33,7 @@ struct HelpView: View {
     
     var body: some View {
         VStack(spacing: 30) {
-            Text("help")
+            Text("settingsPage.help")
                 .bold()
                 .font(.title)
             
@@ -50,7 +50,7 @@ struct HelpView: View {
                     Image(systemName: "envelope")
                         .font(.system(size: 20, weight: .semibold))
                     
-                    Text("helpByEmail")
+                    Text("settingsPage.helpByEmail")
                         .font(.title3)
                         .bold()
                 }
@@ -75,7 +75,7 @@ struct SuggestionView: View {
     
     var body: some View {
         VStack(spacing: 30) {
-            Text("suggestion")
+            Text("settingsPage.suggestion")
                 .bold()
                 .font(.title)
             
@@ -94,7 +94,7 @@ struct SuggestionView: View {
                         .renderingMode(.template)
                         .frame(width: 25, height: 25)
                     
-                    Text("suggestionByEmail")
+                    Text("settingsPage.suggestionByEmail")
                         .font(.title3)
                         .bold()
                 }
@@ -120,7 +120,7 @@ struct HelpAndSuggestionView: View {
             HelpView()
             SuggestionView()
         }
-        .navigationTitle("helpAndSuggestions")
+        .navigationTitle("settingsPage.helpAndSuggestions")
     }
 }
 
@@ -140,7 +140,7 @@ struct GetHelpView: View {
                     Image(systemName: "questionmark.circle")
                         .font(.title2)
                     
-                    Text("helpAndSuggestions")
+                    Text("settingsPage.helpAndSuggestions")
                         .font(.subheadline)
                     
                     Spacer()

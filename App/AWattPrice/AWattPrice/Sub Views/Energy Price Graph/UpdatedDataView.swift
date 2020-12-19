@@ -30,7 +30,7 @@ struct UpdatedDataView: View {
     var body: some View {
         HStack(spacing: 10) {
             if awattarData.currentlyUpdatingData {
-                Text("loading")
+                Text("general.loading")
                     .foregroundColor(Color.blue)
                     .transition(.opacity)
                 
@@ -43,7 +43,7 @@ struct UpdatedDataView: View {
             } else {
                 VStack(alignment: .leading, spacing: 4) {
                     if awattarData.dataRetrievalError == true {
-                        Text("updateNewDataFailed")
+                        Text("updateDataTimeFormatter.updateNewDataFailed")
                             .foregroundColor(Color.red)
                     } else {
                         if awattarData.dateDataLastUpdated != nil {

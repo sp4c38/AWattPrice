@@ -215,7 +215,7 @@ struct ConsumptionClockView: View {
             HStack(spacing: 10) {
                 VStack(spacing: 0) {
                     if endDateString == nil {
-                        Text("on")
+                        Text("general.on")
                             .padding(.bottom, 3)
                     }
                     
@@ -232,7 +232,7 @@ struct ConsumptionClockView: View {
                 }
 
                 if endDateString != nil {
-                    Text("to")
+                    Text("general.to")
 
                     HStack(spacing: 7) {
                         Text(endDateString!.0)

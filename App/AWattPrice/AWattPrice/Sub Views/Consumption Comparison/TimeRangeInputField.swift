@@ -31,7 +31,7 @@ struct TimeRangeInputField: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
-                Text("timeRange")
+                Text("cheapestPricePage.timeRange")
                     .font(.title3)
                     .bold()
                 Spacer()
@@ -39,7 +39,7 @@ struct TimeRangeInputField: View {
             
             VStack(alignment: .leading, spacing: 10) {
                 HStack {
-                    Text("from")
+                    Text("general.from")
                         .bold()
                         .font(.callout)
                         .foregroundColor(colorScheme == .light ? Color(hue: 0.0000, saturation: 0.0000, brightness: 0.4314) : Color(hue: 0.0000, saturation: 0.0000, brightness: 0.8311))
@@ -66,7 +66,7 @@ struct TimeRangeInputField: View {
                 }
  
                 HStack {
-                    Text("to")
+                    Text("general.to")
                         .bold()
                         .font(.callout)
                         .foregroundColor(colorScheme == .light ? Color(hue: 0.0000, saturation: 0.0000, brightness: 0.4314) : Color(hue: 0.0000, saturation: 0.0000, brightness: 0.8311))
@@ -95,7 +95,7 @@ struct TimeRangeInputField: View {
                 if errorValues.contains(5) {
                     let minTimeRangeNeeded = (cheapestHourManager.timeOfUsage * 100).rounded(.up) / 100
                     
-                    Text(String(format: "wrongTimeRangeError".localized(), timeIntervalFormatter.string(from: NSNumber(value: minTimeRangeNeeded))!))
+                    Text(String(format: "cheapestPricePage.wrongTimeRangeError".localized(), timeIntervalFormatter.string(from: NSNumber(value: minTimeRangeNeeded))!))
                         .font(.caption)
                         .foregroundColor(Color.red)
                         .fixedSize(horizontal: false, vertical: true)
@@ -107,7 +107,7 @@ struct TimeRangeInputField: View {
                 Button(action: {
                     cheapestHourManager.setTimeIntervalThisNight(energyData: awattarData.energyData!)
                 }) {
-                    Text("tonight")
+                    Text("general.tonight")
                         .bold()
                 }
                 .buttonStyle(TimeRangeButtonStyle())
@@ -115,7 +115,7 @@ struct TimeRangeInputField: View {
                 Button(action: {
                     cheapestHourManager.setTimeInterval(forNextHourAmount: 3, energyData: awattarData.energyData!)
                 }) {
-                    Text("nextThreeHours")
+                    Text("cheapestPricePage.nextThreeHours")
                         .bold()
                 }
                 .buttonStyle(TimeRangeButtonStyle())

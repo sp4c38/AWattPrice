@@ -151,16 +151,16 @@ struct SplashScreenFeaturesAndConsentView: View {
                 .hidden()
             
             VStack(spacing: 30) {
-                AppFeatureView(title: "splashScreenViewPrices", subTitle: "splashScreenViewPricesInfo", imageName: "magnifyingglass")
+                AppFeatureView(title: "splashScreen.featuresAndConsent.viewPrices", subTitle: "splashScreen.featuresAndConsent.viewPrices.info", imageName: "magnifyingglass")
 
-                AppFeatureView(title: "splashScreenComparePrices", subTitle: "splashScreenComparePricesInfo", imageName: "arrow.left.arrow.right")
+                AppFeatureView(title: "splashScreen.featuresAndConsent.comparePrices", subTitle: "splashScreen.featuresAndConsent.comparePrices.info", imageName: "arrow.left.arrow.right")
             }
 
             Spacer()
             
             AgreementConsentView(
-                agreeText: "agreeTermsOfUse",
-                seeAgreementText: "seeTermsOfUse",
+                agreeText: "splashScreen.featuresAndConsent.termsOfUse.agree",
+                seeAgreementText: "splashScreen.featuresAndConsent.termsOfUse.see",
                 agreementLinks: ("https://awattprice.space8.me/terms_of_use/german.html",
                                  "https://awattprice.space8.me/terms_of_use/english.html"),
                 isChecked: $termsOfUseIsChecked,
@@ -168,8 +168,8 @@ struct SplashScreenFeaturesAndConsentView: View {
                 .padding(.bottom, 25)
             
             AgreementConsentView(
-                agreeText: "agreePrivacyPolicy",
-                seeAgreementText: "seePrivacyPolicy",
+                agreeText: "splashScreen.featuresAndConsent.privacyPolicy.agree",
+                seeAgreementText: "splashScreen.featuresAndConsent.privacyPolicy.see",
                 agreementLinks: ("https://awattprice.space8.me/privacy_policy/german.html",
                                  "https://awattprice.space8.me/privacy_policy/english.html"),
                 isChecked: $privacyPolicyIsChecked,
@@ -192,14 +192,14 @@ struct SplashScreenFeaturesAndConsentView: View {
                     }
                 }
             }) {
-                Text("continue")
+                Text("general.continue")
             }
             .buttonStyle(ContinueButtonStyle())
         }
         .padding(.top, 20)
         .padding([.leading, .trailing], 20)
         .padding(.bottom, 16)
-        .navigationBarTitle("features")
+        .navigationBarTitle("splashScreen.featuresAndConsent.features")
     }
 }
 

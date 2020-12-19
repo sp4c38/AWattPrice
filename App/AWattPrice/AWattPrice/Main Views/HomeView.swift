@@ -73,7 +73,7 @@ struct HomeView: View {
                     DataDownloadAndError()
                 }
             }
-            .navigationTitle("elecPrice")
+            .navigationTitle("electricityPage.elecPrice")
             .navigationBarTitleDisplayMode(.large)
             .navigationBarItems(trailing:
                 Button(action: { showSettingsPage.toggle() }) {

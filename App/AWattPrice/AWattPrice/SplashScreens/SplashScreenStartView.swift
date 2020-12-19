@@ -23,7 +23,7 @@ struct SplashScreenStartView: View {
                         .frame(width: 220, height: 220)
 
                     VStack(spacing: 5) {
-                        Text("splashScreenWelcome")
+                        Text("splashScreen.start.welcome")
                             .font(.system(size: 40, weight: .black))
                         Text("AWattPrice App")
                             .foregroundColor(Color(hue: 0.5648, saturation: 1.0000, brightness: 0.6235))
@@ -38,12 +38,12 @@ struct SplashScreenStartView: View {
                     .hidden()
                 
                 NotAffiliatedView(showGrayedOut: false)
-                    .padding(.bottom, 10)
+                    .padding(.bottom, 20)
                 
                 Button(action: {
                     redirectToNextSplashScreen = 1
                 }) {
-                    Text("continue")
+                    Text("general.continue")
                 }
                 .buttonStyle(ContinueButtonStyle())
             }

@@ -18,14 +18,14 @@ struct RegionAndVatSelection: View {
     
     var body: some View {
         CustomInsetGroupedListItem(
-            header: Text("region"),
-            footer: Text("regionToGetPrices")
+            header: Text("settingsPage.region"),
+            footer: Text("settingsPage.regionToGetPrices")
         ) {
             VStack(alignment: .leading, spacing: 20) {
                 Picker(selection: $selectedRegion.animation(), label: Text("")) {
-                    Text("🇩🇪 Germany")
+                    Text("settingsPage.region.germany")
                         .tag(0)
-                    Text("🇦🇹 Austria")
+                    Text("settingsPage.region.austria")
                         .tag(1)
                 }
                 .pickerStyle(SegmentedPickerStyle())
@@ -46,7 +46,7 @@ struct RegionAndVatSelection: View {
                 
                 if selectedRegion == 0 {
                     HStack(spacing: 10) {
-                        Text("priceWithVat")
+                        Text("settingsPage.priceWithVat")
                             .font(.subheadline)
                             .fixedSize(horizontal: false, vertical: true)
                         

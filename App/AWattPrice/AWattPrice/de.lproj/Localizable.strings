@@ -7,96 +7,98 @@
 */
 
 // Welcome Splash Screen localizations
-"splashScreenWelcome" = "Willkommen zur";
-"splashScreenViewPrices" = "Preise ansehen";
-"splashScreenViewPricesInfo" = "Sehen Sie sich die aktuellen Strompreise für jede Stunde des Tages an.";
-"splashScreenComparePrices" = "Preise vergleichen";
-"splashScreenComparePricesInfo" = "Finden Sie die preislich günstigsten Stunden für Ihren Stromverbrauch.";
+"splashScreen.start.welcome" = "Willkommen zur";
+"splashScreen.start.notAffiliatedNote" = "Bitte beachten Sie, dass AWattPrice eine unabhängige App ist und in keinster Weise mit der Firma aWATTar in Verbindung steht.";
 
 // Features and Consent Splash Screen localizations
-"features" = "Funktionen";
-"agreeTermsOfUse" = "Ich stimme den Nutzungsbedingungen zu.";
-"seeTermsOfUse" = "Zu den Nutzungsbedingungen";
-"notAffliatedNote" = "Bitte beachten Sie, dass AWattPrice eine unabhängige App ist und in keinster Weise mit der Firma aWATTar in Verbindung steht.";
-"agreePrivacyPolicy" = "Ich stimme der Datenschutzrichtlinie zu.";
-"seePrivacyPolicy" = "Zur Datenschutzrichtlinie";
+"splashScreen.featuresAndConsent.features" = "Funktionen";
+"splashScreen.featuresAndConsent.viewPrices" = "Preise ansehen";
+"splashScreen.featuresAndConsent.viewPrices.info" = "Sehen Sie sich die aktuellen Strompreise für jede Stunde des Tages an.";
+"splashScreen.featuresAndConsent.comparePrices" = "Preise vergleichen";
+"splashScreen.featuresAndConsent.comparePrices.info" = "Finden Sie die preislich günstigsten Stunden für Ihren Stromverbrauch.";
+"splashScreen.featuresAndConsent.termsOfUse.agree" = "Ich stimme den Nutzungsbedingungen zu.";
+"splashScreen.featuresAndConsent.termsOfUse.see" = "Zu den Nutzungsbedingungen";
+"splashScreen.featuresAndConsent.privacyPolicy.agree" = "Ich stimme der Datenschutzrichtlinie zu.";
+"splashScreen.featuresAndConsent.privacyPolicy.see" = "Zur Datenschutzrichtlinie";
 
 // Setup splash screen localization
-"splashScreenSetupTitle" = "Einrichtung";
+"splashScreen.setup.title" = "Einrichtung";
 
 // Finish splash screen localization
-"splashScreenSetupFinished" = "Einrichtung abgeschlossen";
-"splashScreenFinishButton" = "Zur App";
+"splashScreen.finish.setupFinished" = "Einrichtung abgeschlossen";
+"splashScreen.finish.toApp" = "Zur App";
 
 // Electricity Price page localizations
-"lessThanOneMinuteAgo" = "Vor weniger als einer Minute aktualisiert";
-"moreThanMMAgoSingular" = "Vor %@ Minute aktualisiert";
-"moreThanMMAgoPlural" = "Vor %@ Minuten aktualisiert";
-"updateNewDataFailed" = "Neue Daten konnten nicht heruntergeladen werden. Tippe, um erneut zu versuchen.";
-"elecPrice" = "Strompreis";
-"hourOfDay" = "Uhrzeit";
+"electricityPage.elecPrice" = "Strompreis";
+"electricityPage.hourOfDay" = "Uhrzeit";
 
 // Cheapest Price page localizations
-"cheapestPrice" = "Günstigste Zeit";
-"emptyFieldError" = "Bitte füllen Sie dieses Feld aus";
-"wrongInputError" = "Dieses Feld darf nur Zahlen und , oder . enthalten.";
-"totalConsumption" = "Gesamtverbrauch";
-"timeRange" = "Zeitfenster";
-"wrongTimeRangeError" = "Bei dieser Leistung und diesem Gesamtverbrauch ist ein Mindestzeitfenster von %@ Stunden erforderlich.";
-"nextThreeHours" = "Nächste 3 Stunden";
+"cheapestPricePage.cheapestPrice" = "Günstigste Zeit";
+"cheapestPricePage.emptyFieldError" = "Bitte füllen Sie dieses Feld aus";
+"cheapestPricePage.wrongInputError" = "Dieses Feld darf nur Zahlen und , oder . enthalten.";
+"cheapestPricePage.totalConsumption" = "Gesamtverbrauch";
+"cheapestPricePage.timeRange" = "Zeitfenster";
+"cheapestPricePage.wrongTimeRangeError" = "Bei dieser Leistung und diesem Gesamtverbrauch ist ein Mindestzeitfenster von %@ Stunden erforderlich.";
+"cheapestPricePage.nextThreeHours" = "Nächste 3 Stunden";
 
 // Cheapest Price Result page localizations
-"cheapestTimeErrorOccurred" = "Es ist ein Fehler aufgetreten.\nBitte versuchen Sie es später noch einmal.";
-"totalTime" = "Gesamtdauer:";
-"elecCosts" = "Stromkosten";
-"priceWithVatNote" = "(Preis mit MwSt., änderbar in Einstellungen)";
-"priceWithoutVatNote" = "(Preis ohne MwSt., änderbar in Einstellungen)";
+"cheapestPriceResultPage.cheapestTimeErrorOccurred" = "Es ist ein Fehler aufgetreten.\nBitte versuchen Sie es später noch einmal.";
+"cheapestPriceResultPage.totalTime" = "Gesamtdauer:";
+"cheapestPriceResultPage.elecCosts" = "Stromkosten";
+"cheapestPriceResultPage.priceWithVatNote" = "(Preis mit MwSt., änderbar in Einstellungen)";
+"cheapestPriceResultPage.priceWithoutVatNote" = "(Preis ohne MwSt., änderbar in Einstellungen)";
 
 // Settings Page and Help & Suggestions page localizations
-"settings" = "Einstellungen";
-"notLoadedSettings" = "Einstellungen konnten nicht geladen werden.";
-"region" = "Region";
-"regionToGetPrices" = "Wählen Sie die Region aus, für die Sie Strompreise erhalten möchten.";
-"priceWithVat" = "Preise mit MwSt.";
-"baseElectricityPriceHint" = "Sie können Ihren Grundarbeitspreis für Ihre Region auf der aWATTar Webseite finden.";
-"toAwattarWebsite" = "Zur aWATTar Webseite";
-"awattarTariff" = "Awattar Tarif";
-"awattarTariffSelectionTip" = "Es ist nicht erforderlich, aWATTar-Kunde zu sein, um die App nutzen zu können. Aber wenn Sie den aWATTar HOURLY Tarif besitzen, können Sie diesen hier auswählen. In der App können sie nach den billigsten Zeitpunkt für einen Stromverbrauch suchen. Mit dieser Einstellung wird Ihnen hierbei der Endpreis angezeigt, den Sie bezahlen würden.";
-"helpAndSuggestions" = "Hilfe & Vorschläge";
-"version" = "Version";
-"help" = "Hilfe";
-"suggestion" = "Vorschläge";
-"helpByEmail" = "Hilfe per E-Mail";
-"suggestionByEmail" = "Vorschläge per E-Mail";
+"settingsPage.settings" = "Einstellungen";
+"settingsPage.notLoadedSettings" = "Einstellungen konnten nicht geladen werden.";
+"settingsPage.region" = "Region";
+"settingsPage.region.germany" = "🇩🇪 Deutschland";
+"settingsPage.region.austria" = "🇦🇹 Österreich";
+"settingsPage.priceWithVat" = "Preise mit MwSt.";
+"settingsPage.regionToGetPrices" = "Wählen Sie die Region aus, für die Sie Strompreise erhalten möchten.";
+"settingsPage.baseElectricityPriceHint" = "Sie können Ihren Grundarbeitspreis für Ihre Region auf der aWATTar Webseite finden.";
+"settingsPage.toAwattarWebsite" = "Zur aWATTar Webseite";
+"settingsPage.awattarTariff" = "Awattar Tarif";
+"settingsPage.awattarTariffSelectionTip" = "Es ist nicht erforderlich, aWATTar-Kunde zu sein, um die App nutzen zu können. Aber wenn Sie den aWATTar HOURLY Tarif besitzen, können Sie diesen hier auswählen. In der App können sie nach den billigsten Zeitpunkt für einen Stromverbrauch suchen. Mit dieser Einstellung wird Ihnen hierbei der Endpreis angezeigt, den Sie bezahlen würden.";
+"settingsPage.helpAndSuggestions" = "Hilfe & Vorschläge";
+"settingsPage.version" = "Version";
+"settingsPage.help" = "Hilfe";
+"settingsPage.suggestion" = "Vorschläge";
+"settingsPage.helpByEmail" = "Hilfe per E-Mail";
+"settingsPage.suggestionByEmail" = "Vorschläge per E-Mail";
 
 // Data download error view
-"tryAgainLater" = "Bitte versuchen Sie es\nspäter noch einmal";
-"connectToInternet" = "Keine Internetverbindung";
-"noDataAvailable" = "Keine Daten verfügbar\nBitte versuchen Sie es später erneut";
+"dataDownloadError.tryAgainLater" = "Bitte versuchen Sie es\nspäter noch einmal";
+"dataDownloadError.noDataAvailable" = "Keine Daten verfügbar\nBitte versuchen Sie es später erneut";
 
 // General localizations
-"inKw" = "in kW";
-"inKwh" = "in kWh";
-"centPerKwh" = "Cent pro kWh";
-"until" = "bis";
-"from" = "von";
-"to" = "bis";
-"pm" = "Nachm.";
-"am" = "Vorm.";
-"result" = "Ergebnis";
-"loading" = "Lädt";
-"price" = "Preise";
-"continue" = "Weiter";
-"power" = "Leistung";
-"none" = "Keiner";
-"today" = "Heute:";
-"tonight" = "Heute Nacht";
-"retry" = "Erneut versuchen";
-"termsOfUse" = "Nutzungsbedingungen";
-"privacyPolicy" = "Datenschutzrichtlinie";
-"on" = "am";
+"general.loading" = "Lädt";
+"general.continue" = "Weiter";
+"general.centPerKwh" = "Cent pro kWh";
+"general.inKw" = "in kW";
+"general.inKwh" = "in kWh";
+"general.until" = "bis";
+"general.from" = "von";
+"general.to" = "bis";
+"general.pm" = "Nachm.";
+"general.am" = "Vorm.";
+"general.result" = "Ergebnis";
+"general.power" = "Leistung";
+"general.none" = "Keiner";
+"general.today" = "Heute:";
+"general.tonight" = "Heute Nacht";
+"general.retry" = "Erneut versuchen";
+"general.termsOfUse" = "Nutzungsbedingungen";
+"general.privacyPolicy" = "Datenschutzrichtlinie";
+"general.on" = "am";
 
 // Total Time Formatter localizations
-"onlyHour"  = "%@h";
-"onlyMinute" = "%@min";
-"hourCommaMinute" =  "%@h, %@min";
+"totalTimeFormatter.onlyHour"  = "%@h";
+"totalTimeFormatter.onlyMinute" = "%@min";
+"totalTimeFormatter.hourCommaMinute" =  "%@h, %@min";
+
+// Updare Date Time Formatter localizations
+"updateDataTimeFormatter.lessThanOneMinuteAgo" = "Vor weniger als einer Minute aktualisiert";
+"updateDataTimeFormatter.moreThanMMAgoSingular" = "Vor %@ Minute aktualisiert";
+"updateDataTimeFormatter.moreThanMMAgoPlural" = "Vor %@ Minuten aktualisiert";
+"updateDataTimeFormatter.updateNewDataFailed" = "Neue Daten konnten nicht heruntergeladen werden. Tippe, um erneut zu versuchen.";

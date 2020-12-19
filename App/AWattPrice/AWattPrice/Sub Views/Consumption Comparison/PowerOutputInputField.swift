@@ -43,14 +43,14 @@ struct PowerOutputInputField: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
-                Text("power")
+                Text("general.power")
                     .font(.title3)
                     .bold()
                 Spacer()
             }
 
             HStack {
-                DecimalTextFieldWithDoneButton(text: $cheapestHourManager.powerOutputString.animation(), placeholder: "inKw".localized())
+                DecimalTextFieldWithDoneButton(text: $cheapestHourManager.powerOutputString.animation(), placeholder: "general.inKw".localized())
                     .fixedSize(horizontal: false, vertical: true)
                     .padding(.trailing, 5)
                     .ifTrue(firstAppear == false) { content in
@@ -83,13 +83,13 @@ struct PowerOutputInputField: View {
             )
             
             if emptyFieldError {
-                Text("emptyFieldError")
+                Text("cheapestPricePage.emptyFieldError")
                     .font(.caption)
                     .foregroundColor(Color.red)
             }
             
             if wrongInputError {
-                Text("wrongInputError")
+                Text("cheapestPricePage.wrongInputError")
                     .font(.caption)
                     .foregroundColor(Color.red)
             }

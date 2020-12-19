@@ -16,7 +16,7 @@ struct NotAffiliatedView: View {
                 .font(.headline)
                 .foregroundColor(Color.blue)
             
-            Text("notAffliatedNote")
+            Text("splashScreen.start.notAffiliatedNote")
                 .font(.subheadline)
                 .ifTrue(showGrayedOut == true) { content in
                     content

@@ -76,7 +76,7 @@ struct ConsumptionComparisonView: View {
                                 }
                             }) {
                                 HStack {
-                                    Text("result")
+                                    Text("general.result")
                                     Image(systemName: "chevron.right")
                                         .foregroundColor(Color.white)
                                         .padding(.leading, 10)
@@ -91,7 +91,7 @@ struct ConsumptionComparisonView: View {
                     DataDownloadAndError()
                 }
             }
-            .navigationTitle("cheapestPrice")
+            .navigationTitle("cheapestPricePage.cheapestPrice")
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .animation(nil)

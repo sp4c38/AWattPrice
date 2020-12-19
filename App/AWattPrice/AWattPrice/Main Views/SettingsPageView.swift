@@ -25,12 +25,12 @@ struct SettingsPageView: View {
                         GetHelpView()
                         
                         AgreementSettingView(agreementIconName: "doc.text",
-                                             agreementName: "termsOfUse",
+                                             agreementName: "general.termsOfUse",
                                              agreementLinks: ("https://awattprice.space8.me/terms_of_use/german.html",
                                                               "https://awattprice.space8.me/terms_of_use/english.html"))
                             
                         AgreementSettingView(agreementIconName: "hand.raised",
-                                             agreementName: "privacyPolicy",
+                                             agreementName: "general.privacyPolicy",
                                              agreementLinks: ("https://awattprice.space8.me/privacy_policy/german.html",
                                                               "https://awattprice.space8.me/privacy_policy/english.html"))
 
@@ -40,10 +40,10 @@ struct SettingsPageView: View {
                         AppVersionView()
                     }
                 } else {
-                    Text("notLoadedSettings")
+                    Text("settingsPage.notLoadedSettings")
                 }
             }
-            .navigationTitle("settings")
+            .navigationTitle("settingsPage.settings")
             .navigationViewStyle(StackNavigationViewStyle())
             .navigationBarItems(trailing: DoneNavigationBarItem(presentationMode: presentationMode))
         }

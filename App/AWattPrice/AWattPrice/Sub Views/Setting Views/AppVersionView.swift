@@ -27,7 +27,7 @@ struct AppVersionView: View {
                     if let currentVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String {
                         if let currentBuild = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String {
                             
-                            Text("\("version".localized()) \(currentVersion) (\(currentBuild))")
+                            Text("\("settingsPage.version".localized()) \(currentVersion) (\(currentBuild))")
                                 .font(.footnote)
                         }
                     }

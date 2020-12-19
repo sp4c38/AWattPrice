@@ -13,7 +13,7 @@ class UpdatedDataTimeFormatter {
         let timeIntervalBetween = startDate.timeIntervalSince(endDate)
         
         if timeIntervalBetween < 60 {
-            return "lessThanOneMinuteAgo".localized()
+            return "updateDataTimeFormatter.lessThanOneMinuteAgo".localized()
         } else {
             // More than one minute ago
             let numberFormatter = NumberFormatter()
@@ -23,9 +23,9 @@ class UpdatedDataTimeFormatter {
             
             var localizableString = ""
             if timeIntervalBetween < 120 {
-                localizableString = "moreThanMMAgoSingular"
+                localizableString = "updateDataTimeFormatter.moreThanMMAgoSingular"
             } else {
-                localizableString = "moreThanMMAgoPlural"
+                localizableString = "updateDataTimeFormatter.moreThanMMAgoPlural"
             }
             
             return String(format: localizableString.localized(), minutesBetweenString!)

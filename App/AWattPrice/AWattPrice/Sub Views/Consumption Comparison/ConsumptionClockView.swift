@@ -38,19 +38,15 @@ struct ConsumptionClockView: View {
             // Subtract 90 degrees to make the cheapest hour indicator fit with the clocks alignment
             var startDegree = Int(30 * (startHour + startMinuteFraction)) - 90
             var endDegree = Int(30 * (endHour + endMinuteFraction)) - 90
-
-            print(startDegree)
-            print(endDegree)
             
             if (startHour + startMinuteFraction) > 12 {
                 // Change to PM if in PM section
                 timeIsAM = false
-                
-                startDegree -= 360
             }
             
-            if (endHour + endMinuteFraction) > 12 {
-                endDegree -= 360
+            if (endTimeLastItem.timeIntervalSince(startTimeFirstItem) / 60 / 60) >= 12 {
+                startDegree = -90 - 10
+                endDegree = 360 + 10
             }
             
             // Add or subtract some degrees to compensate the overlap which occurs because of the lineCap applied to the cheapest hour indicator

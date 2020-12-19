@@ -47,6 +47,7 @@
 
 // Cheapest Price Result page localizations
 "cheapestTimeErrorOccurred" = "Es ist ein Fehler aufgetreten.\nBitte versuchen Sie es später noch einmal.";
+"totalTime" = "Gesamtdauer:";
 "elecCosts" = "Stromkosten";
 "priceWithVatNote" = "(Preis mit MwSt., änderbar in Einstellungen)";
 "priceWithoutVatNote" = "(Preis ohne MwSt., änderbar in Einstellungen)";
@@ -94,3 +95,4 @@
 "termsOfUse" = "Nutzungsbedingungen";
 "privacyPolicy" = "Datenschutzrichtlinie";
 "on" = "am";
+"hourCommaMinute" =  "%@h, %@min";

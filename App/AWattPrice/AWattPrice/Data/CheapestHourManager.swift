@@ -183,7 +183,7 @@ class CheapestHourManager: ObservableObject {
                 }
             }
         }
-        print(allPairs)
+
         return allPairs
     }
     
@@ -339,6 +339,7 @@ class CheapestHourManager: ObservableObject {
             }
             
             DispatchQueue.main.async {
+                print(allPairs[cheapestHourPairIndex!].associatedPricePoints.count)
                 if cheapestHourPairIndex != nil {
                     self.cheapestHoursForUsage = allPairs[cheapestHourPairIndex!]
                 } else {

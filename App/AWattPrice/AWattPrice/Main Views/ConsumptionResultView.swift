@@ -35,6 +35,17 @@ struct ConsumptionResultView: View {
         currencyFormatter.minimumFractionDigits = 2
     }
     
+    func getTotalTime() -> String {
+        let numberFormatter = NumberFormatter()
+        numberFormatter.numberStyle = .none
+        let hours = cheapestHourManager.timeOfUsage.rounded(.down)
+        let minutes = 60 * (cheapestHourManager.timeOfUsage - hours)
+        let hoursString = numberFormatter.string(for: hours) ?? "0"
+        let minutesString = numberFormatter.string(for: minutes) ?? "0"
+        let resultString = String(format: "hourCommaMinute".localized(), hoursString, minutesString)
+        return resultString
+    }
+    
     var body: some View {
         VStack(alignment: .center, spacing: 0) {
             if cheapestHourManager.cheapestHoursForUsage != nil {
@@ -43,26 +54,34 @@ struct ConsumptionResultView: View {
                     Text(dateFormatter.string(from: Date(timeIntervalSince1970:
                                                             TimeInterval(cheapestHourManager.cheapestHoursForUsage!.associatedPricePoints[0].startTimestamp))))
                         .bold()
+                        .font(.title2)
 
                     Text("until")
+                        .font(.title2)
 
                     Text(dateFormatter.string(from: Date(timeIntervalSince1970:
                                                             TimeInterval(cheapestHourManager.cheapestHoursForUsage!.associatedPricePoints[cheapestHourManager.cheapestHoursForUsage!.associatedPricePoints.count - 1].endTimestamp))))
                         .bold()
+                        .font(.title2)
                 }
-                .font(.title2)
-                .padding([.leading, .trailing], 16)
                 
                 Spacer()
                 
-                HStack {
+                HStack(alignment: .center) {
+                    Text("totalTime")
+                    Text(getTotalTime())
+                        .bold()
+                }
+                
+                Spacer()
+                
+                HStack(alignment: .center) {
                     Text("today")
                     Text(todayDateFormatter.string(from: Date()))
                         .bold()
                         .foregroundColor(Color.red)
                 }
                 .font(.callout)
-                .padding([.leading, .trailing], 16)
                 
                 // The final price the user would need to pay
                 if cheapestHourManager.cheapestHoursForUsage!.hourlyEnergyCosts != nil {
@@ -99,8 +118,7 @@ struct ConsumptionResultView: View {
                         .padding([.leading, .trailing], 20)
                         .frame(width: 330, height: 330)
                 }
-                .padding([.leading, .trailing], 16)
-                
+
                 Spacer()
                 Spacer()
             } else if cheapestHourManager.errorOccurredFindingCheapestHours == true {
@@ -113,6 +131,8 @@ struct ConsumptionResultView: View {
                     .progressViewStyle(CircularProgressViewStyle())
             }
         }
+        .padding([.leading, .trailing], 16)
+        .padding(.top, 10)
         .onAppear {
             cheapestHourManager.calculateCheapestHours(energyData: awattarData.energyData!, currentSetting: currentSetting)
         }

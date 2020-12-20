@@ -17,6 +17,8 @@ struct SplashScreenStartView: View {
     var body: some View {
         NavigationView {
             VStack {
+                Spacer()
+                
                 VStack(spacing: 30) {
                     Image("BigAppIcon")
                         .resizable()
@@ -31,6 +33,7 @@ struct SplashScreenStartView: View {
                     }
                 }
 
+                Spacer()
                 Spacer()
                 
                 NavigationLink("", destination: SplashScreenFeaturesAndConsentView(), tag: 1, selection: $redirectToNextSplashScreen)
@@ -47,9 +50,9 @@ struct SplashScreenStartView: View {
                 }
                 .buttonStyle(ContinueButtonStyle())
             }
-            .padding(.top, 40)
             .padding([.leading, .trailing], 20)
             .padding(.bottom, 16)
+            .navigationBarHidden(true)
         }
         .navigationViewStyle(StackNavigationViewStyle())
     }

@@ -159,6 +159,7 @@ struct EnergyPriceSingleBar: View {
 
         ZStack(alignment: Alignment(horizontal: .trailing, vertical: .center)) {
             // Draw the bar shape
+            
             if hourDataPoint.marketprice > 0 {
                 BarShape(isSelected: (isSelected == 1 ? true : false), startWidth: maximalNegativePriceBarWidth, startHeight: startHeight, widthOfBar: positivePriceBarWidth + currentDividerLineWidth, heightOfBar: height, lookToSide: .right)
                     .fill(LinearGradient(gradient: Gradient(colors: [Color(hue: 0.0849, saturation: 0.6797, brightness: 0.9059), Color(hue: 0.9978, saturation: 0.7163, brightness: 0.8431)]), startPoint: .leading, endPoint: .trailing))

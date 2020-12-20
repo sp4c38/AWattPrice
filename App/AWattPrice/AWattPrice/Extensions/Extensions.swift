@@ -106,7 +106,9 @@ extension Double {
         numberFormatter.maximumFractionDigits = 2
         numberFormatter.minimumFractionDigits = 2
     
-        if let result = numberFormatter.string(from: NSNumber(value: self)) {
+        if ((self * 100).rounded() / 100) == 0 {
+            return ""
+        } else if let result = numberFormatter.string(from: NSNumber(value: self)) {
             return result
         } else {
             return nil

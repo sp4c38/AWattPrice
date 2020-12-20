@@ -36,11 +36,13 @@ struct ConsumptionResultView: View {
     }
     
     func getTotalTime() -> String {
-        print(TimeInterval(cheapestHourManager.cheapestHoursForUsage!.associatedPricePoints[cheapestHourManager.cheapestHoursForUsage!.associatedPricePoints.count - 1].endTimestamp))
-        print(TimeInterval(cheapestHourManager.cheapestHoursForUsage!.associatedPricePoints[0].startTimestamp))
-        
-        let hours = cheapestHourManager.timeOfUsage.rounded(.down)
-        let minutes = 60 * (cheapestHourManager.timeOfUsage - hours)
+        let firstItemStart = Date(timeIntervalSince1970: TimeInterval(cheapestHourManager.cheapestHoursForUsage!.associatedPricePoints[0].startTimestamp))
+        let maxPointIndex = cheapestHourManager.cheapestHoursForUsage!.associatedPricePoints.count - 1
+        let lastItemEnd = Date(timeIntervalSince1970: TimeInterval(cheapestHourManager.cheapestHoursForUsage!.associatedPricePoints[maxPointIndex].endTimestamp))
+        let interval = lastItemEnd.timeIntervalSince(firstItemStart) / 60 / 60
+
+        let hours = interval.rounded(.down)
+        let minutes = 60 * (interval - hours)
         return TotalTimeFormatter().localizedTotalTimeString(hour: hours, minute: minutes)
     }
     
@@ -72,7 +74,7 @@ struct ConsumptionResultView: View {
                         .bold()
                 }
                 .padding(.bottom, 25)
-                
+
                 HStack(alignment: .center) {
                     Text("general.today")
                     Text(todayDateFormatter.string(from: Date()))

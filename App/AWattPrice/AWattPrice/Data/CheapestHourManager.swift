@@ -18,8 +18,8 @@ class CheapestHourManager: ObservableObject {
     @Published var energyUsage: Double = 0
     
     // Time range from startDate to endDate in which to find the cheapest hours
-    @Published var startDate = Date(timeIntervalSince1970: 1608450240)//Date()
-    @Published var endDate = Date(timeIntervalSince1970: 1608451200)//Date().addingTimeInterval(3600)
+    @Published var startDate = Date()
+    @Published var endDate = Date().addingTimeInterval(3600)
     
     @Published var timeOfUsage: Double = 0
     
@@ -100,8 +100,7 @@ class CheapestHourManager: ObservableObject {
         if !(errorValues.count > 0) {
             let timeOfUsageInSeconds = (self.energyUsage / self.powerOutput) * 60 * 60
             let timeRangeMax = abs(self.startDate.timeIntervalSince(endDate))
-            
-            if (timeOfUsageInSeconds) <= timeRangeMax {
+            if timeOfUsageInSeconds <= timeRangeMax {
                 self.timeOfUsage = timeOfUsageInSeconds / 60 / 60 // Convert time of usage back to hours
             } else {
                 self.timeOfUsage = timeOfUsageInSeconds / 60 / 60 // Also set the time of usage even if an error occurres to help to deliver a better error message
@@ -216,7 +215,7 @@ class CheapestHourManager: ObservableObject {
             
             var startTimeDifference = 0
             var endTimeDifference = 0
-            
+
             if Calendar.current.component(.minute, from: startTime) != 0 {
                 startTimeDifference = Calendar.current.component(.minute, from: startTime)
                 startTime = Calendar.current.date(bySettingHour: Calendar.current.component(.hour, from: startTime), minute: 0, second: 0, of: startTime)! // Set the minute and second of the start time both to zero
@@ -320,11 +319,11 @@ class CheapestHourManager: ObservableObject {
             if cheapestHourPairIndex != nil {
                 let cheapestPair = allPairs[cheapestHourPairIndex!]
 
-                let timeRangeDifference = ((Double(timeRangeNumber) - self.timeOfUsage) * 60).rounded(.up)
-                
+                let timeRangeDifference = ((((Double(timeRangeNumber) - self.timeOfUsage) * 10000).rounded() / 10000) * 60).rounded(.up)
+                print(timeRangeDifference)
                 if timeRangeDifference != 0 {
                     let maxPointIndex = cheapestPair.associatedPricePoints.count - 1
-
+                    
                     // If the user searches for a time with hours and minutes like 2,3h or 1h 40min than this if statment triggers
                     // It makes sure that the start timestamp and end timestamp is set correctly to met the users wished output (hours and minutes)
                     if cheapestPair.associatedPricePoints[0].marketprice <= cheapestPair.associatedPricePoints[maxPointIndex].marketprice {

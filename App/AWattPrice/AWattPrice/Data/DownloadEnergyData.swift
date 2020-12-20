@@ -71,7 +71,7 @@ class AwattarData: ObservableObject {
         if regionIdentifier == 1 {
             downloadUrl = "https://awattprice.space8.me/data/AT"
         } else {
-            downloadUrl = "https://awattprice.space8.me/data/"
+            downloadUrl = "https://awattprice.space8.me/data/DE"
         }
         
         var energyRequest = URLRequest(
@@ -93,15 +93,16 @@ class AwattarData: ObservableObject {
             if let data = data {
                 do {
                     decodedData = try jsonDecoder.decode(EnergyData.self, from: data)
-                    let currentHour = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: Date())!
+                    let currentHour = Calendar.current.date(bySettingHour: Calendar.current.component(.hour, from: Date()), minute: 0, second: 0, of: Date())!
                     
                     var usedPricesDecodedData = [EnergyPricePoint]()
                     var minPrice: Double? = nil
                     var maxPrice: Double? = nil
                     
                     for hourPoint in decodedData.prices {
-                        if Date(timeIntervalSince1970: TimeInterval(hourPoint.startTimestamp)) >= currentHour && Date(timeIntervalSince1970: TimeInterval(hourPoint.startTimestamp)) < Date(timeIntervalSince1970: 1608505200) {
-                            usedPricesDecodedData.append(EnergyPricePoint(startTimestamp: hourPoint.startTimestamp, endTimestamp: hourPoint.endTimestamp, marketprice: hourPoint.marketprice))
+                        if Date(timeIntervalSince1970: TimeInterval(hourPoint.startTimestamp)) >= currentHour {
+                            let marketprice: Double = (hourPoint.marketprice * 100).rounded() / 100
+                            usedPricesDecodedData.append(EnergyPricePoint(startTimestamp: hourPoint.startTimestamp, endTimestamp: hourPoint.endTimestamp, marketprice: marketprice))
                             
                             if maxPrice == nil || hourPoint.marketprice > maxPrice! {
                                 maxPrice = hourPoint.marketprice

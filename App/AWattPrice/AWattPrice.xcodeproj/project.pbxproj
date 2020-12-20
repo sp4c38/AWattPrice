@@ -85,6 +85,7 @@
 		61260068253B0AB9009E0126 /* DataDownloadAndError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataDownloadAndError.swift; sourceTree = "<group>"; };
 		613CFF7E250CCCA500337CB2 /* AccessSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessSettings.swift; sourceTree = "<group>"; };
 		614C55822573D421009B5241 /* UpdateDataTimeFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateDataTimeFormatter.swift; sourceTree = "<group>"; };
+		614E76CC258F65680097EF9B /* AWattPrice.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AWattPrice.entitlements; sourceTree = "<group>"; };
 		614E784C25068F6100A7ED83 /* DownloadEnergyData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadEnergyData.swift; sourceTree = "<group>"; };
 		615468542520D214004FBEF7 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		615468592520D223004FBEF7 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -244,6 +245,7 @@
 		617D85B025052C35009E18FB /* AWattPrice */ = {
 			isa = PBXGroup;
 			children = (
+				614E76CC258F65680097EF9B /* AWattPrice.entitlements */,
 				618518E82585062F00120D81 /* CoreData */,
 				6184828825699E33004F3F62 /* Extensions */,
 				61260071253B22C4009E0126 /* Styles */,
@@ -700,6 +702,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = AWattPrice/AWattPrice.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 12;
@@ -716,6 +719,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = me.space8.AWattPrice;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SUPPORTS_MACCATALYST = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -725,6 +729,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = AWattPrice/AWattPrice.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 12;
@@ -741,6 +746,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = me.space8.AWattPrice;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SUPPORTS_MACCATALYST = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

@@ -30,11 +30,21 @@ class CheapestHourManager: ObservableObject {
     
     /// Sets the selected time interval to tonight from 20pm first day to 7am next day
     func setTimeIntervalThisNight(energyData: EnergyData) {
-        let possibleStartDate = Calendar.current.date(bySettingHour: 20, minute: 0, second: 0, of: Date())!
+        var possibleStartDate = Date()
+        if Calendar.current.component(.hour, from: Date()) >= 0 && Calendar.current.component(.hour, from: Date()) < 7 {
+            possibleStartDate = Date()
+        } else {
+            possibleStartDate = Calendar.current.date(bySettingHour: 20, minute: 0, second: 0, of: Date())!
+        }
         var firstPossibleStartDate = Date(timeIntervalSince1970: TimeInterval(energyData.prices[0].startTimestamp))
         
         let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: Date())!
-        let possibleEndDate = Calendar.current.date(bySettingHour: 7, minute: 0, second: 0, of: tomorrow)!
+        var possibleEndDate = Date()
+        if Calendar.current.component(.hour, from: Date()) >= 0 && Calendar.current.component(.hour, from: Date()) < 7 {
+            possibleEndDate = Calendar.current.date(bySettingHour: 7, minute: 0, second: 0, of: Date())!
+        } else {
+            possibleEndDate = Calendar.current.date(bySettingHour: 7, minute: 0, second: 0, of: tomorrow)!
+        }
         let lastPossibleEndDate = Date(timeIntervalSince1970: TimeInterval(energyData.prices[energyData.prices.count - 1].endTimestamp))
         
         if possibleStartDate >= firstPossibleStartDate && possibleStartDate <= lastPossibleEndDate {

@@ -275,6 +275,16 @@ background:#eee;
 	padding: 2em 0px;
 	background: #2e3e4e;
 }
+.extra-footer-section {
+    padding: 2em 0px;
+    background: #2e3e4e;
+    /* background-image: url('../images/banner.png'); */
+    background-attachment: fixed;
+    position: absolute;
+    top: 0px;
+    width: 100%;
+    height: 120%;
+}
 .contact-header {
 	text-align: center;
 	width: 85%;
@@ -415,13 +425,35 @@ padding-bottom: 2em;
 }
 .footer-bottom a {
 	font-size: 19px;
-	color: #31C3DB;
-	font-weight: 400;
+	color: #ffffff;
+	font-weight: bold;
 }
 .footer-bottom a:hover {
 	color: #d5d6d7;
 }
 .footer-bottom p a {
+	margin: 0 6px 0 6px;
+}
+
+.footer-bottom-extra {
+	text-align: center;
+
+}
+.footer-bottom-extra p, h3 {
+	font-size: 15px;
+	color: #d5d6d7;
+	font-weight: 400;
+    padding-bottom: 1em;
+}
+.footer-bottom-extra a {
+	font-size: 14px;
+	color: #31C3DB;
+	font-weight: 400;
+}
+.footer-bottom-extra a:hover {
+	color: #d5d6d7;
+}
+.footer-bottom-extra p a {
 	margin: 0 6px 0 6px;
 }
 
@@ -716,9 +748,16 @@ span.menu {
   font-size: 14px;
 }
 .footer-bottom a {
-  font-size: 15px;
+  font-size: 25px;
 }
+
+.footer-bottom-extra p {
+  font-size: 14px;
 }
+.footer-bottom-extra a {
+  font-size: 13px;
+}
+
 @media only screen and (max-width: 480px){
 .top-menu ul {
   width: 93%;
@@ -826,18 +865,11 @@ a.button2 img {
   padding: 0;
 }
 .contact {
-  /* padding-bottom: 2em; */
+  padding-bottom: 2em;
 }
 .contactgrid2 input[type="button"] {
     font-size: 13px;
   }
-.footer-bottom p {
-  font-size: 13px;
-}
-.footer-bottom a {
-  font-size: 13px;
-}
-}
 @media only screen and (max-width: 320px){
 .header-top {
   padding: 0.5em 0;

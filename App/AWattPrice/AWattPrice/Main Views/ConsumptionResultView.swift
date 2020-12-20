@@ -48,6 +48,8 @@ struct ConsumptionResultView: View {
         VStack(alignment: .center, spacing: 0) {
             if cheapestHourManager.cheapestHoursForUsage != nil {
                 // The time range in which the cheapest hours are
+                Spacer(minLength: 0)
+                
                 VStack(alignment: .center, spacing: 5) {
                     Text(dateFormatter.string(from: Date(timeIntervalSince1970:
                                                             TimeInterval(cheapestHourManager.cheapestHoursForUsage!.associatedPricePoints[0].startTimestamp))))

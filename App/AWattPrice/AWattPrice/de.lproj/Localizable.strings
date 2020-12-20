@@ -8,7 +8,7 @@
 
 // Welcome Splash Screen localizations
 "splashScreen.start.welcome" = "Willkommen zur";
-"splashScreen.start.notAffiliatedNote" = "Bitte beachten Sie, dass AWattPrice eine unabhängige App ist und in keinster Weise mit der Firma aWATTar in Verbindung steht.";
+"splashScreen.start.notAffiliatedNote" = "Bitte beachten Sie, dass AWattPrice eine unabhängige App ist und in keiner Weise mit der Firma aWATTar in Verbindung steht.";
 
 // Features and Consent Splash Screen localizations
 "splashScreen.featuresAndConsent.features" = "Funktionen";

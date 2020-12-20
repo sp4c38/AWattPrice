@@ -71,7 +71,7 @@ class AwattarData: ObservableObject {
         if regionIdentifier == 1 {
             downloadUrl = "https://awattprice.space8.me/data/AT"
         } else {
-            downloadUrl = "https://awattprice.space8.me/data/DE"
+            downloadUrl = "https://awattprice.space8.me/data/"
         }
         
         var energyRequest = URLRequest(
@@ -93,14 +93,14 @@ class AwattarData: ObservableObject {
             if let data = data {
                 do {
                     decodedData = try jsonDecoder.decode(EnergyData.self, from: data)
-                    let currentHour = Calendar.current.date(bySettingHour: Calendar.current.component(.hour, from: Date()), minute: 0, second: 0, of: Date())!
-
+                    let currentHour = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: Date())!
+                    
                     var usedPricesDecodedData = [EnergyPricePoint]()
                     var minPrice: Double? = nil
                     var maxPrice: Double? = nil
                     
                     for hourPoint in decodedData.prices {
-                        if Date(timeIntervalSince1970: TimeInterval(hourPoint.startTimestamp)) >= currentHour {
+                        if Date(timeIntervalSince1970: TimeInterval(hourPoint.startTimestamp)) >= currentHour && Date(timeIntervalSince1970: TimeInterval(hourPoint.startTimestamp)) < Date(timeIntervalSince1970: 1608505200) {
                             usedPricesDecodedData.append(EnergyPricePoint(startTimestamp: hourPoint.startTimestamp, endTimestamp: hourPoint.endTimestamp, marketprice: hourPoint.marketprice))
                             
                             if maxPrice == nil || hourPoint.marketprice > maxPrice! {
@@ -119,14 +119,15 @@ class AwattarData: ObservableObject {
                     
                     DispatchQueue.main.async {
                         // Set data in main thread
+                        let currentEnergyData = EnergyData(prices: usedPricesDecodedData, minPrice: minPrice ?? 0, maxPrice: maxPrice ?? 0)
                         
-                        self.energyData = EnergyData(prices: usedPricesDecodedData, minPrice: minPrice ?? 0, maxPrice: maxPrice ?? 0)
-                        
-                        if self.energyData!.prices.isEmpty {
+                        if currentEnergyData.prices.isEmpty {
                             print("No prices can be shown, because either there are none or they are outdated.")
                             withAnimation {
                                 self.currentlyNoData = true
                             }
+                        } else {
+                            self.energyData = currentEnergyData
                         }
                         
                         self.dataRetrievalError = false

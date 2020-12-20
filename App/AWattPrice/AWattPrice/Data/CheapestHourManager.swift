@@ -320,7 +320,6 @@ class CheapestHourManager: ObservableObject {
                 let cheapestPair = allPairs[cheapestHourPairIndex!]
 
                 let timeRangeDifference = ((((Double(timeRangeNumber) - self.timeOfUsage) * 10000).rounded() / 10000) * 60).rounded(.up)
-                print(timeRangeDifference)
                 if timeRangeDifference != 0 {
                     let maxPointIndex = cheapestPair.associatedPricePoints.count - 1
                     

@@ -40,7 +40,6 @@ struct ConsumptionResultView: View {
         let maxPointIndex = cheapestHourManager.cheapestHoursForUsage!.associatedPricePoints.count - 1
         let lastItemEnd = Date(timeIntervalSince1970: TimeInterval(cheapestHourManager.cheapestHoursForUsage!.associatedPricePoints[maxPointIndex].endTimestamp))
         let interval = lastItemEnd.timeIntervalSince(firstItemStart) / 60 / 60
-
         let hours = interval.rounded(.down)
         let minutes = 60 * (interval - hours)
         return TotalTimeFormatter().localizedTotalTimeString(hour: hours, minute: minutes)

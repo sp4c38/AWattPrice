@@ -69,6 +69,7 @@ struct ConsumptionComparisonView: View {
 
                             // Button to perform calculations to find cheapest hours and to redirect to the result view to show the results calculated
                             Button(action: {
+                                self.hideKeyboard()
                                 fieldsEnteredErrorValues = cheapestHourManager.setValues()
                                 if fieldsEnteredErrorValues.contains(0) {
                                     // All requirements are satisfied

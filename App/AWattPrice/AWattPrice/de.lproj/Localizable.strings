@@ -96,6 +96,7 @@
 "totalTimeFormatter.onlyHour"  = "%@h";
 "totalTimeFormatter.onlyMinute" = "%@min";
 "totalTimeFormatter.hourCommaMinute" =  "%@h, %@min";
+"totalTimeFormatter.lessThanOneMinute" =  "<1min";
 
 // Updare Date Time Formatter localizations
 "updateDataTimeFormatter.lessThanOneMinuteAgo" = "Vor weniger als einer Minute aktualisiert";

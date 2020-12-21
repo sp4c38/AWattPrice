@@ -26,10 +26,13 @@ class PersistenceManager {
 /// Entry point of the app
 @main
 struct AwattarApp: App {
-    var awattarData: AwattarData
-    var currentSetting: CurrentSetting
-    var keyboardObserver: KeyboardObserver
+    @UIApplicationDelegateAdaptor var appDelegate: AppDelegate
+    
     var persistence = PersistenceManager()
+    var currentSetting: CurrentSetting
+    
+    var awattarData: AwattarData
+    var keyboardObserver: KeyboardObserver
     
     init() {
         awattarData = AwattarData()

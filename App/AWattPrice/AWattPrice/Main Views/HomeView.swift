@@ -90,14 +90,14 @@ struct HomeView: View {
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .onAppear {
-            if firstEverAppear == true {
-                awattarData.download(forRegion: currentSetting.setting?.regionSelection ?? 0)
-                currentSetting.validateTariffAndEnergyPriceSet()
-                firstEverAppear = false
-            }
+            // Though onAppear will be called only on the first ever appear anyway this variable is used to make sure that onAppear doesn't interfere with any other on* methods applied to this view.
+            awattarData.download(forRegion: currentSetting.setting?.regionSelection ?? 0)
+            currentSetting.validateTariffAndEnergyPriceSet()
+            managePushNotificationsOnAppStart()
+            firstEverAppear = false
         }
         .onChange(of: scenePhase) { phase in
-            if phase == .active {
+            if phase == .active && firstEverAppear == false {
                 print("Updating data")
                 awattarData.download(forRegion: currentSetting.setting?.regionSelection ?? 0)
             }

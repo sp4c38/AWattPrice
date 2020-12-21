@@ -18,6 +18,8 @@ struct ContentView: View {
             if currentSetting.setting != nil {
                 if currentSetting.setting!.splashScreensFinished == true {
                     ZStack {
+                        // The app checks and activates certain Notification processes when it can make sure that the splash screens were already finished and won't appear anymore. That's why those processes are handled inside of the HomeView file.
+                        
                         HomeView()
                             .opacity(tabBarItems.selectedItemIndex == 0 ? 1 : 0)
                                 

@@ -4,4 +4,3 @@ db.sqlite3
 *.xcuserstate
 .DS_Store
 deploy.sh
-AppInformation.pages

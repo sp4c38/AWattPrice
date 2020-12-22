@@ -22,7 +22,8 @@ from awattprice.utils import start_logging
 
 
 api = FastAPI()
-
+config = read_config()
+start_logging(config)
 
 @api.get("/")
 async def root():
@@ -33,7 +34,6 @@ async def root():
 async def no_region():
     """Return data if no region is given for Germany."""
     config = read_config()
-    start_logging(config)
     region = Region.DE
     data = await poll.get_data(config=config, region=region)
     headers = await poll.get_headers(config=config, data=data)
@@ -44,7 +44,6 @@ async def no_region():
 async def with_region(region_id):
     """Return data for the given region."""
     config = read_config()
-    start_logging(config)
     region = getattr(Region, region_id.upper(), None)
     if not region:
         return {"prices": []}
@@ -54,8 +53,6 @@ async def with_region(region_id):
 
 @api.post("/apns/send_token")
 async def send_token(request: Request, background_tasks: BackgroundTasks):
-    config = read_config()
-    start_logging(config)
     token = await apns.validate_token(request)
     if not token == None:
         background_tasks.add_task(apns.write_token, token)

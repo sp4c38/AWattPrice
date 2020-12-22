@@ -23,6 +23,7 @@ url: /v1/marketdata
 [file_location]
 data_dir:   ~/awattprice/data/
 log_dir: ~/awattprice/log/
+apns_dir: ~/awattprice/apns/
 
 [poll]
 # Try to update the data if there are less or equal this number of future energy price points.

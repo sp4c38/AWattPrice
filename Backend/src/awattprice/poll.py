@@ -63,12 +63,6 @@ async def awattar_read_task(
         return data
     return None
 
-
-async def await_tasks(tasks):
-    """Gather the tasks."""
-    return await asyncio.gather(*tasks)
-
-
 async def get_data(config: Box, region: Optional[Region] = None, force: bool = False) -> Dict:
     """Request the Awattar data. Read it from file, if it is too old fetch it
     from the Awattar API endpoint.

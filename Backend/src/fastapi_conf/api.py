@@ -12,10 +12,10 @@ __license__ = "mit"
 
 from typing import Any, Dict, List, Optional, Union
 
-from fastapi import FastAPI
+from fastapi import BackgroundTasks, FastAPI, Request
 from fastapi.responses import JSONResponse
 
-from awattprice import poll
+from awattprice import poll, apns
 from awattprice.config import read_config
 from awattprice.defaults import Region
 from awattprice.utils import start_logging
@@ -51,3 +51,14 @@ async def with_region(region_id):
     data = await poll.get_data(config=config, region=region)
     headers = await poll.get_headers(config=config, data=data)
     return JSONResponse(content=data, headers=headers)
+
+@api.post("/apns/send_token")
+async def send_token(request: Request, background_tasks: BackgroundTasks):
+    config = read_config()
+    start_logging(config)
+    token = await apns.validate_token(request)
+    if not token == None:
+        background_tasks.add_task(apns.write_token, token)
+        return JSONResponse({"tokenWasPassedSuccessfully": True})
+    else:
+        return JSONResponse({"tokenWasPassedSuccessfully": False})

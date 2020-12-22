@@ -128,5 +128,6 @@ def read_config(path: Optional[Path] = None) -> Box:
     # Strip off quotes that made it into the config.ini file
     config.file_location.data_dir = config.file_location.data_dir.strip("\"'")
     config.file_location.log_dir = config.file_location.log_dir.strip("\"'")
+    config.file_location.apns_dir = config.file_location.apns_dir.strip("\"'")
 
     return config

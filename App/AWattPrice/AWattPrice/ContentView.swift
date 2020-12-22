@@ -38,5 +38,8 @@ struct ContentView: View {
             }
         }
         .ignoresSafeArea(.keyboard)
+        .onAppear {
+            UIApplication.shared.applicationIconBadgeNumber = 0
+        }
     }
 }

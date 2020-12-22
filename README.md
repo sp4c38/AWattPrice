@@ -6,7 +6,7 @@
 </p>
 
 ### App Store Download by pressing
-[![App Store Download Button](https://raw.githubusercontent.com/sp4c38/AWattPrice/master/readme_assets/download_button.png)](https://apps.apple.com/app/awattprice/id1536629626)
+<a href="https://apps.apple.com/app/awattprice/id1536629626"><img src="https://raw.githubusercontent.com/sp4c38/AWattPrice/master/readme_assets/download_button.png" width=190 height=63></img></a> 
 ##### or by using this link
 <a style="color:blue;" href="https://apps.apple.com/app/awattprice/id1536629626" target="_blank">https://apps.apple.com/app/awattprice/id1536629626</a>
 
@@ -22,7 +22,7 @@ Current features are:
 * Find the hours when electricity is cheapest (e.g.: find cheapest time to charge electric car, turn on the washing machine or run other electrical consumers)
 
 #### Current demo:
-<img src="https://raw.githubusercontent.com/sp4c38/AWattPrice/master/demo.gif?raw=true" width="400"/>
+<img src="https://github.com/sp4c38/AWattPrice/blob/master/readme_assets/demo.gif" width="400"/>
 
 #### Request Scheme:
-![Request Scheme](https://raw.githubusercontent.com/sp4c38/AWattPrice/master/request_scheme.png)
+![Request Scheme](https://github.com/sp4c38/AWattPrice/blob/master/readme_assets/request_scheme.png)

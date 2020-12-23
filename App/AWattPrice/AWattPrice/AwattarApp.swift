@@ -26,7 +26,7 @@ class PersistenceManager {
 /// Entry point of the app
 @main
 struct AwattarApp: App {
-    @UIApplicationDelegateAdaptor var appDelegate: AppDelegate
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
     var persistence = PersistenceManager()
     var currentSetting: CurrentSetting
@@ -38,6 +38,7 @@ struct AwattarApp: App {
         awattarData = AwattarData()
         currentSetting = CurrentSetting(managedObjectContext: persistence.persistentContainer.viewContext)
         keyboardObserver = KeyboardObserver()
+        appDelegate.currentSetting = currentSetting
     }
     
     var body: some Scene {

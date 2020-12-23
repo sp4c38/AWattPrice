@@ -14,6 +14,9 @@ extension Setting {
         return NSFetchRequest<Setting>(entityName: "Setting")
     }
 
+    /// Stores the last apns token that was sent to the Apps provider server.
+    @NSManaged public var lastApnsToken: String?
+    
     /// The splash screen must only be shown once. This persistent stored value ensures that this is the case.
     @NSManaged public var splashScreensFinished: Bool
     

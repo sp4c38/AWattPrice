@@ -38,6 +38,5 @@ func checkNotificationAccess() -> Bool {
     }
     dispatchSemaphore.wait()
     
-    
     return returnResponse
 }

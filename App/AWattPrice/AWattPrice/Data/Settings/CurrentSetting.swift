@@ -1,59 +1,11 @@
 //
-//  StoreSettings.swift
-//  AwattarApp
+//  CurrentSetting.swift
+//  AWattPrice
 //
-//  Created by Léon Becker on 12.09.20.
+//  Created by Léon Becker on 23.12.20.
 //
 
 import CoreData
-import Foundation
-
-func getSetting(managedObjectContext: NSManagedObjectContext, fetchRequestResults: [Setting]) -> Setting? {
-    if fetchRequestResults.count == 1 {
-        // Settings file was found correctly
-        return fetchRequestResults[0]
-        
-    } else if fetchRequestResults.count == 0 {
-        // No Settings object is yet created. Create a new Settings object with default values and save it to the persistent store
-        let newSetting = Setting(context: managedObjectContext)
-        newSetting.splashScreensFinished = false
-        newSetting.regionSelection = 0
-        newSetting.pricesWithTaxIncluded = true
-        newSetting.awattarTariffIndex = -1
-        newSetting.awattarBaseElectricityPrice = 0
-        newSetting.cheapestTimeLastPower = 0
-        newSetting.cheapestTimeLastConsumption = 0
-        
-        do {
-            try managedObjectContext.save()
-        } catch {
-            print("Error storing new settings object.")
-            return nil
-        }
-        
-        return newSetting
-    } else {
-        // Shouldn't happen because would mean that there are multiple Settings objects stored in the persistent storage
-        // Only one should exist
-        print("Multiple Settings objects found in persistent storage. This shouldn't happen with Settings objects. Will delete all Settings objects except of the last which is kept.")
-        
-        for x in 0...(fetchRequestResults.count - 1) {
-            // Deletes all Settings objects except of the last
-            if !(x == fetchRequestResults.count - 1) {
-                managedObjectContext.delete(fetchRequestResults[x])
-            }
-        }
-        
-        do {
-            try managedObjectContext.save()
-        } catch {
-            print("Error storing new settings object.")
-            return nil
-        }
-        
-        return fetchRequestResults[fetchRequestResults.count - 1]
-    }
-}
 
 /// Object which holds the current Setting object. Using NSFetchedResultsController the current setting stored in this object is updated if any changes occur to it.
 class CurrentSetting: NSObject, NSFetchedResultsControllerDelegate, ObservableObject {
@@ -100,7 +52,24 @@ class CurrentSetting: NSObject, NSFetchedResultsControllerDelegate, ObservableOb
         }
     }
     
-    /**
+    /* Changes the last stored APNs token to a new APNs token. A last stored APNs token should be only set if the server successfully could store the APNs token.
+    - Parameter newApnsToken: New last stored APNs token.
+    */
+    func changeLastApnsToken(newApnsToken: String) {
+        if setting != nil {
+            self.setting!.lastApnsToken = newApnsToken
+            
+            do {
+                try self.managedObjectContext.save()
+                print("Successfully stored new last apns token.")
+            } catch {
+                print("managedObjectContext failed to store new lastApnsToken attribute: \(error).")
+                return
+            }
+        }
+    }
+    
+    /*
     Changes the state of if the splash screen is finished to the specified new state.
     - Parameter newState: The new state to which the setting should be changed to.
     */
@@ -111,6 +80,7 @@ class CurrentSetting: NSObject, NSFetchedResultsControllerDelegate, ObservableOb
             do {
                 try self.managedObjectContext.save()
             } catch {
+                print("managedObjectContext failed to store new splashScreenFinished attribute: \(error).")
                 return
             }
         }
@@ -127,6 +97,7 @@ class CurrentSetting: NSObject, NSFetchedResultsControllerDelegate, ObservableOb
             do {
                 try self.managedObjectContext.save()
             } catch {
+                print("managedObjectContext failed to store new pricesWithTaxIncluded attribute: \(error).")
                 return
             }
         }
@@ -143,6 +114,7 @@ class CurrentSetting: NSObject, NSFetchedResultsControllerDelegate, ObservableOb
             do {
                 try managedObjectContext.save()
             } catch {
+                print("managedObjectContext failed to store new awattarBaseElectricityPrice attribute: \(error).")
                 return
             }
         }
@@ -159,6 +131,7 @@ class CurrentSetting: NSObject, NSFetchedResultsControllerDelegate, ObservableOb
             do {
                 try managedObjectContext.save()
             } catch {
+                print("managedObjectContext failed to store new awattarTariffIndex attribute: \(error).")
                 return
             }
         }
@@ -175,6 +148,7 @@ class CurrentSetting: NSObject, NSFetchedResultsControllerDelegate, ObservableOb
             do {
                 try managedObjectContext.save()
             } catch {
+                print("managedObjectContext failed to store new cheapestTimeLastPower attribute: \(error).")
                 return
             }
         }
@@ -190,11 +164,15 @@ class CurrentSetting: NSObject, NSFetchedResultsControllerDelegate, ObservableOb
             do {
                 try managedObjectContext.save()
             } catch {
+                print("managedObjectContext failed to store new cheapestTimeLastConsumption attribute: \(error).")
                 return
             }
         }
     }
     
+    /* Changes the current region which is selected to get aWATTar prices.
+    - Parameter newRegionSelection: The new region which was selected and to which this setting should be changed to.
+    */
     func changeRegionSelection(newRegionSelection: Int16) {
         if setting != nil {
             self.setting!.regionSelection = newRegionSelection
@@ -202,6 +180,7 @@ class CurrentSetting: NSObject, NSFetchedResultsControllerDelegate, ObservableOb
             do {
                 try managedObjectContext.save()
             } catch {
+                print("managedObjectContext failed to store new regionSelection attribute: \(error).")
                 return
             }
         }

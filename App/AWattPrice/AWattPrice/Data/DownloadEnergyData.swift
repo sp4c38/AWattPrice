@@ -101,19 +101,24 @@ class AwattarData: ObservableObject {
                     
                     for hourPoint in decodedData.prices {
                         if Date(timeIntervalSince1970: TimeInterval(hourPoint.startTimestamp)) >= currentHour {
-                            let marketprice: Double = (hourPoint.marketprice * 100).rounded() / 100
-                            usedPricesDecodedData.append(EnergyPricePoint(startTimestamp: hourPoint.startTimestamp, endTimestamp: hourPoint.endTimestamp, marketprice: marketprice))
+                            var marketprice: Double = (hourPoint.marketprice * 100).rounded() / 100
                             
-                            if maxPrice == nil || hourPoint.marketprice > maxPrice! {
-                                maxPrice = hourPoint.marketprice
+                            if marketprice.sign == .minus && marketprice == 0 {
+                                marketprice = 0
                             }
                             
+                            usedPricesDecodedData.append(EnergyPricePoint(startTimestamp: hourPoint.startTimestamp, endTimestamp: hourPoint.endTimestamp, marketprice: marketprice))
+                            
+                            if maxPrice == nil || marketprice > maxPrice! {
+                                maxPrice = marketprice
+                            }
+                            print(marketprice)
                             if minPrice == nil {
-                                if hourPoint.marketprice < 0 {
-                                    minPrice = hourPoint.marketprice
+                                if marketprice < 0 {
+                                    minPrice = marketprice
                                 }
-                            } else if hourPoint.marketprice < minPrice! {
-                                minPrice = hourPoint.marketprice
+                            } else if marketprice < minPrice! {
+                                minPrice = marketprice
                             }
                         }
                     }

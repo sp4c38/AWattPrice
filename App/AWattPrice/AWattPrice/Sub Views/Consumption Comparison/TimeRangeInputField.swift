@@ -15,7 +15,7 @@ struct TimeRangeInputField: View {
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
     
     @State var inputDateRange: ClosedRange<Date> = Date()...Date()
-    @State var setOnlyOnce: Bool = true // Makes sure that the inputDateRange is set only once to default in onAppear
+    @State var setOnlyOnce: Bool = true // Makes sure that the endDate is set only once to default
     
     let errorValues: [Int]
     let timeIntervalFormatter: NumberFormatter
@@ -26,6 +26,19 @@ struct TimeRangeInputField: View {
         timeIntervalFormatter = NumberFormatter()
         timeIntervalFormatter.numberStyle = .decimal
         timeIntervalFormatter.maximumFractionDigits = 2
+    }
+    
+    func setTimeIntervalValues(energyData: EnergyData) {
+        let maxHourIndex = awattarData.energyData!.prices.count - 1
+
+        if awattarData.energyData!.prices.count > 0 {
+            let inputDateRangeStartPoint = Date(timeIntervalSince1970: TimeInterval(awattarData.energyData!.prices[0].startTimestamp + 1))
+            if setOnlyOnce {
+                cheapestHourManager.endDate = Date(timeIntervalSince1970: TimeInterval(awattarData.energyData!.prices[maxHourIndex].endTimestamp - 1))
+            }
+            inputDateRange = inputDateRangeStartPoint...cheapestHourManager.endDate
+            setOnlyOnce = false
+        }
     }
     
     var body: some View {
@@ -124,17 +137,9 @@ struct TimeRangeInputField: View {
             .padding(.top, 3)
         }
         .frame(maxWidth: .infinity)
-        .onAppear {
-            if setOnlyOnce {
-                let maxHourIndex = awattarData.energyData!.prices.count - 1
-
-                if awattarData.energyData!.prices.count > 0 {
-                    let inputDateRangeStartPoint = Date(timeIntervalSince1970: TimeInterval(awattarData.energyData!.prices[0].startTimestamp + 1))
-                    cheapestHourManager.endDate = Date(timeIntervalSince1970: TimeInterval(awattarData.energyData!.prices[maxHourIndex].endTimestamp - 1))
-                    inputDateRange = inputDateRangeStartPoint...cheapestHourManager.endDate
-                }
-                setOnlyOnce = false
-            }
+        .onReceive(awattarData.$energyData) { newEnergyData in
+            guard let energyData = newEnergyData else { return }
+            self.setTimeIntervalValues(energyData: energyData)
         }
     }
 }

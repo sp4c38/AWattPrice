@@ -5,10 +5,10 @@
     <img src="https://img.shields.io/tokei/lines/github/sp4c38/AWattPrice?label=total%20lines%20of%20code" />
 </p>
 
-### App Store Download by pressing
-<a href="https://apps.apple.com/app/awattprice/id1536629626"><img src="https://raw.githubusercontent.com/sp4c38/AWattPrice/master/readme_assets/download_button.png" width=190 height=63></img></a> 
-##### or by using this link
-<a style="color:blue;" href="https://apps.apple.com/app/awattprice/id1536629626" target="_blank">https://apps.apple.com/app/awattprice/id1536629626</a>
+### App Store Download
+<a href="https://apps.apple.com/app/awattprice/id1536629626"><img src="https://raw.githubusercontent.com/sp4c38/AWattPrice/master/readme_assets/download_button.png" width=190 height=63></img></a>  <a style="color:blue;" href="https://apps.apple.com/app/awattprice/id1536629626" target="_blank">
+
+https://apps.apple.com/app/awattprice/id1536629626</a>
 
 An app that displays electricity prices retrieved from the public aWATTar API.
 

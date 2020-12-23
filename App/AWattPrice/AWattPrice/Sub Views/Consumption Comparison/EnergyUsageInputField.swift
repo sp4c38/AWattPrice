@@ -49,7 +49,7 @@ struct EnergyUsageInputField: View {
             }
             
             HStack {
-                DecimalTextFieldWithDoneButton(text: $cheapestHourManager.energyUsageString.animation(), placeholder: "general.inKw".localized())
+                DecimalTextFieldWithDoneButton(text: $cheapestHourManager.energyUsageString.animation(), placeholder: "general.inKwh".localized())
                     .fixedSize(horizontal: false, vertical: true)
                     .padding(.trailing, 5)
                     .ifTrue(firstAppear == false) { content in

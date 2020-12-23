@@ -55,7 +55,7 @@ async def with_region(region_id):
     headers = await poll.get_headers(config=config, data=data)
     return JSONResponse(content=data, headers=headers)
 
-@api.post("/apns/send_token")
+@api.post("/data/apns/send_token")
 async def send_token(request: Request, background_tasks: BackgroundTasks):
     token = await apns.validate_token(request)
     if not token == None:

@@ -39,8 +39,8 @@ async def validate_token(request: Request) -> str:
             log.info("Successfully decoded and read user APNs token.")
             return token
         else:
-            log.warning("Could not decode and read a valid json when validating users APNs token.")
+            log.warning("APNs token from user isn't in the correct format.")
             return None
     except:
-        log.warning("Could not decode and read a valid json when validating users APNs token.")
+        log.warning("Could NOT decode to a valid json when validating users APNs token.")
         return None

@@ -1,0 +1,16 @@
+//
+//  Production.xcconfig
+//  AWattPrice
+//
+//  Created by Léon Becker on 23.12.20.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://help.apple.com/xcode/#/dev745c5c974
+
+// Server accessing config
+ROOT_URL = https:/$()/awattprice.space8.me // Without trailing /
+
+// App settings
+APP_NAME = AWattPrice
+APP_BUNDLEID = me.space8.AWattPrice

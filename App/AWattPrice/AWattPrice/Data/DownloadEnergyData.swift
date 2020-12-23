@@ -66,16 +66,16 @@ class AwattarData: ObservableObject {
         self.currentlyUpdatingData = true
         self.dataRetrievalError = false
         
-        var downloadUrl = ""
+        var downloadURL = ""
 
         if regionIdentifier == 1 {
-            downloadUrl = "https://awattprice.space8.me/data/AT"
+            downloadURL = GlobalAppSettings.rootURLString + "/data/AT"
         } else {
-            downloadUrl = "https://awattprice.space8.me/data/DE"
+            downloadURL = GlobalAppSettings.rootURLString + "/data/DE"
         }
-        
+
         var energyRequest = URLRequest(
-                        url: URL(string: downloadUrl)!,
+                        url: URL(string: downloadURL)!,
             cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy)
         
         energyRequest.httpMethod = "GET"

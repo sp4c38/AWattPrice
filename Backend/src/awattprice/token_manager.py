@@ -1,5 +1,6 @@
 import asyncio
 import json
+import os
 import sqlite3
 
 from box import Box
@@ -14,6 +15,12 @@ class Token_Database_Manager:
 
     def connect(self, config):
         database_path = Path(config.file_location.apns_dir).expanduser() / Path("token.db")
+
+        database_dir = database_path.parent
+        if not database_dir.expanduser().is_dir():
+            log.warning(f"Creating the APNs database directory {database_dir}.")
+            os.makedirs(database_dir.expanduser().as_posix())
+
         self.db = sqlite3.connect(database_path, check_same_thread=False)
         log.info("Connected to sqlite database.")
 

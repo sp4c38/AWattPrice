@@ -13,7 +13,11 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     }
     
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        print("Registration to APNs for push notifications was successful.")
+        print("Registration to APNs for push notifications was granted.")
         uploadApnsTokenToServer(deviceToken: deviceToken)
+    }
+    
+    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        print("Registration to APNs for push notifications was NOT granted: \(error.localizedDescription)")
     }
 }

@@ -101,7 +101,7 @@ class AwattarData: ObservableObject {
                     
                     for hourPoint in decodedData.prices {
                         if Date(timeIntervalSince1970: TimeInterval(hourPoint.startTimestamp)) >= currentHour {
-                            var marketprice: Double = (hourPoint.marketprice * 100).rounded() / 100
+                            var marketprice: Double = (hourPoint.marketprice * 100).rounded(.up) / 100
                             
                             if marketprice.sign == .minus && marketprice == 0 {
                                 marketprice = 0
@@ -112,7 +112,7 @@ class AwattarData: ObservableObject {
                             if maxPrice == nil || marketprice > maxPrice! {
                                 maxPrice = marketprice
                             }
-                            print(marketprice)
+
                             if minPrice == nil {
                                 if marketprice < 0 {
                                     minPrice = marketprice

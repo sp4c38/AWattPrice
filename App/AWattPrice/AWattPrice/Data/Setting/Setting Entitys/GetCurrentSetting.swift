@@ -15,7 +15,6 @@ func getCurrentSetting(managedObjectContext: NSManagedObjectContext, fetchReques
     } else if fetchRequestResults.count == 0 {
         // No Settings object is yet created. Create a new Settings object with default values and save it to the persistent store
         let newSetting = Setting(context: managedObjectContext)
-        newSetting.lastApnsToken = nil
         newSetting.splashScreensFinished = false
         newSetting.regionSelection = 0
         newSetting.pricesWithTaxIncluded = true

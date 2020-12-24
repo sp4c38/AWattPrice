@@ -9,7 +9,7 @@ import SwiftUI
 import UIKit
 
 class AppDelegate: NSObject, UIApplicationDelegate {
-    var currentSetting: CurrentSetting? = nil
+    var crtNotifiSetting: CurrentNotificationSetting? = nil
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         return true
@@ -22,13 +22,13 @@ class AppDelegate: NSObject, UIApplicationDelegate {
             String(format: "%02.2hhx", $0)
         }.joined()
         
-        if self.currentSetting != nil {
-            if currentSetting!.entity != nil {
-                if currentSetting!.entity!.lastApnsToken != apnsDeviceTokenString {
+        if self.crtNotifiSetting != nil {
+            if self.crtNotifiSetting!.entity != nil {
+                if self.crtNotifiSetting!.entity!.lastApnsToken != apnsDeviceTokenString {
                     print("Need to update stored APNs token. Stored token and current APNs token are not identical.")
                     let requestSuccessful = uploadApnsTokenToServer(deviceToken: apnsDeviceTokenString)
                     if requestSuccessful {
-                        self.currentSetting!.changeLastApnsToken(newApnsToken: apnsDeviceTokenString)
+                        self.crtNotifiSetting!.changeLastApnsToken(newValue: apnsDeviceTokenString)
                     }
                 } else {
                     print("No need to update stored APNs token. Stored token and current APNs token are identical.")

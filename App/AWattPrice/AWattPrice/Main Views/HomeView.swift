@@ -29,6 +29,7 @@ struct HomeView: View {
     @Environment(\.scenePhase) var scenePhase
     @EnvironmentObject var awattarData: AwattarData
     @EnvironmentObject var currentSetting: CurrentSetting
+    @EnvironmentObject var crtNotifiSetting: CurrentNotificationSetting
     
     @State var firstEverAppear: Bool = true
     @State var showSettingsPage: Bool = false
@@ -83,9 +84,9 @@ struct HomeView: View {
                         .padding(.trailing, 5)
                 })
             .fullScreenCover(isPresented: $showSettingsPage) {
-                SettingsPageView()
-                    .environmentObject(currentSetting)
-                    .environmentObject(awattarData)
+                SettingsPageView()                    //.environmentObject(awattarData)
+//                    .environmentObject(currentSetting)
+//                    .environmentObject(crtNotifiSetting)
             }
         }
         .navigationViewStyle(StackNavigationViewStyle())

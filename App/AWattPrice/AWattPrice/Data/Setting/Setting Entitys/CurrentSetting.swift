@@ -30,23 +30,6 @@ class CurrentSetting: AutoUpdatingEntity<Setting> {
         }
     }
 
-    /* Changes the last stored APNs token to a new APNs token. A last stored APNs token should be only set if the server successfully could store the APNs token.
-    - Parameter newApnsToken: New last stored APNs token.
-    */
-    func changeLastApnsToken(newApnsToken: String) {
-        if self.entity != nil {
-            self.entity!.lastApnsToken = newApnsToken
-
-            do {
-                try self.managedObjectContext.save()
-                print("Successfully stored new last apns token.")
-            } catch {
-                print("managedObjectContext failed to store new lastApnsToken attribute: \(error).")
-                return
-            }
-        }
-    }
-
     /*
     Changes the state of if the splash screen is finished to the specified new state.
     - Parameter newState: The new state to which the setting should be changed to.

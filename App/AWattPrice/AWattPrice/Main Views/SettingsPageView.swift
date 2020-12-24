@@ -22,6 +22,8 @@ struct SettingsPageView: View {
 
 //                        AwattarTariffSelectionSetting()
 
+                        GoToNotificationSettingView()
+                        
                         GetHelpView()
                         
                         AgreementSettingView(agreementIconName: "doc.text",

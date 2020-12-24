@@ -146,7 +146,7 @@ struct GetHelpView: View {
                     Spacer()
                     
                     Image(systemName: "chevron.right")
-                        .font(.caption)
+                        .font(Font.caption.weight(.semibold))
                         .foregroundColor(Color.gray)
                 }
             }

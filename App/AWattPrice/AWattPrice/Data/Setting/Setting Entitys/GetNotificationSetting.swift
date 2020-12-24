@@ -15,6 +15,7 @@ func getNotificationSetting(managedObjectContext: NSManagedObjectContext, fetchR
     } else if fetchRequestResults.count == 0 {
         // No Settings object is yet created. Create a new Settings object with default values and save it to the persistent store
         let newSetting = NotificationSetting(context: managedObjectContext)
+        newSetting.lastApnsToken = nil
         newSetting.getNewPricesAvailableNotification = false
         
         do {

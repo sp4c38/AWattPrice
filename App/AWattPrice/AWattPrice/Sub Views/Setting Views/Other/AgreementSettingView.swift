@@ -26,7 +26,7 @@ struct AgreementSettingView: View {
                 Spacer()
                 
                 Image(systemName: "chevron.right")
-                    .font(.caption)
+                    .font(Font.caption.weight(.semibold))
                     .foregroundColor(Color.gray)
             }
             .foregroundColor(colorScheme == .light ? Color.black : Color.white)

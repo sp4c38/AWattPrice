@@ -17,7 +17,7 @@ class AutoUpdatingEntity<T: NSManagedObject>: NSObject, NSFetchedResultsControll
         self.managedObjectContext = managedObjectContext
         
         let fetchRequest = NSFetchRequest<T>(entityName: entityName)
-        fetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \Setting.splashScreensFinished, ascending: true)]
+        fetchRequest.sortDescriptors = []
         entityController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: managedObjectContext, sectionNameKeyPath: nil, cacheName: nil)
             
         super.init()

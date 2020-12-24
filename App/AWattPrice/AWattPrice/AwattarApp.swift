@@ -30,15 +30,17 @@ struct AwattarApp: App {
     
     var persistence = PersistenceManager()
     var currentSetting: CurrentSetting
+    var crtNotifiSetting: CurrentNotificationSetting
     
     var awattarData: AwattarData
     var keyboardObserver: KeyboardObserver
     
     init() {
-        awattarData = AwattarData()
-        currentSetting = CurrentSetting(managedObjectContext: persistence.persistentContainer.viewContext)
-        keyboardObserver = KeyboardObserver()
-        appDelegate.currentSetting = currentSetting
+        self.awattarData = AwattarData()
+        self.currentSetting = CurrentSetting(managedObjectContext: self.persistence.persistentContainer.viewContext)
+        self.crtNotifiSetting = CurrentNotificationSetting(managedObjectContext: self.persistence.persistentContainer.viewContext)
+        self.keyboardObserver = KeyboardObserver()
+        self.appDelegate.crtNotifiSetting = self.crtNotifiSetting
     }
     
     var body: some Scene {
@@ -48,6 +50,7 @@ struct AwattarApp: App {
             ContentView()
                 .environmentObject(awattarData)
                 .environmentObject(currentSetting)
+                .environmentObject(crtNotifiSetting)
                 .environmentObject(CheapestHourManager())
                 .environmentObject(keyboardObserver)
         }

@@ -22,4 +22,15 @@ public enum GlobalAppSettings {
 
         return rootURLString
     }
+    
+    static var VATAmount: Double {
+        guard let VATAmountString = Self.infoDictionary["VAT_AMOUNT"] as? String else {
+            fatalError("VAR_AMOUNT setting wasn't set in .plist / .xcconfig file.")
+        }
+        guard let VATAmountDouble = Double(VATAmountString) else {
+            fatalError("VAT_AMOUNT which is specified in .plist / .xcconfig file is no valid Double.")
+        }
+        
+        return VATAmountDouble
+    }
 }

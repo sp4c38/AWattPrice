@@ -95,7 +95,7 @@ struct EnergyPriceSingleBar: View {
         centFormatter.minimumFractionDigits = 2
         
         if currentSetting.setting!.pricesWithTaxIncluded {
-            return centFormatter.string(from: NSNumber(value: marketprice * 1.16)) ?? "NaN"
+            return centFormatter.string(from: NSNumber(value: marketprice * GlobalAppSettings.VATAmount)) ?? "NaN"
         } else {
             return centFormatter.string(from: NSNumber(value: marketprice)) ?? "NaN"
         }

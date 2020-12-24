@@ -10,10 +10,10 @@ import Foundation
 import CoreData
 
 
-extension NotificationSettings {
+extension NotificationSetting {
 
-    @nonobjc public class func fetchRequest() -> NSFetchRequest<NotificationSettings> {
-        return NSFetchRequest<NotificationSettings>(entityName: "NotificationSettings")
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<NotificationSetting> {
+        return NSFetchRequest<NotificationSetting>(entityName: "NotificationSetting")
     }
 
     /// Representing if the user wants to a notification when new prices are available.

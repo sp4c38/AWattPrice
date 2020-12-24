@@ -9,7 +9,7 @@
 import Foundation
 import CoreData
 
-@objc(NotificationSettings)
-public class NotificationSettings: NSManagedObject {
+@objc(NotificationSetting)
+public class NotificationSetting: NSManagedObject {
 
 }

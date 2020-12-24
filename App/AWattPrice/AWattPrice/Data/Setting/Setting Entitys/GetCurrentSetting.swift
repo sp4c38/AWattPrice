@@ -6,9 +6,8 @@
 //
 
 import CoreData
-import Foundation
 
-func getSetting(managedObjectContext: NSManagedObjectContext, fetchRequestResults: [Setting]) -> Setting? {
+func getCurrentSetting(managedObjectContext: NSManagedObjectContext, fetchRequestResults: [Setting]) -> Setting? {
     if fetchRequestResults.count == 1 {
         // Settings file was found correctly
         return fetchRequestResults[0]

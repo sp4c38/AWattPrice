@@ -15,13 +15,13 @@ class CurrentSetting: AutoUpdatingEntity<Setting> {
     
     /// This will check that when a tariff is selected that also a non-empty electricity price was set
     func validateTariffAndEnergyPriceSet() {
-        if super.entity != nil {
-            if super.entity!.awattarTariffIndex > -1 {
-                if super.entity!.awattarBaseElectricityPrice == 0 {
-                    super.entity!.awattarTariffIndex = -1
+        if self.entity != nil {
+            if self.entity!.awattarTariffIndex > -1 {
+                if self.entity!.awattarBaseElectricityPrice == 0 {
+                    self.entity!.awattarTariffIndex = -1
 
                     do {
-                        try super.managedObjectContext.save()
+                        try self.managedObjectContext.save()
                     } catch {
                         print("Tried to change the awattar tariff index in Setting because no base electricity was given. This failed.")
                     }
@@ -34,11 +34,11 @@ class CurrentSetting: AutoUpdatingEntity<Setting> {
     - Parameter newApnsToken: New last stored APNs token.
     */
     func changeLastApnsToken(newApnsToken: String) {
-        if super.entity != nil {
-            super.entity!.lastApnsToken = newApnsToken
+        if self.entity != nil {
+            self.entity!.lastApnsToken = newApnsToken
 
             do {
-                try super.managedObjectContext.save()
+                try self.managedObjectContext.save()
                 print("Successfully stored new last apns token.")
             } catch {
                 print("managedObjectContext failed to store new lastApnsToken attribute: \(error).")
@@ -52,11 +52,11 @@ class CurrentSetting: AutoUpdatingEntity<Setting> {
     - Parameter newState: The new state to which the setting should be changed to.
     */
     func changeSplashScreenFinished(newState: Bool) {
-        if super.entity != nil {
-            super.entity!.splashScreensFinished = newState
+        if self.entity != nil {
+            self.entity!.splashScreensFinished = newState
 
             do {
-                try super.managedObjectContext.save()
+                try self.managedObjectContext.save()
             } catch {
                 print("managedObjectContext failed to store new splashScreenFinished attribute: \(error).")
                 return
@@ -69,11 +69,11 @@ class CurrentSetting: AutoUpdatingEntity<Setting> {
     - Parameter newTaxSelection: The new state to which the setting should be changed to.
     */
     func changeTaxSelection(newTaxSelection: Bool) {
-        if super.entity != nil {
-            super.entity!.pricesWithTaxIncluded = newTaxSelection
+        if self.entity != nil {
+            self.entity!.pricesWithTaxIncluded = newTaxSelection
 
             do {
-                try super.managedObjectContext.save()
+                try self.managedObjectContext.save()
             } catch {
                 print("managedObjectContext failed to store new pricesWithTaxIncluded attribute: \(error).")
                 return
@@ -86,11 +86,11 @@ class CurrentSetting: AutoUpdatingEntity<Setting> {
     - Parameter newBaseEnergyCharge: The new price to which the setting should be changed to.
     */
     func changeBaseElectricityCharge(newBaseElectricityCharge: Double) {
-        if super.entity != nil {
-            super.entity!.awattarBaseElectricityPrice = newBaseElectricityCharge
+        if self.entity != nil {
+            self.entity!.awattarBaseElectricityPrice = newBaseElectricityCharge
 
             do {
-                try managedObjectContext.save()
+                try self.managedObjectContext.save()
             } catch {
                 print("managedObjectContext failed to store new awattarBaseElectricityPrice attribute: \(error).")
                 return
@@ -103,11 +103,11 @@ class CurrentSetting: AutoUpdatingEntity<Setting> {
     - Parameter newProfileIndex: The new index to which the setting should be changed to.
     */
     func changeAwattarTariffIndex(newTariffIndex: Int16) {
-        if super.entity != nil {
-            super.entity!.awattarTariffIndex = newTariffIndex
+        if self.entity != nil {
+            self.entity!.awattarTariffIndex = newTariffIndex
 
             do {
-                try managedObjectContext.save()
+                try self.managedObjectContext.save()
             } catch {
                 print("managedObjectContext failed to store new awattarTariffIndex attribute: \(error).")
                 return
@@ -120,11 +120,11 @@ class CurrentSetting: AutoUpdatingEntity<Setting> {
     - Parameter newLastPower: The new last power usage to which the setting should be changed to.
     */
     func changeCheapestTimeLastPower(newLastPower: Double) {
-        if super.entity != nil {
-            super.entity!.cheapestTimeLastPower = newLastPower
+        if self.entity != nil {
+            self.entity!.cheapestTimeLastPower = newLastPower
 
             do {
-                try managedObjectContext.save()
+                try self.managedObjectContext.save()
             } catch {
                 print("managedObjectContext failed to store new cheapestTimeLastPower attribute: \(error).")
                 return
@@ -136,11 +136,11 @@ class CurrentSetting: AutoUpdatingEntity<Setting> {
     - Parameter newTimeLastPower: The new last power usage to which the setting should be changed to.
     */
     func changeCheapestTimeLastConsumption(newLastConsumption: Double) {
-        if super.entity != nil {
-            super.entity!.cheapestTimeLastConsumption = newLastConsumption
+        if self.entity != nil {
+            self.entity!.cheapestTimeLastConsumption = newLastConsumption
 
             do {
-                try managedObjectContext.save()
+                try self.managedObjectContext.save()
             } catch {
                 print("managedObjectContext failed to store new cheapestTimeLastConsumption attribute: \(error).")
                 return
@@ -152,11 +152,11 @@ class CurrentSetting: AutoUpdatingEntity<Setting> {
     - Parameter newRegionSelection: The new region which was selected and to which this setting should be changed to.
     */
     func changeRegionSelection(newRegionSelection: Int16) {
-        if super.entity != nil {
-            super.entity!.regionSelection = newRegionSelection
+        if self.entity != nil {
+            self.entity!.regionSelection = newRegionSelection
 
             do {
-                try managedObjectContext.save()
+                try self.managedObjectContext.save()
             } catch {
                 print("managedObjectContext failed to store new regionSelection attribute: \(error).")
                 return

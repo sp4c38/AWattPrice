@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17709" systemVersion="20D5029f" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
-    <entity name="NotificationSettings" representedClassName="NotificationSettings" syncable="YES">
+    <entity name="NotificationSetting" representedClassName="NotificationSetting" syncable="YES">
         <attribute name="getNewPricesAvailableNotification" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
     </entity>
     <entity name="Setting" representedClassName="Setting" syncable="YES">
@@ -14,7 +14,7 @@
         <attribute name="splashScreensFinished" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
     </entity>
     <elements>
+        <element name="NotificationSetting" positionX="13833" positionY="-567" width="128" height="44"/>
         <element name="Setting" positionX="13622.15289306641" positionY="-640.1206970214844" width="698.1566162109375" height="149"/>
-        <element name="NotificationSettings" positionX="13833" positionY="-567" width="128" height="44"/>
     </elements>
 </model>

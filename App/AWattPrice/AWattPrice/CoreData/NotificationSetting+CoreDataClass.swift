@@ -11,5 +11,4 @@ import CoreData
 
 @objc(NotificationSetting)
 public class NotificationSetting: NSManagedObject {
-
 }

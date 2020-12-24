@@ -26,7 +26,10 @@ class AppDelegate: NSObject, UIApplicationDelegate {
             if self.crtNotifiSetting!.entity != nil {
                 if self.crtNotifiSetting!.entity!.lastApnsToken != apnsDeviceTokenString {
                     print("Need to update stored APNs token. Stored token and current APNs token are not identical.")
-                    let requestSuccessful = uploadApnsTokenToServer(deviceToken: apnsDeviceTokenString)
+                    let notificationConfigRepresentable = UploadPushNotificationConfigRepresentable(
+                        crtNotifiSetting!.entity!.getNewPricesAvailableNotification
+                    )
+                    let requestSuccessful = uploadPushNotificationSettings(deviceToken: apnsDeviceTokenString, configuration: notificationConfigRepresentable)
                     if requestSuccessful {
                         self.crtNotifiSetting!.changeLastApnsToken(newValue: apnsDeviceTokenString)
                     }

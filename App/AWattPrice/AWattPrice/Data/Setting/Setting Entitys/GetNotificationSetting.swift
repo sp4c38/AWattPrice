@@ -7,25 +7,30 @@
 
 import CoreData
 
-func getNotificationSetting(managedObjectContext: NSManagedObjectContext, fetchRequestResults: [NotificationSetting]) -> NotificationSetting? {
+func getNotificationSetting(entityName: String, managedObjectContext: NSManagedObjectContext, fetchRequestResults: [NotificationSetting]) -> NotificationSetting? {
     if fetchRequestResults.count == 1 {
         // Settings file was found correctly
         return fetchRequestResults[0]
         
     } else if fetchRequestResults.count == 0 {
         // No Settings object is yet created. Create a new Settings object with default values and save it to the persistent store
-        let newSetting = NotificationSetting(context: managedObjectContext)
-        newSetting.lastApnsToken = nil
-        newSetting.getNewPricesAvailableNotification = false
-        
-        do {
-            try managedObjectContext.save()
-        } catch {
-            print("Error storing new settings object.")
+        if let entityDesciption = NSEntityDescription.entity(forEntityName: "NotificationSetting", in: managedObjectContext) {
+            let newSetting = NotificationSetting.init(entity: entityDesciption, insertInto: managedObjectContext)
+            
+            newSetting.lastApnsToken = nil
+            newSetting.getNewPricesAvailableNotification = false
+            
+            do {
+                try managedObjectContext.save()
+            } catch {
+                print("Error storing new settings object.")
+                return nil
+            }
+            
+            return newSetting
+        } else {
             return nil
         }
-        
-        return newSetting
     } else {
         // Shouldn't happen because would mean that there are multiple Settings objects stored in the persistent storage
         // Only one should exist

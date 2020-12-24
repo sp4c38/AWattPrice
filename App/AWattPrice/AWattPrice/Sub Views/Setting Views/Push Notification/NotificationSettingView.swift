@@ -17,7 +17,7 @@ struct NotificationSettingView: View {
                 NewPricesNotificationView($newPricesNotificationSelection)
             }
         }
-        .navigationTitle("Notifications")
+        .navigationTitle("notificationPage.notifications")
     }
 }
 
@@ -35,7 +35,7 @@ struct GoToNotificationSettingView: View {
             HStack {
                 Image(systemName: "bell")
                     .font(.title2)
-                Text("Notification Settings")
+                Text("notificationPage.goToDescription")
                 Spacer()
                 Image(systemName: "chevron.right")
                     .font(Font.caption.weight(.semibold))

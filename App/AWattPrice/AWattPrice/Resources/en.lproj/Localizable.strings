@@ -67,6 +67,11 @@
 "settingsPage.suggestionByEmail" = "Send suggestions by email";
 "settingsPage.version" = "Version";
 
+// Notification Page localizations
+"notificationPage.goToDescription" = "Notification Settings";
+"notificationPage.notifications" = "Notifications";
+"notificationPage.notification.newPricesAvailable" = "New prices available";
+
 // Data download error view
 "dataDownloadError.tryAgainLater" = "Please try again later";
 "dataDownloadError.noDataAvailable" = "No data available\nPlease try again later";

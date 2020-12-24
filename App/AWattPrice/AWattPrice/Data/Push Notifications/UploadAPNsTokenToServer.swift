@@ -7,7 +7,14 @@
 
 import Foundation
 
-func uploadApnsTokenToServer(deviceToken: String) -> Bool {
+class UploadPushNotificationConfigRepresentable {
+    let newPricesAvailableNotification: Bool
+    init(_ newPricesAvailableNotification: Bool) {
+        self.newPricesAvailableNotification = newPricesAvailableNotification
+    }
+}
+
+func uploadPushNotificationSettings(deviceToken: String, configuration: UploadPushNotificationConfigRepresentable) -> Bool {
     struct ReturnCode: Decodable {
         var tokenWasPassedSuccessfully: Bool
     }

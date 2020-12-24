@@ -33,8 +33,8 @@ struct PowerOutputInputField: View {
     }
     
     func setPowerOutputString() {
-        if currentSetting.setting!.cheapestTimeLastPower != 0 {
-            if let powerOutputString = currentSetting.setting!.cheapestTimeLastPower.priceString {
+        if currentSetting.entity!.cheapestTimeLastPower != 0 {
+            if let powerOutputString = currentSetting.entity!.cheapestTimeLastPower.priceString {
                 cheapestHourManager.powerOutputString = powerOutputString
             }
         }

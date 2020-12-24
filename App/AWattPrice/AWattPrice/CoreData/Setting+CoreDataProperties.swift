@@ -13,7 +13,6 @@ extension Setting {
     @nonobjc public class func fetchRequest() -> NSFetchRequest<Setting> {
         return NSFetchRequest<Setting>(entityName: "Setting")
     }
-
     /// Stores the last apns token that was sent to the Apps provider server.
     @NSManaged public var lastApnsToken: String?
     

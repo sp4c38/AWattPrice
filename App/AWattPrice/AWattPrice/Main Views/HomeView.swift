@@ -45,7 +45,7 @@ struct HomeView: View {
     var body: some View {
         NavigationView {
             VStack {
-                if awattarData.energyData != nil && currentSetting.setting != nil && awattarData.currentlyNoData == false {
+                if awattarData.energyData != nil && currentSetting.entity != nil && awattarData.currentlyNoData == false {
                     ZStack {
                         VStack {
                             VStack(spacing: 5) {
@@ -91,7 +91,7 @@ struct HomeView: View {
         .navigationViewStyle(StackNavigationViewStyle())
         .onAppear {
             // Though onAppear will be called only on the first ever appear anyway this variable is used to make sure that onAppear doesn't interfere with any other on* methods applied to this view.
-            awattarData.download(forRegion: currentSetting.setting?.regionSelection ?? 0)
+            awattarData.download(forRegion: currentSetting.entity?.regionSelection ?? 0)
             currentSetting.validateTariffAndEnergyPriceSet()
             managePushNotificationsOnAppStart()
             firstEverAppear = false
@@ -99,11 +99,11 @@ struct HomeView: View {
         .onChange(of: scenePhase) { phase in
             if phase == .active && firstEverAppear == false {
                 print("Updating data")
-                awattarData.download(forRegion: currentSetting.setting?.regionSelection ?? 0)
+                awattarData.download(forRegion: currentSetting.entity?.regionSelection ?? 0)
             }
         }
-        .onChange(of: currentSetting.setting?.regionSelection) { newRegionSelection in
-            awattarData.download(forRegion: currentSetting.setting?.regionSelection ?? 0)
+        .onChange(of: currentSetting.entity?.regionSelection) { newRegionSelection in
+            awattarData.download(forRegion: currentSetting.entity?.regionSelection ?? 0)
         }
     }
 }

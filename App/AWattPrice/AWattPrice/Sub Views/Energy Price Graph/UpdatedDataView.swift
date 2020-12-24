@@ -73,7 +73,7 @@ struct UpdatedDataView: View {
         }
         .contentShape(Rectangle())
         .onTapGesture {
-            awattarData.download(forRegion: currentSetting.setting!.regionSelection)
+            awattarData.download(forRegion: currentSetting.entity!.regionSelection)
         }
     }
 }

@@ -23,8 +23,8 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         }.joined()
         
         if self.currentSetting != nil {
-            if currentSetting!.setting != nil {
-                if currentSetting!.setting!.lastApnsToken != apnsDeviceTokenString {
+            if currentSetting!.entity != nil {
+                if currentSetting!.entity!.lastApnsToken != apnsDeviceTokenString {
                     print("Need to update stored APNs token. Stored token and current APNs token are not identical.")
                     let requestSuccessful = uploadApnsTokenToServer(deviceToken: apnsDeviceTokenString)
                     if requestSuccessful {

@@ -15,8 +15,8 @@ struct ContentView: View {
     
     var body: some View {
         VStack {
-            if currentSetting.setting != nil {
-                if currentSetting.setting!.splashScreensFinished == true {
+            if currentSetting.entity != nil {
+                if currentSetting.entity!.splashScreensFinished == true {
                     ZStack {
                         // The app checks and activates certain Notification processes when it can make sure that the splash screens were already finished and won't appear anymore. That's why those processes are handled inside of the HomeView file.
                         

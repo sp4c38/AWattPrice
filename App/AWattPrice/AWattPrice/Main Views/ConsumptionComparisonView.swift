@@ -50,7 +50,7 @@ struct ConsumptionComparisonView: View {
     var body: some View {
         NavigationView {
             VStack {
-                if awattarData.energyData != nil && currentSetting.setting != nil {
+                if awattarData.energyData != nil && currentSetting.entity != nil {
                     ScrollView {
                         VStack(spacing: 0) {
                             VStack(alignment: .center, spacing: 20) {

@@ -40,7 +40,7 @@ struct RegionAndVatSelection: View {
                         }
                 }
                 .onAppear {
-                    selectedRegion = Int(currentSetting.setting!.regionSelection)
+                    selectedRegion = Int(currentSetting.entity!.regionSelection)
                     firstAppear = false
                 }
                 
@@ -57,7 +57,7 @@ struct RegionAndVatSelection: View {
                         }
                         .labelsHidden()
                         .onAppear {
-                            pricesWithTaxIncluded = currentSetting.setting!.pricesWithTaxIncluded
+                            pricesWithTaxIncluded = currentSetting.entity!.pricesWithTaxIncluded
                             firstAppear = false
                         }
                         .ifTrue(firstAppear == false) { content in

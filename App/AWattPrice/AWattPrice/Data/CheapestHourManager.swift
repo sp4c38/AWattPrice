@@ -152,16 +152,16 @@ class CheapestHourManager: ObservableObject {
             self.hourlyEnergyCosts = nil
             var hourlyPrice: Double = 0
             
-            if currentSetting.setting!.awattarTariffIndex == 0 {
+            if currentSetting.entity!.awattarTariffIndex == 0 {
                 for hourPair in self.associatedPricePoints {
                     let lengthOfIntervene: Double = Double(abs(hourPair.endTimestamp - hourPair.startTimestamp)) / 60 / 60 // In hours
                     var price = hourPair.marketprice
                     
-                    if currentSetting.setting!.pricesWithTaxIncluded {
+                    if currentSetting.entity!.pricesWithTaxIncluded {
                         price *= GlobalAppSettings.VATAmount
                     }
                     
-                    let basePrice: Double = lengthOfIntervene * currentSetting.setting!.awattarBaseElectricityPrice
+                    let basePrice: Double = lengthOfIntervene * currentSetting.entity!.awattarBaseElectricityPrice
                     
                     hourlyPrice += (lengthOfIntervene * price) + basePrice
                 }

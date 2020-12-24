@@ -49,8 +49,8 @@ struct AwattarBasicEnergyChargePriceSetting: View {
                             }
                     }
                     .onAppear {
-                        if currentSetting.setting!.awattarBaseElectricityPrice != 0 {
-                            if let priceString = currentSetting.setting!.awattarBaseElectricityPrice.priceString {
+                        if currentSetting.entity!.awattarBaseElectricityPrice != 0 {
+                            if let priceString = currentSetting.entity!.awattarBaseElectricityPrice.priceString {
                                 baseEnergyPriceString = priceString
                             }
                         }
@@ -99,7 +99,7 @@ struct AwattarTariffSelectionSetting: View {
                         }
                 }
                 .onAppear {
-                    awattarEnergyTariffIndex = Int(currentSetting.setting!.awattarTariffIndex)
+                    awattarEnergyTariffIndex = Int(currentSetting.entity!.awattarTariffIndex)
                     firstAppear = false
                 }
                 .frame(maxWidth: .infinity)

@@ -12,7 +12,9 @@ func managePushNotificationsOnAppStart() {
     DispatchQueue.global(qos: .background).async {
         let notificationAccess = checkNotificationAccess()
         if notificationAccess == true {
-            UIApplication.shared.registerForRemoteNotifications()
+            DispatchQueue.main.async {
+                UIApplication.shared.registerForRemoteNotifications()
+            }
         } else {
         }
     }

@@ -16,7 +16,7 @@ struct SettingsPageView: View {
     var body: some View {
         NavigationView {
             VStack {
-                if currentSetting.setting != nil {
+                if currentSetting.entity != nil {
                     CustomInsetGroupedList {
                         RegionAndVatSelection()
 

@@ -32,8 +32,8 @@ struct EnergyUsageInputField: View {
     }
     
     func setEnergyUsageString() {
-        if currentSetting.setting!.cheapestTimeLastConsumption != 0 {
-            if let energyUsageString = currentSetting.setting!.cheapestTimeLastConsumption.priceString {
+        if currentSetting.entity!.cheapestTimeLastConsumption != 0 {
+            if let energyUsageString = currentSetting.entity!.cheapestTimeLastConsumption.priceString {
                 cheapestHourManager.energyUsageString = energyUsageString
             }
         }
@@ -56,7 +56,7 @@ struct EnergyUsageInputField: View {
                         content
                             .onChange(of: cheapestHourManager.energyUsageString) { newValue in
                                 currentSetting.changeCheapestTimeLastConsumption(newLastConsumption: newValue.doubleValue ?? 0)
-                                if let energyUsageString = currentSetting.setting!.cheapestTimeLastConsumption.priceString {
+                                if let energyUsageString = currentSetting.entity!.cheapestTimeLastConsumption.priceString {
                                     cheapestHourManager.energyUsageString = energyUsageString
                                 }
                             }

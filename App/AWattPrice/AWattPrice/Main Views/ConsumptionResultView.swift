@@ -134,13 +134,13 @@ struct ConsumptionResultView: View {
         .onAppear {
             cheapestHourManager.calculateCheapestHours(energyData: awattarData.energyData!, currentSetting: currentSetting)
         }
-        .onChange(of: currentSetting.setting!.awattarTariffIndex) { _ in
+        .onChange(of: currentSetting.entity!.awattarTariffIndex) { _ in
             // The tariff selection has affects on the hourly price which was calculated previously. That's why it has to be recalculated when the tariff selection changes.
             if cheapestHourManager.cheapestHoursForUsage != nil {
                 cheapestHourManager.cheapestHoursForUsage!.calculateHourlyPrice(currentSetting: currentSetting)
             }
         }
-        .onChange(of: currentSetting.setting!.awattarBaseElectricityPrice) { _ in
+        .onChange(of: currentSetting.entity!.awattarBaseElectricityPrice) { _ in
             if cheapestHourManager.cheapestHoursForUsage != nil {
                 cheapestHourManager.cheapestHoursForUsage!.calculateHourlyPrice(currentSetting: currentSetting)
             }

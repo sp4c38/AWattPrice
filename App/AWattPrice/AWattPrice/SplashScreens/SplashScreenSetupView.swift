@@ -17,7 +17,7 @@ struct SplashScreenSetupView: View {
     
     var body: some View {
         VStack {
-            if currentSetting.setting != nil {
+            if currentSetting.entity != nil {
                 CustomInsetGroupedList {
                     RegionAndVatSelection()
 

@@ -29,7 +29,8 @@ class Token_Database_Manager:
         self.lock.acquire()
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS token_storage (
-                all_data TEXT PRIMARY KEY NOT NULL
+                token TEXT PRIMARY KEY NOT NULL,
+                configuration TEXT NOT NULL
             )""")
         cursor.close()
         self.db.commit()
@@ -41,10 +42,11 @@ class Token_Database_Manager:
         log.info("Connection to database was closed.")
 
 class APNs_Token_Manager:
-    def __init__(self, token, database_manager):
-        self.token = token
-        self.data = None
+    def __init__(self, token_data, database_manager):
+        self.token_data = token_data
+        self.final_data = None
         self.db_manager = database_manager
+        self.is_new_token = False # Is set later
 
     def acquire(self):
         self.db_manager.lock.acquire()
@@ -60,55 +62,51 @@ class APNs_Token_Manager:
         loop = asyncio.get_event_loop()
         await loop.run_in_executor(None, self.release)
 
-    async def add_token(self) -> bool:
-        if not self.data:
-            self.data = {"tokens": [self.token]}
-            return True
-        else:
-            if not self.token in self.data["tokens"]:
-                self.data["tokens"].append(self.token)
-                return True
-            else:
-                return False
-
     def write_database(self):
         cursor = self.db_manager.db.cursor()
-        cursor.execute("SELECT * FROM token_storage;")
-        item_count = len(cursor.fetchall())
-        new_data = json.dumps(self.data)
 
-        if item_count == 0:
+        if self.is_new_token:
+            encoded_config = json.dumps(self.final_data)
             with self.db_manager.db:
-                cursor.execute("INSERT INTO token_storage VALUES(?);", (new_data,))
-                self.db_manager.db.commit()
-        elif item_count == 1:
-            cursor.execute(""" UPDATE token_storage SET all_data = ? WHERE ROWID = ?""", (new_data, 1,))
-            self.db_manager.db.commit()
+                cursor.execute("INSERT INTO token_storage VALUES(?, ?);", (self.final_data["token"], encoded_config,))
+            log.info("Stored a new APNs config (and token).")
+        else:
+            encoded_config = json.dumps(self.final_data)
+            with self.db_manager.db:
+                cursor.execute(""" UPDATE token_storage SET configuration = ? WHERE token = ?""",
+                              (encoded_config, self.final_data["token"],))
+            log.info("Stored a new APNs config (and token).")
 
+        self.db_manager.db.commit()
 
-    def read_database(self):
+    def set_data_task(self):
         cursor = self.db_manager.db.cursor()
-        items = cursor.execute("SELECT * FROM token_storage;").fetchall()
+        token = self.token_data["token"]
+        items = cursor.execute("SELECT * FROM token_storage WHERE token = ? LIMIT 1;", (token,)).fetchall()
 
         if len(items) == 0:
-            self.data = None
-            return
-        elif len(items) > 1:
-            log.warning("Found more than one token row in the database. This should never happen!\
-                         The first row is used for further reading and writing.")
+            self.is_new_token = True
+            self.final_data = {"token": self.token_data["token"], "config": self.token_data["config"]}
+            log.info("New APNs token and configuration was sent from a client.")
+            return True
+        elif len(items) == 1:
+            if not items[0][1] == json.dumps(self.token_data):
+                self.is_new_token = False # Just new config but no new token
+                self.final_data = {"token": items[0][0], "config": self.token_data["config"]}
+                log.info("Client requested to update existing APNs configuration.")
+                return True
+            else:
+                log.warning("A client resent his APNs token and configuration. "\
+                            "They are same as already stored on the servers APNs database. "\
+                            "This shouldn't happen because only new APNs configuration (and tokens) "\
+                            "should be sent from the client.")
+                return False
+        return False
 
-        raw_data = items[0][0]
-        print(raw_data)
-        try:
-            data = json.loads(raw_data)
-            self.data = data
-        except Exception as exp:
-            log.warning(f"Could not read and parse existing APNs tokens from database: {exp}.")
-            self.data = None
-
-    async def read_from_database(self):
+    async def set_data(self):
         loop = asyncio.get_event_loop()
-        await loop.run_in_executor(None, self.read_database)
+        need_to_write_data = await loop.run_in_executor(None, self.set_data_task)
+        return need_to_write_data
 
     async def write_to_database(self):
         loop = asyncio.get_event_loop()

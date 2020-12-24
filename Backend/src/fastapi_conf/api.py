@@ -57,9 +57,9 @@ async def with_region(region_id):
 
 @api.post("/data/apns/send_token")
 async def send_token(request: Request, background_tasks: BackgroundTasks):
-    token = await apns.validate_token(request)
-    if not token == None:
-        background_tasks.add_task(apns.write_token, token, db_manager)
+    request_data = await apns.validate_token(request)
+    if not request_data == None:
+        background_tasks.add_task(apns.write_token, request_data, db_manager)
         return JSONResponse({"tokenWasPassedSuccessfully": True})
     else:
         return JSONResponse({"tokenWasPassedSuccessfully": False})

@@ -21,7 +21,9 @@ struct DataRetrievalLoadingView: View {
 
 struct DataRetrievalError: View {
     @Environment(\.colorScheme) var colorScheme
+    @Environment(\.networkManager) var networkManager
     @EnvironmentObject var awattarData: AwattarData
+    @EnvironmentObject var currentSetting: CurrentSetting
     
     var body: some View {
         VStack(alignment: .center) {
@@ -32,12 +34,12 @@ struct DataRetrievalError: View {
                     .foregroundColor(Color.orange)
                     .font(.system(size: 60, weight: .light))
                 
-                Text("dataDownloadError.tryAgainLater")
+                Text("dataError.tryAgainLater")
                     .font(.title3)
                     .multilineTextAlignment(.center)
                 
                 Button(action: {
-                    awattarData.download()
+                    awattarData.download(forRegion: currentSetting.entity!.regionSelection, networkManager: networkManager)
                 }) {
                     Text("general.retry")
                 }.buttonStyle(RetryButtonStyle())
@@ -55,7 +57,9 @@ struct DataRetrievalError: View {
 
 struct CurrentlyNoData: View {
     @Environment(\.colorScheme) var colorScheme
+    @Environment(\.networkManager) var networkManager
     @EnvironmentObject var awattarData: AwattarData
+    @EnvironmentObject var currentSetting: CurrentSetting
     
     var body: some View {
         VStack(alignment: .center) {
@@ -66,12 +70,12 @@ struct CurrentlyNoData: View {
                     .foregroundColor(Color(red: 0.99, green: 0.74, blue: 0.04, opacity: 1.0))
                     .font(.system(size: 60, weight: .light))
                 
-                Text("dataDownloadError.noDataAvailable")
+                Text("dataError.noDataAvailable")
                     .font(.title3)
                     .multilineTextAlignment(.center)
                 
                 Button(action: {
-                    awattarData.download()
+                    awattarData.download(forRegion: currentSetting.entity!.regionSelection, networkManager: networkManager)
                 }) {
                     Text("general.retry")
                 }.buttonStyle(RetryButtonStyle())
@@ -87,13 +91,45 @@ struct CurrentlyNoData: View {
     }
 }
 
+struct SettingLoadingError: View {
+    @Environment(\.colorScheme) var colorScheme
+    
+    var body: some View {
+        VStack(alignment: .center) {
+            Spacer()
+            
+            VStack(spacing: 30) {
+                Image(systemName: "gear")
+                    .foregroundColor(Color.red)
+                    .font(.system(size: 60, weight: .light))
+                
+                Text("dataError.settingsLoadingError")
+                    .foregroundColor(Color.red)
+                    .font(.title3)
+                    .multilineTextAlignment(.center)
+            }
+            .padding(25)
+            .background(
+                RoundedRectangle(cornerRadius: 20)
+                    .stroke(Color.red, lineWidth: 5)
+            )
+
+            Spacer()
+        }
+    }
+}
+
 /// Classify network errors
 struct DataDownloadAndError: View {
     @EnvironmentObject var awattarData: AwattarData
+    @EnvironmentObject var crtNotifiSetting: CurrentNotificationSetting
+    @EnvironmentObject var currentSetting: CurrentSetting
     
     var body: some View {
         VStack {
-            if awattarData.dataRetrievalError == true {
+            if crtNotifiSetting.entity == nil || currentSetting.entity == nil {
+                SettingLoadingError()
+            } else if awattarData.dataRetrievalError == true {
                 DataRetrievalError()
                     .transition(.opacity)
             } else if awattarData.currentlyNoData == true {
@@ -108,7 +144,13 @@ struct DataDownloadAndError: View {
 
 struct NetworkConnectionErrorView_Previews: PreviewProvider {
     static var previews: some View {
-        DataRetrievalError()
-            .preferredColorScheme(.dark)
+        Group {
+            DataRetrievalError()
+                .preferredColorScheme(.dark)
+            CurrentlyNoData()
+                .preferredColorScheme(.dark)
+            SettingLoadingError()
+                .preferredColorScheme(.dark)
+        }
     }
 }

@@ -32,10 +32,10 @@ struct RegionAndVatSelection: View {
                 .ifTrue(firstAppear == false) { content in
                     content
                         .onChange(of: selectedRegion) { newRegionSelection in
-                            currentSetting.changeRegionSelection(newRegionSelection: Int16(newRegionSelection))
+                            currentSetting.changeRegionSelection(newValue: Int16(newRegionSelection))
                             
                             if newRegionSelection == 1 {
-                                currentSetting.changeTaxSelection(newTaxSelection: false)
+                                currentSetting.changeTaxSelection(newValue: false)
                             }
                         }
                 }
@@ -63,7 +63,7 @@ struct RegionAndVatSelection: View {
                         .ifTrue(firstAppear == false) { content in
                             content
                                 .onChange(of: pricesWithTaxIncluded) { newValue in
-                                    currentSetting.changeTaxSelection(newTaxSelection: newValue)
+                                    currentSetting.changeTaxSelection(newValue: newValue)
                                 }
                         }
                     }

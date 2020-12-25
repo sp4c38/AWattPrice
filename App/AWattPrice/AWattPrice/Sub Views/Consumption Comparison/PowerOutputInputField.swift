@@ -56,7 +56,7 @@ struct PowerOutputInputField: View {
                     .ifTrue(firstAppear == false) { content in
                         content
                             .onChange(of: cheapestHourManager.powerOutputString) { newValue in
-                                currentSetting.changeCheapestTimeLastPower(newLastPower: newValue.doubleValue ?? 0)
+                                currentSetting.changeCheapestTimeLastPower(newValue: newValue.doubleValue ?? 0)
                                 if let energyUsageString = (newValue.doubleValue ?? 0).priceString {
                                     cheapestHourManager.powerOutputString = energyUsageString
                                 }

@@ -6,7 +6,36 @@
 //
 
 import CoreData
+import Network
 import SwiftUI
+
+class NetworkManager: ObservableObject {
+    @Published var networkStatus: NWPath.Status = NWPath.Status.unsatisfied
+    var monitorer: NWPathMonitor
+
+    init() {
+        self.monitorer = NWPathMonitor()
+        self.monitorer.pathUpdateHandler = { path in
+            DispatchQueue.main.async {
+                self.networkStatus = path.status
+            }
+        }
+        self.monitorer.start(queue: DispatchQueue(label: "NetworkMonitorer"))
+    }
+}
+
+struct NetworkManagerKey: EnvironmentKey {
+    static var defaultValue: NetworkManager = NetworkManager()
+}
+
+extension EnvironmentValues {
+    var networkManager: NetworkManager {
+        get {
+            return self[NetworkManagerKey.self]
+        }
+        set {}
+    }
+}
 
 /// An object which holds and loads a NSPersistentContainer to allow access to persistent stored data from Core Data.
 class PersistenceManager {

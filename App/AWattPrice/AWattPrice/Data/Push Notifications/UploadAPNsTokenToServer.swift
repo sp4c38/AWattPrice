@@ -25,9 +25,9 @@ func uploadPushNotificationSettings(configuration: UploadPushNotificationConfigR
         var apnsDeviceToken: String
     }
     
-    let sendURL = GlobalAppSettings.rootURLString + "/data/apns/send_token"
+    let sendURL = GlobalAppSettings.rootURLString + "/data/apns/send_tokenf"
     var request = URLRequest(url: URL(string: sendURL)!, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData)
-        
+//
     let jsonEncoder = JSONEncoder()
     let encodedJSON: Data?
     do {
@@ -36,10 +36,10 @@ func uploadPushNotificationSettings(configuration: UploadPushNotificationConfigR
         encodedJSON = nil
     }
     guard let requestBody = encodedJSON else { return false }
-    
+
     request.httpMethod = "POST"
     request.httpBody = requestBody
-    
+
     var returnCode: ReturnCode? = nil
     
     let dispatchSemaphore = DispatchSemaphore(value: 0)
@@ -48,19 +48,20 @@ func uploadPushNotificationSettings(configuration: UploadPushNotificationConfigR
             let jsonDecoder = JSONDecoder()
             do {
                 let decodedReturn = try jsonDecoder.decode(ReturnCode.self, from: data) // ReturnCode.self: metatype
-                
+
                 returnCode = decodedReturn
             } catch {
                 print("Couldn't decode the data returned from the provider server after trying to pass the notification token to the provider server. Error: \(error).")
             }
         }
-        
+
         if let error = error {
             print("Error sending APNs token to server: \(error).")
         }
         dispatchSemaphore.signal()
-    }.resume()
-    
+    }
+    .resume()
+
     dispatchSemaphore.wait()
     
     if returnCode == nil {

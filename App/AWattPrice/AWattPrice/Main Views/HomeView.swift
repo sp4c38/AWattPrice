@@ -27,9 +27,10 @@ struct HeaderSizePreferenceKey: PreferenceKey {
 /// The home view mainly holds the graph which represents energy costs for each hour throughout the day.
 struct HomeView: View {
     @Environment(\.scenePhase) var scenePhase
+    @Environment(\.networkManager) var networkManager
     @EnvironmentObject var awattarData: AwattarData
-    @EnvironmentObject var currentSetting: CurrentSetting
     @EnvironmentObject var crtNotifiSetting: CurrentNotificationSetting
+    @EnvironmentObject var currentSetting: CurrentSetting
     
     @State var firstEverAppear: Bool = true
     @State var showSettingsPage: Bool = false
@@ -84,27 +85,27 @@ struct HomeView: View {
                         .padding(.trailing, 5)
                 })
             .fullScreenCover(isPresented: $showSettingsPage) {
-                SettingsPageView()                    //.environmentObject(awattarData)
-//                    .environmentObject(currentSetting)
-//                    .environmentObject(crtNotifiSetting)
+                SettingsPageView()
+                    .environmentObject(awattarData)
+                    .environmentObject(currentSetting)
+                    .environmentObject(crtNotifiSetting)
             }
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .onAppear {
             // Though onAppear will be called only on the first ever appear anyway this variable is used to make sure that onAppear doesn't interfere with any other on* methods applied to this view.
-            awattarData.download(forRegion: currentSetting.entity?.regionSelection ?? 0)
+            awattarData.download(forRegion: currentSetting.entity?.regionSelection ?? 0, networkManager: networkManager)
             currentSetting.validateTariffAndEnergyPriceSet()
-            managePushNotificationsOnAppStart()
             firstEverAppear = false
         }
         .onChange(of: scenePhase) { phase in
             if phase == .active && firstEverAppear == false {
-                print("Updating data")
-                awattarData.download(forRegion: currentSetting.entity?.regionSelection ?? 0)
+                print("App was reentered. Updating data.")
+                awattarData.download(forRegion: currentSetting.entity?.regionSelection ?? 0, networkManager: networkManager)
             }
         }
         .onChange(of: currentSetting.entity?.regionSelection) { newRegionSelection in
-            awattarData.download(forRegion: currentSetting.entity?.regionSelection ?? 0)
+            awattarData.download(forRegion: currentSetting.entity?.regionSelection ?? 0, networkManager: networkManager)
         }
     }
 }

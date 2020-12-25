@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct UpdatedDataView: View {
+    @Environment(\.networkManager) var networkManager
     @EnvironmentObject var awattarData: AwattarData
     @EnvironmentObject var currentSetting: CurrentSetting
     
@@ -73,7 +74,7 @@ struct UpdatedDataView: View {
         }
         .contentShape(Rectangle())
         .onTapGesture {
-            awattarData.download(forRegion: currentSetting.entity!.regionSelection)
+            awattarData.download(forRegion: currentSetting.entity!.regionSelection, networkManager: networkManager)
         }
     }
 }

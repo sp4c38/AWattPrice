@@ -157,7 +157,6 @@ struct EnergyPriceGraph: View {
     
     func readRectSize(preference: GraphSizePreferenceKey.SizeBounds, geo: GeometryProxy) -> some View {
         let newSizeRect = geo[preference.bounds]
-        
         DispatchQueue.main.async {
             guard (newSizeRect != self.sizeRect) else { return }
             self.sizeRect = newSizeRect

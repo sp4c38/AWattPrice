@@ -53,16 +53,8 @@ class AwattarData: ObservableObject {
     @Published var dataRetrievalError = false
     @Published var energyData: EnergyData? = nil
     @Published var profilesData = ProfilesData()
-
-    let internetMonitorer = NWPathMonitor()
     
-    init() {
-        internetMonitorer.pathUpdateHandler = { path in
-        }
-        internetMonitorer.start(queue: DispatchQueue(label: "Network Monitor"))
-    }
-    
-    func download(forRegion regionIdentifier: Int16 = 0) {
+    func download(forRegion regionIdentifier: Int16, networkManager: NetworkManager) {
         self.currentlyUpdatingData = true
         self.dataRetrievalError = false
         
@@ -123,10 +115,9 @@ class AwattarData: ObservableObject {
                         }
                     }
                     
+                    let currentEnergyData = EnergyData(prices: usedPricesDecodedData, minPrice: minPrice ?? 0, maxPrice: maxPrice ?? 0)
+                    
                     DispatchQueue.main.async {
-                        // Set data in main thread
-                        let currentEnergyData = EnergyData(prices: usedPricesDecodedData, minPrice: minPrice ?? 0, maxPrice: maxPrice ?? 0)
-                        
                         if currentEnergyData.prices.isEmpty {
                             print("No prices can be shown, because either there are none or they are outdated.")
                             withAnimation {
@@ -160,7 +151,7 @@ class AwattarData: ObservableObject {
             }
             
             DispatchQueue.main.async {
-                if dataComesFromCache == true && (self.internetMonitorer.currentPath.status == .unsatisfied) {
+                if dataComesFromCache == true && (networkManager.monitorer.currentPath.status == .unsatisfied) {
                     self.dataRetrievalError = true
                 }
                 

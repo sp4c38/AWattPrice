@@ -45,7 +45,7 @@ struct AwattarBasicEnergyChargePriceSetting: View {
                     .ifTrue(firstAppear == false) { content in
                         content
                             .onChange(of: baseEnergyPriceString) { newValue in
-                                currentSetting.changeBaseElectricityCharge(newBaseElectricityCharge: newValue.doubleValue ?? 0)
+                                currentSetting.changeBaseElectricityCharge(newValue: newValue.doubleValue ?? 0)
                             }
                     }
                     .onAppear {
@@ -95,7 +95,7 @@ struct AwattarTariffSelectionSetting: View {
                 .ifTrue(firstAppear == false) { content in
                     content
                         .onChange(of: awattarEnergyTariffIndex) { newValue in
-                            currentSetting.changeAwattarTariffIndex(newTariffIndex: Int16(newValue))
+                            currentSetting.changeAwattarTariffIndex(newValue: Int16(newValue))
                         }
                 }
                 .onAppear {

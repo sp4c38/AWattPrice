@@ -18,6 +18,9 @@ import CoreData
 
 /// Object which holds the current Setting object. Using NSFetchedResultsController the current setting stored in this object is updated if any changes occur to it.
 class CurrentNotificationSetting: AutoUpdatingEntity<NotificationSetting> {
+    /// If set to true it indicates to the app that the app is currently sending APNs configuration to the server (backend).
+    @Published var currentlySendingToServer = NSLock()
+    
     init(managedObjectContext: NSManagedObjectContext) {
         super.init(entityName: "NotificationSetting", managedObjectContext: managedObjectContext)
     }
@@ -33,7 +36,6 @@ class CurrentNotificationSetting: AutoUpdatingEntity<NotificationSetting> {
 
             do {
                 try self.managedObjectContext.save()
-                print("Successfully stored new last apns token.")
             } catch {
                 print("managedObjectContext failed to store new lastApnsToken attribute: \(error).")
                 return
@@ -49,8 +51,7 @@ class CurrentNotificationSetting: AutoUpdatingEntity<NotificationSetting> {
             }
             
             do {
-                try managedObjectContext.save()
-                print("Successfully stored new notification setting (getNewPricesAvailableNotification).")
+                try self.managedObjectContext.save()
             } catch {
                 print("managedObjectContext failed to store new notification setting (getNewPricesAvailableNotification) attribute: \(error).")
                 return
@@ -63,15 +64,17 @@ class CurrentNotificationSetting: AutoUpdatingEntity<NotificationSetting> {
         if self.entity != nil {
             if self.entity!.changesButErrorUploading != newValue {
                 self.entity!.changesButErrorUploading = newValue
+            } else {
+                return
             }
             
             do {
-                try managedObjectContext.save()
-                print("Successfully stored new notification setting (getNewPricesAvailableNotification).")
+                try self.managedObjectContext.save()
             } catch {
                 print("managedObjectContext failed to store new notification setting (getNewPricesAvailableNotification) attribute: \(error).")
                 return
             }
+            return
         }
     }
 }

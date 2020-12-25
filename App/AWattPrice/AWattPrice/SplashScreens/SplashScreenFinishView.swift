@@ -121,7 +121,7 @@ struct SplashScreenFinishView: View {
             
             Button(action: {
                 // Set splashScreensFinished to true so that splash screens aren't shown the next time the app opens
-                currentSetting.changeSplashScreenFinished(newState: true)
+                currentSetting.changeSplashScreenFinished(newValue: true)
             }) {
                 Text("splashScreen.finish.toApp")
             }

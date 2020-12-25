@@ -73,8 +73,9 @@
 "notificationPage.notification.newPricesAvailable.description" = "Receive a notification as soon as there are new aWATTar prices available for the next day (mostly 14 o'clock, sometimes earlier).";
 
 // Data download error view
-"dataDownloadError.tryAgainLater" = "Please try again later";
-"dataDownloadError.noDataAvailable" = "No data available\nPlease try again later";
+"dataError.tryAgainLater" = "Please try again later.";
+"dataError.noDataAvailable" = "No data available.\nPlease try again later.";
+"dataError.settingsLoadingError" = "Settings couldn't be loaded.\nPlease try again later.";
 
 // General localizations
 "general.loading" = "Loading";

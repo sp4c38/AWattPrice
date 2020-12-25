@@ -17,6 +17,7 @@ func getNotificationSetting(entityName: String, managedObjectContext: NSManagedO
         if let entityDesciption = NSEntityDescription.entity(forEntityName: "NotificationSetting", in: managedObjectContext) {
             let newSetting = NotificationSetting.init(entity: entityDesciption, insertInto: managedObjectContext)
             newSetting.lastApnsToken = nil
+            newSetting.changesButErrorUploading = false
             newSetting.getNewPricesAvailableNotification = false
             
             do {

@@ -51,6 +51,12 @@ struct GoToNotificationSettingView: View {
                     if let token = crtNotifiSettings.entity!.lastApnsToken {
                         let newConfig = UploadPushNotificationConfigRepresentable(token, crtNotifiSettings.entity!.getNewPricesAvailableNotification)
                         let requestSuccessful = uploadPushNotificationSettings(configuration: newConfig)
+                        
+                        if !requestSuccessful {
+                            crtNotifiSettings.changeChangesButErrorUploading(newValue: true)
+                        }
+                    } else {
+                        crtNotifiSettings.changeChangesButErrorUploading(newValue: true)
                     }
                 }
             }

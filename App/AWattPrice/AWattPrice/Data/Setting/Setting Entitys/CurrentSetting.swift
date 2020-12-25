@@ -31,12 +31,14 @@ class CurrentSetting: AutoUpdatingEntity<Setting> {
     }
 
     /*
-    Changes the state of if the splash screen is finished to the specified new state.
-    - Parameter newState: The new state to which the setting should be changed to.
+    Changes the value if the splash screen is finished to the specified new value.
+    - Parameter newValue: The new state to which the setting should be changed to.
     */
-    func changeSplashScreenFinished(newState: Bool) {
+    func changeSplashScreenFinished(newValue: Bool) {
         if self.entity != nil {
-            self.entity!.splashScreensFinished = newState
+            if self.entity!.splashScreensFinished != newValue {
+                self.entity!.splashScreensFinished = newValue
+            }
 
             do {
                 try self.managedObjectContext.save()
@@ -48,12 +50,14 @@ class CurrentSetting: AutoUpdatingEntity<Setting> {
     }
 
     /**
-    Changes the state of if prices are shown with tax/VAT included to the specified new state.
-    - Parameter newTaxSelection: The new state to which the setting should be changed to.
+    Changes the value if prices are shown with tax/VAT included to the specified new value.
+    - Parameter newValue: The new state to which the setting should be changed to.
     */
-    func changeTaxSelection(newTaxSelection: Bool) {
+    func changeTaxSelection(newValue: Bool) {
         if self.entity != nil {
-            self.entity!.pricesWithTaxIncluded = newTaxSelection
+            if self.entity!.pricesWithTaxIncluded != newValue {
+                self.entity!.pricesWithTaxIncluded = newValue
+            }
 
             do {
                 try self.managedObjectContext.save()
@@ -65,12 +69,14 @@ class CurrentSetting: AutoUpdatingEntity<Setting> {
     }
 
     /**
-    Changes the price of the base energy charge to the specified new state.
-    - Parameter newBaseEnergyCharge: The new price to which the setting should be changed to.
+    Changes the price of the base energy charge to the specified new value.
+    - Parameter newValue: The new price to which the setting should be changed to.
     */
-    func changeBaseElectricityCharge(newBaseElectricityCharge: Double) {
+    func changeBaseElectricityCharge(newValue: Double) {
         if self.entity != nil {
-            self.entity!.awattarBaseElectricityPrice = newBaseElectricityCharge
+            if self.entity!.awattarBaseElectricityPrice != newValue {
+                self.entity!.awattarBaseElectricityPrice = newValue
+            }
 
             do {
                 try self.managedObjectContext.save()
@@ -83,11 +89,13 @@ class CurrentSetting: AutoUpdatingEntity<Setting> {
 
     /**
     Changes the index of which energy profile/tariff is selected to the specified new index.
-    - Parameter newProfileIndex: The new index to which the setting should be changed to.
+    - Parameter newValue: The new index to which the setting should be changed to.
     */
-    func changeAwattarTariffIndex(newTariffIndex: Int16) {
+    func changeAwattarTariffIndex(newValue: Int16) {
         if self.entity != nil {
-            self.entity!.awattarTariffIndex = newTariffIndex
+            if self.entity!.awattarTariffIndex != newValue {
+                self.entity!.awattarTariffIndex = newValue
+            }
 
             do {
                 try self.managedObjectContext.save()
@@ -100,11 +108,13 @@ class CurrentSetting: AutoUpdatingEntity<Setting> {
 
     /**
     Changes the last power usage setting which is used on the cheapest time page.
-    - Parameter newLastPower: The new last power usage to which the setting should be changed to.
+    - Parameter newValue: The new last power usage to which the setting should be changed to.
     */
-    func changeCheapestTimeLastPower(newLastPower: Double) {
+    func changeCheapestTimeLastPower(newValue: Double) {
         if self.entity != nil {
-            self.entity!.cheapestTimeLastPower = newLastPower
+            if self.entity!.cheapestTimeLastPower != newValue {
+                self.entity!.cheapestTimeLastPower = newValue
+            }
 
             do {
                 try self.managedObjectContext.save()
@@ -116,11 +126,13 @@ class CurrentSetting: AutoUpdatingEntity<Setting> {
     }
 
     /* Changes the last total consumption setting which is used on the cheapest time page.
-    - Parameter newTimeLastPower: The new last power usage to which the setting should be changed to.
+    - Parameter newValue: The new last power usage to which the setting should be changed to.
     */
-    func changeCheapestTimeLastConsumption(newLastConsumption: Double) {
+    func changeCheapestTimeLastConsumption(newValue: Double) {
         if self.entity != nil {
-            self.entity!.cheapestTimeLastConsumption = newLastConsumption
+            if self.entity!.cheapestTimeLastConsumption != newValue {
+                self.entity!.cheapestTimeLastConsumption = newValue
+            }
 
             do {
                 try self.managedObjectContext.save()
@@ -132,11 +144,13 @@ class CurrentSetting: AutoUpdatingEntity<Setting> {
     }
 
     /* Changes the current region which is selected to get aWATTar prices.
-    - Parameter newRegionSelection: The new region which was selected and to which this setting should be changed to.
+    - Parameter newValue: The new region which was selected and to which this setting should be changed to.
     */
-    func changeRegionSelection(newRegionSelection: Int16) {
+    func changeRegionSelection(newValue: Int16) {
         if self.entity != nil {
-            self.entity!.regionSelection = newRegionSelection
+            if self.entity!.regionSelection != newValue {
+                self.entity!.regionSelection = newValue
+            }
 
             do {
                 try self.managedObjectContext.save()

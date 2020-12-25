@@ -24,18 +24,20 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         
         if self.crtNotifiSetting != nil {
             if self.crtNotifiSetting!.entity != nil {
-                if self.crtNotifiSetting!.entity!.lastApnsToken != apnsDeviceTokenString {
-                    print("Need to update stored APNs token. Stored token and current APNs token are not identical.")
+                if self.crtNotifiSetting!.entity!.lastApnsToken != apnsDeviceTokenString ||
+                    self.crtNotifiSetting!.entity!.changesButErrorUploading == true {
+                    print("Need to update stored APNs configuration. Stored APNs token and current APNs token are not identical OR previously notification configuration couldn't be uploaded because of some issue.")
                     let notificationConfigRepresentable = UploadPushNotificationConfigRepresentable(
                         apnsDeviceTokenString,
                         crtNotifiSetting!.entity!.getNewPricesAvailableNotification
                     )
                     let requestSuccessful = uploadPushNotificationSettings(configuration: notificationConfigRepresentable)
-                    if requestSuccessful {
-                        self.crtNotifiSetting!.changeLastApnsToken(newValue: apnsDeviceTokenString)
+                    self.crtNotifiSetting!.changeLastApnsToken(newValue: apnsDeviceTokenString)
+                    if !requestSuccessful {
+                        self.crtNotifiSetting!.changeChangesButErrorUploading(newValue: true)
                     }
                 } else {
-                    print("No need to update stored APNs token. Stored token and current APNs token are identical.")
+                    print("No need to update stored APNs configuration. Stored token and current APNs token are identical and no errors previously occurred when uploading changes.")
                 }
             }
         } else {

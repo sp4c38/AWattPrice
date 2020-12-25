@@ -27,7 +27,9 @@ class CurrentNotificationSetting: AutoUpdatingEntity<NotificationSetting> {
     */
     func changeLastApnsToken(newValue: String) {
         if self.entity != nil {
-            self.entity!.lastApnsToken = newValue
+            if self.entity!.lastApnsToken != newValue {
+                self.entity!.lastApnsToken = newValue
+            }
 
             do {
                 try self.managedObjectContext.save()
@@ -42,7 +44,9 @@ class CurrentNotificationSetting: AutoUpdatingEntity<NotificationSetting> {
     /// Switches to new value for the setting if the user should get a notification when new prices are available.
     func changeNewPricesAvailable(newValue: Bool) {
         if self.entity != nil {
-            self.entity!.getNewPricesAvailableNotification = newValue
+            if self.entity!.getNewPricesAvailableNotification != newValue {
+                self.entity!.getNewPricesAvailableNotification = newValue
+            }
             
             do {
                 try managedObjectContext.save()
@@ -54,4 +58,20 @@ class CurrentNotificationSetting: AutoUpdatingEntity<NotificationSetting> {
         }
     }
     
+    /// Switches to new value for the setting which indicates if settings were changed but there was an error uploading these settings.
+    func changeChangesButErrorUploading(newValue: Bool) {
+        if self.entity != nil {
+            if self.entity!.changesButErrorUploading != newValue {
+                self.entity!.changesButErrorUploading = newValue
+            }
+            
+            do {
+                try managedObjectContext.save()
+                print("Successfully stored new notification setting (getNewPricesAvailableNotification).")
+            } catch {
+                print("managedObjectContext failed to store new notification setting (getNewPricesAvailableNotification) attribute: \(error).")
+                return
+            }
+        }
+    }
 }

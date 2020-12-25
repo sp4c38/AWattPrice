@@ -18,6 +18,8 @@ import CoreData
 
 /// Object which holds the current Setting object. Using NSFetchedResultsController the current setting stored in this object is updated if any changes occur to it.
 class CurrentNotificationSetting: AutoUpdatingEntity<NotificationSetting> {
+    /// Is set to true on the notification configuration page and is set to true if changes were made but not yet uploaded. This is used to not create to much data traffic.
+    @Published var changesAndStaged = false
     /// If set to true it indicates to the app that the app is currently sending APNs configuration to the server (backend).
     @Published var currentlySendingToServer = NSLock()
     

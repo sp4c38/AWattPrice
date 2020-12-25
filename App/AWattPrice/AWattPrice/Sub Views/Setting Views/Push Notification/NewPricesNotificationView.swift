@@ -38,6 +38,7 @@ struct NewPricesNotificationView: View {
                         content
                             .onChange(of: newPricesNotificationSelection) { newValue in
                                 crtNotifiSettings.changeNewPricesAvailable(newValue: newValue)
+                                crtNotifiSettings.changesAndStaged = true
                             }
                     }
             }

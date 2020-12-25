@@ -8,11 +8,27 @@
 import SwiftUI
 import UIKit
 
-class AppDelegate: NSObject, UIApplicationDelegate {
+import UserNotifications
+
+class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
     var crtNotifiSetting: CurrentNotificationSetting? = nil
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+        let center = UNUserNotificationCenter.current()
+        center.delegate = self
         return true
+    }
+    
+    func applicationWillTerminate(_ application: UIApplication) {
+        if crtNotifiSetting != nil {
+            if crtNotifiSetting!.changesAndStaged == true {
+                if crtNotifiSetting!.entity != nil {
+                    if crtNotifiSetting!.entity!.changesButErrorUploading == false {
+                        crtNotifiSetting!.changeChangesButErrorUploading(newValue: true)
+                    }
+                }
+            }
+        }
     }
     
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
@@ -28,7 +44,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
                 if self.crtNotifiSetting!.entity!.lastApnsToken != apnsDeviceTokenString ||
                     self.crtNotifiSetting!.entity!.changesButErrorUploading == true {
                     DispatchQueue.global(qos: .background).async {
-                        print("Need to update stored APNs configuration. Stored APNs token and current APNs token are not identical OR previously notification configuration couldn't be uploaded because of some issue.")
+                        print("Need to update stored APNs configuration. Stored APNs token and current APNs token do NOT match OR previously notification configuration couldn't be uploaded because of some issue.")
                         let group = DispatchGroup()
                         group.enter()
                         DispatchQueue.main.async {
@@ -42,7 +58,6 @@ class AppDelegate: NSObject, UIApplicationDelegate {
                         )
                         let requestSuccessful = uploadPushNotificationSettings(configuration: notificationConfigRepresentable)
                         self.crtNotifiSetting!.changeLastApnsToken(newValue: apnsDeviceTokenString)
-                        print(requestSuccessful)
                         if !requestSuccessful {
                             DispatchQueue.main.async {
                                 self.crtNotifiSetting!.changeChangesButErrorUploading(newValue: true)
@@ -50,7 +65,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
                         }
                     }
                 } else {
-                    print("No need to update stored APNs configuration. Stored token and current APNs token are identical and no errors previously occurred when uploading changes.")
+                    print("No need to update stored APNs configuration. Stored token matches current APNs token and no errors previously occurred when uploading changes.")
                 }
             }
             self.crtNotifiSetting!.currentlySendingToServer.unlock()
@@ -61,5 +76,21 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
         print("Registration to APNs for push notifications was NOT granted: \(error.localizedDescription)")
+    }
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (_ options:UNNotificationPresentationOptions) -> Void)
+    {
+        print("Handle push from foreground")
+        // custom code to handle push while app is in the foreground
+        print("\(notification.request.content.userInfo)")
+        
+    }
+    //Second for background and close
+
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response:UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void)
+    {
+        print("Handle push from background or closed")
+        // if you set a member variable in didReceiveRemoteNotification, you will know if this is from closed or background
+        print("\(response.notification.request.content.userInfo)")
     }
 }

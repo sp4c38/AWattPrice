@@ -69,11 +69,11 @@ func calcSingleBarSizes(_ indexSelected: Int?, _ startHeight: CGFloat,  _ ownInd
         height += 10
         resultStartHeight += startHeight
         
-        fontSize = 9
+        fontSize = 11
         fontWeight = .semibold
     } else {
         resultStartHeight += startHeight
-        fontSize = 7
+        fontSize = 8
         fontWeight = .regular
     }
 
@@ -181,7 +181,7 @@ struct EnergyPriceSingleBar: View {
             .padding(1)
             .background(Color.white)
             .cornerRadius((isSelected == 1 || isSelected == 2) ? 3 : 1)
-            .position(x: ((isSelected == 1 || isSelected == 2) ? maximalNegativePriceBarWidth + startWidthPadding + 25 + fontSize : maximalNegativePriceBarWidth + startWidthPadding + 20), y: startHeight + (height / 2))
+            .position(x: ((isSelected == 1 || isSelected == 2) ?  startWidthPadding + 25 + fontSize : startWidthPadding + 20), y: startHeight + (height / 2))
 
             // Show start to end time of the hour in which the certain energy price applies
             HStack(spacing: 5) {

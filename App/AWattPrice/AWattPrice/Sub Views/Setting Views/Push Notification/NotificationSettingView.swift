@@ -9,6 +9,8 @@ import SwiftUI
 
 
 struct NotificationSettingView: View {
+    @Environment(\.scenePhase) var scenePhase
+    
     @State var newPricesNotificationSelection: Bool = false
     
     var body: some View {
@@ -21,9 +23,38 @@ struct NotificationSettingView: View {
     }
 }
 
+func notificationConfigChanged(_ crtNotifiSetting: CurrentNotificationSetting) {
+    crtNotifiSetting.currentlySendingToServer.lock()
+    print("Notification configuration has changed. Trying to upload to server.")
+    let group = DispatchGroup()
+    group.enter()
+    DispatchQueue.main.async {
+        crtNotifiSetting.changeChangesButErrorUploading(newValue: false)
+        group.leave()
+    }
+    group.wait()
+    
+    if let token = crtNotifiSetting.entity!.lastApnsToken {
+        let newConfig = UploadPushNotificationConfigRepresentable(token, crtNotifiSetting.entity!.getNewPricesAvailableNotification)
+        let requestSuccessful = uploadPushNotificationSettings(configuration: newConfig)
+        
+        if !requestSuccessful {
+            DispatchQueue.main.async {
+                crtNotifiSetting.changeChangesButErrorUploading(newValue: true)
+            }
+        }
+    } else {
+        print("No token is yet set. Will perform upload in background task later.")
+        DispatchQueue.main.async {
+            crtNotifiSetting.changeChangesButErrorUploading(newValue: true)
+        }
+    }
+    crtNotifiSetting.currentlySendingToServer.unlock()
+}
+
 struct GoToNotificationSettingView: View {
     @Environment(\.colorScheme) var colorScheme
-    @EnvironmentObject var crtNotifiSettings: CurrentNotificationSetting
+    @EnvironmentObject var crtNotifiSetting: CurrentNotificationSetting
     
     @State var redirectToNotificationPage: Int? = nil
     
@@ -47,16 +78,12 @@ struct GoToNotificationSettingView: View {
                 redirectToNotificationPage = 1
             }
             .onChange(of: redirectToNotificationPage) { newPageSelection in
-                if newPageSelection == nil {
-                    if let token = crtNotifiSettings.entity!.lastApnsToken {
-                        let newConfig = UploadPushNotificationConfigRepresentable(token, crtNotifiSettings.entity!.getNewPricesAvailableNotification)
-                        let requestSuccessful = uploadPushNotificationSettings(configuration: newConfig)
-                        
-                        if !requestSuccessful {
-                            crtNotifiSettings.changeChangesButErrorUploading(newValue: true)
+                if newPageSelection == nil && crtNotifiSetting.changesAndStaged == true {
+                    DispatchQueue.global(qos: .background).async {
+                        notificationConfigChanged(crtNotifiSetting)
+                        DispatchQueue.main.async {
+                            crtNotifiSetting.changesAndStaged = false
                         }
-                    } else {
-                        crtNotifiSettings.changeChangesButErrorUploading(newValue: true)
                     }
                 }
             }

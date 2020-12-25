@@ -7,14 +7,16 @@
 
 import Foundation
 
-class UploadPushNotificationConfigRepresentable {
-    let newPricesAvailableNotification: Bool
-    init(_ newPricesAvailableNotification: Bool) {
-        self.newPricesAvailableNotification = newPricesAvailableNotification
+class UploadPushNotificationConfigRepresentable: Encodable {
+    let apnsDeviceToken: String
+    let notificationConfig: [String: Bool]
+    init(_ apnsDeviceTokenString: String, _ newPricesAvailableNotification: Bool) {
+        self.apnsDeviceToken = apnsDeviceTokenString
+        self.notificationConfig = ["newPriceAvailable": newPricesAvailableNotification]
     }
 }
 
-func uploadPushNotificationSettings(deviceToken: String, configuration: UploadPushNotificationConfigRepresentable) -> Bool {
+func uploadPushNotificationSettings(configuration: UploadPushNotificationConfigRepresentable) -> Bool {
     struct ReturnCode: Decodable {
         var tokenWasPassedSuccessfully: Bool
     }
@@ -25,13 +27,11 @@ func uploadPushNotificationSettings(deviceToken: String, configuration: UploadPu
     
     let sendURL = GlobalAppSettings.rootURLString + "/data/apns/send_token"
     var request = URLRequest(url: URL(string: sendURL)!, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData)
-    
-    let sendData = SendData(apnsDeviceToken: deviceToken)
-    
+        
     let jsonEncoder = JSONEncoder()
     let encodedJSON: Data?
     do {
-        encodedJSON = try jsonEncoder.encode(sendData)
+        encodedJSON = try jsonEncoder.encode(configuration)
     } catch {
         encodedJSON = nil
     }

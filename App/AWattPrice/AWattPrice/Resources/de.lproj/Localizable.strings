@@ -67,6 +67,11 @@
 "settingsPage.helpByEmail" = "Hilfe per E-Mail";
 "settingsPage.suggestionByEmail" = "Vorschläge per E-Mail";
 
+// Notification Page localizations
+"notificationPage.notifications" = "Benachrichtungen";
+"notificationPage.notification.newPricesAvailable" = "New prices available";
+"notificationPage.notification.newPricesAvailable.description" = "Erhalten Sie eine Benachrichtigung, sobald neue aWATTar-Preise für den nächsten Tag verfügbar sind (meistens 14 Uhr, manchmal früher).";
+
 // Data download error view
 "dataDownloadError.tryAgainLater" = "Bitte versuchen Sie es\nspäter noch einmal";
 "dataDownloadError.noDataAvailable" = "Keine Daten verfügbar\nBitte versuchen Sie es später erneut";

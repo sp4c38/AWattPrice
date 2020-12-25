@@ -12,6 +12,7 @@ import SwiftUI
 struct SettingsPageView: View {
     @Environment(\.presentationMode) var presentationMode
     @EnvironmentObject var currentSetting: CurrentSetting
+    @EnvironmentObject var crtNotifiSetting: CurrentNotificationSetting
     
     var body: some View {
         NavigationView {
@@ -22,7 +23,11 @@ struct SettingsPageView: View {
 
 //                        AwattarTariffSelectionSetting()
 
-                        GoToNotificationSettingView()
+                        if crtNotifiSetting.entity != nil {
+                            if crtNotifiSetting.entity!.lastApnsToken != nil {
+                                GoToNotificationSettingView()
+                            }
+                        }
                         
                         GetHelpView()
                         

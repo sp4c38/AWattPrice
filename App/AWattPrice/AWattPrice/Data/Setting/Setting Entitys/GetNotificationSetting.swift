@@ -16,7 +16,6 @@ func getNotificationSetting(entityName: String, managedObjectContext: NSManagedO
         // No Settings object is yet created. Create a new Settings object with default values and save it to the persistent store
         if let entityDesciption = NSEntityDescription.entity(forEntityName: "NotificationSetting", in: managedObjectContext) {
             let newSetting = NotificationSetting.init(entity: entityDesciption, insertInto: managedObjectContext)
-            
             newSetting.lastApnsToken = nil
             newSetting.getNewPricesAvailableNotification = false
             

@@ -29,15 +29,15 @@ async def validate_token(request: Request):
     decoded_body = request_body.decode('utf-8')
 
     try:
-        token_json = json.loads(decoded_body)
+        body_json = json.loads(decoded_body)
         request_data = {"token": None, "config": None}
-        request_data["token"] = token_json["apnsDeviceToken"]
+        request_data["token"] = body_json["apnsDeviceToken"]
         request_data["config"] = {"new_price_available": False}
 
         # Always need to check with an if statment to ensure backwards-compatibility
         # of users using old AWattPrice versions
-        if "newPriceAvailable" in token_json["notificationConfig"]:
-            request_data["config"]["new_price_available"] = token_json["notificationConfig"]["newPriceAvailable"]
+        if "newPriceAvailable" in body_json["notificationConfig"]:
+            request_data["config"]["new_price_available"] = body_json["notificationConfig"]["newPriceAvailable"]
 
         if not request_data["token"] == None and not request_data["config"] == None:
             request_data_valid = [False, False]

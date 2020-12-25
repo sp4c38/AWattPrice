@@ -68,13 +68,13 @@ class APNs_Token_Manager:
         if self.is_new_token:
             encoded_config = json.dumps(self.final_data)
             with self.db_manager.db:
-                cursor.execute("INSERT INTO token_storage VALUES(?, ?);", (self.final_data["token"], encoded_config,))
+                cursor.execute("INSERT INTO token_storage VALUES(?, ?);", (self.token_data["token"], encoded_config,))
             log.info("Stored a new APNs config (and token).")
         else:
             encoded_config = json.dumps(self.final_data)
             with self.db_manager.db:
                 cursor.execute(""" UPDATE token_storage SET configuration = ? WHERE token = ?""",
-                              (encoded_config, self.final_data["token"],))
+                              (encoded_config, self.token_data["token"],))
             log.info("Stored a new APNs config (and token).")
 
         self.db_manager.db.commit()
@@ -86,13 +86,13 @@ class APNs_Token_Manager:
 
         if len(items) == 0:
             self.is_new_token = True
-            self.final_data = {"token": self.token_data["token"], "config": self.token_data["config"]}
+            self.final_data = {"config": self.token_data["config"]}
             log.info("New APNs token and configuration was sent from a client.")
             return True
         elif len(items) == 1:
             if not items[0][1] == json.dumps(self.token_data):
                 self.is_new_token = False # Just new config but no new token
-                self.final_data = {"token": items[0][0], "config": self.token_data["config"]}
+                self.final_data = {"config": self.token_data["config"]}
                 log.info("Client requested to update existing APNs configuration.")
                 return True
             else:

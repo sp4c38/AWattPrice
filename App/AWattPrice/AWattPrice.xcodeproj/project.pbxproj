@@ -91,7 +91,7 @@
 		610E64992573077900C1BAD9 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		6117E9D72590B52300A2B475 /* PushNotificationManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PushNotificationManager.swift; sourceTree = "<group>"; };
 		6117E9D82590B52300A2B475 /* UploadAPNsTokenToServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadAPNsTokenToServer.swift; sourceTree = "<group>"; };
-		6117E9E02590B65C00A2B475 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = Data/AppDelegate.swift; sourceTree = "<group>"; };
+		6117E9E02590B65C00A2B475 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		61190585256081A9007C04D3 /* Shapes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shapes.swift; sourceTree = "<group>"; };
 		61190590256081E8007C04D3 /* EnergyPriceSingleBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnergyPriceSingleBar.swift; sourceTree = "<group>"; };
 		61190595256083FE007C04D3 /* UpdatedDataView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdatedDataView.swift; sourceTree = "<group>"; };
@@ -257,6 +257,7 @@
 		614E784B25068E0600A7ED83 /* Data */ = {
 			isa = PBXGroup;
 			children = (
+				6117E9E02590B65C00A2B475 /* AppDelegate.swift */,
 				617DF0322594B573004BF4E2 /* AutoUpdatingEntity.swift */,
 				618AF8602593F81700E21583 /* Setting */,
 				614E784C25068F6100A7ED83 /* DownloadEnergyData.swift */,
@@ -307,7 +308,6 @@
 				61260071253B22C4009E0126 /* Styles */,
 				61200EC1253A04E600A104B1 /* SplashScreens */,
 				614E784B25068E0600A7ED83 /* Data */,
-				6117E9E02590B65C00A2B475 /* AppDelegate.swift */,
 				61504CFC250FF46D00EF41D6 /* Sub Views */,
 				618518DC2585057A00120D81 /* Main Views */,
 				617D85B125052C35009E18FB /* AwattarApp.swift */,

@@ -82,7 +82,7 @@ struct AgreementConsentView: View {
     }
     
     var body: some View {
-        HStack(spacing: 20) {
+        HStack(spacing: 24) {
             if isChecked == true {
                 Image(systemName: "checkmark.square")
                     .resizable()

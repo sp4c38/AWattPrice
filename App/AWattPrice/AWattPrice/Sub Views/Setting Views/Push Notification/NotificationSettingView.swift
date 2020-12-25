@@ -23,8 +23,9 @@ struct NotificationSettingView: View {
 
 struct GoToNotificationSettingView: View {
     @Environment(\.colorScheme) var colorScheme
+    @EnvironmentObject var crtNotifiSettings: CurrentNotificationSetting
     
-    @State var redirectToNotificationPage: Int? = 0
+    @State var redirectToNotificationPage: Int? = nil
     
     var body: some View {
         CustomInsetGroupedListItem(
@@ -35,7 +36,7 @@ struct GoToNotificationSettingView: View {
             HStack {
                 Image(systemName: "bell")
                     .font(.title2)
-                Text("notificationPage.goToDescription")
+                Text("notificationPage.notifications")
                 Spacer()
                 Image(systemName: "chevron.right")
                     .font(Font.caption.weight(.semibold))
@@ -44,6 +45,14 @@ struct GoToNotificationSettingView: View {
             .contentShape(Rectangle())
             .onTapGesture {
                 redirectToNotificationPage = 1
+            }
+            .onChange(of: redirectToNotificationPage) { newPageSelection in
+                if newPageSelection == nil {
+                    if let token = crtNotifiSettings.entity!.lastApnsToken {
+                        let newConfig = UploadPushNotificationConfigRepresentable(token, crtNotifiSettings.entity!.getNewPricesAvailableNotification)
+                        let requestSuccessful = uploadPushNotificationSettings(configuration: newConfig)
+                    }
+                }
             }
         }
         .customBackgroundColor(colorScheme == .light ? Color(hue: 0.6667, saturation: 0.0202, brightness: 0.9886) : Color(hue: 0.6667, saturation: 0.0340, brightness: 0.1424))

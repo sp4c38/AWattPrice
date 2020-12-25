@@ -22,12 +22,6 @@ from awattprice.token_manager import Token_Database_Manager
 from awattprice.utils import start_logging
 
 api = FastAPI()
-config = read_config()
-start_logging(config)
-
-db_manager = Token_Database_Manager()
-db_manager.connect(config)
-db_manager.check_table_exists()
 
 @api.get("/")
 async def root():
@@ -64,6 +58,17 @@ async def send_token(request: Request, background_tasks: BackgroundTasks):
     else:
         return JSONResponse({"tokenWasPassedSuccessfully": False})
 
+@api.on_event("startup")
+def startup_event():
+    print("Startup")
+    config = read_config()
+    start_logging(config)
+    global db_manager
+    db_manager = Token_Database_Manager()
+    db_manager.connect(config)
+    db_manager.check_table_exists()
+
 @api.on_event("shutdown")
 def shutdown_backend():
+    print("Shutdown")
     db_manager.disconnect()

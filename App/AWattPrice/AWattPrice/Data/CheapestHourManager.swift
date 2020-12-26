@@ -158,7 +158,7 @@ class CheapestHourManager: ObservableObject {
                     var price = hourPair.marketprice
                     
                     if currentSetting.entity!.pricesWithTaxIncluded {
-                        price *= GlobalAppSettings.VATAmount
+                        price *= currentSetting.currentVATToUse
                     }
                     
                     let basePrice: Double = lengthOfIntervene * currentSetting.entity!.awattarBaseElectricityPrice

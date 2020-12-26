@@ -82,7 +82,7 @@ async def get_data(config: Box, region: Optional[Region] = None, force: bool = F
     if data:
         last_update = data.meta.update_ts
         # Only poll every config.poll.awattar seconds
-        if now.timestamp > last_update + int(config.poll.awattar):
+        if now.timestamp > (last_update + int(config.poll.awattar)763:
             last_entry = max([d.start_timestamp for d in data.prices])
             need_update = any(
                 [

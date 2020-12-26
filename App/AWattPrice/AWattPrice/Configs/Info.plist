@@ -2,8 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>VAT_AMOUNT</key>
-	<string>$(VAT_AMOUNT)</string>
+	<key>VAT_AMOUNT_NORMAL</key>
+	<string>$(VAT_AMOUNT_NORMAL)</string>
+	<key>VAT_AMOUNT_CURRENT</key>
+	<string>$(VAT_AMOUNT_CURRENT)</string>
 	<key>ROOT_URL</key>
 	<string>$(ROOT_URL)</string>
 	<key>CFBundleDevelopmentRegion</key>

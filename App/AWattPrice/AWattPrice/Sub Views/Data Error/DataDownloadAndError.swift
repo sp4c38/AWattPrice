@@ -139,6 +139,7 @@ struct DataDownloadAndError: View {
                 DataRetrievalLoadingView()
             }
         }
+        .padding()
     }
 }
 

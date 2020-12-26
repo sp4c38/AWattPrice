@@ -10,7 +10,5 @@ def main():
     start_logging(config)
 
 
-
-
 if __name__ == "__main__":
     main()

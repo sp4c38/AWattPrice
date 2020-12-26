@@ -82,11 +82,10 @@ async def get_data(config: Box, region: Optional[Region] = None, force: bool = F
     if data:
         last_update = data.meta.update_ts
         # Only poll every config.poll.awattar seconds
-        if now.timestamp > (last_update + int(config.poll.awattar)763:
+        if now.timestamp > last_update + int(config.poll.awattar):
             last_entry = max([d.start_timestamp for d in data.prices])
             need_update = any(
                 [
-                    now.timestamp > last_entry,
                     # Should trigger if there are less than this amount of future energy price points.
                     len([True for e in data.prices if e.start_timestamp > now.timestamp]) <
                         int(config.poll.if_less_than),
@@ -94,6 +93,7 @@ async def get_data(config: Box, region: Optional[Region] = None, force: bool = F
             )
         else:
             need_update = False
+
     if need_update or force:
         # By default the Awattar API returns data for the next 24h. It can provide
         # data until tomorrow midnight. Let's ask for that. Further, set the start

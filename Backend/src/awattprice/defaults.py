@@ -21,7 +21,7 @@ host: https://api.awattar.at
 url: /v1/marketdata
 
 [file_location]
-data_dir:   ~/awattprice/data/
+data_dir: ~/awattprice/data/
 log_dir: ~/awattprice/log/
 apns_dir: ~/awattprice/apns/
 

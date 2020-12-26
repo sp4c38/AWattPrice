@@ -27,7 +27,6 @@ api = FastAPI()
 async def root():
     return {"message": "Nothing here. Please, move on."}
 
-
 @api.get("/data/")
 async def no_region():
     """Return data if no region is given for Germany."""
@@ -60,7 +59,6 @@ async def send_token(request: Request, background_tasks: BackgroundTasks):
 
 @api.on_event("startup")
 def startup_event():
-    print("Startup")
     config = read_config()
     start_logging(config)
     global db_manager
@@ -70,5 +68,4 @@ def startup_event():
 
 @api.on_event("shutdown")
 def shutdown_backend():
-    print("Shutdown")
     db_manager.disconnect()

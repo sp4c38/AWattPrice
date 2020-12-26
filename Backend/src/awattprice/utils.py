@@ -129,16 +129,18 @@ async def read_data(*, file_path: Path) -> Optional[Box]:
     """Return the data read from file_path."""
     if not file_path.is_file():
         return None
-    async with aiofiles.open(file_path) as fh:
-        raw_data = ""
-        async for line in fh:
-            raw_data += line
-    try:
-        data = json.loads(raw_data)
-    except Exception as e:
-        log.warning(f"Could not read and parse data from {file_path}: {e}.")
-        return None
-    return Box(data)
+    lock = FileLock(f"{file_path.as_posix()}.lck")
+    with lock.acquire():
+        async with aiofiles.open(file_path) as fh:
+            raw_data = ""
+            async for line in fh:
+                raw_data += line
+        try:
+            data = json.loads(raw_data)
+        except Exception as e:
+            log.warning(f"Could not read and parse data from {file_path}: {e}.")
+            return None
+        return Box(data)
 
 
 def write_data(*, data: Union[List, Dict, Box], file_path: Path, compress: bool = False) -> None:

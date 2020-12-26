@@ -56,7 +56,7 @@ struct ContentView: View {
                 }
                 .onChange(of: crtNotifiSetting.entity!.changesButErrorUploading) { newValue in
                     if newValue == true {
-                        tryNotificationUploadAfterFailed(crtNotifiSetting, networkManager)
+                        tryNotificationUploadAfterFailed(Int(currentSetting.entity!.regionIdentifier), crtNotifiSetting, networkManager)
                     }
                 }
             }

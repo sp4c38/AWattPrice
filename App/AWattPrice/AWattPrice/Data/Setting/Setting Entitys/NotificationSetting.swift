@@ -45,11 +45,27 @@ class CurrentNotificationSetting: AutoUpdatingEntity<NotificationSetting> {
         }
     }
     
-    /// Switches to new value for the setting if the user should get a notification when new prices are available.
-    func changeNewPricesAvailable(newValue: Bool) {
+    /// Locally stores if the user will get a push notification when prices drop below a certain value.
+    func changePriceDropsBelowValueNotifications(newValue: Bool) {
         if self.entity != nil {
-            if self.entity!.getNewPricesAvailableNotification != newValue {
-                self.entity!.getNewPricesAvailableNotification = newValue
+            if self.entity!.priceDropsBelowValueNotification != newValue {
+                self.entity!.priceDropsBelowValueNotification = newValue
+            }
+            
+            do {
+                try self.managedObjectContext.save()
+            } catch {
+                print("managedObjectContext failed to store new notification setting (getNewPricesAvailableNotification) attribute: \(error).")
+                return
+            }
+        }
+    }
+    
+    /// Get a push notification if the value drops below this locally stored selection.
+    func changePriceBelowValue(newValue: Double) {
+        if self.entity != nil {
+            if self.entity!.priceBelowValue != newValue {
+                self.entity!.priceBelowValue = newValue
             }
             
             do {

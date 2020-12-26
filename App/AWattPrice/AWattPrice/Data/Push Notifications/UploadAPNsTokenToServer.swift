@@ -8,11 +8,23 @@
 import Foundation
 
 class UploadPushNotificationConfigRepresentable: Encodable {
+    class NotificationConfig: Encodable {
+        var priceBelowValueNotification: Bool
+        var priceBelowValue: Double
+        
+        init(_ priceBelowValueNotification: Bool, _ priceBelowValue: Double) {
+            self.priceBelowValueNotification = priceBelowValueNotification
+            self.priceBelowValue = priceBelowValue
+        }
+    }
+    
     let apnsDeviceToken: String
-    let notificationConfig: [String: Bool]
-    init(_ apnsDeviceTokenString: String, _ newPricesAvailableNotification: Bool) {
+    let regionIdentifier: Int
+    let notificationConfig: NotificationConfig
+    init(_ apnsDeviceTokenString: String, regionIdentifier: Int, _ notifiSetting: NotificationSetting) {
         self.apnsDeviceToken = apnsDeviceTokenString
-        self.notificationConfig = ["newPriceAvailable": newPricesAvailableNotification]
+        self.regionIdentifier = regionIdentifier
+        self.notificationConfig = NotificationConfig(notifiSetting.priceDropsBelowValueNotification, notifiSetting.priceBelowValue)
     }
 }
 
@@ -77,7 +89,7 @@ func uploadPushNotificationSettings(configuration: UploadPushNotificationConfigR
     }
 }
 
-func tryNotificationUploadAfterFailed(_ crtNotifiSetting: CurrentNotificationSetting, _ networkManager: NetworkManager) {
+func tryNotificationUploadAfterFailed(_ regionIdentifier: Int, _ crtNotifiSetting: CurrentNotificationSetting, _ networkManager: NetworkManager) {
     print("Detected changes to current notification configuration which could previously NOT be uploaded successful. Trying to upload again in background when network connection is satisfied and a APNs token was set.")
     // If there were changes to the notification preferences but they couldn't be uploaded (e.g. no internet connection or other process currently uploading to server) than a background queue is initiated to take care of uploading these notification preferences as soon as no proces is currently sending to server and there is a internet connection.
     
@@ -90,7 +102,8 @@ func tryNotificationUploadAfterFailed(_ crtNotifiSetting: CurrentNotificationSet
         }
         let notificationConfig = UploadPushNotificationConfigRepresentable(
             crtNotifiSetting.entity!.lastApnsToken!,
-            crtNotifiSetting.entity!.getNewPricesAvailableNotification)
+            regionIdentifier: regionIdentifier,
+            crtNotifiSetting.entity!)
         let requestSuccessful = uploadPushNotificationSettings(configuration: notificationConfig)
         if requestSuccessful {
             print("Could successfuly upload notification configuration after previously an upload failed.")

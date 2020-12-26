@@ -39,7 +39,7 @@ struct DataRetrievalError: View {
                     .multilineTextAlignment(.center)
                 
                 Button(action: {
-                    awattarData.download(forRegion: currentSetting.entity!.regionSelection, networkManager: networkManager)
+                    awattarData.download(forRegion: currentSetting.entity!.regionIdentifier, networkManager: networkManager)
                 }) {
                     Text("general.retry")
                 }.buttonStyle(RetryButtonStyle())
@@ -75,7 +75,7 @@ struct CurrentlyNoData: View {
                     .multilineTextAlignment(.center)
                 
                 Button(action: {
-                    awattarData.download(forRegion: currentSetting.entity!.regionSelection, networkManager: networkManager)
+                    awattarData.download(forRegion: currentSetting.entity!.regionIdentifier, networkManager: networkManager)
                 }) {
                     Text("general.retry")
                 }.buttonStyle(RetryButtonStyle())

@@ -156,12 +156,12 @@ class CurrentSetting: AutoUpdatingEntity<Setting> {
     }
 
     /* Changes the current region which is selected to get aWATTar prices.
-    - Parameter newValue: The new region which was selected and to which this setting should be changed to.
+    - Parameter newValue: The new region identifier which was selected and to which this setting should be changed to.
     */
-    func changeRegionSelection(newValue: Int16) {
+    func changeRegionIdentifier(newValue: Int16) {
         if self.entity != nil {
-            if self.entity!.regionSelection != newValue {
-                self.entity!.regionSelection = newValue
+            if self.entity!.regionIdentifier != newValue {
+                self.entity!.regionIdentifier = newValue
             }
 
             do {

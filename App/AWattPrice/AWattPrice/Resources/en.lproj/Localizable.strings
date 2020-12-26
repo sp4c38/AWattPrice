@@ -69,8 +69,8 @@
 
 // Notification Page localizations
 "notificationPage.notifications" = "Notifications";
-"notificationPage.notification.newPricesAvailable" = "New prices available";
-"notificationPage.notification.newPricesAvailable.description" = "Receive a notification as soon as there are new aWATTar prices available for the next day (mostly 14 o'clock, sometimes earlier).";
+"notificationPage.notification.priceDropsBelowValue" = "Price drops below certain value";
+"notificationPage.notification.priceDropsBelowValue.description" = "Receive a notification as soon as new prices are available and prices drop below a custom set value.";
 
 // Data download error view
 "dataError.tryAgainLater" = "Please try again later.";

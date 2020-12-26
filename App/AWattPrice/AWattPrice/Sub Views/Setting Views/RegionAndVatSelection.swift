@@ -32,7 +32,7 @@ struct RegionAndVatSelection: View {
                 .ifTrue(firstAppear == false) { content in
                     content
                         .onChange(of: selectedRegion) { newRegionSelection in
-                            currentSetting.changeRegionSelection(newValue: Int16(newRegionSelection))
+                            currentSetting.changeRegionIdentifier(newValue: Int16(newRegionSelection))
                             
                             if newRegionSelection == 1 {
                                 currentSetting.changeTaxSelection(newValue: false)
@@ -40,7 +40,7 @@ struct RegionAndVatSelection: View {
                         }
                 }
                 .onAppear {
-                    selectedRegion = Int(currentSetting.entity!.regionSelection)
+                    selectedRegion = Int(currentSetting.entity!.regionIdentifier)
                     firstAppear = false
                 }
                 

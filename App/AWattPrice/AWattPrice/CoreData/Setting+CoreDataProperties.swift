@@ -18,7 +18,7 @@ extension Setting {
     @NSManaged public var splashScreensFinished: Bool
     
     /// Identifies for which region the user gets aWATTar prices
-    @NSManaged public var regionSelection: Int16
+    @NSManaged public var regionIdentifier: Int16
     
     /// Boolean which sets if prices throughout the app will be calculated with or without VAT/tax included
     @NSManaged public var pricesWithTaxIncluded: Bool

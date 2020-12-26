@@ -94,18 +94,18 @@ struct HomeView: View {
         .navigationViewStyle(StackNavigationViewStyle())
         .onAppear {
             // Though onAppear will be called only on the first ever appear anyway this variable is used to make sure that onAppear doesn't interfere with any other on* methods applied to this view.
-            awattarData.download(forRegion: currentSetting.entity?.regionSelection ?? 0, networkManager: networkManager)
+            awattarData.download(forRegion: currentSetting.entity!.regionIdentifier, networkManager: networkManager)
             currentSetting.validateTariffAndEnergyPriceSet()
             firstEverAppear = false
         }
         .onChange(of: scenePhase) { phase in
             if phase == .active && firstEverAppear == false {
                 print("App was reentered. Updating data.")
-                awattarData.download(forRegion: currentSetting.entity?.regionSelection ?? 0, networkManager: networkManager)
+                awattarData.download(forRegion: currentSetting.entity!.regionIdentifier, networkManager: networkManager)
             }
         }
-        .onChange(of: currentSetting.entity?.regionSelection) { newRegionSelection in
-            awattarData.download(forRegion: currentSetting.entity?.regionSelection ?? 0, networkManager: networkManager)
+        .onChange(of: currentSetting.entity!.regionIdentifier) { newRegionSelection in
+            awattarData.download(forRegion: currentSetting.entity!.regionIdentifier, networkManager: networkManager)
         }
     }
 }

@@ -58,18 +58,19 @@ struct AwattarApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
     var persistence = PersistenceManager()
-    var currentSetting: CurrentSetting
     var crtNotifiSetting: CurrentNotificationSetting
+    var currentSetting: CurrentSetting
     
     var awattarData: AwattarData
     var keyboardObserver: KeyboardObserver
     
     init() {
         self.awattarData = AwattarData()
-        self.currentSetting = CurrentSetting(managedObjectContext: self.persistence.persistentContainer.viewContext)
         self.crtNotifiSetting = CurrentNotificationSetting(managedObjectContext: self.persistence.persistentContainer.viewContext)
+        self.currentSetting = CurrentSetting(managedObjectContext: self.persistence.persistentContainer.viewContext)
         self.keyboardObserver = KeyboardObserver()
         self.appDelegate.crtNotifiSetting = self.crtNotifiSetting
+        self.appDelegate.currentSetting = self.currentSetting
     }
     
     var body: some Scene {

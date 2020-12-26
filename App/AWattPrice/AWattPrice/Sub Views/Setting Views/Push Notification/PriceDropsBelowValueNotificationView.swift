@@ -7,37 +7,37 @@
 
 import SwiftUI
 
-struct NewPricesNotificationView: View {
+struct PriceDropsBelowValueNotificationView: View {
     @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var crtNotifiSettings: CurrentNotificationSetting
     
     @State var firstAppear = true
-    @Binding var newPricesNotificationSelection: Bool
+    @Binding var priceDropsBelowValueNotificationSelection: Bool
     
-    init(_ newPricesNotificationSelection: Binding<Bool>) {
-        self._newPricesNotificationSelection = newPricesNotificationSelection
+    init(_ priceDropsBelowValueNotificationSelection: Binding<Bool>) {
+        self._priceDropsBelowValueNotificationSelection = priceDropsBelowValueNotificationSelection
     }
     
     var body: some View {
         CustomInsetGroupedListItem(
             header: Text(""),
-            footer: Text("Receive a notification as soon as there are new aWATTar prices available for the next day (mostly 14 o'clock, sometimes earlier).")
+            footer: Text("notificationPage.notification.priceDropsBelowValue.description")
         ) {
             HStack {
-                Text("New Prices available")
+                Text("notificationPage.notification.priceDropsBelowValue")
                 
                 Spacer()
                 
-                Toggle("", isOn: $newPricesNotificationSelection)
+                Toggle("", isOn: $priceDropsBelowValueNotificationSelection)
                     .labelsHidden()
                     .onAppear {
-                        newPricesNotificationSelection = crtNotifiSettings.entity!.getNewPricesAvailableNotification
+                        priceDropsBelowValueNotificationSelection = crtNotifiSettings.entity!.priceDropsBelowValueNotification
                         firstAppear = false
                     }
                     .ifTrue(firstAppear == false) { content in
                         content
-                            .onChange(of: newPricesNotificationSelection) { newValue in
-                                crtNotifiSettings.changeNewPricesAvailable(newValue: newValue)
+                            .onChange(of: priceDropsBelowValueNotificationSelection) { newValue in
+                                crtNotifiSettings.changePriceDropsBelowValueNotifications(newValue: newValue)
                                 crtNotifiSettings.changesAndStaged = true
                             }
                     }
@@ -50,7 +50,7 @@ struct NewPricesNotificationView: View {
 struct NewPricesNotificationView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            NewPricesNotificationView(.constant(true))
+            PriceDropsBelowValueNotificationView(.constant(true))
                 .environment(\.managedObjectContext, PersistenceManager().persistentContainer.viewContext)
                 .environmentObject(CurrentNotificationSetting(managedObjectContext: PersistenceManager().persistentContainer.viewContext))
         }

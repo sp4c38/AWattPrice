@@ -11,19 +11,19 @@ import SwiftUI
 struct NotificationSettingView: View {
     @Environment(\.scenePhase) var scenePhase
     
-    @State var newPricesNotificationSelection: Bool = false
+    @State var priceDropsBelowValueNotificationSelection: Bool = false
     
     var body: some View {
         VStack(alignment: .center, spacing: 0) {
             CustomInsetGroupedList {
-                NewPricesNotificationView($newPricesNotificationSelection)
+                PriceDropsBelowValueNotificationView($priceDropsBelowValueNotificationSelection)
             }
         }
         .navigationTitle("notificationPage.notifications")
     }
 }
 
-func notificationConfigChanged(_ crtNotifiSetting: CurrentNotificationSetting) {
+func notificationConfigChanged(regionIdentifier: Int, _ crtNotifiSetting: CurrentNotificationSetting) {
     crtNotifiSetting.currentlySendingToServer.lock()
     print("Notification configuration has changed. Trying to upload to server.")
     let group = DispatchGroup()
@@ -35,7 +35,7 @@ func notificationConfigChanged(_ crtNotifiSetting: CurrentNotificationSetting) {
     group.wait()
     
     if let token = crtNotifiSetting.entity!.lastApnsToken {
-        let newConfig = UploadPushNotificationConfigRepresentable(token, crtNotifiSetting.entity!.getNewPricesAvailableNotification)
+        let newConfig = UploadPushNotificationConfigRepresentable(token, regionIdentifier: regionIdentifier, crtNotifiSetting.entity!)
         let requestSuccessful = uploadPushNotificationSettings(configuration: newConfig)
         
         if !requestSuccessful {
@@ -55,6 +55,7 @@ func notificationConfigChanged(_ crtNotifiSetting: CurrentNotificationSetting) {
 struct GoToNotificationSettingView: View {
     @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var crtNotifiSetting: CurrentNotificationSetting
+    @EnvironmentObject var currentSetting: CurrentSetting
     
     @State var redirectToNotificationPage: Int? = nil
     
@@ -80,7 +81,9 @@ struct GoToNotificationSettingView: View {
             .onChange(of: redirectToNotificationPage) { newPageSelection in
                 if newPageSelection == nil && crtNotifiSetting.changesAndStaged == true {
                     DispatchQueue.global(qos: .background).async {
-                        notificationConfigChanged(crtNotifiSetting)
+                        notificationConfigChanged(
+                            regionIdentifier: Int(currentSetting.entity!.regionIdentifier),
+                            crtNotifiSetting)
                         DispatchQueue.main.async {
                             crtNotifiSetting.changesAndStaged = false
                         }

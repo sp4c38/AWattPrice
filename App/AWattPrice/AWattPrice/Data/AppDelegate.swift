@@ -12,6 +12,7 @@ import UserNotifications
 
 class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
     var crtNotifiSetting: CurrentNotificationSetting? = nil
+    var currentSetting: CurrentSetting? = nil
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         let center = UNUserNotificationCenter.current()
@@ -38,9 +39,9 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
             String(format: "%02.2hhx", $0)
         }.joined()
         
-        if self.crtNotifiSetting != nil {
+        if self.crtNotifiSetting != nil && self.currentSetting != nil {
             self.crtNotifiSetting!.currentlySendingToServer.lock()
-            if self.crtNotifiSetting!.entity != nil {
+            if self.crtNotifiSetting!.entity != nil && self.currentSetting!.entity != nil {
                 if self.crtNotifiSetting!.entity!.lastApnsToken != apnsDeviceTokenString ||
                     self.crtNotifiSetting!.entity!.changesButErrorUploading == true {
                     DispatchQueue.global(qos: .background).async {
@@ -54,8 +55,8 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
                         group.wait()
                         let notificationConfigRepresentable = UploadPushNotificationConfigRepresentable(
                             apnsDeviceTokenString,
-                            self.crtNotifiSetting!.entity!.getNewPricesAvailableNotification
-                        )
+                            regionIdentifier: Int(self.currentSetting!.entity!.regionIdentifier),
+                            self.crtNotifiSetting!.entity!)
                         let requestSuccessful = uploadPushNotificationSettings(configuration: notificationConfigRepresentable)
                         self.crtNotifiSetting!.changeLastApnsToken(newValue: apnsDeviceTokenString)
                         if !requestSuccessful {

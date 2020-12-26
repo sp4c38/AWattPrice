@@ -74,7 +74,7 @@ struct UpdatedDataView: View {
         }
         .contentShape(Rectangle())
         .onTapGesture {
-            awattarData.download(forRegion: currentSetting.entity!.regionSelection, networkManager: networkManager)
+            awattarData.download(forRegion: currentSetting.entity!.regionIdentifier, networkManager: networkManager)
         }
     }
 }

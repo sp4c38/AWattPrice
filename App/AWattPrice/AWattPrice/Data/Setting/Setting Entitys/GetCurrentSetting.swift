@@ -17,7 +17,7 @@ func getCurrentSetting(entityName: String, managedObjectContext: NSManagedObject
         if let entityDesciptor = NSEntityDescription.entity(forEntityName: entityName, in: managedObjectContext) {
             let newSetting = Setting.init(entity: entityDesciptor, insertInto: managedObjectContext)
             newSetting.splashScreensFinished = false
-            newSetting.regionSelection = 0
+            newSetting.regionIdentifier = 0
             newSetting.pricesWithTaxIncluded = true
             newSetting.awattarTariffIndex = -1
             newSetting.awattarBaseElectricityPrice = 0

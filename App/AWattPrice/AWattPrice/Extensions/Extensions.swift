@@ -97,6 +97,26 @@ extension String {
         
         return nil
     }
+    
+    func removeOutOfString(atIndex index: Int) -> String {
+        var before = ""
+        if index - 1 >= 0 {
+            before = String(self[...self.index(self.startIndex, offsetBy: (index - 1))])
+        }
+        let after = String(self[self.index(self.startIndex, offsetBy: (index + 1))...])
+        let newString = before + after
+        return newString
+    }
+    
+    func addAtIndex(atIndex index: Int, add addString: String) -> String {
+        var before = ""
+        if index - 1 >= 0 {
+            before = String(self[...self.index(self.startIndex, offsetBy: (index - 1))])
+        }
+        let after = String(self[self.index(self.startIndex, offsetBy: (index))...])
+        let newString = before + addString + after
+        return newString
+    }
 }
 
 extension Double {

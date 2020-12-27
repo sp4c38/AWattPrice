@@ -22,6 +22,7 @@ struct CustomInsetGroupedList<Content: View>: View {
                     .padding(.top, 10)
             }
         }
+        .padding(.top, 1.5)
     }
 }
 

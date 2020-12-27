@@ -61,15 +61,12 @@ struct PriceDropsBelowValueNotificationView: View {
                         DecimalTextFieldWithDoneButton(text: $priceBelowValue, placeholder: "general.cent.long".localized(), plusMinusButton: true)
                             .fixedSize(horizontal: false, vertical: true)
                             .onChange(of: priceBelowValue) { newValue in
-                                print("Changed")
                                 var newDoubleValue: Double = 0
-                                print(newValue)
                                 if let newConvertedDoubleValue = newValue.doubleValue {
                                     newDoubleValue = (newConvertedDoubleValue * 100).rounded() / 100
                                 }
                                 crtNotifiSettings.changePriceBelowValue(newValue: newDoubleValue)
                                 priceBelowValue = getPriceBelowValueCentString(value: newDoubleValue) ?? ""
-                                print(priceBelowValue)
                                 crtNotifiSettings.changesAndStaged = true
                             }
                         

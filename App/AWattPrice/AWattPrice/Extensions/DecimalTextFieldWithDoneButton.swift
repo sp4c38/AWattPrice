@@ -66,7 +66,18 @@ struct DecimalTextFieldWithDoneButton: UIViewRepresentable {
         }
         
         func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-            self.parent.currentText = textField.text ?? ""
+            var newStringFull = textField.text!
+            if range.lowerBound <= (newStringFull.count - 1) {
+                if string == "" {
+                    newStringFull = newStringFull.removeOutOfString(atIndex: range.lowerBound)
+                } else {
+                    newStringFull = newStringFull.addAtIndex(atIndex: range.lowerBound, add: string)
+                }
+            } else {
+                newStringFull.append(string)
+            }
+            
+            self.parent.currentText = newStringFull
             return true
         }
         

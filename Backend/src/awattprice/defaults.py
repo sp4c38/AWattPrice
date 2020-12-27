@@ -37,8 +37,8 @@ awattar: 30
 class Region(Enum):
     """Country"""
 
+    DE = 0
     AT = 1
-    DE = 2
 
 
 CONVERT_MWH_KWH = 100 * 0.001

@@ -16,6 +16,7 @@ from fastapi import BackgroundTasks, FastAPI, Request
 from fastapi.responses import JSONResponse
 
 from awattprice import poll, apns
+from awattprice import notifications
 from awattprice.config import read_config
 from awattprice.defaults import Region
 from awattprice.token_manager import Token_Database_Manager
@@ -23,28 +24,36 @@ from awattprice.utils import start_logging
 
 api = FastAPI()
 
+async def check_and_sent_notifications(data, db_manager):
+    global currently_checking_notification
+    await notifications.check_and_sent(data, db_manager)
+    currently_checking_notification = (False, None)
+
 @api.get("/")
 async def root():
     return {"message": "Nothing here. Please, move on."}
 
 @api.get("/data/")
-async def no_region():
+async def no_region(background_tasks: BackgroundTasks):
     """Return data if no region is given for Germany."""
     config = read_config()
     region = Region.DE
-    data = await poll.get_data(config=config, region=region)
+    data, check_notification = await poll.get_data(config=config, region=region)
     headers = await poll.get_headers(config=config, data=data)
     return JSONResponse(content=data, headers=headers)
 
-
 @api.get("/data/{region_id}")
-async def with_region(region_id):
+async def with_region(region_id, background_tasks: BackgroundTasks):
     """Return data for the given region."""
     config = read_config()
     region = getattr(Region, region_id.upper(), None)
     if not region:
         return {"prices": []}
-    data = await poll.get_data(config=config, region=region)
+    data, check_notification = await poll.get_data(config=config, region=region)
+    # check_notification = True
+    # if check_notification == True and currently_checking_notification == False:
+    #     background_tasks.add_task(check_and_sent_notifications, data, db_manager)
+
     headers = await poll.get_headers(config=config, data=data)
     return JSONResponse(content=data, headers=headers)
 
@@ -62,6 +71,7 @@ def startup_event():
     config = read_config()
     start_logging(config)
     global db_manager
+
     db_manager = Token_Database_Manager()
     db_manager.connect(config)
     db_manager.check_table_exists()

@@ -14,16 +14,18 @@ import asyncio
 
 from pathlib import Path
 
-import arrow  # type: ignore
-from typing import Dict, List, Optional
+import arrow
+import threading
 
-from box import Box  # type: ignore
+from box import Box
+from filelock import FileLock
 from loguru import logger as log
+from typing import Dict, List, Optional
 
 from . import awattar
 from .config import read_config
 from .defaults import CONVERT_MWH_KWH, Region, TIME_CORRECT
-from .utils import start_logging, read_data, write_data
+from .utils import start_logging, read_data, write_data, async_acquire_lock
 
 
 def transform_entry(entry: Box) -> Optional[Box]:
@@ -63,7 +65,22 @@ async def awattar_read_task(
         return data
     return None
 
-async def get_data(config: Box, region: Optional[Region] = None, force: bool = False) -> Dict:
+async def verify_awattar_not_polled(updating_lock: FileLock):
+    # Verify that awattar is currently not polled by a other task.
+    no_request_running = False
+    while no_request_running == False:
+        print("Trying")
+        # Currently a other task is polling the aWATTar API.
+        # In this case wait until this task completes to have the fresh data as soon as the
+        # task completes by reading the file.
+        try:
+            await async_acquire_lock(updating_lock, 0.001)
+            no_request_running = True
+        except:
+            await asyncio.sleep(3)
+    return True
+
+async def get_data(config: Box, region: Optional[Region] = None, force: bool = False) -> (Dict, bool):
     """Request the Awattar data. Read it from file, if it is too old fetch it
     from the Awattar API endpoint.
 
@@ -74,9 +91,17 @@ async def get_data(config: Box, region: Optional[Region] = None, force: bool = F
         region = Region.DE
     # 1) Read the data file.
     file_path = Path(config.file_location.data_dir).expanduser() / Path(f"awattar-data-{region.name.lower()}.json")
+
+    updating_lock_path = Path(config.file_location.data_dir).expanduser() / Path(f"updating-{region.name.lower()}-data.lck")
+    updating_lock = FileLock(updating_lock_path)
+    await verify_awattar_not_polled(updating_lock)
     data = await read_data(file_path=file_path)
+
     fetched_data = None
     need_update = True
+    check_notification = False # If no log exists yet this value will still False
+                               # and won't trigger any notification updates.
+                               # Notification updates are only run when a log already existed.
     last_update = 0
     now = arrow.utcnow()
     if data:
@@ -91,6 +116,8 @@ async def get_data(config: Box, region: Optional[Region] = None, force: bool = F
                         int(config.poll.if_less_than),
                 ]
             )
+            if need_update:
+                check_notification = True
         else:
             need_update = False
 
@@ -100,19 +127,22 @@ async def get_data(config: Box, region: Optional[Region] = None, force: bool = F
         # time to the last full hour. The Awattar API expects microsecond timestamps.
         start = now.replace(minute=0, second=0, microsecond=0).timestamp * TIME_CORRECT
         end = now.shift(days=+2).replace(hour=0, minute=0, second=0, microsecond=0).timestamp * TIME_CORRECT
+
         future = awattar_read_task(config=config, region=region, start=start, end=end)
-        if future is None:
-            return None
         results = await asyncio.gather(*[future])
+
+        if results is None:
+            return None, False
         if results:
-            log.info("Successfully fetched fresh data from Awattar.")
+            log.info("Successfully fetched fresh data from aWATTar.")
             # We run one task in asyncio
             fetched_data = results.pop()
         else:
-            log.info("Failed to fetch fresh data from Awattar.")
+            log.info("Failed to fetch fresh data from aWATTar.")
             fetched_data = None
     else:
-        log.debug("No need to update Awattar data from their API.")
+        updating_lock.release()
+        log.debug("No need to update aWATTar data from their API.")
     # Update existing data
     must_write_data = False
     if data and fetched_data:
@@ -140,13 +170,16 @@ async def get_data(config: Box, region: Optional[Region] = None, force: bool = F
         log.info("Writing Awattar data to disk.")
         before_24h = now.shift(hours=-24).timestamp
         data.prices = [e for e in data.prices if e.end_timestamp > before_24h]
-        write_data(data=data, file_path=file_path)
+        await write_data(data=data, file_path=file_path)
+        if need_update or force:
+            updating_lock.release()
     # As the last resort return empty data.
     if not data:
         data = Box({"prices": []})
-    return data
+    return data, check_notification
 
 async def get_headers(config: Box, data: Dict) -> Dict:
+    # print(data)
     data = Box(data)
     headers = {"Cache-Control": "public, max-age={}"}
     max_age = 0

@@ -30,6 +30,7 @@ class Token_Database_Manager:
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS token_storage (
                 token TEXT PRIMARY KEY NOT NULL,
+                region_identifier INTEGER NOT NULL,
                 configuration TEXT NOT NULL
             )""")
         cursor.close()
@@ -68,14 +69,15 @@ class APNs_Token_Manager:
         if self.is_new_token:
             encoded_config = json.dumps(self.final_data)
             with self.db_manager.db:
-                cursor.execute("INSERT INTO token_storage VALUES(?, ?);", (self.token_data["token"], encoded_config,))
-            log.info("Stored a new APNs config (and token).")
+                cursor.execute("INSERT INTO token_storage VALUES(?, ?, ?);",
+                    (self.token_data["token"], self.token_data["region_identifier"], encoded_config,))
+            log.info("Stored a new APNs token and config.")
         else:
             encoded_config = json.dumps(self.final_data)
             with self.db_manager.db:
-                cursor.execute(""" UPDATE token_storage SET configuration = ? WHERE token = ?""",
-                              (encoded_config, self.token_data["token"],))
-            log.info("Stored a new APNs config (and token).")
+                cursor.execute(""" UPDATE token_storage SET region_identifier = ?, configuration = ? WHERE token = ?""",
+                              (self.token_data["region_identifier"], encoded_config, self.token_data["token"],))
+            log.info("Updated to a new APNs config.")
 
         self.db_manager.db.commit()
 
@@ -90,7 +92,8 @@ class APNs_Token_Manager:
             log.info("New APNs token and configuration was sent from a client.")
             return True
         elif len(items) == 1:
-            if not items[0][1] == json.dumps(self.token_data):
+            new_config_raw = json.dumps({"config": self.token_data["config"]})
+            if not (items[0][1] == self.token_data["region_identifier"]) or not (items[0][2] == new_config_raw):
                 self.is_new_token = False # Just new config but no new token
                 self.final_data = {"config": self.token_data["config"]}
                 log.info("Client requested to update existing APNs configuration.")
@@ -99,7 +102,7 @@ class APNs_Token_Manager:
                 log.warning("A client resent his APNs token and configuration. "\
                             "They are same as already stored on the servers APNs database. "\
                             "This shouldn't happen because only new APNs configuration (and tokens) "\
-                            "should be sent from the client.")
+                            "should be sent from the client-side.")
                 return False
         return False
 

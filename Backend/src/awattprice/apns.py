@@ -30,6 +30,7 @@ async def validate_token(request: Request):
 
     try:
         body_json = json.loads(decoded_body)
+
         request_data = {"token": None, "region_identifier": None, "config": None}
         request_data["token"] = body_json["apnsDeviceToken"]
         request_data["region_identifier"] = body_json["regionIdentifier"]
@@ -53,7 +54,8 @@ async def validate_token(request: Request):
 
             if not (type(request_data["token"]) == str):
                 request_data_valid = False
-
+            if not (type(request_data["region_identifier"]) == int):
+                request_data_valid = False
             if not (type(request_data["config"]["price_below_value_notification"]["active"]) == bool):
                 request_data_valid = False
             if not (type(request_data["config"]["price_below_value_notification"]["below_value"]) == float):

@@ -21,6 +21,7 @@ from timeit import default_timer
 from typing import Any, Callable, Dict, List, NamedTuple, Optional, Union
 
 import aiofiles
+import asyncio
 
 from box import Box  # type: ignore
 from filelock import FileLock
@@ -125,25 +126,39 @@ def verify_file_permissions(path: Path) -> bool:
     return False
 
 
+def async_acquire_lock_helper(lock, timeout):
+    lock.acquire(timeout = timeout)
+
+async def async_acquire_lock(lock, timeout):
+    # Acquire locks asynchronous.
+    # If locks aren't acquired this way it could leed to one task successfully
+    # acquiring the lock. Running some await tasks with the lock acquired.
+    # At the same time a other task tries to get the lock and waits because it can't
+    # get it. Because it's like doing an time.sleep() in an async function all
+    # tasks aren't resumed anymore and the server will be hanging forever.
+    loop = asyncio.get_event_loop()
+    await loop.run_in_executor(None, async_acquire_lock_helper, lock, timeout)
+
 async def read_data(*, file_path: Path) -> Optional[Box]:
     """Return the data read from file_path."""
     if not file_path.is_file():
         return None
     lock = FileLock(f"{file_path.as_posix()}.lck")
-    with lock.acquire():
-        async with aiofiles.open(file_path) as fh:
-            raw_data = ""
-            async for line in fh:
-                raw_data += line
-        try:
-            data = json.loads(raw_data)
-        except Exception as e:
-            log.warning(f"Could not read and parse data from {file_path}: {e}.")
-            return None
-        return Box(data)
+    await async_acquire_lock(lock, None)
+    async with aiofiles.open(file_path) as fh:
+        raw_data = ""
+        async for line in fh:
+            raw_data += line
+    lock.release()
+    try:
+        data = json.loads(raw_data)
+    except Exception as e:
+        log.warning(f"Could not read and parse data from {file_path}: {e}.")
+        return None
+    return Box(data)
 
 
-def write_data(*, data: Union[List, Dict, Box], file_path: Path, compress: bool = False) -> None:
+async def write_data(*, data: Union[List, Dict, Box], file_path: Path, compress: bool = False) -> None:
     """Write the gz-iped raw data to file_path."""
     dst_dir = file_path.parent
     if not dst_dir.expanduser().is_dir():
@@ -154,6 +169,7 @@ def write_data(*, data: Union[List, Dict, Box], file_path: Path, compress: bool 
     else:
         opener = open
     lock = FileLock(f"{file_path.as_posix()}.lck")
-    with lock.acquire():
-        with opener(file_path.expanduser().as_posix(), "wb") as fh:
-            fh.write(json.dumps(data).encode("utf-8"))
+    await async_acquire_lock(lock, None)
+    with opener(file_path.expanduser().as_posix(), "wb") as fh:
+        fh.write(json.dumps(data).encode("utf-8"))
+    lock.release()

@@ -49,27 +49,27 @@ struct EnergyUsageInputField: View {
             }
             
             HStack {
-                DecimalTextFieldWithDoneButton(text: $cheapestHourManager.energyUsageString.animation(), placeholder: "general.inKwh".localized())
-                    .fixedSize(horizontal: false, vertical: true)
-                    .padding(.trailing, 5)
-                    .ifTrue(firstAppear == false) { content in
-                        content
-                            .onChange(of: cheapestHourManager.energyUsageString) { newValue in
-                                currentSetting.changeCheapestTimeLastConsumption(newValue: newValue.doubleValue ?? 0)
-                                if let energyUsageString = currentSetting.entity!.cheapestTimeLastConsumption.priceString {
-                                    cheapestHourManager.energyUsageString = energyUsageString
-                                }
-                            }
-                    }
-                    .onAppear {
-                        setEnergyUsageString()
-                        firstAppear = false
-                    }
-                    .onChange(of: tabBarItems.selectedItemIndex) { newSelectedItemIndex in
-                        if newSelectedItemIndex == 1 && firstAppear == false {
-                            setEnergyUsageString()
-                        }
-                    }
+//                DecimalTextFieldWithDoneButton(text: $cheapestHourManager.energyUsageString.animation(), placeholder: "general.inKwh".localized())
+//                    .fixedSize(horizontal: false, vertical: true)
+//                    .padding(.trailing, 5)
+//                    .ifTrue(firstAppear == false) { content in
+//                        content
+//                            .onChange(of: cheapestHourManager.energyUsageString) { newValue in
+//                                currentSetting.changeCheapestTimeLastConsumption(newValue: newValue.doubleValue ?? 0)
+//                                if let energyUsageString = currentSetting.entity!.cheapestTimeLastConsumption.priceString {
+//                                    cheapestHourManager.energyUsageString = energyUsageString
+//                                }
+//                            }
+//                    }
+//                    .onAppear {
+//                        setEnergyUsageString()
+//                        firstAppear = false
+//                    }
+//                    .onChange(of: tabBarItems.selectedItemIndex) { newSelectedItemIndex in
+//                        if newSelectedItemIndex == 1 && firstAppear == false {
+//                            setEnergyUsageString()
+//                        }
+//                    }
                 
                 if cheapestHourManager.energyUsageString != "" {
                     Text("kWh")

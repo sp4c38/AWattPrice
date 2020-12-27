@@ -309,6 +309,7 @@
 				61200EC1253A04E600A104B1 /* SplashScreens */,
 				614E784B25068E0600A7ED83 /* Data */,
 				61504CFC250FF46D00EF41D6 /* Sub Views */,
+				6122115325951BE1003D6512 /* Other */,
 				618518DC2585057A00120D81 /* Main Views */,
 				617D85B125052C35009E18FB /* AwattarApp.swift */,
 				610E64992573077900C1BAD9 /* ContentView.swift */,
@@ -448,7 +449,6 @@
 				6184828025699DEE004F3F62 /* RegionAndVatSelection.swift */,
 				61EC1C07254B41D800324ADA /* AwattarTariffSelectionSettings.swift */,
 				6122115425951BF2003D6512 /* Help and Suggestion */,
-				6122115325951BE1003D6512 /* Other */,
 			);
 			path = "Setting Views";
 			sourceTree = "<group>";

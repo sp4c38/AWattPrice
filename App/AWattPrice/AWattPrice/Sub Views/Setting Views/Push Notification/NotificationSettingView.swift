@@ -11,12 +11,10 @@ import SwiftUI
 struct NotificationSettingView: View {
     @Environment(\.scenePhase) var scenePhase
     
-    @State var priceDropsBelowValueNotificationSelection: Bool = false
-    
     var body: some View {
         VStack(alignment: .center, spacing: 0) {
             CustomInsetGroupedList {
-                PriceDropsBelowValueNotificationView($priceDropsBelowValueNotificationSelection)
+                PriceDropsBelowValueNotificationView()
             }
         }
         .navigationTitle("notificationPage.notifications")

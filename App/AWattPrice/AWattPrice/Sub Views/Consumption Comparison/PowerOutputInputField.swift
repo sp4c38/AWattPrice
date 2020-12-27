@@ -50,28 +50,28 @@ struct PowerOutputInputField: View {
             }
 
             HStack {
-                DecimalTextFieldWithDoneButton(text: $cheapestHourManager.powerOutputString.animation(), placeholder: "general.inKw".localized())
-                    .fixedSize(horizontal: false, vertical: true)
-                    .padding(.trailing, 5)
-                    .ifTrue(firstAppear == false) { content in
-                        content
-                            .onChange(of: cheapestHourManager.powerOutputString) { newValue in
-                                currentSetting.changeCheapestTimeLastPower(newValue: newValue.doubleValue ?? 0)
-                                if let energyUsageString = (newValue.doubleValue ?? 0).priceString {
-                                    cheapestHourManager.powerOutputString = energyUsageString
-                                }
-                            }
-                    }
-                    .onAppear {
-                        setPowerOutputString()
-                        firstAppear = false
-                    }
-                    .onChange(of: tabBarItems.selectedItemIndex) { newSelectedItemIndex in
-                        if newSelectedItemIndex == 1 && firstAppear == false {
-                            setPowerOutputString()
-                        }
-                    }
-                
+//                DecimalTextFieldWithDoneButton(text: $cheapestHourManager.powerOutputString.animation(), placeholder: "general.inKw".localized())
+//                    .fixedSize(horizontal: false, vertical: true)
+//                    .padding(.trailing, 5)
+//                    .ifTrue(firstAppear == false) { content in
+//                        content
+//                            .onChange(of: cheapestHourManager.powerOutputString) { newValue in
+//                                currentSetting.changeCheapestTimeLastPower(newValue: newValue.doubleValue ?? 0)
+//                                if let energyUsageString = (newValue.doubleValue ?? 0).priceString {
+//                                    cheapestHourManager.powerOutputString = energyUsageString
+//                                }
+//                            }
+//                    }
+//                    .onAppear {
+//                        setPowerOutputString()
+//                        firstAppear = false
+//                    }
+//                    .onChange(of: tabBarItems.selectedItemIndex) { newSelectedItemIndex in
+//                        if newSelectedItemIndex == 1 && firstAppear == false {
+//                            setPowerOutputString()
+//                        }
+//                    }
+//                
                 if cheapestHourManager.powerOutputString != "" {
                     Text("kW")
                         .transition(.opacity)

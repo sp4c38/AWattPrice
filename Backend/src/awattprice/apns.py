@@ -33,7 +33,7 @@ async def validate_token(request: Request):
         request_data = {"token": None, "region_identifier": None, "config": None}
         request_data["token"] = body_json["apnsDeviceToken"]
         request_data["region_identifier"] = body_json["regionIdentifier"]
-        request_data["config"] = {"price_below_value_notification": {"active": False, "below_value": 0}}
+        request_data["config"] = {"price_below_value_notification": {"active": False, "below_value": float(0)}}
 
         # Always need to check with an if statment to ensure backwards-compatibility
         # of users using old AWattPrice versions
@@ -48,17 +48,18 @@ async def validate_token(request: Request):
                 request_data["config"]["price_below_value_notification"]["active"] = active
                 request_data["config"]["price_below_value_notification"]["below_value"] = below_value
 
-        print(request_data["config"])
         if not request_data["token"] == None and not request_data["config"] == None:
-            request_data_valid = [False, False]
+            request_data_valid = True
 
-            if type(request_data["token"]) == str:
-                request_data_valid[0] = True
+            if not (type(request_data["token"]) == str):
+                request_data_valid = False
 
-            if type(request_data["config"]["new_price_available"]) == bool:
-                request_data_valid[1] = True
+            if not (type(request_data["config"]["price_below_value_notification"]["active"]) == bool):
+                request_data_valid = False
+            if not (type(request_data["config"]["price_below_value_notification"]["below_value"]) == float):
+                request_data_valid = False
 
-            if request_data_valid[0] == True and request_data_valid[1]  == True:
+            if request_data_valid:
                 log.info("APNs data (sent from a client) is valid.")
                 return request_data
             else:

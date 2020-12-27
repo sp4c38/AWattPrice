@@ -85,21 +85,6 @@ func calcSingleBarSizes(_ indexSelected: Int?, _ startHeight: CGFloat,  _ ownInd
  */
 struct EnergyPriceSingleBar: View {
     @Environment(\.colorScheme) var colorScheme
-    @EnvironmentObject var currentSetting: CurrentSetting
-
-    static func getPriceString(marketprice: Double, currentSetting: CurrentSetting) -> String {
-        let centFormatter = NumberFormatter()
-        centFormatter.numberStyle = .currency
-        centFormatter.currencySymbol = "ct"
-        centFormatter.maximumFractionDigits = 2
-        centFormatter.minimumFractionDigits = 2
-        
-        if currentSetting.entity!.pricesWithTaxIncluded {
-            return centFormatter.string(from: NSNumber(value: marketprice * currentSetting.currentVATToUse)) ?? "NaN"
-        } else {
-            return centFormatter.string(from: NSNumber(value: marketprice)) ?? "NaN"
-        }
-    }
     
     let fontSize: CGFloat
     let fontWeight: Font.Weight
@@ -159,12 +144,26 @@ struct EnergyPriceSingleBar: View {
 
         ZStack(alignment: Alignment(horizontal: .trailing, vertical: .center)) {
             // Draw the bar shape
-            
+
             if hourDataPoint.marketprice > 0 {
-                BarShape(isSelected: (isSelected == 1 ? true : false), startWidth: maximalNegativePriceBarWidth, startHeight: startHeight, widthOfBar: positivePriceBarWidth + currentDividerLineWidth, heightOfBar: height, lookToSide: .right)
+                BarShape(barShapeAttributes: BarShape.BarShapeAttributes (
+                            isSelected: (isSelected == 1 ? true : false),
+                            startWidth: maximalNegativePriceBarWidth,
+                            startHeight: startHeight,
+                            widthOfBar: positivePriceBarWidth + currentDividerLineWidth,
+                            heightOfBar: height,
+                            lookToSide: .right))
+                            
                     .fill(LinearGradient(gradient: Gradient(colors: [Color(hue: 0.0849, saturation: 0.6797, brightness: 0.9059), Color(hue: 0.9978, saturation: 0.7163, brightness: 0.8431)]), startPoint: .leading, endPoint: .trailing))
             } else if hourDataPoint.marketprice < 0 {
-                BarShape(isSelected: (isSelected == 1 ? true : false), startWidth: maximalNegativePriceBarWidth, startHeight: startHeight, widthOfBar: maximalNegativePriceBarWidth - negativePriceBarWidth, heightOfBar: height, lookToSide: .left)
+                BarShape(barShapeAttributes: BarShape.BarShapeAttributes (
+                            isSelected: (isSelected == 1 ? true : false),
+                            startWidth: maximalNegativePriceBarWidth,
+                            startHeight: startHeight,
+                            widthOfBar: maximalNegativePriceBarWidth - negativePriceBarWidth,
+                            heightOfBar: height,
+                            lookToSide: .left))
+                    
                     .fill(LinearGradient(gradient: Gradient(colors: [Color.green, Color.gray]), startPoint: .leading, endPoint: .trailing))
             }
 
@@ -175,21 +174,16 @@ struct EnergyPriceSingleBar: View {
             }
 
             // Show the energy price as text with or without VAT/tax included
-            Text(EnergyPriceSingleBar.getPriceString(marketprice: hourDataPoint.marketprice, currentSetting: currentSetting))
-            .foregroundColor(colorScheme == .light ? Color.black : Color.white)
-            .animatableFont(size: fontSize + 1, weight: fontWeight)
-            .padding(1)
-                .padding([.leading, .trailing], (isSelected == 1 || isSelected == 2) ? 2 : 1)
-                .background(
-                    RoundedRectangle(cornerRadius: (isSelected == 1 || isSelected == 2) ? 3 : 2)
-                        .fill(Color.clear)
-                        .background(colorScheme == .light ? Color.white : Color(red: 0.21, green: 0.21, blue: 0.21))
-                        .cornerRadius((isSelected == 1 || isSelected == 2) ? 3 : 2)
-                        .opacity(0.8)
-                )
-            .position(x: ((isSelected == 1 || isSelected == 2) ? startWidthPadding + 30 + fontSize : startWidthPadding + fontSize + 20), y: startHeight + (height / 2))
             
-            HourOfDayText(fontSize: fontSize, fontWeight: fontWeight, isSelected: isSelected, totalWidth: width, startHeight: startHeight, height: height)
+            HourOfDayText(singleBarSettings: singleBarSettings,
+                          hourDataPoint: hourDataPoint,
+                          fontSize: fontSize,
+                          fontWeight: fontWeight,
+                          isSelected: isSelected,
+                          totalWidth: width,
+                          startWidthPadding: startWidthPadding,
+                          height: height,
+                          startHeight: startHeight)
         }
     }
 }

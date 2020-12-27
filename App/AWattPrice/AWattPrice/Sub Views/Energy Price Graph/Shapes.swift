@@ -9,21 +9,52 @@ import SwiftUI
 
 /// A single bar with a certain length to represent the energy price relative to all other hours
 struct BarShape: Shape {
-    let isSelected: Bool
-    let startWidth: CGFloat
+    class BarShapeAttributes {
+        enum SidesToLook {
+            case right
+            case left
+        }
+        
+        let isSelected: Bool
+        let lookToSide: SidesToLook
+        
+        let startWidth: CGFloat
+        var startHeight: CGFloat
+        let widthOfBar: CGFloat
+        var heightOfBar: CGFloat
+        
+        let radius: CGFloat
+        let barPadding: CGFloat // Padding between different bars
+        let dividerLineWidth: CGFloat
+        
+        init(isSelected: Bool, startWidth: CGFloat, startHeight: CGFloat, widthOfBar: CGFloat, heightOfBar: CGFloat, lookToSide: SidesToLook) {
+            self.isSelected = isSelected
+            self.lookToSide = lookToSide
+            
+            self.startWidth = startWidth
+            self.startHeight = startHeight
+            self.widthOfBar = widthOfBar
+            self.heightOfBar = heightOfBar
+            
+            self.radius = heightOfBar / 14
+            self.barPadding = 1
+            self.dividerLineWidth = 3
+        }
+    }
+    let attr: BarShapeAttributes
+    
     var startHeight: CGFloat
-    let widthOfBar: CGFloat
     var heightOfBar: CGFloat
     
-    enum SidesToLook {
-        case right
-        case left
+    init(barShapeAttributes: BarShapeAttributes) {
+        print("new")
+        self.attr = barShapeAttributes
+        self.startHeight = attr.startHeight
+        self.heightOfBar = attr.heightOfBar
     }
     
-    let lookToSide: SidesToLook
-    
     var animatableData: AnimatablePair<CGFloat, CGFloat> {
-        get { return AnimatablePair(startHeight, heightOfBar) }
+        get { return AnimatablePair(self.startHeight, self.heightOfBar) }
         set {
             self.startHeight = newValue.first
             self.heightOfBar = newValue.second
@@ -31,23 +62,27 @@ struct BarShape: Shape {
     }
     
     func path(in rect: CGRect) -> Path {
-        let radius: CGFloat = heightOfBar / 14
-        let barPadding: CGFloat = 1
-        let dividerLineWidth: CGFloat = 3
         
         var path = Path()
         
-        if lookToSide == .left {
-            path.move(to: CGPoint(x: startWidth - (dividerLineWidth / 2), y: startHeight + barPadding))
-            path.addLine(to: CGPoint(x: startWidth - (dividerLineWidth / 2), y: startHeight + heightOfBar - barPadding))
-            path.addRelativeArc(center: CGPoint(x: widthOfBar + radius, y: startHeight + heightOfBar - radius - barPadding), radius: radius, startAngle: .degrees(90), delta: .degrees(90))
-            path.addRelativeArc(center: CGPoint(x: widthOfBar + radius, y: startHeight + barPadding + radius), radius: radius, startAngle: .degrees(180), delta: .degrees(90))
-        } else if lookToSide == .right {
-            path.move(to: CGPoint(x: startWidth + (dividerLineWidth / 2), y: startHeight + barPadding))
-            path.addRelativeArc(center: CGPoint(x: widthOfBar - radius, y: startHeight + barPadding + radius), radius: radius, startAngle: .degrees(270), delta: .degrees(180))
-            path.addLine(to: CGPoint(x: widthOfBar, y: startHeight + barPadding + radius))
-            path.addRelativeArc(center: CGPoint(x: widthOfBar - radius, y: startHeight + heightOfBar - barPadding - radius), radius: radius, startAngle: .degrees(0), delta: .degrees(90))
-            path.addLine(to: CGPoint(x: startWidth + (dividerLineWidth / 2), y: startHeight + heightOfBar - barPadding))
+        if attr.lookToSide == .left {
+            path.move(to: CGPoint(x: attr.startWidth - (attr.dividerLineWidth / 2), y: startHeight + attr.barPadding))
+            
+            path.addLine(to: CGPoint(x: attr.startWidth - (attr.dividerLineWidth / 2), y: startHeight + heightOfBar - attr.barPadding))
+            
+            path.addRelativeArc(center: CGPoint(x: attr.widthOfBar + attr.radius, y: startHeight + heightOfBar - attr.radius - attr.barPadding), radius: attr.radius, startAngle: .degrees(90), delta: .degrees(90))
+            
+            path.addRelativeArc(center: CGPoint(x: attr.widthOfBar + attr.radius, y: startHeight + attr.barPadding + attr.radius), radius: attr.radius, startAngle: .degrees(180), delta: .degrees(90))
+            
+        } else if attr.lookToSide == .right {
+            path.move(to: CGPoint(x: attr.startWidth + (attr.dividerLineWidth / 2), y: startHeight + attr.barPadding))
+            
+            path.addRelativeArc(center: CGPoint(x: attr.widthOfBar - attr.radius, y: startHeight + attr.barPadding + attr.radius), radius: attr.radius, startAngle: .degrees(270), delta: .degrees(180))
+            
+            path.addLine(to: CGPoint(x: attr.widthOfBar, y: startHeight + attr.barPadding + attr.radius))
+            path.addRelativeArc(center: CGPoint(x: attr.widthOfBar - attr.radius, y: startHeight + heightOfBar - attr.barPadding - attr.radius), radius: attr.radius, startAngle: .degrees(0), delta: .degrees(90))
+            
+            path.addLine(to: CGPoint(x: attr.startWidth + (attr.dividerLineWidth / 2), y: startHeight + heightOfBar - attr.barPadding))
         }
 
         return path

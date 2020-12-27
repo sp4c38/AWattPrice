@@ -30,15 +30,25 @@ async def validate_token(request: Request):
 
     try:
         body_json = json.loads(decoded_body)
-        request_data = {"token": None, "config": None}
+        request_data = {"token": None, "region_identifier": None, "config": None}
         request_data["token"] = body_json["apnsDeviceToken"]
-        request_data["config"] = {"new_price_available": False}
+        request_data["region_identifier"] = body_json["regionIdentifier"]
+        request_data["config"] = {"price_below_value_notification": {"active": False, "below_value": 0}}
 
         # Always need to check with an if statment to ensure backwards-compatibility
         # of users using old AWattPrice versions
-        if "newPriceAvailable" in body_json["notificationConfig"]:
-            request_data["config"]["new_price_available"] = body_json["notificationConfig"]["newPriceAvailable"]
+        if "priceBelowValueNotification" in body_json["notificationConfig"]:
+            below_notification = body_json["notificationConfig"]["priceBelowValueNotification"]
+            if "active" in below_notification and "belowValue" in below_notification:
+                active = below_notification["active"]
+                below_value = below_notification["belowValue"]
+                # Limit below_value to two decimal places.
+                # The app normally should already have rounded this number to two decimal places.
+                below_value = round(below_value, 2)
+                request_data["config"]["price_below_value_notification"]["active"] = active
+                request_data["config"]["price_below_value_notification"]["below_value"] = below_value
 
+        print(request_data["config"])
         if not request_data["token"] == None and not request_data["config"] == None:
             request_data_valid = [False, False]
 
@@ -54,6 +64,8 @@ async def validate_token(request: Request):
             else:
                 log.info("APNs data (sent from a client) is NOT valid.")
                 return None
-    except:
-        log.warning("Could NOT decode to a valid json when validating clients APNs data.")
+    except Exception as exp:
+        log.warning("Could NOT decode to a valid json when validating client APNs data.\n"\
+                   f"Sent data: {decoded_body}\n"\
+                   f"Exception: {exp}")
         return None

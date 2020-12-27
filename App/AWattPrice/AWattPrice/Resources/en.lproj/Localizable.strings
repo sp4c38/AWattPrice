@@ -29,7 +29,8 @@
 "splashScreen.finish.toApp" = "Enter app";
 
 // Electricity Price page localizations
-"electricityPage.elecPrice" = "Electricity Price";
+"electricityPage.elecPrice" = "Electricity Prices";
+"electricityPage.tabBarTitle" = "Prices";
 "electricityPage.hourOfDay" = "Hour of day";
 
 // Cheapest Price page localizations

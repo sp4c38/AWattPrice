@@ -86,7 +86,6 @@ struct PriceDropsBelowValueNotificationView: View {
             }
             .padding([.top, .bottom], 2)
         }
-        .customBackgroundColor(colorScheme == .light ? Color(hue: 0.6667, saturation: 0.0202, brightness: 0.9886) : Color(hue: 0.6667, saturation: 0.0340, brightness: 0.1424))
         .onAppear {
             self.priceBelowValue = getPriceBelowValueCentString(value: crtNotifiSettings.entity!.priceBelowValue) ?? ""
             self.textFieldTextSet = true

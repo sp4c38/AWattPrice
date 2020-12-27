@@ -176,35 +176,20 @@ struct EnergyPriceSingleBar: View {
 
             // Show the energy price as text with or without VAT/tax included
             Text(EnergyPriceSingleBar.getPriceString(marketprice: hourDataPoint.marketprice, currentSetting: currentSetting))
-            .foregroundColor(Color.black)
+            .foregroundColor(colorScheme == .light ? Color.black : Color.white)
             .animatableFont(size: fontSize + 1, weight: fontWeight)
             .padding(1)
                 .padding([.leading, .trailing], (isSelected == 1 || isSelected == 2) ? 2 : 1)
                 .background(
                     RoundedRectangle(cornerRadius: (isSelected == 1 || isSelected == 2) ? 3 : 2)
                         .fill(Color.clear)
-                        .background(Color.white)
+                        .background(colorScheme == .light ? Color.white : Color(red: 0.21, green: 0.21, blue: 0.21))
                         .cornerRadius((isSelected == 1 || isSelected == 2) ? 3 : 2)
+                        .opacity(0.8)
                 )
-            .position(x: ((isSelected == 1 || isSelected == 2) ?  startWidthPadding + 25 + fontSize : startWidthPadding + 20), y: startHeight + (height / 2))
-
-            // Show start to end time of the hour in which the certain energy price applies
-            HStack(spacing: 5) {
-                Text(singleBarSettings.hourFormatter.string(from: Date(timeIntervalSince1970: TimeInterval(hourDataPoint.startTimestamp))))
-                Text("-")
-                Text(singleBarSettings.hourFormatter.string(from: Date(timeIntervalSince1970: TimeInterval(hourDataPoint.endTimestamp))))
-            }
-            .foregroundColor(Color.black)
-            .animatableFont(size: fontSize + 2, weight: fontWeight)
-            .padding(1)
-            .padding([.leading, .trailing], (isSelected == 1 || isSelected == 2) ? 2 : 1)
-            .background(
-                RoundedRectangle(cornerRadius: (isSelected == 1 || isSelected == 2) ? 3 : 2)
-                    .fill(Color.clear)
-                    .background(Color.white)
-                    .cornerRadius((isSelected == 1 || isSelected == 2) ? 3 : 2)
-            )
-            .position(x: ((isSelected == 1 || isSelected == 2) ? width - 20 - fontSize : width - 20), y: startHeight + (height / 2))
+            .position(x: ((isSelected == 1 || isSelected == 2) ? startWidthPadding + 30 + fontSize : startWidthPadding + fontSize + 20), y: startHeight + (height / 2))
+            
+            HourOfDayText(fontSize: fontSize, fontWeight: fontWeight, isSelected: isSelected, totalWidth: width, startHeight: startHeight, height: height)
         }
     }
 }

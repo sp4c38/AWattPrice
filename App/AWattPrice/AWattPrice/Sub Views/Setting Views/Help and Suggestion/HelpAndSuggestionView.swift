@@ -156,7 +156,6 @@ struct GetHelpView: View {
                 redirectToHelpAndSuggestionView = 1
             }
         }
-        .customBackgroundColor(colorScheme == .light ? Color(hue: 0.6667, saturation: 0.0202, brightness: 0.9886) : Color(hue: 0.6667, saturation: 0.0340, brightness: 0.1424))
     }
 }
 

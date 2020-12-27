@@ -66,8 +66,8 @@ struct TimeRangeInputField: View {
                 .padding([.leading, .trailing], 2)
                 .background(
                     colorScheme == .light ?
-                        Color(hue: 0.6667, saturation: 0.0083, brightness: 0.9412) :
-                        Color(hue: 0.0000, saturation: 0.0000, brightness: 0.1429)
+                        Color(red: 0.96, green: 0.95, blue: 0.97) :
+                        Color(hue: 0.6667, saturation: 0.0340, brightness: 0.1424)
                 )
                 .cornerRadius(7)
                 .ifTrue(errorValues.contains(5)) { content in
@@ -93,8 +93,8 @@ struct TimeRangeInputField: View {
                 .padding([.leading, .trailing], 2)
                 .background(
                     colorScheme == .light ?
-                        Color(hue: 0.6667, saturation: 0.0083, brightness: 0.9412) :
-                        Color(hue: 0.0000, saturation: 0.0000, brightness: 0.1429)
+                        Color(red: 0.96, green: 0.95, blue: 0.97) :
+                        Color(hue: 0.6667, saturation: 0.0340, brightness: 0.1424)
                 )
                 .cornerRadius(7)
                 .ifTrue(errorValues.contains(5)) { content in

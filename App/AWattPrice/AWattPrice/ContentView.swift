@@ -21,11 +21,15 @@ struct ContentView: View {
                 VStack(spacing: 0) {
                     if currentSetting.entity!.splashScreensFinished == true {
                         ZStack {
-                            HomeView()
+                            
+                            SettingsPageView()
                                 .opacity(tabBarItems.selectedItemIndex == 0 ? 1 : 0)
+                            
+                            HomeView()
+                                .opacity(tabBarItems.selectedItemIndex == 1 ? 1 : 0)
                                     
                             ConsumptionComparisonView()
-                                .opacity(tabBarItems.selectedItemIndex == 1 ? 1 : 0)
+                                .opacity(tabBarItems.selectedItemIndex == 2 ? 1 : 0)
                                 .environmentObject(tabBarItems)
                         }
                         .onAppear {

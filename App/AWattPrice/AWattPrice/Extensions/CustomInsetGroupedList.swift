@@ -55,7 +55,10 @@ struct CustomInsetGroupedListItem<Content: View>: View { // All content which is
             .padding([.leading, .trailing], 15)
             .padding([.top, .bottom], 9)
             .frame(maxWidth: .infinity)
-            .background(backgroundColor != nil ? backgroundColor : (colorScheme == .light ? Color.white : Color(hue: 0.6667, saturation: 0.0667, brightness: 0.1176)))
+            .background(backgroundColor != nil ? backgroundColor :
+                            (colorScheme == .light ?
+                                Color(red: 0.96, green: 0.95, blue: 0.97) :
+                                Color(hue: 0.6667, saturation: 0.0340, brightness: 0.1424)))
             .cornerRadius(10)
             
             if footer != nil {

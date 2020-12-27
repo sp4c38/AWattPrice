@@ -10,7 +10,6 @@ import SwiftUI
 
 /// A place for the user to modify certain settings. Those changes are automatically stored (if modified) in persistent storage.
 struct SettingsPageView: View {
-    @Environment(\.presentationMode) var presentationMode
     @EnvironmentObject var crtNotifiSetting: CurrentNotificationSetting
     @EnvironmentObject var currentSetting: CurrentSetting
     
@@ -41,10 +40,13 @@ struct SettingsPageView: View {
                                              agreementLinks: ("https://awattprice.space8.me/privacy_policy/german.html",
                                                               "https://awattprice.space8.me/privacy_policy/english.html"))
 
-                        NotAffiliatedView(showGrayedOut: true)
-                            .padding([.leading, .trailing], 16)
-                        
-                        AppVersionView()
+                        VStack(spacing: 20) {
+                            NotAffiliatedView(showGrayedOut: true)
+                                .padding([.leading, .trailing], 16)
+                            
+                            AppVersionView()
+                        }
+                        .padding(.bottom, 15)
                     }
                 } else {
                     Text("settingsPage.notLoadedSettings")
@@ -52,7 +54,6 @@ struct SettingsPageView: View {
             }
             .navigationTitle("settingsPage.settings")
             .navigationViewStyle(StackNavigationViewStyle())
-            .navigationBarItems(trailing: DoneNavigationBarItem(presentationMode: presentationMode))
         }
     }
     

@@ -33,7 +33,6 @@ struct HomeView: View {
     @EnvironmentObject var currentSetting: CurrentSetting
     
     @State var firstEverAppear: Bool = true
-    @State var showSettingsPage: Bool = false
     
     @State var headerSize: CGSize = CGSize(width: 0, height: 0)
     
@@ -77,19 +76,6 @@ struct HomeView: View {
             }
             .navigationTitle("electricityPage.elecPrice")
             .navigationBarTitleDisplayMode(.large)
-            .navigationBarItems(trailing:
-                Button(action: { showSettingsPage.toggle() }) {
-                    Image(systemName: "gear")
-                        .resizable()
-                        .frame(width: 24, height: 24)
-                        .padding(.trailing, 5)
-                })
-            .fullScreenCover(isPresented: $showSettingsPage) {
-                SettingsPageView()
-                    .environmentObject(awattarData)
-                    .environmentObject(currentSetting)
-                    .environmentObject(crtNotifiSetting)
-            }
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .onAppear {

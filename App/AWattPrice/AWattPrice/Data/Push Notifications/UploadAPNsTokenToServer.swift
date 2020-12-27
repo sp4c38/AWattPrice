@@ -9,22 +9,33 @@ import Foundation
 
 class UploadPushNotificationConfigRepresentable: Encodable {
     class NotificationConfig: Encodable {
-        var priceBelowValueNotification: Bool
-        var priceBelowValue: Double
+        class PriceBelowValueNotification: Encodable {
+            var active: Bool
+            var belowValue: Double
+            
+            init(active: Bool, belowValue: Double) {
+                self.active = active
+                self.belowValue = belowValue
+            }
+        }
         
-        init(_ priceBelowValueNotification: Bool, _ priceBelowValue: Double) {
-            self.priceBelowValueNotification = priceBelowValueNotification
-            self.priceBelowValue = priceBelowValue
+        var priceBelowValueNotification: PriceBelowValueNotification
+        
+        init(active: Bool, priceBelowValue: Double) {
+            self.priceBelowValueNotification = PriceBelowValueNotification(
+                active: active,
+                belowValue: priceBelowValue)
         }
     }
     
     let apnsDeviceToken: String
     let regionIdentifier: Int
     let notificationConfig: NotificationConfig
+    
     init(_ apnsDeviceTokenString: String, regionIdentifier: Int, _ notifiSetting: NotificationSetting) {
         self.apnsDeviceToken = apnsDeviceTokenString
         self.regionIdentifier = regionIdentifier
-        self.notificationConfig = NotificationConfig(notifiSetting.priceDropsBelowValueNotification, notifiSetting.priceBelowValue)
+        self.notificationConfig = NotificationConfig(active: notifiSetting.priceDropsBelowValueNotification, priceBelowValue: notifiSetting.priceBelowValue)
     }
 }
 

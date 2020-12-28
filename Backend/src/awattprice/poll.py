@@ -115,6 +115,8 @@ async def get_data(config: Box, region: Optional[Region] = None, force: bool = F
                         int(config.poll.if_less_than),
                 ]
             )
+        else:
+            need_update = False
 
     if need_update or force:
         # By default the Awattar API returns data for the next 24h. It can provide

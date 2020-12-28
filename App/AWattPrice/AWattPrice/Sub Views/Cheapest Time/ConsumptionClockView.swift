@@ -36,37 +36,13 @@ struct ConsumptionClockView: View {
             let endMinuteFraction = Float(calendar.component(.minute, from: endTimeLastItem)) / 60
 
             // Subtract 90 degrees to make the cheapest hour indicator fit with the clocks alignment
-            var startDegree = Int(30 * (startHour + startMinuteFraction)) - 90
-            var endDegree = Int(30 * (endHour + endMinuteFraction)) - 90
+            let startDegree = Int(30 * (startHour + startMinuteFraction)) - 90
+            let endDegree = Int(30 * (endHour + endMinuteFraction)) - 90
             
             if (startHour + startMinuteFraction) > 12 {
                 // Change to PM if in PM section
                 timeIsAM = false
             }
-            
-            if (endTimeLastItem.timeIntervalSince(startTimeFirstItem) / 60 / 60) >= 12 {
-                startDegree = -90 - 10
-                endDegree = 360 + 10
-            }
-            
-            // Add or subtract some degrees to compensate the overlap which occurs because of the lineCap applied to the cheapest hour indicator
-            if endDegree - startDegree > 7 {
-                startDegree += 3
-                if startHour == endHour {
-                    if endMinuteFraction - startMinuteFraction >= 0.5 {
-                        endDegree -= 3
-                    } else {
-                        endDegree += 2
-                    }
-                } else if startHour != endHour {
-                    endDegree -= 3
-                }
-            } else if endDegree - startDegree == 0 {
-                startDegree -= 1
-            }
-//            } else if endDegree - startDegree > 3 {
-//                startDegree += 3
-//            }
 
             hourDegree = (startDegree, endDegree)
             
@@ -79,11 +55,7 @@ struct ConsumptionClockView: View {
             if calendar.startOfDay(for: startTimeFirstItem) == calendar.startOfDay(for: endTimeLastItem) {
                 startDateString = (dayFormatter.string(from: startTimeFirstItem), monthFormatter.string(from: startTimeFirstItem))
             } else {
-                if monthFormatter.string(from: startTimeFirstItem) == monthFormatter.string(from: endTimeLastItem) {
-                    startDateString = (dayFormatter.string(from: startTimeFirstItem), nil)
-                } else {
-                    startDateString = (dayFormatter.string(from: startTimeFirstItem), monthFormatter.string(from: startTimeFirstItem))
-                }
+                startDateString = (dayFormatter.string(from: startTimeFirstItem), nil)
                 endDateString = (dayFormatter.string(from: endTimeLastItem), monthFormatter.string(from: endTimeLastItem))
             }
         }
@@ -113,7 +85,7 @@ struct ConsumptionClockView: View {
         let minuteIndicatorWidth = CGFloat((clockWidth / 2) - hourBorderIndicatorWidth - 10)
         let hourIndicatorWidth = CGFloat((2 * ((clockWidth / 2) / 3)) - hourBorderIndicatorWidth  - 10)
 
-        let hourMarkerLineWidth = CGFloat(0.2 * (clockWidth / 2))
+        let hourMarkerLineWidth = CGFloat(0.17 * (clockWidth / 2))
 
         let clockRightSideStartWidth = ((width - clockWidth) / 2)
         let clockStartHeight = (height / 2) - (width / 2) + clockRightSideStartWidth
@@ -212,7 +184,7 @@ struct ConsumptionClockView: View {
             }
 
             // The start date and if needed also the end date which help the user understand from when to when the cheapest hours apply
-            HStack(spacing: 10) {
+            HStack(spacing: 5) {
                 VStack(spacing: 0) {
                     if endDateString == nil {
                         Text("general.on")
@@ -234,7 +206,7 @@ struct ConsumptionClockView: View {
                 if endDateString != nil {
                     Text("general.to")
 
-                    HStack(spacing: 7) {
+                    HStack(spacing: 5) {
                         Text(endDateString!.0)
                             .bold()
                             .foregroundColor(Color.red)

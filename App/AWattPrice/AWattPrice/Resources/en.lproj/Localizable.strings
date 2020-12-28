@@ -39,12 +39,12 @@
 "cheapestPricePage.wrongInputError" = "This field may only contain numbers and , or .";
 "cheapestPricePage.totalConsumption" = "Total consumption";
 "cheapestPricePage.timeRange" = "Time range";
-"cheapestPricePage.wrongTimeRangeError" = "With this power output and this total consumption a minimum time range of %@ hours and is required.";
+"cheapestPricePage.wrongTimeRangeError" = "With this power output and this total consumption a minimum time range of %@ is required.";
 "cheapestPricePage.nextThreeHours" = "Next 3 hours";
 
 // Cheapest Price Result page localizations
 "cheapestPriceResultPage.cheapestTimeErrorOccurred" = "An error occurred.\nPlease try again later.";
-"cheapestPriceResultPage.totalTime" = "Total time:";
+"cheapestPriceResultPage.totalTime" = "Time:";
 "cheapestPriceResultPage.elecCosts" = "Electricity costs";
 "cheapestPriceResultPage.priceWithVatNote" = "(price with VAT, changeable in settings)";
 "cheapestPriceResultPage.priceWithoutVatNote" = "(price without VAT, changeable in settings)";

@@ -83,13 +83,11 @@ struct DecimalTextFieldWithDoneButton: UIViewRepresentable {
         
         @objc func plusMinusPressed(button: UIBarButtonItem) {
             if self.parent.currentText.hasPrefix("-") {
-                print("a1")
                 let offsetIndex = self.parent.currentText.index(self.parent.currentText.startIndex, offsetBy: 1)
                 let newString = String(self.parent.currentText[offsetIndex...])
                 self.parent.text = newString
                 self.parent.currentText = newString
             } else {
-                print("a2")
                 self.parent.text = "-" + self.parent.currentText
                 self.parent.currentText = "-" + self.parent.currentText
             }

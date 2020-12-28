@@ -18,14 +18,19 @@ struct TimeRangeInputField: View {
     @State var setOnlyOnce: Bool = true // Makes sure that the endDate is set only once to default
     
     let errorValues: [Int]
-    let timeIntervalFormatter: NumberFormatter
+    let totalTimeFormatter: TotalTimeFormatter
     
     init(errorValues: [Int]) {
         self.errorValues = errorValues
-        
-        timeIntervalFormatter = NumberFormatter()
-        timeIntervalFormatter.numberStyle = .decimal
-        timeIntervalFormatter.maximumFractionDigits = 2
+        totalTimeFormatter = TotalTimeFormatter()
+    }
+    
+    func getMinRangeNeededString() -> String {
+        let minTimeNeeded = (cheapestHourManager.timeOfUsage * 100).rounded(.up) / 100
+        let hours = minTimeNeeded.rounded(.down)
+        let minutes = ((minTimeNeeded - hours) * 100).rounded() / 100 * 60
+        let totalTimeString = totalTimeFormatter.localizedTotalTimeString(hour: hours, minute: minutes)
+        return String(format: "cheapestPricePage.wrongTimeRangeError".localized(), totalTimeString)
     }
     
     func setTimeIntervalValues(energyData: EnergyData) {
@@ -106,9 +111,7 @@ struct TimeRangeInputField: View {
                 }
                 
                 if errorValues.contains(5) {
-                    let minTimeRangeNeeded = (cheapestHourManager.timeOfUsage * 100).rounded(.up) / 100
-                    
-                    Text(String(format: "cheapestPricePage.wrongTimeRangeError".localized(), timeIntervalFormatter.string(from: NSNumber(value: minTimeRangeNeeded))!))
+                    Text(getMinRangeNeededString())
                         .font(.caption)
                         .foregroundColor(Color.red)
                         .fixedSize(horizontal: false, vertical: true)
@@ -133,7 +136,6 @@ struct TimeRangeInputField: View {
                 }
                 .buttonStyle(TimeRangeButtonStyle())
             }
-            .animation(.easeInOut)
             .padding(.top, 3)
         }
         .frame(maxWidth: .infinity)

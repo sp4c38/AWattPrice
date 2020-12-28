@@ -34,7 +34,6 @@ async def root():
 @api.get("/data/")
 async def no_region(background_tasks: BackgroundTasks):
     """Return data if no region is given for Germany."""
-    config = read_config()
     region = Region.DE
     data, check_notification = await poll.get_data(config=config, region=region)
     headers = await poll.get_headers(config=config, data=data)
@@ -43,7 +42,6 @@ async def no_region(background_tasks: BackgroundTasks):
 @api.get("/data/{region_id}")
 async def with_region(region_id, background_tasks: BackgroundTasks):
     """Return data for the given region."""
-    config = read_config()
     region = getattr(Region, region_id.upper(), None)
     if not region:
         return {"prices": []}
@@ -67,6 +65,7 @@ async def send_token(request: Request, background_tasks: BackgroundTasks):
 
 @api.on_event("startup")
 def startup_event():
+    global config
     config = read_config()
     start_logging(config)
     global db_manager

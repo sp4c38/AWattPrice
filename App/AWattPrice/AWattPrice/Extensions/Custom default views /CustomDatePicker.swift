@@ -48,18 +48,3 @@ struct ComparisonDatePicker: UIViewRepresentable {
         Coordinator(selection: $selection)
     }
 }
-
-struct ComparisonDatePicker_PreviewsView: View {
-    var body: some View {
-        VStack(spacing: 0) {
-            ComparisonDatePicker(selection: .constant(Date()), in: Date()...Date())
-                .frame(width: 160, height: 40)
-        }
-    }
-}
-
-struct ComparisonDatePicker_Previews: PreviewProvider {
-    static var previews: some View {
-        ComparisonDatePicker_PreviewsView()
-    }
-}

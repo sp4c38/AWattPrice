@@ -39,12 +39,12 @@
 "cheapestPricePage.wrongInputError" = "Dieses Feld darf nur Zahlen und , oder . enthalten.";
 "cheapestPricePage.totalConsumption" = "Gesamtverbrauch";
 "cheapestPricePage.timeRange" = "Zeitfenster";
-"cheapestPricePage.wrongTimeRangeError" = "Bei dieser Leistung und diesem Gesamtverbrauch ist ein Mindestzeitfenster von %@ Stunden erforderlich.";
+"cheapestPricePage.wrongTimeRangeError" = "Bei dieser Leistung und diesem Gesamtverbrauch ist ein Mindestzeitfenster von %@ erforderlich.";
 "cheapestPricePage.nextThreeHours" = "Nächste 3 Stunden";
 
 // Cheapest Price Result page localizations
 "cheapestPriceResultPage.cheapestTimeErrorOccurred" = "Es ist ein Fehler aufgetreten.\nBitte versuchen Sie es später noch einmal.";
-"cheapestPriceResultPage.totalTime" = "Gesamtdauer:";
+"cheapestPriceResultPage.totalTime" = "Dauer:";
 "cheapestPriceResultPage.elecCosts" = "Stromkosten";
 "cheapestPriceResultPage.priceWithVatNote" = "(Preis mit MwSt., änderbar in Einstellungen)";
 "cheapestPriceResultPage.priceWithoutVatNote" = "(Preis ohne MwSt., änderbar in Einstellungen)";

@@ -28,7 +28,7 @@ struct ContentView: View {
                             HomeView()
                                 .opacity(tabBarItems.selectedItemIndex == 1 ? 1 : 0)
                                     
-                            ConsumptionComparisonView()
+                            CheapestTimeView()
                                 .opacity(tabBarItems.selectedItemIndex == 2 ? 1 : 0)
                                 .environmentObject(tabBarItems)
                         }

@@ -7,22 +7,60 @@
 
 import SwiftUI
 
+struct CheapestTimeResultTimeRange: View {
+    @EnvironmentObject var cheapestHourManager: CheapestHourManager
+    
+    var dateFormatter: DateFormatter
+    init() {
+        dateFormatter = DateFormatter()
+        dateFormatter.dateStyle = .short
+        dateFormatter.timeStyle = .short
+    }
+    
+    func getDateString(start: Bool, end: Bool) -> String {
+        if !(start == false && end == false) && !(start == true && end == true) {
+            var timeInterval = TimeInterval(0)
+            if start == true {
+                timeInterval = TimeInterval(cheapestHourManager.cheapestHoursForUsage!.associatedPricePoints[0].startTimestamp)
+            } else if end == true {
+                let maxItem = cheapestHourManager.cheapestHoursForUsage!.associatedPricePoints.endIndex - 1
+                timeInterval = TimeInterval(cheapestHourManager.cheapestHoursForUsage!.associatedPricePoints[maxItem].endTimestamp)
+            }
+            let startDate = Date(timeIntervalSince1970: timeInterval)
+            return dateFormatter.string(from: startDate)
+        } else {
+            return ""
+        }
+    }
+    
+    var body: some View {
+        VStack(alignment: .center, spacing: 5) {
+            Text(getDateString(start: true, end: false))
+                .bold()
+                .font(.title2)
+
+            Text("general.until")
+                .font(.title2)
+
+            Text(getDateString(start: false, end: true))
+                .bold()
+                .font(.title2)
+        }
+        .padding(.bottom, 25)
+    }
+}
+
 /// A view which presents the results calculated by the CheapestHourManager of when the cheapest hours for the usage of energy are.
-struct ConsumptionResultView: View {
+struct CheapestTimeResultView: View {
     @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var awattarData: AwattarData
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
     @EnvironmentObject var currentSetting: CurrentSetting
     
-    var dateFormatter: DateFormatter
     var todayDateFormatter: DateFormatter
     let currencyFormatter: NumberFormatter
     
     init() {
-        dateFormatter = DateFormatter()
-        dateFormatter.dateStyle = .short
-        dateFormatter.timeStyle = .short
-        
         todayDateFormatter = DateFormatter()
         todayDateFormatter.dateStyle = .long
         todayDateFormatter.timeStyle = .none
@@ -51,21 +89,7 @@ struct ConsumptionResultView: View {
                 // The time range in which the cheapest hours are
                 Spacer(minLength: 0)
                 
-                VStack(alignment: .center, spacing: 5) {
-                    Text(dateFormatter.string(from: Date(timeIntervalSince1970:
-                                                            TimeInterval(cheapestHourManager.cheapestHoursForUsage!.associatedPricePoints[0].startTimestamp))))
-                        .bold()
-                        .font(.title2)
-
-                    Text("general.until")
-                        .font(.title2)
-
-                    Text(dateFormatter.string(from: Date(timeIntervalSince1970:
-                                                            TimeInterval(cheapestHourManager.cheapestHoursForUsage!.associatedPricePoints[cheapestHourManager.cheapestHoursForUsage!.associatedPricePoints.count - 1].endTimestamp))))
-                        .bold()
-                        .font(.title2)
-                }
-                .padding(.bottom, 25)
+                CheapestTimeResultTimeRange()
                 
                 HStack(alignment: .center) {
                     Text("cheapestPriceResultPage.totalTime")
@@ -73,44 +97,6 @@ struct ConsumptionResultView: View {
                         .bold()
                 }
                 .padding(.bottom, 25)
-
-                HStack(alignment: .center) {
-                    Text("general.today")
-                    Text(todayDateFormatter.string(from: Date()))
-                        .bold()
-                        .foregroundColor(Color.red)
-                }
-                .font(.callout)
-                
-                Spacer(minLength: 0)
-                
-                // The final price the user would need to pay
-//                if cheapestHourManager.cheapestHoursForUsage!.hourlyEnergyCosts != nil {
-//                    if let hourlyCostString = currencyFormatter.string(from: NSNumber(value: cheapestHourManager.cheapestHoursForUsage!.hourlyEnergyCosts!)) {
-//                        Spacer()
-//
-//                        VStack(alignment: .center, spacing: 5) {
-//                            Text("cheapestPriceResultPage.elecCosts")
-//
-//                            Text(hourlyCostString)
-//                                .bold()
-//                                .font(.title3)
-//
-//                            if currentSetting.setting!.pricesWithTaxIncluded {
-//                                Text("cheapestPriceResultPage.priceWithVatNote")
-//                                    .font(.caption)
-//                            } else {
-//                                Text("cheapestPriceResultPage.priceWithoutVatNote")
-//                                    .font(.caption)
-//                            }
-//                        }
-//                        .foregroundColor(Color.white)
-//                        .shadow(radius: 4)
-//                        .padding(5)
-//                        .frame(maxWidth: .infinity)
-//                        .background(colorScheme == .light ? Color(hue: 0.3815, saturation: 0.6605, brightness: 0.8431) : Color(hue: 0.3844, saturation: 0.6293, brightness: 0.6288))
-//                    }
-//                }
                 
                 // The clock which visually presents the results.
                 HStack(spacing: 10) {
@@ -118,6 +104,16 @@ struct ConsumptionResultView: View {
                         .padding([.leading, .trailing], 20)
                         .frame(width: 310, height: 310)
                 }
+                
+                Spacer(minLength: 0)
+                
+                HStack(alignment: .center) {
+                    Text("general.today")
+                    Text(todayDateFormatter.string(from: Date()))
+                        .bold()
+                        .foregroundColor(Color.white)
+                }
+                .font(.callout)
 
                 Spacer(minLength: 0)
             } else if cheapestHourManager.errorOccurredFindingCheapestHours == true {
@@ -146,14 +142,5 @@ struct ConsumptionResultView: View {
             }
         }
         .navigationTitle("general.result")
-    }
-}
-
-struct ConsumptionResultView_Previews: PreviewProvider {
-    static var previews: some View {
-        ConsumptionResultView()
-            .environmentObject(AwattarData())
-            .environmentObject(CheapestHourManager())
-            .preferredColorScheme(.light)
     }
 }

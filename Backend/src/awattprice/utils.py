@@ -131,11 +131,10 @@ def async_acquire_lock_helper(lock, timeout):
 
 async def async_acquire_lock(lock, timeout):
     # Acquire locks asynchronous.
-    # If locks aren't acquired this way it could leed to one task successfully
+    # If locks aren't acquired asynchronous, it could leed to one task successfully
     # acquiring the lock. Running some await tasks with the lock acquired.
     # At the same time a other task tries to get the lock and waits because it can't
-    # get it. Because it's like doing an time.sleep() in an async function all
-    # tasks aren't resumed anymore and the server will be hanging forever.
+    # get it. Because this waiting isn't awaited the backend won't resume any other tasks anymore.
     loop = asyncio.get_event_loop()
     await loop.run_in_executor(None, async_acquire_lock_helper, lock, timeout)
 
@@ -144,12 +143,11 @@ async def read_data(*, file_path: Path) -> Optional[Box]:
     if not file_path.is_file():
         return None
     lock = FileLock(f"{file_path.as_posix()}.lck")
-    await async_acquire_lock(lock, None)
-    async with aiofiles.open(file_path) as fh:
-        raw_data = ""
-        async for line in fh:
-            raw_data += line
-    lock.release()
+    with lock.acquire():
+        async with aiofiles.open(file_path) as fh:
+            raw_data = ""
+            async for line in fh:
+                raw_data += line
     try:
         data = json.loads(raw_data)
     except Exception as e:

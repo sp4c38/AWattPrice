@@ -47,7 +47,6 @@ struct BarShape: Shape {
     var heightOfBar: CGFloat
     
     init(barShapeAttributes: BarShapeAttributes) {
-        print("new")
         self.attr = barShapeAttributes
         self.startHeight = attr.startHeight
         self.heightOfBar = attr.heightOfBar

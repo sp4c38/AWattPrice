@@ -21,7 +21,7 @@ struct ViewSizePreferenceKey: PreferenceKey {
 }
 
 /// A view which allows the user to find the cheapest hours for using energy. It optionally can also show the final price which the user would have to pay to aWATTar if consuming the specified amount of energy.
-struct ConsumptionComparisonView: View {
+struct CheapestTimeView: View {
     @Environment(\.colorScheme) var colorScheme
     
     @EnvironmentObject var awattarData: AwattarData
@@ -64,7 +64,7 @@ struct ConsumptionComparisonView: View {
 
                             Spacer()
 
-                            NavigationLink(destination: ConsumptionResultView(), tag: 1, selection: $redirectToComparisonResults) {
+                            NavigationLink(destination: CheapestTimeResultView(), tag: 1, selection: $redirectToComparisonResults) {
                             }
 
                             // Button to perform calculations to find cheapest hours and to redirect to the result view to show the results calculated
@@ -87,6 +87,7 @@ struct ConsumptionComparisonView: View {
                             .padding([.leading, .trailing, .bottom], 16)
                             .padding(.top, 10)
                         }
+                        .animation(.easeInOut)
                     }
                     .padding(.top, 1.5)
                 } else {
@@ -97,14 +98,5 @@ struct ConsumptionComparisonView: View {
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .animation(nil)
-    }
-}
-
-struct ConsumptionComparatorView_Previews: PreviewProvider {
-    static var previews: some View {
-        EnergyUsageInputField(errorValues: [2])
-            .environmentObject(CheapestHourManager())
-            .preferredColorScheme(.dark)
-            .padding()
     }
 }

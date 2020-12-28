@@ -1,18 +1,22 @@
 import asyncio
 
 import arrow
+import jwt
 import json
 
 from awattprice import poll
-from awattprice.defaults import Region
+from awattprice.defaults import Region, Notifications
 
 from box import Box
 from loguru import logger as log
 
-async def price_drops_below_notification(config, price_data, token, below_value):
+async def price_drops_below_notification(notification_defaults, config, price_data, token, below_value):
     lowest_price = price_data.lowest_price
     if lowest_price < below_value:
-        pass
+        log.info("User applies for receiving \"Price Drops Below\" notification.")
+        encryption_algorithm = notification_defaults.encryption_algorithm
+        path = notification_defaults.url_path.format(token)
+        
 
 class DetailedPriceData:
     def __init__(self, data: Box, region_identifier: int):
@@ -25,7 +29,6 @@ class DetailedPriceData:
         now_hour_start = now.replace(minute = 0, second = 0, microsecond = 0)
         for price_point in self.data.prices:
             if price_point.start_timestamp >= now_hour_start.timestamp:
-                print(price_point.start_timestamp)
                 marketprice = round(price_point.marketprice, 2)
                 if self.lowest_price == None or marketprice < self.lowest_price:
                     self.lowest_price = marketprice
@@ -33,6 +36,8 @@ class DetailedPriceData:
 async def check_and_send(config, data, data_region, db_manager):
     log.info("Checking and sending notifications.")
     log.debug(f"Need to check and send notifications for data region {data_region.name}.")
+
+    notification_defaults = Notifications(config,)
 
     all_data_to_check = {}
     all_data_to_check[data_region.value] = DetailedPriceData(Box(data), data_region.value)
@@ -44,7 +49,7 @@ async def check_and_send(config, data, data_region, db_manager):
         items = cursor.execute("SELECT * FROM token_storage;").fetchall()
         items = [dict(x) for x in items]
 
-        log.debug("Checking all stored notification configurations if they apply to receive a notification.")
+        log.debug("Checking all stored notification configurations - if they apply to receive a notification.")
 
         notification_queue = asyncio.Queue()
 
@@ -70,6 +75,7 @@ async def check_and_send(config, data, data_region, db_manager):
                     below_value = configuration["price_below_value_notification"]["below_value"]
                     await notification_queue.put(asyncio.create_task(
                         price_drops_below_notification(
+                        notification_defaults,
                         config,
                         all_data_to_check[notifi_config["region_identifier"]],
                         token,
@@ -82,4 +88,5 @@ async def check_and_send(config, data, data_region, db_manager):
         # Catch exception to be able to release lock, also if an error occurred
         print(e)
 
+    del notification_defaults
     await db_manager.release_lock()

@@ -4,6 +4,7 @@ configupdater
 fastapi
 filelock
 httpx
+jwt
 loguru
 python-box
 tenacity

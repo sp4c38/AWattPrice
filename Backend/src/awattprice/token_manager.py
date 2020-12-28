@@ -22,6 +22,7 @@ class Token_Database_Manager:
             os.makedirs(database_dir.expanduser().as_posix())
 
         self.db = sqlite3.connect(database_path, check_same_thread=False)
+        self.db.row_factory = sqlite3.Row
         log.info("Connected to sqlite database.")
 
     def check_table_exists(self):
@@ -37,6 +38,20 @@ class Token_Database_Manager:
         self.db.commit()
         self.lock.release()
 
+    def acquire(self):
+        self.lock.acquire()
+
+    async def acquire_lock(self):
+        loop = asyncio.get_event_loop()
+        await loop.run_in_executor(None, self.acquire)
+
+    def release(self):
+        self.lock.release()
+
+    async def release_lock(self):
+        loop = asyncio.get_event_loop()
+        await loop.run_in_executor(None, self.release)
+
     def disconnect(self):
         self.db.commit()
         self.db.close()
@@ -48,20 +63,6 @@ class APNs_Token_Manager:
         self.final_data = None
         self.db_manager = database_manager
         self.is_new_token = False # Is set later
-
-    def acquire(self):
-        self.db_manager.lock.acquire()
-
-    async def acquire_lock(self):
-        loop = asyncio.get_event_loop()
-        await loop.run_in_executor(None, self.acquire)
-
-    def release(self):
-        self.db_manager.lock.release()
-
-    async def release_lock(self):
-        loop = asyncio.get_event_loop()
-        await loop.run_in_executor(None, self.release)
 
     def write_database(self):
         cursor = self.db_manager.db.cursor()

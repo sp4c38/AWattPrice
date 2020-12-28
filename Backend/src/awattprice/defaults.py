@@ -36,7 +36,7 @@ awattar: 30
 
 class Region(Enum):
     """Country"""
-
+    # Region names may not contain __
     DE = 0
     AT = 1
 

@@ -69,7 +69,6 @@ async def verify_awattar_not_polled(updating_lock: FileLock):
     # Verify that awattar is currently not polled by a other task.
     no_request_running = False
     while no_request_running == False:
-        print("Trying")
         # Currently a other task is polling the aWATTar API.
         # In this case wait until this task completes to have the fresh data as soon as the
         # task completes by reading the file.
@@ -99,9 +98,9 @@ async def get_data(config: Box, region: Optional[Region] = None, force: bool = F
 
     fetched_data = None
     need_update = True
-    check_notification = False # If no log exists yet this value will still False
+    check_notification = False # If no cached data exists this value will still False
                                # and won't trigger any notification updates.
-                               # Notification updates are only run when a log already existed.
+                               # Notification updates are only run when cached data already exists.
     last_update = 0
     now = arrow.utcnow()
     if data:
@@ -116,10 +115,6 @@ async def get_data(config: Box, region: Optional[Region] = None, force: bool = F
                         int(config.poll.if_less_than),
                 ]
             )
-            if need_update:
-                check_notification = True
-        else:
-            need_update = False
 
     if need_update or force:
         # By default the Awattar API returns data for the next 24h. It can provide
@@ -130,7 +125,6 @@ async def get_data(config: Box, region: Optional[Region] = None, force: bool = F
 
         future = awattar_read_task(config=config, region=region, start=start, end=end)
         results = await asyncio.gather(*[future])
-
         if results is None:
             return None, False
         if results:
@@ -142,7 +136,8 @@ async def get_data(config: Box, region: Optional[Region] = None, force: bool = F
             fetched_data = None
     else:
         updating_lock.release()
-        log.debug("No need to update aWATTar data from their API.")
+        log.debug(f"No need to update aWATTar data for region {region.name} from their API.")
+
     # Update existing data
     must_write_data = False
     if data and fetched_data:
@@ -154,6 +149,7 @@ async def get_data(config: Box, region: Optional[Region] = None, force: bool = F
             entry = transform_entry(entry)
             if entry:
                 must_write_data = True
+                check_notification = True
                 data.prices.append(entry)
         if must_write_data:
             data.meta.update_ts = now.timestamp
@@ -173,6 +169,8 @@ async def get_data(config: Box, region: Optional[Region] = None, force: bool = F
         await write_data(data=data, file_path=file_path)
         if need_update or force:
             updating_lock.release()
+    else:
+        updating_lock.release()
     # As the last resort return empty data.
     if not data:
         data = Box({"prices": []})

@@ -10,7 +10,9 @@
 
 https://apps.apple.com/app/awattprice/id1536629626</a>
 
-An app that displays electricity prices retrieved from the public aWATTar API.
+### Description
+
+AWattPrice is an app that displays electricity prices retrieved from the public aWATTar API.
 
 aWATTar is an electricty provider, where customers don't pay a fix price for electricity, but instead pay as much for the electricity as it currently costs at stock exchange 📉. This is possible because the electricity price changes every hour.
 
@@ -21,8 +23,12 @@ Current features are:
 * View electricity prices throughout the day
 * Find the hours when electricity is cheapest (e.g.: find cheapest time to charge electric car, turn on the washing machine or run other electrical consumers)
 
-#### Current demo:
+### Demo:
 <img src="https://github.com/sp4c38/AWattPrice/blob/master/readme_assets/demo.gif" width="400"/>
 
-#### Request Scheme:
+### Technical Notes:
+AWattPrice consists out of two parts: The main app bundle and the backend part.
+To not overload the public aWATTar API AWattPrice caches the current price data. The AWattPrice Backend will only call the aWATTar API a few times a day.
+
+##### Request Scheme of AWattPrice:
 ![Request Scheme](https://github.com/sp4c38/AWattPrice/blob/master/readme_assets/request_scheme.png)

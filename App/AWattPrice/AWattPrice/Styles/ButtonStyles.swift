@@ -36,6 +36,7 @@ struct ContinueButtonStyle: ButtonStyle {
 struct TimeRangeButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
+            .multilineTextAlignment(.center)
             .padding(7)
             .padding([.leading, .trailing], 4)
             .foregroundColor(Color.white)

@@ -8,7 +8,7 @@
 import SwiftUI
 
 /// A clock which job it is to visually present the cheapest hours for the consumption so that these informations can be immediately and fastly processed by the user.
-struct ConsumptionClockView: View {
+struct CheapestTimeClockView: View {
     @Environment(\.colorScheme) var colorScheme
 
     @State var currentLevel = 0
@@ -36,12 +36,16 @@ struct ConsumptionClockView: View {
             let endMinuteFraction = Float(calendar.component(.minute, from: endTimeLastItem)) / 60
 
             // Subtract 90 degrees to make the cheapest hour indicator fit with the clocks alignment
-            let startDegree = Int(30 * (startHour + startMinuteFraction)) - 90
-            let endDegree = Int(30 * (endHour + endMinuteFraction)) - 90
+            var startDegree = Int(30 * (startHour + startMinuteFraction)) - 90
+            var endDegree = Int(30 * (endHour + endMinuteFraction)) - 90
             
-            if (startHour + startMinuteFraction) > 12 {
-                // Change to PM if in PM section
-                timeIsAM = false
+            if endDegree - startDegree == 0 {
+                startDegree -= 1
+            }
+            
+            if (endTimeLastItem.timeIntervalSince(startTimeFirstItem) / 60 / 60) >= 12 {
+                startDegree = -90 - 10
+                endDegree = 360 + 10
             }
 
             hourDegree = (startDegree, endDegree)
@@ -55,7 +59,11 @@ struct ConsumptionClockView: View {
             if calendar.startOfDay(for: startTimeFirstItem) == calendar.startOfDay(for: endTimeLastItem) {
                 startDateString = (dayFormatter.string(from: startTimeFirstItem), monthFormatter.string(from: startTimeFirstItem))
             } else {
-                startDateString = (dayFormatter.string(from: startTimeFirstItem), nil)
+                if monthFormatter.string(from: startTimeFirstItem) == monthFormatter.string(from: endTimeLastItem) {
+                    startDateString = (dayFormatter.string(from: startTimeFirstItem), nil)
+                } else {
+                    startDateString = (dayFormatter.string(from: startTimeFirstItem), monthFormatter.string(from: startTimeFirstItem))
+                }
                 endDateString = (dayFormatter.string(from: endTimeLastItem), monthFormatter.string(from: endTimeLastItem))
             }
         }
@@ -184,41 +192,67 @@ struct ConsumptionClockView: View {
             }
 
             // The start date and if needed also the end date which help the user understand from when to when the cheapest hours apply
-            HStack(spacing: 5) {
-                VStack(spacing: 0) {
-                    if endDateString == nil {
-                        Text("general.on")
-                            .padding(.bottom, 3)
-                    }
+            VStack(spacing: 0) {
+                if endDateString == nil {
+                      Text("general.on")
+                          .padding(.bottom, 3)
                     
                     HStack(spacing: 7) {
                         Text(startDateString.0)
                             .bold()
                             .foregroundColor(Color.red)
 
-                        if startDateString.1 != nil {
-                            Text(startDateString.1!)
+                        Text(startDateString.1!)
+                            .foregroundColor(colorScheme == .light ? Color.black : Color.white)
+                    }
+                } else {
+                    if startDateString.1 == nil {
+                        HStack(spacing: 6) {
+                            Text(startDateString.0)
+                                .bold()
+                                .foregroundColor(Color.red)
+                            
+                            Text("general.to")
+                        }
+                        .padding(.bottom, 3)
+                            
+                        HStack(spacing: 5) {
+                            Text(endDateString!.0)
+                                .bold()
+                                .foregroundColor(Color.red)
+
+                            Text(endDateString!.1)
                                 .foregroundColor(colorScheme == .light ? Color.black : Color.white)
                         }
-                    }
-                }
+                    } else {
+                        HStack(spacing: 6) {
+                            Text(startDateString.0)
+                                .bold()
+                            Text(startDateString.1!)
+                                .bold()
+                        }
+                        .foregroundColor(Color.red)
+                        .padding(.bottom, 3)
+                        
+                            
+                        HStack(spacing: 4) {
+                            Text("general.to")
 
-                if endDateString != nil {
-                    Text("general.to")
+                            HStack(spacing: 5) {
+                                Text(endDateString!.0)
+                                    .bold()
+                                    .foregroundColor(Color.red)
 
-                    HStack(spacing: 5) {
-                        Text(endDateString!.0)
-                            .bold()
-                            .foregroundColor(Color.red)
-
-                        Text(endDateString!.1)
-                            .foregroundColor(colorScheme == .light ? Color.black : Color.white)
+                                Text(endDateString!.1)
+                                    .foregroundColor(colorScheme == .light ? Color.black : Color.white)
+                            }
+                        }
                     }
                 }
             }
             .font(.headline)
             .position(x: clockRightSideStartWidth + clockWidth / 2,
-                      y: endDateString == nil ? clockStartHeight + (clockWidth / 4) + (hourMarkerLineWidth / 2) : clockStartHeight + (clockWidth / 3) + (hourMarkerLineWidth / 2))
+                      y: endDateString == nil ? clockStartHeight + (clockWidth / 4) + (hourMarkerLineWidth / 2) : clockStartHeight + (clockWidth / 3))
 
             // Indicates if the start hour of the cheapest hours are within the am time or pm time
 //            Text(timeIsAM ? "am" : "pm")
@@ -248,7 +282,7 @@ struct ConsumptionClockView: View {
 
 struct ConsumptionClockView_Previews: PreviewProvider {
     static var previews: some View {
-        ConsumptionClockView(CheapestHourManager.HourPair(associatedPricePoints: [EnergyPricePoint(startTimestamp: 1603184400, endTimestamp: 1603189800, marketprice: 3)]))
+        CheapestTimeClockView(CheapestHourManager.HourPair(associatedPricePoints: [EnergyPricePoint(startTimestamp: 1603184400, endTimestamp: 1603189800, marketprice: 3)]))
             .preferredColorScheme(.dark)
             .padding(20)
     }

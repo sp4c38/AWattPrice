@@ -11,7 +11,6 @@ import SwiftUI
 struct EnergyUsageInputField: View {
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
     @EnvironmentObject var currentSetting: CurrentSetting
-    @EnvironmentObject var tabBarItems: TBItems
     
     @State var firstAppear = true
     
@@ -56,7 +55,7 @@ struct EnergyUsageInputField: View {
                         content
                             .onChange(of: cheapestHourManager.energyUsageString) { newValue in
                                 currentSetting.changeCheapestTimeLastConsumption(newValue: newValue.doubleValue ?? 0)
-                                if let energyUsageString = currentSetting.entity!.cheapestTimeLastConsumption.priceString {
+                                if let energyUsageString = (newValue.doubleValue ?? 0).priceString {
                                     cheapestHourManager.energyUsageString = energyUsageString
                                 }
                             }
@@ -64,11 +63,6 @@ struct EnergyUsageInputField: View {
                     .onAppear {
                         setEnergyUsageString()
                         firstAppear = false
-                    }
-                    .onChange(of: tabBarItems.selectedItemIndex) { newSelectedItemIndex in
-                        if newSelectedItemIndex == 1 && firstAppear == false {
-                            setEnergyUsageString()
-                        }
                     }
                 
                 if cheapestHourManager.energyUsageString != "" {

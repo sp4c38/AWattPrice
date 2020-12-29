@@ -12,7 +12,6 @@ struct PowerOutputInputField: View {
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
     @EnvironmentObject var currentSetting: CurrentSetting
     @EnvironmentObject var keyboardObserver: KeyboardObserver
-    @EnvironmentObject var tabBarItems: TBItems
     
     @State var firstAppear = true
     
@@ -65,11 +64,6 @@ struct PowerOutputInputField: View {
                     .onAppear {
                         setPowerOutputString()
                         firstAppear = false
-                    }
-                    .onChange(of: tabBarItems.selectedItemIndex) { newSelectedItemIndex in
-                        if newSelectedItemIndex == 1 && firstAppear == false {
-                            setPowerOutputString()
-                        }
                     }
                 
                 if cheapestHourManager.powerOutputString != "" {

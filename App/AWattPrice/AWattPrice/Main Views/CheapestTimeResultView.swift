@@ -96,11 +96,12 @@ struct CheapestTimeResultView: View {
                     Text(getTotalTime())
                         .bold()
                 }
-                .padding(.bottom, 25)
+                
+                Spacer(minLength: 0)
                 
                 // The clock which visually presents the results.
                 HStack(spacing: 10) {
-                    ConsumptionClockView(cheapestHourManager.cheapestHoursForUsage!)
+                    CheapestTimeClockView(cheapestHourManager.cheapestHoursForUsage!)
                         .padding([.leading, .trailing], 20)
                         .frame(width: 310, height: 310)
                 }
@@ -111,7 +112,6 @@ struct CheapestTimeResultView: View {
                     Text("general.today")
                     Text(todayDateFormatter.string(from: Date()))
                         .bold()
-                        .foregroundColor(Color.white)
                 }
                 .font(.callout)
 

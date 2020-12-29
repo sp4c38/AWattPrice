@@ -40,7 +40,9 @@
 "cheapestPricePage.totalConsumption" = "Gesamtverbrauch";
 "cheapestPricePage.timeRange" = "Zeitfenster";
 "cheapestPricePage.wrongTimeRangeError" = "Bei dieser Leistung und diesem Gesamtverbrauch ist ein Mindestzeitfenster von %@ erforderlich.";
-"cheapestPricePage.nextThreeHours" = "Nächste 3 Stunden";
+"cheapestPricePage.todayTonight" = "Heute Nacht";
+"cheapestPricePage.nextThreeHours" = "Nächsten\n3h";
+"cheapestPricePage.nextTwelveHours" = "Nächsten\n12h";
 
 // Cheapest Price Result page localizations
 "cheapestPriceResultPage.cheapestTimeErrorOccurred" = "Es ist ein Fehler aufgetreten.\nBitte versuchen Sie es später noch einmal.";
@@ -95,7 +97,6 @@
 "general.power" = "Leistung";
 "general.none" = "Keiner";
 "general.today" = "Heute:";
-"general.tonight" = "Heute Nacht";
 "general.retry" = "Erneut versuchen";
 "general.termsOfUse" = "Nutzungsbedingungen";
 "general.privacyPolicy" = "Datenschutzrichtlinie";

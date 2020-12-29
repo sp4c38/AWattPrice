@@ -61,7 +61,7 @@ struct DecimalTextFieldWithDoneButton: UIViewRepresentable {
             self.parent.text = textField.text ?? ""
             
             if let powerOutputString = parent.text.doubleValue?.priceString {
-                parent.text = powerOutputString
+                self.parent.text = powerOutputString
             }
         }
         

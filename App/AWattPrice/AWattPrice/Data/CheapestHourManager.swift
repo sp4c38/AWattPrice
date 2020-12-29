@@ -61,7 +61,7 @@ class CheapestHourManager: ObservableObject {
         }
     }
     
-    /// Sets the selected time interval to tonight from 20pm first day to 7am next day
+    /// Sets the selected time interval to the next x hours
     func setTimeInterval(forNextHourAmount hourAmount: Int, energyData: EnergyData) {
         self.startDate = Date()
         let possibleEndDate = Calendar.current.date(byAdding: .hour, value: hourAmount, to: Date())!

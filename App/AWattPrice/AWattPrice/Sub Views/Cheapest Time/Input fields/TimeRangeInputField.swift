@@ -15,7 +15,6 @@ struct TimeRangeInputField: View {
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
     
     @State var inputDateRange: ClosedRange<Date> = Date()...Date()
-    @State var setOnlyOnce: Bool = true // Makes sure that the endDate is set only once to default
     
     let errorValues: [Int]
     let totalTimeFormatter: TotalTimeFormatter
@@ -34,15 +33,12 @@ struct TimeRangeInputField: View {
     }
     
     func setTimeIntervalValues(energyData: EnergyData) {
-        let maxHourIndex = awattarData.energyData!.prices.count - 1
+        let maxHourIndex = energyData.prices.count - 1
 
-        if awattarData.energyData!.prices.count > 0 {
-            let inputDateRangeStartPoint = Date(timeIntervalSince1970: TimeInterval(awattarData.energyData!.prices[0].startTimestamp + 1))
-            if setOnlyOnce {
-                cheapestHourManager.endDate = Date(timeIntervalSince1970: TimeInterval(awattarData.energyData!.prices[maxHourIndex].endTimestamp - 1))
-            }
+        if energyData.prices.count > 0 {
+            let inputDateRangeStartPoint = Date(timeIntervalSince1970: TimeInterval(energyData.prices[0].startTimestamp + 1))
+            cheapestHourManager.endDate = Date(timeIntervalSince1970: TimeInterval(energyData.prices[maxHourIndex].endTimestamp - 1))
             inputDateRange = inputDateRangeStartPoint...cheapestHourManager.endDate
-            setOnlyOnce = false
         }
     }
     
@@ -119,11 +115,11 @@ struct TimeRangeInputField: View {
             }
             .padding([.top, .bottom], 20)
             
-            HStack {
+            HStack(alignment: .center) {
                 Button(action: {
                     cheapestHourManager.setTimeIntervalThisNight(energyData: awattarData.energyData!)
                 }) {
-                    Text("general.tonight")
+                    Text("cheapestPricePage.todayTonight")
                         .bold()
                 }
                 .buttonStyle(TimeRangeButtonStyle())
@@ -135,6 +131,14 @@ struct TimeRangeInputField: View {
                         .bold()
                 }
                 .buttonStyle(TimeRangeButtonStyle())
+                
+                Button(action: {
+                   cheapestHourManager.setTimeInterval(forNextHourAmount: 12, energyData: awattarData.energyData!)
+               }) {
+                   Text("cheapestPricePage.nextTwelveHours")
+                       .bold()
+               }
+               .buttonStyle(TimeRangeButtonStyle())
             }
             .padding(.top, 3)
         }

@@ -66,7 +66,6 @@ async def price_drops_below_notification(notification_defaults, config, price_da
         }
 
         url = f"{notification_defaults.apns_server_url}:{notification_defaults.apns_server_port}{notification_defaults.url_path.format(token)}"
-        print(url)
         async with httpx.AsyncClient(http2 = True) as client:
             response = await client.post(url,
                                          headers = request_headers,
@@ -92,12 +91,14 @@ class DetailedPriceData:
                     self.lowest_price_point = price_point
 
 async def check_and_send(config, data, data_region, db_manager):
+    # Check which users apply to receive certain notifications and send them to those users.
+
     log.info("Checking and sending notifications.")
-    log.debug(f"Need to check and send notifications for data region {data_region.name}.")
 
     notification_defaults = Notifications(config,)
 
     all_data_to_check = {}
+    log.debug(f"Need to check and send notifications for data region {data_region.name}.")
     all_data_to_check[data_region.value] = DetailedPriceData(Box(data), data_region.value)
     del data
 
@@ -112,24 +113,33 @@ async def check_and_send(config, data, data_region, db_manager):
     notification_queue = asyncio.Queue()
 
     for notifi_config in items:
-        if not notifi_config["region_identifier"] in all_data_to_check:
-            region = Region(notifi_config["region_identifier"])
-            region_data, region_check_notification = await poll.get_data(config=config, region=region)
-            if region_check_notification:
-                log.debug(f"Need to check and send notifications for data region {region.name}.")
-                all_data_to_check[region.value] = DetailedPriceData(Box(region_data), region.value)
-            else:
-                continue
+        try:
+            configuration = json.loads(notifi_config["configuration"])["config"]
+        except:
+            log.warning("Only internally passed notification configuration of a client couldn't be read "\
+                        "while checking if the user should receive notifications.")
+            continue
 
-        if notifi_config["region_identifier"] in all_data_to_check:
+        # Check all notification types with following if statment to check if the user
+        # wants to get any notifications at all
+        if configuration["price_below_value_notification"]["active"] == True: # Currently only notification type which exists
+            if not notifi_config["region_identifier"] in all_data_to_check:
+                # Run if a user is in a different region as the current data to check includes.
+                # This polls the aWATTar API of this region and checks if notification updates
+                # should also be sent for that region.
+
+                region = Region(notifi_config["region_identifier"])
+                region_data, region_check_notification = await poll.get_data(config=config, region=region)
+                if region_check_notification:
+                    log.debug(f"Need to check and send notifications for data region {region.name}.")
+                    all_data_to_check[region.value] = DetailedPriceData(Box(region_data), region.value)
+                else:
+                    continue
+
             token = notifi_config["token"]
-            try:
-                configuration = json.loads(notifi_config["configuration"])["config"]
-            except:
-                log.warning("Internally passed notification configuration of a client couldn't be read "\
-                            "while checking if the user should receive notifications.")
 
             if configuration["price_below_value_notification"]["active"] == True:
+                # If user wants to get price below value notifications add following item to queue
                 below_value = configuration["price_below_value_notification"]["below_value"]
                 await notification_queue.put((
                     price_drops_below_notification,
@@ -146,9 +156,6 @@ async def check_and_send(config, data, data_region, db_manager):
 
     await asyncio.gather(*tasks)
     log.debug("All notification configurations checked and all connections closed.")
-    # except Exception as e:
-        # Catch exception to be able to release lock, also if an error occurred
-        # log.warning(f"Exception when trying to check and send notifications: {e}")
 
     del notification_defaults
     await db_manager.release_lock()

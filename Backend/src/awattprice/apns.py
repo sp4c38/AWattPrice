@@ -11,8 +11,8 @@ from awattprice.token_manager import APNs_Token_Manager
 from awattprice.utils import read_data, write_data
 
 async def write_token(request_data, db_manager):
+    # Store APNs token configuration to the database
     log.info("Initiated a new background task to store an APNs token.")
-    # Write the token to a file to store it.
     apns_token_manager = APNs_Token_Manager(request_data, db_manager)
 
     await db_manager.acquire_lock()
@@ -24,7 +24,14 @@ async def write_token(request_data, db_manager):
     return
 
 async def validate_token(request: Request):
-    # Check if backend can successfully get APNs token from request body.
+    # Checks if the backend can successfully read and decode the APNs token configuration
+    # sent from a client.
+
+    # Clarification:
+    # When refering to APNs token configuration or APNs configuration or token configuration
+    # the token and all config data (like selected region in app, selected notifications to receive, ...
+    # is meant.
+
     request_body = await request.body()
     decoded_body = request_body.decode('utf-8')
 
@@ -34,17 +41,18 @@ async def validate_token(request: Request):
         request_data = {"token": None, "region_identifier": None, "config": None}
         request_data["token"] = body_json["apnsDeviceToken"]
         request_data["region_identifier"] = body_json["regionIdentifier"]
+        # Set default values which are replaced if certain values are contained in the request body
         request_data["config"] = {"price_below_value_notification": {"active": False, "below_value": float(0)}}
 
-        # Always need to check with an if statment to ensure backwards-compatibility
-        # of users using old AWattPrice versions
+        # Always check with an if statment to ensure backwards-compatibility (in the future)
         if "priceBelowValueNotification" in body_json["notificationConfig"]:
+            # Set price below value notification configuration if included in request body
             below_notification = body_json["notificationConfig"]["priceBelowValueNotification"]
             if "active" in below_notification and "belowValue" in below_notification:
                 active = below_notification["active"]
                 below_value = below_notification["belowValue"]
                 # Limit below_value to two decimal places.
-                # The app normally should already have rounded this number to two decimal places.
+                # The app normally should already have rounded this number to two decimal places - but make sure.
                 below_value = round(below_value, 2)
                 request_data["config"]["price_below_value_notification"]["active"] = active
                 request_data["config"]["price_below_value_notification"]["below_value"] = below_value
@@ -52,6 +60,7 @@ async def validate_token(request: Request):
         if not request_data["token"] == None and not request_data["config"] == None:
             request_data_valid = True
 
+            # Validate types
             if not (type(request_data["token"]) == str):
                 request_data_valid = False
             if not (type(request_data["region_identifier"]) == int):

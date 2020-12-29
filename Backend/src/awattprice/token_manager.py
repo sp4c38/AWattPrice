@@ -14,6 +14,8 @@ class Token_Database_Manager:
     lock = Lock()
 
     def connect(self, config):
+        # Connect to the database
+
         database_path = Path(config.file_location.apns_dir).expanduser() / Path("token.db")
 
         database_dir = database_path.parent
@@ -26,6 +28,8 @@ class Token_Database_Manager:
         log.info("Connected to sqlite database.")
 
     def check_table_exists(self):
+        # Ensure that table in which APNs token configuration is stored exists.
+
         cursor = self.db.cursor()
         self.lock.acquire()
         cursor.execute("""
@@ -39,20 +43,29 @@ class Token_Database_Manager:
         self.lock.release()
 
     def acquire(self):
+        # Acquire a custom program-only lock to prevent multiple tasks
+        # writing to the database at the same time.
         self.lock.acquire()
 
     async def acquire_lock(self):
+        # Run synchronous acquire asynchronous
         loop = asyncio.get_event_loop()
         await loop.run_in_executor(None, self.acquire)
 
     def release(self):
+        # Release custom program-only lock.
+        # After this other tasks will be able to write to the database.
         self.lock.release()
 
     async def release_lock(self):
+        # Run synchronous release asynchronous
+
         loop = asyncio.get_event_loop()
         await loop.run_in_executor(None, self.release)
 
     def disconnect(self):
+        # Disconnect from the database by writing all changes and closing the connection.
+
         self.db.commit()
         self.db.close()
         log.info("Connection to database was closed.")
@@ -65,15 +78,19 @@ class APNs_Token_Manager:
         self.is_new_token = False # Is set later
 
     def write_database(self):
+        # Write data to associated database
+
         cursor = self.db_manager.db.cursor()
 
         if self.is_new_token:
+            # Completely new token and configuration
             encoded_config = json.dumps(self.final_data)
             with self.db_manager.db:
                 cursor.execute("INSERT INTO token_storage VALUES(?, ?, ?);",
                     (self.token_data["token"], self.token_data["region_identifier"], encoded_config,))
             log.info("Stored a new APNs token and config.")
         else:
+            # Existing token updates notification configuration
             encoded_config = json.dumps(self.final_data)
             with self.db_manager.db:
                 cursor.execute(""" UPDATE token_storage SET region_identifier = ?, configuration = ? WHERE token = ?""",
@@ -83,6 +100,8 @@ class APNs_Token_Manager:
         self.db_manager.db.commit()
 
     def set_data_task(self):
+        # Read existing data and appropriately create the final data which will be later written to the database
+
         cursor = self.db_manager.db.cursor()
         token = self.token_data["token"]
         items = cursor.execute("SELECT * FROM token_storage WHERE token = ? LIMIT 1;", (token,)).fetchall()
@@ -108,10 +127,13 @@ class APNs_Token_Manager:
         return False
 
     async def set_data(self):
+        # Run synchronous set_data_task asynchronous
         loop = asyncio.get_event_loop()
         need_to_write_data = await loop.run_in_executor(None, self.set_data_task)
         return need_to_write_data
 
     async def write_to_database(self):
+        # Run synchronous write_database asynchronous
+
         loop = asyncio.get_event_loop()
         await loop.run_in_executor(None, self.write_database)

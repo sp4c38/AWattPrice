@@ -70,13 +70,15 @@ async def verify_awattar_not_polled(updating_lock: FileLock):
     # Verify that awattar is currently not polled by a other task.
     no_request_running = False
     while no_request_running == False:
-        # Currently a other task is polling the aWATTar API.
-        # In this case wait until this task completes to have the fresh data as soon as the
-        # task completes by reading the file.
         try:
+            # Will raise exception if it can't acquire the lock immediately
             await async_acquire_lock(updating_lock, 0.001)
             no_request_running = True
         except:
+            # Currently a other task is polling the aWATTar API.
+            # In this case wait until the other task completes to use the downloaded
+            # data from that task. This avoids multiple requests initiated at about the same time
+            # to poll aWATTar data multiple times instead of waiting for one polling task to complete.
             await asyncio.sleep(3)
     return True
 
@@ -89,10 +91,10 @@ async def get_data(config: Box, region: Optional[Region] = None, force: bool = F
     """
     if region is None:
         region = Region.DE
-    # 1) Read the data file.
+
     file_path = Path(config.file_location.data_dir).expanduser() / Path(f"awattar-data-{region.name.lower()}.json")
 
-    # If caching data directory doesn't exist create it.
+    # If data directory doesn't exist create it.
     # This is also checked again when writing to the actual data file (if awattar data needs to be updated).
     check_dir = file_path.parent
     if not check_dir.expanduser().is_dir():
@@ -105,9 +107,9 @@ async def get_data(config: Box, region: Optional[Region] = None, force: bool = F
 
     fetched_data = None
     need_update = True
-    check_notification = False # If no cached data exists this value will still False
+    check_notification = False # If no cached data exists this value will stay False
                                # and won't trigger any notification updates.
-                               # Notification updates are only run when cached data already exists.
+                               # Notification updates are only run when cached data already existed.
     last_update = 0
     now = arrow.utcnow()
     if data:

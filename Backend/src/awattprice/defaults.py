@@ -26,7 +26,7 @@ url: /v1/marketdata
 data_dir: ~/awattprice/data/
 log_dir: ~/awattprice/log/
 apns_dir: ~/awattprice/apns/
-developer_team_id: ~/awattprice/dev_team_id.txt
+dev_team_id: ~/awattprice/apns/dev_team_id.txt
 apns_encryption_key_id: ~/awattprice/apns/encryption_key_id.txt
 apns_encryption_key: ~/awattprice/apns/encryption_key.p8
 
@@ -56,6 +56,7 @@ class Notifications:
             # Use localization keys which are resolved on the client side
             self.title_loc_key = "notifications.price_drops_below.title"
             self.body_loc_key = "notifications.price_drops_below.body"
+            self.collapse_id = "collapse.priceDropsBelow3DK203W0#"
 
     def __init__(self, config):
         self.price_drops_below_notification = self.Price_Drops_Below()

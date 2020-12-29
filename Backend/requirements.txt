@@ -5,8 +5,8 @@ fastapi
 filelock
 httpx
 httpx[http2]
-jwt
 loguru
+PyJWT
 python-box
 tenacity
 uvicorn

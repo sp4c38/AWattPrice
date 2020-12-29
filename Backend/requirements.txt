@@ -4,6 +4,7 @@ configupdater
 fastapi
 filelock
 httpx
+httpx[http2]
 jwt
 loguru
 python-box

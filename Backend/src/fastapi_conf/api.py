@@ -24,9 +24,6 @@ from awattprice.utils import start_logging
 
 api = FastAPI()
 
-async def check_and_send_notifications(config, data, last_region, db_manager):
-    await notifications.check_and_send(config, data, last_region, db_manager)
-
 @api.get("/")
 async def root():
     return {"message": "Nothing here. Please, move on."}
@@ -47,9 +44,9 @@ async def with_region(region_id, background_tasks: BackgroundTasks):
         return {"prices": []}
     data, check_notification = await poll.get_data(config=config, region=region)
 
-    check_notification = True
+    check_notification = True # For debugging
     if check_notification == True:
-        background_tasks.add_task(check_and_send_notifications, config, data, region, db_manager)
+        background_tasks.add_task(notifications.check_and_send, config, data, region, db_manager)
 
     headers = await poll.get_headers(config=config, data=data)
     return JSONResponse(content=data, headers=headers)

@@ -129,6 +129,8 @@ def read_config(path: Optional[Path] = None) -> Box:
     config.file_location.data_dir = config.file_location.data_dir.strip("\"'")
     config.file_location.log_dir = config.file_location.log_dir.strip("\"'")
     config.file_location.apns_dir = config.file_location.apns_dir.strip("\"'")
+    config.file_location.dev_team_id = config.file_location.dev_team_id.strip("\"'")
+    config.file_location.apns_encryption_key_id = config.file_location.apns_encryption_key_id.strip("\"'")
     config.file_location.apns_encryption_key = config.file_location.apns_encryption_key.strip("\"'")
 
     return config

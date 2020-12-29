@@ -26,7 +26,9 @@ url: /v1/marketdata
 data_dir: ~/awattprice/data/
 log_dir: ~/awattprice/log/
 apns_dir: ~/awattprice/apns/
-apns_encryption_key = ~/awattprice/apns/encryption_key.p8
+developer_team_id: ~/awattprice/dev_team_id.txt
+apns_encryption_key_id: ~/awattprice/apns/encryption_key_id.txt
+apns_encryption_key: ~/awattprice/apns/encryption_key.p8
 
 [poll]
 # Try to update the data if there are less than this number of future energy price points.
@@ -51,20 +53,22 @@ TIME_CORRECT = 1000  # Correct milli seconds used by Awattar to seconds
 class Notifications:
     class Price_Drops_Below:
         def __init__(self):
+            # Use localization keys which are resolved on the client side
             self.title_loc_key = "notifications.price_drops_below.title"
             self.body_loc_key = "notifications.price_drops_below.body"
 
     def __init__(self, config):
         self.price_drops_below_notification = self.Price_Drops_Below()
         self.encryption_algorithm = "ES256"
-        path = Path(config.file_location.apns_encryption_key).expanduser()
-        lock_path = Path(f"{config.file_location.apns_encryption_key}.lck").expanduser()
-        lock = FileLock(lock_path.as_posix())
-        lock.acquire()
-        self.encryption_key = open(path.as_posix(), "r").read()
-        print(path.as_posix())
-        lock.release()
+
+        dev_team_id_path = Path(config.file_location.dev_team_id).expanduser()
+        self.dev_team_id = open(dev_team_id_path.as_posix(), "r").readline()[0].replace("\n", "")
+        encryption_key_id_path = Path(config.file_location.apns_encryption_key_id).expanduser()
+        self.encryption_key_id = open(encryption_key_id_path.as_posix(), "r").readlines()[0].replace("\n", "")
+        encryption_key_path = Path(config.file_location.apns_encryption_key).expanduser()
+        self.encryption_key = open(encryption_key_path.as_posix(), "r").read()
         self.url_path = "/3/device/{}"
 
         self.bundle_id = "me.space8.AWattPrice.dev"
-        self.apns_server = "api.sandbox.push.apple.com:443"
+        self.apns_server_url = "https://api.sandbox.push.apple.com"
+        self.apns_server_port = 443

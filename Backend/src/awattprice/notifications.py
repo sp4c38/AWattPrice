@@ -1,28 +1,77 @@
 import asyncio
 
 import arrow
+import httpx
 import jwt
 import json
+import socket
 
 from awattprice import poll
 from awattprice.defaults import Region, Notifications
 
 from box import Box
+from datetime import datetime
+from datetime import tzlocal
 from loguru import logger as log
 
 async def price_drops_below_notification(notification_defaults, config, price_data, token, below_value):
     lowest_price = price_data.lowest_price
     if lowest_price < below_value:
-        log.info("User applies for receiving \"Price Drops Below\" notification.")
+        lowest_price_start = arrow.get(price_data.lowest_price_point.start_timestamp)
+                                .to(tzstr("CET-1CEST,M3.5.0/2,M10.5.0/3")
+                                        .tzname(datetime.fromtimestamp(price_data.lowest_price_point.start_timestamp)))
+        lowest_price_end = arrow.get(price_data.lowest_price_point.end_timestamp)
+                                .to(tzstr("CET-1CEST,M3.5.0/2,M10.5.0/3")
+                                        .tzname(datetime.fromtimestamp(price_data.lowest_price_point.start_timestamp)))
+
+        formatted_time_range = f"{lowest_price_start.format("H")} - {lowest_price_end.format("H")}"
+
+        awattprice_bundle_id = notification_defaults.bundle_id
         encryption_algorithm = notification_defaults.encryption_algorithm
-        path = notification_defaults.url_path.format(token)
-        
+
+        # Set token data
+        # For reference see: https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/establishing_a_token-based_connection_to_apns
+        token_body = {"iss": notification_defaults.dev_team_id,
+                      "iat": arrow.utcnow().timestamp}
+
+        token_headers = {"alg" = algorithm,
+                         "kid" = notification_defaults.apns_encryption_key_id}
+
+        token = jwt.encode( # Apple requires use of JWT to encode token body and token headers
+            token_body,
+            notification_defaults.encryption_key_id,
+            algorithm = encryption_algorithm,
+            headers = token_headers,
+        )
+
+        # Set notification payload
+        # For reference see: https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/generating_a_remote_notification#2943365
+        notification_payload = {
+            "aps": {
+                "alert": {
+                    "title-loc-key": notification_defaults.price_drops_below_notification.title_loc_key,
+                    "loc-key": notification_defaults.price_drops_below_notification,
+                    "loc-args": [formatted_time_range, lowest_price],
+                },
+                "badge": 1,
+                "sound": "default",
+                "content-available": 0,
+            }
+        }
+
+        url = f"{notification_defaults.apns_server_url}:{notification_defaults.apns_server_port}{notification_defaults.url_path.format(token)}"
+        async with httpx.AsyncClient(http2 = True) as client:
+            log.info("Started a new connection to APNs.")
+            response = await client.post(url)
+            print(response.content)
+
 
 class DetailedPriceData:
     def __init__(self, data: Box, region_identifier: int):
         self.data = data
         self.region_identifier = region_identifier
         self.lowest_price = None
+        self.lowest_price_point = None
         self.timedata = [] # Only contains current and future prices
 
         now = arrow.utcnow()
@@ -32,6 +81,7 @@ class DetailedPriceData:
                 marketprice = round(price_point.marketprice, 2)
                 if self.lowest_price == None or marketprice < self.lowest_price:
                     self.lowest_price = marketprice
+                    self.lowest_price_point = price_point
 
 async def check_and_send(config, data, data_region, db_manager):
     log.info("Checking and sending notifications.")
@@ -73,20 +123,24 @@ async def check_and_send(config, data, data_region, db_manager):
 
                 if configuration["price_below_value_notification"]["active"] == True:
                     below_value = configuration["price_below_value_notification"]["below_value"]
-                    await notification_queue.put(asyncio.create_task(
-                        price_drops_below_notification(
+                    await notification_queue.put((
+                        price_drops_below_notification,
                         notification_defaults,
                         config,
                         all_data_to_check[notifi_config["region_identifier"]],
                         token,
-                        below_value)))
+                        below_value))
 
+        tasks = []
         while notification_queue.empty() == False:
             task = await notification_queue.get()
-            await task
+            tasks.append(asyncio.create_task(task[0](task[1], task[2], task[3], task[4], task[5])))
+
+        await asyncio.gather(*tasks)
+        log.info("All notifications checked and all connections closed.")
     except Exception as e:
         # Catch exception to be able to release lock, also if an error occurred
-        print(e)
+        log.warning(f"Exception when trying to check and send notifications: {e}")
 
     del notification_defaults
     await db_manager.release_lock()

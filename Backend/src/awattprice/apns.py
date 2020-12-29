@@ -15,11 +15,11 @@ async def write_token(request_data, db_manager):
     # Write the token to a file to store it.
     apns_token_manager = APNs_Token_Manager(request_data, db_manager)
 
-    await apns_token_manager.acquire_lock()
+    await db_manager.acquire_lock()
     need_to_write_data = await apns_token_manager.set_data()
     if need_to_write_data:
         await apns_token_manager.write_to_database()
-    await apns_token_manager.release_lock()
+    await db_manager.release_lock()
 
     return
 
@@ -68,7 +68,5 @@ async def validate_token(request: Request):
                 log.info("APNs data (sent from a client) is NOT valid.")
                 return None
     except Exception as exp:
-        log.warning("Could NOT decode to a valid json when validating client APNs data.\n"\
-                   f"Sent data: {decoded_body}\n"\
-                   f"Exception: {exp}")
+        log.warning("Could NOT decode to a valid json when validating client APNs data.")
         return None

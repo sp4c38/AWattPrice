@@ -33,6 +33,10 @@ async def no_region(background_tasks: BackgroundTasks):
     """Return data if no region is given for Germany."""
     region = Region.DE
     data, check_notification = await poll.get_data(config=config, region=region)
+
+    if check_notification == True:
+        background_tasks.add_task(notifications.check_and_send, config, data, region, db_manager)
+
     headers = await poll.get_headers(config=config, data=data)
     return JSONResponse(content=data, headers=headers)
 
@@ -44,7 +48,7 @@ async def with_region(region_id, background_tasks: BackgroundTasks):
         return {"prices": []}
     data, check_notification = await poll.get_data(config=config, region=region)
 
-    check_notification = True # For debugging
+    # check_notification = True # Activate for debugging and testing of the push notification system
     if check_notification == True:
         background_tasks.add_task(notifications.check_and_send, config, data, region, db_manager)
 

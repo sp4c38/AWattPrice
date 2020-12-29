@@ -127,7 +127,7 @@ async def check_and_send(config, data, data_region, db_manager):
                 configuration = json.loads(notifi_config["configuration"])["config"]
             except:
                 log.warning("Internally passed notification configuration of a client couldn't be read "\
-                            "when checking if he should receive notifications.")
+                            "while checking if the user should receive notifications.")
 
             if configuration["price_below_value_notification"]["active"] == True:
                 below_value = configuration["price_below_value_notification"]["below_value"]

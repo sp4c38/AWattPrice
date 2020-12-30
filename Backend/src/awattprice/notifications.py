@@ -18,6 +18,7 @@ async def price_drops_below_notification(notification_defaults, config, price_da
     lowest_price = price_data.lowest_price
     if lowest_price < below_value:
         log.debug("Sending \"Price Drops Below\" notification to a user.")
+        # Get the current timezone (either CET or CEST, depending on season)
         timezone = tzstr("CET-1CEST,M3.5.0/2,M10.5.0/3").tzname(datetime.fromtimestamp(price_data.lowest_price_point.start_timestamp))
         lowest_price_start = arrow.get(price_data.lowest_price_point.start_timestamp).to(timezone)
         lowest_price_end = arrow.get(price_data.lowest_price_point.end_timestamp).to(timezone)
@@ -35,7 +36,7 @@ async def price_drops_below_notification(notification_defaults, config, price_da
         token_headers = {"alg": notification_defaults.encryption_algorithm,
                          "kid": notification_defaults.encryption_key_id,}
 
-        token = jwt.encode(
+        token = jwt.encode( # Apple requires using JWT
             token_body,
             notification_defaults.encryption_key,
             algorithm = encryption_algorithm,
@@ -56,6 +57,9 @@ async def price_drops_below_notification(notification_defaults, config, price_da
                 "content-available": 0,
             }
         }
+
+        # Set request headers
+        # For reference see: https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/sending_notification_requests_to_apns
         request_headers = {
             "authorization": f"bearer {token}",
             "apns-push-type": "alert",

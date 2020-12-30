@@ -31,7 +31,7 @@ struct DecimalTextFieldWithDoneButton: UIViewRepresentable {
         newUIView.textAlignment = .left
         newUIView.delegate = context.coordinator
         
-        let toolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: newUIView.frame.size.width, height: 44))
+        let toolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: 100, height: 44))
         
         let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
         let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(newUIView.doneButtonTapped(button:)))

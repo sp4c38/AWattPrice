@@ -27,14 +27,14 @@ struct SettingsPageView: View {
                                 GoToNotificationSettingView()
                             }
                         }
-                        
+
                         GetHelpView()
-                        
+
                         AgreementSettingView(agreementIconName: "doc.text",
                                              agreementName: "general.termsOfUse",
                                              agreementLinks: ("https://awattprice.space8.me/terms_of_use/german.html",
                                                               "https://awattprice.space8.me/terms_of_use/english.html"))
-                            
+
                         AgreementSettingView(agreementIconName: "hand.raised",
                                              agreementName: "general.privacyPolicy",
                                              agreementLinks: ("https://awattprice.space8.me/privacy_policy/german.html",
@@ -43,7 +43,7 @@ struct SettingsPageView: View {
                         VStack(spacing: 20) {
                             NotAffiliatedView(showGrayedOut: true)
                                 .padding([.leading, .trailing], 16)
-                            
+
                             AppVersionView()
                         }
                         .padding(.bottom, 15)
@@ -52,30 +52,9 @@ struct SettingsPageView: View {
                     Text("settingsPage.notLoadedSettings")
                 }
             }
-            .navigationTitle("settingsPage.settings")
+            .navigationTitle(Text("settingsPage.settings"))
+            .navigationBarTitleDisplayMode(.large)
             .navigationViewStyle(StackNavigationViewStyle())
-        }
-    }
-    
-    struct DoneNavigationBarItem: View {
-        @EnvironmentObject var currentSetting: CurrentSetting
-        @Binding var presentationMode: PresentationMode
-        
-        var body: some View {
-            Button(action: {
-                self.hideKeyboard()
-                currentSetting.validateTariffAndEnergyPriceSet()
-                presentationMode.dismiss()
-            }) {
-                HStack {
-                    Text("Done")
-                        .bold()
-                        .font(.subheadline)
-                }
-                .foregroundColor(Color.blue)
-                .padding(5)
-                .padding([.leading, .trailing], 3)
-            }
         }
     }
 }

@@ -113,3 +113,6 @@
 "updateDataTimeFormatter.moreThanMMAgoSingular" = "Updated %@ minute ago";
 "updateDataTimeFormatter.moreThanMMAgoPlural" = "Updated %@ minutes ago";
 "updateDataTimeFormatter.updateNewDataFailed" = "Couldn't get new data. Tap to retry.";
+
+// Notification localizations
+"notifications.price_drops_below.title" = "A title";

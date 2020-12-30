@@ -9,6 +9,7 @@ import SwiftUI
 
 struct RegionAndVatSelection: View {
     @Environment(\.colorScheme) var colorScheme
+    @EnvironmentObject var crtNotifiSetting: CurrentNotificationSetting
     @EnvironmentObject var currentSetting: CurrentSetting
     
     @State var selectedRegion: Int = 0
@@ -37,6 +38,8 @@ struct RegionAndVatSelection: View {
                             if newRegionSelection == 1 {
                                 currentSetting.changeTaxSelection(newValue: false)
                             }
+                            
+                            crtNotifiSetting.changesAndStaged = true
                         }
                 }
                 .onAppear {
@@ -64,6 +67,7 @@ struct RegionAndVatSelection: View {
                             content
                                 .onChange(of: pricesWithTaxIncluded) { newValue in
                                     currentSetting.changeTaxSelection(newValue: newValue)
+                                    crtNotifiSetting.changesAndStaged = true
                                 }
                         }
                     }

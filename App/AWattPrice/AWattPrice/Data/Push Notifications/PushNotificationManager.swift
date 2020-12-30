@@ -73,13 +73,15 @@ func notificationConfigChanged(regionIdentifier: Int, vatSelection: Int, _ crtNo
 }
 
 func initiateBackgroundNotificationUpdate(currentSetting: CurrentSetting, crtNotifiSetting: CurrentNotificationSetting) {
-    DispatchQueue.global(qos: .background).async {
-        notificationConfigChanged(
-            regionIdentifier: Int(currentSetting.entity!.regionIdentifier),
-            vatSelection: currentSetting.entity!.pricesWithTaxIncluded ? 1 : 0,
-            crtNotifiSetting)
-        DispatchQueue.main.async {
-            crtNotifiSetting.changesAndStaged = false
+    if crtNotifiSetting.changesAndStaged == true {
+        DispatchQueue.global(qos: .background).async {
+            notificationConfigChanged(
+                regionIdentifier: Int(currentSetting.entity!.regionIdentifier),
+                vatSelection: currentSetting.entity!.pricesWithTaxIncluded ? 1 : 0,
+                crtNotifiSetting)
+            DispatchQueue.main.async {
+                crtNotifiSetting.changesAndStaged = false
+            }
         }
     }
 }

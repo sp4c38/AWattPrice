@@ -13,6 +13,7 @@ struct SettingsPageView: View {
     @Environment(\.scenePhase) var scenePhase
     @EnvironmentObject var crtNotifiSetting: CurrentNotificationSetting
     @EnvironmentObject var currentSetting: CurrentSetting
+    @EnvironmentObject var tabBarItems: TBItems
     
     var body: some View {
         NavigationView {
@@ -57,7 +58,12 @@ struct SettingsPageView: View {
             .navigationBarTitleDisplayMode(.large)
             .navigationViewStyle(StackNavigationViewStyle())
             .onChange(of: scenePhase) { scenePhase in
-                if scenePhase == .background && crtNotifiSetting.changesAndStaged == true {
+                if scenePhase == .background {
+                    initiateBackgroundNotificationUpdate(currentSetting: currentSetting, crtNotifiSetting: crtNotifiSetting)
+                }
+            }
+            .onChange(of: tabBarItems.selectedItemIndex) { newSelectedIndex in
+                if newSelectedIndex != 0 {
                     initiateBackgroundNotificationUpdate(currentSetting: currentSetting, crtNotifiSetting: crtNotifiSetting)
                 }
             }

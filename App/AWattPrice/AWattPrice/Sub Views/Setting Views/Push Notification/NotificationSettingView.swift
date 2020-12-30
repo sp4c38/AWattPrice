@@ -48,7 +48,7 @@ struct GoToNotificationSettingView: View {
                 redirectToNotificationPage = 1
             }
             .onChange(of: redirectToNotificationPage) { newPageSelection in
-                if newPageSelection == nil && crtNotifiSetting.changesAndStaged == true {
+                if newPageSelection == nil {
                     initiateBackgroundNotificationUpdate(currentSetting: currentSetting, crtNotifiSetting: crtNotifiSetting)
                 }
             }

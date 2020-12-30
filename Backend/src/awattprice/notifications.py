@@ -14,12 +14,13 @@ from datetime import datetime
 from dateutil.tz import tzstr
 from loguru import logger as log
 
-async def price_drops_below_notification(notification_defaults, config, price_data, token, below_value, vat_selection):
-    lowest_price = price_data.lowest_price
-    if vat_selection == 1:
-        lowest_price *= 1.19
+async def price_drops_below_notification(notification_defaults, config, price_data, token, below_value, region_identifier, vat_selection):
+    lowest_price = round(price_data.lowest_price, 2)
+    if region_identifier == 0 and vat_selection == 1: # User selected Germany as a region and wants VAT included in all electricity prices
+        lowest_price = round(lowest_price * 1.19, 2)
+
     if lowest_price < below_value:
-        log.debug("Sending 4\"Price Drops Below\" notification to a user.")
+        log.debug("Sending \"Price Drops Below\" notification to a user.")
         # Get the current timezone (either CET or CEST, depending on season)
         timezone = tzstr("CET-1CEST,M3.5.0/2,M10.5.0/3").tzname(datetime.fromtimestamp(price_data.lowest_price_point.start_timestamp))
         lowest_price_start = arrow.get(price_data.lowest_price_point.start_timestamp).to(timezone)
@@ -38,12 +39,14 @@ async def price_drops_below_notification(notification_defaults, config, price_da
         token_headers = {"alg": notification_defaults.encryption_algorithm,
                          "kid": notification_defaults.encryption_key_id,}
 
-        token = jwt.encode( # Apple requires using JWT
+        token_data_encoded = jwt.encode( # Apple requires using JWT
             token_body,
             notification_defaults.encryption_key,
             algorithm = encryption_algorithm,
             headers = token_headers,
         )
+        # print(token_body)
+        # print(token_headers)
 
         # Set notification payload
         # For reference see: https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/generating_a_remote_notification#2943365
@@ -63,7 +66,7 @@ async def price_drops_below_notification(notification_defaults, config, price_da
         # Set request headers
         # For reference see: https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/sending_notification_requests_to_apns
         request_headers = {
-            "authorization": f"bearer {token}",
+            "authorization": f"bearer {token_data_encoded}",
             "apns-push-type": "alert",
             "apns-topic": notification_defaults.bundle_id,
             "apns-expiration": f"{lowest_price_start.timestamp - 3600}",
@@ -77,6 +80,7 @@ async def price_drops_below_notification(notification_defaults, config, price_da
                                          headers = request_headers,
                                          data = json.dumps(notification_payload))
             print(response.content)
+
 
 
 class DetailedPriceData:
@@ -143,6 +147,7 @@ async def check_and_send(config, data, data_region, db_manager):
                     continue
 
             token = notifi_config["token"]
+            region_identifier = notifi_config["region_identifier"]
             vat_selection = notifi_config["vat_selection"]
 
             if configuration["price_below_value_notification"]["active"] == True:
@@ -156,12 +161,13 @@ async def check_and_send(config, data, data_region, db_manager):
                     all_data_to_check[notifi_config["region_identifier"]],
                     token,
                     below_value,
+                    region_identifier,
                     vat_selection))
 
     tasks = []
     while notification_queue.empty() == False:
         task = await notification_queue.get()
-        tasks.append(asyncio.create_task(task[0](task[1], task[2], task[3], task[4], task[5])))
+        tasks.append(asyncio.create_task(task[0](task[1], task[2], task[3], task[4], task[5], task[6], task[7])))
 
     await asyncio.gather(*tasks)
     log.debug("All notification configurations checked and all connections closed.")

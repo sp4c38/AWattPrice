@@ -23,13 +23,13 @@ struct ContentView: View {
                         ZStack {
                             SettingsPageView()
                                 .opacity(tabBarItems.selectedItemIndex == 0 ? 1 : 0)
+                                .environmentObject(tabBarItems)
                             
                             HomeView()
                                 .opacity(tabBarItems.selectedItemIndex == 1 ? 1 : 0)
                                     
                             CheapestTimeView()
                                 .opacity(tabBarItems.selectedItemIndex == 2 ? 1 : 0)
-                                .environmentObject(tabBarItems)
                         }
                         .onAppear {
                             managePushNotificationsOnAppStart()

@@ -200,10 +200,12 @@ async def get_headers(config: Box, data: Dict) -> Dict:
             price_points_in_future += 1
 
     if price_points_in_future < int(config.poll.if_less_than):
-        # Runs when the data is fetched at every call and the aWATTar data
-        # will probably update soon.
-        # In that case the client shall only cache data for up to 5 minutes.
-        max_age = 300
+        # Runs when the data is fetched at every call (respecting minimum time interval between updates)
+        # and the aWATTar data will probably update soon.
+        if config.poll.awattar <= 300:
+            max_age = 300
+        else:
+            max_age = config.poll.awattar
     else:
         if (price_points_in_future - int(config.poll.if_less_than)) == 0:
             # Runs when it is currently the hour before the backend

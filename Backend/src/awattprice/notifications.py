@@ -8,6 +8,7 @@ import socket
 
 from awattprice import poll
 from awattprice.defaults import Region, Notifications
+from awattprice.token_manager import APNs_Token_Manager
 
 from box import Box
 from datetime import datetime
@@ -15,7 +16,24 @@ from dateutil.tz import tzstr
 from loguru import logger as log
 from math import floor
 
-async def price_drops_below_notification(notification_defaults, config, price_data, token, below_value, region_identifier, vat_selection):
+async def handle_apns_response(db_manager, token, response, status_code):
+    # For reference of returned response and status codes see: https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/handling_notification_responses_from_apns
+    if not status_code == 200:
+        if status_code in [400, 410]:
+            remove_token = False
+            if status_code == 410 and response["reason"] == "Unregistered":
+                remove_token = True
+
+            if status_code == 400 and response["reason"] in ["BadDeviceToken", "DeviceTokenNotForTopic"]:
+                remove_token = True
+
+            if remove_token == True:
+                token_manager = APNs_Token_Manager({"token": token}, db_manager)
+                await token_manager.remove_entry_from_database()
+                log.debug("Removed invalid APNs token from database.")
+
+
+async def price_drops_below_notification(db_manager, notification_defaults, config, price_data, token, below_value, region_identifier, vat_selection):
     lowest_price = round(price_data.lowest_price, 2)
     if region_identifier == 0 and vat_selection == 1: # User selected Germany as a region and wants VAT included in all electricity prices
         lowest_price = round(lowest_price * 1.16, 2)
@@ -74,16 +92,25 @@ async def price_drops_below_notification(notification_defaults, config, price_da
             "apns-topic": notification_defaults.bundle_id,
             "apns-expiration": f"{lowest_price_start.timestamp - 3600}",
             "apns-priority": "5",
-            "apns-collapse-id": notification_defaults.price_drops_below_notification.collapse_id
+            "apns-collapse-id": notification_defaults.price_drops_below_notification.collapse_id,
         }
 
         url = f"{notification_defaults.apns_server_url}:{notification_defaults.apns_server_port}{notification_defaults.url_path.format(token)}"
+
+        status_code = None
+        response = None
         async with httpx.AsyncClient(http2 = True) as client:
-            response = await client.post(url,
+            request = await client.post(url,
                                          headers = request_headers,
                                          data = json.dumps(notification_payload))
-            # print(f"Returned response {response.content}")
+            status_code = request.status_code
+            try:
+                response = json.loads(request.content.decode("utf-8"))
+            except Exception as e:
+                log.warning(f"Couldn't decode response from APNs servers: {e}")
 
+        if not response == None and not status_code == None:
+            await handle_apns_response(db_manager, token, response, status_code)
 
 
 class DetailedPriceData:
@@ -108,72 +135,76 @@ async def check_and_send(config, data, data_region, db_manager):
 
     log.info("Checking and sending notifications.")
 
-    notification_defaults = Notifications(config,)
+    notification_defaults = Notifications()
+    values_set_successful = notification_defaults.set_values(config,)
 
-    all_data_to_check = {}
-    log.debug(f"Need to check and send notifications for data region {data_region.name}.")
-    all_data_to_check[data_region.value] = DetailedPriceData(Box(data), data_region.value)
-    del data
+    if values_set_successful:
+        all_data_to_check = {}
+        log.debug(f"Need to check and send notifications for data region {data_region.name}.")
+        all_data_to_check[data_region.value] = DetailedPriceData(Box(data), data_region.value)
+        del data
 
-    await db_manager.acquire_lock()
-    # try:
-    cursor = db_manager.db.cursor()
-    items = cursor.execute("SELECT * FROM token_storage;").fetchall()
-    items = [dict(x) for x in items]
+        await db_manager.acquire_lock()
 
-    log.debug("Checking all stored notification configurations - if they apply to receive a notification.")
+        cursor = db_manager.db.cursor()
+        items = cursor.execute("SELECT * FROM token_storage;").fetchall()
+        cursor.close()
+        items = [dict(x) for x in items]
 
-    notification_queue = asyncio.Queue()
+        log.debug("Checking all stored notification configurations - if they apply to receive a notification.")
 
-    for notifi_config in items:
-        try:
-            configuration = json.loads(notifi_config["configuration"])["config"]
-        except:
-            log.warning("Only internally passed notification configuration of a client couldn't be read "\
-                        "while checking if the user should receive notifications.")
-            continue
+        notification_queue = asyncio.Queue()
 
-        # Check all notification types with following if statment to check if the user
-        # wants to get any notifications at all
-        if configuration["price_below_value_notification"]["active"] == True: # Currently only notification type which exists
-            if not notifi_config["region_identifier"] in all_data_to_check:
-                # Run if a user is in a different region as the current data to check includes.
-                # This polls the aWATTar API of this region and checks if notification updates
-                # should also be sent for that region.
+        for notifi_config in items:
+            try:
+                configuration = json.loads(notifi_config["configuration"])["config"]
+            except:
+                log.warning("Only internally passed notification configuration of a client couldn't be read "\
+                            "while checking if the user should receive notifications.")
+                continue
 
-                region = Region(notifi_config["region_identifier"])
-                region_data, region_check_notification = await poll.get_data(config=config, region=region)
-                if region_check_notification:
-                    log.debug(f"Need to check and send notifications for data region {region.name}.")
-                    all_data_to_check[region.value] = DetailedPriceData(Box(region_data), region.value)
-                else:
-                    continue
+            # Check all notification types with following if statment to check if the user
+            # wants to get any notifications at all
+            if configuration["price_below_value_notification"]["active"] == True: # Currently only notification type which exists
+                if not notifi_config["region_identifier"] in all_data_to_check:
+                    # Run if a user is in a different region as the current data to check includes.
+                    # This polls the aWATTar API of this region and checks if notification updates
+                    # should also be sent for that region.
 
-            token = notifi_config["token"]
-            region_identifier = notifi_config["region_identifier"]
-            vat_selection = notifi_config["vat_selection"]
+                    region = Region(notifi_config["region_identifier"])
+                    region_data, region_check_notification = await poll.get_data(config=config, region=region)
+                    if region_check_notification:
+                        log.debug(f"Need to check and send notifications for data region {region.name}.")
+                        all_data_to_check[region.value] = DetailedPriceData(Box(region_data), region.value)
+                    else:
+                        continue
 
-            if configuration["price_below_value_notification"]["active"] == True:
-                # If user wants to get price below value notifications add following item to queue
-                below_value = configuration["price_below_value_notification"]["below_value"]
+                token = notifi_config["token"]
+                region_identifier = notifi_config["region_identifier"]
+                vat_selection = notifi_config["vat_selection"]
 
-                await notification_queue.put((
-                    price_drops_below_notification,
-                    notification_defaults,
-                    config,
-                    all_data_to_check[notifi_config["region_identifier"]],
-                    token,
-                    below_value,
-                    region_identifier,
-                    vat_selection))
+                if configuration["price_below_value_notification"]["active"] == True:
+                    # If user wants to get price below value notifications add following item to queue
+                    below_value = configuration["price_below_value_notification"]["below_value"]
 
-    tasks = []
-    while notification_queue.empty() == False:
-        task = await notification_queue.get()
-        tasks.append(asyncio.create_task(task[0](task[1], task[2], task[3], task[4], task[5], task[6], task[7])))
+                    await notification_queue.put((
+                        price_drops_below_notification,
+                        db_manager,
+                        notification_defaults,
+                        config,
+                        all_data_to_check[notifi_config["region_identifier"]],
+                        token,
+                        below_value,
+                        region_identifier,
+                        vat_selection))
 
-    await asyncio.gather(*tasks)
-    log.debug("All notification configurations checked and all connections closed.")
+        tasks = []
+        while notification_queue.empty() == False:
+            task = await notification_queue.get()
+            tasks.append(asyncio.create_task(task[0](task[1], task[2], task[3], task[4], task[5], task[6], task[7], task[8])))
+
+        await asyncio.gather(*tasks)
+        await db_manager.release_lock()
+        log.debug("All notification configurations checked and all connections closed.")
 
     del notification_defaults
-    await db_manager.release_lock()

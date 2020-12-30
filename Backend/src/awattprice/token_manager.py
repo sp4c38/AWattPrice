@@ -99,11 +99,11 @@ class APNs_Token_Manager:
                               (self.token_data["region_identifier"], self.token_data["vat_selection"], encoded_config, self.token_data["token"],))
             log.info("Updated to a new APNs config.")
 
+        cursor.close()
         self.db_manager.db.commit()
 
     def set_data_task(self):
         # Read existing data and appropriately create the final data which will be later written to the database
-
         cursor = self.db_manager.db.cursor()
         token = self.token_data["token"]
         items = cursor.execute("SELECT * FROM token_storage WHERE token = ? LIMIT 1;", (token,)).fetchall()
@@ -112,6 +112,7 @@ class APNs_Token_Manager:
             self.is_new_token = True
             self.final_data = {"config": self.token_data["config"]}
             log.info("New APNs token and configuration was sent from a client.")
+            cursor.close()
             return True
         elif len(items) == 1:
             new_config_raw = json.dumps({"config": self.token_data["config"]})
@@ -127,8 +128,19 @@ class APNs_Token_Manager:
                             "They are same as already stored on the servers APNs database. "\
                             "This shouldn't happen because only new APNs configuration (and tokens) "\
                             "should be sent from the client-side.")
+                cursor.close()
                 return False
+        cursor.close()
         return False
+
+    def remove_entry(self):
+        cursor = self.db_manager.db.cursor()
+        cursor.execute("DELETE FROM token_storage WHERE token = ?", (self.token_data["token"],))
+        cursor.close()
+
+    async def remove_entry_from_database(self):
+        loop = asyncio.get_event_loop()
+        await loop.run_in_executor(None, self.remove_entry)
 
     async def set_data(self):
         # Run synchronous set_data_task asynchronous
@@ -138,6 +150,5 @@ class APNs_Token_Manager:
 
     async def write_to_database(self):
         # Run synchronous write_database asynchronous
-
         loop = asyncio.get_event_loop()
         await loop.run_in_executor(None, self.write_database)

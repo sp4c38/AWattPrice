@@ -11,6 +11,7 @@ __license__ = "mit"
 
 from enum import Enum
 from filelock import FileLock
+from loguru import logger as log
 from pathlib import Path
 
 DEFAULT_CONFIG = """
@@ -52,24 +53,33 @@ TIME_CORRECT = 1000  # Correct milli seconds used by Awattar to seconds
 
 class Notifications:
     class Price_Drops_Below:
-        def __init__(self):
+        def set_values(self):
             # Use localization keys which are resolved on the client side
             self.title_loc_key = "notifications.price_drops_below.title"
             self.body_loc_key = "notifications.price_drops_below.body"
             self.collapse_id = "collapse.priceDropsBelow3DK203W0#"
 
-    def __init__(self, config):
+
+    def set_values(self, config) -> bool:
         self.price_drops_below_notification = self.Price_Drops_Below()
+        self.price_drops_below_notification.set_values()
         self.encryption_algorithm = "ES256"
 
-        dev_team_id_path = Path(config.file_location.dev_team_id).expanduser()
-        self.dev_team_id = open(dev_team_id_path.as_posix(), "r").readlines()[0].replace("\n", "")
-        encryption_key_id_path = Path(config.file_location.apns_encryption_key_id).expanduser()
-        self.encryption_key_id = open(encryption_key_id_path.as_posix(), "r").readlines()[0].replace("\n", "")
-        encryption_key_path = Path(config.file_location.apns_encryption_key).expanduser()
-        self.encryption_key = open(encryption_key_path.as_posix(), "r").read()
-        self.url_path = "/3/device/{}"
+        try:
+            dev_team_id_path = Path(config.file_location.dev_team_id).expanduser()
+            self.dev_team_id = open(dev_team_id_path.as_posix(), "r").readlines()[0].replace("\n", "")
+            encryption_key_id_path = Path(config.file_location.apns_encryption_key_id).expanduser()
+            self.encryption_key_id = open(encryption_key_id_path.as_posix(), "r").readlines()[0].replace("\n", "")
+            encryption_key_path = Path(config.file_location.apns_encryption_key).expanduser()
+            self.encryption_key = open(encryption_key_path.as_posix(), "r").read()
+            self.url_path = "/3/device/{}"
+        except Exception as e:
+            log.warning(f"Couldn't read or find file(s) containing required information to send notifications "\
+                        f"with APNs. Notifications won't be checked and won't be sent by the backend: {e}.")
+            return False
 
         self.bundle_id = "me.space8.AWattPrice.dev"
         self.apns_server_url = "https://api.sandbox.push.apple.com"
         self.apns_server_port = 443
+
+        return True

@@ -10,6 +10,7 @@ import SwiftUI
 /// Start of the application.
 struct ContentView: View {
     @Environment(\.networkManager) var networkManager
+    @Environment(\.scenePhase) var scenePhase
     @EnvironmentObject var crtNotifiSetting: CurrentNotificationSetting
     @EnvironmentObject var currentSetting: CurrentSetting
 
@@ -69,8 +70,10 @@ struct ContentView: View {
             }
         }
         .ignoresSafeArea(.keyboard)
-        .onAppear {
-            UIApplication.shared.applicationIconBadgeNumber = 0
+        .onChange(of: scenePhase) { newScenePhase in
+            if newScenePhase == .active {
+                UIApplication.shared.applicationIconBadgeNumber = 0
+            }
         }
     }
 }

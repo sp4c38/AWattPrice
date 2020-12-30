@@ -55,7 +55,8 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
                         group.wait()
                         let notificationConfigRepresentable = UploadPushNotificationConfigRepresentable(
                             apnsDeviceTokenString,
-                            regionIdentifier: Int(self.currentSetting!.entity!.regionIdentifier),
+                            Int(self.currentSetting!.entity!.regionIdentifier),
+                            self.currentSetting!.entity!.pricesWithTaxIncluded ? 1 : 0,
                             self.crtNotifiSetting!.entity!)
                         let requestSuccessful = uploadPushNotificationSettings(configuration: notificationConfigRepresentable)
                         self.crtNotifiSetting!.changeLastApnsToken(newValue: apnsDeviceTokenString)

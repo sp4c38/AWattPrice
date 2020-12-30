@@ -38,9 +38,10 @@ async def validate_token(request: Request):
     try:
         body_json = json.loads(decoded_body)
 
-        request_data = {"token": None, "region_identifier": None, "config": None}
+        request_data = {"token": None, "region_identifier": None, "vat_selection": None, "config": None}
         request_data["token"] = body_json["apnsDeviceToken"]
         request_data["region_identifier"] = body_json["regionIdentifier"]
+        request_data["vat_selection"] = body_json["vatSelection"]
         # Set default values which are replaced if certain values are contained in the request body
         request_data["config"] = {"price_below_value_notification": {"active": False, "below_value": float(0)}}
 
@@ -63,7 +64,9 @@ async def validate_token(request: Request):
             # Validate types
             if not (type(request_data["token"]) == str):
                 request_data_valid = False
-            if not (type(request_data["region_identifier"]) == int):
+            if not (type(request_data["region_identifier"]) == int) or not request_data["region_identifier"] in [0, 1]:
+                request_data_valid = False
+            if not (type(request_data["vat_selection"]) == int) or not request_data["vat_selection"] in [0, 1]:
                 request_data_valid = False
             if not (type(request_data["config"]["price_below_value_notification"]["active"]) == bool):
                 request_data_valid = False

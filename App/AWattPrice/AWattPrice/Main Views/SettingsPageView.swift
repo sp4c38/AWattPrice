@@ -10,6 +10,7 @@ import SwiftUI
 
 /// A place for the user to modify certain settings. Those changes are automatically stored (if modified) in persistent storage.
 struct SettingsPageView: View {
+    @Environment(\.scenePhase) var scenePhase
     @EnvironmentObject var crtNotifiSetting: CurrentNotificationSetting
     @EnvironmentObject var currentSetting: CurrentSetting
     
@@ -55,6 +56,11 @@ struct SettingsPageView: View {
             .navigationTitle(Text("settingsPage.settings"))
             .navigationBarTitleDisplayMode(.large)
             .navigationViewStyle(StackNavigationViewStyle())
+            .onChange(of: scenePhase) { scenePhase in
+                if scenePhase == .background && crtNotifiSetting.changesAndStaged == true {
+                    initiateBackgroundNotificationUpdate(currentSetting: currentSetting, crtNotifiSetting: crtNotifiSetting)
+                }
+            }
         }
     }
 }

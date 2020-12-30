@@ -14,10 +14,12 @@ from datetime import datetime
 from dateutil.tz import tzstr
 from loguru import logger as log
 
-async def price_drops_below_notification(notification_defaults, config, price_data, token, below_value):
+async def price_drops_below_notification(notification_defaults, config, price_data, token, below_value, vat_selection):
     lowest_price = price_data.lowest_price
+    if vat_selection == 1:
+        lowest_price *= 1.19
     if lowest_price < below_value:
-        log.debug("Sending \"Price Drops Below\" notification to a user.")
+        log.debug("Sending 4\"Price Drops Below\" notification to a user.")
         # Get the current timezone (either CET or CEST, depending on season)
         timezone = tzstr("CET-1CEST,M3.5.0/2,M10.5.0/3").tzname(datetime.fromtimestamp(price_data.lowest_price_point.start_timestamp))
         lowest_price_start = arrow.get(price_data.lowest_price_point.start_timestamp).to(timezone)
@@ -141,17 +143,20 @@ async def check_and_send(config, data, data_region, db_manager):
                     continue
 
             token = notifi_config["token"]
+            vat_selection = notifi_config["vat_selection"]
 
             if configuration["price_below_value_notification"]["active"] == True:
                 # If user wants to get price below value notifications add following item to queue
                 below_value = configuration["price_below_value_notification"]["below_value"]
+
                 await notification_queue.put((
                     price_drops_below_notification,
                     notification_defaults,
                     config,
                     all_data_to_check[notifi_config["region_identifier"]],
                     token,
-                    below_value))
+                    below_value,
+                    vat_selection))
 
     tasks = []
     while notification_queue.empty() == False:

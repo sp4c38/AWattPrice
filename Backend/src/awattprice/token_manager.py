@@ -36,6 +36,7 @@ class Token_Database_Manager:
             CREATE TABLE IF NOT EXISTS token_storage (
                 token TEXT PRIMARY KEY NOT NULL,
                 region_identifier INTEGER NOT NULL,
+                vat_selection INTEGER NOT NULL,
                 configuration TEXT NOT NULL
             )""")
         cursor.close()
@@ -86,15 +87,16 @@ class APNs_Token_Manager:
             # Completely new token and configuration
             encoded_config = json.dumps(self.final_data)
             with self.db_manager.db:
-                cursor.execute("INSERT INTO token_storage VALUES(?, ?, ?);",
-                    (self.token_data["token"], self.token_data["region_identifier"], encoded_config,))
+                cursor.execute("INSERT INTO token_storage VALUES(?, ?, ?, ?);",
+                    (self.token_data["token"], self.token_data["region_identifier"],
+                     self.token_data["vat_selection"], encoded_config,))
             log.info("Stored a new APNs token and config.")
         else:
             # Existing token updates notification configuration
             encoded_config = json.dumps(self.final_data)
             with self.db_manager.db:
-                cursor.execute(""" UPDATE token_storage SET region_identifier = ?, configuration = ? WHERE token = ?""",
-                              (self.token_data["region_identifier"], encoded_config, self.token_data["token"],))
+                cursor.execute(""" UPDATE token_storage SET region_identifier = ?, vat_selection = ?, configuration = ? WHERE token = ?""",
+                              (self.token_data["region_identifier"], self.token_data["vat_selection"], encoded_config, self.token_data["token"],))
             log.info("Updated to a new APNs config.")
 
         self.db_manager.db.commit()
@@ -113,7 +115,9 @@ class APNs_Token_Manager:
             return True
         elif len(items) == 1:
             new_config_raw = json.dumps({"config": self.token_data["config"]})
-            if not (items[0][1] == self.token_data["region_identifier"]) or not (items[0][2] == new_config_raw):
+            if (not (items[0][1] == self.token_data["region_identifier"]) or
+                not (items[0][2] == self.token_data["vat_selection"]) or
+                not (items[0][3] == new_config_raw)):
                 self.is_new_token = False # Just new config but no new token
                 self.final_data = {"config": self.token_data["config"]}
                 log.info("Client requested to update existing APNs configuration.")

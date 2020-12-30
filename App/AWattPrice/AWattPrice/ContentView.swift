@@ -21,7 +21,6 @@ struct ContentView: View {
                 VStack(spacing: 0) {
                     if currentSetting.entity!.splashScreensFinished == true {
                         ZStack {
-                            
                             SettingsPageView()
                                 .opacity(tabBarItems.selectedItemIndex == 0 ? 1 : 0)
                             
@@ -60,7 +59,11 @@ struct ContentView: View {
                 }
                 .onChange(of: crtNotifiSetting.entity!.changesButErrorUploading) { newValue in
                     if newValue == true {
-                        tryNotificationUploadAfterFailed(Int(currentSetting.entity!.regionIdentifier), crtNotifiSetting, networkManager)
+                        tryNotificationUploadAfterFailed(
+                            Int(currentSetting.entity!.regionIdentifier),
+                            currentSetting.entity!.pricesWithTaxIncluded ? 1 : 0,
+                            crtNotifiSetting,
+                            networkManager)
                     }
                 }
             }

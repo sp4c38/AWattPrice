@@ -73,7 +73,7 @@
 // Notification Page localizations
 "notificationPage.notifications" = "Notifications";
 "notificationPage.notification.priceDropsBelowValue" = "Price drops below certain value";
-"notificationPage.notification.priceDropsBelowValue.description" = "Receive a notification as soon as new prices are available and prices drop below a custom set value.";
+"notificationPage.notification.priceDropsBelowValue.description" = "Receive a notification as soon as new prices are available and prices drop below a certain value.";
 
 // Data download error view
 "dataError.tryAgainLater" = "Please try again later.";
@@ -115,4 +115,5 @@
 "updateDataTimeFormatter.updateNewDataFailed" = "Couldn't get new data. Tap to retry.";
 
 // Notification localizations
-"notifications.price_drops_below.title" = "A title";
+"notifications.price_drops_below.title" = "Electricity prices";
+"notifications.price_drops_below.body" = "Between %@ to %@ o'clock electricity prices will drop as low as %@ cent.";

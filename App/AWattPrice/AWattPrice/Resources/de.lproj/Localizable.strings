@@ -73,7 +73,7 @@
 // Notification Page localizations
 "notificationPage.notifications" = "Benachrichtungen";
 "notificationPage.notification.priceDropsBelowValue" = "Preis sinkt unter bestimmten Wert";
-"notificationPage.notification.priceDropsBelowValue.description" = "Erhalten eine Benachrichtigung, sobald neue Preise verfügbar sind und diese  unter einen selbst eingestellten Wert fallen.";
+"notificationPage.notification.priceDropsBelowValue.description" = "Erhalte eine Benachrichtigung, sobald neue Preise verfügbar sind und diese unter einem eingestellten Wert fallen.";
 
 // Data download error view
 "dataError.tryAgainLater" = "Bitte versuchen Sie es\nspäter noch einmal.";
@@ -113,3 +113,7 @@
 "updateDataTimeFormatter.moreThanMMAgoSingular" = "Vor %@ Minute aktualisiert";
 "updateDataTimeFormatter.moreThanMMAgoPlural" = "Vor %@ Minuten aktualisiert";
 "updateDataTimeFormatter.updateNewDataFailed" = "Neue Daten konnten nicht heruntergeladen werden. Tippe, um erneut zu versuchen.";
+
+// Notification localizations
+"notifications.price_drops_below.title" = "Strompreise";
+"notifications.price_drops_below.body" = "Zwischen %@ bis %@ Uhr fallen die Strompreise auf bis zu %@ Cent.";

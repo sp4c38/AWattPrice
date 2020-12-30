@@ -13,11 +13,12 @@ from box import Box
 from datetime import datetime
 from dateutil.tz import tzstr
 from loguru import logger as log
+from math import floor
 
 async def price_drops_below_notification(notification_defaults, config, price_data, token, below_value, region_identifier, vat_selection):
     lowest_price = round(price_data.lowest_price, 2)
     if region_identifier == 0 and vat_selection == 1: # User selected Germany as a region and wants VAT included in all electricity prices
-        lowest_price = round(lowest_price * 1.19, 2)
+        lowest_price = round(lowest_price * 1.16, 2)
 
     if lowest_price < below_value:
         log.debug("Sending \"Price Drops Below\" notification to a user.")
@@ -25,8 +26,12 @@ async def price_drops_below_notification(notification_defaults, config, price_da
         timezone = tzstr("CET-1CEST,M3.5.0/2,M10.5.0/3").tzname(datetime.fromtimestamp(price_data.lowest_price_point.start_timestamp))
         lowest_price_start = arrow.get(price_data.lowest_price_point.start_timestamp).to(timezone)
         lowest_price_end = arrow.get(price_data.lowest_price_point.end_timestamp).to(timezone)
+        lowest_price_start_string_hour = lowest_price_start.format("H")
+        lowest_price_end_string_hour = lowest_price_end.format("H")
 
-        formatted_time_range = f"{lowest_price_start.format('H')} - {lowest_price_end.format('H')}"
+        lowest_price_cent = floor(lowest_price) # Full cents, for example 4
+        lowest_price_cent_decimal = round((lowest_price - lowest_price_cent) * 100) # Decimal places of cent, for example 39
+        formatted_lowest_price = f"{lowest_price_cent},{lowest_price_cent_decimal}" # Together 4,39
 
         awattprice_bundle_id = notification_defaults.bundle_id
         encryption_algorithm = notification_defaults.encryption_algorithm
@@ -45,8 +50,6 @@ async def price_drops_below_notification(notification_defaults, config, price_da
             algorithm = encryption_algorithm,
             headers = token_headers,
         )
-        # print(token_body)
-        # print(token_headers)
 
         # Set notification payload
         # For reference see: https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/generating_a_remote_notification#2943365
@@ -55,7 +58,7 @@ async def price_drops_below_notification(notification_defaults, config, price_da
                 "alert": {
                     "title-loc-key": notification_defaults.price_drops_below_notification.title_loc_key,
                     "loc-key": notification_defaults.price_drops_below_notification.body_loc_key,
-                    "loc-args": [formatted_time_range, lowest_price],
+                    "loc-args": [lowest_price_start_string_hour, lowest_price_end_string_hour, formatted_lowest_price],
                 },
                 "badge": 1,
                 "sound": "default",
@@ -79,7 +82,7 @@ async def price_drops_below_notification(notification_defaults, config, price_da
             response = await client.post(url,
                                          headers = request_headers,
                                          data = json.dumps(notification_payload))
-            print(response.content)
+            # print(f"Returned response {response.content}")
 
 
 

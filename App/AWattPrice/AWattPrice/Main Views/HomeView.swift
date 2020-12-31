@@ -95,7 +95,7 @@ struct HomeView: View {
             awattarData.download(forRegion: currentSetting.entity!.regionIdentifier, networkManager: networkManager)
         }
         .sheet(isPresented: $showWhatsNewPage) {
-
+            WhatsNewPage()
         }
     }
 }

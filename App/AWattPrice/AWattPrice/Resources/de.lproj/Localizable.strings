@@ -14,8 +14,10 @@
 "splashScreen.featuresAndConsent.features" = "Funktionen";
 "splashScreen.featuresAndConsent.viewPrices" = "Preise ansehen";
 "splashScreen.featuresAndConsent.viewPrices.info" = "Sehen Sie sich die aktuellen Strompreise für jede Stunde des Tages an.";
-"splashScreen.featuresAndConsent.comparePrices" = "Prei8se vergleichen";
+"splashScreen.featuresAndConsent.comparePrices" = "Preise vergleichen";
 "splashScreen.featuresAndConsent.comparePrices.info" = "Finden Sie die preislich günstigsten Stunden für Ihren Stromverbrauch.";
+// Notifications title handled by notificationPage.notifications
+"splashScreen.featuresAndConsent.notifications.info" = "Erhalten Sie eine Benachrichtigung, sobald die Strompreise unter einen bestimmten Wert fallen.";
 "splashScreen.featuresAndConsent.termsOfUse.agree" = "Ich stimme den Nutzungsbedingungen zu.";
 "splashScreen.featuresAndConsent.termsOfUse.see" = "Zu den Nutzungsbedingungen";
 "splashScreen.featuresAndConsent.privacyPolicy.agree" = "Ich stimme der Datenschutzrichtlinie zu.";
@@ -23,6 +25,10 @@
 
 // Setup splash screen localization
 "splashScreen.setup.title" = "Einrichtung";
+
+// What's new splash screen localization
+"splashScreen.whatsNew.title" = "Was gibt's Neues?";
+"splashScreen.whatsNew.notifications.extrainfo" = "Tipp: Um Benachrichtigungen zu aktivieren, gehen Sie zum Einstellungs Tab.";
 
 // Finish splash screen localization
 "splashScreen.finish.setupFinished" = "Einrichtung abgeschlossen";
@@ -101,6 +107,7 @@
 "general.termsOfUse" = "Nutzungsbedingungen";
 "general.privacyPolicy" = "Datenschutzrichtlinie";
 "general.on" = "am";
+"general.done" = "Fertig";
 
 // Total Time Formatter localizations
 "totalTimeFormatter.onlyHour"  = "%@h";

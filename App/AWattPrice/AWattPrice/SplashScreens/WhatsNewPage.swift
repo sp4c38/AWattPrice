@@ -8,15 +8,30 @@
 import SwiftUI
 
 struct WhatsNewPage: View {
+    @Environment(\.presentationMode) var presentationMode
+    
+    @EnvironmentObject var currentSetting: CurrentSetting
+    
     var body: some View {
         NavigationView {
-            VStack {
-                AppFeatureView(title: "Notifications", subTitle: "You can now enable receiving a push notification if prices drop below a custom set value.", imageName: "app.badge")
-            }
-            .navigationTitle("What's new!")
-            .toolbar {
+            VStack(alignment: .leading) {
+                VStack(alignment: .leading, spacing: 15) {
+                    AppFeatureView(title: "notificationPage.notifications", subTitle: "splashScreen.featuresAndConsent.notifications.info", tipText: "splashScreen.whatsNew.notifications.extrainfo", imageName: "app.badge")
+                }
                 
+                Spacer()
+                
+                Button(action: {
+                    currentSetting.changeShowWhatsNew(newValue: false)
+                    presentationMode.wrappedValue.dismiss()
+                }) {
+                    Text("general.continue")
+                }
+                .buttonStyle(ContinueButtonStyle())
             }
+            .padding(.top, 25)
+            .padding([.leading, .trailing], 16)
+            .navigationTitle("splashScreen.whatsNew.title")
         }
     }
 }

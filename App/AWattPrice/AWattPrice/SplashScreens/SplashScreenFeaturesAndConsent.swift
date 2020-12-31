@@ -30,28 +30,43 @@ struct AppFeatureView: View {
     
     var title: LocalizedStringKey
     var subTitle: LocalizedStringKey
+    var tipText: LocalizedStringKey? = nil
     var imageName: String
     
     var body: some View {
-        HStack(alignment: .center, spacing: 10) {
-            Image(systemName: imageName)
-                .font(.system(size: 40))
-                .foregroundColor(Color(hue: 0.5648, saturation: 1.0000, brightness: 0.6235))
-                .padding()
-            
-            VStack(alignment: .leading, spacing: 5) {
-                Text(title)
-                    .font(.headline)
-                    .foregroundColor(colorScheme == .light ? Color.black : Color.white)
+        HStack {
+            VStack(alignment: .leading) {
+                HStack(alignment: .center, spacing: 10) {
+                    Image(systemName: imageName)
+                        .resizable()
+                        .foregroundColor(Color(hue: 0.5648, saturation: 1.0000, brightness: 0.6235))
+                        .padding(16)
+                        .frame(width: 75, height: 75)
+                    
+                    VStack(alignment: .leading, spacing: 5) {
+                        Text(title)
+                            .font(.headline)
+                            .foregroundColor(colorScheme == .light ? Color.black : Color.white)
+                        
+                        Text(subTitle)
+                            .font(.subheadline)
+                            .foregroundColor(colorScheme == .light ? Color.black : Color.white)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
                 
-                Text(subTitle)
-                    .font(.subheadline)
-                    .foregroundColor(colorScheme == .light ? Color.black : Color.white)
-                    .fixedSize(horizontal: false, vertical: true)
+                if tipText != nil {
+                    Text(tipText!)
+                        .foregroundColor(Color.gray)
+                        .font(.subheadline)
+                        .padding(.top, 10)
+                        .padding(.leading, 85)
+                }
             }
-            
-            Spacer()
+            .multilineTextAlignment(.leading)
         }
+        
+        Spacer()
     }
 }
 

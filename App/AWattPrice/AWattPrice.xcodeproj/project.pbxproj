@@ -19,6 +19,7 @@
 		612211442594C927003D6512 /* GetNotificationSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 612211432594C927003D6512 /* GetNotificationSetting.swift */; };
 		6122114F25951BCE003D6512 /* NotificationSettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6122114E25951BCE003D6512 /* NotificationSettingView.swift */; };
 		6122115D25951C8E003D6512 /* PriceDropsBelowValueNotificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6122115C25951C8D003D6512 /* PriceDropsBelowValueNotificationView.swift */; };
+		6122C061259DD42F003BE302 /* WhatsNewPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6122C060259DD42F003BE302 /* WhatsNewPage.swift */; };
 		61260069253B0AB9009E0126 /* DataDownloadAndError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61260068253B0AB9009E0126 /* DataDownloadAndError.swift */; };
 		613CFF7F250CCCA500337CB2 /* GetCurrentSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 613CFF7E250CCCA500337CB2 /* GetCurrentSetting.swift */; };
 		614C55832573D421009B5241 /* UpdateDataTimeFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 614C55822573D421009B5241 /* UpdateDataTimeFormatter.swift */; };
@@ -101,6 +102,8 @@
 		612211432594C927003D6512 /* GetNotificationSetting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetNotificationSetting.swift; sourceTree = "<group>"; };
 		6122114E25951BCE003D6512 /* NotificationSettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSettingView.swift; sourceTree = "<group>"; };
 		6122115C25951C8D003D6512 /* PriceDropsBelowValueNotificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceDropsBelowValueNotificationView.swift; sourceTree = "<group>"; };
+		6122C046259DCB61003BE302 /* Model 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Model 2.xcdatamodel"; sourceTree = "<group>"; };
+		6122C060259DD42F003BE302 /* WhatsNewPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatsNewPage.swift; sourceTree = "<group>"; };
 		61260068253B0AB9009E0126 /* DataDownloadAndError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataDownloadAndError.swift; sourceTree = "<group>"; };
 		613CFF7E250CCCA500337CB2 /* GetCurrentSetting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetCurrentSetting.swift; sourceTree = "<group>"; };
 		614C55822573D421009B5241 /* UpdateDataTimeFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateDataTimeFormatter.swift; sourceTree = "<group>"; };
@@ -224,6 +227,7 @@
 				61753B6D257818DF001379B9 /* SplashScreenFeaturesAndConsent.swift */,
 				6181328B258A4AB3007FC6F2 /* SplashScreenSetupView.swift */,
 				61813290258A4B56007FC6F2 /* SplashScreenFinishView.swift */,
+				6122C060259DD42F003BE302 /* WhatsNewPage.swift */,
 			);
 			path = SplashScreens;
 			sourceTree = "<group>";
@@ -640,6 +644,7 @@
 				6181328C258A4AB3007FC6F2 /* SplashScreenSetupView.swift in Sources */,
 				614C55832573D421009B5241 /* UpdateDataTimeFormatter.swift in Sources */,
 				61D196E52507F58D00E57BAC /* EnergyPriceGraph.swift in Sources */,
+				6122C061259DD42F003BE302 /* WhatsNewPage.swift in Sources */,
 				61753B6E257818DF001379B9 /* SplashScreenFeaturesAndConsent.swift in Sources */,
 				6122115D25951C8E003D6512 /* PriceDropsBelowValueNotificationView.swift in Sources */,
 				614E784D25068F6100A7ED83 /* DownloadEnergyData.swift in Sources */,
@@ -1045,9 +1050,10 @@
 		6156A571250C1F04005174A5 /* Model.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				6122C046259DCB61003BE302 /* Model 2.xcdatamodel */,
 				6156A572250C1F04005174A5 /* Model.xcdatamodel */,
 			);
-			currentVersion = 6156A572250C1F04005174A5 /* Model.xcdatamodel */;
+			currentVersion = 6122C046259DCB61003BE302 /* Model 2.xcdatamodel */;
 			path = Model.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

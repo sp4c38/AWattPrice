@@ -50,13 +50,13 @@ class CurrentSetting: AutoUpdatingEntity<Setting> {
         if self.entity != nil {
             if self.entity!.splashScreensFinished != newValue {
                 self.entity!.splashScreensFinished = newValue
-            }
-
-            do {
-                try self.managedObjectContext.save()
-            } catch {
-                print("managedObjectContext failed to store new splashScreenFinished attribute: \(error).")
-                return
+                
+                do {
+                    try self.managedObjectContext.save()
+                } catch {
+                    print("managedObjectContext failed to store new splashScreenFinished attribute: \(error).")
+                    return
+                }
             }
         }
     }
@@ -67,15 +67,15 @@ class CurrentSetting: AutoUpdatingEntity<Setting> {
     */
     func changeTaxSelection(newValue: Bool) {
         if self.entity != nil {
-            if self.entity!.pricesWithTaxIncluded != newValue {
-                self.entity!.pricesWithTaxIncluded = newValue
-            }
-
-            do {
-                try self.managedObjectContext.save()
-            } catch {
-                print("managedObjectContext failed to store new pricesWithTaxIncluded attribute: \(error).")
-                return
+            if self.entity!.pricesWithVAT != newValue {
+                self.entity!.pricesWithVAT = newValue
+                
+                do {
+                    try self.managedObjectContext.save()
+                } catch {
+                    print("managedObjectContext failed to store new pricesWithTaxIncluded attribute: \(error).")
+                    return
+                }
             }
         }
     }
@@ -88,13 +88,13 @@ class CurrentSetting: AutoUpdatingEntity<Setting> {
         if self.entity != nil {
             if self.entity!.awattarBaseElectricityPrice != newValue {
                 self.entity!.awattarBaseElectricityPrice = newValue
-            }
-
-            do {
-                try self.managedObjectContext.save()
-            } catch {
-                print("managedObjectContext failed to store new awattarBaseElectricityPrice attribute: \(error).")
-                return
+                
+                do {
+                    try self.managedObjectContext.save()
+                } catch {
+                    print("managedObjectContext failed to store new awattarBaseElectricityPrice attribute: \(error).")
+                    return
+                }
             }
         }
     }
@@ -107,13 +107,13 @@ class CurrentSetting: AutoUpdatingEntity<Setting> {
         if self.entity != nil {
             if self.entity!.awattarTariffIndex != newValue {
                 self.entity!.awattarTariffIndex = newValue
-            }
-
-            do {
-                try self.managedObjectContext.save()
-            } catch {
-                print("managedObjectContext failed to store new awattarTariffIndex attribute: \(error).")
-                return
+                
+                do {
+                    try self.managedObjectContext.save()
+                } catch {
+                    print("managedObjectContext failed to store new awattarTariffIndex attribute: \(error).")
+                    return
+                }
             }
         }
     }
@@ -126,13 +126,13 @@ class CurrentSetting: AutoUpdatingEntity<Setting> {
         if self.entity != nil {
             if self.entity!.cheapestTimeLastPower != newValue {
                 self.entity!.cheapestTimeLastPower = newValue
-            }
-
-            do {
-                try self.managedObjectContext.save()
-            } catch {
-                print("managedObjectContext failed to store new cheapestTimeLastPower attribute: \(error).")
-                return
+                
+                do {
+                    try self.managedObjectContext.save()
+                } catch {
+                    print("managedObjectContext failed to store new cheapestTimeLastPower attribute: \(error).")
+                    return
+                }
             }
         }
     }
@@ -144,13 +144,13 @@ class CurrentSetting: AutoUpdatingEntity<Setting> {
         if self.entity != nil {
             if self.entity!.cheapestTimeLastConsumption != newValue {
                 self.entity!.cheapestTimeLastConsumption = newValue
-            }
-
-            do {
-                try self.managedObjectContext.save()
-            } catch {
-                print("managedObjectContext failed to store new cheapestTimeLastConsumption attribute: \(error).")
-                return
+                
+                do {
+                    try self.managedObjectContext.save()
+                } catch {
+                    print("managedObjectContext failed to store new cheapestTimeLastConsumption attribute: \(error).")
+                    return
+                }
             }
         }
     }
@@ -162,13 +162,28 @@ class CurrentSetting: AutoUpdatingEntity<Setting> {
         if self.entity != nil {
             if self.entity!.regionIdentifier != newValue {
                 self.entity!.regionIdentifier = newValue
+                
+                do {
+                    try self.managedObjectContext.save()
+                } catch {
+                    print("managedObjectContext failed to store new regionSelection attribute: \(error).")
+                    return
+                }
             }
-
-            do {
-                try self.managedObjectContext.save()
-            } catch {
-                print("managedObjectContext failed to store new regionSelection attribute: \(error).")
-                return
+        }
+    }
+    
+    func changeShowWhatsNew(newValue: Bool) {
+        if self.entity != nil {
+            if self.entity!.showWhatsNew != newValue {
+                self.entity!.showWhatsNew = newValue
+                
+                do {
+                    try self.managedObjectContext.save()
+                } catch {
+                    print("managedObjectContext failed to store new showWhatsNew attribute: \(error).")
+                    return
+                }
             }
         }
     }

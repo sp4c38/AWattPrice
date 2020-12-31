@@ -58,11 +58,16 @@ struct ContentView: View {
                         SplashScreenStartView()
                     }
                 }
+                .onAppear {
+                    if currentSetting.entity!.splashScreensFinished == false && currentSetting.entity!.showWhatsNew == true {
+                        currentSetting.changeShowWhatsNew(newValue: false)
+                    }
+                }
                 .onChange(of: crtNotifiSetting.entity!.changesButErrorUploading) { newValue in
                     if newValue == true {
                         tryNotificationUploadAfterFailed(
                             Int(currentSetting.entity!.regionIdentifier),
-                            currentSetting.entity!.pricesWithTaxIncluded ? 1 : 0,
+                            currentSetting.entity!.pricesWithVAT ? 1 : 0,
                             crtNotifiSetting,
                             networkManager)
                     }

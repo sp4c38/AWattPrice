@@ -157,7 +157,7 @@ class CheapestHourManager: ObservableObject {
                     let lengthOfIntervene: Double = Double(abs(hourPair.endTimestamp - hourPair.startTimestamp)) / 60 / 60 // In hours
                     var price = hourPair.marketprice
                     
-                    if currentSetting.entity!.pricesWithTaxIncluded {
+                    if currentSetting.entity!.pricesWithVAT {
                         price *= currentSetting.currentVATToUse
                     }
                     

@@ -16,9 +16,10 @@ func getCurrentSetting(entityName: String, managedObjectContext: NSManagedObject
         // No Settings object is yet created. Create a new Settings object with default values and save it to the persistent store
         if let entityDesciptor = NSEntityDescription.entity(forEntityName: entityName, in: managedObjectContext) {
             let newSetting = Setting.init(entity: entityDesciptor, insertInto: managedObjectContext)
+            newSetting.showWhatsNew = false
             newSetting.splashScreensFinished = false
             newSetting.regionIdentifier = 0
-            newSetting.pricesWithTaxIncluded = true
+            newSetting.pricesWithVAT = true
             newSetting.awattarTariffIndex = -1
             newSetting.awattarBaseElectricityPrice = 0
             newSetting.cheapestTimeLastPower = 0

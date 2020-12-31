@@ -1,6 +1,7 @@
 aiofiles
 arrow
 configupdater
+cryptography
 fastapi
 filelock
 httpx

@@ -55,7 +55,6 @@ struct SettingsPageView: View {
                 }
             }
             .navigationTitle(Text("settingsPage.settings"))
-            .navigationBarTitleDisplayMode(.large)
             .navigationViewStyle(StackNavigationViewStyle())
             .onChange(of: scenePhase) { scenePhase in
                 if scenePhase == .background {

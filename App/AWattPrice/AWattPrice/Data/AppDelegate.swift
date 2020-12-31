@@ -41,34 +41,38 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
         
         if self.crtNotifiSetting != nil && self.currentSetting != nil {
             self.crtNotifiSetting!.currentlySendingToServer.lock()
+
             if self.crtNotifiSetting!.entity != nil && self.currentSetting!.entity != nil {
-                if self.crtNotifiSetting!.entity!.lastApnsToken != apnsDeviceTokenString ||
-                    self.crtNotifiSetting!.entity!.changesButErrorUploading == true {
-                    DispatchQueue.global(qos: .background).async {
-                        print("Need to update stored APNs configuration. Stored APNs token and current APNs token do NOT match OR previously notification configuration couldn't be uploaded because of some issue.")
-                        let group = DispatchGroup()
-                        group.enter()
-                        DispatchQueue.main.async {
-                            self.crtNotifiSetting!.changeChangesButErrorUploading(newValue: false)
-                            group.leave()
-                        }
-                        group.wait()
-                        let notificationConfigRepresentable = UploadPushNotificationConfigRepresentable(
-                            apnsDeviceTokenString,
-                            Int(self.currentSetting!.entity!.regionIdentifier),
-                            self.currentSetting!.entity!.pricesWithTaxIncluded ? 1 : 0,
-                            self.crtNotifiSetting!.entity!)
-                        let requestSuccessful = uploadPushNotificationSettings(configuration: notificationConfigRepresentable)
-                        self.crtNotifiSetting!.changeLastApnsToken(newValue: apnsDeviceTokenString)
-                        if !requestSuccessful {
+                let notificationConfigRepresentable = UploadPushNotificationConfigRepresentable(
+                    apnsDeviceTokenString,
+                    Int(self.currentSetting!.entity!.regionIdentifier),
+                    self.currentSetting!.entity!.pricesWithVAT ? 1 : 0,
+                    self.crtNotifiSetting!.entity!)
+                
+                if notificationConfigRepresentable.checkUserWantsNotifications() == true || self.crtNotifiSetting!.entity!.changesButErrorUploading == true {
+                    if self.crtNotifiSetting!.entity!.lastApnsToken != apnsDeviceTokenString ||
+                        self.crtNotifiSetting!.entity!.changesButErrorUploading == true {
+                        DispatchQueue.global(qos: .background).async {
+                            print("Need to update stored APNs configuration. Stored APNs token and current APNs token do NOT match OR previously notification configuration couldn't be uploaded because of some issue.")
+                            let group = DispatchGroup()
+                            group.enter()
                             DispatchQueue.main.async {
-                                self.crtNotifiSetting!.changeChangesButErrorUploading(newValue: true)
+                                self.crtNotifiSetting!.changeChangesButErrorUploading(newValue: false)
+                                group.leave()
+                            }
+                            group.wait()
+                            let requestSuccessful = uploadPushNotificationSettings(configuration: notificationConfigRepresentable)
+                            if !requestSuccessful {
+                                DispatchQueue.main.async {
+                                    self.crtNotifiSetting!.changeChangesButErrorUploading(newValue: true)
+                                }
                             }
                         }
+                    } else {
+                        print("No need to update stored APNs configuration. Stored token matches current APNs token and no errors previously occurred when uploading changes.")
                     }
-                } else {
-                    print("No need to update stored APNs configuration. Stored token matches current APNs token and no errors previously occurred when uploading changes.")
                 }
+                self.crtNotifiSetting!.changeLastApnsToken(newValue: apnsDeviceTokenString)
             }
             self.crtNotifiSetting!.currentlySendingToServer.unlock()
         } else {

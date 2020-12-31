@@ -39,6 +39,15 @@ class UploadPushNotificationConfigRepresentable: Encodable {
         self.vatSelection = vatSelection
         self.notificationConfig = NotificationConfig(active: notifiSetting.priceDropsBelowValueNotification, priceBelowValue: notifiSetting.priceBelowValue)
     }
+    
+    func checkUserWantsNotifications() -> Bool {
+        // Check if the user would like to receive notification at all
+        if self.notificationConfig.priceBelowValueNotification.active == true {
+            return true
+        }
+        
+        return false
+    }
 }
 
 func uploadPushNotificationSettings(configuration: UploadPushNotificationConfigRepresentable) -> Bool {

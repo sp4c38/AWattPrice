@@ -77,7 +77,7 @@ func initiateBackgroundNotificationUpdate(currentSetting: CurrentSetting, crtNot
         DispatchQueue.global(qos: .background).async {
             notificationConfigChanged(
                 regionIdentifier: Int(currentSetting.entity!.regionIdentifier),
-                vatSelection: currentSetting.entity!.pricesWithTaxIncluded ? 1 : 0,
+                vatSelection: currentSetting.entity!.pricesWithVAT ? 1 : 0,
                 crtNotifiSetting)
             DispatchQueue.main.async {
                 crtNotifiSetting.changesAndStaged = false

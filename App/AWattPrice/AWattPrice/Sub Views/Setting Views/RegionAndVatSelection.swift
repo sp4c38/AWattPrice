@@ -60,7 +60,7 @@ struct RegionAndVatSelection: View {
                         }
                         .labelsHidden()
                         .onAppear {
-                            pricesWithTaxIncluded = currentSetting.entity!.pricesWithTaxIncluded
+                            pricesWithTaxIncluded = currentSetting.entity!.pricesWithVAT
                             firstAppear = false
                         }
                         .ifTrue(firstAppear == false) { content in

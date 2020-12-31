@@ -51,7 +51,7 @@ async def validate_token(request: Request):
             below_notification = body_json["notificationConfig"]["priceBelowValueNotification"]
             if "active" in below_notification and "belowValue" in below_notification:
                 active = below_notification["active"]
-                below_value = below_notification["belowValue"]
+                below_value = float(below_notification["belowValue"])
                 # Limit below_value to two decimal places.
                 # The app normally should already have rounded this number to two decimal places - but make sure.
                 below_value = round(below_value, 2)

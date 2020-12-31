@@ -34,13 +34,13 @@ class CurrentNotificationSetting: AutoUpdatingEntity<NotificationSetting> {
         if self.entity != nil {
             if self.entity!.lastApnsToken != newValue {
                 self.entity!.lastApnsToken = newValue
-            }
-
-            do {
-                try self.managedObjectContext.save()
-            } catch {
-                print("managedObjectContext failed to store new lastApnsToken attribute: \(error).")
-                return
+                
+                do {
+                    try self.managedObjectContext.save()
+                } catch {
+                    print("managedObjectContext failed to store new lastApnsToken attribute: \(error).")
+                    return
+                }
             }
         }
     }
@@ -50,13 +50,13 @@ class CurrentNotificationSetting: AutoUpdatingEntity<NotificationSetting> {
         if self.entity != nil {
             if self.entity!.priceDropsBelowValueNotification != newValue {
                 self.entity!.priceDropsBelowValueNotification = newValue
-            }
-            
-            do {
-                try self.managedObjectContext.save()
-            } catch {
-                print("managedObjectContext failed to store new notification setting (getNewPricesAvailableNotification) attribute: \(error).")
-                return
+                
+                do {
+                    try self.managedObjectContext.save()
+                } catch {
+                    print("managedObjectContext failed to store new notification setting (getNewPricesAvailableNotification) attribute: \(error).")
+                    return
+                }
             }
         }
     }
@@ -66,13 +66,13 @@ class CurrentNotificationSetting: AutoUpdatingEntity<NotificationSetting> {
         if self.entity != nil {
             if self.entity!.priceBelowValue != newValue {
                 self.entity!.priceBelowValue = newValue
-            }
-            
-            do {
-                try self.managedObjectContext.save()
-            } catch {
-                print("managedObjectContext failed to store new notification setting (getNewPricesAvailableNotification) attribute: \(error).")
-                return
+                
+                do {
+                    try self.managedObjectContext.save()
+                } catch {
+                    print("managedObjectContext failed to store new notification setting (getNewPricesAvailableNotification) attribute: \(error).")
+                    return
+                }
             }
         }
     }
@@ -82,17 +82,14 @@ class CurrentNotificationSetting: AutoUpdatingEntity<NotificationSetting> {
         if self.entity != nil {
             if self.entity!.changesButErrorUploading != newValue {
                 self.entity!.changesButErrorUploading = newValue
-            } else {
-                return
+                
+                do {
+                    try self.managedObjectContext.save()
+                } catch {
+                    print("managedObjectContext failed to store new notification setting (getNewPricesAvailableNotification) attribute: \(error).")
+                    return
+                }
             }
-            
-            do {
-                try self.managedObjectContext.save()
-            } catch {
-                print("managedObjectContext failed to store new notification setting (getNewPricesAvailableNotification) attribute: \(error).")
-                return
-            }
-            return
         }
     }
 }

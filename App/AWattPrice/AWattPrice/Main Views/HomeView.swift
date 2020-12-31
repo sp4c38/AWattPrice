@@ -33,8 +33,8 @@ struct HomeView: View {
     @EnvironmentObject var currentSetting: CurrentSetting
     
     @State var firstEverAppear: Bool = true
-    
     @State var headerSize: CGSize = CGSize(width: 0, height: 0)
+    @State var showWhatsNewPage: Bool = false
     
     func parseHeaderSize(preference: HeaderSizePreferenceKey.SizeBounds, geo: GeometryProxy) -> some View {
         let newHeaderSize = geo[preference.bounds].size
@@ -82,6 +82,7 @@ struct HomeView: View {
             // Though onAppear will be called only on the first ever appear anyway this variable is used to make sure that onAppear doesn't interfere with any other on* methods applied to this view.
             awattarData.download(forRegion: currentSetting.entity!.regionIdentifier, networkManager: networkManager)
             currentSetting.validateTariffAndEnergyPriceSet()
+            showWhatsNewPage = currentSetting.entity!.showWhatsNew
             firstEverAppear = false
         }
         .onChange(of: scenePhase) { phase in
@@ -92,6 +93,9 @@ struct HomeView: View {
         }
         .onChange(of: currentSetting.entity!.regionIdentifier) { newRegionSelection in
             awattarData.download(forRegion: currentSetting.entity!.regionIdentifier, networkManager: networkManager)
+        }
+        .sheet(isPresented: $showWhatsNewPage) {
+
         }
     }
 }

@@ -56,8 +56,6 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>VAT_AMOUNT_CURRENT</key>
-	<string>$(VAT_AMOUNT_CURRENT)</string>
 	<key>VAT_AMOUNT_NORMAL</key>
 	<string>$(VAT_AMOUNT_NORMAL)</string>
 </dict>

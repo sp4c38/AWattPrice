@@ -33,6 +33,7 @@ struct HomeView: View {
     @EnvironmentObject var currentSetting: CurrentSetting
     
     @State var headerSize: CGSize = CGSize(width: 0, height: 0)
+    @State var initialAppearFinished: Bool? = false
     @State var showWhatsNewPage: Bool = false
     
     func parseHeaderSize(preference: HeaderSizePreferenceKey.SizeBounds, geo: GeometryProxy) -> some View {
@@ -80,10 +81,15 @@ struct HomeView: View {
         .onAppear {
             awattarData.download(forRegion: currentSetting.entity!.regionIdentifier, networkManager: networkManager)
             showWhatsNewPage = currentSetting.entity!.showWhatsNew
+            initialAppearFinished = nil
         }
         .onChange(of: scenePhase) { phase in
-            if phase == .active  {
-                print("App was entered. Updating data.")
+            if initialAppearFinished == nil {
+                initialAppearFinished = true
+                return
+            }
+            if phase == .active && initialAppearFinished == true  {
+                print("App was reentered. Updating data.")
                 awattarData.download(forRegion: currentSetting.entity!.regionIdentifier, networkManager: networkManager)
                 showWhatsNewPage = currentSetting.entity!.showWhatsNew
             }

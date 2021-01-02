@@ -7,19 +7,9 @@
 
 import CoreData
 
-func getCurrentVATToUse() -> Double {
-    let nowTimeInterval = Date().timeIntervalSince1970
-    
-    if nowTimeInterval < 1609455600 && nowTimeInterval >= 1590962400 {
-        return GlobalAppSettings.CurrentVATAmount
-    } else {
-        return GlobalAppSettings.NormalVATAmount
-    }
-}
-
 /// Object which holds the current Setting object. Using NSFetchedResultsController the current setting stored in this object is updated if any changes occur to it.
 class CurrentSetting: AutoUpdatingEntity<Setting> {
-    @Published var currentVATToUse = getCurrentVATToUse()
+    @Published var currentVATToUse = GlobalAppSettings.NormalVATAmount
     
     init(managedObjectContext: NSManagedObjectContext) {
         super.init(entityName: "Setting", managedObjectContext: managedObjectContext)

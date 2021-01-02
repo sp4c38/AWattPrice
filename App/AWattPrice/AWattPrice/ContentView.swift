@@ -16,6 +16,8 @@ struct ContentView: View {
 
     @ObservedObject var tabBarItems = TBItems()
     
+    @State var initialAppearFinished: Bool? = false
+    
     var body: some View {
         VStack {
             if currentSetting.entity != nil {
@@ -33,20 +35,16 @@ struct ContentView: View {
                                 .opacity(tabBarItems.selectedItemIndex == 2 ? 1 : 0)
                         }
                         .onAppear {
-                            managePushNotificationsOnAppStart()
-                            let vatDispatchQueue = DispatchQueue(label: "VATUpdatingQueue")
-                            vatDispatchQueue.async {
-                                let timer = Timer.scheduledTimer(withTimeInterval: 3, repeats: true) { _ in
-                                    let currentVATToUse = getCurrentVATToUse()
-                                    if currentVATToUse != currentSetting.currentVATToUse {
-                                        DispatchQueue.main.async {
-                                            currentSetting.currentVATToUse = currentVATToUse
-                                        }
-                                    }
-                                }
-                                let runLoop = RunLoop.current
-                                runLoop.add(timer, forMode: .default)
-                                runLoop.run()
+                            managePushNotificationsOnAppAppear(registerForRemoteNotifications: true)
+                            initialAppearFinished = nil
+                        }
+                        .onChange(of: scenePhase) { newScenePhase in
+                            if initialAppearFinished == nil {
+                                initialAppearFinished = true
+                                return
+                            }
+                            if newScenePhase == .active && initialAppearFinished == true {
+                                managePushNotificationsOnAppAppear(registerForRemoteNotifications: false)
                             }
                         }
                         

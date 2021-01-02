@@ -8,14 +8,13 @@
 import UIKit
 import UserNotifications
 
-func managePushNotificationsOnAppStart() {
+func managePushNotificationsOnAppAppear(registerForRemoteNotifications: Bool) {
     DispatchQueue.global(qos: .background).async {
         let notificationAccess = checkNotificationAccess()
-        if notificationAccess == true {
+        if notificationAccess == true && registerForRemoteNotifications {
             DispatchQueue.main.async {
                 UIApplication.shared.registerForRemoteNotifications()
             }
-        } else {
         }
     }
 }

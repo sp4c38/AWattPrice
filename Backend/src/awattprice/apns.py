@@ -12,7 +12,7 @@ from awattprice.utils import read_data, write_data
 
 async def write_token(request_data, db_manager):
     # Store APNs token configuration to the database
-    log.info("Initiated a new background task to store an APNs token.")
+    log.info("Initiated a new background task to store an APNs configuration.")
     apns_token_manager = APNs_Token_Manager(request_data, db_manager)
 
     await db_manager.acquire_lock()
@@ -21,7 +21,6 @@ async def write_token(request_data, db_manager):
         await apns_token_manager.write_to_database()
     await db_manager.release_lock()
 
-    return
 
 async def validate_token(request: Request):
     # Checks if the backend can successfully read and decode the APNs token configuration

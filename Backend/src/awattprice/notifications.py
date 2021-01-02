@@ -31,7 +31,8 @@ async def handle_apns_response(db_manager, token, response, status_code):
                 token_manager = APNs_Token_Manager({"token": token}, db_manager)
                 await token_manager.remove_entry_from_database()
                 log.debug("Removed invalid APNs token from database.")
-
+    else:
+        log.debug("Request to APNs server was successful.")
 
 async def price_drops_below_notification(db_manager, notification_defaults, config, price_data, token, below_value, region_identifier, vat_selection):
     lowest_price = round(price_data.lowest_price, 2)
@@ -45,6 +46,7 @@ async def price_drops_below_notification(db_manager, notification_defaults, conf
         lowest_price_start = arrow.get(price_data.lowest_price_point.start_timestamp).to(timezone)
         lowest_price_end = arrow.get(price_data.lowest_price_point.end_timestamp).to(timezone)
         lowest_price_start_string_hour = lowest_price_start.format("H")
+        start_hour_date = lowest_price_start.format("DD.MM.YYYY")
         lowest_price_end_string_hour = lowest_price_end.format("H")
 
         lowest_price_cent = floor(lowest_price) # Full cents, for example 4
@@ -76,9 +78,10 @@ async def price_drops_below_notification(db_manager, notification_defaults, conf
                 "alert": {
                     "title-loc-key": notification_defaults.price_drops_below_notification.title_loc_key,
                     "loc-key": notification_defaults.price_drops_below_notification.body_loc_key,
-                    "loc-args": [lowest_price_start_string_hour, lowest_price_end_string_hour, formatted_lowest_price],
+                    "loc-args": [start_hour_date, lowest_price_start_string_hour,
+                                 lowest_price_end_string_hour, formatted_lowest_price],
                 },
-                "badge": 1,
+                "badge": 0,
                 "sound": "default",
                 "content-available": 0,
             }
@@ -99,17 +102,24 @@ async def price_drops_below_notification(db_manager, notification_defaults, conf
 
         status_code = None
         response = None
+        log.info(url)
         async with httpx.AsyncClient(http2 = True) as client:
             request = await client.post(url,
-                                         headers = request_headers,
-                                         data = json.dumps(notification_payload))
+                                        headers = request_headers,
+                                        data = json.dumps(notification_payload))
             status_code = request.status_code
-            try:
-                response = json.loads(request.content.decode("utf-8"))
-            except Exception as e:
-                log.warning(f"Couldn't decode response from APNs servers: {e}")
+
+            if request.content.decode("utf-8") == "":
+                response = {}
+            else:
+                try:
+                    response = json.loads(request.content.decode("utf-8"))
+                except Exception as e:
+                    log.warning(f"Couldn't decode response from APNs servers: {e}")
 
         if not response == None and not status_code == None:
+            log.info(response)
+            log.info(status_code)
             await handle_apns_response(db_manager, token, response, status_code)
 
 
@@ -136,13 +146,12 @@ async def check_and_send(config, data, data_region, db_manager):
     log.info("Checking and sending notifications.")
 
     notification_defaults = Notifications()
-    values_set_successful = notification_defaults.set_values(config,)
+    values_set_successful = notification_defaults.set_values(config, sandbox = False,)
 
     if values_set_successful:
         all_data_to_check = {}
         log.debug(f"Need to check and send notifications for data region {data_region.name}.")
         all_data_to_check[data_region.value] = DetailedPriceData(Box(data), data_region.value)
-        del data
 
         await db_manager.acquire_lock()
 

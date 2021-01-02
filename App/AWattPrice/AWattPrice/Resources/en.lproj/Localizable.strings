@@ -28,7 +28,7 @@
 
 // What's new splash screen localization
 "splashScreen.whatsNew.title" = "What's new?";
-"splashScreen.whatsNew.notifications.extrainfo" = "Tip: To enable notifications, go to the Settings tab.";
+"splashScreen.whatsNew.notifications.extrainfo" = "Tip: Go to the Settings tab to enable notifications.";
 
 // Finish splash screen localization
 "splashScreen.finish.setupFinished" = "Setup finished";
@@ -123,4 +123,4 @@
 
 // Notification localizations
 "notifications.price_drops_below.title" = "Electricity prices";
-"notifications.price_drops_below.body" = "Between %@ to %@ o'clock electricity prices will drop as low as %@ cent.";
+"notifications.price_drops_below.body" = "On %@ from %@ o'clock to %@ o'clock electricity prices drop as low as %@ cents.";

@@ -59,8 +59,7 @@ class Notifications:
             self.body_loc_key = "notifications.price_drops_below.body"
             self.collapse_id = "collapse.priceDropsBelow3DK203W0#"
 
-
-    def set_values(self, config) -> bool:
+    def set_values(self, config, sandbox = True) -> bool:
         self.price_drops_below_notification = self.Price_Drops_Below()
         self.price_drops_below_notification.set_values()
         self.encryption_algorithm = "ES256"
@@ -78,8 +77,12 @@ class Notifications:
                         f"with APNs. Notifications won't be checked and won't be sent by the backend: {e}.")
             return False
 
-        self.bundle_id = "me.space8.AWattPrice.dev"
-        self.apns_server_url = "https://api.sandbox.push.apple.com"
+        if sandbox:
+            self.apns_server_url = "https://api.sandbox.push.apple.com"
+            self.bundle_id = "me.space8.AWattPrice.dev"
+        else:
+            self.apns_server_url = "https://api.push.apple.com"
+            self.bundle_id = "me.space8.AWattPrice"
         self.apns_server_port = 443
 
         return True

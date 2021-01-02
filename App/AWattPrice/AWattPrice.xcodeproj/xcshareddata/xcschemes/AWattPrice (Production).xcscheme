@@ -91,7 +91,7 @@
       </BuildableProductRunnable>
    </ProfileAction>
    <AnalyzeAction
-      buildConfiguration = "Development">
+      buildConfiguration = "Production">
    </AnalyzeAction>
    <ArchiveAction
       buildConfiguration = "Production"

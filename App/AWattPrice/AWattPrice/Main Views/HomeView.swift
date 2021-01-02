@@ -32,7 +32,6 @@ struct HomeView: View {
     @EnvironmentObject var crtNotifiSetting: CurrentNotificationSetting
     @EnvironmentObject var currentSetting: CurrentSetting
     
-    @State var firstEverAppear: Bool = true
     @State var headerSize: CGSize = CGSize(width: 0, height: 0)
     @State var showWhatsNewPage: Bool = false
     
@@ -79,16 +78,14 @@ struct HomeView: View {
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .onAppear {
-            // Though onAppear will be called only on the first ever appear anyway this variable is used to make sure that onAppear doesn't interfere with any other on* methods applied to this view.
             awattarData.download(forRegion: currentSetting.entity!.regionIdentifier, networkManager: networkManager)
-            currentSetting.validateTariffAndEnergyPriceSet()
             showWhatsNewPage = currentSetting.entity!.showWhatsNew
-            firstEverAppear = false
         }
         .onChange(of: scenePhase) { phase in
-            if phase == .active && firstEverAppear == false {
-                print("App was reentered. Updating data.")
+            if phase == .active  {
+                print("App was entered. Updating data.")
                 awattarData.download(forRegion: currentSetting.entity!.regionIdentifier, networkManager: networkManager)
+                showWhatsNewPage = currentSetting.entity!.showWhatsNew
             }
         }
         .onChange(of: currentSetting.entity!.regionIdentifier) { newRegionSelection in
@@ -96,6 +93,11 @@ struct HomeView: View {
         }
         .sheet(isPresented: $showWhatsNewPage) {
             WhatsNewPage()
+        }
+        .onChange(of: showWhatsNewPage) { newValue in
+            if newValue == false {
+                currentSetting.changeShowWhatsNew(newValue: false)
+            }
         }
     }
 }

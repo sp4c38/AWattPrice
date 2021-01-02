@@ -137,6 +137,7 @@ class APNs_Token_Manager:
         cursor = self.db_manager.db.cursor()
         cursor.execute("DELETE FROM token_storage WHERE token = ?", (self.token_data["token"],))
         cursor.close()
+        self.db_manager.db.commit()
 
     async def remove_entry_from_database(self):
         loop = asyncio.get_event_loop()

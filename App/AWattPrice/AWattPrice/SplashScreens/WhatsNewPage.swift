@@ -22,15 +22,15 @@ struct WhatsNewPage: View {
                 Spacer()
                 
                 Button(action: {
-                    currentSetting.changeShowWhatsNew(newValue: false)
                     presentationMode.wrappedValue.dismiss()
                 }) {
-                    Text("general.continue")
+                    Text("general.done")
                 }
                 .buttonStyle(ContinueButtonStyle())
             }
             .padding(.top, 25)
-            .padding([.leading, .trailing], 16)
+            .padding(.leading, 16)
+            .padding(.trailing, 30)
             .navigationTitle("splashScreen.whatsNew.title")
         }
     }

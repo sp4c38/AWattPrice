@@ -202,7 +202,7 @@ async def get_headers(config: Box, data: Dict) -> Dict:
     if price_points_in_future < int(config.poll.if_less_than):
         # Runs when the data is fetched at every call (respecting minimum time interval between updates)
         # and the aWATTar data will probably update soon.
-        if config.poll.awattar <= 300:
+        if int(config.poll.awattar) <= 300:
             max_age = 300
         else:
             max_age = config.poll.awattar

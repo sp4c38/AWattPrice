@@ -5,16 +5,23 @@
 //  Created by Léon Becker on 17.12.20.
 //
 
+import SwiftUI
 import UIKit
 import UserNotifications
 
-func managePushNotificationsOnAppAppear(registerForRemoteNotifications: Bool) {
+func managePushNotificationsOnAppAppear(notificationAccessRepresentable: NotificationAccess, registerForRemoteNotifications: Bool) {
     DispatchQueue.global(qos: .background).async {
         let notificationAccess = checkNotificationAccess()
         if notificationAccess == true && registerForRemoteNotifications {
             DispatchQueue.main.async {
                 UIApplication.shared.registerForRemoteNotifications()
             }
+        }
+        
+        if notificationAccess {
+            notificationAccessRepresentable.access = true
+        } else {
+            notificationAccessRepresentable.access = false
         }
     }
 }
@@ -28,10 +35,10 @@ func checkNotificationAccess() -> Bool {
             print("Notification center access was granted.")
             returnResponse = true
         } else if successful == false && error == nil {
-            print("Notification center acces was rejected.")
+            print("Notification center access was rejected.")
             returnResponse = false
         } else if error != nil {
-            print("Notification center acces failed with error: \(error?.localizedDescription ?? "[Couldn't unpack error optional as localized description]").")
+            print("Notification center access failed with error: \(error?.localizedDescription ?? "[Couldn't unpack optional as localized description]").")
             returnResponse = false
         }
 
@@ -56,6 +63,7 @@ func notificationConfigChanged(regionIdentifier: Int, vatSelection: Int, _ crtNo
     if let token = crtNotifiSetting.entity!.lastApnsToken {
         let newConfig = UploadPushNotificationConfigRepresentable(token, regionIdentifier, vatSelection, crtNotifiSetting.entity!)
         let requestSuccessful = uploadPushNotificationSettings(configuration: newConfig)
+        crtNotifiSetting.currentlySendingToServer.unlock()
         
         if !requestSuccessful {
             DispatchQueue.main.async {
@@ -63,24 +71,16 @@ func notificationConfigChanged(regionIdentifier: Int, vatSelection: Int, _ crtNo
             }
         }
     } else {
-        print("No token is yet set. Will perform upload in background task later.")
-        DispatchQueue.main.async {
-            crtNotifiSetting.changeChangesButErrorUploading(newValue: true)
-        }
+        print("No token is set yet. Will perform upload in background task later.")
+        crtNotifiSetting.currentlySendingToServer.unlock()
     }
-    crtNotifiSetting.currentlySendingToServer.unlock()
 }
 
 func initiateBackgroundNotificationUpdate(currentSetting: CurrentSetting, crtNotifiSetting: CurrentNotificationSetting) {
-    if crtNotifiSetting.changesAndStaged == true {
-        DispatchQueue.global(qos: .background).async {
-            notificationConfigChanged(
-                regionIdentifier: Int(currentSetting.entity!.regionIdentifier),
-                vatSelection: currentSetting.entity!.pricesWithVAT ? 1 : 0,
-                crtNotifiSetting)
-            DispatchQueue.main.async {
-                crtNotifiSetting.changesAndStaged = false
-            }
-        }
+    DispatchQueue.global(qos: .background).async {
+        notificationConfigChanged(
+            regionIdentifier: Int(currentSetting.entity!.regionIdentifier),
+            vatSelection: currentSetting.entity!.pricesWithVAT ? 1 : 0,
+            crtNotifiSetting)
     }
 }

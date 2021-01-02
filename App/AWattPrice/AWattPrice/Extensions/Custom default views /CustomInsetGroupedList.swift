@@ -22,7 +22,7 @@ struct CustomInsetGroupedList<Content: View>: View {
                     .padding(.top, 10)
             }
         }
-        .padding(.top, 3)
+        .padding(.top, 0.5)
     }
 }
 
@@ -31,6 +31,7 @@ struct CustomInsetGroupedListItem<Content: View>: View { // All content which is
     let header: Text?
     let footer: Text?
     let content: Content
+    var backgroundColorDisabled = false
     var backgroundColor: Color?
     
     init(header: Text? = nil, footer: Text? = nil, @ViewBuilder content: () -> Content) {
@@ -55,10 +56,12 @@ struct CustomInsetGroupedListItem<Content: View>: View { // All content which is
             .padding([.leading, .trailing], 15)
             .padding([.top, .bottom], 9)
             .frame(maxWidth: .infinity)
-            .background(backgroundColor != nil ? backgroundColor :
-                            (colorScheme == .light ?
-                                Color(red: 0.96, green: 0.95, blue: 0.97) :
-                                Color(hue: 0.6667, saturation: 0.0340, brightness: 0.1424)))
+            .ifTrue(backgroundColorDisabled == false) { content in
+                content
+                    .background(colorScheme == .light ?
+                                    Color(red: 0.96, green: 0.95, blue: 0.97) :
+                                    Color(hue: 0.6667, saturation: 0.0340, brightness: 0.1424))
+            }
             .cornerRadius(10)
             
             if footer != nil {
@@ -73,10 +76,14 @@ struct CustomInsetGroupedListItem<Content: View>: View { // All content which is
         .padding([.leading, .trailing], 16)
     }
     
-    func customBackgroundColor(_ color: Color) -> Self {
-        var copy = self
-        copy.backgroundColor = color
-        return copy
+    func disableBackgroundColor(_ disable: Bool) -> Self {
+        if disable == true {
+            var copy = self
+            copy.backgroundColorDisabled = true
+            return copy
+        } else {
+            return self
+        }
     }
 }
 

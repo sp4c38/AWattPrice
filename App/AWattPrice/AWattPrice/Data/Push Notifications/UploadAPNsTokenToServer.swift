@@ -130,7 +130,7 @@ func tryNotificationUploadAfterFailed(_ regionIdentifier: Int, _ vatSelection: I
         let requestSuccessful = uploadPushNotificationSettings(configuration: notificationConfig)
         if requestSuccessful {
             print("Could successfuly upload notification configuration after previously an upload failed.")
-            crtNotifiSetting.entity!.changesButErrorUploading = false
+            crtNotifiSetting.changeChangesButErrorUploading(newValue: false)
         } else {
             print("Could still NOT upload notification configuration after previously also an upload failed.")
         }

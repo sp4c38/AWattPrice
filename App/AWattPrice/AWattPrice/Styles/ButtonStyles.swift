@@ -62,3 +62,16 @@ struct RetryButtonStyle: ButtonStyle {
             .animation(.easeInOut(duration: 0.1))
     }
 }
+
+struct RoundedBorderButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.subheadline)
+            .foregroundColor(Color.gray)
+            .padding([.top, .bottom], 6)
+            .padding([.leading, .trailing], 8)
+            .background(
+                RoundedRectangle(cornerRadius: 4)
+                    .stroke(Color.gray, lineWidth: 0.5))
+    }
+}

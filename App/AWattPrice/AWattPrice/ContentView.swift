@@ -10,6 +10,7 @@ import SwiftUI
 /// Start of the application.
 struct ContentView: View {
     @Environment(\.networkManager) var networkManager
+    @Environment(\.notificationAccess) var notificationAccess
     @Environment(\.scenePhase) var scenePhase
     @EnvironmentObject var crtNotifiSetting: CurrentNotificationSetting
     @EnvironmentObject var currentSetting: CurrentSetting
@@ -35,7 +36,7 @@ struct ContentView: View {
                                 .opacity(tabBarItems.selectedItemIndex == 2 ? 1 : 0)
                         }
                         .onAppear {
-                            managePushNotificationsOnAppAppear(registerForRemoteNotifications: true)
+                            managePushNotificationsOnAppAppear(notificationAccessRepresentable: notificationAccess, registerForRemoteNotifications: true)
                             initialAppearFinished = nil
                         }
                         .onChange(of: scenePhase) { newScenePhase in
@@ -44,7 +45,7 @@ struct ContentView: View {
                                 return
                             }
                             if newScenePhase == .active && initialAppearFinished == true {
-                                managePushNotificationsOnAppAppear(registerForRemoteNotifications: false)
+                                managePushNotificationsOnAppAppear(notificationAccessRepresentable: self.notificationAccess, registerForRemoteNotifications: false)
                             }
                         }
                         
@@ -61,8 +62,8 @@ struct ContentView: View {
                         currentSetting.changeShowWhatsNew(newValue: false)
                     }
                 }
-                .onChange(of: crtNotifiSetting.entity!.changesButErrorUploading) { newValue in
-                    if newValue == true {
+                .onChange(of: crtNotifiSetting.entity!.changesButErrorUploading) { errorOccurred in
+                    if errorOccurred == true {
                         tryNotificationUploadAfterFailed(
                             Int(currentSetting.entity!.regionIdentifier),
                             currentSetting.entity!.pricesWithVAT ? 1 : 0,

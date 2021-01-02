@@ -249,10 +249,6 @@ struct EnergyPriceGraph: View {
             }
             .ignoresSafeArea(.keyboard)
             .drawingGroup()
-            .onReceive(currentSetting.$currentVATToUse) { _ in
-                print("Updated the current VAT to use: \(currentSetting.currentVATToUse)")
-                setGraphValues(energyData: awattarData.energyData!, localSizeRect: sizeRect, localHeaderSize: headerSize)
-            }
             
             VStack {
                 if sizeRect.height != 0 {

@@ -51,6 +51,7 @@
 		618A6F6E2518F8C800A8778B /* CheapestTimeResultView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 618A6F6D2518F8C800A8778B /* CheapestTimeResultView.swift */; };
 		618AF8502593E94100E21583 /* GlobalAppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 618AF84F2593E94100E21583 /* GlobalAppSettings.swift */; };
 		618AF8622593F82600E21583 /* CurrentSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 618AF8612593F82600E21583 /* CurrentSetting.swift */; };
+		618CE22F25A0B4F8006116D3 /* NoNotificationAccessView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 618CE22E25A0B4F8006116D3 /* NoNotificationAccessView.swift */; };
 		6191FF8F258D0CAF00C31D63 /* NotAffiliatedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6191FF8E258D0CAF00C31D63 /* NotAffiliatedView.swift */; };
 		6198BD4B254C7F7100356A0F /* TimeRangeInputField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6198BD4A254C7F7100356A0F /* TimeRangeInputField.swift */; };
 		6198BD53254C7FA700356A0F /* TotalConsumptionInputField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6198BD52254C7FA700356A0F /* TotalConsumptionInputField.swift */; };
@@ -145,6 +146,7 @@
 		618AF8062593DB8500E21583 /* Production.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Production.xcconfig; sourceTree = "<group>"; };
 		618AF84F2593E94100E21583 /* GlobalAppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalAppSettings.swift; sourceTree = "<group>"; };
 		618AF8612593F82600E21583 /* CurrentSetting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentSetting.swift; sourceTree = "<group>"; };
+		618CE22E25A0B4F8006116D3 /* NoNotificationAccessView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoNotificationAccessView.swift; sourceTree = "<group>"; };
 		6191FF8E258D0CAF00C31D63 /* NotAffiliatedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotAffiliatedView.swift; sourceTree = "<group>"; };
 		6198BD4A254C7F7100356A0F /* TimeRangeInputField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeRangeInputField.swift; sourceTree = "<group>"; };
 		6198BD52254C7FA700356A0F /* TotalConsumptionInputField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TotalConsumptionInputField.swift; sourceTree = "<group>"; };
@@ -497,6 +499,7 @@
 			children = (
 				6122115C25951C8D003D6512 /* PriceDropsBelowValueNotificationView.swift */,
 				6122114E25951BCE003D6512 /* NotificationSettingView.swift */,
+				618CE22E25A0B4F8006116D3 /* NoNotificationAccessView.swift */,
 			);
 			path = "Push Notification";
 			sourceTree = "<group>";
@@ -633,6 +636,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				618CE22F25A0B4F8006116D3 /* NoNotificationAccessView.swift in Sources */,
 				612211442594C927003D6512 /* GetNotificationSetting.swift in Sources */,
 				618AF8622593F82600E21583 /* CurrentSetting.swift in Sources */,
 				61D88C0B2545EF9800DA2088 /* Extensions.swift in Sources */,

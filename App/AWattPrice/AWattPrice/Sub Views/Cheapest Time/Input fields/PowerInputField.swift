@@ -11,7 +11,6 @@ import SwiftUI
 struct PowerOutputInputField: View {
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
     @EnvironmentObject var currentSetting: CurrentSetting
-    @EnvironmentObject var keyboardObserver: KeyboardObserver
     
     @State var firstAppear = true
     

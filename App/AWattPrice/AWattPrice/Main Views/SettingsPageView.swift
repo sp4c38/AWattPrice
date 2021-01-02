@@ -56,16 +56,6 @@ struct SettingsPageView: View {
             }
             .navigationTitle(Text("settingsPage.settings"))
             .navigationViewStyle(StackNavigationViewStyle())
-            .onChange(of: scenePhase) { scenePhase in
-                if scenePhase == .background {
-                    initiateBackgroundNotificationUpdate(currentSetting: currentSetting, crtNotifiSetting: crtNotifiSetting)
-                }
-            }
-            .onChange(of: tabBarItems.selectedItemIndex) { newSelectedIndex in
-                if newSelectedIndex != 0 {
-                    initiateBackgroundNotificationUpdate(currentSetting: currentSetting, crtNotifiSetting: crtNotifiSetting)
-                }
-            }
         }
     }
 }

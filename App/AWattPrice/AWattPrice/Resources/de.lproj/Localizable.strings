@@ -78,7 +78,7 @@
 
 // Notification Page localizations
 "notificationPage.notifications" = "Benachrichtungen";
-"notificationPage.notification.priceDropsBelowValue" = "Preis sinkt unter bestimmten Wert";
+"notificationPage.notification.priceDropsBelowValue" = "Preis fällt unter bestimmten Wert";
 "notificationPage.notification.priceDropsBelowValue.description" = "Erhalte eine Benachrichtigung, sobald neue Preise verfügbar sind und diese unter einem eingestellten Wert fallen.";
 
 // Data download error view

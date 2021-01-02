@@ -7,21 +7,25 @@
 
 import SwiftUI
 
-struct PriceDropsBelowValueNotificationView: View {
+struct PriceDropsBelowValueNotificationSubView: View {
     @Environment(\.colorScheme) var colorScheme
-    @EnvironmentObject var crtNotifiSettings: CurrentNotificationSetting
     
-    @State var firstAppearToggle = true
-    @State var textFieldTextSet = false
+    @EnvironmentObject var currentSetting: CurrentSetting
+    @EnvironmentObject var keyboardObserver: KeyboardObserver
+    
+    @ObservedObject var crtNotifiSetting: CurrentNotificationSetting
+    
+    @State var changesAndStaged = false
+    @State var initialAppearFinished: Bool? = false
     @State var priceBelowValue: String = ""
-    @State var priceDropsBelowValueNotificationSelection: Bool = false
+    @State var priceDropsBelowValueNotificationSelection = false
     
     func getPriceBelowValueCentString(value: Double) -> String? {
         let numberFormatter = NumberFormatter()
         numberFormatter.numberStyle = .decimal
         numberFormatter.maximumFractionDigits = 2
         numberFormatter.minimumFractionDigits = 2
-        
+
         if let result = numberFormatter.string(from: NSNumber(value: value)) {
             return result
         } else {
@@ -29,9 +33,15 @@ struct PriceDropsBelowValueNotificationView: View {
         }
     }
     
+    init(crtNotifiSetting: CurrentNotificationSetting) {
+        _crtNotifiSetting = ObservedObject(initialValue: crtNotifiSetting)
+        _priceDropsBelowValueNotificationSelection = State(initialValue: self.crtNotifiSetting.entity!.priceDropsBelowValueNotification)
+        _priceBelowValue = State(initialValue: getPriceBelowValueCentString(value: self.crtNotifiSetting.entity!.priceBelowValue) ?? "")
+    }
+    
     var body: some View {
         CustomInsetGroupedListItem(
-            header: Text(""),
+            header: nil,
             footer: Text("notificationPage.notification.priceDropsBelowValue.description")
         ) {
             VStack(spacing: 20) {
@@ -43,20 +53,13 @@ struct PriceDropsBelowValueNotificationView: View {
                     
                     Toggle("", isOn: $priceDropsBelowValueNotificationSelection.animation())
                         .labelsHidden()
-                        .onAppear {
-                            priceDropsBelowValueNotificationSelection = crtNotifiSettings.entity!.priceDropsBelowValueNotification
-                            firstAppearToggle = false
-                        }
-                        .ifTrue(firstAppearToggle == false) { content in
-                            content
-                                .onChange(of: priceDropsBelowValueNotificationSelection) { newValue in
-                                    crtNotifiSettings.changePriceDropsBelowValueNotifications(newValue: newValue)
-                                    crtNotifiSettings.changesAndStaged = true
-                                }
+                        .onChange(of: priceDropsBelowValueNotificationSelection) { newValue in
+                            crtNotifiSetting.changePriceDropsBelowValueNotifications(newValue: newValue)
+                            initiateBackgroundNotificationUpdate(currentSetting: currentSetting, crtNotifiSetting: crtNotifiSetting)
                         }
                 }
                 
-                if priceDropsBelowValueNotificationSelection && textFieldTextSet {
+                if priceDropsBelowValueNotificationSelection {
                     HStack {
                         DecimalTextFieldWithDoneButton(text: $priceBelowValue, placeholder: "general.cent.long".localized(), plusMinusButton: true)
                             .fixedSize(horizontal: false, vertical: true)
@@ -65,9 +68,9 @@ struct PriceDropsBelowValueNotificationView: View {
                                 if let newConvertedDoubleValue = newValue.doubleValue {
                                     newDoubleValue = (newConvertedDoubleValue * 100).rounded() / 100
                                 }
-                                crtNotifiSettings.changePriceBelowValue(newValue: newDoubleValue)
+                                crtNotifiSetting.changePriceBelowValue(newValue: newDoubleValue)
                                 priceBelowValue = getPriceBelowValueCentString(value: newDoubleValue) ?? ""
-                                crtNotifiSettings.changesAndStaged = true
+                                changesAndStaged = true
                             }
                         
                         if priceBelowValue != "" {
@@ -85,11 +88,20 @@ struct PriceDropsBelowValueNotificationView: View {
                 }
             }
             .padding([.top, .bottom], 2)
+            .onReceive(keyboardObserver.keyboardHeight) { newKeyboardHeight in
+                if self.changesAndStaged && newKeyboardHeight == 0 {
+                    initiateBackgroundNotificationUpdate(currentSetting: currentSetting, crtNotifiSetting: crtNotifiSetting)
+                }
+            }
         }
-        .onAppear {
-            self.priceBelowValue = getPriceBelowValueCentString(value: crtNotifiSettings.entity!.priceBelowValue) ?? ""
-            self.textFieldTextSet = true
-        }
+    }
+}
+
+struct PriceDropsBelowValueNotificationView: View {
+    @EnvironmentObject var crtNotifiSetting: CurrentNotificationSetting
+    
+    var body: some View {
+        PriceDropsBelowValueNotificationSubView(crtNotifiSetting: crtNotifiSetting)
     }
 }
 

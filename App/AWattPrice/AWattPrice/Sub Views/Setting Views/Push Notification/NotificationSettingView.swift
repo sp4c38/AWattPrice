@@ -6,15 +6,27 @@
 //
 
 import SwiftUI
-
-
 struct NotificationSettingView: View {
+    @Environment(\.notificationAccess) var notificationAccess
     @Environment(\.scenePhase) var scenePhase
     
     var body: some View {
         VStack(alignment: .center, spacing: 0) {
             CustomInsetGroupedList {
-                PriceDropsBelowValueNotificationView()
+                VStack(spacing: 20) {
+                    VStack {
+                        if notificationAccess.access == false {
+                            NoNotificationAccessView()
+                                .padding(.top, 10)
+                                .transition(.opacity)
+                        }
+                    }
+                        
+                    PriceDropsBelowValueNotificationView()
+                        .opacity(notificationAccess.access == false ? 0.5 : 1)
+                        .disabled(notificationAccess.access == false)
+                }
+                .animation(.easeInOut)
             }
         }
         .navigationTitle("notificationPage.notifications")
@@ -46,11 +58,6 @@ struct GoToNotificationSettingView: View {
             .contentShape(Rectangle())
             .onTapGesture {
                 redirectToNotificationPage = 1
-            }
-            .onChange(of: redirectToNotificationPage) { newPageSelection in
-                if newPageSelection == nil {
-                    initiateBackgroundNotificationUpdate(currentSetting: currentSetting, crtNotifiSetting: crtNotifiSetting)
-                }
             }
         }
     }

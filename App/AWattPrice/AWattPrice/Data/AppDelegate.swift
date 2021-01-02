@@ -83,20 +83,4 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
         print("Registration to APNs for push notifications was NOT granted: \(error.localizedDescription)")
     }
-    
-    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (_ options:UNNotificationPresentationOptions) -> Void)
-    {
-        print("Handle push from foreground")
-        // custom code to handle push while app is in the foreground
-        print("\(notification.request.content.userInfo)")
-        
-    }
-    //Second for background and close
-
-    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response:UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void)
-    {
-        print("Handle push from background or closed")
-        // if you set a member variable in didReceiveRemoteNotification, you will know if this is from closed or background
-        print("\(response.notification.request.content.userInfo)")
-    }
 }

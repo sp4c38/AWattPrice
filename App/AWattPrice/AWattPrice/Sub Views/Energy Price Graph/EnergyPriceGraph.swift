@@ -160,7 +160,7 @@ struct EnergyPriceGraph: View {
         DispatchQueue.main.async {
             guard (newSizeRect != self.sizeRect) else { return }
             self.sizeRect = newSizeRect
-             print("Set graph size to \(newSizeRect)")
+//             print("Set graph size to \(newSizeRect)")
         }
         return Color.clear
     }

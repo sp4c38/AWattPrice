@@ -5,6 +5,7 @@
 //  Created by Léon Becker on 24.12.20.
 //
 
+import Combine
 import SwiftUI
 
 struct PriceDropsBelowValueNotificationSubView: View {
@@ -14,9 +15,9 @@ struct PriceDropsBelowValueNotificationSubView: View {
     @EnvironmentObject var keyboardObserver: KeyboardObserver
     
     @ObservedObject var crtNotifiSetting: CurrentNotificationSetting
-    
-    @State var changesAndStaged = false
+
     @State var initialAppearFinished: Bool? = false
+    @State var keyboardCurrentlyClosed = false
     @State var priceBelowValue: String = ""
     @State var priceDropsBelowValueNotificationSelection = false
     
@@ -55,7 +56,9 @@ struct PriceDropsBelowValueNotificationSubView: View {
                         .labelsHidden()
                         .onChange(of: priceDropsBelowValueNotificationSelection) { newValue in
                             crtNotifiSetting.changePriceDropsBelowValueNotifications(newValue: newValue)
-                            initiateBackgroundNotificationUpdate(currentSetting: currentSetting, crtNotifiSetting: crtNotifiSetting)
+                            crtNotifiSetting.pushNotificationUpdateManager.backgroundNotificationUpdate(
+                                currentSetting: currentSetting,
+                                crtNotifiSetting: crtNotifiSetting)
                         }
                 }
                 
@@ -70,7 +73,10 @@ struct PriceDropsBelowValueNotificationSubView: View {
                                 }
                                 crtNotifiSetting.changePriceBelowValue(newValue: newDoubleValue)
                                 priceBelowValue = getPriceBelowValueCentString(value: newDoubleValue) ?? ""
-                                changesAndStaged = true
+                                
+                                if keyboardCurrentlyClosed {
+                                    crtNotifiSetting.pushNotificationUpdateManager.backgroundNotificationUpdate(currentSetting: currentSetting, crtNotifiSetting: crtNotifiSetting)
+                                }
                             }
                         
                         if priceBelowValue != "" {
@@ -89,8 +95,10 @@ struct PriceDropsBelowValueNotificationSubView: View {
             }
             .padding([.top, .bottom], 2)
             .onReceive(keyboardObserver.keyboardHeight) { newKeyboardHeight in
-                if self.changesAndStaged && newKeyboardHeight == 0 {
-                    initiateBackgroundNotificationUpdate(currentSetting: currentSetting, crtNotifiSetting: crtNotifiSetting)
+                if newKeyboardHeight == 0 {
+                    self.keyboardCurrentlyClosed = true
+                } else {
+                    self.keyboardCurrentlyClosed = false
                 }
             }
         }

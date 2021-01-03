@@ -30,6 +30,10 @@ struct RegionAndVatSelection: View {
                         .tag(1)
                 }
                 .pickerStyle(SegmentedPickerStyle())
+                .onAppear {
+                    selectedRegion = Int(currentSetting.entity!.regionIdentifier)
+                    firstAppear = false
+                }
                 .ifTrue(firstAppear == false) { content in
                     content
                         .onChange(of: selectedRegion) { newRegionSelection in
@@ -38,13 +42,8 @@ struct RegionAndVatSelection: View {
                             if newRegionSelection == 1 {
                                 currentSetting.changeTaxSelection(newValue: false)
                             }
-                            
-                            crtNotifiSetting.changesAndStaged = true
+                            crtNotifiSetting.pushNotificationUpdateManager.backgroundNotificationUpdate(currentSetting: currentSetting, crtNotifiSetting: crtNotifiSetting)
                         }
-                }
-                .onAppear {
-                    selectedRegion = Int(currentSetting.entity!.regionIdentifier)
-                    firstAppear = false
                 }
                 
                 if selectedRegion == 0 {
@@ -67,7 +66,7 @@ struct RegionAndVatSelection: View {
                             content
                                 .onChange(of: pricesWithTaxIncluded) { newValue in
                                     currentSetting.changeTaxSelection(newValue: newValue)
-                                    crtNotifiSetting.changesAndStaged = true
+                                    crtNotifiSetting.pushNotificationUpdateManager.backgroundNotificationUpdate(currentSetting: currentSetting, crtNotifiSetting: crtNotifiSetting)
                                 }
                         }
                     }

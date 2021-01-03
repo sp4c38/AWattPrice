@@ -10,20 +10,23 @@ import SwiftUI
 struct DecimalTextFieldWithDoneButton: UIViewRepresentable {
     typealias UIViewType = UITextField
     
-    var currentText: String // Changes at every character change
     @Binding var text: String // Changes only when keyboard hides / done button is pressed
+    
+    var currentText: String // Changes at every character change
+    var textFieldView: UITextField
     var placeholder: String
     var plusMinusButton: Bool
     
-    init(text pText: Binding<String>, placeholder pPlaceholder: String, plusMinusButton pPlusMinusButton: Bool = false) {
+    init(text pText: Binding<String>, placeholder pPlaceholder: String, plusMinusButton pPlusMinusButton: Bool = false) {        self._text = pText
+        
+        self.currentText = pText.wrappedValue
+        self.textFieldView = UITextField()
         self.placeholder = pPlaceholder
         self.plusMinusButton = pPlusMinusButton
-        self._text = pText
-        self.currentText = pText.wrappedValue
     }
     
     func makeUIView(context: Context) -> UIViewType {
-        let newUIView = UIViewType()
+        let newUIView = textFieldView
         
         newUIView.keyboardType = .decimalPad
         newUIView.text = self.text
@@ -65,31 +68,16 @@ struct DecimalTextFieldWithDoneButton: UIViewRepresentable {
             }
         }
         
-        func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-            var newStringFull = textField.text!
-            if range.lowerBound <= (newStringFull.count - 1) {
-                if string == "" {
-                    newStringFull = newStringFull.removeOutOfString(atIndex: range.lowerBound)
-                } else {
-                    newStringFull = newStringFull.addAtIndex(atIndex: range.lowerBound, add: string)
-                }
-            } else {
-                newStringFull.append(string)
-            }
-            
-            self.parent.currentText = newStringFull
-            return true
-        }
-        
         @objc func plusMinusPressed(button: UIBarButtonItem) {
-            if self.parent.currentText.hasPrefix("-") {
-                let offsetIndex = self.parent.currentText.index(self.parent.currentText.startIndex, offsetBy: 1)
-                let newString = String(self.parent.currentText[offsetIndex...])
-                self.parent.text = newString
-                self.parent.currentText = newString
-            } else {
-                self.parent.text = "-" + self.parent.currentText
-                self.parent.currentText = "-" + self.parent.currentText
+            if self.parent.textFieldView.text != nil {
+                let fieldText = self.parent.textFieldView.text!
+                if fieldText.hasPrefix("-") {
+                    let offsetIndex = fieldText.index(self.parent.currentText.startIndex, offsetBy: 1)
+                    let newString = String(fieldText[offsetIndex...])
+                    self.parent.textFieldView.text = newString
+                } else {
+                    self.parent.textFieldView.text = "-" + fieldText
+                }
             }
         }
     }

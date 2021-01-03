@@ -26,8 +26,9 @@ struct HeaderSizePreferenceKey: PreferenceKey {
 
 /// The home view mainly holds the graph which represents energy costs for each hour throughout the day.
 struct HomeView: View {
-    @Environment(\.scenePhase) var scenePhase
     @Environment(\.networkManager) var networkManager
+    @Environment(\.notificationAccess) var notificationAccess
+    @Environment(\.scenePhase) var scenePhase
     @EnvironmentObject var awattarData: AwattarData
     @EnvironmentObject var crtNotifiSetting: CurrentNotificationSetting
     @EnvironmentObject var currentSetting: CurrentSetting
@@ -103,6 +104,7 @@ struct HomeView: View {
         .onChange(of: showWhatsNewPage) { newValue in
             if newValue == false {
                 currentSetting.changeShowWhatsNew(newValue: false)
+                managePushNotificationsOnAppAppear(notificationAccessRepresentable: notificationAccess, registerForRemoteNotifications: true)
             }
         }
     }

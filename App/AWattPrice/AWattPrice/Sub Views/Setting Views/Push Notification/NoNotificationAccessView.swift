@@ -11,14 +11,14 @@ struct NoNotificationAccessView: View {
     var body: some View {
         CustomInsetGroupedListItem {
             VStack(alignment: .center, spacing: 30) {
-                Text("To receive AWattPrice notifications, please allow these in the Settings App.")
+                Text("notificationPage.noNotificationAccessInfo")
                     .multilineTextAlignment(.center)
                     .foregroundColor(Color.gray)
                 
                 Button(action: {
                     UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
                 }) {
-                    Text("Open Settings App")
+                    Text("general.openSettingsApp")
                 }
                 .buttonStyle(RoundedBorderButtonStyle())
             }

@@ -3,6 +3,7 @@
     <entity name="NotificationSetting" representedClassName="NotificationSetting" syncable="YES">
         <attribute name="changesButErrorUploading" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="lastApnsToken" optional="YES" attributeType="String"/>
+        <attribute name="notifiPreviouslyAllowed" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="priceBelowValue" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="priceDropsBelowValueNotification" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
     </entity>
@@ -17,7 +18,7 @@
         <attribute name="splashScreensFinished" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
     </entity>
     <elements>
-        <element name="NotificationSetting" positionX="13833" positionY="-567" width="128" height="89"/>
+        <element name="NotificationSetting" positionX="13833" positionY="-567" width="128" height="104"/>
         <element name="Setting" positionX="13622.15289306641" positionY="-640.1206970214844" width="698.1566162109375" height="149"/>
     </elements>
 </model>

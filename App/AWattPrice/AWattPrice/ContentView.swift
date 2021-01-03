@@ -36,7 +36,9 @@ struct ContentView: View {
                                 .opacity(tabBarItems.selectedItemIndex == 2 ? 1 : 0)
                         }
                         .onAppear {
-                            managePushNotificationsOnAppAppear(notificationAccessRepresentable: notificationAccess, registerForRemoteNotifications: true)
+                            if currentSetting.entity!.showWhatsNew == false {
+                                managePushNotificationsOnAppAppear(notificationAccessRepresentable: notificationAccess, registerForRemoteNotifications: true)
+                            }
                             initialAppearFinished = nil
                         }
                         .onChange(of: scenePhase) { newScenePhase in
@@ -44,7 +46,7 @@ struct ContentView: View {
                                 initialAppearFinished = true
                                 return
                             }
-                            if newScenePhase == .active && initialAppearFinished == true {
+                            if newScenePhase == .active && initialAppearFinished == true && currentSetting.entity!.showWhatsNew == false {
                                 managePushNotificationsOnAppAppear(notificationAccessRepresentable: self.notificationAccess, registerForRemoteNotifications: false)
                             }
                         }

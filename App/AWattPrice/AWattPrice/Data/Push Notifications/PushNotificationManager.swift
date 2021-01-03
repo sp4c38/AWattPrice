@@ -54,7 +54,7 @@ class PushNotificationUpdateManager {
     let backgroundQueue: DispatchQueue
     var currentlySleeping = false
     let updateInterval = 5 // In seconds
-    var scheduleUpdate = false
+    var updateScheduled = false
     
     var crtNotifiSetting: CurrentNotificationSetting? = nil
     var currentSetting: CurrentSetting? = nil
@@ -103,10 +103,6 @@ class PushNotificationUpdateManager {
     func startTimer() {
         currentlySleeping = true
         sleep(UInt32(updateInterval))
-        if self.scheduleUpdate == true {
-            self.crtNotifiSetting!.currentlySendingToServer.lock()
-            self.doNotificationUpdate()
-        }
         currentlySleeping = false
     }
     
@@ -114,29 +110,22 @@ class PushNotificationUpdateManager {
         self.currentSetting = currentSetting
         self.crtNotifiSetting = crtNotifiSetting
         
-        if self.crtNotifiSetting!.currentlySendingToServer.try() == true { // Currently not sending
-            if self.currentlySleeping == false { // Don't need to wait
-                backgroundQueue.async {
-                    self.scheduleUpdate = false
-                    self.doNotificationUpdate()
-                    self.startTimer()
-                }
-            } else {
-                self.scheduleUpdate = true
-                self.crtNotifiSetting!.currentlySendingToServer.unlock()
+        if self.currentlySleeping == false { // Don't need to wait
+            backgroundQueue.async {
+                self.crtNotifiSetting!.currentlySendingToServer.lock() // Make sure no task is sending data to the backend
+                self.updateScheduled = false
+                self.doNotificationUpdate()
+                self.startTimer()
             }
         } else {
-            if !currentlySleeping {
-                self.scheduleUpdate = true
-            } else {
+            if self.updateScheduled == false {
+                updateScheduled = true
                 backgroundQueue.async {
-                    self.scheduleUpdate = false
-                    self.startTimer()
-                    self.crtNotifiSetting!.currentlySendingToServer.lock()
+                    self.updateScheduled = false
                     self.doNotificationUpdate()
                     self.startTimer()
                 }
-            }
+            } else {} // Don't need to do anything. Values were set before.
         }
     }
 }

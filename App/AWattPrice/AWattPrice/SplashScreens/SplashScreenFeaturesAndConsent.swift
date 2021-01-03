@@ -65,8 +65,6 @@ struct AppFeatureView: View {
             }
             .multilineTextAlignment(.leading)
         }
-        
-        Spacer()
     }
 }
 

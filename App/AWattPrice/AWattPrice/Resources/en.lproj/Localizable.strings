@@ -78,8 +78,9 @@
 
 // Notification Page localizations
 "notificationPage.notifications" = "Notifications";
+"notificationPage.noNotificationAccessInfo" = "Please allow AWattPrice notifications in the Settings App.";
 "notificationPage.notification.priceDropsBelowValue" = "Price drops below certain value";
-"notificationPage.notification.priceDropsBelowValue.description" = "Receive a notification as soon as new prices are available and prices drop below a certain value.";
+"notificationPage.notification.priceDropsBelowValue.description" = "Receive a notification as soon as new prices are available and these prices drop below a certain value.";
 
 // Data download error view
 "dataError.tryAgainLater" = "Please try again later.";
@@ -108,6 +109,7 @@
 "general.privacyPolicy" = "Privacy Policy";
 "general.on" = "on";
 "general.done" = "Done";
+"general.openSettingsApp" = "Open Settings App";
 
 // Total Time Formatter localizations
 "totalTimeFormatter.onlyHour"  = "%@h";

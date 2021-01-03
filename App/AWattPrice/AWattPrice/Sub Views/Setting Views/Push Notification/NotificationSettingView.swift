@@ -47,7 +47,7 @@ struct GoToNotificationSettingView: View {
                 .frame(width: 0, height: 0)
                 .hidden()
             HStack {
-                Image(systemName: "bell")
+                Image(systemName: "app.badge")
                     .font(.title2)
                 Text("notificationPage.notifications")
                 Spacer()

@@ -9,7 +9,7 @@ import SwiftUI
 import UIKit
 import UserNotifications
 
-func managePushNotificationsOnAppAppear(notificationAccessRepresentable: NotificationAccess, registerForRemoteNotifications: Bool) {
+func managePushNotificationsOnAppAppear(notificationAccessRepresentable: NotificationAccess, registerForRemoteNotifications: Bool, completionHandler: @escaping () -> Void) {
     DispatchQueue.global(qos: .background).async {
         let notificationAccess = checkNotificationAccess()
         if notificationAccess == true && registerForRemoteNotifications {
@@ -23,6 +23,8 @@ func managePushNotificationsOnAppAppear(notificationAccessRepresentable: Notific
         } else {
             notificationAccessRepresentable.access = false
         }
+        
+        completionHandler()
     }
 }
 
@@ -115,6 +117,7 @@ class PushNotificationUpdateManager {
                 self.crtNotifiSetting!.currentlySendingToServer.lock() // Make sure no task is sending data to the backend
                 self.updateScheduled = false
                 self.doNotificationUpdate()
+                self.crtNotifiSetting!.changesAndStaged = false
                 self.startTimer()
             }
         } else {
@@ -123,6 +126,7 @@ class PushNotificationUpdateManager {
                 backgroundQueue.async {
                     self.updateScheduled = false
                     self.doNotificationUpdate()
+                    self.crtNotifiSetting!.changesAndStaged = false
                     self.startTimer()
                 }
             } else {} // Don't need to do anything. Values were set before.

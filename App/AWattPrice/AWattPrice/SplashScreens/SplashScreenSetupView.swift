@@ -10,6 +10,8 @@ import SwiftUI
 /// Splash screen which handles the input of settings which are required for the main functionality of the app.
 struct SplashScreenSetupView: View {
     @Environment(\.colorScheme) var colorScheme
+    @Environment(\.notificationAccess) var notificationAccess
+    
     @EnvironmentObject var currentSetting: CurrentSetting
     
     @State var redirectToNextSplashScreen: Int? = 0
@@ -21,6 +23,10 @@ struct SplashScreenSetupView: View {
                 CustomInsetGroupedList {
                     RegionAndVatSelection()
 
+                    
+                    if notificationAccess.access == true {
+                        PriceDropsBelowValueNotificationView()
+                    }
 //                    AwattarTariffSelectionSetting()
                 }
                 
@@ -39,6 +45,7 @@ struct SplashScreenSetupView: View {
                 Text("settingsPage.notLoadedSettings")
             }
         }
+        .ignoresSafeArea(.keyboard)
         .navigationBarTitle("splashScreen.setup.title")
         .navigationViewStyle(StackNavigationViewStyle())
     }

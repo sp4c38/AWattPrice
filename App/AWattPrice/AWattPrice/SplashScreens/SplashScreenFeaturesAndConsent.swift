@@ -41,7 +41,7 @@ struct AppFeatureView: View {
                         .resizable()
                         .foregroundColor(Color(hue: 0.5648, saturation: 1.0000, brightness: 0.6235))
                         .padding(16)
-                        .frame(width: 75, height: 75)
+                        .frame(width: 70, height: 70)
                     
                     VStack(alignment: .leading, spacing: 5) {
                         Text(title)
@@ -60,10 +60,12 @@ struct AppFeatureView: View {
                         .foregroundColor(Color.gray)
                         .font(.subheadline)
                         .padding(.top, 10)
-                        .padding(.leading, 85)
+                        .padding(.leading, 80)
                 }
             }
             .multilineTextAlignment(.leading)
+            
+            Spacer(minLength: 0)
         }
     }
 }
@@ -147,6 +149,8 @@ struct AgreementConsentView: View {
  A splash screen which presents and describes the main functionalities of the app briefly and displays a check box for the user to consent to the apps privacy policy.
  */
 struct SplashScreenFeaturesAndConsentView: View {
+    @Environment(\.notificationAccess) var notificationAccess
+    
     @EnvironmentObject var currentSetting: CurrentSetting
     
     @State var redirectToNextSplashScreen: Int? = 0
@@ -167,6 +171,8 @@ struct SplashScreenFeaturesAndConsentView: View {
                 AppFeatureView(title: "splashScreen.featuresAndConsent.viewPrices", subTitle: "splashScreen.featuresAndConsent.viewPrices.info", imageName: "magnifyingglass")
 
                 AppFeatureView(title: "splashScreen.featuresAndConsent.comparePrices", subTitle: "splashScreen.featuresAndConsent.comparePrices.info", imageName: "arrow.left.arrow.right")
+                
+                AppFeatureView(title: "notificationPage.notifications", subTitle: "splashScreen.featuresAndConsent.notifications.info", imageName: "bell")
             }
 
             Spacer()
@@ -194,7 +200,9 @@ struct SplashScreenFeaturesAndConsentView: View {
                 if privacyPolicyIsChecked == true && termsOfUseIsChecked == true {
                     showTermsOfUseNotChecked = false
                     showPrivacyPolicyNotChecked = false
-                    redirectToNextSplashScreen = 1
+                    managePushNotificationsOnAppAppear(notificationAccessRepresentable: notificationAccess, registerForRemoteNotifications: true) {
+                        redirectToNextSplashScreen = 1
+                    }
                 } else {
                     if termsOfUseIsChecked == false {
                         showTermsOfUseNotChecked = true

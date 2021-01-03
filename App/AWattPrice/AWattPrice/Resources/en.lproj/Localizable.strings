@@ -28,7 +28,7 @@
 
 // What's new splash screen localization
 "splashScreen.whatsNew.title" = "What's new?";
-"splashScreen.whatsNew.notifications.extrainfo" = "Tip: Go to the Settings tab to enable notifications.";
+"splashScreen.whatsNew.notifications.extrainfo" = "Tip: Go to the Settings tab in AWattPrice to enable notifications.";
 
 // Finish splash screen localization
 "splashScreen.finish.setupFinished" = "Setup finished";
@@ -41,7 +41,7 @@
 
 // Cheapest Price page localizations
 "cheapestPricePage.cheapestPrice" = "Cheapest Time";
-"cheapestPricePage.emptyFieldError" = "Please fill out this field";
+"cheapestPricePage.emptyFieldError" = "Please fill out this field.";
 "cheapestPricePage.wrongInputError" = "This field may only contain numbers and , or .";
 "cheapestPricePage.totalConsumption" = "Total consumption";
 "cheapestPricePage.timeRange" = "Time range";

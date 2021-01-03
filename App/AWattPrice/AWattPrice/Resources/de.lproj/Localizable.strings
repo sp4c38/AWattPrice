@@ -18,9 +18,9 @@
 "splashScreen.featuresAndConsent.comparePrices.info" = "Finden Sie die preislich günstigsten Stunden für Ihren Stromverbrauch.";
 // Notifications title handled by notificationPage.notifications
 "splashScreen.featuresAndConsent.notifications.info" = "Erhalten Sie eine Benachrichtigung, sobald die Strompreise unter einen bestimmten Wert fallen.";
-"splashScreen.featuresAndConsent.termsOfUse.agree" = "Ich stimme den Nutzungsbedingungen zu.";
+"splashScreen.featuresAndConsent.termsOfUse.agree" = "Ich stimme den\nNutzungsbedingungen zu.";
 "splashScreen.featuresAndConsent.termsOfUse.see" = "Zu den Nutzungsbedingungen";
-"splashScreen.featuresAndConsent.privacyPolicy.agree" = "Ich stimme der Datenschutzrichtlinie zu.";
+"splashScreen.featuresAndConsent.privacyPolicy.agree" = "Ich stimme der\nDatenschutzrichtlinie zu.";
 "splashScreen.featuresAndConsent.privacyPolicy.see" = "Zur Datenschutzrichtlinie";
 
 // Setup splash screen localization
@@ -28,7 +28,7 @@
 
 // What's new splash screen localization
 "splashScreen.whatsNew.title" = "Was gibt's Neues?";
-"splashScreen.whatsNew.notifications.extrainfo" = "Tipp: Benachrichtigungen können im \"Einstellungen\"-Tab aktiviert werden.";
+"splashScreen.whatsNew.notifications.extrainfo" = "Tipp: Um Benachrichtigungen zu aktivieren, gehe zum \"Einstellungen\"-Tab in AWattPrice.";
 
 // Finish splash screen localization
 "splashScreen.finish.setupFinished" = "Einrichtung abgeschlossen";
@@ -41,7 +41,7 @@
 
 // Cheapest Price page localizations
 "cheapestPricePage.cheapestPrice" = "Günstigste Zeit";
-"cheapestPricePage.emptyFieldError" = "Bitte füllen Sie dieses Feld aus";
+"cheapestPricePage.emptyFieldError" = "Bitte füllen Sie dieses Feld aus.";
 "cheapestPricePage.wrongInputError" = "Dieses Feld darf nur Zahlen und , oder . enthalten.";
 "cheapestPricePage.totalConsumption" = "Gesamtverbrauch";
 "cheapestPricePage.timeRange" = "Zeitfenster";

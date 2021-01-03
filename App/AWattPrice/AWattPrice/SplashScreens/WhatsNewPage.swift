@@ -18,6 +18,7 @@ struct WhatsNewPage: View {
                 VStack(alignment: .leading, spacing: 15) {
                     AppFeatureView(title: "notificationPage.notifications", subTitle: "splashScreen.featuresAndConsent.notifications.info", tipText: "splashScreen.whatsNew.notifications.extrainfo", imageName: "app.badge")
                 }
+                .padding(.trailing, 14)
                 
                 Spacer()
                 
@@ -27,10 +28,10 @@ struct WhatsNewPage: View {
                     Text("general.done")
                 }
                 .buttonStyle(ContinueButtonStyle())
+                .padding(.bottom, 10)
             }
+            .padding([.leading, .trailing], 16)
             .padding(.top, 25)
-            .padding(.leading, 16)
-            .padding(.trailing, 30)
             .navigationTitle("splashScreen.whatsNew.title")
         }
     }

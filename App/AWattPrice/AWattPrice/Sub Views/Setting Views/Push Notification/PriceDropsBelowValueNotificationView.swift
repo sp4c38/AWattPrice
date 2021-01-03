@@ -56,6 +56,7 @@ struct PriceDropsBelowValueNotificationSubView: View {
                         .labelsHidden()
                         .onChange(of: priceDropsBelowValueNotificationSelection) { newValue in
                             crtNotifiSetting.changePriceDropsBelowValueNotifications(newValue: newValue)
+                            crtNotifiSetting.changesAndStaged = true
                             crtNotifiSetting.pushNotificationUpdateManager.backgroundNotificationUpdate(
                                 currentSetting: currentSetting,
                                 crtNotifiSetting: crtNotifiSetting)

@@ -35,21 +35,6 @@ struct ContentView: View {
                             CheapestTimeView()
                                 .opacity(tabBarItems.selectedItemIndex == 2 ? 1 : 0)
                         }
-                        .onAppear {
-                            if currentSetting.entity!.showWhatsNew == false {
-                                managePushNotificationsOnAppAppear(notificationAccessRepresentable: notificationAccess, registerForRemoteNotifications: true)
-                            }
-                            initialAppearFinished = nil
-                        }
-                        .onChange(of: scenePhase) { newScenePhase in
-                            if initialAppearFinished == nil {
-                                initialAppearFinished = true
-                                return
-                            }
-                            if newScenePhase == .active && initialAppearFinished == true && currentSetting.entity!.showWhatsNew == false {
-                                managePushNotificationsOnAppAppear(notificationAccessRepresentable: self.notificationAccess, registerForRemoteNotifications: false)
-                            }
-                        }
                         
                         Spacer(minLength: 0)
                         
@@ -60,6 +45,24 @@ struct ContentView: View {
                     }
                 }
                 .onAppear {
+                    // Check Notification access
+                    if currentSetting.entity!.showWhatsNew == false && currentSetting.entity!.splashScreensFinished == true {
+                        managePushNotificationsOnAppAppear(notificationAccessRepresentable: notificationAccess, registerForRemoteNotifications: true) {}
+                    }
+                    initialAppearFinished = nil
+                }
+                .onChange(of: scenePhase) { newScenePhase in
+                    if initialAppearFinished == nil {
+                        initialAppearFinished = true
+                        return
+                    }
+                    if newScenePhase == .active && initialAppearFinished == true && currentSetting.entity!.showWhatsNew == false && currentSetting.entity!.splashScreensFinished == true {
+                        managePushNotificationsOnAppAppear(notificationAccessRepresentable: self.notificationAccess, registerForRemoteNotifications: false) {}
+                    }
+                }
+                
+                .onAppear {
+                    // Check Show Whats New
                     if currentSetting.entity!.splashScreensFinished == false && currentSetting.entity!.showWhatsNew == true {
                         currentSetting.changeShowWhatsNew(newValue: false)
                     }

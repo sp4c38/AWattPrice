@@ -54,6 +54,7 @@ class measure_duration(ContextDecorator):
 def start_logging(config: Box) -> None:
     """Start console and file logging"""
     log_dir = Path(config.file_location.log_dir).expanduser()
+
     if not log_dir.is_dir():
         sys.stderr.write(f"Could not find the log dir {log_dir}. Creating it ...\n")
         os.makedirs(log_dir.as_posix())
@@ -67,8 +68,9 @@ def start_logging(config: Box) -> None:
                 "backtrace": True,
             },
             {
-                "sink": log_dir / "awattprice_{time}.log",
-                "rotation": "1 day",
+                "sink": log_dir / "awattprice.log",
+                "rotation": "100 KB",
+                "level": "TRACE",
                 "compression": "gz",
                 "format": "{time:YYYY-MM-DDTHH:mm:ss} | {level} | {message}",
                 "backtrace": True,

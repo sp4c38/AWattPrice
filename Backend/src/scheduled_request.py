@@ -9,6 +9,7 @@ from loguru import logger as log
 from pathlib import Path
 
 from awattprice.config import read_config
+from awattprice.defaults import Notifications
 from awattprice.utils import start_logging
 
 async def request_data(queue, config):
@@ -74,14 +75,10 @@ async def request_data(queue, config):
                 log.warning(f"All possible attempts for {url} are exhausted.")
 
 async def main():
-    # Scheduled requests are called in certain time ranges in certain intervals
-    # by a service like cron. This script calls the AWattPrice backend just like
-    # a client would do. This is done especially to have up to date caches with
-    # up to date data. This is also needed to frequently check if notifications
-    # need and should be sent (e.g. send notification when price drops below
-    # certain value -> need up to date data)
-    # Therefor this script calls the AWattPrice backend because it handles
-    # notification sending.
+    """ Scheduled requests are called in certain time ranges in certain intervals
+    by a service like cron. This script calls the AWattPrice backend just like
+    a client would do. This is done to have up to date caches and to frequently check
+    if notifications need to be sent. """
 
     config = read_config()
     start_logging(config)

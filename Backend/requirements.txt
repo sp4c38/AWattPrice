@@ -1,6 +1,6 @@
 aiofiles
 arrow
-certifi==2020.11.08
+certifi==2020.12.5
 configupdater
 cryptography
 fastapi

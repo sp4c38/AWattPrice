@@ -48,6 +48,11 @@ extension EnvironmentValues {
         get { self[NotificationAccessKey.self] }
         set { self[NotificationAccessKey.self] = newValue }
     }
+    
+    var deviceType: UIUserInterfaceIdiom {
+        get { UIDevice.current.userInterfaceIdiom }
+        set {}
+    }
 }
 
 /// An object which holds and loads a NSPersistentContainer to allow access to persistent stored data from Core Data.

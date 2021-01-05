@@ -29,7 +29,7 @@ struct NotificationSettingView: View {
                 .animation(.easeInOut)
             }
         }
-        .navigationTitle("notificationPage.notifications")
+        .navigationTitle("notificationPage.priceGuard")
     }
 }
 
@@ -46,14 +46,31 @@ struct GoToNotificationSettingView: View {
             NavigationLink("", destination: NotificationSettingView(), tag: 1, selection: $redirectToNotificationPage)
                 .frame(width: 0, height: 0)
                 .hidden()
-            HStack {
-                Image(systemName: "app.badge")
-                    .font(.title2)
-                Text("notificationPage.notifications")
-                Spacer()
-                Image(systemName: "chevron.right")
-                    .font(Font.caption.weight(.semibold))
-                    .foregroundColor(Color.gray)
+            
+            VStack(spacing: 15) {
+                HStack(alignment: .center) {
+                    Image("PriceTag")
+                        .resizable()
+                        .renderingMode(.template)
+                        .foregroundColor(colorScheme == .light ? Color.black : Color.white)
+                        .scaledToFit()
+                        .frame(width: 22, height: 22, alignment: .center)
+                    
+                    Text("notificationPage.priceGuard")
+                        .bold()
+                        .font(.body)
+                        .padding(.top, 2)
+                    
+                    Spacer()
+                    
+                    Image(systemName: "chevron.right")
+                        .font(Font.caption.weight(.semibold))
+                        .foregroundColor(Color.gray)
+                }
+                
+                Text("notificationPage.notification.priceDropsBelowValue.description")
+                    .font(.subheadline)
+                    .multilineTextAlignment(.center)
             }
             .contentShape(Rectangle())
             .onTapGesture {
@@ -66,8 +83,9 @@ struct GoToNotificationSettingView: View {
 struct NotificationSettingView_Previews: PreviewProvider {
     static var previews: some View {
         GoToNotificationSettingView()
-        NotificationSettingView()
-            .environment(\.managedObjectContext, PersistenceManager().persistentContainer.viewContext)
-            .environmentObject(CurrentNotificationSetting(managedObjectContext: PersistenceManager().persistentContainer.viewContext))
+            .preferredColorScheme(.dark)
+//        NotificationSettingView()
+//            .environment(\.managedObjectContext, PersistenceManager().persistentContainer.viewContext)
+//            .environmentObject(CurrentNotificationSetting(managedObjectContext: PersistenceManager().persistentContainer.viewContext))
     }
 }

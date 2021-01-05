@@ -18,7 +18,9 @@ struct AgreementSettingView: View {
         CustomInsetGroupedListItem {
             HStack {
                 Image(systemName: agreementIconName)
-                    .font(.title2)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 22, height: 22, alignment: .center)
                 
                 Text(agreementName.localized())
                     .font(.subheadline)

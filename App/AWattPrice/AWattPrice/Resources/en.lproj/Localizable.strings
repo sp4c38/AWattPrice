@@ -77,7 +77,7 @@
 "settingsPage.version" = "Version";
 
 // Notification Page localizations
-"notificationPage.notifications" = "Notifications";
+"notificationPage.priceGuard" = "Price Guard";
 "notificationPage.noNotificationAccessInfo" = "Please allow AWattPrice notifications in the Settings App.";
 "notificationPage.notification.priceDropsBelowValue" = "Price drops below certain value";
 "notificationPage.notification.priceDropsBelowValue.description" = "Receive a notification as soon as new prices are available and these prices drop below a certain value.";

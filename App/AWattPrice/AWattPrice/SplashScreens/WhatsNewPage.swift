@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct WhatsNewPage: View {
+    @Environment(\.deviceType) var deviceType
     @Environment(\.presentationMode) var presentationMode
     
     @EnvironmentObject var currentSetting: CurrentSetting
@@ -20,7 +21,9 @@ struct WhatsNewPage: View {
                 }
                 .padding(.trailing, 14)
                 
-                Spacer()
+                if deviceType == .phone {
+                    Spacer()
+                }
                 
                 Button(action: {
                     presentationMode.wrappedValue.dismiss()

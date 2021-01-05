@@ -89,7 +89,7 @@ struct SuggestionView: View {
                 }
             }) {
                 HStack(spacing: 10) {
-                    Image("suggestion")
+                    Image("Suggestion")
                         .resizable()
                         .renderingMode(.template)
                         .frame(width: 25, height: 25)
@@ -138,7 +138,9 @@ struct GetHelpView: View {
                 
                 HStack {
                     Image(systemName: "questionmark.circle")
-                        .font(.title2)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 22, height: 22, alignment: .center)
                     
                     Text("settingsPage.helpAndSuggestions")
                         .font(.subheadline)

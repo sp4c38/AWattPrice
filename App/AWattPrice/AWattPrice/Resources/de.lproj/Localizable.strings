@@ -77,7 +77,7 @@
 "settingsPage.suggestionByEmail" = "Vorschläge per E-Mail";
 
 // Notification Page localizations
-"notificationPage.notifications" = "Benachrichtungen";
+"notificationPage.priceGuard" = "Preiswächter";
 "notificationPage.noNotificationAccessInfo" = "Bitte erlauben Sie Benachrichtigungen für AWattPrice in der Einstellungen-App.";
 "notificationPage.notification.priceDropsBelowValue" = "Preis fällt unter bestimmten Wert";
 "notificationPage.notification.priceDropsBelowValue.description" = "Erhalte eine Benachrichtigung, sobald neue Preise verfügbar sind und diese unter einen bestimmten Wert fallen.";

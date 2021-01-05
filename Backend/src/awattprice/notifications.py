@@ -102,7 +102,7 @@ async def price_drops_below_notification(db_manager, notification_defaults, conf
 
         status_code = None
         response = None
-        log.info(url)
+
         async with httpx.AsyncClient(http2 = True) as client:
             request = await client.post(url,
                                         headers = request_headers,
@@ -118,8 +118,6 @@ async def price_drops_below_notification(db_manager, notification_defaults, conf
                     log.warning(f"Couldn't decode response from APNs servers: {e}")
 
         if not response == None and not status_code == None:
-            log.info(response)
-            log.info(status_code)
             await handle_apns_response(db_manager, token, response, status_code)
 
 

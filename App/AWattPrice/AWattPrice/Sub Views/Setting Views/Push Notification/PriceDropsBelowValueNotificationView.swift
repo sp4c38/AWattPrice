@@ -50,6 +50,7 @@ struct PriceDropsBelowValueNotificationSubView: View {
                     HStack {
                         Text("notificationPage.notification.priceDropsBelowValue")
                             .fixedSize(horizontal: false, vertical: true)
+                            .padding(.top, 2)
                         
                         Spacer()
                         
@@ -62,14 +63,6 @@ struct PriceDropsBelowValueNotificationSubView: View {
                                     currentSetting: currentSetting,
                                     crtNotifiSetting: crtNotifiSetting)
                             }
-                    }
-                    
-                    HStack {
-                        Text("notificationPage.notification.priceDropsBelowValue.description")
-                            .multilineTextAlignment(.leading)
-                            .font(.callout)
-                        
-                        Spacer()
                     }
                     
                     if priceDropsBelowValueNotificationSelection {

@@ -29,7 +29,7 @@ struct NotificationSettingView: View {
                 .animation(.easeInOut)
             }
         }
-        .navigationTitle("notificationPage.priceGuard")
+        .navigationTitle("general.priceGuard")
     }
 }
 
@@ -56,7 +56,7 @@ struct GoToNotificationSettingView: View {
                         .scaledToFit()
                         .frame(width: 22, height: 22, alignment: .center)
                     
-                    Text("notificationPage.priceGuard")
+                    Text("general.priceGuard")
                         .bold()
                         .font(.body)
                         .padding(.top, 2)

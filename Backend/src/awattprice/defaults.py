@@ -55,7 +55,7 @@ class Notifications:
     class Price_Drops_Below:
         def set_values(self):
             # Use localization keys which are resolved on the client side
-            self.title_loc_key = "notifications.price_drops_below.title"
+            self.title_loc_key = "general.priceGuard"
             self.body_loc_key = "notifications.price_drops_below.body"
             self.collapse_id = "collapse.priceDropsBelow3DK203W0#"
 

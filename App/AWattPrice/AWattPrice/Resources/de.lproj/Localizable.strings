@@ -77,10 +77,9 @@
 "settingsPage.suggestionByEmail" = "Vorschläge per E-Mail";
 
 // Notification Page localizations
-"notificationPage.priceGuard" = "Preiswächter";
 "notificationPage.noNotificationAccessInfo" = "Bitte erlauben Sie Benachrichtigungen für AWattPrice in der Einstellungen-App.";
 "notificationPage.notification.priceDropsBelowValue" = "Preis fällt unter bestimmten Wert";
-"notificationPage.notification.priceDropsBelowValue.description" = "Erhalte eine Benachrichtigung, sobald neue Preise verfügbar sind und diese unter einen bestimmten Wert fallen.";
+"notificationPage.notification.priceDropsBelowValue.description" = "Erhalte eine Benachrichtigung, sobald neue Preise verfügbar sind und diese unter einen selbst eingestellten Wunschpreis fallen.";
 
 // Data download error view
 "dataError.tryAgainLater" = "Bitte versuchen Sie es\nspäter noch einmal.";
@@ -110,6 +109,7 @@
 "general.on" = "am";
 "general.done" = "Fertig";
 "general.openSettingsApp" = "Einstellungen-App öffnen";
+"general.priceGuard" = "Preiswächter";
 
 // Total Time Formatter localizations
 "totalTimeFormatter.onlyHour"  = "%@h";
@@ -124,5 +124,5 @@
 "updateDataTimeFormatter.updateNewDataFailed" = "Neue Daten konnten nicht heruntergeladen werden. Tippe, um erneut zu versuchen.";
 
 // Notification localizations
-"notifications.price_drops_below.title" = "Strompreise";
-"notifications.price_drops_below.body" = "Am %@ von %@ Uhr bis %@ Uhr fallen die Strompreise auf bis zu %@ Cent.";
+// Title managed by general.priceGuard
+"notifications.price_drops_below.body" = "Morgen, am %1$@ von %2$@ - %3$@ Uhr fallen die Strompreise auf bis zu %1$@ Cent.";

@@ -35,90 +35,92 @@ async def handle_apns_response(db_manager, token, response, status_code):
         log.debug("Request to APNs server was successful.")
 
 async def price_drops_below_notification(db_manager, notification_defaults, config, price_data, token, below_value, region_identifier, vat_selection):
-    lowest_price = round(price_data.lowest_price, 2)
-    if region_identifier == 0 and vat_selection == 1: # User selected Germany as a region and wants VAT included in all electricity prices
-        lowest_price = round(lowest_price * 1.16, 2)
+    if not price_data.lowest_price is None:
+        lowest_price = round(price_data.lowest_price, 2)
+        if region_identifier == 0 and vat_selection == 1: # User selected Germany as a region and wants VAT included in all electricity prices
+            lowest_price = round(lowest_price * 1.16, 2)
 
-    if lowest_price < below_value:
-        log.debug("Sending \"Price Drops Below\" notification to a user.")
-        # Get the current timezone (either CET or CEST, depending on season)
-        timezone = tzstr("CET-1CEST,M3.5.0/2,M10.5.0/3").tzname(datetime.fromtimestamp(price_data.lowest_price_point.start_timestamp))
-        lowest_price_start = arrow.get(price_data.lowest_price_point.start_timestamp).to(timezone)
-        lowest_price_end = arrow.get(price_data.lowest_price_point.end_timestamp).to(timezone)
-        lowest_price_start_string_hour = lowest_price_start.format("H")
-        start_hour_date = lowest_price_start.format("DD.MM.YYYY")
-        lowest_price_end_string_hour = lowest_price_end.format("H")
+        if lowest_price < below_value:
+            log.debug("Sending \"Price Drops Below\" notification to a user.")
+            # Get the current timezone (either CET or CEST, depending on season)
+            timezone = tzstr("CET-1CEST,M3.5.0/2,M10.5.0/3").tzname(datetime.fromtimestamp(price_data.lowest_price_point.start_timestamp))
+            now = arrow.utcnow().to(timezone)
+            lowest_price_start = arrow.get(price_data.lowest_price_point.start_timestamp).to(timezone)
+            lowest_price_end = arrow.get(price_data.lowest_price_point.end_timestamp).to(timezone)
 
-        lowest_price_cent = floor(lowest_price) # Full cents, for example 4
-        lowest_price_cent_decimal = round((lowest_price - lowest_price_cent) * 100) # Decimal places of cent, for example 39
-        formatted_lowest_price = f"{lowest_price_cent},{lowest_price_cent_decimal}" # Together 4,39
+            lowest_price_cent = floor(lowest_price) # Full cents, for example 4
+            lowest_price_cent_decimal = round((lowest_price - lowest_price_cent) * 100) # Decimal places of cent, for example 39
+            formatted_lowest_price = f"{lowest_price_cent},{lowest_price_cent_decimal}" # Together 4,39
 
-        awattprice_bundle_id = notification_defaults.bundle_id
-        encryption_algorithm = notification_defaults.encryption_algorithm
+            awattprice_bundle_id = notification_defaults.bundle_id
+            encryption_algorithm = notification_defaults.encryption_algorithm
 
-        # Set token data
-        # For reference see: https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/establishing_a_token-based_connection_to_apns
-        token_body = {"iss": notification_defaults.dev_team_id,
-                      "iat": arrow.utcnow().timestamp,}
+            # Set token data
+            # For reference see: https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/establishing_a_token-based_connection_to_apns
+            token_body = {"iss": notification_defaults.dev_team_id,
+                          "iat": arrow.utcnow().timestamp,}
 
-        token_headers = {"alg": notification_defaults.encryption_algorithm,
-                         "kid": notification_defaults.encryption_key_id,}
+            token_headers = {"alg": notification_defaults.encryption_algorithm,
+                             "kid": notification_defaults.encryption_key_id,}
 
-        token_data_encoded = jwt.encode( # Apple requires using JWT
-            token_body,
-            notification_defaults.encryption_key,
-            algorithm = encryption_algorithm,
-            headers = token_headers,
-        )
+            token_data_encoded = jwt.encode( # Apple requires using JWT
+                token_body,
+                notification_defaults.encryption_key,
+                algorithm = encryption_algorithm,
+                headers = token_headers,
+            )
 
-        # Set notification payload
-        # For reference see: https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/generating_a_remote_notification#2943365
-        notification_payload = {
-            "aps": {
-                "alert": {
-                    "title-loc-key": notification_defaults.price_drops_below_notification.title_loc_key,
-                    "loc-key": notification_defaults.price_drops_below_notification.body_loc_key,
-                    "loc-args": [start_hour_date, lowest_price_start_string_hour,
-                                 lowest_price_end_string_hour, formatted_lowest_price],
-                },
-                "badge": 0,
-                "sound": "default",
-                "content-available": 0,
+            # Set notification payload
+            # For reference see: https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/generating_a_remote_notification#2943365
+            notification_payload = {
+                "aps": {
+                    "alert": {
+                        "title-loc-key": notification_defaults.price_drops_below_notification.title_loc_key,
+                        "loc-key": notification_defaults.price_drops_below_notification.body_loc_key,
+                        "loc-args": [
+                            lowest_price_start.format("DD.MM.YYYY"),
+                            lowest_price_start.format("HH"),
+                            lowest_price_end.format("HH"),
+                            formatted_lowest_price],
+                    },
+                    "badge": 0,
+                    "sound": "default",
+                    "content-available": 0,
+                }
             }
-        }
 
-        # Set request headers
-        # For reference see: https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/sending_notification_requests_to_apns
-        request_headers = {
-            "authorization": f"bearer {token_data_encoded}",
-            "apns-push-type": "alert",
-            "apns-topic": notification_defaults.bundle_id,
-            "apns-expiration": f"{lowest_price_start.timestamp - 3600}",
-            "apns-priority": "5",
-            "apns-collapse-id": notification_defaults.price_drops_below_notification.collapse_id,
-        }
+            # Set request headers
+            # For reference see: https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/sending_notification_requests_to_apns
+            request_headers = {
+                "authorization": f"bearer {token_data_encoded}",
+                "apns-push-type": "alert",
+                "apns-topic": notification_defaults.bundle_id,
+                "apns-expiration": f"{lowest_price_start.timestamp - 3600}",
+                "apns-priority": "5",
+                "apns-collapse-id": notification_defaults.price_drops_below_notification.collapse_id,
+            }
 
-        url = f"{notification_defaults.apns_server_url}:{notification_defaults.apns_server_port}{notification_defaults.url_path.format(token)}"
+            url = f"{notification_defaults.apns_server_url}:{notification_defaults.apns_server_port}{notification_defaults.url_path.format(token)}"
 
-        status_code = None
-        response = None
+            status_code = None
+            response = None
 
-        async with httpx.AsyncClient(http2 = True) as client:
-            request = await client.post(url,
-                                        headers = request_headers,
-                                        data = json.dumps(notification_payload))
-            status_code = request.status_code
+            async with httpx.AsyncClient(http2 = True) as client:
+                request = await client.post(url,
+                                            headers = request_headers,
+                                            data = json.dumps(notification_payload))
+                status_code = request.status_code
 
-            if request.content.decode("utf-8") == "":
-                response = {}
-            else:
-                try:
-                    response = json.loads(request.content.decode("utf-8"))
-                except Exception as e:
-                    log.warning(f"Couldn't decode response from APNs servers: {e}")
+                if request.content.decode("utf-8") == "":
+                    response = {}
+                else:
+                    try:
+                        response = json.loads(request.content.decode("utf-8"))
+                    except Exception as e:
+                        log.warning(f"Couldn't decode response from APNs servers: {e}")
 
-        if not response == None and not status_code == None:
-            await handle_apns_response(db_manager, token, response, status_code)
+            if not response == None and not status_code == None:
+                await handle_apns_response(db_manager, token, response, status_code)
 
 
 class DetailedPriceData:
@@ -129,10 +131,13 @@ class DetailedPriceData:
         self.lowest_price_point = None
         self.timedata = [] # Only contains current and future prices
 
-        now = arrow.utcnow()
-        now_hour_start = now.replace(minute = 0, second = 0, microsecond = 0)
         for price_point in self.data.prices:
-            if price_point.start_timestamp >= now_hour_start.timestamp:
+            timezone = tzstr("CET-1CEST,M3.5.0/2,M10.5.0/3").tzname(datetime.fromtimestamp(price_point.start_timestamp))
+            now = arrow.utcnow().to(timezone)
+            now_day_start = now.replace(hour = 0, minute = 0, second = 0, microsecond = 0)
+            tomorrow_hour_start = now_day_start.shift(days = +1)
+
+            if price_point.start_timestamp >= tomorrow_hour_start.timestamp:
                 marketprice = round(price_point.marketprice, 2)
                 if self.lowest_price == None or marketprice < self.lowest_price:
                     self.lowest_price = marketprice
@@ -142,9 +147,9 @@ async def check_and_send(config, data, data_region, db_manager):
     # Check which users apply to receive certain notifications and send them to those users.
 
     log.info("Checking and sending notifications.")
-
+    await asyncio.sleep(100)
     notification_defaults = Notifications()
-    values_set_successful = notification_defaults.set_values(config, sandbox = False,)
+    values_set_successful = notification_defaults.set_values(config, sandbox = True,)
 
     if values_set_successful:
         all_data_to_check = {}

@@ -117,13 +117,14 @@ async def get_data(config: Box, region: Optional[Region] = None, force: bool = F
         # Only poll every config.poll.awattar seconds
         if now.timestamp > last_update + int(config.poll.awattar):
             last_entry = max([d.start_timestamp for d in data.prices])
-            need_update = any(
-                [
-                    # Should trigger if there are less than this amount of future energy price points.
-                    len([True for e in data.prices if e.start_timestamp > now.timestamp]) <
-                        int(config.poll.if_less_than),
-                ]
-            )
+            need_update = True
+            # need_update = any(
+            #     [
+            #         # Should trigger if there are less than this amount of future energy price points.
+            #         len([True for e in data.prices if e.start_timestamp > now.timestamp]) <
+            #             int(config.poll.if_less_than),
+            #     ]
+            # )
         else:
             need_update = False
 
@@ -136,6 +137,7 @@ async def get_data(config: Box, region: Optional[Region] = None, force: bool = F
 
         future = awattar_read_task(config=config, region=region, start=start, end=end)
         results = await asyncio.gather(*[future])
+
         if results is None:
             return None, False
         if results:
@@ -159,11 +161,12 @@ async def get_data(config: Box, region: Optional[Region] = None, force: bool = F
                 continue
             entry = transform_entry(entry)
             if entry:
-                must_write_data = True
                 check_notification = True
                 data.prices.append(entry)
-        if must_write_data:
-            data.meta.update_ts = now.timestamp
+
+        # Must always equal True if new data was fetched to update update_ts to newest value.
+        must_write_data = True
+        data.meta.update_ts = now.timestamp
     elif fetched_data:
         data = Box({"prices": [], "meta": {}}, box_dots=True)
         data.meta["update_ts"] = now.timestamp
@@ -172,6 +175,7 @@ async def get_data(config: Box, region: Optional[Region] = None, force: bool = F
             if entry:
                 must_write_data = True
                 data.prices.append(entry)
+
     # Filter out data older than 24h and write to disk
     if must_write_data:
         log.info("Writing Awattar data to disk.")

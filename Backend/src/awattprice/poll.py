@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 
-"""Discovergy poller
+"""
 
-Poll for data from different sources.
+Poll aWATTar data from their public API.
 
-All functions that end with _task will be feed to the event loop.
 """
 __author__ = "Frank Becker <fb@alien8.de>"
 __copyright__ = "Frank Becker"
@@ -26,7 +25,7 @@ from typing import Dict, List, Optional
 from . import awattar
 from .config import read_config
 from .defaults import CONVERT_MWH_KWH, Region, TIME_CORRECT
-from .utils import start_logging, read_data, write_data, async_acquire_lock
+from .utils import start_logging, read_data, write_data, async_acquire_lock, check_data_needs_update
 
 
 def transform_entry(entry: Box) -> Optional[Box]:
@@ -109,24 +108,11 @@ async def get_data(config: Box, region: Optional[Region] = None, force: bool = F
     need_update = True
     check_notification = False # If no cached data exists this value will stay False
                                # and won't trigger any notification updates.
-                               # Notification updates are only run when cached data already existed.
+                               # Notification updates are only run when cached data already exists.
     last_update = 0
     now = arrow.utcnow()
     if data:
-        last_update = data.meta.update_ts
-        # Only poll every config.poll.awattar seconds
-        if now.timestamp > last_update + int(config.poll.awattar):
-            last_entry = max([d.start_timestamp for d in data.prices])
-            need_update = True
-            # need_update = any(
-            #     [
-            #         # Should trigger if there are less than this amount of future energy price points.
-            #         len([True for e in data.prices if e.start_timestamp > now.timestamp]) <
-            #             int(config.poll.if_less_than),
-            #     ]
-            # )
-        else:
-            need_update = False
+        need_update = check_data_needs_update(data, config)
 
     if need_update or force:
         # By default the Awattar API returns data for the next 24h. It can provide

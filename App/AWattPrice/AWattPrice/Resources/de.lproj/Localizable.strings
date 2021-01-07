@@ -78,8 +78,10 @@
 
 // Notification Page localizations
 "notificationPage.noNotificationAccessInfo" = "Bitte erlauben Sie Benachrichtigungen für AWattPrice in der Einstellungen-App.";
-"notificationPage.notification.priceDropsBelowValue" = "Preis fällt unter bestimmten Wert";
-"notificationPage.notification.priceDropsBelowValue.description" = "Erhalte eine Benachrichtigung, sobald neue Preise verfügbar sind und diese unter einen selbst eingestellten Wunschpreis fallen.";
+"notificationPage.notification.priceDropsBelowValue" = "Preis fällt auf oder unter Wunschpreis";
+"notificationPage.notification.priceDropsBelowValue.wishPrice" = "Wunschpreis";
+"notificationPage.notification.priceDropsBelowValue.description" = "Erhalte eine Benachrichtigung, sobald Preise auf oder unter einen Wunschpreis fallen.";
+"notificationPage.notification.priceDropsBelowValue.description.extra" = "Jeden Tag, sobald neue Preise verfügbar sind, werden Sie benachrichtigt, insofern diese Preise für den nächsten Tag auf oder unter Ihren Wunschpreis fallen.";
 
 // Data download error view
 "dataError.tryAgainLater" = "Bitte versuchen Sie es\nspäter noch einmal.";

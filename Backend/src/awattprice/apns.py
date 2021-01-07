@@ -1,3 +1,14 @@
+# -*- coding: utf-8 -*-
+
+"""
+
+Code to handle notification configuration from clients used for communication with APNs later.
+
+"""
+__author__ = "Léon Becker <lb@space8.me>"
+__copyright__ = "Léon Becker"
+__license__ = "mit"
+
 import asyncio
 import json
 import sqlite3

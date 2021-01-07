@@ -1,3 +1,19 @@
+# -*- coding: utf-8 -*-
+
+"""
+
+Send a data GET request for all regions to the own backend to make it download and
+cache new data and send notifications.
+This script is meant to be called seperately in a specific time range each n seconds.
+For example: Each 5 minutes throughout the whole day.
+The script will check if the Backend would update its data. Only if this applies
+it actually calls the Backend. This doesn't produce unnecessary trafic.
+
+"""
+__author__ = "Léon Becker <lb@space8.me>"
+__copyright__ = "Léon Becker"
+__license__ = "mit"
+
 import aiofiles
 import arrow
 import asyncio
@@ -5,104 +21,97 @@ import filelock
 import httpx
 import json
 
+from fastapi import status
 from loguru import logger as log
 from pathlib import Path
+from urllib.parse import urlparse
+from validators import url as URL_Validator
 
 from awattprice.config import read_config
-from awattprice.defaults import Notifications
-from awattprice.utils import start_logging
+from awattprice.defaults import Notifications, Region
+from awattprice.utils import check_data_needs_update, read_data, start_logging
 
-async def request_data(queue, config):
-    max_attempt_number = 2
+async def send_request(url: str, client: httpx.AsyncClient, max_tries: int) -> bool:
+    request_successful = False
+    tries_made = 0
+    while tries_made < max_tries and request_successful is False:
+        tries_made += 1
+        log.debug(f"Starting attempt {tries_made} for {url}.")
 
-    async with httpx.AsyncClient() as client:
-        while not queue.empty():
-            work_item = await queue.get()
-            tried_attempts = work_item[0]
-            if not tried_attempts > max_attempt_number:
-                region_identifier = work_item[1]
-
-                url = f"https://test-awp.space8.me/data/{region_identifier}"
-                data_file_path = Path(config.file_location.data_dir).expanduser()
-                data_file_path /= Path(f"awattar-data-{region_identifier.lower()}.json")
-                if data_file_path.is_file():
-                    data_file_lock = filelock.FileLock(f"{data_file_path.as_posix()}.lck", timeout=20)
+        try:
+            response = await client.get(url, timeout=5)
+        except httpx.ConnectTimeout:
+            log.warning(f"Attempt {tries_made} to {url} timed out.")
+        except httpx.ReadTimeout:
+            log.warning(f"Attempt {tries_made} to {url} timed out.")
+        except Exception as e:
+            log.warning(f"Unrecognized exception at attempt {tries_made} for {url}: {e}.")
+        else:
+            if response.status_code == status.HTTP_200_OK:
                 try:
-                    data = None
-                    if data_file_path.is_file():
-                        with data_file_lock.acquire():
-                            async with aiofiles.open(data_file_path, "r") as afp:
-                                raw_json = await afp.read()
-                                try:
-                                    data = json.loads(raw_json)
-                                    data["prices"]
-                                except Exception as exp:
-                                    log.warning(f"Tried to decode data in {data_file_path} but it is no "\
-                                                  "valid json.")
-
-                    now = arrow.now()
-                    items_in_future = len([True for e in data["prices"] if e["start_timestamp"] > now.timestamp])
-                    if items_in_future < int(config.poll.if_less_than):
-                        int(config.poll.if_less_than)
-                        try:
-                            log.info(f"Starting attempt {tried_attempts} for {url}")
-                            response = await client.get(url, timeout=5)
-                            try:
-                                json.loads(response.text)
-                                log.info(f"Attempt {tried_attempts} was successful for {url}.")
-                            except Exception as err:
-                                log.warning(f"Couldn't decode response from attempt {tried_attempts} for"\
-                                            f"{url}: {err}")
-                                work_item[0] += 1
-                                await queue.put(work_item)
-
-                        except httpx.ConnectTimeout:
-                            log.warning(f"Attempt {tried_attempts} for {url} timed out.")
-                            work_item[0] += 1
-                            await queue.put(work_item)
-                    else:
-                        log.info("Don't need to send scheduled request to AWattPrice "\
-                                 f"backend for url {url} because in the cached data "\
-                                 f"there are more future price points than {config.poll.if_less_than} "\
-                                  "(number specified in settings for AWattPrice backend).")
-
-                except filelock.Timeout:
-                    work_item[0] += 1
-                    await queue.put(work_item)
-                    log.warning(f"Couldn't acquire lock for {data_file_path} data file associated "\
-                                 f"with url {url}")
+                    json.loads(response.text)
+                    request_successful = True
+                    log.debug(f"Attempt {tries_made} to {url} was successful.")
+                except:
+                    log.warning("Could not decode valid json of response (status code 200) from Backend.")
+                    request_successful = False
             else:
-                log.warning(f"All possible attempts for {url} are exhausted.")
+                log.warning("Backend responsed with response code other than 200.")
+                request_successful = False
+
+    if tries_made is max_tries:
+        log.warning(f"Maximal attemps ({max_tries}) for {url} exhausted.")
+
+    return request_successful
+
+async def run_request(region, max_tries, config):
+    need_update_region = True
+    async with httpx.AsyncClient() as client:
+        url = urlparse(config.poll.backend_url)
+        url_path = Path("data") / region.name.upper()
+        url = url._replace(path = url_path.as_posix()).geturl()
+
+        region_file_path = Path(config.file_location.data_dir).expanduser() / Path(f"awattar-data-{region.name.lower()}.json")
+        data = await read_data(file_path = region_file_path)
+        if data:
+            # Check if backend would update data. If not we can save resources and don't need to send the request.
+            need_update_region = check_data_needs_update(data, config)
+
+        if not need_update_region:
+            log.debug(f"{region.name} data doesn't need to be requested. It is already up-to date.")
+            return
+        else:
+            await send_request(url, client, max_tries)
 
 async def main():
-    """ Scheduled requests are called in certain time ranges in certain intervals
-    by a service like cron. This script calls the AWattPrice backend just like
-    a client would do. This is done to have up to date caches and to frequently check
-    if notifications need to be sent. """
-
     config = read_config()
     start_logging(config)
-    log.info("Started a scheduled request.")
+    log.info("Started scheduled request.")
 
-    lock_file_path = Path(config.file_location.data_dir).expanduser() / "scheduled_event.lck"
-    scheduled_event_lock = filelock.FileLock(lock_file_path, timeout=20)
+    if config.poll.backend_url:
+        if URL_Validator(config.poll.backend_url) == True:
+            lock_file_path = Path(config.file_location.data_dir).expanduser() / "scheduled_event.lck"
 
-    try:
-        with scheduled_event_lock.acquire():
-            queue = asyncio.Queue()
-            for url in [[1, "DE"], # 1: number of attempts to poll this url.
-                        [1, "AT"]]:
-                        await queue.put(url)
+            scheduled_event_lock = filelock.FileLock(lock_file_path, timeout=5)
 
-            await asyncio.gather(
-                asyncio.create_task(request_data(queue, config)),
-                asyncio.create_task(request_data(queue, config)),
-            )
-    except filelock.Timeout:
-        log.warning("Scheduled request couldn't acquire lock (timed out). Other scheduled "\
-                    "request is currently running.")
+            try:
+                with scheduled_event_lock.acquire():
 
-    log.info("Finished a scheduled request.")
+                    tasks = []
+                    for region in [[getattr(Region, "de".upper(), None), 3], # number of attempts for a successful request, region id
+                                   [getattr(Region, "at".upper(), None), 3]]:
+                        if region[0].name != None:
+                            tasks.append(asyncio.create_task(run_request(region[0], region[1], config)))
+
+                    await asyncio.gather(*tasks)
+            except filelock.Timeout:
+                log.warning("Scheduled request lock still acquired. Won't run scheduled request.")
+        else:
+            log.warning(f"Value {config.poll.backend_url} set in \"config.poll.backend_url\" is no valid URL.")
+    else:
+        log.warning("Scheduled request was called without having \"config.poll.backend_url\" configured. Won't run scheduled request.")
+
+    log.info("Finished scheduled request.")
 
 if __name__ == "__main__":
     asyncio.run(main())

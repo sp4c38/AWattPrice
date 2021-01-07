@@ -9,6 +9,7 @@ __author__ = "Frank Becker <fb@alien8.de>"
 __copyright__ = "Frank Becker"
 __license__ = "mit"
 
+import arrow
 import gzip
 import json
 import os
@@ -173,3 +174,22 @@ async def write_data(*, data: Union[List, Dict, Box], file_path: Path, compress:
     with opener(file_path.expanduser().as_posix(), "wb") as fh:
         fh.write(json.dumps(data).encode("utf-8"))
     lock.release()
+
+def check_data_needs_update(data: Box, config: Box):
+    need_update = True
+    now = arrow.utcnow()
+    last_update = data.meta.update_ts
+    # Only poll every config.poll.awattar seconds
+    if now.timestamp > last_update + int(config.poll.awattar):
+        last_entry = max([d.start_timestamp for d in data.prices])
+        need_update = any(
+            [
+                # Should trigger if there are less than this amount of future energy price points.
+                len([True for e in data.prices if e.start_timestamp > now.timestamp]) <
+                    int(config.poll.if_less_than),
+            ]
+        )
+    else:
+        need_update = False
+
+    return need_update

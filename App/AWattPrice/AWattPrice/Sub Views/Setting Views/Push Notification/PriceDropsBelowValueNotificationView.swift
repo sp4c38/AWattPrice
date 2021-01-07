@@ -44,7 +44,7 @@ struct PriceDropsBelowValueNotificationSubView: View {
         VStack {
             CustomInsetGroupedListItem(
                 header: nil,
-                footer: nil
+                footer: Text("notificationPage.notification.priceDropsBelowValue.description.extra")
             ) {
                 VStack(alignment: .center, spacing: 20) {
                     HStack {
@@ -83,7 +83,7 @@ struct PriceDropsBelowValueNotificationSubView: View {
                                 }
                             
                             if priceBelowValue != "" {
-                                Text("general.cent.short")
+                                Text("general.centPerKwh")
                                     .transition(.opacity)
                             }
                         }

@@ -1,3 +1,14 @@
+# -*- coding: utf-8 -*-
+
+"""
+
+Manages database entries for notification configuration.
+
+"""
+__author__ = "Léon Becker <lb@space8.me>"
+__copyright__ = "Léon Becker"
+__license__ = "mit"
+
 import asyncio
 import json
 import os

@@ -12,3 +12,4 @@ PyJWT
 python-box
 tenacity
 uvicorn
+validators

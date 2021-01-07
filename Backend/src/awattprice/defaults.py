@@ -35,8 +35,14 @@ apns_encryption_key: ~/awattprice/apns/encryption_key.p8
 # Try to update the data if there are less than this number of future energy price points.
 # This uses the CET timezone to find how many future energy price points there are.
 if_less_than: 12
+
 # Do not poll the aWATTar API more frequent than this in seconds
 awattar: 30
+
+# Optionally set the url (scheme with domain name and port) by which the Backend is accessible.
+# This is used for scheduled requests to know where to access the Backend.
+# Leave blank if scheduled requests aren't needed.
+backend_url:
 """
 
 

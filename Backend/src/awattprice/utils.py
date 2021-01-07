@@ -123,14 +123,16 @@ def verify_file_permissions(path: Path) -> bool:
         else:
             log.warning(
                 "The file {} didn't have secure file permissions {}. "
-                "The permissions were changed to -rw------- for you. ".format(path, oct(file_stat.st_mode))
+                "The permissions were changed to -rw------- for you. ".format(
+                    path, oct(file_stat.st_mode))
             )
             return True
     return False
 
 
 def async_acquire_lock_helper(lock, timeout):
-    lock.acquire(timeout = timeout)
+    lock.acquire(timeout=timeout)
+
 
 async def async_acquire_lock(lock, timeout):
     # Acquire locks asynchronous.
@@ -140,6 +142,7 @@ async def async_acquire_lock(lock, timeout):
     # get it. Because this waiting isn't awaited the backend won't resume any other tasks anymore.
     loop = asyncio.get_event_loop()
     await loop.run_in_executor(None, async_acquire_lock_helper, lock, timeout)
+
 
 async def read_data(*, file_path: Path) -> Optional[Box]:
     """Return the data read from file_path."""
@@ -175,6 +178,7 @@ async def write_data(*, data: Union[List, Dict, Box], file_path: Path, compress:
         fh.write(json.dumps(data).encode("utf-8"))
     lock.release()
 
+
 def check_data_needs_update(data: Box, config: Box):
     need_update = True
     now = arrow.utcnow()
@@ -186,7 +190,7 @@ def check_data_needs_update(data: Box, config: Box):
             [
                 # Should trigger if there are less than this amount of future energy price points.
                 len([True for e in data.prices if e.start_timestamp > now.timestamp]) <
-                    int(config.poll.if_less_than),
+                int(config.poll.if_less_than),
             ]
         )
     else:

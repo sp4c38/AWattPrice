@@ -31,6 +31,7 @@ from awattprice.config import read_config
 from awattprice.defaults import Notifications, Region
 from awattprice.utils import check_data_needs_update, read_data, start_logging
 
+
 async def send_request(url: str, client: httpx.AsyncClient, max_tries: int) -> bool:
     request_successful = False
     tries_made = 0
@@ -53,10 +54,12 @@ async def send_request(url: str, client: httpx.AsyncClient, max_tries: int) -> b
                     request_successful = True
                     log.debug(f"Attempt {tries_made} to {url} was successful.")
                 except:
-                    log.warning("Could not decode valid json of response (status code 200) from Backend.")
+                    log.warning(
+                        "Could not decode valid json of response (status code 200) from Backend.")
                     request_successful = False
             else:
-                log.warning("Server for {url} responded with status code other than 200.")
+                log.warning(
+                    "Server for {url} responded with status code other than 200.")
                 request_successful = False
 
     if tries_made is max_tries:
@@ -64,15 +67,16 @@ async def send_request(url: str, client: httpx.AsyncClient, max_tries: int) -> b
 
     return request_successful
 
+
 async def run_request(region, max_tries, config):
     need_update_region = True
     async with httpx.AsyncClient() as client:
         url = urlparse(config.poll.backend_url)
         url_path = Path("data") / region.name.upper()
-        url = url._replace(path = url_path.as_posix()).geturl()
+        url = url._replace(path=url_path.as_posix()).geturl()
 
         region_file_path = Path(config.file_location.data_dir).expanduser() / Path(f"awattar-data-{region.name.lower()}.json")
-        data = await read_data(file_path = region_file_path)
+        data = await read_data(file_path=region_file_path)
         if data:
             # Check if backend would update data. If not we can save resources and don't need to send the request.
             need_update_region = check_data_needs_update(data, config)
@@ -83,6 +87,7 @@ async def run_request(region, max_tries, config):
         else:
             await send_request(url, client, max_tries)
 
+
 async def main():
     config = read_config()
     start_logging(config)
@@ -90,7 +95,8 @@ async def main():
 
     if config.poll.backend_url:
         if URL_Validator(config.poll.backend_url) == True:
-            lock_file_path = Path(config.file_location.data_dir).expanduser() / "scheduled_event.lck"
+            lock_file_path = Path(
+                config.file_location.data_dir).expanduser() / "scheduled_event.lck"
 
             scheduled_event_lock = filelock.FileLock(lock_file_path, timeout=5)
 
@@ -98,18 +104,21 @@ async def main():
                 with scheduled_event_lock.acquire():
 
                     tasks = []
-                    for region in [[getattr(Region, "de".upper(), None), 3], # number of attempts for a successful request, region id
+                    for region in [[getattr(Region, "de".upper(), None), 3],  # number of attempts for a successful request, region id
                                    [getattr(Region, "at".upper(), None), 3]]:
                         if region[0].name != None:
-                            tasks.append(asyncio.create_task(run_request(region[0], region[1], config)))
+                            tasks.append(asyncio.create_task(
+                                run_request(region[0], region[1], config)))
 
                     await asyncio.gather(*tasks)
             except filelock.Timeout:
-                log.warning("Scheduled request lock still acquired. Won't run scheduled request.")
+                log.warning(
+                    "Scheduled request lock still acquired. Won't run scheduled request.")
         else:
             log.warning(f"Value {config.poll.backend_url} set in \"config.poll.backend_url\" is no valid URL.")
     else:
-        log.warning("Scheduled request was called without having \"config.poll.backend_url\" configured. Won't run scheduled request.")
+        log.warning(
+            "Scheduled request was called without having \"config.poll.backend_url\" configured. Won't run scheduled request.")
 
     log.info("Finished scheduled request.")
 

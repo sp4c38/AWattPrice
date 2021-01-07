@@ -27,7 +27,8 @@ class Token_Database_Manager:
     def connect(self, config):
         # Connect to the database
 
-        database_path = Path(config.file_location.apns_dir).expanduser() / Path("token.db")
+        database_path = Path(
+            config.file_location.apns_dir).expanduser() / Path("token.db")
 
         database_dir = database_path.parent
         if not database_dir.expanduser().is_dir():
@@ -82,12 +83,13 @@ class Token_Database_Manager:
         self.db.close()
         log.info("Connection to database was closed.")
 
+
 class APNs_Token_Manager:
     def __init__(self, token_data, database_manager):
         self.token_data = token_data
         self.final_data = None
         self.db_manager = database_manager
-        self.is_new_token = False # Is set later
+        self.is_new_token = False  # Is set later
 
     def write_database(self):
         # Write data to associated database
@@ -99,15 +101,15 @@ class APNs_Token_Manager:
             encoded_config = json.dumps(self.final_data)
             with self.db_manager.db:
                 cursor.execute("INSERT INTO token_storage VALUES(?, ?, ?, ?);",
-                    (self.token_data["token"], self.token_data["region_identifier"],
-                     self.token_data["vat_selection"], encoded_config,))
+                               (self.token_data["token"], self.token_data["region_identifier"],
+                                self.token_data["vat_selection"], encoded_config,))
             log.info("Stored a new APNs token and config.")
         else:
             # Existing token updates notification configuration
             encoded_config = json.dumps(self.final_data)
             with self.db_manager.db:
                 cursor.execute(""" UPDATE token_storage SET region_identifier = ?, vat_selection = ?, configuration = ? WHERE token = ?""",
-                              (self.token_data["region_identifier"], self.token_data["vat_selection"], encoded_config, self.token_data["token"],))
+                               (self.token_data["region_identifier"], self.token_data["vat_selection"], encoded_config, self.token_data["token"],))
             log.info("Updated to a new APNs config.")
 
         cursor.close()
@@ -117,7 +119,8 @@ class APNs_Token_Manager:
         # Read existing data and appropriately create the final data which will be later written to the database
         cursor = self.db_manager.db.cursor()
         token = self.token_data["token"]
-        items = cursor.execute("SELECT * FROM token_storage WHERE token = ? LIMIT 1;", (token,)).fetchall()
+        items = cursor.execute(
+            "SELECT * FROM token_storage WHERE token = ? LIMIT 1;", (token,)).fetchall()
 
         if len(items) == 0:
             self.is_new_token = True
@@ -129,15 +132,15 @@ class APNs_Token_Manager:
             new_config_raw = json.dumps({"config": self.token_data["config"]})
             if (not (items[0][1] == self.token_data["region_identifier"]) or
                 not (items[0][2] == self.token_data["vat_selection"]) or
-                not (items[0][3] == new_config_raw)):
-                self.is_new_token = False # Just new config but no new token
+                    not (items[0][3] == new_config_raw)):
+                self.is_new_token = False  # Just new config but no new token
                 self.final_data = {"config": self.token_data["config"]}
                 log.info("Client requested to update existing APNs configuration.")
                 return True
             else:
-                log.warning("A client resent his APNs token and configuration. "\
-                            "They are same as already stored on the servers APNs database. "\
-                            "This shouldn't happen because only new APNs configuration (and tokens) "\
+                log.warning("A client resent his APNs token and configuration. "
+                            "They are same as already stored on the servers APNs database. "
+                            "This shouldn't happen because only new APNs configuration (and tokens) "
                             "should be sent from the client-side.")
                 cursor.close()
                 return False
@@ -146,7 +149,8 @@ class APNs_Token_Manager:
 
     def remove_entry(self):
         cursor = self.db_manager.db.cursor()
-        cursor.execute("DELETE FROM token_storage WHERE token = ?", (self.token_data["token"],))
+        cursor.execute("DELETE FROM token_storage WHERE token = ?",
+                       (self.token_data["token"],))
         cursor.close()
         self.db_manager.db.commit()
 

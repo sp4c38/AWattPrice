@@ -27,7 +27,8 @@ from .utils import verify_file_permissions
 def bootstrap_config(path: Optional[Path] = None) -> ConfigUpdater:
     """Create the Config file and populate it."""
     if path is None:
-        path = Path(os.path.expanduser("~")) / ".config" / "awattprice" / "config.ini"
+        path = Path(os.path.expanduser("~")) / \
+            ".config" / "awattprice" / "config.ini"
     if not path.parent.is_dir():
         os.makedirs(path.parent.as_posix())
     config_updater = ConfigUpdater()
@@ -46,7 +47,8 @@ def config_updater_factory(config: Box) -> Tuple[Path, ConfigUpdater]:
     if "config_file_path" in config_updater_data:
         path = Path(config_updater_data.pop("config_file_path"))
     else:
-        raise AttributeError("The config is missing the config_file_path. This should not happen.")
+        raise AttributeError(
+            "The config is missing the config_file_path. This should not happen.")
 
     config_updater = ConfigUpdater()
     to_add = []
@@ -60,7 +62,8 @@ def config_updater_factory(config: Box) -> Tuple[Path, ConfigUpdater]:
                 if option in config_updater_section:
                     config_updater_section[option].value = value
                 else:
-                    config_updater_section[last_option].add_after.option(option, value)
+                    config_updater_section[last_option].add_after.option(
+                        option, value)
                     last_option = option
             config_updater[section] = config_updater_section
         else:
@@ -74,7 +77,8 @@ def config_updater_factory(config: Box) -> Tuple[Path, ConfigUpdater]:
         last_section = config_updater[config_updater.sections()[-1]]
         for section in to_add:
             # Add a new line for readability
-            config_updater[last_section.name].add_after.space().section(section)
+            config_updater[last_section.name].add_after.space().section(
+                section)
             last_section = section
 
     return path, config_updater
@@ -95,7 +99,8 @@ def read_config(path: Optional[Path] = None) -> Box:
     else:
         config_path_locations = (
             Path(Path("/etc") / "awattprice" / "config.ini"),
-            Path(os.path.expanduser("~")) / ".config" / "awattprice" / "config.ini",
+            Path(os.path.expanduser("~")) / ".config" /
+            "awattprice" / "config.ini",
         )
     found_config_file = False
     for path in config_path_locations:
@@ -104,7 +109,8 @@ def read_config(path: Optional[Path] = None) -> Box:
             break
     else:
         log.info(f"No config file found in {path.parent}. Creating one...")
-        path = Path(os.path.expanduser("~")) / ".config" / "awattprice" / "config.ini"
+        path = Path(os.path.expanduser("~")) / \
+            ".config" / "awattprice" / "config.ini"
         config_updater = bootstrap_config(path)
     if path.parent.exists() and not path.parent.is_dir():
         log.error(f"Expected the config directory {path.parent} to be a directory.")
@@ -130,8 +136,11 @@ def read_config(path: Optional[Path] = None) -> Box:
     config.file_location.log_dir = config.file_location.log_dir.strip("\"'")
     config.file_location.apns_dir = config.file_location.apns_dir.strip("\"'")
 
-    config.notifications.dev_team_id = config.notifications.dev_team_id.strip("\"'")
-    config.notifications.apns_encryption_key_id = config.notifications.apns_encryption_key_id.strip("\"'")
-    config.notifications.apns_encryption_key = config.notifications.apns_encryption_key.strip("\"'")
+    config.notifications.dev_team_id = config.notifications.dev_team_id.strip(
+        "\"'")
+    config.notifications.apns_encryption_key_id = config.notifications.apns_encryption_key_id.strip(
+        "\"'")
+    config.notifications.apns_encryption_key = config.notifications.apns_encryption_key.strip(
+        "\"'")
 
     return config

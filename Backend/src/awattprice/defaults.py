@@ -75,15 +75,21 @@ class Notifications:
         self.encryption_algorithm = "ES256"
 
         try:
-            dev_team_id_path = Path(config.notifications.dev_team_id).expanduser()
-            self.dev_team_id = open(dev_team_id_path.as_posix(), "r").readlines()[0].replace("\n", "")
-            encryption_key_id_path = Path(config.notifications.apns_encryption_key_id).expanduser()
-            self.encryption_key_id = open(encryption_key_id_path.as_posix(), "r").readlines()[0].replace("\n", "")
-            encryption_key_path = Path(config.notifications.apns_encryption_key).expanduser()
-            self.encryption_key = open(encryption_key_path.as_posix(), "r").read()
+            dev_team_id_path = Path(
+                config.notifications.dev_team_id).expanduser()
+            self.dev_team_id = open(dev_team_id_path.as_posix(), "r").readlines()[
+                0].replace("\n", "")
+            encryption_key_id_path = Path(
+                config.notifications.apns_encryption_key_id).expanduser()
+            self.encryption_key_id = open(encryption_key_id_path.as_posix(), "r").readlines()[
+                0].replace("\n", "")
+            encryption_key_path = Path(
+                config.notifications.apns_encryption_key).expanduser()
+            self.encryption_key = open(
+                encryption_key_path.as_posix(), "r").read()
             self.url_path = "/3/device/{}"
         except Exception as e:
-            log.warning(f"Couldn't read or find file(s) containing required information to send notifications "\
+            log.warning(f"Couldn't read or find file(s) containing required information to send notifications "
                         f"with APNs. Notifications won't be checked and won't be sent by the backend: {e}.")
             return False
 

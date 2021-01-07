@@ -56,7 +56,7 @@ async def send_request(url: str, client: httpx.AsyncClient, max_tries: int) -> b
                     log.warning("Could not decode valid json of response (status code 200) from Backend.")
                     request_successful = False
             else:
-                log.warning("Backend responsed with response code other than 200.")
+                log.warning("Server for {url} responded with status code other than 200.")
                 request_successful = False
 
     if tries_made is max_tries:

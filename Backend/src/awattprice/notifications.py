@@ -32,7 +32,8 @@ async def handle_apns_response(db_manager, token, response, status_code):
                 await token_manager.remove_entry_from_database()
                 log.debug("Removed invalid APNs token from database.")
     else:
-        log.debug("Request to APNs server was successful.")
+        log.debug("Request to APNs was successful.")
+
 
 async def price_drops_below_notification(db_manager, notification_defaults, config, price_data, token, below_value, region_identifier, vat_selection):
     if not price_data.lowest_price is None:
@@ -120,7 +121,6 @@ async def price_drops_below_notification(db_manager, notification_defaults, conf
                         log.warning(f"Couldn't decode response from APNs servers: {e}")
 
             if not response == None and not status_code == None:
-                log.warning(response)
                 await handle_apns_response(db_manager, token, response, status_code)
 
 
@@ -144,12 +144,13 @@ class DetailedPriceData:
                     self.lowest_price = marketprice
                     self.lowest_price_point = price_point
 
+
 async def check_and_send(config, data, data_region, db_manager):
     # Check which users apply to receive certain notifications and send them to those users.
 
     log.info("Checking and sending notifications.")
     notification_defaults = Notifications()
-    values_set_successful = notification_defaults.set_values(config, sandbox = True,)
+    values_set_successful = notification_defaults.set_values(config,)
 
     if values_set_successful:
         all_data_to_check = {}
@@ -157,7 +158,6 @@ async def check_and_send(config, data, data_region, db_manager):
         all_data_to_check[data_region.value] = DetailedPriceData(Box(data), data_region.value)
 
         await db_manager.acquire_lock()
-
         cursor = db_manager.db.cursor()
         items = cursor.execute("SELECT * FROM token_storage;").fetchall()
         cursor.close()
@@ -166,7 +166,6 @@ async def check_and_send(config, data, data_region, db_manager):
         log.debug("Checking all stored notification configurations - if they apply to receive a notification.")
 
         notification_queue = asyncio.Queue()
-
         for notifi_config in items:
             try:
                 configuration = json.loads(notifi_config["configuration"])["config"]

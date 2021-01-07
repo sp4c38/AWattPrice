@@ -27,6 +27,10 @@ url: /v1/marketdata
 data_dir: ~/awattprice/data/
 log_dir: ~/awattprice/log/
 apns_dir: ~/awattprice/apns/
+
+[notifications]
+# If set to True the APNs sandbox server is used to send notifications.
+use_sandbox: True
 dev_team_id: ~/awattprice/apns/dev_team_id.txt
 apns_encryption_key_id: ~/awattprice/apns/encryption_key_id.txt
 apns_encryption_key: ~/awattprice/apns/encryption_key.p8
@@ -65,17 +69,17 @@ class Notifications:
             self.body_loc_key = "notifications.price_drops_below.body"
             self.collapse_id = "collapse.priceDropsBelow3DK203W0#"
 
-    def set_values(self, config, sandbox = True) -> bool:
+    def set_values(self, config) -> bool:
         self.price_drops_below_notification = self.Price_Drops_Below()
         self.price_drops_below_notification.set_values()
         self.encryption_algorithm = "ES256"
 
         try:
-            dev_team_id_path = Path(config.file_location.dev_team_id).expanduser()
+            dev_team_id_path = Path(config.notifications.dev_team_id).expanduser()
             self.dev_team_id = open(dev_team_id_path.as_posix(), "r").readlines()[0].replace("\n", "")
-            encryption_key_id_path = Path(config.file_location.apns_encryption_key_id).expanduser()
+            encryption_key_id_path = Path(config.notifications.apns_encryption_key_id).expanduser()
             self.encryption_key_id = open(encryption_key_id_path.as_posix(), "r").readlines()[0].replace("\n", "")
-            encryption_key_path = Path(config.file_location.apns_encryption_key).expanduser()
+            encryption_key_path = Path(config.notifications.apns_encryption_key).expanduser()
             self.encryption_key = open(encryption_key_path.as_posix(), "r").read()
             self.url_path = "/3/device/{}"
         except Exception as e:
@@ -83,7 +87,7 @@ class Notifications:
                         f"with APNs. Notifications won't be checked and won't be sent by the backend: {e}.")
             return False
 
-        if sandbox:
+        if config.notifications.use_sandbox:
             self.apns_server_url = "https://api.sandbox.push.apple.com"
             self.bundle_id = "me.space8.AWattPrice.dev"
         else:

@@ -1,6 +1,14 @@
-import asyncio
+# -*- coding: utf-8 -*-
+
+""" 
+
+Check which users apply to receive certain notifications.
+Send notifications via APNs to those users.
+
+"""
 
 import arrow
+import asyncio
 import httpx
 import jwt
 import json

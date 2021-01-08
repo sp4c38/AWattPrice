@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""
+"""Call the own Backend server.
 
 Send a data GET request for all regions to the own backend to make it download and
 cache new data and send notifications.

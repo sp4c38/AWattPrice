@@ -139,15 +139,19 @@ def read_config(path: Optional[Path] = None) -> Box:
     config.file_location.log_dir = config.file_location.log_dir.strip("\"'")
     config.file_location.apns_dir = config.file_location.apns_dir.strip("\"'")
 
-    try:
+    if config.notifications.use_sandbox.lower() == "true":
         # Convert use_sandbox string to bool
-        run_on_sandbox = int(config.notifications.use_sandbox)
-    except:
+        run_on_sandbox = True
+    elif config.notifications.use_sandbox.lower() == "false":
+        run_on_sandbox = False
+    else:
         log.error(
-            "Please specify a valid bool (True or False) in config.notifications.use_sandbox."
-            "Will use "
+            "Please specify a valid bool (True or False) in config.notifications.use_sandbox"
+            "Will use sandbox for this session."
         )
         run_on_sandbox = False
+        
+    print(run_on_sandbox)
     config.notifications.use_sandbox = run_on_sandbox
     config.notifications.dev_team_id = config.notifications.dev_team_id.strip("\"'")
     config.notifications.apns_encryption_key_id = (

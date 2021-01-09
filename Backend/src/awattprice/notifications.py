@@ -141,7 +141,7 @@ async def price_drops_below_notification(
 
             status_code = None
             response = None
-            print(url)
+ 
             async with httpx.AsyncClient(http2=True) as client:
                 request = await client.post(
                     url, headers=request_headers, data=json.dumps(notification_payload)

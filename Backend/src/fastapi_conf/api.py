@@ -47,7 +47,7 @@ async def with_region(region_id, background_tasks: BackgroundTasks):
     if not region:
         return {"prices": []}
     data, check_notification = await poll.get_data(config=config, region=region)
-
+    
     # check_notification = True # Activate for debugging and testing of the push notification system
     if check_notification is True:
         background_tasks.add_task(notifications.check_and_send, config, data, region, db_manager)

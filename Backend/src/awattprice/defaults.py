@@ -101,11 +101,9 @@ class Notifications:
             return False
 
         if config.notifications.use_sandbox:
-            print("1")
             self.apns_server_url = "https://api.sandbox.push.apple.com"
             self.bundle_id = "me.space8.AWattPrice.dev"
         else:
-            print("2")
             self.apns_server_url = "https://api.push.apple.com"
             print(self.apns_server_url)
             self.bundle_id = "me.space8.AWattPrice"

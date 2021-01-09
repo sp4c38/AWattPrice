@@ -61,29 +61,23 @@ def recursiv_grouping(current_item_index: Optional[int], items_list: list, belon
         if not belongs_to_group:
             result_list.extend((current_item, *results,))
         else:
-            result_list.extend((current_item, *results,)) # (7, 10), ((10, 13),)
-            print("result")
-            print(result_list)
+            result_list.extend((current_item, *results,))
     else:
         if not belongs_to_group:
-            print("two")
             other_items = results[1:]
             number_of_tuples = [True for i in results[0] if type(i) is tuple]
             if len(number_of_tuples) > 1:
                 result_list.extend(((current_item, *results[0],), *other_items,))
             else:
                 result_list.extend(((current_item, results[0],), *other_items,))
-            print(result_list)
         else:
-            print("b called with")
-            print(results)
-            print("add")
-            print(current_item)
             other_items = results[1:]
-            result_list.extend(((current_item, results[0],), *other_items,))
-            print(result_list)
+            number_of_tuples = [True for i in results[0] if type(i) is tuple]
+            if len(number_of_tuples) > 1:
+                result_list.extend(((current_item, *results[0],), *other_items,))
+            else:
+                result_list.extend(((current_item, results[0],), *other_items))
 
-    # print(result_list)
     return result_list
 
 def get_grouped_list(filtered_list: list, all_data) -> list:
@@ -93,7 +87,7 @@ def get_grouped_list(filtered_list: list, all_data) -> list:
     # Associated example output:
     # [(7, -2), (8, -3), (9, -7)]
 
-    filtered_list = [(5, 5), (6, 8), (7, 10), (8, 2), (10, 13), (11, 19), (14, 100), (15, 200)]
+    filtered_list = [(5, 5), (6, 8), (7, 10), (8, 2), (9, 200), (10, 13), (11, 19), (14, 100), (15, 200)]
     if len(filtered_list) >= 2:
         if filtered_list[0][0] + 1 == filtered_list[1][0]: 
             print("final")

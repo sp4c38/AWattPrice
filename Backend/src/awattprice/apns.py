@@ -9,17 +9,12 @@ __author__ = "Léon Becker <lb@space8.me>"
 __copyright__ = "Léon Becker"
 __license__ = "mit"
 
-import asyncio
 import json
-import sqlite3
 
 from fastapi import Request
 from loguru import logger as log
-from pathlib import Path
 
-from awattprice.config import read_config
 from awattprice.token_manager import APNs_Token_Manager
-from awattprice.utils import read_data, write_data
 
 
 async def write_token(request_data, db_manager):

@@ -126,5 +126,6 @@ async def main():
 
     log.info("Finished scheduled request.")
 
+
 if __name__ == "__main__":
     asyncio.run(main())

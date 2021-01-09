@@ -36,7 +36,7 @@ async def no_region(background_tasks: BackgroundTasks):
     region = Region.DE
     data, check_notification = await poll.get_data(config=config, region=region)
 
-    if check_notification == True:
+    if check_notification is True:
         background_tasks.add_task(notifications.check_and_send, config, data, region, db_manager)
 
     headers = await poll.get_headers(config=config, data=data)
@@ -62,7 +62,7 @@ async def with_region(region_id, background_tasks: BackgroundTasks):
 @api.post("/data/apns/send_token")
 async def send_token(request: Request, background_tasks: BackgroundTasks):
     request_data = await apns.validate_token(request)
-    if not request_data is None:
+    if request_data is not None:
         background_tasks.add_task(apns.write_token, request_data, db_manager)
         return JSONResponse({"tokenWasPassedSuccessfully": True}, status_code = status.HTTP_200_OK)
     else:

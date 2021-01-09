@@ -107,8 +107,8 @@ async def validate_token(request: Request):
             else:
                 log.info("APNs data (sent from a client) is NOT valid.")
                 return None
-    except Exception as exp:
+    except Exception as e:
         log.warning(
-            "Could NOT decode to a valid json when validating client APNs data."
+            f"Could NOT decode to a valid json when validating client APNs data: {e}"
         )
         return None

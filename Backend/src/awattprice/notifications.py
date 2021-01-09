@@ -7,11 +7,13 @@ Send notifications via APNs to those users.
 
 """
 
+from math import floor
+
 import arrow
 import asyncio
 import httpx
-import jwt
 import json
+import jwt
 
 from awattprice import poll
 from awattprice.defaults import Region, Notifications
@@ -21,7 +23,6 @@ from box import Box
 from datetime import datetime
 from dateutil.tz import tzstr
 from loguru import logger as log
-from math import floor
 
 
 class DetailedPriceData:

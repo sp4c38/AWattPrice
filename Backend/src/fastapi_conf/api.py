@@ -64,9 +64,9 @@ async def send_token(request: Request, background_tasks: BackgroundTasks):
     request_data = await apns.validate_token(request)
     if request_data is not None:
         background_tasks.add_task(apns.write_token, request_data, db_manager)
-        return JSONResponse({"tokenWasPassedSuccessfully": True}, status_code = status.HTTP_200_OK)
+        return JSONResponse({"tokenWasPassedSuccessfully": True}, status_code=status.HTTP_200_OK)
     else:
-        return JSONResponse({"tokenWasPassedSuccessfully": False}, status_code = status.HTTP_400_BAD_REQUEST)
+        return JSONResponse({"tokenWasPassedSuccessfully": False}, status_code=status.HTTP_400_BAD_REQUEST)
 
 
 @api.on_event("startup")

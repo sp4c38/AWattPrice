@@ -24,6 +24,28 @@ from loguru import logger as log
 from math import floor
 
 
+class DetailedPriceData:
+
+    def __init__(self, data: Box, region_identifier: int):
+        self.data = data
+        self.region_identifier = region_identifier
+        self.lowest_price = None
+        self.lowest_price_point = None
+        self.timedata = []  # Only contains current and future prices
+
+        for price_point in self.data.prices:
+            timezone = tzstr("CET-1CEST,M3.5.0/2,M10.5.0/3").tzname(
+                datetime.fromtimestamp(price_point.start_timestamp)
+            )
+            now = arrow.utcnow().to(timezone)
+            now_day_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+            if price_point.start_timestamp >= now_day_start.timestamp:
+                marketprice = round(price_point.marketprice, 2)
+                if self.lowest_price is None or marketprice < self.lowest_price:
+                    self.lowest_price = marketprice
+                    self.lowest_price_point = price_point
+
+
 async def handle_apns_response(db_manager, token, response, status_code):
     # For reference of returned response and status codes see: https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/handling_notification_responses_from_apns
     if not status_code == 200:
@@ -155,27 +177,6 @@ async def price_drops_below_notification(
 
             if response is not None and status_code is not None:
                 await handle_apns_response(db_manager, token, response, status_code)
-
-
-class DetailedPriceData:
-    def __init__(self, data: Box, region_identifier: int):
-        self.data = data
-        self.region_identifier = region_identifier
-        self.lowest_price = None
-        self.lowest_price_point = None
-        self.timedata = []  # Only contains current and future prices
-
-        for price_point in self.data.prices:
-            timezone = tzstr("CET-1CEST,M3.5.0/2,M10.5.0/3").tzname(
-                datetime.fromtimestamp(price_point.start_timestamp)
-            )
-            now = arrow.utcnow().to(timezone)
-            now_day_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
-            if price_point.start_timestamp >= now_day_start.timestamp:
-                marketprice = round(price_point.marketprice, 2)
-                if self.lowest_price is None or marketprice < self.lowest_price:
-                    self.lowest_price = marketprice
-                    self.lowest_price_point = price_point
 
 
 async def check_and_send(config, data, data_region, db_manager):

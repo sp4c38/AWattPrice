@@ -19,11 +19,12 @@ import filelock
 import httpx
 import json
 
+import validators
+
 from fastapi import status
 from loguru import logger as log
 from pathlib import Path
 from urllib.parse import urlparse
-from validators import url as URL_Validator
 
 from awattprice.config import read_config
 from awattprice.defaults import Region
@@ -92,7 +93,7 @@ async def main():
     log.info("Started scheduled request.")
 
     if config.poll.backend_url:
-        if URL_Validator(config.poll.backend_url) == True:
+        if validators.url(config.poll.backend_url) == True:
             lock_file_path = Path(
                 config.file_location.data_dir).expanduser() / "scheduled_event.lck"
 

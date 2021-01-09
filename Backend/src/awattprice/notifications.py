@@ -15,21 +15,19 @@ import httpx
 import json
 import jwt
 
+from box import Box
 from configupdater import ConfigUpdater  # type: ignore
+from datetime import datetime
+from dateutil.tz import tzstr
 from pathlib import Path
+from loguru import logger as log
 
 from awattprice import poll
 from awattprice.defaults import Region
 from awattprice.token_manager import APNs_Token_Manager
 
-from box import Box
-from datetime import datetime
-from dateutil.tz import tzstr
-from loguru import logger as log
-
 
 class DetailedPriceData:
-
     def __init__(self, data: Box, region_identifier: int):
         self.data = data
         self.region_identifier = region_identifier

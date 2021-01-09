@@ -60,18 +60,19 @@ class Region(Enum):
 CONVERT_MWH_KWH = 100 * 0.001
 TIME_CORRECT = 1000  # Correct milli seconds used by Awattar to seconds
 
+class Price_Drops_Below:
+
+    def __init__(self):
+        # Use localization keys which are resolved on the client side
+        self.title_loc_key = "general.priceGuard"
+        self.body_loc_key = "notifications.price_drops_below.body"
+        self.collapse_id = "collapse.priceDropsBelow3DK203W0#"
+
 
 class Notifications:
-    class Price_Drops_Below:
-        def set_values(self):
-            # Use localization keys which are resolved on the client side
-            self.title_loc_key = "general.priceGuard"
-            self.body_loc_key = "notifications.price_drops_below.body"
-            self.collapse_id = "collapse.priceDropsBelow3DK203W0#"
 
     def set_values(self, config) -> bool:
-        self.price_drops_below_notification = self.Price_Drops_Below()
-        self.price_drops_below_notification.set_values()
+        self.price_drops_below_notification = Price_Drops_Below()
         self.encryption_algorithm = "ES256"
 
         try:

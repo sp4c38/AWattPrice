@@ -15,8 +15,11 @@ import httpx
 import json
 import jwt
 
+from configupdater import ConfigUpdater  # type: ignore
+from pathlib import Path
+
 from awattprice import poll
-from awattprice.defaults import Region, Notifications
+from awattprice.defaults import Region
 from awattprice.token_manager import APNs_Token_Manager
 
 from box import Box
@@ -45,6 +48,63 @@ class DetailedPriceData:
                 if self.lowest_price is None or marketprice < self.lowest_price:
                     self.lowest_price = marketprice
                     self.lowest_price_point = price_point
+
+
+class PriceDropsBelow:
+
+    # Use localization keys which are resolved on the client side
+    title_loc_key = "general.priceGuard"
+    body_loc_key = "notifications.price_drops_below.body"
+    collapse_id = "collapse.priceDropsBelow3DK203W0#"
+
+
+class Notifications:
+
+    _is_initialized = False
+
+    def __init__(self, config: ConfigUpdater) -> None:
+        self.price_drops_below_notification = PriceDropsBelow()
+        self.encryption_algorithm = "ES256"
+
+        try:
+            dev_team_id_path = Path(config.notifications.dev_team_id).expanduser()
+            self.dev_team_id = (
+                open(dev_team_id_path.as_posix(), "r").readlines()[0].replace("\n", "")
+            )
+            encryption_key_id_path = Path(
+                config.notifications.apns_encryption_key_id
+            ).expanduser()
+            self.encryption_key_id = (
+                open(encryption_key_id_path.as_posix(), "r")
+                .readlines()[0]
+                .replace("\n", "")
+            )
+            encryption_key_path = Path(
+                config.notifications.apns_encryption_key
+            ).expanduser()
+            self.encryption_key = open(encryption_key_path.as_posix(), "r").read()
+            self.url_path = "/3/device/{}"
+        except Exception as e:
+            log.warning(
+                f"Couldn't read or find file(s) containing required information to send notifications "
+                f"with APNs. Notifications won't be checked and won't be sent by the backend: {e}."
+            )
+            return
+
+        if config.notifications.use_sandbox:
+            self.apns_server_url = "https://api.sandbox.push.apple.com"
+            self.bundle_id = "me.space8.AWattPrice.dev"
+        else:
+            self.apns_server_url = "https://api.push.apple.com"
+            self.bundle_id = "me.space8.AWattPrice"
+        self.apns_server_port = 443
+
+        self._is_initialized = True
+
+    @property
+    def is_initialized(self):
+        """Return True if __init__ was successful."""
+        return self._is_initialized
 
 
 async def handle_apns_response(db_manager, token, response, status_code):

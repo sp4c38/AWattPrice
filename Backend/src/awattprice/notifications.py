@@ -38,7 +38,7 @@ async def handle_apns_response(db_manager, token, response, status_code):
             ]:
                 remove_token = True
 
-            if remove_token == True:
+            if remove_token is True:
                 token_manager = APNs_Token_Manager({"token": token}, db_manager)
                 await token_manager.remove_entry_from_database()
                 log.debug("Removed invalid APNs token from database.")
@@ -56,7 +56,7 @@ async def price_drops_below_notification(
     region_identifier,
     vat_selection,
 ):
-    if not price_data.lowest_price is None:
+    if price_data.lowest_price is not None:
         lowest_price = round(price_data.lowest_price, 2)
         # User selected Germany as a region and wants VAT included in all electricity prices
         if region_identifier == 0 and vat_selection == 1:
@@ -155,7 +155,7 @@ async def price_drops_below_notification(
                     except Exception as e:
                         log.warning(f"Couldn't decode response from APNs servers: {e}")
 
-            if not response == None and not status_code == None:
+            if response is not None and status_code is not None:
                 await handle_apns_response(db_manager, token, response, status_code)
 
 
@@ -178,7 +178,7 @@ class DetailedPriceData:
             # tomorrow_hour_start.timestamp:
             if price_point.start_timestamp >= now_day_start.timestamp:
                 marketprice = round(price_point.marketprice, 2)
-                if self.lowest_price == None or marketprice < self.lowest_price:
+                if self.lowest_price is None or marketprice < self.lowest_price:
                     self.lowest_price = marketprice
                     self.lowest_price_point = price_point
 
@@ -221,10 +221,10 @@ async def check_and_send(config, data, data_region, db_manager):
 
             # Check all notification types with following if statment to check if the user
             # wants to get any notifications at all
-            if configuration["price_below_value_notification"]["active"] == True:
+            if configuration["price_below_value_notification"]["active"] is True:
                 region_identifier = notifi_config["region_identifier"]
 
-                if not region_identifier in all_data_to_check:
+                if region_identifier not in all_data_to_check:
                     # Runs if a user is in a different region as those which are included in the regions
                     # to send notification updates.
                     # Therefor this polls the aWATTar API of the certain region.
@@ -244,16 +244,15 @@ async def check_and_send(config, data, data_region, db_manager):
                         continue
 
                 if (
-                    not all_data_to_check[region_identifier].lowest_price is None
-                    and not all_data_to_check[region_identifier].lowest_price_point
-                    is None
+                    all_data_to_check[region_identifier].lowest_price is not None
+                    and all_data_to_check[region_identifier].lowest_price_point
+                    is not None
                 ):
                     token = notifi_config["token"]
                     vat_selection = notifi_config["vat_selection"]
 
                     if (
-                        configuration["price_below_value_notification"]["active"]
-                        == True
+                        configuration["price_below_value_notification"]["active"] is True
                     ):
                         # If user applies to get price below value notifications add following item to queue
                         below_value = configuration["price_below_value_notification"][
@@ -274,7 +273,7 @@ async def check_and_send(config, data, data_region, db_manager):
                         )
 
         tasks = []
-        while notification_queue.empty() == False:
+        while notification_queue.empty() is False:
             task = await notification_queue.get()
             tasks.append(
                 asyncio.create_task(

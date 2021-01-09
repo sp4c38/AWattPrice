@@ -9,6 +9,7 @@ __author__ = "Frank Becker <fb@alien8.de>"
 __copyright__ = "Frank Becker"
 __license__ = "mit"
 
+from configupdater import ConfigUpdater  # type: ignore
 from enum import Enum
 from loguru import logger as log
 from pathlib import Path
@@ -71,7 +72,9 @@ class Price_Drops_Below:
 
 class Notifications:
 
-    def set_values(self, config) -> bool:
+    is_initialized = False
+
+    def __init__(self, config: ConfigUpdater) -> None:
         self.price_drops_below_notification = Price_Drops_Below()
         self.encryption_algorithm = "ES256"
 
@@ -98,7 +101,7 @@ class Notifications:
                 f"Couldn't read or find file(s) containing required information to send notifications "
                 f"with APNs. Notifications won't be checked and won't be sent by the backend: {e}."
             )
-            return False
+            return
 
         if config.notifications.use_sandbox:
             self.apns_server_url = "https://api.sandbox.push.apple.com"
@@ -108,4 +111,4 @@ class Notifications:
             self.bundle_id = "me.space8.AWattPrice"
         self.apns_server_port = 443
 
-        return True
+        self.is_initialized = True

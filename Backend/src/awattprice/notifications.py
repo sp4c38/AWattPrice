@@ -187,12 +187,9 @@ async def check_and_send(config, data, data_region, db_manager):
     # Check which users apply to receive certain notifications and send them to those users.
 
     log.info("Checking and sending notifications.")
-    notification_defaults = Notifications()
-    values_set_successful = notification_defaults.set_values(
-        config,
-    )
+    notification_defaults = Notifications(config)
 
-    if values_set_successful:
+    if notification_defaults.is_initialized:
         all_data_to_check = {}
         log.debug(
             f"Need to check and send notifications for data region {data_region.name}."

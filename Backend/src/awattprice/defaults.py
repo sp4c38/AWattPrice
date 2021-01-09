@@ -105,7 +105,6 @@ class Notifications:
             self.bundle_id = "me.space8.AWattPrice.dev"
         else:
             self.apns_server_url = "https://api.push.apple.com"
-            print(self.apns_server_url)
             self.bundle_id = "me.space8.AWattPrice"
         self.apns_server_port = 443
 

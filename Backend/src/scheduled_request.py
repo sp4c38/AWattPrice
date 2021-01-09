@@ -122,7 +122,7 @@ async def main():
             log.warning(f"Value {config.poll.backend_url} set in \"config.poll.backend_url\" is no valid URL.")
     else:
         log.warning(
-            "Scheduled request was called without having \"config.poll.backend_url\" configured. Won't run scheduled request.")
+            """Scheduled request was called without having "config.poll.backend_url" configured. Won't run scheduled request.""")
 
     log.info("Finished scheduled request.")
 

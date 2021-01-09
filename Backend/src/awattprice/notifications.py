@@ -298,16 +298,15 @@ async def check_and_send(config, data, data_region, db_manager):
                     else:
                         continue
 
-                if (
-                    all_data_to_check[region_identifier].lowest_price is not None
-                    and all_data_to_check[region_identifier].lowest_price_point
-                    is not None
+                if (all_data_to_check[region_identifier].lowest_price is not None) and (
+                    all_data_to_check[region_identifier].lowest_price_point is not None
                 ):
                     token = notifi_config["token"]
                     vat_selection = notifi_config["vat_selection"]
 
                     if (
-                        configuration["price_below_value_notification"]["active"] is True
+                        configuration["price_below_value_notification"]["active"]
+                        is True
                     ):
                         # If user applies to get price below value notifications add following item to queue
                         below_value = configuration["price_below_value_notification"][

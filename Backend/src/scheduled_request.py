@@ -14,8 +14,6 @@ __author__ = "Léon Becker <lb@space8.me>"
 __copyright__ = "Léon Becker"
 __license__ = "mit"
 
-import aiofiles
-import arrow
 import asyncio
 import filelock
 import httpx
@@ -28,7 +26,7 @@ from urllib.parse import urlparse
 from validators import url as URL_Validator
 
 from awattprice.config import read_config
-from awattprice.defaults import Notifications, Region
+from awattprice.defaults import Region
 from awattprice.utils import check_data_needs_update, read_data, start_logging
 
 

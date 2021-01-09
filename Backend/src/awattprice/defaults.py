@@ -10,7 +10,6 @@ __copyright__ = "Frank Becker"
 __license__ = "mit"
 
 from enum import Enum
-from filelock import FileLock
 from loguru import logger as log
 from pathlib import Path
 

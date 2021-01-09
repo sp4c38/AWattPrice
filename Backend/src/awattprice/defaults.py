@@ -63,11 +63,10 @@ TIME_CORRECT = 1000  # Correct milli seconds used by Awattar to seconds
 
 class Price_Drops_Below:
 
-    def __init__(self):
-        # Use localization keys which are resolved on the client side
-        self.title_loc_key = "general.priceGuard"
-        self.body_loc_key = "notifications.price_drops_below.body"
-        self.collapse_id = "collapse.priceDropsBelow3DK203W0#"
+    # Use localization keys which are resolved on the client side
+    title_loc_key = "general.priceGuard"
+    body_loc_key = "notifications.price_drops_below.body"
+    collapse_id = "collapse.priceDropsBelow3DK203W0#"
 
 
 class Notifications:

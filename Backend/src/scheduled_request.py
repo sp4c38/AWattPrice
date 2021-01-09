@@ -93,7 +93,7 @@ async def main():
     log.info("Started scheduled request.")
 
     if config.poll.backend_url:
-        if validators.url(config.poll.backend_url) == True:
+        if validators.url(config.poll.backend_url) is True:
             lock_file_path = Path(
                 config.file_location.data_dir).expanduser() / "scheduled_event.lck"
 
@@ -105,7 +105,7 @@ async def main():
                     tasks = []
                     for region in [[getattr(Region, "de".upper(), None), 3],  # number of attempts for a successful request, region id
                                    [getattr(Region, "at".upper(), None), 3]]:
-                        if region[0].name != None:
+                        if region[0].name is not None:
                             tasks.append(asyncio.create_task(
                                 run_request(region[0], region[1], config)))
 

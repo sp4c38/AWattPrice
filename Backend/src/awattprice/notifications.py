@@ -207,7 +207,7 @@ async def check_and_send(config, data, data_region, db_manager):
         for notifi_config in items:
             try:
                 configuration = json.loads(notifi_config["configuration"])["config"]
-            except:
+            except Exception:
                 log.warning(
                     "Internally passed notification configuration of a user couldn't be read "
                     "while checking if the user should receive notifications."

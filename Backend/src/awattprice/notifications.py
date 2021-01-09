@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-""" 
+"""
 
 Check which users apply to receive certain notifications.
 Send notifications via APNs to those users.
@@ -12,7 +12,6 @@ import asyncio
 import httpx
 import jwt
 import json
-import socket
 
 from awattprice import poll
 from awattprice.defaults import Region, Notifications
@@ -141,7 +140,7 @@ async def price_drops_below_notification(
 
             status_code = None
             response = None
- 
+
             async with httpx.AsyncClient(http2=True) as client:
                 request = await client.post(
                     url, headers=request_headers, data=json.dumps(notification_payload)

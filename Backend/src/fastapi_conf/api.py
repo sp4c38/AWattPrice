@@ -24,9 +24,11 @@ from awattprice.utils import start_logging
 
 api = FastAPI()
 
+
 @api.get("/")
 async def root():
     return {"message": "Nothing here. Please, move on."}
+
 
 @api.get("/data/")
 async def no_region(background_tasks: BackgroundTasks):
@@ -39,6 +41,7 @@ async def no_region(background_tasks: BackgroundTasks):
 
     headers = await poll.get_headers(config=config, data=data)
     return JSONResponse(content=data, headers=headers)
+
 
 @api.get("/data/{region_id}")
 async def with_region(region_id, background_tasks: BackgroundTasks):
@@ -55,6 +58,7 @@ async def with_region(region_id, background_tasks: BackgroundTasks):
     headers = await poll.get_headers(config=config, data=data)
     return JSONResponse(content=data, headers=headers)
 
+
 @api.post("/data/apns/send_token")
 async def send_token(request: Request, background_tasks: BackgroundTasks):
     request_data = await apns.validate_token(request)
@@ -63,6 +67,7 @@ async def send_token(request: Request, background_tasks: BackgroundTasks):
         return JSONResponse({"tokenWasPassedSuccessfully": True}, status_code = status.HTTP_200_OK)
     else:
         return JSONResponse({"tokenWasPassedSuccessfully": False}, status_code = status.HTTP_400_BAD_REQUEST)
+
 
 @api.on_event("startup")
 def startup_event():
@@ -74,6 +79,7 @@ def startup_event():
     db_manager = TokenDatabaseManager()
     db_manager.connect(config)
     db_manager.check_table_exists()
+
 
 @api.on_event("shutdown")
 def shutdown_backend():

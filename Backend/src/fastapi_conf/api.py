@@ -10,13 +10,11 @@ __author__ = "Frank Becker <fb@alien8.de>"
 __copyright__ = "Frank Becker"
 __license__ = "mit"
 
-from typing import Any, Dict, List, Optional, Union
 
 from fastapi import BackgroundTasks, FastAPI, Request, status
 from fastapi.responses import JSONResponse
 
-from awattprice import poll, apns
-from awattprice import notifications
+from awattprice import apns, notifications, poll
 from awattprice.config import read_config
 from awattprice.defaults import Region
 from awattprice.token_manager import TokenDatabaseManager

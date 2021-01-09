@@ -111,4 +111,3 @@ async def validate_token(request: Request):
         log.warning(
             f"Could NOT decode to a valid json when validating client APNs data: {e}"
         )
-        return None

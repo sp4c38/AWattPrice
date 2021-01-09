@@ -50,12 +50,17 @@ async def send_request(url: str, client: httpx.AsyncClient, max_tries: int) -> b
             if response.status_code == status.HTTP_200_OK:
                 try:
                     json.loads(response.text)
+                except json.JSONDecodeError as e:
+                    log.warning(
+                        f"Could not decode valid json of response (status code 200) from Backend: {e}")
+                    request_successful = False
+                except Exception as e:
+                    log.warning(
+                        f"Unknown exception while parsing response (status code 200) from Backend: {e}")
+                    request_successful = False
+                else:
                     request_successful = True
                     log.debug(f"Attempt {tries_made} to {url} was successful.")
-                except:
-                    log.warning(
-                        "Could not decode valid json of response (status code 200) from Backend.")
-                    request_successful = False
             else:
                 log.warning(
                     "Server for {url} responded with status code other than 200.")

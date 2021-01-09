@@ -103,13 +103,13 @@ def get_longest_time_frame(grouped_list: list, all_data: list):
     current_index = 0
     for grouped_items in grouped_list:
         if longest_time_frame_index[0] == None or longest_time_frame_index[1] == None:
-            if type(grouped_items[0]) is int:
+            if isinstance(grouped_items[0], int):
                 longest_time_frame_index = (current_index, 1)
             else:
                 longest_time_frame_index = (current_index, len(grouped_items))
         else:
             amount_of_items = 0
-            if type(grouped_items[0]) is int:
+            if isinstance(grouped_items[0], int):
                 amount_of_items = 1
             else:
                 amount_of_items = len(grouped_items)
@@ -143,7 +143,12 @@ def main():
         price_point.marketprice = round(price_point.marketprice, 2)
         price_data.append(price_point)
 
-    on_below_value = int(input("This script will find the longest time range in which price drop on or below (int and in cents): "))
+    on_below_value_string = input("This script will find the longest time range in which price drop on or below (int and in cents): ")
+    try:
+        on_below_value = int(on_below_value_string)
+    except Exception as e:
+        print(f"Entered value is no valid integer: {e}.")
+        return
     
     below_list = get_below_list(price_data, on_below_value)
     if below_list:

@@ -27,8 +27,7 @@ from .utils import verify_file_permissions
 def bootstrap_config(path: Optional[Path] = None) -> ConfigUpdater:
     """Create the Config file and populate it."""
     if path is None:
-        path = Path(os.path.expanduser("~")) / \
-            ".config" / "awattprice" / "config.ini"
+        path = Path(os.path.expanduser("~")) / ".config" / "awattprice" / "config.ini"
     if not path.parent.is_dir():
         os.makedirs(path.parent.as_posix())
     config_updater = ConfigUpdater()
@@ -48,7 +47,8 @@ def config_updater_factory(config: Box) -> Tuple[Path, ConfigUpdater]:
         path = Path(config_updater_data.pop("config_file_path"))
     else:
         raise AttributeError(
-            "The config is missing the config_file_path. This should not happen.")
+            "The config is missing the config_file_path. This should not happen."
+        )
 
     config_updater = ConfigUpdater()
     to_add = []
@@ -62,14 +62,16 @@ def config_updater_factory(config: Box) -> Tuple[Path, ConfigUpdater]:
                 if option in config_updater_section:
                     config_updater_section[option].value = value
                 else:
-                    config_updater_section[last_option].add_after.option(
-                        option, value)
+                    config_updater_section[last_option].add_after.option(option, value)
                     last_option = option
             config_updater[section] = config_updater_section
         else:
             tmp_updater = ConfigUpdater()
             section_txt = f"[{section}]\n" + "\n".join(
-                (f"{option}: {value}" for option, value in config_updater_data[section].items())
+                (
+                    f"{option}: {value}"
+                    for option, value in config_updater_data[section].items()
+                )
             )
             tmp_updater.read_string(section_txt)
             to_add.append(tmp_updater[section])
@@ -77,8 +79,7 @@ def config_updater_factory(config: Box) -> Tuple[Path, ConfigUpdater]:
         last_section = config_updater[config_updater.sections()[-1]]
         for section in to_add:
             # Add a new line for readability
-            config_updater[last_section.name].add_after.space().section(
-                section)
+            config_updater[last_section.name].add_after.space().section(section)
             last_section = section
 
     return path, config_updater
@@ -87,7 +88,9 @@ def config_updater_factory(config: Box) -> Tuple[Path, ConfigUpdater]:
 def write_config_updater(path: Path, config: ConfigUpdater) -> None:
     """Write the config file."""
     to_write_config = copy.deepcopy(config)
-    with os.fdopen(os.open(path.as_posix(), os.O_WRONLY | os.O_CREAT, 0o600), "w") as fh:
+    with os.fdopen(
+        os.open(path.as_posix(), os.O_WRONLY | os.O_CREAT, 0o600), "w"
+    ) as fh:
         to_write_config.write(fh)
 
 
@@ -99,8 +102,7 @@ def read_config(path: Optional[Path] = None) -> Box:
     else:
         config_path_locations = (
             Path(Path("/etc") / "awattprice" / "config.ini"),
-            Path(os.path.expanduser("~")) / ".config" /
-            "awattprice" / "config.ini",
+            Path(os.path.expanduser("~")) / ".config" / "awattprice" / "config.ini",
         )
     found_config_file = False
     for path in config_path_locations:
@@ -109,15 +111,16 @@ def read_config(path: Optional[Path] = None) -> Box:
             break
     else:
         log.info(f"No config file found in {path.parent}. Creating one...")
-        path = Path(os.path.expanduser("~")) / \
-            ".config" / "awattprice" / "config.ini"
+        path = Path(os.path.expanduser("~")) / ".config" / "awattprice" / "config.ini"
         config_updater = bootstrap_config(path)
     if path.parent.exists() and not path.parent.is_dir():
         log.error(f"Expected the config directory {path.parent} to be a directory.")
         sys.exit(1)
 
     if not verify_file_permissions(path):
-        log.error(f"Could not ensure secure file permissions for {path}. Fix them and try again.")
+        log.error(
+            f"Could not ensure secure file permissions for {path}. Fix them and try again."
+        )
         sys.exit(1)
 
     if found_config_file:
@@ -136,11 +139,22 @@ def read_config(path: Optional[Path] = None) -> Box:
     config.file_location.log_dir = config.file_location.log_dir.strip("\"'")
     config.file_location.apns_dir = config.file_location.apns_dir.strip("\"'")
 
-    config.notifications.dev_team_id = config.notifications.dev_team_id.strip(
-        "\"'")
-    config.notifications.apns_encryption_key_id = config.notifications.apns_encryption_key_id.strip(
-        "\"'")
-    config.notifications.apns_encryption_key = config.notifications.apns_encryption_key.strip(
-        "\"'")
+    try:
+        # Convert use_sandbox string to bool
+        run_on_sandbox = int(config.notifications.use_sandbox)
+    except:
+        log.error(
+            "Please specify a valid bool (True or False) in config.notifications.use_sandbox."
+            "Will use "
+        )
+        run_on_sandbox = False
+    config.notifications.use_sandbox = run_on_sandbox
+    config.notifications.dev_team_id = config.notifications.dev_team_id.strip("\"'")
+    config.notifications.apns_encryption_key_id = (
+        config.notifications.apns_encryption_key_id.strip("\"'")
+    )
+    config.notifications.apns_encryption_key = (
+        config.notifications.apns_encryption_key.strip("\"'")
+    )
 
     return config

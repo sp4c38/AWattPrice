@@ -25,7 +25,13 @@ from typing import Dict, List, Optional
 from . import awattar
 from .config import read_config
 from .defaults import CONVERT_MWH_KWH, Region, TIME_CORRECT
-from .utils import start_logging, read_data, write_data, async_acquire_lock, check_data_needs_update
+from .utils import (
+    start_logging,
+    read_data,
+    write_data,
+    async_acquire_lock,
+    check_data_needs_update,
+)
 
 
 def transform_entry(entry: Box) -> Optional[Box]:
@@ -83,7 +89,9 @@ async def verify_awattar_not_polled(updating_lock: FileLock):
     return True
 
 
-async def get_data(config: Box, region: Optional[Region] = None, force: bool = False) -> (Dict, bool):
+async def get_data(
+    config: Box, region: Optional[Region] = None, force: bool = False
+) -> (Dict, bool):
     """Request the Awattar data. Read it from file, if it is too old fetch it
     from the Awattar API endpoint.
 
@@ -93,7 +101,9 @@ async def get_data(config: Box, region: Optional[Region] = None, force: bool = F
     if region is None:
         region = Region.DE
 
-    file_path = Path(config.file_location.data_dir).expanduser() / Path(f"awattar-data-{region.name.lower()}.json")
+    file_path = Path(config.file_location.data_dir).expanduser() / Path(
+        f"awattar-data-{region.name.lower()}.json"
+    )
 
     # If data directory doesn't exist create it.
     # This is also checked again when writing to the actual data file (if awattar data needs to be updated).
@@ -101,7 +111,9 @@ async def get_data(config: Box, region: Optional[Region] = None, force: bool = F
     if not check_dir.expanduser().is_dir():
         log.warning(f"Creating the data destination directory {check_dir}.")
         os.makedirs(check_dir.expanduser().as_posix())
-    updating_lock_path = Path(config.file_location.data_dir).expanduser() / Path(f"updating-{region.name.lower()}-data.lck")
+    updating_lock_path = Path(config.file_location.data_dir).expanduser() / Path(
+        f"updating-{region.name.lower()}-data.lck"
+    )
     updating_lock = FileLock(updating_lock_path)
     await verify_awattar_not_polled(updating_lock)
     data = await read_data(file_path=file_path)
@@ -120,13 +132,15 @@ async def get_data(config: Box, region: Optional[Region] = None, force: bool = F
         # By default the Awattar API returns data for the next 24h. It can provide
         # data until tomorrow midnight. Let's ask for that. Further, set the start
         # time to the last full hour. The Awattar API expects microsecond timestamps.
-        start = now.replace(minute=0, second=0,
-                            microsecond=0).timestamp * TIME_CORRECT
-        end = now.shift(days=+2).replace(hour=0, minute=0,
-                                         second=0, microsecond=0).timestamp * TIME_CORRECT
+        start = now.replace(minute=0, second=0, microsecond=0).timestamp * TIME_CORRECT
+        end = (
+            now.shift(days=+2)
+            .replace(hour=0, minute=0, second=0, microsecond=0)
+            .timestamp
+            * TIME_CORRECT
+        )
 
-        future = awattar_read_task(
-            config=config, region=region, start=start, end=end)
+        future = awattar_read_task(config=config, region=region, start=start, end=end)
         results = await asyncio.gather(*[future])
 
         if results is None:
@@ -140,13 +154,16 @@ async def get_data(config: Box, region: Optional[Region] = None, force: bool = F
             fetched_data = None
     else:
         updating_lock.release()
-        log.debug(f"No need to update aWATTar data for region {region.name} from their API.")
+        log.debug(
+            f"No need to update aWATTar data for region {region.name} from their API."
+        )
 
     # Update existing data
     must_write_data = False
     if data and fetched_data:
-        max_existing_data_start_timestamp = max(
-            [d.start_timestamp for d in data.prices]) * TIME_CORRECT
+        max_existing_data_start_timestamp = (
+            max([d.start_timestamp for d in data.prices]) * TIME_CORRECT
+        )
         for entry in fetched_data:
             ts = entry.start_timestamp
             if ts <= max_existing_data_start_timestamp:
@@ -210,7 +227,8 @@ async def get_headers(config: Box, data: Dict) -> Dict:
             # max_age is set so that the client only caches until the backend
             # will start continuous requesting for new price data.
             next_hour_start = now.replace(
-                hour=now.hour+1, minute=0, second=0, microsecond=0)
+                hour=now.hour + 1, minute=0, second=0, microsecond=0
+            )
             difference = next_hour_start - now
             max_age = difference.seconds
         else:

@@ -44,46 +44,66 @@ async def validate_token(request: Request):
     # is meant.
 
     request_body = await request.body()
-    decoded_body = request_body.decode('utf-8')
+    decoded_body = request_body.decode("utf-8")
 
     try:
         body_json = json.loads(decoded_body)
 
-        request_data = {"token": None, "region_identifier": None,
-                        "vat_selection": None, "config": None}
+        request_data = {
+            "token": None,
+            "region_identifier": None,
+            "vat_selection": None,
+            "config": None,
+        }
         request_data["token"] = body_json["apnsDeviceToken"]
         request_data["region_identifier"] = body_json["regionIdentifier"]
         request_data["vat_selection"] = body_json["vatSelection"]
         # Set default values which are replaced if certain values are contained in the request body
-        request_data["config"] = {"price_below_value_notification": {
-            "active": False, "below_value": float(0)}}
+        request_data["config"] = {
+            "price_below_value_notification": {"active": False, "below_value": float(0)}
+        }
 
         # Always check with an if statment to ensure backwards-compatibility (in the future)
         if "priceBelowValueNotification" in body_json["notificationConfig"]:
             # Set price below value notification configuration if included in request body
-            below_notification = body_json["notificationConfig"]["priceBelowValueNotification"]
+            below_notification = body_json["notificationConfig"][
+                "priceBelowValueNotification"
+            ]
             if "active" in below_notification and "belowValue" in below_notification:
                 active = below_notification["active"]
                 below_value = float(below_notification["belowValue"])
                 # Limit below_value to two decimal places.
                 # The app normally should already have rounded this number to two decimal places - but make sure.
                 below_value = round(below_value, 2)
-                request_data["config"]["price_below_value_notification"]["active"] = active
-                request_data["config"]["price_below_value_notification"]["below_value"] = below_value
+                request_data["config"]["price_below_value_notification"][
+                    "active"
+                ] = active
+                request_data["config"]["price_below_value_notification"][
+                    "below_value"
+                ] = below_value
 
         if not request_data["token"] == None and not request_data["config"] == None:
             request_data_valid = True
 
             # Validate types
-            if not (type(request_data["token"]) == str):
+            if not isinstance(request_data["token"], str):
                 request_data_valid = False
-            if not (type(request_data["region_identifier"]) == int) or not request_data["region_identifier"] in [0, 1]:
+            if not isinstance(
+                request_data["region_identifier"], int
+            ) or not request_data["region_identifier"] in [0, 1]:
                 request_data_valid = False
-            if not (type(request_data["vat_selection"]) == int) or not request_data["vat_selection"] in [0, 1]:
+            if not isinstance(request_data["vat_selection"], int) or not request_data[
+                "vat_selection"
+            ] in [0, 1]:
                 request_data_valid = False
-            if not (type(request_data["config"]["price_below_value_notification"]["active"]) == bool):
+            if not isinstance(
+                request_data["config"]["price_below_value_notification"]["active"], bool
+            ):
                 request_data_valid = False
-            if not (type(request_data["config"]["price_below_value_notification"]["below_value"]) == float):
+            if not isinstance(
+                request_data["config"]["price_below_value_notification"]["below_value"],
+                float,
+            ):
                 request_data_valid = False
 
             if request_data_valid:
@@ -94,5 +114,6 @@ async def validate_token(request: Request):
                 return None
     except Exception as exp:
         log.warning(
-            "Could NOT decode to a valid json when validating client APNs data.")
+            "Could NOT decode to a valid json when validating client APNs data."
+        )
         return None

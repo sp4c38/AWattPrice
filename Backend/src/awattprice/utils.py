@@ -124,7 +124,8 @@ def verify_file_permissions(path: Path) -> bool:
             log.warning(
                 "The file {} didn't have secure file permissions {}. "
                 "The permissions were changed to -rw------- for you. ".format(
-                    path, oct(file_stat.st_mode))
+                    path, oct(file_stat.st_mode)
+                )
             )
             return True
     return False
@@ -162,7 +163,9 @@ async def read_data(*, file_path: Path) -> Optional[Box]:
     return Box(data)
 
 
-async def write_data(*, data: Union[List, Dict, Box], file_path: Path, compress: bool = False) -> None:
+async def write_data(
+    *, data: Union[List, Dict, Box], file_path: Path, compress: bool = False
+) -> None:
     """Write the gz-iped raw data to file_path."""
     dst_dir = file_path.parent
     if not dst_dir.expanduser().is_dir():
@@ -189,8 +192,8 @@ def check_data_needs_update(data: Box, config: Box):
         need_update = any(
             [
                 # Should trigger if there are less than this amount of future energy price points.
-                len([True for e in data.prices if e.start_timestamp > now.timestamp]) <
-                int(config.poll.if_less_than),
+                len([True for e in data.prices if e.start_timestamp > now.timestamp])
+                < int(config.poll.if_less_than),
             ]
         )
     else:

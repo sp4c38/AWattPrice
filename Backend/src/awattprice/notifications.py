@@ -68,7 +68,6 @@ async def price_drops_below_notification(
             timezone = tzstr("CET-1CEST,M3.5.0/2,M10.5.0/3").tzname(
                 datetime.fromtimestamp(price_data.lowest_price_point.start_timestamp)
             )
-            now = arrow.utcnow().to(timezone)
             lowest_price_start = arrow.get(
                 price_data.lowest_price_point.start_timestamp
             ).to(timezone)
@@ -83,7 +82,6 @@ async def price_drops_below_notification(
             # Together 4,39
             formatted_lowest_price = f"{lowest_price_cent},{lowest_price_cent_decimal}"
 
-            awattprice_bundle_id = notification_defaults.bundle_id
             encryption_algorithm = notification_defaults.encryption_algorithm
 
             # Set token data
@@ -173,9 +171,6 @@ class DetailedPriceData:
             )
             now = arrow.utcnow().to(timezone)
             now_day_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
-            tomorrow_hour_start = now_day_start.shift(days=+1)
-
-            # tomorrow_hour_start.timestamp:
             if price_point.start_timestamp >= now_day_start.timestamp:
                 marketprice = round(price_point.marketprice, 2)
                 if self.lowest_price is None or marketprice < self.lowest_price:

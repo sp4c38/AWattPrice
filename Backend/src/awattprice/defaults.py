@@ -72,7 +72,7 @@ class Price_Drops_Below:
 
 class Notifications:
 
-    is_initialized = False
+    _is_initialized = False
 
     def __init__(self, config: ConfigUpdater) -> None:
         self.price_drops_below_notification = Price_Drops_Below()
@@ -111,4 +111,9 @@ class Notifications:
             self.bundle_id = "me.space8.AWattPrice"
         self.apns_server_port = 443
 
-        self.is_initialized = True
+        self._is_initialized = True
+
+    @property
+    def is_initialized(self):
+        """Return True if __init__ was successful."""
+        return self._is_initialized

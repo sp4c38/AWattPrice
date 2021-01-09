@@ -19,7 +19,7 @@ from awattprice import poll, apns
 from awattprice import notifications
 from awattprice.config import read_config
 from awattprice.defaults import Region
-from awattprice.token_manager import Token_Database_Manager
+from awattprice.token_manager import TokenDatabaseManager
 from awattprice.utils import start_logging
 
 api = FastAPI()
@@ -47,7 +47,7 @@ async def with_region(region_id, background_tasks: BackgroundTasks):
     if not region:
         return {"prices": []}
     data, check_notification = await poll.get_data(config=config, region=region)
-    
+
     # check_notification = True # Activate for debugging and testing of the push notification system
     if check_notification is True:
         background_tasks.add_task(notifications.check_and_send, config, data, region, db_manager)
@@ -71,7 +71,7 @@ def startup_event():
     start_logging(config)
     global db_manager
 
-    db_manager = Token_Database_Manager()
+    db_manager = TokenDatabaseManager()
     db_manager.connect(config)
     db_manager.check_table_exists()
 

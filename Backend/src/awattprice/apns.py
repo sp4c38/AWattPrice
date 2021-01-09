@@ -14,13 +14,13 @@ import json
 from fastapi import Request
 from loguru import logger as log
 
-from awattprice.token_manager import APNs_Token_Manager
+from awattprice.token_manager import APNsTokenManager
 
 
 async def write_token(request_data, db_manager):
     # Store APNs token configuration to the database
     log.info("Initiated a new background task to store an APNs configuration.")
-    apns_token_manager = APNs_Token_Manager(request_data, db_manager)
+    apns_token_manager = APNsTokenManager(request_data, db_manager)
 
     await db_manager.acquire_lock()
     need_to_write_data = await apns_token_manager.set_data()

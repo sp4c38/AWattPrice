@@ -24,7 +24,7 @@ from loguru import logger as log
 
 from awattprice import poll
 from awattprice.defaults import Region
-from awattprice.token_manager import APNs_Token_Manager
+from awattprice.token_manager import APNsTokenManager
 
 
 class DetailedPriceData:
@@ -120,7 +120,7 @@ async def handle_apns_response(db_manager, token, response, status_code):
                 remove_token = True
 
             if remove_token is True:
-                token_manager = APNs_Token_Manager({"token": token}, db_manager)
+                token_manager = APNsTokenManager({"token": token}, db_manager)
                 await token_manager.remove_entry_from_database()
                 log.debug("Removed invalid APNs token from database.")
     else:

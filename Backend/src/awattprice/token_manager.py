@@ -19,7 +19,7 @@ from multiprocessing import Lock
 from pathlib import Path
 
 
-class Token_Database_Manager:
+class TokenDatabaseManager:
     lock = Lock()
 
     def connect(self, config):
@@ -85,7 +85,7 @@ class Token_Database_Manager:
         log.info("Connection to database was closed.")
 
 
-class APNs_Token_Manager:
+class APNsTokenManager:
     def __init__(self, token_data, database_manager):
         self.token_data = token_data
         self.final_data = None

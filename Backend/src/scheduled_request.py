@@ -63,7 +63,7 @@ async def send_request(url: str, client: httpx.AsyncClient, max_tries: int) -> b
                     log.debug(f"Attempt {tries_made} to {url} was successful.")
             else:
                 log.warning(
-                    "Server for {url} responded with status code other than 200.")
+                    f"Server for {url} responded with status code other than 200.")
                 request_successful = False
 
     if tries_made is max_tries:

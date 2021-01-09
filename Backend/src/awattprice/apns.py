@@ -77,7 +77,7 @@ async def validate_token(request: Request):
                     "below_value"
                 ] = below_value
 
-        if not request_data["token"] == None and not request_data["config"] == None:
+        if request_data["token"] is not None and request_data["config"] is not None:
             request_data_valid = True
 
             # Validate types

@@ -127,4 +127,4 @@
 
 // Notification localizations
 // Title managed by general.priceGuard
-"notifications.price_drops_below.body" = "Morgen, am %1$@ von %2$@ bis %3$@ Uhr fallen die Strompreise auf bis zu %4$@ Cent pro kWh.";
+"notifications.price_drops_below.body" = "Strompreis fällt morgen unter Wunschpreis von %1$@ ct. Günstigster Preis um %2$@ Uhr mit %3$@ ct.";

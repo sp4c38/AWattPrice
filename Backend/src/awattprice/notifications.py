@@ -174,16 +174,19 @@ async def price_drops_below_notification(
             datetime.fromtimestamp(lowest_point.start_timestamp)
         )
         lowest_price_start = arrow.get(lowest_point.start_timestamp).to(timezone)
-        lowest_price_end = arrow.get(lowest_point.end_timestamp).to(timezone)
 
         # Full cents, for example 4
-        lowest_price_cent = floor(lowest_point.marketprice)
+        lowest_price_floored = floor(lowest_point.marketprice)
         # Decimal places of cent, for example 39
-        lowest_price_cent_decimal = round(
-            (lowest_point.marketprice - lowest_price_cent) * 100
+        lowest_price_decimal = round(
+            (lowest_point.marketprice - lowest_price_floored) * 100
         )
         # Together 4,39
-        formatted_lowest_price = f"{lowest_price_cent},{lowest_price_cent_decimal}"
+        formatted_lowest_price = f"{lowest_price_floored},{lowest_price_decimal}"
+
+        below_value_floored = floor(below_value)
+        below_value_decimal = round((below_value - below_value_floored) * 100)
+        formatted_below_value = f"{below_value_floored},{below_value_decimal}"
 
         encryption_algorithm = notification_defaults.encryption_algorithm
 
@@ -216,10 +219,8 @@ async def price_drops_below_notification(
                     "title-loc-key": notification_defaults.price_drops_below_notification.title_loc_key,
                     "loc-key": notification_defaults.price_drops_below_notification.body_loc_key,
                     "loc-args": [
-                        len(below_price_data),
-                        below_value,
+                        formatted_below_value,
                         lowest_price_start.format("HH"),
-                        lowest_price_end.format("HH"),
                         formatted_lowest_price,
                     ],
                 },

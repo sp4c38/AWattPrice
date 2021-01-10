@@ -82,28 +82,28 @@ def validate_token(request: Request) -> Optional[Dict]:
                 ] = below_value
 
         if request_data["token"] is not None and request_data["config"] is not None:
-            request_data_valid = True
+            is_request_data_valid = True
 
             # Validate types
             if not isinstance(request_data["token"], str):
-                request_data_valid = False
+                is_request_data_valid = False
             if not isinstance(
                 request_data["region_identifier"], int
             ) or not request_data["region_identifier"] in [0, 1]:
-                request_data_valid = False
+                is_request_data_valid = False
             if not isinstance(request_data["vat_selection"], int) or not request_data[
                 "vat_selection"
             ] in [0, 1]:
-                request_data_valid = False
+                is_request_data_valid = False
             if not isinstance(
                 request_data["config"]["price_below_value_notification"]["active"], bool
             ):
-                request_data_valid = False
+                is_request_data_valid = False
             if not isinstance(
                 request_data["config"]["price_below_value_notification"]["below_value"],
                 float,
             ):
-                request_data_valid = False
+                is_request_data_valid = False
 
     except KeyError as e:
         log.warning(
@@ -116,7 +116,7 @@ def validate_token(request: Request) -> Optional[Dict]:
         )
         request_data = None
 
-    if not request_data_valid:
+    if not is_request_data_valid:
         log.info("APNs data (sent from a client) is NOT valid.")
         request_data = None
     else:

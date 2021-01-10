@@ -11,6 +11,8 @@ __license__ = "mit"
 
 import json
 
+from typing import Dict, Optional
+
 from fastapi import Request
 from loguru import logger as log
 
@@ -18,7 +20,7 @@ from awattprice.token_manager import APNsTokenManager
 
 
 async def write_token(request_data, db_manager):
-    # Store APNs token configuration to the database
+    """Store APNs token configuration to the database."""
     log.info("Initiated a new background task to store an APNs configuration.")
     apns_token_manager = APNsTokenManager(request_data, db_manager)
 
@@ -29,14 +31,15 @@ async def write_token(request_data, db_manager):
     await db_manager.release_lock()
 
 
-async def validate_token(request: Request):
-    # Checks if the backend can successfully read and decode the APNs token configuration
-    # sent from a client.
+async def validate_token(request: Request) -> Optional[Dict]:
+    """Checks if the backend can successfully read and decode the APNs token configuration
+    sent from a client.
 
-    # Clarification:
-    # When refering to APNs token configuration or APNs configuration or token configuration
-    # the token and all config data (like selected region in app, selected notifications to receive, ...
-    # is meant.
+    Clarification:
+    When refering to APNs token configuration or APNs configuration or token configuration
+    the token and all config data (like selected region in app, selected notifications to receive, ...
+    is meant.
+    """
 
     request_body = await request.body()
     decoded_body = request_body.decode("utf-8")

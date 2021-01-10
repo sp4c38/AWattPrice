@@ -7,19 +7,20 @@ Send notifications via APNs to those users.
 
 """
 
-from math import floor
-
-import arrow
 import asyncio
-import httpx
 import json
+
+from datetime import datetime
+from math import floor
+from pathlib import Path
+
+import arrow  # type: ignore
+import httpx
 import jwt
 
 from box import Box
 from configupdater import ConfigUpdater  # type: ignore
-from datetime import datetime
 from dateutil.tz import tzstr
-from pathlib import Path
 from loguru import logger as log
 
 from awattprice import poll

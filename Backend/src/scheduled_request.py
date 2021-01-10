@@ -45,25 +45,30 @@ async def send_request(url: str, client: httpx.AsyncClient, max_tries: int) -> b
         except httpx.ReadTimeout:
             log.warning(f"Attempt {tries_made} to {url} timed out.")
         except Exception as e:
-            log.warning(f"Unrecognized exception at attempt {tries_made} for {url}: {e}.")
+            log.warning(
+                f"Unrecognized exception at attempt {tries_made} for {url}: {e}."
+            )
         else:
             if response.status_code == status.HTTP_200_OK:
                 try:
                     json.loads(response.text)
                 except json.JSONDecodeError as e:
                     log.warning(
-                        f"Could not decode valid json of response (status code 200) from Backend: {e}")
+                        f"Could not decode valid json of response (status code 200) from Backend: {e}"
+                    )
                     request_successful = False
                 except Exception as e:
                     log.warning(
-                        f"Unknown exception while parsing response (status code 200) from Backend: {e}")
+                        f"Unknown exception while parsing response (status code 200) from Backend: {e}"
+                    )
                     request_successful = False
                 else:
                     request_successful = True
                     log.debug(f"Attempt {tries_made} to {url} was successful.")
             else:
                 log.warning(
-                    f"Server for {url} responded with status code other than 200.")
+                    f"Server for {url} responded with status code other than 200."
+                )
                 request_successful = False
 
     if tries_made is max_tries:
@@ -79,14 +84,18 @@ async def run_request(region, max_tries, config):
         url_path = Path("data") / region.name.upper()
         url = url._replace(path=url_path.as_posix()).geturl()
 
-        region_file_path = Path(config.file_location.data_dir).expanduser() / Path(f"awattar-data-{region.name.lower()}.json")
+        region_file_path = Path(config.file_location.data_dir).expanduser() / Path(
+            f"awattar-data-{region.name.lower()}.json"
+        )
         data = await read_data(file_path=region_file_path)
         if data:
             # Check if backend would update data. If not we can save resources and don't need to send the request.
             need_update_region = check_data_needs_update(data, config)
 
         if not need_update_region:
-            log.debug(f"{region.name} data doesn't need to be requested. It is already up-to date.")
+            log.debug(
+                f"{region.name} data doesn't need to be requested. It is already up-to date."
+            )
             return
         else:
             await send_request(url, client, max_tries)
@@ -99,8 +108,9 @@ async def main():
 
     if config.poll.backend_url:
         if validators.url(config.poll.backend_url) is True:
-            lock_file_path = Path(
-                config.file_location.data_dir).expanduser() / "scheduled_event.lck"
+            lock_file_path = (
+                Path(config.file_location.data_dir).expanduser() / "scheduled_event.lck"
+            )
 
             scheduled_event_lock = filelock.FileLock(lock_file_path, timeout=5)
 
@@ -108,24 +118,35 @@ async def main():
                 with scheduled_event_lock.acquire():
 
                     tasks = []
-                    for region in [[getattr(Region, "de".upper(), None), 3],  # number of attempts for a successful request, region id
-                                   [getattr(Region, "at".upper(), None), 3]]:
+
+                    for region in [
+                        [getattr(Region, "de".upper(), None), 3],  # number of attempts for a successful request, region id
+                        [getattr(Region, "at".upper(), None), 3],
+                    ]:
                         if region[0].name is not None:
-                            tasks.append(asyncio.create_task(
-                                run_request(region[0], region[1], config)))
+                            tasks.append(
+                                asyncio.create_task(
+                                    run_request(region[0], region[1], config)
+                                )
+                            )
 
                     await asyncio.gather(*tasks)
             except filelock.Timeout:
                 log.warning(
-                    "Scheduled request lock still acquired. Won't run scheduled request.")
+                    "Scheduled request lock still acquired. Won't run scheduled request."
+                )
         else:
-            log.warning(f"Value {config.poll.backend_url} set in \"config.poll.backend_url\" is no valid URL.")
+            log.warning(
+                f'Value {config.poll.backend_url} set in "config.poll.backend_url" is no valid URL.'
+            )
     else:
         log.warning(
-            """Scheduled request was called without having "config.poll.backend_url" configured. Won't run scheduled request.""")
+            """Scheduled request was called without having "config.poll.backend_url" configured. Won't run scheduled request."""
+        )
 
     log.info("Finished scheduled request.")
 
 
 if __name__ == "__main__":
     asyncio.run(main())
+)

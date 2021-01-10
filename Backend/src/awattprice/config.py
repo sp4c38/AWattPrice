@@ -150,8 +150,7 @@ def read_config(path: Optional[Path] = None) -> Box:
             "Will use sandbox for this session."
         )
         run_on_sandbox = False
-        
-    print(run_on_sandbox)
+
     config.notifications.use_sandbox = run_on_sandbox
     config.notifications.dev_team_id = config.notifications.dev_team_id.strip("\"'")
     config.notifications.apns_encryption_key_id = (

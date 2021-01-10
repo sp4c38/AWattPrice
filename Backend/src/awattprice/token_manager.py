@@ -145,11 +145,13 @@ class APNsTokenManager:
             return True
         elif len(items) == 1:
             new_config_raw = json.dumps({"config": self.token_data["config"]})
-            if any([
-                (items[0][1] != self.token_data["region_identifier"]),
-                (items[0][2] != self.token_data["vat_selection"]),
-                (items[0][3] != new_config_raw)
-            ]):
+            if any(
+                [
+                    (items[0][1] != self.token_data["region_identifier"]),
+                    (items[0][2] != self.token_data["vat_selection"]),
+                    (items[0][3] != new_config_raw),
+                ]
+            ):
                 self.is_new_token = False  # Just new config but no new token
                 self.final_data = {"config": self.token_data["config"]}
                 log.info("Client requested to update existing APNs configuration.")

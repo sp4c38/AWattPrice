@@ -9,11 +9,11 @@ import SwiftUI
 
 struct AgreementSettingView: View {
     @Environment(\.colorScheme) var colorScheme
-    
+
     var agreementIconName: String
     var agreementName: String
     var agreementLinks: (String, String)
-    
+
     var body: some View {
         CustomInsetGroupedListItem {
             HStack {
@@ -21,12 +21,12 @@ struct AgreementSettingView: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: 22, height: 22, alignment: .center)
-                
+
                 Text(agreementName.localized())
                     .font(.subheadline)
-                
+
                 Spacer()
-                
+
                 Image(systemName: "chevron.right")
                     .font(Font.caption.weight(.semibold))
                     .foregroundColor(Color.gray)

@@ -10,18 +10,18 @@ import SwiftUI
 struct TBBarShape: Shape {
     func path(in rect: CGRect) -> Path {
         var path = Path()
-        
+
         path.addRect(CGRect(x: rect.minX, y: rect.minY, width: rect.width, height: rect.height))
-        
+
         return path
     }
 }
 
 struct TabBar: View {
     @Environment(\.colorScheme) var colorScheme
-    
+
     @EnvironmentObject var tabBarItems: TBItems
-    
+
     var body: some View {
         ZStack {
             TBBarShape()
@@ -29,7 +29,7 @@ struct TabBar: View {
                 .edgesIgnoringSafeArea(.all)
 
             HStack {
-                ForEach(0..<tabBarItems.items.count, id: \.self) { i in
+                ForEach(0 ..< tabBarItems.items.count, id: \.self) { i in
                     HStack {
                         Spacer()
                         VStack(spacing: 6) {

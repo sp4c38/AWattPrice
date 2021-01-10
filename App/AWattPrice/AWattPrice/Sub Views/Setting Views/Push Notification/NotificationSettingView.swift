@@ -9,7 +9,7 @@ import SwiftUI
 struct NotificationSettingView: View {
     @Environment(\.notificationAccess) var notificationAccess
     @Environment(\.scenePhase) var scenePhase
-    
+
     var body: some View {
         VStack(alignment: .center, spacing: 0) {
             CustomInsetGroupedList {
@@ -21,7 +21,7 @@ struct NotificationSettingView: View {
                                 .transition(.opacity)
                         }
                     }
-                        
+
                     PriceDropsBelowValueNotificationView()
                         .opacity(notificationAccess.access == false ? 0.5 : 1)
                         .disabled(notificationAccess.access == false)
@@ -37,16 +37,16 @@ struct GoToNotificationSettingView: View {
     @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var crtNotifiSetting: CurrentNotificationSetting
     @EnvironmentObject var currentSetting: CurrentSetting
-    
+
     @State var redirectToNotificationPage: Int? = nil
-    
+
     var body: some View {
         CustomInsetGroupedListItem(
         ) {
             NavigationLink("", destination: NotificationSettingView(), tag: 1, selection: $redirectToNotificationPage)
                 .frame(width: 0, height: 0)
                 .hidden()
-            
+
             VStack(spacing: 15) {
                 HStack(alignment: .center) {
                     Image("PriceTag")
@@ -55,19 +55,19 @@ struct GoToNotificationSettingView: View {
                         .foregroundColor(colorScheme == .light ? Color.black : Color.white)
                         .scaledToFit()
                         .frame(width: 22, height: 22, alignment: .center)
-                    
+
                     Text("general.priceGuard")
                         .bold()
                         .font(.body)
                         .padding(.top, 2)
-                    
+
                     Spacer()
-                    
+
                     Image(systemName: "chevron.right")
                         .font(Font.caption.weight(.semibold))
                         .foregroundColor(Color.gray)
                 }
-                
+
                 Text("notificationPage.notification.priceDropsBelowValue.description")
                     .font(.subheadline)
                     .multilineTextAlignment(.center)

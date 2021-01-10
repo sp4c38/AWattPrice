@@ -14,7 +14,7 @@ struct NoNotificationAccessView: View {
                 Text("notificationPage.noNotificationAccessInfo")
                     .multilineTextAlignment(.center)
                     .foregroundColor(Color.gray)
-                
+
                 Button(action: {
                     UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
                 }) {

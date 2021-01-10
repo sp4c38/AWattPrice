@@ -9,10 +9,10 @@ import SwiftUI
 
 struct AwattarBasicEnergyChargePriceSetting: View {
     @EnvironmentObject var currentSetting: CurrentSetting
-    
+
     @State var baseEnergyPriceString = ""
     @State var firstAppear = true
-    
+
     struct SettingFooter: View {
         var body: some View {
             VStack(alignment: .leading, spacing: 12) {
@@ -35,7 +35,7 @@ struct AwattarBasicEnergyChargePriceSetting: View {
             .foregroundColor(Color.gray)
         }
     }
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
             HStack {
@@ -71,15 +71,14 @@ struct AwattarBasicEnergyChargePriceSetting: View {
     }
 }
 
-
 struct AwattarTariffSelectionSetting: View {
     @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var awattarData: AwattarData
     @EnvironmentObject var currentSetting: CurrentSetting
-    
+
     @State var awattarEnergyTariffIndex: Int = 0
     @State var firstAppear = true
-    
+
     var body: some View {
         CustomInsetGroupedListItem(
             header: Text("settingsPage.awattarTariff"),

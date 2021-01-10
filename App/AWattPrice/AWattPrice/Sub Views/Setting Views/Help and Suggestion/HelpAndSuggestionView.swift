@@ -22,7 +22,6 @@ struct HelpAndSuggestionButtonStyle: ButtonStyle {
                 RoundedRectangle(cornerRadius: 10)
                     .stroke(Color.black, lineWidth: 5)
             )
-        
     }
 }
 
@@ -30,13 +29,13 @@ struct HelpView: View {
     @Environment(\.colorScheme) var colorScheme
 
     @State var isShowingMailView = false
-    
+
     var body: some View {
         VStack(spacing: 30) {
             Text("settingsPage.help")
                 .bold()
                 .font(.title)
-            
+
             Button(action: {
                 if MFMailComposeViewController.canSendMail() {
                     self.isShowingMailView.toggle()
@@ -49,7 +48,7 @@ struct HelpView: View {
                 HStack(spacing: 10) {
                     Image(systemName: "envelope")
                         .font(.system(size: 20, weight: .semibold))
-                    
+
                     Text("settingsPage.helpByEmail")
                         .font(.title3)
                         .bold()
@@ -72,13 +71,13 @@ struct SuggestionView: View {
     @Environment(\.colorScheme) var colorScheme
 
     @State var isShowingMailView = false
-    
+
     var body: some View {
         VStack(spacing: 30) {
             Text("settingsPage.suggestion")
                 .bold()
                 .font(.title)
-            
+
             Button(action: {
                 if MFMailComposeViewController.canSendMail() {
                     self.isShowingMailView.toggle()
@@ -93,7 +92,7 @@ struct SuggestionView: View {
                         .resizable()
                         .renderingMode(.template)
                         .frame(width: 25, height: 25)
-                    
+
                     Text("settingsPage.suggestionByEmail")
                         .font(.title3)
                         .bold()
@@ -114,7 +113,7 @@ struct SuggestionView: View {
 
 struct HelpAndSuggestionView: View {
     @Environment(\.colorScheme) var colorScheme
-    
+
     var body: some View {
         VStack {
             HelpView()
@@ -126,27 +125,27 @@ struct HelpAndSuggestionView: View {
 
 struct GetHelpView: View {
     @Environment(\.colorScheme) var colorScheme
-    
+
     @State var redirectToHelpAndSuggestionView: Int? = 0
-    
+
     var body: some View {
         CustomInsetGroupedListItem {
             HStack(spacing: 0) {
                 NavigationLink("", destination: HelpAndSuggestionView(), tag: 1, selection: $redirectToHelpAndSuggestionView)
                     .frame(width: 0, height: 0)
                     .hidden()
-                
+
                 HStack {
                     Image(systemName: "questionmark.circle")
                         .resizable()
                         .scaledToFit()
                         .frame(width: 22, height: 22, alignment: .center)
-                    
+
                     Text("settingsPage.helpAndSuggestions")
                         .font(.subheadline)
-                    
+
                     Spacer()
-                    
+
                     Image(systemName: "chevron.right")
                         .font(Font.caption.weight(.semibold))
                         .foregroundColor(Color.gray)
@@ -183,7 +182,7 @@ struct HelpView_Previews: PreviewProvider {
 //            .navigationTitle("Settings")
 //        }
 //        .preferredColorScheme(.light)
-        
+
         HelpAndSuggestionView()
             .preferredColorScheme(.dark)
     }

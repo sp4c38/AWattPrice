@@ -9,7 +9,7 @@ import SwiftUI
 
 struct AppVersionView: View {
     @Environment(\.colorScheme) var colorScheme
-    
+
     var body: some View {
         HStack {
             Spacer()
@@ -22,10 +22,9 @@ struct AppVersionView: View {
 
                 Text("AWattPrice")
                     .font(.headline)
-                
+
                 if let currentVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String {
                     if let currentBuild = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String {
-                        
                         Text("\("settingsPage.version".localized()) \(currentVersion) (\(currentBuild))")
                             .font(.footnote)
                     }

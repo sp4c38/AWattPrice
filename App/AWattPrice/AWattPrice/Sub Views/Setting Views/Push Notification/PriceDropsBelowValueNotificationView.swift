@@ -9,7 +9,6 @@ import Combine
 import SwiftUI
 
 struct PriceDropsBelowValueNotificationInfoView: View {
-    
     var body: some View {
         Text("")
     }
@@ -17,18 +16,18 @@ struct PriceDropsBelowValueNotificationInfoView: View {
 
 struct PriceDropsBelowValueNotificationInputField: View {
     @Environment(\.keyboardObserver) var keyboardObserver
-    
+
     @EnvironmentObject var crtNotifiSetting: CurrentNotificationSetting
     @EnvironmentObject var currentSetting: CurrentSetting
-    
+
     @State var keyboardCurrentlyClosed: Bool = true
-    
+
     @Binding var priceBelowValue: String
-    
+
     init(_ priceBelowValue: Binding<String>) {
-        self._priceBelowValue = priceBelowValue
+        _priceBelowValue = priceBelowValue
     }
-    
+
     var body: some View {
         HStack {
             NumberField(text: $priceBelowValue, placeholder: "general.cent.long".localized(), plusMinusButton: true, withDecimalSeperator: false)
@@ -45,7 +44,7 @@ struct PriceDropsBelowValueNotificationInputField: View {
                         crtNotifiSetting.pushNotificationUpdateManager.backgroundNotificationUpdate(currentSetting: currentSetting, crtNotifiSetting: crtNotifiSetting)
                     }
                 }
-            
+
             Text("general.centPerKwh")
                 .transition(.opacity)
         }
@@ -60,18 +59,17 @@ struct PriceDropsBelowValueNotificationInputField: View {
 }
 
 struct PriceDropsBelowValueNotificationToggleView: View {
-    
     @EnvironmentObject var crtNotifiSetting: CurrentNotificationSetting
     @EnvironmentObject var currentSetting: CurrentSetting
-    
+
     @Binding var priceDropsBelowValueNotificationSelection: Bool
-    
+
     init(
         _ selection: Binding<Bool>
     ) {
-        self._priceDropsBelowValueNotificationSelection = selection
+        _priceDropsBelowValueNotificationSelection = selection
     }
-    
+
     var body: some View {
         HStack {
             Text("notificationPage.notification.priceDropsBelowValue")
@@ -87,20 +85,20 @@ struct PriceDropsBelowValueNotificationToggleView: View {
                     crtNotifiSetting.changesAndStaged = true
                     crtNotifiSetting.pushNotificationUpdateManager.backgroundNotificationUpdate(
                         currentSetting: currentSetting,
-                        crtNotifiSetting: crtNotifiSetting)
+                        crtNotifiSetting: crtNotifiSetting
+                    )
                 }
         }
     }
 }
 
 struct PriceDropsBelowValueNotificationSubView: View {
-    
     @Environment(\.colorScheme) var colorScheme
-    
+
     @EnvironmentObject var currentSetting: CurrentSetting
-    
+
     @ObservedObject var crtNotifiSetting: CurrentNotificationSetting
-    
+
     @State var initialAppearFinished: Bool? = false
     @State var keyboardCurrentlyClosed = false
     @State var priceDropsBelowValueNotificationSelection = false
@@ -153,7 +151,6 @@ struct PriceDropsBelowValueNotificationSubView: View {
 }
 
 struct PriceDropsBelowValueNotificationView: View {
-    
     @EnvironmentObject var crtNotifiSetting: CurrentNotificationSetting
 
     var body: some View {
@@ -162,7 +159,6 @@ struct PriceDropsBelowValueNotificationView: View {
 }
 
 struct NewPricesNotificationView_Previews: PreviewProvider {
-    
     static var previews: some View {
         NavigationView {
             PriceDropsBelowValueNotificationView()

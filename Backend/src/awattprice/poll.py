@@ -43,7 +43,7 @@ def transform_entry(entry: Box) -> Optional[Box]:
             entry.start_timestamp = int(entry.start_timestamp / TIME_CORRECT)
             entry.end_timestamp = int(entry.end_timestamp / TIME_CORRECT)
             # Convert MWh to kWh
-            entry.marketprice = entry.marketprice * CONVERT_MWH_KWH
+            entry.marketprice = round(entry.marketprice * CONVERT_MWH_KWH, 2)
     except KeyError:
         log.warning(f"Missing key in Awattar entry. Skipping: {entry}.")
     except Exception as e:

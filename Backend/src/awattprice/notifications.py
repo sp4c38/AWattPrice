@@ -41,7 +41,10 @@ class DetailedPriceData:
             )
             now = arrow.utcnow().to(timezone)
             now_day_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
-            if price_point.start_timestamp >= now_day_start.timestamp:
+            tomorrow_hour_start = now_day_start.shift(days=+1)
+            # Only check price points for the next day. Price points of the
+            # current day were already checked a day before.
+            if price_point.start_timestamp >= tomorrow_hour_start.timestamp:
                 marketprice = round(price_point.marketprice, 2)
                 if self.lowest_price is None or marketprice < self.lowest_price:
                     self.lowest_price = marketprice
@@ -259,10 +262,6 @@ async def check_and_send(config, data, data_region, db_manager):
         cursor.close()
         items = [dict(x) for x in items]
 
-        log.debug(
-            "Checking all stored notification configurations - if they apply to receive a notification."
-        )
-
         notification_queue = asyncio.Queue()
         for notifi_config in items:
             try:
@@ -346,6 +345,4 @@ async def check_and_send(config, data, data_region, db_manager):
 
         await asyncio.gather(*tasks)
         await db_manager.release_lock()
-        log.debug("All notification configurations checked and all connections closed.")
-
-    del notification_defaults
+        log.debug("All notifications checked (and sent) and all connections closed.")

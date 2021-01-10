@@ -41,17 +41,19 @@ def validate_token(request: Request) -> Optional[Dict]:
     is meant.
     """
 
-    decoded_body = request.decode("utf-8")
+    try:
+        body_json = json.loads(request.decode("utf-8"))
+    except json.JSONDecodeError as e:
+        log.warning(f"Could not JSON encode the request: {e}")
+
+    request_data = {
+        "token": None,
+        "region_identifier": None,
+        "vat_selection": None,
+        "config": None,
+    }
 
     try:
-        body_json = json.loads(decoded_body)
-
-        request_data = {
-            "token": None,
-            "region_identifier": None,
-            "vat_selection": None,
-            "config": None,
-        }
         request_data["token"] = body_json["apnsDeviceToken"]
         request_data["region_identifier"] = body_json["regionIdentifier"]
         request_data["vat_selection"] = body_json["vatSelection"]
@@ -60,7 +62,7 @@ def validate_token(request: Request) -> Optional[Dict]:
             "price_below_value_notification": {"active": False, "below_value": float(0)}
         }
 
-        # Always check with an if statment to ensure backwards-compatibility (in the future)
+        # Always check with an if statement to ensure backwards-compatibility (in the future)
         if "priceBelowValueNotification" in body_json["notificationConfig"]:
             # Set price below value notification configuration if included in request body
             below_notification = body_json["notificationConfig"][
@@ -103,13 +105,20 @@ def validate_token(request: Request) -> Optional[Dict]:
             ):
                 request_data_valid = False
 
-            if request_data_valid:
-                log.info("APNs data (sent from a client) is valid.")
-                return request_data
-            else:
-                log.info("APNs data (sent from a client) is NOT valid.")
-                return None
+    except KeyError as e:
+        log.warning(
+            f"Caught a KeyError while validating APNs token: {e}"
+        )
+        request_data = None
     except Exception as e:
         log.warning(
-            f"Could NOT decode to a valid json when validating client APNs data: {e}"
+            f"Caught an unknown exception while validating client APNs data: {e}"
         )
+        request_data = None
+
+    if not request_data_valid:
+        log.info("APNs data (sent from a client) is NOT valid.")
+        request_data = None
+    else:
+        log.info("APNs data (sent from a client) is valid.")
+    return request_data

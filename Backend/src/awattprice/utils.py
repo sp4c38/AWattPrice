@@ -9,7 +9,7 @@ __author__ = "Frank Becker <fb@alien8.de>"
 __copyright__ = "Frank Becker"
 __license__ = "mit"
 
-import arrow
+import asyncio
 import gzip
 import json
 import os
@@ -22,7 +22,7 @@ from timeit import default_timer
 from typing import Any, Callable, Dict, List, NamedTuple, Optional, Union
 
 import aiofiles
-import asyncio
+import arrow  # type: ignore
 
 from box import Box  # type: ignore
 from filelock import FileLock

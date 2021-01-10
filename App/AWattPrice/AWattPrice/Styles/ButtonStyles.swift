@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-
 struct ActionButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label

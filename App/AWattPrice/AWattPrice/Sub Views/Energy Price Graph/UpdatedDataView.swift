@@ -11,30 +11,30 @@ struct UpdatedDataView: View {
     @Environment(\.networkManager) var networkManager
     @EnvironmentObject var awattarData: AwattarData
     @EnvironmentObject var currentSetting: CurrentSetting
-    
+
     @State var firstAppear = true
     @State var localizedTimeIntervalString: String = ""
-    
+
     let dateFormatter: UpdatedDataTimeFormatter
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-    
+
     init() {
-        self.dateFormatter = UpdatedDataTimeFormatter()
+        dateFormatter = UpdatedDataTimeFormatter()
     }
-    
+
     func updateLocalizedTimeIntervalString() {
         if awattarData.dateDataLastUpdated != nil {
             localizedTimeIntervalString = dateFormatter.localizedTimeString(for: Date(), relativeTo: awattarData.dateDataLastUpdated!)
         }
     }
-    
+
     var body: some View {
         HStack(spacing: 10) {
             if awattarData.currentlyUpdatingData {
                 Text("general.loading")
                     .foregroundColor(Color.blue)
                     .transition(.opacity)
-                
+
                 ProgressView()
                     .foregroundColor(Color.blue)
                     .transition(.opacity)
@@ -56,7 +56,7 @@ struct UpdatedDataView: View {
                     }
                 }
             }
-            
+
             Spacer()
         }
         .font(.caption)

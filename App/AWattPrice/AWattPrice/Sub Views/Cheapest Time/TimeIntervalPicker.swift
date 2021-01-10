@@ -8,7 +8,7 @@
 import SwiftUI
 
 /// A time picker using UIDatePicker to select a time interval (e.g. 4 hour interval, 5 hour and 25 minutes interval,...)
-//struct TimeIntervalPicker: UIViewRepresentable {
+// struct TimeIntervalPicker: UIViewRepresentable {
 //    @EnvironmentObject var cheapestHourManager: CheapestHourManager
 //
 //    class Coordinator {
@@ -41,4 +41,4 @@ import SwiftUI
 //    func makeCoordinator() -> Coordinator {
 //        return Coordinator(self)
 //    }
-//}
+// }

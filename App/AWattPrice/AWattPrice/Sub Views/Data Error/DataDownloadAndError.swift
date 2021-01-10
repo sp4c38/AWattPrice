@@ -11,9 +11,9 @@ struct DataRetrievalLoadingView: View {
     var body: some View {
         VStack(spacing: 20) {
             Spacer()
-            
+
             ProgressView("general.loading")
-            
+
             Spacer()
         }
     }
@@ -24,20 +24,20 @@ struct DataRetrievalError: View {
     @Environment(\.networkManager) var networkManager
     @EnvironmentObject var awattarData: AwattarData
     @EnvironmentObject var currentSetting: CurrentSetting
-    
+
     var body: some View {
         VStack(alignment: .center) {
             Spacer()
-            
+
             VStack(spacing: 30) {
                 Image(systemName: "exclamationmark.triangle")
                     .foregroundColor(Color.orange)
                     .font(.system(size: 60, weight: .light))
-                
+
                 Text("dataError.tryAgainLater")
                     .font(.title3)
                     .multilineTextAlignment(.center)
-                
+
                 Button(action: {
                     awattarData.download(forRegion: currentSetting.entity!.regionIdentifier, networkManager: networkManager)
                 }) {
@@ -60,20 +60,20 @@ struct CurrentlyNoData: View {
     @Environment(\.networkManager) var networkManager
     @EnvironmentObject var awattarData: AwattarData
     @EnvironmentObject var currentSetting: CurrentSetting
-    
+
     var body: some View {
         VStack(alignment: .center) {
             Spacer()
-            
+
             VStack(spacing: 30) {
                 Image(systemName: "rectangle.slash.fill")
                     .foregroundColor(Color(red: 0.99, green: 0.74, blue: 0.04, opacity: 1.0))
                     .font(.system(size: 60, weight: .light))
-                
+
                 Text("dataError.noDataAvailable")
                     .font(.title3)
                     .multilineTextAlignment(.center)
-                
+
                 Button(action: {
                     awattarData.download(forRegion: currentSetting.entity!.regionIdentifier, networkManager: networkManager)
                 }) {
@@ -93,16 +93,16 @@ struct CurrentlyNoData: View {
 
 struct SettingLoadingError: View {
     @Environment(\.colorScheme) var colorScheme
-    
+
     var body: some View {
         VStack(alignment: .center) {
             Spacer()
-            
+
             VStack(spacing: 30) {
                 Image(systemName: "gear")
                     .foregroundColor(Color.red)
                     .font(.system(size: 60, weight: .light))
-                
+
                 Text("dataError.settingsLoadingError")
                     .foregroundColor(Color.red)
                     .font(.title3)
@@ -124,7 +124,7 @@ struct DataDownloadAndError: View {
     @EnvironmentObject var awattarData: AwattarData
     @EnvironmentObject var crtNotifiSetting: CurrentNotificationSetting
     @EnvironmentObject var currentSetting: CurrentSetting
-    
+
     var body: some View {
         VStack {
             if crtNotifiSetting.entity == nil || currentSetting.entity == nil {

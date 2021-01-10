@@ -10,9 +10,9 @@ import SwiftUI
 struct WhatsNewPage: View {
     @Environment(\.deviceType) var deviceType
     @Environment(\.presentationMode) var presentationMode
-    
+
     @EnvironmentObject var currentSetting: CurrentSetting
-    
+
     var body: some View {
         NavigationView {
             VStack(alignment: .leading) {
@@ -20,11 +20,11 @@ struct WhatsNewPage: View {
                     AppFeatureView(title: "notificationPage.notifications", subTitle: "splashScreen.featuresAndConsent.notifications.info", tipText: "splashScreen.whatsNew.notifications.extrainfo", imageName: "app.badge")
                 }
                 .padding(.trailing, 14)
-                
+
                 if deviceType == .phone {
                     Spacer()
                 }
-                
+
                 Button(action: {
                     presentationMode.wrappedValue.dismiss()
                 }) {

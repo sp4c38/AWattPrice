@@ -10,7 +10,7 @@ import SwiftUI
 /// Opens the apps privacy policy in the browser in the correct language depending on the device language.
 func openAgreementLink(_ agreementLinks: (String, String)) {
     var agreementLink = URL(string: agreementLinks.0)
-    
+
     if Locale.current.languageCode == "en" {
         agreementLink = URL(string: agreementLinks.1)
     }
@@ -27,12 +27,12 @@ func openAgreementLink(_ agreementLinks: (String, String)) {
  */
 struct AppFeatureView: View {
     @Environment(\.colorScheme) var colorScheme
-    
+
     var title: LocalizedStringKey
     var subTitle: LocalizedStringKey
     var tipText: LocalizedStringKey? = nil
     var imageName: String
-    
+
     var body: some View {
         HStack {
             VStack(alignment: .leading) {
@@ -42,19 +42,19 @@ struct AppFeatureView: View {
                         .foregroundColor(Color(hue: 0.5648, saturation: 1.0000, brightness: 0.6235))
                         .padding(16)
                         .frame(width: 70, height: 70)
-                    
+
                     VStack(alignment: .leading, spacing: 5) {
                         Text(title)
                             .font(.headline)
                             .foregroundColor(colorScheme == .light ? Color.black : Color.white)
-                        
+
                         Text(subTitle)
                             .font(.subheadline)
                             .foregroundColor(colorScheme == .light ? Color.black : Color.white)
                             .fixedSize(horizontal: false, vertical: true)
                     }
                 }
-                
+
                 if tipText != nil {
                     Text(tipText!)
                         .foregroundColor(Color.gray)
@@ -64,7 +64,7 @@ struct AppFeatureView: View {
                 }
             }
             .multilineTextAlignment(.leading)
-            
+
             Spacer(minLength: 0)
         }
     }
@@ -72,30 +72,30 @@ struct AppFeatureView: View {
 
 struct AgreementConsentView: View {
     @Environment(\.colorScheme) var colorScheme
-    
+
     var agreeText: String
     var seeAgreementText: String
     var agreementLinks: (String, String) // First item is the default link, second item is the link when the device language is english
-    
+
     @Binding var isChecked: Bool
     @Binding var showConsentNotChecked: Bool
-    
+
     func getForegroundColor(isCheckmark: Bool = false, isText: Bool = false) -> Color {
         if showConsentNotChecked == true && (isCheckmark == true || isText == true) {
             return Color.red
         }
-        
+
         if isCheckmark {
             return Color.blue
         }
-        
+
         if colorScheme == .light {
             return Color.black
         } else {
             return Color.white
         }
     }
-    
+
     var body: some View {
         HStack(spacing: 24) {
             if isChecked == true {
@@ -113,13 +113,13 @@ struct AgreementConsentView: View {
                     .frame(width: 27, height: 27)
                     .transition(.opacity)
             }
-            
+
             VStack(alignment: .leading, spacing: 5) {
                 Text(agreeText.localized())
                     .font(.subheadline)
                     .foregroundColor(Color.white)
                     .colorMultiply(getForegroundColor(isText: true))
-                
+
                 Button(action: {
                     openAgreementLink(agreementLinks)
                 }) {
@@ -131,7 +131,7 @@ struct AgreementConsentView: View {
                     .foregroundColor(Color.blue)
                 }
             }
-            
+
             Spacer()
         }
         .animation(.easeInOut(duration: 0.4))
@@ -150,54 +150,53 @@ struct AgreementConsentView: View {
  */
 struct SplashScreenFeaturesAndConsentView: View {
     @Environment(\.notificationAccess) var notificationAccess
-    
+
     @EnvironmentObject var currentSetting: CurrentSetting
-    
-    @State var redirectToNextSplashScreen: Int? = 0
-    
-    @State var termsOfUseIsChecked: Bool = false
+
     @State var privacyPolicyIsChecked: Bool = false
-    
-    @State var showTermsOfUseNotChecked: Bool = false
+    @State var redirectToNextSplashScreen: Int? = 0
     @State var showPrivacyPolicyNotChecked: Bool = false
-    
+    @State var showTermsOfUseNotChecked: Bool = false
+    @State var termsOfUseIsChecked: Bool = false
+
     var body: some View {
         VStack(spacing: 0) {
             NavigationLink("", destination: SplashScreenSetupView(), tag: 1, selection: $redirectToNextSplashScreen)
                 .frame(width: 0, height: 0)
                 .hidden()
-            
+
             VStack(spacing: 30) {
                 AppFeatureView(title: "splashScreen.featuresAndConsent.viewPrices", subTitle: "splashScreen.featuresAndConsent.viewPrices.info", imageName: "magnifyingglass")
 
                 AppFeatureView(title: "splashScreen.featuresAndConsent.comparePrices", subTitle: "splashScreen.featuresAndConsent.comparePrices.info", imageName: "arrow.left.arrow.right")
-                
+
                 AppFeatureView(title: "notificationPage.notifications", subTitle: "splashScreen.featuresAndConsent.notifications.info", imageName: "bell")
             }
 
             Spacer()
-            
+
             AgreementConsentView(
                 agreeText: "splashScreen.featuresAndConsent.termsOfUse.agree",
                 seeAgreementText: "splashScreen.featuresAndConsent.termsOfUse.see",
                 agreementLinks: ("https://awattprice.space8.me/terms_of_use/german.html",
                                  "https://awattprice.space8.me/terms_of_use/english.html"),
                 isChecked: $termsOfUseIsChecked,
-                showConsentNotChecked: $showTermsOfUseNotChecked)
-                .padding(.bottom, 25)
-            
+                showConsentNotChecked: $showTermsOfUseNotChecked
+            )
+            .padding(.bottom, 25)
+
             AgreementConsentView(
                 agreeText: "splashScreen.featuresAndConsent.privacyPolicy.agree",
                 seeAgreementText: "splashScreen.featuresAndConsent.privacyPolicy.see",
                 agreementLinks: ("https://awattprice.space8.me/privacy_policy/german.html",
                                  "https://awattprice.space8.me/privacy_policy/english.html"),
                 isChecked: $privacyPolicyIsChecked,
-                showConsentNotChecked: $showPrivacyPolicyNotChecked)
-                .padding(.bottom, 25)
+                showConsentNotChecked: $showPrivacyPolicyNotChecked
+            )
+            .padding(.bottom, 25)
 
-            
             Button(action: {
-                if privacyPolicyIsChecked == true && termsOfUseIsChecked == true {
+                if privacyPolicyIsChecked == true, termsOfUseIsChecked == true {
                     showTermsOfUseNotChecked = false
                     showPrivacyPolicyNotChecked = false
                     managePushNotificationsOnAppAppear(notificationAccessRepresentable: notificationAccess, registerForRemoteNotifications: true) {
@@ -207,7 +206,7 @@ struct SplashScreenFeaturesAndConsentView: View {
                     if termsOfUseIsChecked == false {
                         showTermsOfUseNotChecked = true
                     }
-                    
+
                     if privacyPolicyIsChecked == false {
                         showPrivacyPolicyNotChecked = true
                     }

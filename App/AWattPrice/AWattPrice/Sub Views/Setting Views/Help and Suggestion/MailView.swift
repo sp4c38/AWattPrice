@@ -142,7 +142,7 @@ struct MailView: UIViewControllerRepresentable {
         Coordinator(presentationMode: presentationMode)
     }
 
-    func updateUIViewController(_: MFMailComposeViewController, _: Context) {}
+    func updateUIViewController(_: MFMailComposeViewController, context _: Context) {}
 
     func getAlternativeMailApp() -> URL? {
         let gmailUrl = URL(string: "googlegmail://co?to=\(mailContent.recipientEmails)&subject=\(mailContent.encodedSubject)&body=\(mailContent.encodedBody)")

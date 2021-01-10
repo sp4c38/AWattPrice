@@ -7,15 +7,13 @@
 
 import SwiftUI
 
-
 /// Calculates multiple sizes which are needed to draw a single price bar.
 /// - Returns: (Start height of bar,
 ///             is selected identifier,
 ///             height of the bar,
 ///             font size of the text,
 ///             font weight of the text)
-func calcSingleBarSizes(_ indexSelected: Int?, _ startHeight: CGFloat,  _ ownIndex: Int, _ maxIndex: Int, _ height: CGFloat) -> (CGFloat, Int16, CGFloat, CGFloat, Font.Weight) {
-    
+func calcSingleBarSizes(_ indexSelected: Int?, _ startHeight: CGFloat, _ ownIndex: Int, _ maxIndex: Int, _ height: CGFloat) -> (CGFloat, Int16, CGFloat, CGFloat, Font.Weight) {
     var height = height
     var isSelected: Int16 = 0
     var resultStartHeight: CGFloat = 0
@@ -31,22 +29,22 @@ func calcSingleBarSizes(_ indexSelected: Int?, _ startHeight: CGFloat,  _ ownInd
         } else {
             isSelected = 0
         }
-        
+
         if isSelected == 0 {
             height -= CGFloat(barSpacingWhenSelected)
-            
+
             if ownIndex > indexSelected! {
                 resultStartHeight += CGFloat(barSpacingWhenSelected * Double(maxIndex - (ownIndex - 1)))
             } else if ownIndex < indexSelected! {
                 resultStartHeight -= CGFloat(Double(ownIndex) * barSpacingWhenSelected)
             }
         }
-        
+
         if isSelected == 1 {
             resultStartHeight += 10
             resultStartHeight -= CGFloat(Double(ownIndex - 1) * barSpacingWhenSelected)
         }
-        
+
         if isSelected == 2 {
             if ownIndex > indexSelected! {
                 resultStartHeight += 30
@@ -62,13 +60,13 @@ func calcSingleBarSizes(_ indexSelected: Int?, _ startHeight: CGFloat,  _ ownInd
     if isSelected == 1 {
         height += 20
         resultStartHeight += startHeight
-        
+
         fontSize = 17
         fontWeight = .bold
     } else if isSelected == 2 {
         height += 10
         resultStartHeight += startHeight
-        
+
         fontSize = 11
         fontWeight = .semibold
     } else {
@@ -85,7 +83,7 @@ func calcSingleBarSizes(_ indexSelected: Int?, _ startHeight: CGFloat,  _ ownInd
  */
 struct EnergyPriceSingleBar: View {
     @Environment(\.colorScheme) var colorScheme
-    
+
     let fontSize: CGFloat
     let fontWeight: Font.Weight
     let singleBarSettings: SingleBarSettings
@@ -103,25 +101,25 @@ struct EnergyPriceSingleBar: View {
          indexSelected: Int?,
          ownIndex: Int,
          maxIndex: Int,
-         hourDataPoint: EnergyPricePoint) {
-        
+         hourDataPoint: EnergyPricePoint)
+    {
         self.singleBarSettings = singleBarSettings
 
         if singleBarSettings.minPrice != 0 {
-            self.startWidthPadding = 8 // Set padding to the left side
+            startWidthPadding = 8 // Set padding to the left side
             self.width = width - 16 // Set padding to the right side
         } else {
-            self.startWidthPadding = 3
+            startWidthPadding = 3
             self.width = width - 19
         }
-                
+
         let results = calcSingleBarSizes(indexSelected, startHeight, ownIndex, maxIndex, height)
         self.startHeight = results.0
-        self.isSelected = results.1
+        isSelected = results.1
         self.height = results.2
-        self.fontSize = results.3
-        self.fontWeight = results.4
-        
+        fontSize = results.3
+        fontWeight = results.4
+
         self.hourDataPoint = hourDataPoint
     }
 
@@ -146,24 +144,26 @@ struct EnergyPriceSingleBar: View {
             // Draw the bar shape
 
             if hourDataPoint.marketprice > 0 {
-                BarShape(barShapeAttributes: BarShape.BarShapeAttributes (
-                            isSelected: (isSelected == 1 ? true : false),
-                            startWidth: maximalNegativePriceBarWidth,
-                            startHeight: startHeight,
-                            widthOfBar: positivePriceBarWidth + currentDividerLineWidth,
-                            heightOfBar: height,
-                            lookToSide: .right))
-                            
+                BarShape(barShapeAttributes: BarShape.BarShapeAttributes(
+                    isSelected: isSelected == 1 ? true : false,
+                    startWidth: maximalNegativePriceBarWidth,
+                    startHeight: startHeight,
+                    widthOfBar: positivePriceBarWidth + currentDividerLineWidth,
+                    heightOfBar: height,
+                    lookToSide: .right
+                ))
+
                     .fill(LinearGradient(gradient: Gradient(colors: [Color(hue: 0.0849, saturation: 0.6797, brightness: 0.9059), Color(hue: 0.9978, saturation: 0.7163, brightness: 0.8431)]), startPoint: .leading, endPoint: .trailing))
             } else if hourDataPoint.marketprice < 0 {
-                BarShape(barShapeAttributes: BarShape.BarShapeAttributes (
-                            isSelected: (isSelected == 1 ? true : false),
-                            startWidth: maximalNegativePriceBarWidth,
-                            startHeight: startHeight,
-                            widthOfBar: maximalNegativePriceBarWidth - negativePriceBarWidth,
-                            heightOfBar: height,
-                            lookToSide: .left))
-                    
+                BarShape(barShapeAttributes: BarShape.BarShapeAttributes(
+                    isSelected: isSelected == 1 ? true : false,
+                    startWidth: maximalNegativePriceBarWidth,
+                    startHeight: startHeight,
+                    widthOfBar: maximalNegativePriceBarWidth - negativePriceBarWidth,
+                    heightOfBar: height,
+                    lookToSide: .left
+                ))
+
                     .fill(LinearGradient(gradient: Gradient(colors: [Color.green, Color.gray]), startPoint: .leading, endPoint: .trailing))
             }
 
@@ -174,7 +174,7 @@ struct EnergyPriceSingleBar: View {
             }
 
             // Show the energy price as text with or without VAT/tax included
-            
+
             HourOfDayText(singleBarSettings: singleBarSettings,
                           hourDataPoint: hourDataPoint,
                           fontSize: fontSize,

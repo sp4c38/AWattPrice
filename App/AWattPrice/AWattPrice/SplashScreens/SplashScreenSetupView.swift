@@ -11,28 +11,27 @@ import SwiftUI
 struct SplashScreenSetupView: View {
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.notificationAccess) var notificationAccess
-    
+
     @EnvironmentObject var currentSetting: CurrentSetting
-    
+
     @State var redirectToNextSplashScreen: Int? = 0
     @State var basicCharge: String = ""
-    
+
     var body: some View {
         VStack {
             if currentSetting.entity != nil {
                 CustomInsetGroupedList {
                     RegionAndVatSelection()
 
-                    
                     if notificationAccess.access == true {
                         PriceDropsBelowValueNotificationView()
                     }
 //                    AwattarTariffSelectionSetting()
                 }
-                
+
                 NavigationLink("", destination: SplashScreenFinishView(), tag: 1, selection: $redirectToNextSplashScreen)
                     .hidden()
-                
+
                 Button(action: {
                     redirectToNextSplashScreen = 1
                 }) {

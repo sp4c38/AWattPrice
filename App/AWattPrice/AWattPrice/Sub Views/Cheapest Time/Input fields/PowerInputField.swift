@@ -11,12 +11,12 @@ import SwiftUI
 struct PowerOutputInputField: View {
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
     @EnvironmentObject var currentSetting: CurrentSetting
-    
+
     @State var firstAppear = true
-    
+
     let emptyFieldError: Bool
     let wrongInputError: Bool
-    
+
     init(errorValues: [Int]) {
         if errorValues.contains(1) {
             emptyFieldError = true
@@ -29,7 +29,7 @@ struct PowerOutputInputField: View {
             wrongInputError = false
         }
     }
-    
+
     func setPowerOutputString() {
         if currentSetting.entity!.cheapestTimeLastPower != 0 {
             if let powerOutputString = currentSetting.entity!.cheapestTimeLastPower.priceString {
@@ -37,7 +37,7 @@ struct PowerOutputInputField: View {
             }
         }
     }
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
@@ -64,7 +64,7 @@ struct PowerOutputInputField: View {
                         setPowerOutputString()
                         firstAppear = false
                     }
-                
+
                 if cheapestHourManager.powerOutputString != "" {
                     Text("kW")
                         .transition(.opacity)
@@ -77,13 +77,13 @@ struct PowerOutputInputField: View {
                 RoundedRectangle(cornerRadius: 8)
                     .stroke((emptyFieldError || wrongInputError) ? Color.red : Color(hue: 0.0000, saturation: 0.0000, brightness: 0.8706), lineWidth: 2)
             )
-            
+
             if emptyFieldError {
                 Text("cheapestPricePage.emptyFieldError")
                     .font(.caption)
                     .foregroundColor(Color.red)
             }
-            
+
             if wrongInputError {
                 Text("cheapestPricePage.wrongInputError")
                     .font(.caption)

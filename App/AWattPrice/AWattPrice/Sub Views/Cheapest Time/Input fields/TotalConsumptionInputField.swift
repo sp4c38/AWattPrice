@@ -11,12 +11,12 @@ import SwiftUI
 struct EnergyUsageInputField: View {
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
     @EnvironmentObject var currentSetting: CurrentSetting
-    
+
     @State var firstAppear = true
-    
+
     let emptyFieldError: Bool
     let wrongInputError: Bool
-    
+
     init(errorValues: [Int]) {
         if errorValues.contains(3) {
             emptyFieldError = true
@@ -29,7 +29,7 @@ struct EnergyUsageInputField: View {
             wrongInputError = false
         }
     }
-    
+
     func setEnergyUsageString() {
         if currentSetting.entity!.cheapestTimeLastConsumption != 0 {
             if let energyUsageString = currentSetting.entity!.cheapestTimeLastConsumption.priceString {
@@ -37,7 +37,7 @@ struct EnergyUsageInputField: View {
             }
         }
     }
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
@@ -46,7 +46,7 @@ struct EnergyUsageInputField: View {
                     .bold()
                 Spacer()
             }
-            
+
             HStack {
                 NumberField(text: $cheapestHourManager.energyUsageString.animation(), placeholder: "general.inKwh".localized(), withDecimalSeperator: true)
                     .fixedSize(horizontal: false, vertical: true)
@@ -64,7 +64,7 @@ struct EnergyUsageInputField: View {
                         setEnergyUsageString()
                         firstAppear = false
                     }
-                
+
                 if cheapestHourManager.energyUsageString != "" {
                     Text("kWh")
                         .transition(.opacity)
@@ -77,13 +77,13 @@ struct EnergyUsageInputField: View {
                 RoundedRectangle(cornerRadius: 8)
                     .stroke((emptyFieldError || wrongInputError) ? Color.red : Color(hue: 0.0000, saturation: 0.0000, brightness: 0.8706), lineWidth: 2)
             )
-            
+
             if emptyFieldError {
                 Text("cheapestPricePage.emptyFieldError")
                     .font(.caption)
                     .foregroundColor(Color.red)
             }
-            
+
             if wrongInputError {
                 Text("cheapestPricePage.wrongInputError")
                     .font(.caption)
@@ -93,7 +93,6 @@ struct EnergyUsageInputField: View {
         .frame(maxWidth: .infinity)
     }
 }
-
 
 struct EnergyUsageField_Previews: PreviewProvider {
     static var previews: some View {

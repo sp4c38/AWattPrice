@@ -18,7 +18,7 @@ struct CheapestTimeClockView: View {
     let calendar = Calendar.current
     var timeIsAM: Bool = true // Default value will be changed if needed
     var startDateString: (String, String?) = ("", nil)
-    var endDateString: (String, String)? = nil
+    var endDateString: (String, String)?
 
     var hourDegree = (0, 0)
 
@@ -38,24 +38,24 @@ struct CheapestTimeClockView: View {
             // Subtract 90 degrees to make the cheapest hour indicator fit with the clocks alignment
             var startDegree = Int(30 * (startHour + startMinuteFraction)) - 90
             var endDegree = Int(30 * (endHour + endMinuteFraction)) - 90
-            
+
             if endDegree - startDegree == 0 {
                 startDegree -= 1
             }
-            
+
             if (endTimeLastItem.timeIntervalSince(startTimeFirstItem) / 60 / 60) >= 12 {
                 startDegree = -90 - 10
                 endDegree = 360 + 10
             }
 
             hourDegree = (startDegree, endDegree)
-            
+
             // Show the dates the cheapest hour indicator crosses
             let dayFormatter = DateFormatter()
             dayFormatter.dateFormat = "dd"
             let monthFormatter = DateFormatter()
             monthFormatter.dateFormat = "MMM"
-            
+
             if calendar.startOfDay(for: startTimeFirstItem) == calendar.startOfDay(for: endTimeLastItem) {
                 startDateString = (dayFormatter.string(from: startTimeFirstItem), monthFormatter.string(from: startTimeFirstItem))
             } else {
@@ -73,7 +73,7 @@ struct CheapestTimeClockView: View {
         GeometryReader { geometry in
             self.makeView(geometry)
         }
-        .onReceive(timer) { input in
+        .onReceive(timer) { _ in
             // Update the clock to make both markers (hour and minute) point in the correct direction while time progresses
             now = Date()
         }
@@ -91,7 +91,7 @@ struct CheapestTimeClockView: View {
         let hourBorderIndicatorWidth = CGFloat(4)
         let hourMarkerRadius = CGFloat(0.85 * ((clockWidth / 2) - circleLineWidth))
         let minuteIndicatorWidth = CGFloat((clockWidth / 2) - hourBorderIndicatorWidth - 10)
-        let hourIndicatorWidth = CGFloat((2 * ((clockWidth / 2) / 3)) - hourBorderIndicatorWidth  - 10)
+        let hourIndicatorWidth = CGFloat((2 * ((clockWidth / 2) / 3)) - hourBorderIndicatorWidth - 10)
 
         let hourMarkerLineWidth = CGFloat(0.17 * (clockWidth / 2))
 
@@ -117,9 +117,9 @@ struct CheapestTimeClockView: View {
 
         var hourNamesAndPositions = [(String, CGFloat, CGFloat, CGFloat, CGFloat, CGFloat, CGFloat)]()
         var currentDegree: Double = -60
-        
+
         // Calculate text and line positions for the hours 1 to 12 which are shown on a normal clock
-        for hourName in 1...12 {
+        for hourName in 1 ... 12 {
             // Calculate the x coord and y coord for the text with the currentDegree and the radius of the circle
             let xCoordTextDiff = CGFloat(Double((clockWidth / 2) + textPaddingToClock) * cos(currentDegree * Double.pi / 180))
             let yCoordTextDiff = CGFloat(Double((clockWidth / 2) + textPaddingToClock) * sin(currentDegree * Double.pi / 180))
@@ -140,7 +140,7 @@ struct CheapestTimeClockView: View {
 
             currentDegree += 30
         }
-        
+
         return ZStack {
             // Outside circle which holds the clock inside of it
             Circle()
@@ -154,7 +154,6 @@ struct CheapestTimeClockView: View {
 //            }
 //            .foregroundColor(colorScheme == .light ? Color.black : Color.white)
 
-            
             // A little point in the direct center of the clock at which the hour indicator and the minute indicator originate from
             Path { path in
                 path.addArc(center: center, radius: middlePointRadius, startAngle: .degrees(0), endAngle: .degrees(360), clockwise: true)
@@ -194,9 +193,9 @@ struct CheapestTimeClockView: View {
             // The start date and if needed also the end date which help the user understand from when to when the cheapest hours apply
             VStack(spacing: 0) {
                 if endDateString == nil {
-                      Text("general.on")
-                          .padding(.bottom, 3)
-                    
+                    Text("general.on")
+                        .padding(.bottom, 3)
+
                     HStack(spacing: 7) {
                         Text(startDateString.0)
                             .bold()
@@ -211,11 +210,11 @@ struct CheapestTimeClockView: View {
                             Text(startDateString.0)
                                 .bold()
                                 .foregroundColor(Color.red)
-                            
+
                             Text("general.to")
                         }
                         .padding(.bottom, 3)
-                            
+
                         HStack(spacing: 5) {
                             Text(endDateString!.0)
                                 .bold()
@@ -233,8 +232,7 @@ struct CheapestTimeClockView: View {
                         }
                         .foregroundColor(Color.red)
                         .padding(.bottom, 3)
-                        
-                            
+
                         HStack(spacing: 4) {
                             Text("general.to")
 
@@ -282,7 +280,7 @@ struct CheapestTimeClockView: View {
 
 struct ConsumptionClockView_Previews: PreviewProvider {
     static var previews: some View {
-        CheapestTimeClockView(CheapestHourManager.HourPair(associatedPricePoints: [EnergyPricePoint(startTimestamp: 1603184400, endTimestamp: 1603189800, marketprice: 3)]))
+        CheapestTimeClockView(CheapestHourManager.HourPair(associatedPricePoints: [EnergyPricePoint(startTimestamp: 1_603_184_400, endTimestamp: 1_603_189_800, marketprice: 3)]))
             .preferredColorScheme(.dark)
             .padding(20)
     }

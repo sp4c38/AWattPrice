@@ -13,12 +13,12 @@ import SwiftUI
 struct SplashScreenStartView: View {
     @EnvironmentObject var currentSetting: CurrentSetting
     @State var redirectToNextSplashScreen: Int? = 0
-    
+
     var body: some View {
         NavigationView {
             VStack {
                 Spacer()
-                
+
                 VStack(spacing: 30) {
                     Image("BigAppIcon")
                         .resizable()
@@ -35,14 +35,14 @@ struct SplashScreenStartView: View {
 
                 Spacer()
                 Spacer()
-                
+
                 NavigationLink("", destination: SplashScreenFeaturesAndConsentView(), tag: 1, selection: $redirectToNextSplashScreen)
                     .frame(width: 0, height: 0)
                     .hidden()
-                
+
                 NotAffiliatedView(showGrayedOut: false)
                     .padding(.bottom, 20)
-                
+
                 Button(action: {
                     redirectToNextSplashScreen = 1
                 }) {

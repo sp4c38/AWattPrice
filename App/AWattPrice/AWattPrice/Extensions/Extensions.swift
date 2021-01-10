@@ -50,9 +50,8 @@ extension View {
      - Returns: Returns the view the modifier was applied to with the font  and properties to reflect the change of the size to animate it in the future.
      */
     func animatableFont(size: CGFloat, weight: Font.Weight) -> some View {
-        self.modifier(AnimatableCustomFontModifier(size: size, weight: weight))
+        modifier(AnimatableCustomFontModifier(size: size, weight: weight))
     }
-
 }
 
 // AnyTransition extensions
@@ -111,9 +110,9 @@ extension String {
     func removeOutOfString(atIndex index: Int) -> String {
         var before = ""
         if index - 1 >= 0 {
-            before = String(self[...self.index(self.startIndex, offsetBy: (index - 1))])
+            before = String(self[...self.index(startIndex, offsetBy: index - 1)])
         }
-        let after = String(self[self.index(self.startIndex, offsetBy: (index + 1))...])
+        let after = String(self[self.index(startIndex, offsetBy: index + 1)...])
         let newString = before + after
         return newString
     }
@@ -121,9 +120,9 @@ extension String {
     func addAtIndex(atIndex index: Int, add addString: String) -> String {
         var before = ""
         if index - 1 >= 0 {
-            before = String(self[...self.index(self.startIndex, offsetBy: (index - 1))])
+            before = String(self[...self.index(startIndex, offsetBy: index - 1)])
         }
-        let after = String(self[self.index(self.startIndex, offsetBy: (index))...])
+        let after = String(self[self.index(startIndex, offsetBy: index)...])
         let newString = before + addString + after
         return newString
     }
@@ -153,7 +152,7 @@ extension Int {
         let numberFormatter = NumberFormatter()
         numberFormatter.numberStyle = .none
 
-        if let result = numberFormatter.string(from: NSNumber(value: self)){
+        if let result = numberFormatter.string(from: NSNumber(value: self)) {
             return result
         } else {
             return nil
@@ -165,8 +164,6 @@ extension String {
     /// Returns the localized string of a string.
     /// If you wish to format a localized string use String(format: String.localized(), value)
     func localized() -> String {
-        return NSLocalizedString(self, comment: "")
+        NSLocalizedString(self, comment: "")
     }
 }
-
-

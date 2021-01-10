@@ -16,7 +16,7 @@ class KeyboardObserver: ObservableObject {
             .map { _ in CGFloat(0) }
 
         let mergedPublishers = Publishers.MergeMany(willShow, willHide)
-        
+
         return mergedPublishers.eraseToAnyPublisher()
     }
 }
@@ -27,6 +27,6 @@ class KeyboardObserverKey: EnvironmentKey {
 
 extension Notification {
     var keyboardHeight: CGFloat {
-        return (self.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect)?.height ?? 0
+        (userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect)?.height ?? 0
     }
 }

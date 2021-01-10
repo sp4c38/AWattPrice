@@ -11,7 +11,7 @@ import Foundation
 class UpdatedDataTimeFormatter {
     func localizedTimeString(for startDate: Date, relativeTo endDate: Date) -> String {
         let timeIntervalBetween = startDate.timeIntervalSince(endDate)
-        
+
         if timeIntervalBetween < 60 {
             return "updateDataTimeFormatter.lessThanOneMinuteAgo".localized()
         } else {
@@ -20,14 +20,14 @@ class UpdatedDataTimeFormatter {
             numberFormatter.maximumFractionDigits = 0
             let minutesBetweenString = numberFormatter.string(from: NSNumber(value: (timeIntervalBetween / 60).rounded(.down)))
             guard let _ = minutesBetweenString else { return "" }
-            
+
             var localizableString = ""
             if timeIntervalBetween < 120 {
                 localizableString = "updateDataTimeFormatter.moreThanMMAgoSingular"
             } else {
                 localizableString = "updateDataTimeFormatter.moreThanMMAgoPlural"
             }
-            
+
             return String(format: localizableString.localized(), minutesBetweenString!)
         }
     }

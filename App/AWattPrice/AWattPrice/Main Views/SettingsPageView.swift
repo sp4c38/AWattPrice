@@ -14,7 +14,7 @@ struct SettingsPageView: View {
     @EnvironmentObject var crtNotifiSetting: CurrentNotificationSetting
     @EnvironmentObject var currentSetting: CurrentSetting
     @EnvironmentObject var tabBarItems: TBItems
-    
+
     var body: some View {
         NavigationView {
             VStack {

@@ -9,14 +9,14 @@ import SwiftUI
 
 struct CheapestTimeResultTimeRange: View {
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
-    
+
     var dateFormatter: DateFormatter
     init() {
         dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .short
         dateFormatter.timeStyle = .short
     }
-    
+
     func getDateString(start: Bool, end: Bool) -> String {
         if !(start == false && end == false) && !(start == true && end == true) {
             var timeInterval = TimeInterval(0)
@@ -32,7 +32,7 @@ struct CheapestTimeResultTimeRange: View {
             return ""
         }
     }
-    
+
     var body: some View {
         VStack(alignment: .center, spacing: 5) {
             Text(getDateString(start: true, end: false))
@@ -56,15 +56,15 @@ struct CheapestTimeResultView: View {
     @EnvironmentObject var awattarData: AwattarData
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
     @EnvironmentObject var currentSetting: CurrentSetting
-    
+
     var todayDateFormatter: DateFormatter
     let currencyFormatter: NumberFormatter
-    
+
     init() {
         todayDateFormatter = DateFormatter()
         todayDateFormatter.dateStyle = .long
         todayDateFormatter.timeStyle = .none
-        
+
         currencyFormatter = NumberFormatter()
         currencyFormatter.numberStyle = .currency
         currencyFormatter.locale = Locale(identifier: "de_DE")
@@ -72,7 +72,7 @@ struct CheapestTimeResultView: View {
         currencyFormatter.maximumFractionDigits = 2
         currencyFormatter.minimumFractionDigits = 2
     }
-    
+
     func getTotalTime() -> String {
         let firstItemStart = Date(timeIntervalSince1970: TimeInterval(cheapestHourManager.cheapestHoursForUsage!.associatedPricePoints[0].startTimestamp))
         let maxPointIndex = cheapestHourManager.cheapestHoursForUsage!.associatedPricePoints.count - 1
@@ -82,32 +82,32 @@ struct CheapestTimeResultView: View {
         let minutes = 60 * (interval - hours)
         return TotalTimeFormatter().localizedTotalTimeString(hour: hours, minute: minutes)
     }
-    
+
     var body: some View {
         VStack(alignment: .center, spacing: 0) {
             if cheapestHourManager.cheapestHoursForUsage != nil {
                 // The time range in which the cheapest hours are
                 Spacer(minLength: 0)
-                
+
                 CheapestTimeResultTimeRange()
-                
+
                 HStack(alignment: .center) {
                     Text("cheapestPriceResultPage.totalTime")
                     Text(getTotalTime())
                         .bold()
                 }
-                
+
                 Spacer(minLength: 0)
-                
+
                 // The clock which visually presents the results.
                 HStack(spacing: 10) {
                     CheapestTimeClockView(cheapestHourManager.cheapestHoursForUsage!)
                         .padding([.leading, .trailing], 20)
                         .frame(width: 310, height: 310)
                 }
-                
+
                 Spacer(minLength: 0)
-                
+
                 HStack(alignment: .center) {
                     Text("general.today")
                     Text(todayDateFormatter.string(from: Date()))

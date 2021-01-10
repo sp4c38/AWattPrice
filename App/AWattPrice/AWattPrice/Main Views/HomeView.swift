@@ -9,16 +9,16 @@ import SwiftUI
 
 struct HeaderSizePreferenceKey: PreferenceKey {
     struct SizeBounds: Equatable {
-        static func == (lhs: HeaderSizePreferenceKey.SizeBounds, rhs: HeaderSizePreferenceKey.SizeBounds) -> Bool {
-            return false
+        static func == (_: HeaderSizePreferenceKey.SizeBounds, _: HeaderSizePreferenceKey.SizeBounds) -> Bool {
+            false
         }
-        
+
         var bounds: Anchor<CGRect>
     }
-    
+
     typealias Value = SizeBounds?
     static var defaultValue: Value = nil
-    
+
     static func reduce(value: inout Value, nextValue: () -> Value) {
         value = nextValue()
     }
@@ -32,18 +32,18 @@ struct HomeView: View {
     @EnvironmentObject var awattarData: AwattarData
     @EnvironmentObject var crtNotifiSetting: CurrentNotificationSetting
     @EnvironmentObject var currentSetting: CurrentSetting
-    
-    @State var headerSize: CGSize = CGSize(width: 0, height: 0)
+
+    @State var headerSize = CGSize(width: 0, height: 0)
     @State var initialAppearFinished: Bool? = false
     @State var showWhatsNewPage: Bool = false
-    
+
     func parseHeaderSize(preference: HeaderSizePreferenceKey.SizeBounds, geo: GeometryProxy) -> some View {
         let newHeaderSize = geo[preference.bounds].size
-        guard (newHeaderSize != headerSize) else { return Color.clear }
-        self.headerSize = newHeaderSize
+        guard newHeaderSize != headerSize else { return Color.clear }
+        headerSize = newHeaderSize
         return Color.clear
     }
-    
+
     var body: some View {
         NavigationView {
             VStack {
@@ -65,10 +65,10 @@ struct HomeView: View {
                                     }
                                 }
                             }
-                            
+
                             Spacer()
                         }
-                        
+
                         EnergyPriceGraph(headerSize: self.$headerSize)
                     }
                 } else {
@@ -89,13 +89,13 @@ struct HomeView: View {
                 initialAppearFinished = true
                 return
             }
-            if phase == .active && initialAppearFinished == true  {
+            if phase == .active, initialAppearFinished == true {
                 print("App was reentered. Updating data.")
                 awattarData.download(forRegion: currentSetting.entity!.regionIdentifier, networkManager: networkManager)
                 showWhatsNewPage = currentSetting.entity!.showWhatsNew
             }
         }
-        .onChange(of: currentSetting.entity!.regionIdentifier) { newRegionSelection in
+        .onChange(of: currentSetting.entity!.regionIdentifier) { _ in
             awattarData.download(forRegion: currentSetting.entity!.regionIdentifier, networkManager: networkManager)
         }
         .sheet(isPresented: $showWhatsNewPage) {

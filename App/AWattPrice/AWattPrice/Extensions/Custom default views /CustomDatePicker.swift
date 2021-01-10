@@ -10,40 +10,40 @@ import SwiftUI
 struct ComparisonDatePicker: UIViewRepresentable {
     @Binding var selection: Date
     var range: ClosedRange<Date>
-    
+
     init(selection: Binding<Date>, in range: ClosedRange<Date>) {
-        self._selection = selection
+        _selection = selection
         self.range = range
     }
-    
+
     class Coordinator: NSObject {
         @Binding var selection: Date
-        
+
         init(selection: Binding<Date>) {
-            self._selection = selection
+            _selection = selection
         }
-        
+
         @objc func dateChanged(_ sender: UIDatePicker) {
-            self.selection = sender.date
+            selection = sender.date
         }
     }
-    
+
     func makeUIView(context: Context) -> UIDatePicker {
         let datePicker = UIDatePicker()
         datePicker.datePickerMode = .dateAndTime
         datePicker.preferredDatePickerStyle = .compact
         datePicker.minuteInterval = 1
         datePicker.addTarget(context.coordinator, action: #selector(Coordinator.dateChanged(_:)), for: .valueChanged)
-        
+
         return datePicker
     }
-    
-    func updateUIView(_ uiView: UIDatePicker, context: Context) {
-        uiView.date = self.selection
+
+    func updateUIView(_ uiView: UIDatePicker, context _: Context) {
+        uiView.date = selection
         uiView.minimumDate = range.lowerBound
         uiView.maximumDate = range.upperBound
     }
-    
+
     func makeCoordinator() -> Coordinator {
         Coordinator(selection: $selection)
     }

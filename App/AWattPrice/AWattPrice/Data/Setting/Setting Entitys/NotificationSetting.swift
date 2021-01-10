@@ -22,21 +22,21 @@ class CurrentNotificationSetting: AutoUpdatingEntity<NotificationSetting> {
     @Published var changesAndStaged = false
     /// If set to true it indicates to the app that the app is currently sending APNs configuration to the server (backend).
     @Published var currentlySendingToServer = NSLock()
-    
+
     let pushNotificationUpdateManager = PushNotificationUpdateManager()
-    
+
     init(managedObjectContext: NSManagedObjectContext) {
         super.init(entityName: "NotificationSetting", managedObjectContext: managedObjectContext)
     }
-    
+
     /// Switches to new value for the setting which indicates if settings were changed but there was an error uploading these settings.
     func changeChangesButErrorUploading(newValue: Bool) {
-        if self.entity != nil {
-            if self.entity!.changesButErrorUploading != newValue {
-                self.entity!.changesButErrorUploading = newValue
-                
+        if entity != nil {
+            if entity!.changesButErrorUploading != newValue {
+                entity!.changesButErrorUploading = newValue
+
                 do {
-                    try self.managedObjectContext.save()
+                    try managedObjectContext.save()
                 } catch {
                     print("managedObjectContext failed to store new notification setting (changesButErrorUploading) attribute: \(error).")
                     return
@@ -44,18 +44,17 @@ class CurrentNotificationSetting: AutoUpdatingEntity<NotificationSetting> {
             }
         }
     }
-    
-    
+
     /* Changes the last stored APNs token to a new APNs token. A last stored APNs token should be only set if the server successfully could store the APNs token.
-    - Parameter newValue: New last stored APNs token.
-    */
+     - Parameter newValue: New last stored APNs token.
+     */
     func changeLastApnsToken(newValue: String) {
-        if self.entity != nil {
-            if self.entity!.lastApnsToken != newValue {
-                self.entity!.lastApnsToken = newValue
-                
+        if entity != nil {
+            if entity!.lastApnsToken != newValue {
+                entity!.lastApnsToken = newValue
+
                 do {
-                    try self.managedObjectContext.save()
+                    try managedObjectContext.save()
                 } catch {
                     print("managedObjectContext failed to store new notification setting (lastApnsToken) attribute: \(error).")
                     return
@@ -63,15 +62,15 @@ class CurrentNotificationSetting: AutoUpdatingEntity<NotificationSetting> {
             }
         }
     }
-    
+
     /// Get a push notification if the value drops below this locally stored selection.
     func changePriceBelowValue(newValue: Int) {
-        if self.entity != nil {
-            if self.entity!.priceBelowValue != newValue {
-                self.entity!.priceBelowValue = newValue
-                
+        if entity != nil {
+            if entity!.priceBelowValue != newValue {
+                entity!.priceBelowValue = newValue
+
                 do {
-                    try self.managedObjectContext.save()
+                    try managedObjectContext.save()
                 } catch {
                     print("managedObjectContext failed to store new notification setting (priceBelowValue) attribute: \(error).")
                     return
@@ -79,15 +78,15 @@ class CurrentNotificationSetting: AutoUpdatingEntity<NotificationSetting> {
             }
         }
     }
-    
+
     /// Locally stores if the user will get a push notification when prices drop below a certain value.
     func changePriceDropsBelowValueNotifications(newValue: Bool) {
-        if self.entity != nil {
-            if self.entity!.priceDropsBelowValueNotification != newValue {
-                self.entity!.priceDropsBelowValueNotification = newValue
-                
+        if entity != nil {
+            if entity!.priceDropsBelowValueNotification != newValue {
+                entity!.priceDropsBelowValueNotification = newValue
+
                 do {
-                    try self.managedObjectContext.save()
+                    try managedObjectContext.save()
                 } catch {
                     print("managedObjectContext failed to store new notification setting (priceDropsBelowValueNotification) attribute: \(error).")
                     return

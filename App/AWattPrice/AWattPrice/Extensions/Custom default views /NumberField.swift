@@ -19,11 +19,11 @@ struct NumberField: UIViewRepresentable {
     var withDecimalSeperator: Bool
 
     init(text pText: Binding<String>, placeholder pPlaceholder: String, plusMinusButton pPlusMinusButton: Bool = false, withDecimalSeperator: Bool) {
-        self._text = pText
-        self.currentText = pText.wrappedValue
-        self.textFieldView = UITextField()
-        self.placeholder = pPlaceholder
-        self.plusMinusButton = pPlusMinusButton
+        _text = pText
+        currentText = pText.wrappedValue
+        textFieldView = UITextField()
+        placeholder = pPlaceholder
+        plusMinusButton = pPlusMinusButton
         self.withDecimalSeperator = withDecimalSeperator
     }
 
@@ -31,8 +31,8 @@ struct NumberField: UIViewRepresentable {
         let newUIView = textFieldView
 
         newUIView.keyboardType = withDecimalSeperator ? .decimalPad : .numberPad
-        newUIView.text = self.text
-        newUIView.placeholder = self.placeholder
+        newUIView.text = text
+        newUIView.placeholder = placeholder
         newUIView.textAlignment = .left
         newUIView.delegate = context.coordinator
 
@@ -40,7 +40,7 @@ struct NumberField: UIViewRepresentable {
 
         let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
         let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(newUIView.doneButtonTapped(button:)))
-        if self.plusMinusButton {
+        if plusMinusButton {
             let plusMinusButton = UIBarButtonItem(title: "+ / -", style: .plain, target: context.coordinator, action: #selector(context.coordinator.plusMinusPressed(button:)))
             toolBar.setItems([plusMinusButton, space, doneButton], animated: true)
         } else {
@@ -51,36 +51,36 @@ struct NumberField: UIViewRepresentable {
         return newUIView
     }
 
-    func updateUIView(_ uiView: UIViewType, context: Context) {
-        uiView.text = self.text
+    func updateUIView(_ uiView: UIViewType, context _: Context) {
+        uiView.text = text
     }
 
     class Coordinator: NSObject, UITextFieldDelegate {
         var parent: NumberField
 
         init(_ textField: NumberField) {
-            self.parent = textField
+            parent = textField
         }
 
         func textFieldDidEndEditing(_ textField: UITextField) {
-            self.parent.text = textField.text ?? ""
+            parent.text = textField.text ?? ""
 
-            if self.parent.withDecimalSeperator == true {
+            if parent.withDecimalSeperator == true {
                 if let doubleValue = parent.text.doubleValue?.priceString {
-                    self.parent.text = doubleValue
+                    parent.text = doubleValue
                 }
             }
         }
 
-        @objc func plusMinusPressed(button: UIBarButtonItem) {
-            if self.parent.textFieldView.text != nil {
-                let fieldText = self.parent.textFieldView.text!
+        @objc func plusMinusPressed(button _: UIBarButtonItem) {
+            if parent.textFieldView.text != nil {
+                let fieldText = parent.textFieldView.text!
                 if fieldText.hasPrefix("-") {
-                    let offsetIndex = fieldText.index(self.parent.currentText.startIndex, offsetBy: 1)
+                    let offsetIndex = fieldText.index(parent.currentText.startIndex, offsetBy: 1)
                     let newString = String(fieldText[offsetIndex...])
-                    self.parent.textFieldView.text = newString
+                    parent.textFieldView.text = newString
                 } else {
-                    self.parent.textFieldView.text = "-" + fieldText
+                    parent.textFieldView.text = "-" + fieldText
                 }
             }
         }
@@ -92,7 +92,7 @@ struct NumberField: UIViewRepresentable {
 }
 
 extension UITextField {
-    @objc func doneButtonTapped(button: UIBarButtonItem) -> Void {
-        self.resignFirstResponder()
+    @objc func doneButtonTapped(button _: UIBarButtonItem) {
+        resignFirstResponder()
     }
 }

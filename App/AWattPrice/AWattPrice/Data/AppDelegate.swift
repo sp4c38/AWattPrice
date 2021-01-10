@@ -11,16 +11,16 @@ import UIKit
 import UserNotifications
 
 class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
-    var crtNotifiSetting: CurrentNotificationSetting? = nil
-    var currentSetting: CurrentSetting? = nil
-    
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+    var crtNotifiSetting: CurrentNotificationSetting?
+    var currentSetting: CurrentSetting?
+
+    func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
         let center = UNUserNotificationCenter.current()
         center.delegate = self
         return true
     }
-    
-    func applicationWillTerminate(_ application: UIApplication) {
+
+    func applicationWillTerminate(_: UIApplication) {
         if crtNotifiSetting != nil {
             if crtNotifiSetting!.changesAndStaged == true {
                 if crtNotifiSetting!.entity != nil {
@@ -31,27 +31,29 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
             }
         }
     }
-    
-    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+
+    func application(_: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         print("Registration from APNs for push notifications was granted.")
-        
+
         let apnsDeviceTokenString = deviceToken.map {
             String(format: "%02.2hhx", $0)
         }.joined()
-        
-        if self.crtNotifiSetting != nil && self.currentSetting != nil {
-            self.crtNotifiSetting!.currentlySendingToServer.lock()
 
-            if self.crtNotifiSetting!.entity != nil && self.currentSetting!.entity != nil {
+        if crtNotifiSetting != nil, currentSetting != nil {
+            crtNotifiSetting!.currentlySendingToServer.lock()
+
+            if crtNotifiSetting!.entity != nil, currentSetting!.entity != nil {
                 let notificationConfigRepresentable = UploadPushNotificationConfigRepresentable(
                     apnsDeviceTokenString,
-                    Int(self.currentSetting!.entity!.regionIdentifier),
-                    self.currentSetting!.entity!.pricesWithVAT ? 1 : 0,
-                    self.crtNotifiSetting!.entity!)
-                
-                if notificationConfigRepresentable.checkUserWantsNotifications() == true || self.crtNotifiSetting!.entity!.changesButErrorUploading == true {
-                    if self.crtNotifiSetting!.entity!.lastApnsToken != apnsDeviceTokenString ||
-                        self.crtNotifiSetting!.entity!.changesButErrorUploading == true {
+                    Int(currentSetting!.entity!.regionIdentifier),
+                    currentSetting!.entity!.pricesWithVAT ? 1 : 0,
+                    crtNotifiSetting!.entity!
+                )
+
+                if notificationConfigRepresentable.checkUserWantsNotifications() == true || crtNotifiSetting!.entity!.changesButErrorUploading == true {
+                    if crtNotifiSetting!.entity!.lastApnsToken != apnsDeviceTokenString ||
+                        crtNotifiSetting!.entity!.changesButErrorUploading == true
+                    {
                         DispatchQueue.global(qos: .background).async {
                             print("Need to update stored APNs configuration. Stored APNs token and current APNs token mismatch OR previously notification configuration couldn't be uploaded because of some issue.")
                             let group = DispatchGroup()
@@ -72,15 +74,15 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
                         print("No need to update stored APNs configuration. Stored token matches current APNs token and no errors previously occurred when uploading changes.")
                     }
                 }
-                self.crtNotifiSetting!.changeLastApnsToken(newValue: apnsDeviceTokenString)
+                crtNotifiSetting!.changeLastApnsToken(newValue: apnsDeviceTokenString)
             }
-            self.crtNotifiSetting!.currentlySendingToServer.unlock()
+            crtNotifiSetting!.currentlySendingToServer.unlock()
         } else {
             print("Settings could not be found. Therefor can't store last APNs token.")
         }
     }
-    
-    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+
+    func application(_: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
         print("Registration to APNs for push notifications was NOT granted: \(error.localizedDescription)")
     }
 }

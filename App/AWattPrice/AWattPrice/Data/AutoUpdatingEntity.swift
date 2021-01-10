@@ -12,18 +12,18 @@ class AutoUpdatingEntity<T: NSManagedObject>: NSObject, NSFetchedResultsControll
     var managedObjectContext: NSManagedObjectContext // managed object context is stored with this object because it is later needed to change settings
     let entityController: NSFetchedResultsController<T> // settings controller which reports changes in the persistent stored Setting object
     var entity: T?
-    
+
     init(entityName: String, managedObjectContext: NSManagedObjectContext) {
         self.managedObjectContext = managedObjectContext
-        
+
         let fetchRequest = NSFetchRequest<T>(entityName: entityName)
 //        if T.self == NotificationSetting.self {
 //            fetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \NotificationSetting.getNewPricesAvailableNotification, ascending: true)]
 //        } else {
-            fetchRequest.sortDescriptors = []
+        fetchRequest.sortDescriptors = []
 //        }
         entityController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: managedObjectContext, sectionNameKeyPath: nil, cacheName: nil)
-            
+
         super.init()
         entityController.delegate = self
         do {
@@ -31,15 +31,15 @@ class AutoUpdatingEntity<T: NSManagedObject>: NSObject, NSFetchedResultsControll
         } catch {
             print("Error performing fetch request on Setting-Item out of Core Data.")
         }
-        
+
         if T.self == Setting.self {
-            self.entity = getCurrentSetting(entityName: entityName, managedObjectContext: self.managedObjectContext, fetchRequestResults: (entityController as? NSFetchedResultsController<Setting>)?.fetchedObjects ?? []) as? T
+            entity = getCurrentSetting(entityName: entityName, managedObjectContext: self.managedObjectContext, fetchRequestResults: (entityController as? NSFetchedResultsController<Setting>)?.fetchedObjects ?? []) as? T
         } else if T.self == NotificationSetting.self {
-            self.entity = getNotificationSetting(entityName: entityName, managedObjectContext: self.managedObjectContext, fetchRequestResults: (entityController as? NSFetchedResultsController<NotificationSetting>)?.fetchedObjects ?? []) as? T
+            entity = getNotificationSetting(entityName: entityName, managedObjectContext: self.managedObjectContext, fetchRequestResults: (entityController as? NSFetchedResultsController<NotificationSetting>)?.fetchedObjects ?? []) as? T
         }
     }
-    
-    func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+
+    func controllerWillChangeContent(_: NSFetchedResultsController<NSFetchRequestResult>) {
         objectWillChange.send()
     }
 }

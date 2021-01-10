@@ -7,14 +7,13 @@
 
 import SwiftUI
 
-
 struct CustomInsetGroupedList<Content: View>: View {
     let content: Content
-    
+
     init(@ViewBuilder content: () -> Content) {
         self.content = content()
     }
-    
+
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
@@ -33,13 +32,13 @@ struct CustomInsetGroupedListItem<Content: View>: View { // All content which is
     let content: Content
     var backgroundColorDisabled = false
     var backgroundColor: Color?
-    
+
     init(header: Text? = nil, footer: Text? = nil, @ViewBuilder content: () -> Content) {
         self.header = header
         self.footer = footer
         self.content = content()
     }
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             if header != nil {
@@ -49,7 +48,7 @@ struct CustomInsetGroupedListItem<Content: View>: View { // All content which is
                     .foregroundColor(Color(hue: 0.7083, saturation: 0.0312, brightness: 0.5020))
                     .fixedSize(horizontal: false, vertical: true)
             }
-            
+
             VStack {
                 content
             }
@@ -59,11 +58,11 @@ struct CustomInsetGroupedListItem<Content: View>: View { // All content which is
             .ifTrue(backgroundColorDisabled == false) { content in
                 content
                     .background(colorScheme == .light ?
-                                    Color(red: 0.96, green: 0.95, blue: 0.97) :
-                                    Color(hue: 0.6667, saturation: 0.0340, brightness: 0.1424))
+                        Color(red: 0.96, green: 0.95, blue: 0.97) :
+                        Color(hue: 0.6667, saturation: 0.0340, brightness: 0.1424))
             }
             .cornerRadius(10)
-            
+
             if footer != nil {
                 footer
                     .font(.caption2)
@@ -75,7 +74,7 @@ struct CustomInsetGroupedListItem<Content: View>: View { // All content which is
         }
         .padding([.leading, .trailing], 16)
     }
-    
+
     func disableBackgroundColor(_ disable: Bool) -> Self {
         if disable == true {
             var copy = self

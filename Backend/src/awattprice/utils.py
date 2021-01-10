@@ -151,7 +151,7 @@ async def read_data(*, file_path: Path) -> Optional[Box]:
         return None
     lock = FileLock(f"{file_path.as_posix()}.lck")
     with lock.acquire():
-        async with aiofiles.open(file_path) as fh:
+        async with aiofiles.open(file_path) as fh:  # type: ignore
             raw_data = ""
             async for line in fh:
                 raw_data += line

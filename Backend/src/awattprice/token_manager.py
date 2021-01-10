@@ -14,14 +14,12 @@ import json
 import os
 import sqlite3
 
-from box import Box
-from filelock import FileLock
 from loguru import logger as log
 from multiprocessing import Lock
 from pathlib import Path
 
 
-class Token_Database_Manager:
+class TokenDatabaseManager:
     lock = Lock()
 
     def connect(self, config):
@@ -87,7 +85,7 @@ class Token_Database_Manager:
         log.info("Connection to database was closed.")
 
 
-class APNs_Token_Manager:
+class APNsTokenManager:
     def __init__(self, token_data, database_manager):
         self.token_data = token_data
         self.final_data = None
@@ -147,11 +145,11 @@ class APNs_Token_Manager:
             return True
         elif len(items) == 1:
             new_config_raw = json.dumps({"config": self.token_data["config"]})
-            if (
-                not (items[0][1] == self.token_data["region_identifier"])
-                or not (items[0][2] == self.token_data["vat_selection"])
-                or not (items[0][3] == new_config_raw)
-            ):
+            if any([
+                (items[0][1] != self.token_data["region_identifier"]),
+                (items[0][2] != self.token_data["vat_selection"]),
+                (items[0][3] != new_config_raw)
+            ]):
                 self.is_new_token = False  # Just new config but no new token
                 self.final_data = {"config": self.token_data["config"]}
                 log.info("Client requested to update existing APNs configuration.")

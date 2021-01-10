@@ -14,21 +14,20 @@ __author__ = "Léon Becker <lb@space8.me>"
 __copyright__ = "Léon Becker"
 __license__ = "mit"
 
-import aiofiles
-import arrow
 import asyncio
 import filelock
 import httpx
 import json
 
+import validators
+
 from fastapi import status
 from loguru import logger as log
 from pathlib import Path
 from urllib.parse import urlparse
-from validators import url as URL_Validator
 
 from awattprice.config import read_config
-from awattprice.defaults import Notifications, Region
+from awattprice.defaults import Region
 from awattprice.utils import check_data_needs_update, read_data, start_logging
 
 
@@ -51,15 +50,20 @@ async def send_request(url: str, client: httpx.AsyncClient, max_tries: int) -> b
             if response.status_code == status.HTTP_200_OK:
                 try:
                     json.loads(response.text)
+                except json.JSONDecodeError as e:
+                    log.warning(
+                        f"Could not decode valid json of response (status code 200) from Backend: {e}")
+                    request_successful = False
+                except Exception as e:
+                    log.warning(
+                        f"Unknown exception while parsing response (status code 200) from Backend: {e}")
+                    request_successful = False
+                else:
                     request_successful = True
                     log.debug(f"Attempt {tries_made} to {url} was successful.")
-                except:
-                    log.warning(
-                        "Could not decode valid json of response (status code 200) from Backend.")
-                    request_successful = False
             else:
                 log.warning(
-                    "Server for {url} responded with status code other than 200.")
+                    f"Server for {url} responded with status code other than 200.")
                 request_successful = False
 
     if tries_made is max_tries:
@@ -94,7 +98,7 @@ async def main():
     log.info("Started scheduled request.")
 
     if config.poll.backend_url:
-        if URL_Validator(config.poll.backend_url) == True:
+        if validators.url(config.poll.backend_url) is True:
             lock_file_path = Path(
                 config.file_location.data_dir).expanduser() / "scheduled_event.lck"
 
@@ -106,7 +110,7 @@ async def main():
                     tasks = []
                     for region in [[getattr(Region, "de".upper(), None), 3],  # number of attempts for a successful request, region id
                                    [getattr(Region, "at".upper(), None), 3]]:
-                        if region[0].name != None:
+                        if region[0].name is not None:
                             tasks.append(asyncio.create_task(
                                 run_request(region[0], region[1], config)))
 
@@ -118,9 +122,10 @@ async def main():
             log.warning(f"Value {config.poll.backend_url} set in \"config.poll.backend_url\" is no valid URL.")
     else:
         log.warning(
-            "Scheduled request was called without having \"config.poll.backend_url\" configured. Won't run scheduled request.")
+            """Scheduled request was called without having "config.poll.backend_url" configured. Won't run scheduled request.""")
 
     log.info("Finished scheduled request.")
+
 
 if __name__ == "__main__":
     asyncio.run(main())

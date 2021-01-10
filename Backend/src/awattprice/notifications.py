@@ -1,28 +1,108 @@
 # -*- coding: utf-8 -*-
 
-""" 
+"""
 
 Check which users apply to receive certain notifications.
 Send notifications via APNs to those users.
 
 """
 
+from math import floor
+
 import arrow
 import asyncio
 import httpx
-import jwt
 import json
-import socket
-
-from awattprice import poll
-from awattprice.defaults import Region, Notifications
-from awattprice.token_manager import APNs_Token_Manager
+import jwt
 
 from box import Box
+from configupdater import ConfigUpdater  # type: ignore
 from datetime import datetime
 from dateutil.tz import tzstr
+from pathlib import Path
 from loguru import logger as log
-from math import floor
+
+from awattprice import poll
+from awattprice.defaults import Region
+from awattprice.token_manager import APNsTokenManager
+
+
+class DetailedPriceData:
+    def __init__(self, data: Box, region_identifier: int):
+        self.data = data
+        self.region_identifier = region_identifier
+        self.lowest_price = None
+        self.lowest_price_point = None
+        self.timedata = []  # Only contains current and future prices
+
+        for price_point in self.data.prices:
+            timezone = tzstr("CET-1CEST,M3.5.0/2,M10.5.0/3").tzname(
+                datetime.fromtimestamp(price_point.start_timestamp)
+            )
+            now = arrow.utcnow().to(timezone)
+            now_day_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+            if price_point.start_timestamp >= now_day_start.timestamp:
+                marketprice = round(price_point.marketprice, 2)
+                if self.lowest_price is None or marketprice < self.lowest_price:
+                    self.lowest_price = marketprice
+                    self.lowest_price_point = price_point
+
+
+class PriceDropsBelow:
+
+    # Use localization keys which are resolved on the client side
+    title_loc_key = "general.priceGuard"
+    body_loc_key = "notifications.price_drops_below.body"
+    collapse_id = "collapse.priceDropsBelow3DK203W0#"
+
+
+class Notifications:
+
+    _is_initialized = False
+
+    def __init__(self, config: ConfigUpdater) -> None:
+        self.price_drops_below_notification = PriceDropsBelow()
+        self.encryption_algorithm = "ES256"
+
+        try:
+            dev_team_id_path = Path(config.notifications.dev_team_id).expanduser()
+            self.dev_team_id = (
+                open(dev_team_id_path.as_posix(), "r").readlines()[0].replace("\n", "")
+            )
+            encryption_key_id_path = Path(
+                config.notifications.apns_encryption_key_id
+            ).expanduser()
+            self.encryption_key_id = (
+                open(encryption_key_id_path.as_posix(), "r")
+                .readlines()[0]
+                .replace("\n", "")
+            )
+            encryption_key_path = Path(
+                config.notifications.apns_encryption_key
+            ).expanduser()
+            self.encryption_key = open(encryption_key_path.as_posix(), "r").read()
+            self.url_path = "/3/device/{}"
+        except Exception as e:
+            log.warning(
+                f"Couldn't read or find file(s) containing required information to send notifications "
+                f"with APNs. Notifications won't be checked and won't be sent by the backend: {e}."
+            )
+            return
+
+        if config.notifications.use_sandbox:
+            self.apns_server_url = "https://api.sandbox.push.apple.com"
+            self.bundle_id = "me.space8.AWattPrice.dev"
+        else:
+            self.apns_server_url = "https://api.push.apple.com"
+            self.bundle_id = "me.space8.AWattPrice"
+        self.apns_server_port = 443
+
+        self._is_initialized = True
+
+    @property
+    def is_initialized(self):
+        """Return True if __init__ was successful."""
+        return self._is_initialized
 
 
 async def handle_apns_response(db_manager, token, response, status_code):
@@ -39,8 +119,8 @@ async def handle_apns_response(db_manager, token, response, status_code):
             ]:
                 remove_token = True
 
-            if remove_token == True:
-                token_manager = APNs_Token_Manager({"token": token}, db_manager)
+            if remove_token is True:
+                token_manager = APNsTokenManager({"token": token}, db_manager)
                 await token_manager.remove_entry_from_database()
                 log.debug("Removed invalid APNs token from database.")
     else:
@@ -57,7 +137,7 @@ async def price_drops_below_notification(
     region_identifier,
     vat_selection,
 ):
-    if not price_data.lowest_price is None:
+    if price_data.lowest_price is not None:
         lowest_price = round(price_data.lowest_price, 2)
         # User selected Germany as a region and wants VAT included in all electricity prices
         if region_identifier == 0 and vat_selection == 1:
@@ -69,7 +149,6 @@ async def price_drops_below_notification(
             timezone = tzstr("CET-1CEST,M3.5.0/2,M10.5.0/3").tzname(
                 datetime.fromtimestamp(price_data.lowest_price_point.start_timestamp)
             )
-            now = arrow.utcnow().to(timezone)
             lowest_price_start = arrow.get(
                 price_data.lowest_price_point.start_timestamp
             ).to(timezone)
@@ -84,7 +163,6 @@ async def price_drops_below_notification(
             # Together 4,39
             formatted_lowest_price = f"{lowest_price_cent},{lowest_price_cent_decimal}"
 
-            awattprice_bundle_id = notification_defaults.bundle_id
             encryption_algorithm = notification_defaults.encryption_algorithm
 
             # Set token data
@@ -141,7 +219,7 @@ async def price_drops_below_notification(
 
             status_code = None
             response = None
- 
+
             async with httpx.AsyncClient(http2=True) as client:
                 request = await client.post(
                     url, headers=request_headers, data=json.dumps(notification_payload)
@@ -156,44 +234,17 @@ async def price_drops_below_notification(
                     except Exception as e:
                         log.warning(f"Couldn't decode response from APNs servers: {e}")
 
-            if not response == None and not status_code == None:
+            if response is not None and status_code is not None:
                 await handle_apns_response(db_manager, token, response, status_code)
-
-
-class DetailedPriceData:
-    def __init__(self, data: Box, region_identifier: int):
-        self.data = data
-        self.region_identifier = region_identifier
-        self.lowest_price = None
-        self.lowest_price_point = None
-        self.timedata = []  # Only contains current and future prices
-
-        for price_point in self.data.prices:
-            timezone = tzstr("CET-1CEST,M3.5.0/2,M10.5.0/3").tzname(
-                datetime.fromtimestamp(price_point.start_timestamp)
-            )
-            now = arrow.utcnow().to(timezone)
-            now_day_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
-            tomorrow_hour_start = now_day_start.shift(days=+1)
-
-            # tomorrow_hour_start.timestamp:
-            if price_point.start_timestamp >= now_day_start.timestamp:
-                marketprice = round(price_point.marketprice, 2)
-                if self.lowest_price == None or marketprice < self.lowest_price:
-                    self.lowest_price = marketprice
-                    self.lowest_price_point = price_point
 
 
 async def check_and_send(config, data, data_region, db_manager):
     # Check which users apply to receive certain notifications and send them to those users.
 
     log.info("Checking and sending notifications.")
-    notification_defaults = Notifications()
-    values_set_successful = notification_defaults.set_values(
-        config,
-    )
+    notification_defaults = Notifications(config)
 
-    if values_set_successful:
+    if notification_defaults.is_initialized:
         all_data_to_check = {}
         log.debug(
             f"Need to check and send notifications for data region {data_region.name}."
@@ -216,7 +267,7 @@ async def check_and_send(config, data, data_region, db_manager):
         for notifi_config in items:
             try:
                 configuration = json.loads(notifi_config["configuration"])["config"]
-            except:
+            except Exception:
                 log.warning(
                     "Internally passed notification configuration of a user couldn't be read "
                     "while checking if the user should receive notifications."
@@ -225,10 +276,10 @@ async def check_and_send(config, data, data_region, db_manager):
 
             # Check all notification types with following if statment to check if the user
             # wants to get any notifications at all
-            if configuration["price_below_value_notification"]["active"] == True:
+            if configuration["price_below_value_notification"]["active"] is True:
                 region_identifier = notifi_config["region_identifier"]
 
-                if not region_identifier in all_data_to_check:
+                if region_identifier not in all_data_to_check:
                     # Runs if a user is in a different region as those which are included in the regions
                     # to send notification updates.
                     # Therefor this polls the aWATTar API of the certain region.
@@ -247,17 +298,15 @@ async def check_and_send(config, data, data_region, db_manager):
                     else:
                         continue
 
-                if (
-                    not all_data_to_check[region_identifier].lowest_price is None
-                    and not all_data_to_check[region_identifier].lowest_price_point
-                    is None
+                if (all_data_to_check[region_identifier].lowest_price is not None) and (
+                    all_data_to_check[region_identifier].lowest_price_point is not None
                 ):
                     token = notifi_config["token"]
                     vat_selection = notifi_config["vat_selection"]
 
                     if (
                         configuration["price_below_value_notification"]["active"]
-                        == True
+                        is True
                     ):
                         # If user applies to get price below value notifications add following item to queue
                         below_value = configuration["price_below_value_notification"][
@@ -278,7 +327,7 @@ async def check_and_send(config, data, data_region, db_manager):
                         )
 
         tasks = []
-        while notification_queue.empty() == False:
+        while notification_queue.empty() is False:
             task = await notification_queue.get()
             tasks.append(
                 asyncio.create_task(

@@ -9,23 +9,18 @@ __author__ = "Léon Becker <lb@space8.me>"
 __copyright__ = "Léon Becker"
 __license__ = "mit"
 
-import asyncio
 import json
-import sqlite3
 
 from fastapi import Request
 from loguru import logger as log
-from pathlib import Path
 
-from awattprice.config import read_config
-from awattprice.token_manager import APNs_Token_Manager
-from awattprice.utils import read_data, write_data
+from awattprice.token_manager import APNsTokenManager
 
 
 async def write_token(request_data, db_manager):
     # Store APNs token configuration to the database
     log.info("Initiated a new background task to store an APNs configuration.")
-    apns_token_manager = APNs_Token_Manager(request_data, db_manager)
+    apns_token_manager = APNsTokenManager(request_data, db_manager)
 
     await db_manager.acquire_lock()
     need_to_write_data = await apns_token_manager.set_data()
@@ -82,7 +77,7 @@ async def validate_token(request: Request):
                     "below_value"
                 ] = below_value
 
-        if not request_data["token"] == None and not request_data["config"] == None:
+        if request_data["token"] is not None and request_data["config"] is not None:
             request_data_valid = True
 
             # Validate types
@@ -112,8 +107,7 @@ async def validate_token(request: Request):
             else:
                 log.info("APNs data (sent from a client) is NOT valid.")
                 return None
-    except Exception as exp:
+    except Exception as e:
         log.warning(
-            "Could NOT decode to a valid json when validating client APNs data."
+            f"Could NOT decode to a valid json when validating client APNs data: {e}"
         )
-        return None

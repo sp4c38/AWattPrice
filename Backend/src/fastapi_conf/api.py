@@ -10,23 +10,23 @@ __author__ = "Frank Becker <fb@alien8.de>"
 __copyright__ = "Frank Becker"
 __license__ = "mit"
 
-from typing import Any, Dict, List, Optional, Union
 
 from fastapi import BackgroundTasks, FastAPI, Request, status
 from fastapi.responses import JSONResponse
 
-from awattprice import poll, apns
-from awattprice import notifications
+from awattprice import apns, notifications, poll
 from awattprice.config import read_config
 from awattprice.defaults import Region
-from awattprice.token_manager import Token_Database_Manager
+from awattprice.token_manager import TokenDatabaseManager
 from awattprice.utils import start_logging
 
 api = FastAPI()
 
+
 @api.get("/")
 async def root():
     return {"message": "Nothing here. Please, move on."}
+
 
 @api.get("/data/")
 async def no_region(background_tasks: BackgroundTasks):
@@ -34,11 +34,12 @@ async def no_region(background_tasks: BackgroundTasks):
     region = Region.DE
     data, check_notification = await poll.get_data(config=config, region=region)
 
-    if check_notification == True:
+    if check_notification is True:
         background_tasks.add_task(notifications.check_and_send, config, data, region, db_manager)
 
     headers = await poll.get_headers(config=config, data=data)
     return JSONResponse(content=data, headers=headers)
+
 
 @api.get("/data/{region_id}")
 async def with_region(region_id, background_tasks: BackgroundTasks):
@@ -47,7 +48,7 @@ async def with_region(region_id, background_tasks: BackgroundTasks):
     if not region:
         return {"prices": []}
     data, check_notification = await poll.get_data(config=config, region=region)
-    
+
     # check_notification = True # Activate for debugging and testing of the push notification system
     if check_notification is True:
         background_tasks.add_task(notifications.check_and_send, config, data, region, db_manager)
@@ -55,14 +56,16 @@ async def with_region(region_id, background_tasks: BackgroundTasks):
     headers = await poll.get_headers(config=config, data=data)
     return JSONResponse(content=data, headers=headers)
 
+
 @api.post("/data/apns/send_token")
 async def send_token(request: Request, background_tasks: BackgroundTasks):
     request_data = await apns.validate_token(request)
-    if not request_data is None:
+    if request_data is not None:
         background_tasks.add_task(apns.write_token, request_data, db_manager)
-        return JSONResponse({"tokenWasPassedSuccessfully": True}, status_code = status.HTTP_200_OK)
+        return JSONResponse({"tokenWasPassedSuccessfully": True}, status_code=status.HTTP_200_OK)
     else:
-        return JSONResponse({"tokenWasPassedSuccessfully": False}, status_code = status.HTTP_400_BAD_REQUEST)
+        return JSONResponse({"tokenWasPassedSuccessfully": False}, status_code=status.HTTP_400_BAD_REQUEST)
+
 
 @api.on_event("startup")
 def startup_event():
@@ -71,9 +74,10 @@ def startup_event():
     start_logging(config)
     global db_manager
 
-    db_manager = Token_Database_Manager()
+    db_manager = TokenDatabaseManager()
     db_manager.connect(config)
     db_manager.check_table_exists()
+
 
 @api.on_event("shutdown")
 def shutdown_backend():

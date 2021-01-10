@@ -10,7 +10,7 @@ __author__ = "Frank Becker <fb@alien8.de>"
 __copyright__ = "Frank Becker"
 __license__ = "mit"
 
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional
 from urllib.parse import urlencode
 
 import arrow  # type: ignore

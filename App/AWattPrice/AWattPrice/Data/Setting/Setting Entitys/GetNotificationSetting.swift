@@ -19,7 +19,7 @@ func getNotificationSetting(entityName: String, managedObjectContext: NSManagedO
             newSetting.lastApnsToken = nil
             newSetting.changesButErrorUploading = false
             newSetting.priceDropsBelowValueNotification = false
-            newSetting.priceBelowValue = 0.0
+            newSetting.priceBelowValue = 0
             
             do {
                 try managedObjectContext.save()

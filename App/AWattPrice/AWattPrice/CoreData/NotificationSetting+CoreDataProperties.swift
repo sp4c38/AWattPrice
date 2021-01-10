@@ -21,7 +21,7 @@ extension NotificationSetting {
     /// Stores the last apns token that was sent to the Apps provider server.
     @NSManaged public var lastApnsToken: String?
     /// Associated setting which is needed if priceDropsBelowNotification is active. The user will get push notifications if any energy prices are below this value.
-    @NSManaged public var priceBelowValue: Double
+    @NSManaged public var priceBelowValue: Int
     /// If activated and configured by the user it will make sure that the user becomes a notification if there are prices below a certain value.
     @NSManaged public var priceDropsBelowValueNotification: Bool
 }

@@ -53,7 +53,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
                     if self.crtNotifiSetting!.entity!.lastApnsToken != apnsDeviceTokenString ||
                         self.crtNotifiSetting!.entity!.changesButErrorUploading == true {
                         DispatchQueue.global(qos: .background).async {
-                            print("Need to update stored APNs configuration. Stored APNs token and current APNs token do NOT match OR previously notification configuration couldn't be uploaded because of some issue.")
+                            print("Need to update stored APNs configuration. Stored APNs token and current APNs token mismatch OR previously notification configuration couldn't be uploaded because of some issue.")
                             let group = DispatchGroup()
                             group.enter()
                             DispatchQueue.main.async {

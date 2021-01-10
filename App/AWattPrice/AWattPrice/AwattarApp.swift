@@ -6,54 +6,7 @@
 //
 
 import CoreData
-import Network
 import SwiftUI
-
-class NetworkManager: ObservableObject {
-    @Published var networkStatus: NWPath.Status = NWPath.Status.unsatisfied
-    var monitorer: NWPathMonitor
-
-    init() {
-        self.monitorer = NWPathMonitor()
-        self.monitorer.pathUpdateHandler = { path in
-            DispatchQueue.main.async {
-                self.networkStatus = path.status
-            }
-        }
-        self.monitorer.start(queue: DispatchQueue(label: "NetworkMonitorer"))
-    }
-}
-
-struct NetworkManagerKey: EnvironmentKey {
-    static var defaultValue: NetworkManager = NetworkManager()
-}
-
-class NotificationAccess {
-    var access = false
-}
-
-class NotificationAccessKey: EnvironmentKey {
-    static var defaultValue: NotificationAccess = NotificationAccess()
-}
-
-extension EnvironmentValues {
-    var networkManager: NetworkManager {
-        get {
-            return self[NetworkManagerKey.self]
-        }
-        set {}
-    }
-    
-    var notificationAccess: NotificationAccess {
-        get { self[NotificationAccessKey.self] }
-        set { self[NotificationAccessKey.self] = newValue }
-    }
-    
-    var deviceType: UIUserInterfaceIdiom {
-        get { UIDevice.current.userInterfaceIdiom }
-        set {}
-    }
-}
 
 /// An object which holds and loads a NSPersistentContainer to allow access to persistent stored data from Core Data.
 class PersistenceManager {
@@ -75,18 +28,19 @@ class PersistenceManager {
 struct AwattarApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
-    var persistence = PersistenceManager()
+    var awattarData: AwattarData
     var crtNotifiSetting: CurrentNotificationSetting
     var currentSetting: CurrentSetting
-    
-    var awattarData: AwattarData
-    var keyboardObserver: KeyboardObserver
+    var persistence = PersistenceManager()
     
     init() {
         self.awattarData = AwattarData()
-        self.crtNotifiSetting = CurrentNotificationSetting(managedObjectContext: self.persistence.persistentContainer.viewContext)
-        self.currentSetting = CurrentSetting(managedObjectContext: self.persistence.persistentContainer.viewContext)
-        self.keyboardObserver = KeyboardObserver()
+        self.crtNotifiSetting = CurrentNotificationSetting(
+            managedObjectContext: self.persistence.persistentContainer.viewContext
+        )
+        self.currentSetting = CurrentSetting(
+            managedObjectContext: self.persistence.persistentContainer.viewContext
+        )
         self.appDelegate.crtNotifiSetting = self.crtNotifiSetting
         self.appDelegate.currentSetting = self.currentSetting
     }
@@ -100,7 +54,6 @@ struct AwattarApp: App {
                 .environmentObject(currentSetting)
                 .environmentObject(crtNotifiSetting)
                 .environmentObject(CheapestHourManager())
-                .environmentObject(keyboardObserver)
         }
     }
 }

@@ -11,9 +11,9 @@ class UploadPushNotificationConfigRepresentable: Encodable {
     class NotificationConfig: Encodable {
         class PriceBelowValueNotification: Encodable {
             var active: Bool
-            var belowValue: Double
+            var belowValue: Int
             
-            init(active: Bool, belowValue: Double) {
+            init(active: Bool, belowValue: Int) {
                 self.active = active
                 self.belowValue = belowValue
             }
@@ -21,7 +21,7 @@ class UploadPushNotificationConfigRepresentable: Encodable {
         
         var priceBelowValueNotification: PriceBelowValueNotification
         
-        init(active: Bool, priceBelowValue: Double) {
+        init(active: Bool, priceBelowValue: Int) {
             self.priceBelowValueNotification = PriceBelowValueNotification(
                 active: active,
                 belowValue: priceBelowValue)

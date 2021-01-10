@@ -1,9 +1,9 @@
-/* 
+/*
   Localizable.strings
   AwattarApp
 
   Created by Léon Becker on 27.09.20.
-  
+
 */
 
 // Welcome Splash Screen localizations
@@ -80,7 +80,7 @@
 "notificationPage.noNotificationAccessInfo" = "Please allow AWattPrice notifications in the Settings App.";
 "notificationPage.notification.priceDropsBelowValue" = "Price drops on or below desired price";
 "notificationPage.notification.priceDropsBelowValue.wishPrice" = "Desired price";
-"notificationPage.notification.priceDropsBelowValue.description" = "Receive a notification if prices fall on or below a self-set price.";
+"notificationPage.notification.priceDropsBelowValue.description" = "Receive a notification as soon as prices fall on or below a certain value.";
 "notificationPage.notification.priceDropsBelowValue.description.extra" = "Each day, as new prices become available, you will be notified, insofar those prices for the next day fall on or below your desired price.";
 
 // Data download error view

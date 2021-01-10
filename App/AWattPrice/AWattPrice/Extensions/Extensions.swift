@@ -29,14 +29,14 @@ extension View {
 struct AnimatableCustomFontModifier: AnimatableModifier {
     var size: CGFloat
     var weight: Font.Weight
-    
+
     var animatableData: CGFloat {
         get { size }
         set {
             size = newValue
         }
     }
-    
+
     func body(content: Content) -> some View {
         content
             .font(.system(size: size, weight: weight))
@@ -70,7 +70,7 @@ extension String {
     /// The double value of a string. This supports , and . as seperator. This attribute is nil if the string can't be converted to a double and a double if conversion was successful.
     var doubleValue: Double? {
         let numberFormatter = NumberFormatter()
-        
+
         numberFormatter.groupingSeparator = Locale.current.groupingSeparator
         numberFormatter.decimalSeparator = Locale.current.decimalSeparator
         numberFormatter.numberStyle = .decimal
@@ -83,21 +83,31 @@ extension String {
             } else {
                 numberFormatter.decimalSeparator = "."
             }
-            
+
             if numberFormatter.groupingSeparator == "." {
                 numberFormatter.groupingSeparator = ","
             } else {
                 numberFormatter.groupingSeparator = "."
             }
-            
+
             if let result = numberFormatter.number(from: self) {
                 return Double(truncating: result)
             }
         }
-        
+
         return nil
     }
-    
+
+    var integerValue: Int? {
+        let numberFormatter = NumberFormatter()
+
+        if let result = numberFormatter.number(from: self) {
+            return Int(truncating: result)
+        }
+
+        return nil
+    }
+
     func removeOutOfString(atIndex index: Int) -> String {
         var before = ""
         if index - 1 >= 0 {
@@ -107,7 +117,7 @@ extension String {
         let newString = before + after
         return newString
     }
-    
+
     func addAtIndex(atIndex index: Int, add addString: String) -> String {
         var before = ""
         if index - 1 >= 0 {
@@ -125,12 +135,25 @@ extension Double {
         numberFormatter.numberStyle = .decimal
         numberFormatter.maximumFractionDigits = 2
         numberFormatter.minimumFractionDigits = 2
-    
+
         let currentSelfDouble = (self * 100).rounded() / 100
-        
+
         if ((currentSelfDouble * 100).rounded() / 100) == 0 {
             return ""
         } else if let result = numberFormatter.string(from: NSNumber(value: currentSelfDouble)) {
+            return result
+        } else {
+            return nil
+        }
+    }
+}
+
+extension Int {
+    var priceString: String? {
+        let numberFormatter = NumberFormatter()
+        numberFormatter.numberStyle = .none
+
+        if let result = numberFormatter.string(from: NSNumber(value: self)){
             return result
         } else {
             return nil

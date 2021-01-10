@@ -21,6 +21,10 @@ class KeyboardObserver: ObservableObject {
     }
 }
 
+class KeyboardObserverKey: EnvironmentKey {
+    static let defaultValue = KeyboardObserver()
+}
+
 extension Notification {
     var keyboardHeight: CGFloat {
         return (self.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect)?.height ?? 0

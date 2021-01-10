@@ -48,7 +48,7 @@ struct PowerOutputInputField: View {
             }
 
             HStack {
-                DecimalTextFieldWithDoneButton(text: $cheapestHourManager.powerOutputString.animation(), placeholder: "general.inKw".localized())
+                NumberField(text: $cheapestHourManager.powerOutputString.animation(), placeholder: "general.inKw".localized(), withDecimalSeperator: true)
                     .fixedSize(horizontal: false, vertical: true)
                     .padding(.trailing, 5)
                     .ifTrue(firstAppear == false) { content in

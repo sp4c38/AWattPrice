@@ -65,7 +65,7 @@ class CurrentNotificationSetting: AutoUpdatingEntity<NotificationSetting> {
     }
     
     /// Get a push notification if the value drops below this locally stored selection.
-    func changePriceBelowValue(newValue: Double) {
+    func changePriceBelowValue(newValue: Int) {
         if self.entity != nil {
             if self.entity!.priceBelowValue != newValue {
                 self.entity!.priceBelowValue = newValue

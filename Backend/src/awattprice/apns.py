@@ -68,7 +68,7 @@ async def validate_token(request: Request):
                 active = below_notification["active"]
                 below_value = float(below_notification["belowValue"])
                 # Limit below_value to two decimal places.
-                # The app normally should already have rounded this number to two decimal places - but make sure.
+                # The app normally should already have rounded this number to two decimal places - but to make sure.
                 below_value = round(below_value, 2)
                 request_data["config"]["price_below_value_notification"][
                     "active"

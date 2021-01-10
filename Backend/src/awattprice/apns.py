@@ -82,39 +82,27 @@ def validate_token(request: Request) -> Optional[Dict]:
                 ] = below_value
 
         if request_data["token"] is not None and request_data["config"] is not None:
-            is_request_data_valid = True
-
             # Validate types
-            if not isinstance(request_data["token"], str):
-                is_request_data_valid = False
-            if not isinstance(
-                request_data["region_identifier"], int
-            ) or not request_data["region_identifier"] in [0, 1]:
-                is_request_data_valid = False
-            if not isinstance(request_data["vat_selection"], int) or not request_data[
-                "vat_selection"
-            ] in [0, 1]:
-                is_request_data_valid = False
-            if not isinstance(
-                request_data["config"]["price_below_value_notification"]["active"], bool
-            ):
-                is_request_data_valid = False
-            if not isinstance(
-                request_data["config"]["price_below_value_notification"]["below_value"],
-                float,
-            ):
-                is_request_data_valid = False
+            is_request_data_valid = all([
+                isinstance(request_data["token"], str),
+                isinstance(request_data["region_identifier"], int) and request_data["region_identifier"] in [0, 1],
+                isinstance(request_data["vat_selection"], int) and request_data["vat_selection"] in [0, 1],
+                isinstance(request_data["config"]["price_below_value_notification"]["active"], bool),
+                isinstance(request_data["config"]["price_below_value_notification"]["below_value"], float),
+            ])
+        else:
+            is_request_data_valid = False
 
     except KeyError as e:
         log.warning(
             f"Caught a KeyError while validating APNs token: {e}"
         )
-        request_data = None
+        is_request_data_valid = False
     except Exception as e:
         log.warning(
             f"Caught an unknown exception while validating client APNs data: {e}"
         )
-        request_data = None
+        is_request_data_valid = False
 
     if not is_request_data_valid:
         log.info("APNs data (sent from a client) is NOT valid.")

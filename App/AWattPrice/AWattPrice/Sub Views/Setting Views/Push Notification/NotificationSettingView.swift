@@ -5,21 +5,22 @@
 //  Created by Léon Becker on 24.12.20.
 //
 
+import Combine
 import SwiftUI
+
 struct NotificationSettingView: View {
-    @Environment(\.notificationAccess) var notificationAccess
     @Environment(\.scenePhase) var scenePhase
 
+    @EnvironmentObject var notificationAccess: NotificationAccess
+    
     var body: some View {
         VStack(alignment: .center, spacing: 0) {
             CustomInsetGroupedList {
                 VStack(spacing: 20) {
-                    VStack {
-                        if notificationAccess.access == false {
-                            NoNotificationAccessView()
-                                .padding(.top, 10)
-                                .transition(.opacity)
-                        }
+                    if notificationAccess.access == false {
+                        NoNotificationAccessView()
+                            .padding(.top, 10)
+                            .transition(.opacity)
                     }
 
                     PriceDropsBelowValueNotificationView()
@@ -47,7 +48,7 @@ struct GoToNotificationSettingView: View {
                 .frame(width: 0, height: 0)
                 .hidden()
 
-            VStack(spacing: 15) {
+            VStack(alignment: .leading, spacing: 15) {
                 HStack(alignment: .center) {
                     Image("PriceTag")
                         .resizable()

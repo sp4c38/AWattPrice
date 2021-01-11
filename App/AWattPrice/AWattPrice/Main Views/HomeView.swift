@@ -27,11 +27,12 @@ struct HeaderSizePreferenceKey: PreferenceKey {
 /// The home view mainly holds the graph which represents energy costs for each hour throughout the day.
 struct HomeView: View {
     @Environment(\.networkManager) var networkManager
-    @Environment(\.notificationAccess) var notificationAccess
     @Environment(\.scenePhase) var scenePhase
+    
     @EnvironmentObject var awattarData: AwattarData
     @EnvironmentObject var crtNotifiSetting: CurrentNotificationSetting
     @EnvironmentObject var currentSetting: CurrentSetting
+    @EnvironmentObject var notificationAccess: NotificationAccess
 
     @State var headerSize = CGSize(width: 0, height: 0)
     @State var initialAppearFinished: Bool? = false

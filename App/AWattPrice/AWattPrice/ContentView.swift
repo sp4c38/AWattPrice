@@ -10,10 +10,11 @@ import SwiftUI
 /// Start of the application.
 struct ContentView: View {
     @Environment(\.networkManager) var networkManager
-    @Environment(\.notificationAccess) var notificationAccess
     @Environment(\.scenePhase) var scenePhase
+    
     @EnvironmentObject var crtNotifiSetting: CurrentNotificationSetting
     @EnvironmentObject var currentSetting: CurrentSetting
+    @EnvironmentObject var notificationAccess: NotificationAccess
 
     @ObservedObject var tabBarItems = TBItems()
 
@@ -60,7 +61,6 @@ struct ContentView: View {
                         managePushNotificationsOnAppAppear(notificationAccessRepresentable: self.notificationAccess, registerForRemoteNotifications: false) {}
                     }
                 }
-
                 .onAppear {
                     // Check Show Whats New
                     if currentSetting.entity!.splashScreensFinished == false && currentSetting.entity!.showWhatsNew == true {

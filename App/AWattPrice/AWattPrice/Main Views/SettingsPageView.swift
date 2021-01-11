@@ -25,9 +25,7 @@ struct SettingsPageView: View {
 //                        AwattarTariffSelectionSetting()
 
                         if crtNotifiSetting.entity != nil {
-                            if crtNotifiSetting.entity!.lastApnsToken != nil {
-                                GoToNotificationSettingView()
-                            }
+                            GoToNotificationSettingView()
                         }
 
                         GetHelpView()
@@ -55,8 +53,8 @@ struct SettingsPageView: View {
                 }
             }
             .navigationTitle(Text("settingsPage.settings"))
-            .navigationViewStyle(StackNavigationViewStyle())
         }
+        .navigationViewStyle(StackNavigationViewStyle())
     }
 }
 

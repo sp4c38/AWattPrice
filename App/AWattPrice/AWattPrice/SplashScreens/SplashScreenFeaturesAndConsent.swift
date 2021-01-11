@@ -149,9 +149,8 @@ struct AgreementConsentView: View {
  A splash screen which presents and describes the main functionalities of the app briefly and displays a check box for the user to consent to the apps privacy policy.
  */
 struct SplashScreenFeaturesAndConsentView: View {
-    @Environment(\.notificationAccess) var notificationAccess
-
     @EnvironmentObject var currentSetting: CurrentSetting
+    @EnvironmentObject var notificationAccess: NotificationAccess
 
     @State var privacyPolicyIsChecked: Bool = false
     @State var redirectToNextSplashScreen: Int? = 0
@@ -170,7 +169,7 @@ struct SplashScreenFeaturesAndConsentView: View {
 
                 AppFeatureView(title: "splashScreen.featuresAndConsent.comparePrices", subTitle: "splashScreen.featuresAndConsent.comparePrices.info", imageName: "arrow.left.arrow.right")
 
-                AppFeatureView(title: "notificationPage.notifications", subTitle: "splashScreen.featuresAndConsent.notifications.info", imageName: "bell")
+                AppFeatureView(title: "general.priceGuard", subTitle: "notificationPage.notification.priceDropsBelowValue.description", imageName: "bell")
             }
 
             Spacer()

@@ -17,7 +17,7 @@
 "splashScreen.featuresAndConsent.comparePrices" = "Compare prices";
 "splashScreen.featuresAndConsent.comparePrices.info" = "Find the cheapest hours for your electricity consumption.";
 // Notifications title handled by notificationPage.notifications
-"splashScreen.featuresAndConsent.notifications.info" = "Receive a notification when electricity prices drop below a certain value.";
+"splashScreen.featuresAndConsent.notifications.info" = "Receive a notification as soon as electricity prices drop below a certain value.";
 "splashScreen.featuresAndConsent.termsOfUse.agree" = "I agree to the Terms Of Use.";
 "splashScreen.featuresAndConsent.termsOfUse.see" = "View Terms Of Use";
 "splashScreen.featuresAndConsent.privacyPolicy.agree" = "I agree to the Privacy Policy.";
@@ -78,10 +78,16 @@
 
 // Notification Page localizations
 "notificationPage.noNotificationAccessInfo" = "Please allow AWattPrice notifications in the Settings App.";
-"notificationPage.notification.priceDropsBelowValue" = "Price drops on or below desired price";
+"notificationPage.notification.priceDropsBelowValue" = "Price drops below desired price";
 "notificationPage.notification.priceDropsBelowValue.wishPrice" = "Desired price";
-"notificationPage.notification.priceDropsBelowValue.description" = "Receive a notification as soon as prices fall on or below a certain value.";
-"notificationPage.notification.priceDropsBelowValue.description.extra" = "Each day, as new prices become available, you will be notified, insofar those prices for the next day fall on or below your desired price.";
+"notificationPage.notification.priceDropsBelowValue.description" = "Receive a notification as soon as prices fall below a certain value.";
+"notificationPage.notification.priceDropsBelowValue.description.extra.pt1" = "You will receive a notification as soon as the prices drop";
+"notificationPage.notification.priceDropsBelowValue.description.extra.pt2" = " on ";
+"notificationPage.notification.priceDropsBelowValue.description.extra.pt3" = "or";
+"notificationPage.notification.priceDropsBelowValue.description.extra.pt4" = " below ";
+"notificationPage.notification.priceDropsBelowValue.description.extra.pt5" = "your desired price.";
+"notificationPage.notification.priceDropsBelowValue.description.hint" = "Bitte beachten Sie, dass Benachrichtigungen immer nur über die Preise des nächsten Tages informieren, sobald sie verfügbar sind.";
+"notificationPage.notification.priceDropsBelowValue.description.hint" = "Hereby AWattPrice only informes about prices of the next day. Notifications for prices of the current day were therefor already sent the day before.";
 
 // Data download error view
 "dataError.tryAgainLater" = "Please try again later.";
@@ -112,6 +118,7 @@
 "general.done" = "Done";
 "general.openSettingsApp" = "Open Settings App";
 "general.priceGuard" = "Price Guard";
+"general.notifications" = "Notifications";
 
 // Total Time Formatter localizations
 "totalTimeFormatter.onlyHour"  = "%@h";

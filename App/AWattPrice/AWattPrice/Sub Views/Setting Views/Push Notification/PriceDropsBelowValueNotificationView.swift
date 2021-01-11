@@ -9,8 +9,28 @@ import Combine
 import SwiftUI
 
 struct PriceDropsBelowValueNotificationInfoView: View {
+    let completeExtraText: Text
+
+    init() {
+        completeExtraText = Text("notificationPage.notification.priceDropsBelowValue.description.extra.pt1") +
+            Text("notificationPage.notification.priceDropsBelowValue.description.extra.pt2").fontWeight(.heavy) +
+            Text("notificationPage.notification.priceDropsBelowValue.description.extra.pt3") +
+            Text("notificationPage.notification.priceDropsBelowValue.description.extra.pt4").fontWeight(.heavy) +
+            Text("notificationPage.notification.priceDropsBelowValue.description.extra.pt5")
+    }
+
     var body: some View {
-        Text("")
+        VStack(alignment: .leading, spacing: 10) {
+            Divider()
+            
+            completeExtraText
+                .font(.footnote)
+            
+            Text("notificationPage.notification.priceDropsBelowValue.description.hint")
+                .font(.caption)
+                .lineSpacing(2)
+                .foregroundColor(Color.blue)
+        }
     }
 }
 
@@ -103,8 +123,12 @@ struct PriceDropsBelowValueNotificationSubView: View {
     @State var keyboardCurrentlyClosed = false
     @State var priceDropsBelowValueNotificationSelection = false
     @State var priceBelowValue: String = ""
+    
+    let showHeader: Bool
 
-    init(crtNotifiSetting: CurrentNotificationSetting) {
+    init(crtNotifiSetting: CurrentNotificationSetting, showHeader showHeaderValue: Bool = false) {
+        showHeader = showHeaderValue
+        
         _crtNotifiSetting = ObservedObject(initialValue: crtNotifiSetting)
         _priceDropsBelowValueNotificationSelection = State(initialValue: self.crtNotifiSetting.entity!.priceDropsBelowValueNotification)
         _priceBelowValue = State(initialValue: self.crtNotifiSetting.entity!.priceBelowValue.priceString ?? "")
@@ -113,10 +137,10 @@ struct PriceDropsBelowValueNotificationSubView: View {
     var body: some View {
         VStack {
             CustomInsetGroupedListItem(
-                header: nil,
-                footer: Text("notificationPage.notification.priceDropsBelowValue.description.extra")
+                header: showHeader ? Text("general.notifications") : nil,
+                footer: nil
             ) {
-                VStack(alignment: .center, spacing: 20) {
+                VStack(alignment: .leading, spacing: 20) {
                     PriceDropsBelowValueNotificationToggleView(
                         self.$priceDropsBelowValueNotificationSelection
                     )
@@ -126,8 +150,6 @@ struct PriceDropsBelowValueNotificationSubView: View {
                             PriceDropsBelowValueNotificationInputField(
                                 self.$priceBelowValue
                             )
-
-                            PriceDropsBelowValueNotificationInfoView()
                         }
                         .padding(.leading, 17)
                         .padding(.trailing, 14)
@@ -144,6 +166,10 @@ struct PriceDropsBelowValueNotificationSubView: View {
                                 )
                         )
                     }
+
+                    if priceDropsBelowValueNotificationSelection {
+                        PriceDropsBelowValueNotificationInfoView()
+                    }
                 }
             }
         }
@@ -152,18 +178,29 @@ struct PriceDropsBelowValueNotificationSubView: View {
 
 struct PriceDropsBelowValueNotificationView: View {
     @EnvironmentObject var crtNotifiSetting: CurrentNotificationSetting
+    
+    let showHeader: Bool
+    
+    init(showHeader showHeaderValue: Bool = false) {
+        showHeader = showHeaderValue
+    }
 
     var body: some View {
-        PriceDropsBelowValueNotificationSubView(crtNotifiSetting: crtNotifiSetting)
+        PriceDropsBelowValueNotificationSubView(crtNotifiSetting: crtNotifiSetting, showHeader: showHeader)
     }
 }
 
 struct NewPricesNotificationView_Previews: PreviewProvider {
     static var previews: some View {
+//        PriceDropsBelowValueNotificationInfoView()
+//            .padding(.leading, 17)
+//            .padding(.trailing, 14)
+//            .padding([.top, .bottom], 7)
+
         NavigationView {
             PriceDropsBelowValueNotificationView()
-                .environment(\.managedObjectContext, PersistenceManager().persistentContainer.viewContext)
                 .environmentObject(CurrentNotificationSetting(managedObjectContext: PersistenceManager().persistentContainer.viewContext))
+                .preferredColorScheme(.dark)
         }
     }
 }

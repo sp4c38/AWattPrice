@@ -27,25 +27,12 @@ struct NetworkManagerKey: EnvironmentKey {
     static var defaultValue = NetworkManager()
 }
 
-class NotificationAccess {
-    var access = false
-}
-
-class NotificationAccessKey: EnvironmentKey {
-    static var defaultValue = NotificationAccess()
-}
-
 extension EnvironmentValues {
     var networkManager: NetworkManager {
         get {
             self[NetworkManagerKey.self]
         }
         set {}
-    }
-
-    var notificationAccess: NotificationAccess {
-        get { self[NotificationAccessKey.self] }
-        set { self[NotificationAccessKey.self] = newValue }
     }
 
     var deviceType: UIUserInterfaceIdiom {

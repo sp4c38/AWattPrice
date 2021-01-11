@@ -10,9 +10,9 @@ import SwiftUI
 /// Splash screen which handles the input of settings which are required for the main functionality of the app.
 struct SplashScreenSetupView: View {
     @Environment(\.colorScheme) var colorScheme
-    @Environment(\.notificationAccess) var notificationAccess
 
     @EnvironmentObject var currentSetting: CurrentSetting
+    @EnvironmentObject var notificationAccess: NotificationAccess
 
     @State var redirectToNextSplashScreen: Int? = 0
     @State var basicCharge: String = ""
@@ -24,7 +24,7 @@ struct SplashScreenSetupView: View {
                     RegionAndVatSelection()
 
                     if notificationAccess.access == true {
-                        PriceDropsBelowValueNotificationView()
+                        PriceDropsBelowValueNotificationView(showHeader: true)
                     }
 //                    AwattarTariffSelectionSetting()
                 }

@@ -16,9 +16,9 @@ struct ContentView: View {
     @EnvironmentObject var currentSetting: CurrentSetting
 
     @ObservedObject var tabBarItems = TBItems()
-    
+
     @State var initialAppearFinished: Bool? = false
-    
+
     var body: some View {
         VStack {
             if currentSetting.entity != nil {
@@ -28,16 +28,16 @@ struct ContentView: View {
                             SettingsPageView()
                                 .opacity(tabBarItems.selectedItemIndex == 0 ? 1 : 0)
                                 .environmentObject(tabBarItems)
-                            
+
                             HomeView()
                                 .opacity(tabBarItems.selectedItemIndex == 1 ? 1 : 0)
-                                    
+
                             CheapestTimeView()
                                 .opacity(tabBarItems.selectedItemIndex == 2 ? 1 : 0)
                         }
-                        
+
                         Spacer(minLength: 0)
-                        
+
                         TabBar()
                             .environmentObject(tabBarItems)
                     } else {
@@ -56,11 +56,11 @@ struct ContentView: View {
                         initialAppearFinished = true
                         return
                     }
-                    if newScenePhase == .active && initialAppearFinished == true && currentSetting.entity!.showWhatsNew == false && currentSetting.entity!.splashScreensFinished == true {
+                    if newScenePhase == .active, initialAppearFinished == true, currentSetting.entity!.showWhatsNew == false, currentSetting.entity!.splashScreensFinished == true {
                         managePushNotificationsOnAppAppear(notificationAccessRepresentable: self.notificationAccess, registerForRemoteNotifications: false) {}
                     }
                 }
-                
+
                 .onAppear {
                     // Check Show Whats New
                     if currentSetting.entity!.splashScreensFinished == false && currentSetting.entity!.showWhatsNew == true {
@@ -73,7 +73,8 @@ struct ContentView: View {
                             Int(currentSetting.entity!.regionIdentifier),
                             currentSetting.entity!.pricesWithVAT ? 1 : 0,
                             crtNotifiSetting,
-                            networkManager)
+                            networkManager
+                        )
                     }
                 }
             }

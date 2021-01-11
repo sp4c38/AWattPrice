@@ -12,13 +12,13 @@ import SwiftUI
 class PersistenceManager {
     var persistentContainer: NSPersistentContainer {
         let container = NSPersistentContainer(name: "Model")
-        
+
         container.loadPersistentStores(completionHandler: { _, error in
             if let error = error {
                 fatalError("Couldn't load persistent container. \(error)")
             }
         })
-        
+
         return container
     }
 }
@@ -27,28 +27,28 @@ class PersistenceManager {
 @main
 struct AwattarApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-    
+
     var awattarData: AwattarData
     var crtNotifiSetting: CurrentNotificationSetting
     var currentSetting: CurrentSetting
     var persistence = PersistenceManager()
-    
+
     init() {
-        self.awattarData = AwattarData()
-        self.crtNotifiSetting = CurrentNotificationSetting(
-            managedObjectContext: self.persistence.persistentContainer.viewContext
+        awattarData = AwattarData()
+        crtNotifiSetting = CurrentNotificationSetting(
+            managedObjectContext: persistence.persistentContainer.viewContext
         )
-        self.currentSetting = CurrentSetting(
-            managedObjectContext: self.persistence.persistentContainer.viewContext
+        currentSetting = CurrentSetting(
+            managedObjectContext: persistence.persistentContainer.viewContext
         )
-        self.appDelegate.crtNotifiSetting = self.crtNotifiSetting
-        self.appDelegate.currentSetting = self.currentSetting
+        appDelegate.crtNotifiSetting = crtNotifiSetting
+        appDelegate.currentSetting = currentSetting
     }
-    
+
     var body: some Scene {
         WindowGroup {
             // The managedObjectContext from PersistenceManager mustn't be parsed to the views directly as environment value because views will only access it indirectly through CurrentSetting.
-            
+
             ContentView()
                 .environmentObject(awattarData)
                 .environmentObject(currentSetting)

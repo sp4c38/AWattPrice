@@ -6,9 +6,8 @@
 //
 //
 
-import Foundation
 import CoreData
+import Foundation
 
 @objc(NotificationSetting)
-public class NotificationSetting: NSManagedObject {
-}
+public class NotificationSetting: NSManagedObject {}

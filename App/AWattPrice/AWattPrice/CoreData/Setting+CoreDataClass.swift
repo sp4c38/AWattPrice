@@ -6,13 +6,11 @@
 //
 //
 
-import Foundation
 import CoreData
+import Foundation
 
 /**
  Core Data object to store variouse settings which can be modified by the user. In every way only one of this object should be stored. There must not exist multiple Setting objects in persitent storage because only one Setting object can be handled.
  */
 @objc(Setting)
-public class Setting: NSManagedObject {
-
-}
+public class Setting: NSManagedObject {}

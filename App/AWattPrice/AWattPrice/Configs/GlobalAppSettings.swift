@@ -14,7 +14,7 @@ public enum GlobalAppSettings {
         }
         return dict
     }()
-    
+
     static var rootURLString: String {
         guard let rootURLString = Self.infoDictionary["ROOT_URL"] as? String else {
             fatalError("ROOT_URL setting wasn't set in .plist / .xcconfig file.")
@@ -22,7 +22,7 @@ public enum GlobalAppSettings {
 
         return rootURLString
     }
-    
+
     static var CurrentVATAmount: Double {
         guard let VATAmountCurrentString = Self.infoDictionary["VAT_AMOUNT_CURRENT"] as? String else {
             fatalError("VAT_AMOUNT_CURRENT setting wasn't set in .plist / .xcconfig file.")
@@ -30,10 +30,10 @@ public enum GlobalAppSettings {
         guard let VATAmountCurrentDouble = Double(VATAmountCurrentString) else {
             fatalError("VAT_AMOUNT_CURRENT which is specified in .plist / .xcconfig file is no valid Double.")
         }
-        
+
         return VATAmountCurrentDouble
     }
-    
+
     static var NormalVATAmount: Double {
         guard let VATAmountNormalString = Self.infoDictionary["VAT_AMOUNT_NORMAL"] as? String else {
             fatalError("VAT_AMOUNT_NORMAL setting wasn't set in .plist / .xcconfig file.")
@@ -41,7 +41,7 @@ public enum GlobalAppSettings {
         guard let VATAmountNormalDouble = Double(VATAmountNormalString) else {
             fatalError("VAT_AMOUNT_NORMAL which is specified in .plist / .xcconfig file is no valid Double.")
         }
-        
+
         return VATAmountNormalDouble
     }
 }

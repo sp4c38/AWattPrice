@@ -52,13 +52,18 @@ class measure_duration(ContextDecorator):
         return False
 
 
-def start_logging(config: Box) -> None:
+def start_logging(config: Box, for_scheduled_request: bool = False) -> None:
     """Start console and file logging"""
     log_dir = Path(config.file_location.log_dir).expanduser()
 
     if not log_dir.is_dir():
         sys.stderr.write(f"Could not find the log dir {log_dir}. Creating it ...\n")
         os.makedirs(log_dir.as_posix())
+    if for_scheduled_request is False:
+        log_path = log_dir / "awattprice.log"
+    else:
+        log_path = log_dir / "scheduled_request.log"
+
     log_config = {
         "handlers": [
             {
@@ -69,7 +74,7 @@ def start_logging(config: Box) -> None:
                 "backtrace": True,
             },
             {
-                "sink": log_dir / "awattprice.log",
+                "sink": log_path,
                 "rotation": "100 KB",
                 "level": "TRACE",
                 "compression": "gz",

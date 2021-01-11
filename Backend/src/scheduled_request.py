@@ -4,7 +4,7 @@
 
 Send a data GET request for all regions to the own backend to make it download and
 cache new data and send notifications.
-This script is meant to be called seperately in a specific time range each n seconds.
+This script is meant to be called separately in a specific time range each n seconds.
 For example: Each 5 minutes throughout the whole day.
 The script will check if the Backend would update its data. Only if this applies
 it actually calls the Backend. This doesn't produce unnecessary trafic.
@@ -103,8 +103,8 @@ async def run_request(region, max_tries, config):
 
 async def main():
     config = read_config()
-    start_logging(config)
-    log.info("Started scheduled request.")
+    start_logging(config, for_scheduled_request=True)
+    log.info("Started a scheduled request.")
 
     if config.poll.backend_url:
         if validators.url(config.poll.backend_url) is True:
@@ -120,7 +120,10 @@ async def main():
                     tasks = []
 
                     for region in [
-                        [getattr(Region, "de".upper(), None), 3],  # number of attempts for a successful request, region id
+                        [
+                            getattr(Region, "de".upper(), None),
+                            3,
+                        ],  # region, number of attempts until a successful request could be made
                         [getattr(Region, "at".upper(), None), 3],
                     ]:
                         if region[0].name is not None:
@@ -144,9 +147,8 @@ async def main():
             """Scheduled request was called without having "config.poll.backend_url" configured. Won't run scheduled request."""
         )
 
-    log.info("Finished scheduled request.")
+    log.info("Finished a scheduled request.\n")  # leave a little space for the next run
 
 
 if __name__ == "__main__":
     asyncio.run(main())
-)

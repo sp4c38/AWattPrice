@@ -23,6 +23,9 @@
 		61260069253B0AB9009E0126 /* DataDownloadAndError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61260068253B0AB9009E0126 /* DataDownloadAndError.swift */; };
 		61286F0C25ABBCF300CE1D61 /* EnvironmentExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61286F0B25ABBCF300CE1D61 /* EnvironmentExtensions.swift */; };
 		613CFF7F250CCCA500337CB2 /* GetCurrentSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 613CFF7E250CCCA500337CB2 /* GetCurrentSetting.swift */; };
+		6141BFF725ADC60000608290 /* SF-Compact-Display-Black.otf in Resources */ = {isa = PBXBuildFile; fileRef = 6141BFF625ADC60000608290 /* SF-Compact-Display-Black.otf */; };
+		6141BFF825ADC60000608290 /* SF-Compact-Display-Black.otf in Resources */ = {isa = PBXBuildFile; fileRef = 6141BFF625ADC60000608290 /* SF-Compact-Display-Black.otf */; };
+		6141BFF925ADC60000608290 /* SF-Compact-Display-Black.otf in Resources */ = {isa = PBXBuildFile; fileRef = 6141BFF625ADC60000608290 /* SF-Compact-Display-Black.otf */; };
 		614C55832573D421009B5241 /* UpdateDataTimeFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 614C55822573D421009B5241 /* UpdateDataTimeFormatter.swift */; };
 		614E784D25068F6100A7ED83 /* DownloadEnergyData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 614E784C25068F6100A7ED83 /* DownloadEnergyData.swift */; };
 		615468532520D214004FBEF7 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 615468552520D214004FBEF7 /* Localizable.strings */; };
@@ -109,6 +112,7 @@
 		61260068253B0AB9009E0126 /* DataDownloadAndError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataDownloadAndError.swift; sourceTree = "<group>"; };
 		61286F0B25ABBCF300CE1D61 /* EnvironmentExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentExtensions.swift; sourceTree = "<group>"; };
 		613CFF7E250CCCA500337CB2 /* GetCurrentSetting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetCurrentSetting.swift; sourceTree = "<group>"; };
+		6141BFF625ADC60000608290 /* SF-Compact-Display-Black.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-Compact-Display-Black.otf"; sourceTree = "<group>"; };
 		614C55822573D421009B5241 /* UpdateDataTimeFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateDataTimeFormatter.swift; sourceTree = "<group>"; };
 		614E76CC258F65680097EF9B /* AWattPrice.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AWattPrice.entitlements; sourceTree = "<group>"; };
 		614E784C25068F6100A7ED83 /* DownloadEnergyData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadEnergyData.swift; sourceTree = "<group>"; };
@@ -261,6 +265,14 @@
 				61D6F8872517AD5500027FD1 /* ButtonStyles.swift */,
 			);
 			path = Styles;
+			sourceTree = "<group>";
+		};
+		6141BFED25ADC31400608290 /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				6141BFF625ADC60000608290 /* SF-Compact-Display-Black.otf */,
+			);
+			path = Fonts;
 			sourceTree = "<group>";
 		};
 		614E784B25068E0600A7ED83 /* Data */ = {
@@ -452,6 +464,7 @@
 		618AF8042593DB0D00E21583 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				6141BFED25ADC31400608290 /* Fonts */,
 				61F983F92545BC4600A253CC /* Launch Screen.storyboard */,
 				617D85B525052C37009E18FB /* Assets.xcassets */,
 				615468552520D214004FBEF7 /* Localizable.strings */,
@@ -614,6 +627,7 @@
 				617D85B925052C37009E18FB /* Preview Assets.xcassets in Resources */,
 				615468532520D214004FBEF7 /* Localizable.strings in Resources */,
 				61F983FA2545BC4600A253CC /* Launch Screen.storyboard in Resources */,
+				6141BFF725ADC60000608290 /* SF-Compact-Display-Black.otf in Resources */,
 				617D85B625052C37009E18FB /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -622,6 +636,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6141BFF825ADC60000608290 /* SF-Compact-Display-Black.otf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -629,6 +644,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6141BFF925ADC60000608290 /* SF-Compact-Display-Black.otf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

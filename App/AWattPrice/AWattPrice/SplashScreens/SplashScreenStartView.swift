@@ -7,6 +7,33 @@
 
 import SwiftUI
 
+struct SplashScreenStartViewTitle: View {
+    var body: some View {
+        VStack(spacing: 15) {
+            Image("BigAppIcon")
+                .resizable()
+                .frame(width: 210, height: 210)
+            
+            VStack(spacing: 5) {
+                Text("splashScreen.start.welcome")
+                    .font(
+                        .custom("SFCompactDisplay-Black",
+                                size: 40,
+                                relativeTo: .largeTitle)
+                    )
+                
+                Text("AWattPrice")
+                    .foregroundColor(Color(hue: 0.5648, saturation: 1.0000, brightness: 0.6235))
+                    .font(
+                        .custom("SFCompactDisplay-Black",
+                                size: 45,
+                                relativeTo: .largeTitle)
+                    )
+            }
+        }
+    }
+}
+
 /**
  Start of all splash screens. Presents and describes the main functionalities of the app briefly.
  */
@@ -19,19 +46,7 @@ struct SplashScreenStartView: View {
             VStack {
                 Spacer()
 
-                VStack(spacing: 30) {
-                    Image("BigAppIcon")
-                        .resizable()
-                        .frame(width: 220, height: 220)
-
-                    VStack(spacing: 5) {
-                        Text("splashScreen.start.welcome")
-                            .font(.system(size: 40, weight: .black))
-                        Text("AWattPrice App")
-                            .foregroundColor(Color(hue: 0.5648, saturation: 1.0000, brightness: 0.6235))
-                            .font(.system(size: 36, weight: .black))
-                    }
-                }
+                SplashScreenStartViewTitle()
 
                 Spacer()
                 Spacer()

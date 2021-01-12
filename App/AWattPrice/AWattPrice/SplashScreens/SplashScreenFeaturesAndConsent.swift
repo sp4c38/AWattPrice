@@ -165,44 +165,45 @@ struct SplashScreenFeaturesAndConsentView: View {
                 .frame(width: 0, height: 0)
                 .hidden()
 
-            VStack(spacing: 30) {
+            VStack(spacing: 15) {
                 AppFeatureView(
                     title: "splashScreen.featuresAndConsent.viewPrices",
                     subTitle: "splashScreen.featuresAndConsent.viewPrices.info",
                     imageName: "magnifyingglass")
-
+                
                 AppFeatureView(
                     title: "splashScreen.featuresAndConsent.comparePrices",
                     subTitle: "splashScreen.featuresAndConsent.comparePrices.info",
                     imageName: "arrow.left.arrow.right")
-
+                
                 AppFeatureView(
                     title: "general.priceGuard",
                     subTitle: "notificationPage.notification.priceDropsBelowValue.description",
                     imageName: "bell")
             }
 
-            Spacer()
+            Spacer(minLength: 0)
 
-            AgreementConsentView(
-                agreeText: "splashScreen.featuresAndConsent.termsOfUse.agree",
-                seeAgreementText: "splashScreen.featuresAndConsent.termsOfUse.see",
-                agreementLinks: ("https://awattprice.space8.me/terms_of_use/german.html",
-                                 "https://awattprice.space8.me/terms_of_use/english.html"),
-                isChecked: $termsOfUseIsChecked,
-                showConsentNotChecked: $showTermsOfUseNotChecked
-            )
-            .padding(.bottom, 25)
+            VStack(spacing: 10) {
+                AgreementConsentView(
+                    agreeText: "splashScreen.featuresAndConsent.termsOfUse.agree",
+                    seeAgreementText: "splashScreen.featuresAndConsent.termsOfUse.see",
+                    agreementLinks: ("https://awattprice.space8.me/terms_of_use/german.html",
+                                     "https://awattprice.space8.me/terms_of_use/english.html"),
+                    isChecked: $termsOfUseIsChecked,
+                    showConsentNotChecked: $showTermsOfUseNotChecked
+                )
 
-            AgreementConsentView(
-                agreeText: "splashScreen.featuresAndConsent.privacyPolicy.agree",
-                seeAgreementText: "splashScreen.featuresAndConsent.privacyPolicy.see",
-                agreementLinks: ("https://awattprice.space8.me/privacy_policy/german.html",
-                                 "https://awattprice.space8.me/privacy_policy/english.html"),
-                isChecked: $privacyPolicyIsChecked,
-                showConsentNotChecked: $showPrivacyPolicyNotChecked
-            )
-            .padding(.bottom, 25)
+                AgreementConsentView(
+                    agreeText: "splashScreen.featuresAndConsent.privacyPolicy.agree",
+                    seeAgreementText: "splashScreen.featuresAndConsent.privacyPolicy.see",
+                    agreementLinks: ("https://awattprice.space8.me/privacy_policy/german.html",
+                                     "https://awattprice.space8.me/privacy_policy/english.html"),
+                    isChecked: $privacyPolicyIsChecked,
+                    showConsentNotChecked: $showPrivacyPolicyNotChecked
+                )
+            }
+            .padding(.bottom, 15)
 
             Button(action: {
                 if privacyPolicyIsChecked == true, termsOfUseIsChecked == true {
@@ -225,7 +226,7 @@ struct SplashScreenFeaturesAndConsentView: View {
             }
             .buttonStyle(ContinueButtonStyle())
         }
-        .padding(.top, 20)
+        .padding(.top, 5)
         .padding([.leading, .trailing], 20)
         .padding(.bottom, 16)
         .navigationBarTitle("splashScreen.featuresAndConsent.features")

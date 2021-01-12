@@ -69,26 +69,49 @@ struct BarShape: Shape {
 
             path.addLine(to: CGPoint(x: attr.startWidth - (attr.dividerLineWidth / 2), y: startHeight + heightOfBar - attr.barPadding))
 
-            path.addRelativeArc(center: CGPoint(x: attr.widthOfBar + attr.radius, y: startHeight + heightOfBar - attr.radius - attr.barPadding), radius: attr.radius, startAngle: .degrees(90), delta: .degrees(90))
+            path.addRelativeArc(
+                center: CGPoint(x: attr.widthOfBar + attr.radius,
+                                y: startHeight + heightOfBar - attr.radius - attr.barPadding),
+                radius: attr.radius,
+                startAngle: .degrees(90),
+                delta: .degrees(90))
 
-            path.addRelativeArc(center: CGPoint(x: attr.widthOfBar + attr.radius, y: startHeight + attr.barPadding + attr.radius), radius: attr.radius, startAngle: .degrees(180), delta: .degrees(90))
+            path.addRelativeArc(
+                center: CGPoint(x: attr.widthOfBar + attr.radius,
+                                y: startHeight + attr.barPadding + attr.radius),
+                radius: attr.radius,
+                startAngle: .degrees(180),
+                delta: .degrees(90))
 
         } else if attr.lookToSide == .right {
             path.move(to: CGPoint(x: attr.startWidth + (attr.dividerLineWidth / 2), y: startHeight + attr.barPadding))
 
-            path.addRelativeArc(center: CGPoint(x: attr.widthOfBar - attr.radius, y: startHeight + attr.barPadding + attr.radius), radius: attr.radius, startAngle: .degrees(270), delta: .degrees(180))
+            path.addRelativeArc(
+                center: CGPoint(x: attr.widthOfBar - attr.radius,
+                                y: startHeight + attr.barPadding + attr.radius),
+                radius: attr.radius,
+                startAngle: .degrees(270),
+                delta: .degrees(180))
 
             path.addLine(to: CGPoint(x: attr.widthOfBar, y: startHeight + attr.barPadding + attr.radius))
-            path.addRelativeArc(center: CGPoint(x: attr.widthOfBar - attr.radius, y: startHeight + heightOfBar - attr.barPadding - attr.radius), radius: attr.radius, startAngle: .degrees(0), delta: .degrees(90))
+            path.addRelativeArc(
+                center: CGPoint(x: attr.widthOfBar - attr.radius,
+                                y: startHeight + heightOfBar - attr.barPadding - attr.radius),
+                radius: attr.radius,
+                startAngle: .degrees(0),
+                delta: .degrees(90))
 
-            path.addLine(to: CGPoint(x: attr.startWidth + (attr.dividerLineWidth / 2), y: startHeight + heightOfBar - attr.barPadding))
+            path.addLine(
+                to: CGPoint(x: attr.startWidth + (attr.dividerLineWidth / 2),
+                            y: startHeight + heightOfBar - attr.barPadding))
         }
 
         return path
     }
 }
 
-/// A simple line at a certain coordinate which shows the passage from positive energy prices to negative energy prices. It supports animation when the height  of this line is changed.
+/// A simple line at a certain coordinate which shows the passage from positive energy prices to negative
+/// energy prices. It supports animation when the height  of this line is changed.
 struct VerticalDividerLineShape: Shape {
     let width: CGFloat
     var height: CGFloat
@@ -156,7 +179,13 @@ struct DayMarkView: View {
 
         func path(in rect: CGRect) -> Path {
             var path = Path()
-            path.addArc(center: CGPoint(x: rect.width - 76 + widthDiff, y: startHeight), radius: 2 + sizeDiff, startAngle: .degrees(0), endAngle: .degrees(360), clockwise: true)
+            path.addArc(
+                center: CGPoint(x: rect.width - 76 + widthDiff,
+                                y: startHeight),
+                radius: 2 + sizeDiff,
+                startAngle: .degrees(0),
+                endAngle: .degrees(360),
+                clockwise: true)
             return path
         }
     }
@@ -166,7 +195,11 @@ struct DayMarkView: View {
     var widthDiff: CGFloat
     var sizeDiff: CGFloat
 
-    init(graphPointItem: (EnergyPricePoint, CGFloat), indexSelected: Int?, ownIndex: Int, maxIndex: Int, height: CGFloat) {
+    init(graphPointItem: (EnergyPricePoint, CGFloat),
+         indexSelected: Int?,
+         ownIndex: Int,
+         maxIndex: Int,
+         height: CGFloat) {
         self.graphPointItem = graphPointItem.0
 
         let results = calcSingleBarSizes(indexSelected, graphPointItem.1, ownIndex, maxIndex, height)

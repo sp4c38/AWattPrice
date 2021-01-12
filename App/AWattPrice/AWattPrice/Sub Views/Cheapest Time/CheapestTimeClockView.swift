@@ -74,7 +74,8 @@ struct CheapestTimeClockView: View {
             self.makeView(geometry)
         }
         .onReceive(timer) { _ in
-            // Update the clock to make both markers (hour and minute) point in the correct direction while time progresses
+            // Update the clock to make both markers (hour and minute)
+            // point in the correct direction while time progresses.
             now = Date()
         }
     }
@@ -280,7 +281,15 @@ struct CheapestTimeClockView: View {
 
 struct ConsumptionClockView_Previews: PreviewProvider {
     static var previews: some View {
-        CheapestTimeClockView(CheapestHourManager.HourPair(associatedPricePoints: [EnergyPricePoint(startTimestamp: 1_603_184_400, endTimestamp: 1_603_189_800, marketprice: 3)]))
+        CheapestTimeClockView(
+            CheapestHourManager.HourPair(
+                associatedPricePoints: [EnergyPricePoint(
+                                            startTimestamp: 1_603_184_400,
+                                            endTimestamp: 1_603_189_800,
+                                            marketprice: 3
+                                        )]
+            )
+        )
             .preferredColorScheme(.dark)
             .padding(20)
     }

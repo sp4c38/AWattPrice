@@ -25,28 +25,34 @@ struct TabBar: View {
     var body: some View {
         ZStack {
             TBBarShape()
-                .foregroundColor(colorScheme == .light ? Color(red: 0.96, green: 0.96, blue: 0.96) : Color(red: 0.07, green: 0.07, blue: 0.07))
+                .foregroundColor(colorScheme == .light ?
+                                    Color(red: 0.96, green: 0.96, blue: 0.96) :
+                                    Color(red: 0.07, green: 0.07, blue: 0.07)
+                )
                 .edgesIgnoringSafeArea(.all)
 
             HStack {
-                ForEach(0 ..< tabBarItems.items.count, id: \.self) { i in
+                ForEach(0 ..< tabBarItems.items.count, id: \.self) { tabBarItemIndex in
                     HStack {
                         Spacer()
                         VStack(spacing: 6) {
-                            Image(systemName: tabBarItems.items[i].imageName)
+                            Image(systemName: tabBarItems.items[tabBarItemIndex].imageName)
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
                                 .frame(width: 20, height: 20)
 
-                            Text(tabBarItems.items[i].itemSubtitle.localized())
+                            Text(tabBarItems.items[tabBarItemIndex].itemSubtitle.localized())
                                 .font(.caption)
                         }
-                        .foregroundColor(i == tabBarItems.selectedItemIndex ? Color.blue : Color(red: 0.56, green: 0.56, blue: 0.56))
+                        .foregroundColor(
+                            tabBarItemIndex == tabBarItems.selectedItemIndex ?
+                                Color.blue : Color(red: 0.56, green: 0.56, blue: 0.56)
+                        )
                         Spacer()
                     }
                     .contentShape(Rectangle())
                     .onTapGesture {
-                        tabBarItems.changeSelected(i)
+                        tabBarItems.changeSelected(tabBarItemIndex)
                     }
                 }
             }

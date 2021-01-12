@@ -160,18 +160,6 @@ struct GetHelpView: View {
     }
 }
 
-struct demoPreview: View {
-    var body: some View {
-        NavigationView {
-            List {
-                GetHelpView()
-            }
-            .listStyle(InsetGroupedListStyle())
-        }
-        .preferredColorScheme(.light)
-    }
-}
-
 struct HelpView_Previews: PreviewProvider {
     static var previews: some View {
 //        NavigationView {

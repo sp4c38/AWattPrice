@@ -13,7 +13,8 @@ import SwiftUI
 ///             height of the bar,
 ///             font size of the text,
 ///             font weight of the text)
-func calcSingleBarSizes(_ indexSelected: Int?, _ startHeight: CGFloat, _ ownIndex: Int, _ maxIndex: Int, _ height: CGFloat) -> (CGFloat, Int16, CGFloat, CGFloat, Font.Weight) {
+func calcSingleBarSizes(_ indexSelected: Int?, _ startHeight: CGFloat, _ ownIndex: Int, _ maxIndex: Int,
+    _ height: CGFloat) -> (CGFloat, Int16, CGFloat, CGFloat, Font.Weight) {
     var height = height
     var isSelected: Int16 = 0
     var resultStartHeight: CGFloat = 0
@@ -79,7 +80,9 @@ func calcSingleBarSizes(_ indexSelected: Int?, _ startHeight: CGFloat, _ ownInde
 }
 
 /**
- A single bar with a certain length (representing the energy cost for this hour relative to other hours) and text which again shows the energy cost for this hour but helps to also show the energy price information in more legible and more accurate form.
+ A single bar with a certain length (representing the energy cost for this hour relative to other hours)
+ and text which again shows the energy cost for this hour but helps to also show the energy price information in more
+ legible and more accurate form.
  */
 struct EnergyPriceSingleBar: View {
     @Environment(\.colorScheme) var colorScheme
@@ -91,7 +94,8 @@ struct EnergyPriceSingleBar: View {
     let startWidthPadding: CGFloat // Padding to the left side
     var height: CGFloat
     var startHeight: CGFloat
-    let isSelected: Int16 // 0 if not selected and 1 if main selected and 2 if co-selected (bars around the selected bar)
+    let isSelected: Int16 // 0 if not selected and 1 if main selected and
+                          // 2 if co-selected (bars around the selected bar)
     let hourDataPoint: EnergyPricePoint
 
     init(singleBarSettings: SingleBarSettings,
@@ -153,7 +157,12 @@ struct EnergyPriceSingleBar: View {
                     lookToSide: .right
                 ))
 
-                    .fill(LinearGradient(gradient: Gradient(colors: [Color(hue: 0.0849, saturation: 0.6797, brightness: 0.9059), Color(hue: 0.9978, saturation: 0.7163, brightness: 0.8431)]), startPoint: .leading, endPoint: .trailing))
+                    .fill(
+                        LinearGradient(gradient: Gradient(
+                                        colors: [Color(hue: 0.0849, saturation: 0.6797, brightness: 0.9059),
+                                                 Color(hue: 0.9978, saturation: 0.7163, brightness: 0.8431)]),
+                                       startPoint: .leading, endPoint: .trailing)
+                    )
             } else if hourDataPoint.marketprice < 0 {
                 BarShape(barShapeAttributes: BarShape.BarShapeAttributes(
                     isSelected: isSelected == 1 ? true : false,
@@ -164,12 +173,18 @@ struct EnergyPriceSingleBar: View {
                     lookToSide: .left
                 ))
 
-                    .fill(LinearGradient(gradient: Gradient(colors: [Color.green, Color.gray]), startPoint: .leading, endPoint: .trailing))
+                    .fill(LinearGradient(gradient: Gradient(colors: [Color.green, Color.gray]),
+                                         startPoint: .leading,
+                                         endPoint: .trailing))
             }
 
             // If there are negative energy price values a vergtical divider line shape is displayed to mark the point where costs go from positive values to negative values
             if maximalNegativePriceBarWidth - startWidthPadding != 0 {
-                VerticalDividerLineShape(width: currentDividerLineWidth, height: height, startWidth: maximalNegativePriceBarWidth, startHeight: startHeight)
+                VerticalDividerLineShape(
+                    width: currentDividerLineWidth,
+                    height: height,
+                    startWidth: maximalNegativePriceBarWidth,
+                    startHeight: startHeight)
                     .foregroundColor(colorScheme == .light ? Color.black : Color.white)
             }
 

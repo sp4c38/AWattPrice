@@ -70,11 +70,11 @@ struct EnergyPriceGraph: View {
     @EnvironmentObject var currentSetting: CurrentSetting
 
     @State var graphHourPointData = [(EnergyPricePoint, CGFloat)]()
-    @State var hapticEngine: CHHapticEngine? = nil
-    @State var currentPointerIndexSelected: Int? = nil
+    @State var hapticEngine: CHHapticEngine?
+    @State var currentPointerIndexSelected: Int?
     @State var singleHeight: CGFloat = 0
-    @State var singleBarSettings: SingleBarSettings? = nil
-    @State var dateMarkPointIndex: Int? = nil
+    @State var singleBarSettings: SingleBarSettings?
+    @State var dateMarkPointIndex: Int?
 
     @State var sizeRect = CGRect(x: 0, y: 0, width: 0, height: 0)
 
@@ -217,7 +217,13 @@ struct EnergyPriceGraph: View {
                     }
 
                     if dateMarkPointIndex != nil && graphHourPointData.isEmpty == false {
-                        DayMarkView(graphPointItem: graphHourPointData[dateMarkPointIndex!], indexSelected: currentPointerIndexSelected, ownIndex: dateMarkPointIndex!, maxIndex: graphHourPointData.count - 1, height: singleHeight)
+                        DayMarkView(
+                            graphPointItem: graphHourPointData[dateMarkPointIndex!],
+                            indexSelected: currentPointerIndexSelected,
+                            ownIndex: dateMarkPointIndex!,
+                            maxIndex: graphHourPointData.count - 1,
+                            height: singleHeight
+                        )
                     }
                 }
             }

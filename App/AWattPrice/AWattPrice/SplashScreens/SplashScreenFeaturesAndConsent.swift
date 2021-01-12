@@ -146,7 +146,8 @@ struct AgreementConsentView: View {
 }
 
 /**
- A splash screen which presents and describes the main functionalities of the app briefly and displays a check box for the user to consent to the apps privacy policy.
+ A splash screen which presents and describes the main functionalities of the app
+ briefly and displays a check box for the user to consent to the apps privacy policy.
  */
 struct SplashScreenFeaturesAndConsentView: View {
     @EnvironmentObject var currentSetting: CurrentSetting
@@ -165,11 +166,20 @@ struct SplashScreenFeaturesAndConsentView: View {
                 .hidden()
 
             VStack(spacing: 30) {
-                AppFeatureView(title: "splashScreen.featuresAndConsent.viewPrices", subTitle: "splashScreen.featuresAndConsent.viewPrices.info", imageName: "magnifyingglass")
+                AppFeatureView(
+                    title: "splashScreen.featuresAndConsent.viewPrices",
+                    subTitle: "splashScreen.featuresAndConsent.viewPrices.info",
+                    imageName: "magnifyingglass")
 
-                AppFeatureView(title: "splashScreen.featuresAndConsent.comparePrices", subTitle: "splashScreen.featuresAndConsent.comparePrices.info", imageName: "arrow.left.arrow.right")
+                AppFeatureView(
+                    title: "splashScreen.featuresAndConsent.comparePrices",
+                    subTitle: "splashScreen.featuresAndConsent.comparePrices.info",
+                    imageName: "arrow.left.arrow.right")
 
-                AppFeatureView(title: "general.priceGuard", subTitle: "notificationPage.notification.priceDropsBelowValue.description", imageName: "bell")
+                AppFeatureView(
+                    title: "general.priceGuard",
+                    subTitle: "notificationPage.notification.priceDropsBelowValue.description",
+                    imageName: "bell")
             }
 
             Spacer()

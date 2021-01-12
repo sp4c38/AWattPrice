@@ -37,8 +37,10 @@ struct SettingsPageView: View {
 
                         AgreementSettingView(agreementIconName: "hand.raised",
                                              agreementName: "general.privacyPolicy",
-                                             agreementLinks: ("https://awattprice.space8.me/privacy_policy/german.html",
-                                                              "https://awattprice.space8.me/privacy_policy/english.html"))
+                                             agreementLinks:
+                                                ("https://awattprice.space8.me/privacy_policy/german.html",
+                                                 "https://awattprice.space8.me/privacy_policy/english.html")
+                        )
 
                         VStack(spacing: 20) {
                             NotAffiliatedView(showGrayedOut: true)
@@ -63,6 +65,10 @@ struct SettingsPageView_Previews: PreviewProvider {
         SettingsPageView()
             .environment(\.managedObjectContext, PersistenceManager().persistentContainer.viewContext)
             .environmentObject(AwattarData())
-            .environmentObject(CurrentSetting(managedObjectContext: PersistenceManager().persistentContainer.viewContext))
+            .environmentObject(
+                CurrentSetting(
+                    managedObjectContext: PersistenceManager().persistentContainer.viewContext
+                )
+            )
     }
 }

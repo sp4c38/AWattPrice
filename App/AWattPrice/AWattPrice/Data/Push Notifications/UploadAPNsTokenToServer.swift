@@ -113,10 +113,18 @@ func uploadPushNotificationSettings(configuration: UploadPushNotificationConfigR
 }
 
 func tryNotificationUploadAfterFailed(_ regionIdentifier: Int, _ vatSelection: Int, _ crtNotifiSetting: CurrentNotificationSetting, _ networkManager: NetworkManager) {
-    print("Detected changes to current notification configuration which could previously NOT be uploaded successful. Trying to upload again in background when network connection is satisfied and a APNs token was set.")
-    // If there were changes to the notification preferences but they couldn't be uploaded (e.g. no internet connection or other process currently uploading to server) than a background queue is initiated to take care of uploading these notification preferences as soon as no proces is currently sending to server and there is a internet connection.
+    print("""
+        Detected changes to current notification configuration which could previously NOT be uploaded successful.
+        Trying to upload again in background when network connection is satisfied and a APNs token was set.
+    """)
+    // If there were changes to the notification preferences but they couldn't be uploaded
+    // (e.g. no internet connection or other process currently uploading to server) than a background
+    // queue is initiated to take care of uploading these notification preferences as soon as
+    // no proces is currently sending to server and there is a internet connection.
 
-    let resolveNotificationErrorUploadingQueue = DispatchQueue(label: "NotificationErrorUploadingQueue", qos: .background)
+    let resolveNotificationErrorUploadingQueue = DispatchQueue(
+        label: "NotificationErrorUploadingQueue",
+        qos: .background)
     resolveNotificationErrorUploadingQueue.async {
         crtNotifiSetting.currentlySendingToServer.lock()
         while (networkManager.networkStatus == .unsatisfied) || (crtNotifiSetting.entity!.lastApnsToken == nil) {

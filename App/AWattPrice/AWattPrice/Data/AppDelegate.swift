@@ -50,12 +50,16 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
                     crtNotifiSetting!.entity!
                 )
 
-                if notificationConfigRepresentable.checkUserWantsNotifications() == true || crtNotifiSetting!.entity!.changesButErrorUploading == true {
+                if notificationConfigRepresentable.checkUserWantsNotifications() == true ||
+                    crtNotifiSetting!.entity!.changesButErrorUploading == true {
                     if crtNotifiSetting!.entity!.lastApnsToken != apnsDeviceTokenString ||
-                        crtNotifiSetting!.entity!.changesButErrorUploading == true
-                    {
+                        crtNotifiSetting!.entity!.changesButErrorUploading == true {
                         DispatchQueue.global(qos: .background).async {
-                            print("Need to update stored APNs configuration. Stored APNs token and current APNs token mismatch OR previously notification configuration couldn't be uploaded because of some issue.")
+                            print("""
+                                Need to update stored APNs configuration. Stored APNs token and current
+                                APNs token mismatch OR previously notification configuration couldn't be
+                                uploaded because of some issue.
+                            """)
                             let group = DispatchGroup()
                             group.enter()
                             DispatchQueue.main.async {
@@ -63,7 +67,9 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
                                 group.leave()
                             }
                             group.wait()
-                            let requestSuccessful = uploadPushNotificationSettings(configuration: notificationConfigRepresentable)
+                            let requestSuccessful = uploadPushNotificationSettings(
+                                configuration: notificationConfigRepresentable
+                            )
                             if !requestSuccessful {
                                 DispatchQueue.main.async {
                                     self.crtNotifiSetting!.changeChangesButErrorUploading(newValue: true)

@@ -46,13 +46,15 @@ struct ProfilesData {
     ]
 }
 
-/// Object responsible for downloading the current energy prices from the backend, decoding this data and providing it to all views which need it. It also includes data for the different profiles/tariffs of aWATTar which don't need to be downloaded.
+/// Object responsible for downloading the current energy prices from the backend,
+/// decoding this data and providing it to all views which need it. It also includes data for the different
+/// profiles/tariffs of aWATTar which don't need to be downloaded.
 class AwattarData: ObservableObject {
     @Published var currentlyNoData = false // Set to true if the price data in the downloaded data is empty.
     @Published var currentlyUpdatingData = false
-    @Published var dateDataLastUpdated: Date? = nil
+    @Published var dateDataLastUpdated: Date?
     @Published var dataRetrievalError = false
-    @Published var energyData: EnergyData? = nil
+    @Published var energyData: EnergyData?
     @Published var profilesData = ProfilesData()
 
     func download(forRegion regionIdentifier: Int16, networkManager: NetworkManager) {

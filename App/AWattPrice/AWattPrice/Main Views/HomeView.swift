@@ -28,7 +28,7 @@ struct HeaderSizePreferenceKey: PreferenceKey {
 struct HomeView: View {
     @Environment(\.networkManager) var networkManager
     @Environment(\.scenePhase) var scenePhase
-    
+
     @EnvironmentObject var awattarData: AwattarData
     @EnvironmentObject var crtNotifiSetting: CurrentNotificationSetting
     @EnvironmentObject var currentSetting: CurrentSetting
@@ -48,7 +48,7 @@ struct HomeView: View {
     var body: some View {
         NavigationView {
             VStack {
-                if awattarData.energyData != nil && currentSetting.entity != nil && awattarData.currentlyNoData == false {
+                if awattarData.energyData != nil, currentSetting.entity != nil, awattarData.currentlyNoData == false {
                     ZStack {
                         VStack {
                             VStack(spacing: 5) {
@@ -58,7 +58,10 @@ struct HomeView: View {
                             .padding([.leading, .trailing], 16)
                             .padding(.top, 8)
                             .padding(.bottom, 5)
-                            .anchorPreference(key: HeaderSizePreferenceKey.self, value: .bounds, transform: { HeaderSizePreferenceKey.SizeBounds(bounds: $0) })
+                            .anchorPreference(key: HeaderSizePreferenceKey.self,
+                                              value: .bounds,
+                                              transform: { HeaderSizePreferenceKey.SizeBounds(bounds: $0) }
+                            )
                             .backgroundPreferenceValue(HeaderSizePreferenceKey.self) { headerSize in
                                 if headerSize != nil {
                                     GeometryReader { geo in
@@ -105,7 +108,10 @@ struct HomeView: View {
         .onChange(of: showWhatsNewPage) { newValue in
             if newValue == false {
                 currentSetting.changeShowWhatsNew(newValue: false)
-                managePushNotificationsOnAppAppear(notificationAccessRepresentable: notificationAccess, registerForRemoteNotifications: true) {}
+                managePushNotificationsOnAppAppear(
+                    notificationAccessRepresentable: notificationAccess,
+                    registerForRemoteNotifications: true
+                ) {}
             }
         }
     }
@@ -116,6 +122,10 @@ struct HomeView_Previews: PreviewProvider {
         HomeView()
             .environment(\.managedObjectContext, PersistenceManager().persistentContainer.viewContext)
             .environmentObject(AwattarData())
-            .environmentObject(CurrentSetting(managedObjectContext: PersistenceManager().persistentContainer.viewContext))
+            .environmentObject(
+                CurrentSetting(
+                    managedObjectContext: PersistenceManager().persistentContainer.viewContext
+                )
+            )
     }
 }

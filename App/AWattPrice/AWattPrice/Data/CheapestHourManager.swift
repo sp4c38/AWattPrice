@@ -74,14 +74,15 @@ class CheapestHourManager: ObservableObject {
         }
     }
 
-    /// Sets the values after the user entered them. This includes calculating time intervals and formatting raw text strings to floats. If errors occur because of wrong input of the user and values cannot be set correctly a list is returned with error values.
-    /// - Returns: Returns a list with error values if any occur. If no errors occur a list is also returned but with a success value
+    /// Sets the values after the user entered them. This includes calculating time intervals and formatting raw text strings to floats.
+    /// If errors occur because of wrong input of the user and values cannot be set correctly a list is returned with error values.
+    /// - Returns: Returns a list with error values if any occur. If no errors occur a list is also returned but with a success value.
     ///     - [0] all values were entered correctly
     ///     - [1] powerOutputString is empty
     ///     - [2] powerOutputString contains wrong characters
     ///     - [3] energyUsageString is empty
     ///     - [4] energyUsageString contains wrong characters
-    ///     - [5] the time which is needed with current power output and energy usage is smaller than the time range specified
+    ///     - [5] the time which is needed with current power output and energy usage is smaller than the time range specified.
     ///     - [6] not supported in this beta release
     func setValues() -> [Int] {
         cheapestHoursForUsage = nil
@@ -125,23 +126,31 @@ class CheapestHourManager: ObservableObject {
         return errorValues
     }
 
-    /// A pair of one, two, three or more EnergyPricePoints. This object supports functionallity to calculate the average price or to sort the associated price points for day.
+    /// A pair of one, two, three or more EnergyPricePoints. This object supports functionallity to
+    /// calculate the average price or to sort the associated price points for day.
     class HourPair {
         var averagePrice: Double = 0
         var associatedPricePoints: [EnergyPricePoint]
-        /// Final energy cost which is calculated with a certain power (kW) a electrical consumer uses and the time of the usage.
+        /// Final energy cost which is calculated with a certain power (kW) a electrical
+        /// consumer uses and the time of the usage.
         var hourlyEnergyCosts: Double?
 
         init(associatedPricePoints: [EnergyPricePoint]) {
             self.associatedPricePoints = associatedPricePoints
         }
 
-        /// Caluclates the average price from the energy price of all to this HourPair associated price points without VAT included.
+        /// Caluclates the average price from the energy price of all to this HourPair
+        /// associated price points without VAT included.
         func calculateAveragePrice() {
             var pricesTogether: Double = 0
             var totalMinutes: Double = 0
             for pricePoint in associatedPricePoints {
-                let pricePointMinuteLength: Double = Date(timeIntervalSince1970: TimeInterval(pricePoint.startTimestamp)).timeIntervalSince(Date(timeIntervalSince1970: TimeInterval(pricePoint.endTimestamp))) / 60
+                let pricePointMinuteLength: Double = Date(timeIntervalSince1970:
+                    TimeInterval(pricePoint.startTimestamp)
+                )
+                .timeIntervalSince(Date(timeIntervalSince1970:
+                    TimeInterval(pricePoint.endTimestamp))
+                ) / 60
                 pricesTogether += pricePointMinuteLength * pricePoint.marketprice
                 totalMinutes += pricePointMinuteLength
             }
@@ -228,7 +237,12 @@ class CheapestHourManager: ObservableObject {
 
             if Calendar.current.component(.minute, from: startTime) != 0 {
                 startTimeDifference = Calendar.current.component(.minute, from: startTime)
-                startTime = Calendar.current.date(bySettingHour: Calendar.current.component(.hour, from: startTime), minute: 0, second: 0, of: startTime)! // Set the minute and second of the start time both to zero
+                startTime = Calendar.current.date(
+                    bySettingHour: Calendar.current.component(.hour, from: startTime),
+                    minute: 0,
+                    second: 0,
+                    of: startTime
+                )! // Set the minute and second of the start time both to zero
             }
 
             if Calendar.current.component(.minute, from: self.endDate) != 0 {

@@ -33,9 +33,19 @@ class AutoUpdatingEntity<T: NSManagedObject>: NSObject, NSFetchedResultsControll
         }
 
         if T.self == Setting.self {
-            entity = getCurrentSetting(entityName: entityName, managedObjectContext: self.managedObjectContext, fetchRequestResults: (entityController as? NSFetchedResultsController<Setting>)?.fetchedObjects ?? []) as? T
+            entity = getCurrentSetting(
+                entityName: entityName,
+                managedObjectContext: self.managedObjectContext,
+                fetchRequestResults: (entityController as? NSFetchedResultsController<Setting>)?.fetchedObjects ?? []
+            ) as? T
         } else if T.self == NotificationSetting.self {
-            entity = getNotificationSetting(entityName: entityName, managedObjectContext: self.managedObjectContext, fetchRequestResults: (entityController as? NSFetchedResultsController<NotificationSetting>)?.fetchedObjects ?? []) as? T
+            entity = getNotificationSetting(
+                entityName: entityName,
+                managedObjectContext: self.managedObjectContext,
+                fetchRequestResults: (
+                    entityController as? NSFetchedResultsController<NotificationSetting>
+                )?.fetchedObjects ?? []
+            ) as? T
         }
     }
 

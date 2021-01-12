@@ -46,7 +46,6 @@ struct CheapestTimeResultTimeRange: View {
                 .bold()
                 .font(.title2)
         }
-        .padding(.bottom, 25)
     }
 }
 
@@ -91,6 +90,8 @@ struct CheapestTimeResultView: View {
 
                 CheapestTimeResultTimeRange()
 
+                Spacer(minLength: 0)
+                
                 HStack(alignment: .center) {
                     Text("cheapestPriceResultPage.totalTime")
                     Text(getTotalTime())
@@ -103,7 +104,10 @@ struct CheapestTimeResultView: View {
                 HStack(spacing: 10) {
                     CheapestTimeClockView(cheapestHourManager.cheapestHoursForUsage!)
                         .padding([.leading, .trailing], 20)
-                        .frame(width: 310, height: 310)
+                        .frame(
+                            width: UIScreen.main.bounds.width * 0.85,
+                            height: UIScreen.main.bounds.width * 0.85
+                        )
                 }
 
                 Spacer(minLength: 0)

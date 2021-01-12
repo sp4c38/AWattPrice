@@ -26,54 +26,69 @@ class MailContent {
 
 class HelpMailContent: MailContent {
     init() {
-        var recipientEmails = "contact-awattprice@space8.me"
-        var subject = "AWattPrice Hilfe"
-        var encodedSubject = subject.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!
-        var messageBody = ""
-
-        if let currentVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String {
-            messageBody += "\n\nApp Versionsnummer: "
-
-            if let currentAppName = Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String {
-                messageBody += "\(currentAppName) "
-            }
-            messageBody += "\(currentVersion)"
-        }
-
-        if let currentBuild = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String {
-            messageBody += " (\(currentBuild))"
-        }
-
-        if Locale.current.languageCode == "en" {
-            recipientEmails = "contact-awattprice@space8.me"
-            subject = "AWattPrice Help"
-            encodedSubject = subject.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!
-            messageBody = ""
-
-            if let currentVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String {
-                messageBody += "\n\nApp version number: "
-
-                if let currentAppName = Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String {
-                    messageBody += "\(currentAppName) "
-                }
-                messageBody += "\(currentVersion)"
-            }
-
-            if let currentBuild = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String {
-                messageBody += " (\(currentBuild))"
-            }
-        }
-
-        let body = messageBody
-        let encodedBody = body.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!
+        let recipientEmails = "contact-awattprice@space8.me"
 
         super.init(
             recipientEmails: recipientEmails,
-            subject: subject,
-            encodedSubject: encodedSubject,
-            body: body,
-            encodedBody: encodedBody
+            subject: "",
+            encodedSubject: "",
+            body: "",
+            encodedBody: ""
         )
+    }
+    
+    func setSubject() {
+        if Locale.current.languageCode == "de" {
+            subject = "AWattPrice Hilfe"
+        } else {
+            subject = "AWattPrice Help"
+        }
+        encodedSubject = subject.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!
+    }
+    
+    func getDeviceModelString() -> String {
+        var systemInfo = utsname()
+        uname(&systemInfo)
+        
+        let machineMirror = Mirror(reflecting: systemInfo.machine)
+        let identifier = machineMirror.children.reduce("") { identifier, element in
+            guard let value = element.value as? Int8, value != 0 else { return identifier }
+            return identifier + String(UnicodeScalar(UInt8(value)))
+        }
+        return identifier
+    }
+    
+    func setBody() {
+        let isGermanLanguage = Locale.current.identifier == "de" ? true : false
+        
+        if let currentVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String {
+            if isGermanLanguage {
+                body += "\n\nApp Versionsnummer: "
+            } else {
+                body += "\n\nApp version number: "
+            }
+
+            if let currentAppName = Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String {
+                body += "\(currentAppName) "
+            }
+            body += "\(currentVersion)"
+            
+            if let currentBuild = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String {
+                body += " (\(currentBuild))"
+            }
+            
+            if isGermanLanguage {
+                body += "\nGerätemodel Identifikation: \(getDeviceModelString()) (\(UIDevice.current.systemName))"
+            } else {
+                body += "\nDevice model identification: \(getDeviceModelString()) (\(UIDevice.current.systemName))"
+            }
+        }
+        encodedBody = body.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!
+    }
+    
+    func setValues() {
+        setSubject()
+        setBody()
     }
 }
 
@@ -117,7 +132,7 @@ struct MailView: UIViewControllerRepresentable {
             _presentationMode = presentationMode
         }
 
-        func mailComposeController(_: MFMailComposeViewController, _: MFMailComposeResult, error: Error?) {
+        func mailComposeController(_: MFMailComposeViewController, didFinishWith _: MFMailComposeResult, error: Error?) {
             defer {
                 presentationMode.dismiss()
             }

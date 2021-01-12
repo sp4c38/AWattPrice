@@ -30,6 +30,13 @@ struct HelpView: View {
 
     @State var isShowingMailView = false
 
+    let mailContent: HelpMailContent
+    
+    init() {
+        mailContent = HelpMailContent()
+        mailContent.setValues()
+    }
+    
     var body: some View {
         VStack(spacing: 30) {
             Text("settingsPage.help")
@@ -40,9 +47,11 @@ struct HelpView: View {
                 if MFMailComposeViewController.canSendMail() {
                     self.isShowingMailView.toggle()
                 } else {
-                    if let alternativeUrl = MailView(mailContent: HelpMailContent()).getAlternativeMailApp() {
-                        UIApplication.shared.open(alternativeUrl)
-                    }
+                    if let alternativeUrl = MailView(
+                        mailContent: mailContent)
+                        .getAlternativeMailApp() {
+                            UIApplication.shared.open(alternativeUrl)
+                        }
                 }
             }) {
                 HStack(spacing: 10) {
@@ -61,7 +70,7 @@ struct HelpView: View {
         .cornerRadius(20)
         .padding()
         .sheet(isPresented: $isShowingMailView) {
-            MailView(mailContent: HelpMailContent())
+            MailView(mailContent: mailContent)
                 .edgesIgnoringSafeArea(.bottom)
         }
     }

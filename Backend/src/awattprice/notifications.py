@@ -273,12 +273,6 @@ async def check_and_send(config, data, data_region, db_manager):
 
     if notification_defaults.is_initialized:
         all_data_to_check = {}
-        log.debug(
-            f"Need to check and send notifications for data region {data_region.name}."
-        )
-        all_data_to_check[data_region.value] = DetailedPriceData(
-            Box(data), data_region.value
-        )
 
         await db_manager.acquire_lock()
         cursor = db_manager.db.cursor()
@@ -287,6 +281,7 @@ async def check_and_send(config, data, data_region, db_manager):
         items = [dict(x) for x in items]
 
         notification_queue = asyncio.Queue()
+
         for notifi_config in items:
             try:
                 configuration = json.loads(notifi_config["configuration"])["config"]
@@ -306,11 +301,15 @@ async def check_and_send(config, data, data_region, db_manager):
                     # Runs if a user is in a different region as those which are included in the regions
                     # to send notification updates.
                     # Therefor this polls the aWATTar API of the certain region.
-
                     region = Region(region_identifier)
-                    region_data, region_check_notification = await poll.get_data(
-                        config=config, region=region
-                    )
+                    if region == data_region:
+                        region_check_notification = True
+                        region_data = data
+                    else:
+                        region_data, region_check_notification = await poll.get_data(
+                            config=config, region=region
+                        )
+
                     if region_check_notification:
                         log.debug(
                             f"Need to check and send notifications for data region {region.name}."

@@ -68,7 +68,7 @@ def start_logging(config: Box, for_scheduled_request: bool = False) -> None:
         "handlers": [
             {
                 "sink": sys.stderr,
-                "format": "{time:YYYY-MM-DD HH:mm:ss} | <level>{level}</level> | {message}",
+                "format": "{time:YYYY-MM-DD HH:mm:ss.SSS} | <level>{level}</level> | {message}",
                 "colorize": True,
                 "level": "DEBUG",
                 "backtrace": True,
@@ -78,7 +78,7 @@ def start_logging(config: Box, for_scheduled_request: bool = False) -> None:
                 "rotation": "100 KB",
                 "level": "TRACE",
                 "compression": "gz",
-                "format": "{time:YYYY-MM-DDTHH:mm:ss} | {level} | {message}",
+                "format": "{time:YYYY-MM-DDTHH:mm:ss.SSS} | {level} | {message}",
                 "backtrace": True,
                 "serialize": False,
             },

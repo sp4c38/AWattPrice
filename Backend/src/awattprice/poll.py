@@ -146,7 +146,9 @@ async def get_data(
         if results is None:
             return None, False
         if results:
-            log.info("Successfully fetched fresh data from aWATTar.")
+            log.info(
+                f"Successfully fetched fresh data from aWATTar for {region.name} region."
+            )
             # We run one task in asyncio
             fetched_data = results.pop()
         else:

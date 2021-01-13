@@ -23,7 +23,7 @@ struct NoNotificationAccessView: View {
                 .buttonStyle(RoundedBorderButtonStyle())
             }
         }
-//        .disableBackgroundColor(true)
+        .disableBackgroundColor(true)
     }
 }
 

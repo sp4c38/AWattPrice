@@ -107,13 +107,11 @@ async def get_data(
 
     # If data directory doesn't exist create it.
     # This is also checked again when writing to the actual data file (if awattar data needs to be updated).
-    check_dir = file_path.parent
-    if not check_dir.expanduser().is_dir():
+    check_dir = file_path.parent.expanduser()
+    if not check_dir.is_dir():
         log.warning(f"Creating the data destination directory {check_dir}.")
-        os.makedirs(check_dir.expanduser().as_posix())
-    updating_lock_path = Path(config.file_location.data_dir).expanduser() / Path(
-        f"updating-{region.name.lower()}-data.lck"
-    )
+        os.makedirs(check_dir.as_posix())
+    updating_lock_path = check_dir / Path(f"updating-{region.name.lower()}-data.lck")
     updating_lock = FileLock(updating_lock_path)
     await verify_awattar_not_polled(updating_lock)
     data = await read_data(file_path=file_path)

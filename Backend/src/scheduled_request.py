@@ -15,10 +15,11 @@ __copyright__ = "Léon Becker"
 __license__ = "mit"
 
 import asyncio
+import json
+import os
+
 import filelock
 import httpx
-import json
-
 import validators
 
 from fastapi import status
@@ -111,14 +112,13 @@ async def main():
             lock_file_path = (
                 Path(config.file_location.data_dir).expanduser() / "scheduled_event.lck"
             )
-
+            if not lock_file_path.parent.is_dir():
+                os.makedirs(lock_file_path.parent.as_posix())
             scheduled_event_lock = filelock.FileLock(lock_file_path, timeout=5)
 
             try:
                 with scheduled_event_lock.acquire():
-
                     tasks = []
-
                     for region in [
                         [
                             getattr(Region, "de".upper(), None),

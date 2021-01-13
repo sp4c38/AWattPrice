@@ -49,6 +49,29 @@ struct CheapestTimeResultTimeRange: View {
     }
 }
 
+struct CheapestTimeResultViewClock: View {
+    @EnvironmentObject var cheapestHourManager: CheapestHourManager
+    
+    var clockSize: CGFloat = 0
+    
+    func getClockSize() -> CGFloat {
+        let screenSize = UIScreen.main.bounds.width
+        let clockSize = screenSize * 0.85
+        return clockSize
+    }
+    
+    var body: some View {
+        HStack(spacing: 10) {
+            CheapestTimeClockView(cheapestHourManager.cheapestHoursForUsage!)
+                .padding([.leading, .trailing], 20)
+                .frame(
+                    width: getClockSize(),
+                    height: getClockSize()
+                )
+        }
+    }
+}
+
 /// A view which presents the results calculated by the CheapestHourManager of when the cheapest hours for the usage of energy are.
 struct CheapestTimeResultView: View {
     @Environment(\.colorScheme) var colorScheme
@@ -57,19 +80,11 @@ struct CheapestTimeResultView: View {
     @EnvironmentObject var currentSetting: CurrentSetting
 
     var todayDateFormatter: DateFormatter
-    let currencyFormatter: NumberFormatter
 
     init() {
         todayDateFormatter = DateFormatter()
         todayDateFormatter.dateStyle = .long
         todayDateFormatter.timeStyle = .none
-
-        currencyFormatter = NumberFormatter()
-        currencyFormatter.numberStyle = .currency
-        currencyFormatter.locale = Locale(identifier: "de_DE")
-        currencyFormatter.currencySymbol = "ct"
-        currencyFormatter.maximumFractionDigits = 2
-        currencyFormatter.minimumFractionDigits = 2
     }
 
     func getTotalTime() -> String {
@@ -81,13 +96,12 @@ struct CheapestTimeResultView: View {
         let minutes = 60 * (interval - hours)
         return TotalTimeFormatter().localizedTotalTimeString(hour: hours, minute: minutes)
     }
-
+    
     var body: some View {
         VStack(alignment: .center, spacing: 0) {
             if cheapestHourManager.cheapestHoursForUsage != nil {
-                // The time range in which the cheapest hours are
                 Spacer(minLength: 0)
-
+                
                 CheapestTimeResultTimeRange()
 
                 Spacer(minLength: 0)
@@ -97,18 +111,10 @@ struct CheapestTimeResultView: View {
                     Text(getTotalTime())
                         .bold()
                 }
-
+                
                 Spacer(minLength: 0)
 
-                // The clock which visually presents the results.
-                HStack(spacing: 10) {
-                    CheapestTimeClockView(cheapestHourManager.cheapestHoursForUsage!)
-                        .padding([.leading, .trailing], 20)
-                        .frame(
-                            width: UIScreen.main.bounds.width * 0.85,
-                            height: UIScreen.main.bounds.width * 0.85
-                        )
-                }
+                CheapestTimeResultViewClock()
 
                 Spacer(minLength: 0)
 
@@ -131,6 +137,7 @@ struct CheapestTimeResultView: View {
             }
         }
         .padding([.leading, .trailing], 16)
+        .navigationTitle("general.result")
         .onAppear {
             cheapestHourManager.calculateCheapestHours(energyData: awattarData.energyData!, currentSetting: currentSetting)
         }
@@ -140,11 +147,5 @@ struct CheapestTimeResultView: View {
                 cheapestHourManager.cheapestHoursForUsage!.calculateHourlyPrice(currentSetting: currentSetting)
             }
         }
-        .onChange(of: currentSetting.entity!.awattarBaseElectricityPrice) { _ in
-            if cheapestHourManager.cheapestHoursForUsage != nil {
-                cheapestHourManager.cheapestHoursForUsage!.calculateHourlyPrice(currentSetting: currentSetting)
-            }
-        }
-        .navigationTitle("general.result")
     }
 }

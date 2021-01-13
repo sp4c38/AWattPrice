@@ -27,53 +27,9 @@ class CheapestHourManager: ObservableObject {
     @Published var cheapestHoursForUsage: HourPair? = nil
     /// A variable set to true if calculations have been performed but no cheapest hours were found.
     @Published var errorOccurredFindingCheapestHours = false
+}
 
-    /// Sets the selected time interval to tonight from 20pm first day to 7am next day
-    func setTimeIntervalThisNight(energyData: EnergyData) {
-        var possibleStartDate = Date()
-        if Calendar.current.component(.hour, from: Date()) >= 0, Calendar.current.component(.hour, from: Date()) < 7 {
-            possibleStartDate = Date()
-        } else {
-            possibleStartDate = Calendar.current.date(bySettingHour: 20, minute: 0, second: 0, of: Date())!
-        }
-        var firstPossibleStartDate = Date(timeIntervalSince1970: TimeInterval(energyData.prices[0].startTimestamp))
-
-        let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: Date())!
-        var possibleEndDate = Date()
-        if Calendar.current.component(.hour, from: Date()) >= 0, Calendar.current.component(.hour, from: Date()) < 7 {
-            possibleEndDate = Calendar.current.date(bySettingHour: 7, minute: 0, second: 0, of: Date())!
-        } else {
-            possibleEndDate = Calendar.current.date(bySettingHour: 7, minute: 0, second: 0, of: tomorrow)!
-        }
-        let lastPossibleEndDate = Date(timeIntervalSince1970: TimeInterval(energyData.prices[energyData.prices.count - 1].endTimestamp))
-
-        if possibleStartDate >= firstPossibleStartDate, possibleStartDate <= lastPossibleEndDate {
-            startDate = possibleStartDate
-        } else {
-            firstPossibleStartDate = Date()
-            startDate = firstPossibleStartDate
-        }
-
-        if possibleEndDate > lastPossibleEndDate {
-            endDate = lastPossibleEndDate
-        } else {
-            endDate = possibleEndDate
-        }
-    }
-
-    /// Sets the selected time interval to the next x hours
-    func setTimeInterval(forNextHourAmount hourAmount: Int, energyData: EnergyData) {
-        startDate = Date()
-        let possibleEndDate = Calendar.current.date(byAdding: .hour, value: hourAmount, to: Date())!
-        let lastPossibleEndDate = Date(timeIntervalSince1970: TimeInterval(energyData.prices[energyData.prices.count - 1].endTimestamp))
-
-        if possibleEndDate > lastPossibleEndDate {
-            endDate = lastPossibleEndDate
-        } else {
-            endDate = possibleEndDate
-        }
-    }
-
+extension CheapestHourManager {
     /// Sets the values after the user entered them. This includes calculating time intervals and formatting raw text strings to floats.
     /// If errors occur because of wrong input of the user and values cannot be set correctly a list is returned with error values.
     /// - Returns: Returns a list with error values if any occur. If no errors occur a list is also returned but with a success value.
@@ -125,61 +81,111 @@ class CheapestHourManager: ObservableObject {
 
         return errorValues
     }
+}
 
-    /// A pair of one, two, three or more EnergyPricePoints. This object supports functionallity to
-    /// calculate the average price or to sort the associated price points for day.
-    class HourPair {
-        var averagePrice: Double = 0
-        var associatedPricePoints: [EnergyPricePoint]
-        /// Final energy cost which is calculated with a certain power (kW) a electrical
-        /// consumer uses and the time of the usage.
-        var hourlyEnergyCosts: Double?
+extension CheapestHourManager {
+    /// Sets the selected time interval to tonight from 20pm first day to 7am next day
+    func setTimeIntervalThisNight(energyData: EnergyData) {
+        var possibleStartDate = Date()
+        if Calendar.current.component(.hour, from: Date()) >= 0, Calendar.current.component(.hour, from: Date()) < 7 {
+            possibleStartDate = Date()
+        } else {
+            possibleStartDate = Calendar.current.date(bySettingHour: 20, minute: 0, second: 0, of: Date())!
+        }
+        var firstPossibleStartDate = Date(timeIntervalSince1970: TimeInterval(energyData.prices[0].startTimestamp))
 
-        init(associatedPricePoints: [EnergyPricePoint]) {
-            self.associatedPricePoints = associatedPricePoints
+        let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: Date())!
+        var possibleEndDate = Date()
+        if Calendar.current.component(.hour, from: Date()) >= 0, Calendar.current.component(.hour, from: Date()) < 7 {
+            possibleEndDate = Calendar.current.date(bySettingHour: 7, minute: 0, second: 0, of: Date())!
+        } else {
+            possibleEndDate = Calendar.current.date(bySettingHour: 7, minute: 0, second: 0, of: tomorrow)!
+        }
+        let lastPossibleEndDate = Date(timeIntervalSince1970: TimeInterval(energyData.prices[energyData.prices.count - 1].endTimestamp))
+
+        if possibleStartDate >= firstPossibleStartDate, possibleStartDate <= lastPossibleEndDate {
+            startDate = possibleStartDate
+        } else {
+            firstPossibleStartDate = Date()
+            startDate = firstPossibleStartDate
         }
 
-        /// Caluclates the average price from the energy price of all to this HourPair
-        /// associated price points without VAT included.
-        func calculateAveragePrice() {
-            var pricesTogether: Double = 0
-            var totalMinutes: Double = 0
-            for pricePoint in associatedPricePoints {
-                let pricePointMinuteLength: Double = Date(timeIntervalSince1970:
-                    TimeInterval(pricePoint.startTimestamp)
-                )
-                .timeIntervalSince(Date(timeIntervalSince1970:
-                    TimeInterval(pricePoint.endTimestamp))
-                ) / 60
-                pricesTogether += pricePointMinuteLength * pricePoint.marketprice
-                totalMinutes += pricePointMinuteLength
-            }
-            averagePrice = pricesTogether / totalMinutes
-        }
-
-        func calculateHourlyPrice(currentSetting: CurrentSetting) {
-            hourlyEnergyCosts = nil
-            var hourlyPrice: Double = 0
-
-            if currentSetting.entity!.awattarTariffIndex == 0 {
-                for hourPair in associatedPricePoints {
-                    let lengthOfIntervene = Double(abs(hourPair.endTimestamp - hourPair.startTimestamp)) / 60 / 60 // In hours
-                    var price = hourPair.marketprice
-
-                    if currentSetting.entity!.pricesWithVAT {
-                        price *= currentSetting.currentVATToUse
-                    }
-
-                    let basePrice: Double = lengthOfIntervene * currentSetting.entity!.awattarBaseElectricityPrice
-
-                    hourlyPrice += (lengthOfIntervene * price) + basePrice
-                }
-
-                hourlyEnergyCosts = hourlyPrice
-            }
+        if possibleEndDate > lastPossibleEndDate {
+            endDate = lastPossibleEndDate
+        } else {
+            endDate = possibleEndDate
         }
     }
+    
+    /// Sets the selected time interval to the next x hours
+    func setTimeInterval(forNextHourAmount hourAmount: Int, energyData: EnergyData) {
+        startDate = Date()
+        let possibleEndDate = Calendar.current.date(byAdding: .hour, value: hourAmount, to: Date())!
+        let lastPossibleEndDate = Date(timeIntervalSince1970: TimeInterval(energyData.prices[energyData.prices.count - 1].endTimestamp))
 
+        if possibleEndDate > lastPossibleEndDate {
+            endDate = lastPossibleEndDate
+        } else {
+            endDate = possibleEndDate
+        }
+    }
+}
+
+/// A pair of one, two, three or more EnergyPricePoints. This object supports functionallity to
+/// calculate the average price and to calculate the prices for the hourly awattar tariff.
+class HourPair {
+    var averagePrice: Double = 0
+    var associatedPricePoints: [EnergyPricePoint]
+    /// Final energy cost which is calculated with a certain power (kW) a electrical
+    /// consumer uses and the time of the usage.
+    var hourlyEnergyCosts: Double?
+
+    init(associatedPricePoints: [EnergyPricePoint]) {
+        self.associatedPricePoints = associatedPricePoints
+    }
+
+    /// Caluclates the average price from the energy price of all to this HourPair
+    /// associated price points without VAT included.
+    func calculateAveragePrice() {
+        var pricesTogether: Double = 0
+        var totalMinutes: Double = 0
+        for pricePoint in associatedPricePoints {
+            let pricePointMinuteLength: Double = Date(timeIntervalSince1970:
+                TimeInterval(pricePoint.startTimestamp)
+            )
+            .timeIntervalSince(Date(timeIntervalSince1970:
+                TimeInterval(pricePoint.endTimestamp))
+            ) / 60
+            pricesTogether += pricePointMinuteLength * pricePoint.marketprice
+            totalMinutes += pricePointMinuteLength
+        }
+        averagePrice = pricesTogether / totalMinutes
+    }
+
+    func calculateHourlyPrice(currentSetting: CurrentSetting) {
+        hourlyEnergyCosts = nil
+        var hourlyPrice: Double = 0
+
+        if currentSetting.entity!.awattarTariffIndex == 0 {
+            for hourPair in associatedPricePoints {
+                let lengthOfIntervene = Double(abs(hourPair.endTimestamp - hourPair.startTimestamp)) / 60 / 60 // In hours
+                var price = hourPair.marketprice
+
+                if currentSetting.entity!.pricesWithVAT {
+                    price *= currentSetting.currentVATToUse
+                }
+
+                let basePrice: Double = lengthOfIntervene * currentSetting.entity!.awattarBaseElectricityPrice
+
+                hourlyPrice += (lengthOfIntervene * price) + basePrice
+            }
+
+            hourlyEnergyCosts = hourlyPrice
+        }
+    }
+}
+
+extension CheapestHourManager {
     func createHourPairs(forHours timeRangeNumber: Int, fromStartTime startTime: Date, toEndTime endTime: Date, with energyData: EnergyData) -> [HourPair] {
         // Create all HourPair's for later comparison
         var allPairs = [HourPair]()
@@ -204,7 +210,9 @@ class CheapestHourManager: ObservableObject {
 
         return allPairs
     }
+}
 
+extension CheapestHourManager {
     func compareHourPairs(allPairs: [HourPair]) -> Int? {
         // Compare all hour pairs to find the index of the hour pair with the smallest average price
         var cheapestPairIndex: Int?
@@ -220,7 +228,10 @@ class CheapestHourManager: ObservableObject {
 
         return cheapestPairIndex
     }
+}
 
+
+extension CheapestHourManager {
     /**
      Function to calculate when energy prices are cheapest.
      - Returns: Doesn't return value directly. Instead sets cheapestHoursForUsage of CheapestHourManager to the result HourPair.

@@ -22,7 +22,7 @@ struct CheapestTimeClockView: View {
 
     var hourDegree = (0, 0)
 
-    init(_ cheapestHourPair: CheapestHourManager.HourPair) {
+    init(_ cheapestHourPair: HourPair) {
         let minItemIndex = 0
         let maxItemIndex = cheapestHourPair.associatedPricePoints.count - 1
 
@@ -282,7 +282,7 @@ struct CheapestTimeClockView: View {
 struct ConsumptionClockView_Previews: PreviewProvider {
     static var previews: some View {
         CheapestTimeClockView(
-            CheapestHourManager.HourPair(
+            HourPair(
                 associatedPricePoints: [EnergyPricePoint(
                                             startTimestamp: 1_603_184_400,
                                             endTimestamp: 1_603_189_800,

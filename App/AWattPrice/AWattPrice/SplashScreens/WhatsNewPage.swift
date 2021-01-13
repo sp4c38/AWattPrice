@@ -21,7 +21,7 @@ struct WhatsNewPage: View {
                         title: "general.priceGuard",
                         subTitle: "notificationPage.notification.priceDropsBelowValue.description",
                         tipText: "splashScreen.whatsNew.notifications.extrainfo",
-                        imageName: "app.badge"
+                        imageName: ("PriceTag", false)
                     )
                 }
                 .padding(.trailing, 14)

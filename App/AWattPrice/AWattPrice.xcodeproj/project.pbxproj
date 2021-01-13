@@ -282,7 +282,7 @@
 				617DF0322594B573004BF4E2 /* AutoUpdatingEntity.swift */,
 				618AF8602593F81700E21583 /* Setting */,
 				614E784C25068F6100A7ED83 /* DownloadEnergyData.swift */,
-				61E2DFD6254214B100473E20 /* CheapestHourManager.swift */,
+				61DE42BA25AE534A002AF6C2 /* Cheapest Hour Manager */,
 				6117E9D62590B52300A2B475 /* Push Notifications */,
 			);
 			path = Data;
@@ -497,6 +497,14 @@
 				61B9F6192598EB0200C14690 /* BarText.swift */,
 			);
 			path = "Single Bar";
+			sourceTree = "<group>";
+		};
+		61DE42BA25AE534A002AF6C2 /* Cheapest Hour Manager */ = {
+			isa = PBXGroup;
+			children = (
+				61E2DFD6254214B100473E20 /* CheapestHourManager.swift */,
+			);
+			path = "Cheapest Hour Manager";
 			sourceTree = "<group>";
 		};
 		61EC1BFE254B419500324ADA /* Setting Views */ = {

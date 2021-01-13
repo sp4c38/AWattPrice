@@ -31,17 +31,27 @@ struct AppFeatureView: View {
     var title: LocalizedStringKey
     var subTitle: LocalizedStringKey
     var tipText: LocalizedStringKey? = nil
-    var imageName: String
-
+    /// Tuple out of String (1st item) and Bool (2nd item). 2nd item tells if image should be resolved as a SF icon.
+    var imageName: (String, Bool)
+    
     var body: some View {
         HStack {
             VStack(alignment: .leading) {
                 HStack(alignment: .center, spacing: 10) {
-                    Image(systemName: imageName)
-                        .resizable()
-                        .foregroundColor(Color(hue: 0.5648, saturation: 1.0000, brightness: 0.6235))
-                        .padding(16)
-                        .frame(width: 70, height: 70)
+                    VStack {
+                        if imageName.1 == true {
+                            Image(systemName: imageName.0)
+                                .resizable()
+                                .renderingMode(.template)
+                        } else {
+                            Image(imageName.0)
+                                .resizable()
+                                .renderingMode(.template)
+                        }
+                    }
+                    .foregroundColor(Color(hue: 0.5648, saturation: 1.0000, brightness: 0.6235))
+                    .padding(16)
+                    .frame(width: 70, height: 70)
 
                     VStack(alignment: .leading, spacing: 5) {
                         Text(title)
@@ -169,17 +179,17 @@ struct SplashScreenFeaturesAndConsentView: View {
                 AppFeatureView(
                     title: "splashScreen.featuresAndConsent.viewPrices",
                     subTitle: "splashScreen.featuresAndConsent.viewPrices.info",
-                    imageName: "magnifyingglass")
+                    imageName: ("magnifyingglass", true))
                 
                 AppFeatureView(
                     title: "splashScreen.featuresAndConsent.comparePrices",
                     subTitle: "splashScreen.featuresAndConsent.comparePrices.info",
-                    imageName: "arrow.left.arrow.right")
+                    imageName: ("arrow.left.arrow.right", true))
                 
                 AppFeatureView(
                     title: "general.priceGuard",
                     subTitle: "notificationPage.notification.priceDropsBelowValue.description",
-                    imageName: "bell")
+                    imageName: ("PriceTag", false))
             }
 
             Spacer(minLength: 0)

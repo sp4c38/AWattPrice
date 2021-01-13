@@ -12,13 +12,13 @@ struct SplashScreenStartViewTitle: View {
         VStack(spacing: 15) {
             Image("BigAppIcon")
                 .resizable()
-                .frame(width: 210, height: 210)
+                .frame(width: 220, height: 220)
             
             VStack(spacing: 5) {
                 Text("splashScreen.start.welcome")
                     .font(
                         .custom("SFCompactDisplay-Black",
-                                size: 40,
+                                size: 45,
                                 relativeTo: .largeTitle)
                     )
                 
@@ -26,7 +26,7 @@ struct SplashScreenStartViewTitle: View {
                     .foregroundColor(Color(hue: 0.5648, saturation: 1.0000, brightness: 0.6235))
                     .font(
                         .custom("SFCompactDisplay-Black",
-                                size: 45,
+                                size: 50,
                                 relativeTo: .largeTitle)
                     )
             }

@@ -273,6 +273,9 @@ async def check_and_send(config, data, data_region, db_manager):
 
     if notification_defaults.is_initialized:
         all_data_to_check = {}
+        checked_regions_no_notifications = (
+            []
+        )  # Already checked regions which don't apply to receive notifications
 
         await db_manager.acquire_lock()
         cursor = db_manager.db.cursor()
@@ -296,12 +299,14 @@ async def check_and_send(config, data, data_region, db_manager):
             # wants to get any notifications at all
             if configuration["price_below_value_notification"]["active"] is True:
                 region_identifier = notifi_config["region_identifier"]
+                region = Region(region_identifier)
 
                 if region_identifier not in all_data_to_check:
                     # Runs if a user is in a different region as those which are included in the regions
                     # to send notification updates.
                     # Therefor this polls the aWATTar API of the certain region.
-                    region = Region(region_identifier)
+                    if region.value in checked_regions_no_notifications:
+                        continue
                     if region == data_region:
                         region_check_notification = True
                         region_data = data
@@ -318,6 +323,10 @@ async def check_and_send(config, data, data_region, db_manager):
                             Box(region_data), region.value
                         )
                     else:
+                        log.debug(
+                            f"Don't need to check and send notifications for data region {region.name}"
+                        )
+                        checked_regions_no_notifications.append(region.value)
                         continue
 
                 token = notifi_config["token"]
@@ -328,13 +337,14 @@ async def check_and_send(config, data, data_region, db_manager):
                     below_value = configuration["price_below_value_notification"][
                         "below_value"
                     ]
+
                     await notification_queue.put(
                         (
                             price_drops_below_notification,
                             db_manager,
                             notification_defaults,
                             config,
-                            all_data_to_check[region_identifier],
+                            all_data_to_check[region.value],
                             token,
                             below_value,
                             region_identifier,
@@ -362,4 +372,4 @@ async def check_and_send(config, data, data_region, db_manager):
 
         await asyncio.gather(*tasks)
         await db_manager.release_lock()
-        log.debug("All notifications checked (and sent) and all connections closed.")
+        log.info("All notifications checked (and sent) and all connections closed.")

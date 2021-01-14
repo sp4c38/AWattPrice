@@ -221,7 +221,7 @@ async def price_drops_below_notification(
                     "loc-key": notification_defaults.price_drops_below_notification.body_loc_key,
                     "loc-args": [
                         formatted_below_value,
-                        lowest_price_start.format("HH"),
+                        lowest_price_start.format("H"),
                         formatted_lowest_price,
                     ],
                 },

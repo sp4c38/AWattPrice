@@ -202,7 +202,6 @@ async def get_data(
 
 
 async def get_headers(config: Box, data: Dict) -> Dict:
-    # print(data)
     data = Box(data)
     headers = {"Cache-Control": "public, max-age={}"}
     max_age = 0

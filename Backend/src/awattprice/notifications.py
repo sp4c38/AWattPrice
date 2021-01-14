@@ -10,6 +10,7 @@ Send notifications via APNs to those users.
 import asyncio
 import json
 
+from copy import copy
 from datetime import datetime
 from math import floor
 from pathlib import Path
@@ -36,15 +37,14 @@ class DetailedPriceData:
     def get_user_prices(
         self, below_value: int, region_identifier: int, vat_selection: int
     ) -> (list, int):
-        # Returns a list of prices which drop below or on a certain value. Also returns a
-        # integer which represents the lowest price point in the returned list.
-        # The price point marketprices in the returned list have the VAT added if the user selected it (if vat_selection is 1).
+        """Returns a list of prices which drop below or on a certain value. Also returns a
+        integer which represents the lowest price point in the returned list.
+        The price point marketprices in the returned list have the VAT added if the user selected it (if vat_selection is 1).
+        """
         below_price_data = []
-        current_index = 0
         lowest_index = None
-        # print(
-        #     f"started with below value {below_value} and rid {region_identifier} FOR {self.region_identifier}. VAT selection: {vat_selection}"
-        # )
+
+        current_index = 0
         for price_point in self.data.prices:
             timezone = tzstr("CET-1CEST,M3.5.0/2,M10.5.0/3").tzname(
                 datetime.fromtimestamp(price_point.start_timestamp)
@@ -54,22 +54,31 @@ class DetailedPriceData:
             now_day_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
             tomorrow_hour_start = now_day_start.shift(days=+1)
 
-            new_marketprice = price_point.marketprice
             if region_identifier == 0 and vat_selection == 1:
-                new_marketprice = round(new_marketprice * 1.19, 2)
+                marketprice_with_vat = round(price_point.marketprice * 1.19, 2)
+            else:
+                marketprice_with_vat = price_point.marketprice
 
             # Only check price points for the next day. So price points for the
             # current day were already checked a day before.
             if price_point.start_timestamp >= tomorrow_hour_start.timestamp:
-                # print(f"future {new_marketprice}")
-                # print(new_marketprice <= below_value)
-                if new_marketprice <= below_value:
-                    below_price_data.append(price_point)
+                if marketprice_with_vat <= below_value:
+                    below_price_data.append(
+                        Box(
+                            {
+                                "start_timestamp": price_point.start_timestamp,
+                                "marketprice": marketprice_with_vat,
+                            }  # Always one hour long
+                        )
+                    )
+
                     if lowest_index is None:
                         lowest_index = current_index
                     else:
-                        # print(f"2: {below_price_data[lowest_index].marketprice}")
-                        if new_marketprice < below_price_data[lowest_index].marketprice:
+                        if (
+                            marketprice_with_vat
+                            < below_price_data[lowest_index].marketprice
+                        ):
                             lowest_index = current_index
 
                     current_index += 1

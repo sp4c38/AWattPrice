@@ -56,4 +56,4 @@ class Region(Enum):
 
 
 CONVERT_MWH_KWH = 100 * 0.001
-TIME_CORRECT = 1000  # Correct milli seconds used by Awattar to seconds
+TIME_CORRECT = 1000  # Correct milli seconds used by aWATTar to seconds

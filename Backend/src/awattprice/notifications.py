@@ -34,9 +34,7 @@ class DetailedPriceData:
         self.data = data
         self.region_identifier = region_identifier
 
-    def get_user_prices(
-        self, below_value: int, region_identifier: int, vat_selection: int
-    ) -> (list, int):
+    def get_user_prices(self, below_value: int, region_identifier: int, vat_selection: int) -> (list, int):
         """Returns a list of prices which drop below or on a certain value. Also returns a
         integer which represents the lowest price point in the returned list.
         The price point marketprices in the returned list have the VAT added if the user selected it (if vat_selection is 1).
@@ -46,9 +44,7 @@ class DetailedPriceData:
 
         current_index = 0
         for price_point in self.data.prices:
-            timezone = tzstr("CET-1CEST,M3.5.0/2,M10.5.0/3").tzname(
-                datetime.fromtimestamp(price_point.start_timestamp)
-            )
+            timezone = tzstr("CET-1CEST,M3.5.0/2,M10.5.0/3").tzname(datetime.fromtimestamp(price_point.start_timestamp))
             now = arrow.utcnow().to(timezone)
 
             now_day_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
@@ -75,10 +71,7 @@ class DetailedPriceData:
                     if lowest_index is None:
                         lowest_index = current_index
                     else:
-                        if (
-                            marketprice_with_vat
-                            < below_price_data[lowest_index].marketprice
-                        ):
+                        if marketprice_with_vat < below_price_data[lowest_index].marketprice:
                             lowest_index = current_index
 
                     current_index += 1
@@ -104,20 +97,10 @@ class Notifications:
 
         try:
             dev_team_id_path = Path(config.notifications.dev_team_id).expanduser()
-            self.dev_team_id = (
-                open(dev_team_id_path.as_posix(), "r").readlines()[0].replace("\n", "")
-            )
-            encryption_key_id_path = Path(
-                config.notifications.apns_encryption_key_id
-            ).expanduser()
-            self.encryption_key_id = (
-                open(encryption_key_id_path.as_posix(), "r")
-                .readlines()[0]
-                .replace("\n", "")
-            )
-            encryption_key_path = Path(
-                config.notifications.apns_encryption_key
-            ).expanduser()
+            self.dev_team_id = open(dev_team_id_path.as_posix(), "r").readlines()[0].replace("\n", "")
+            encryption_key_id_path = Path(config.notifications.apns_encryption_key_id).expanduser()
+            self.encryption_key_id = open(encryption_key_id_path.as_posix(), "r").readlines()[0].replace("\n", "")
+            encryption_key_path = Path(config.notifications.apns_encryption_key).expanduser()
             self.encryption_key = open(encryption_key_path.as_posix(), "r").read()
             self.url_path = "/3/device/{}"
         except Exception as e:
@@ -175,26 +158,20 @@ async def price_drops_below_notification(
     region_identifier,
     vat_selection,
 ):
-    below_price_data, lowest_index = price_data.get_user_prices(
-        below_value, region_identifier, vat_selection
-    )
+    below_price_data, lowest_index = price_data.get_user_prices(below_value, region_identifier, vat_selection)
 
     if below_price_data and lowest_index is not None:
         lowest_point = below_price_data[lowest_index]
 
         log.debug('Sending "Price Drops Below" notification to a user.')
         # Get the current timezone (either CET or CEST)
-        timezone = tzstr("CET-1CEST,M3.5.0/2,M10.5.0/3").tzname(
-            datetime.fromtimestamp(lowest_point.start_timestamp)
-        )
+        timezone = tzstr("CET-1CEST,M3.5.0/2,M10.5.0/3").tzname(datetime.fromtimestamp(lowest_point.start_timestamp))
         lowest_price_start = arrow.get(lowest_point.start_timestamp).to(timezone)
 
         # Full cents, for example 4
         lowest_price_floored = floor(lowest_point.marketprice)
         # Decimal places of cent, for example 39
-        lowest_price_decimal = round(
-            (lowest_point.marketprice - lowest_price_floored) * 100
-        )
+        lowest_price_decimal = round((lowest_point.marketprice - lowest_price_floored) * 100)
         # Together 4,39
         formatted_lowest_price = f"{lowest_price_floored},{lowest_price_decimal}"
 
@@ -216,13 +193,11 @@ async def price_drops_below_notification(
             "kid": notification_defaults.encryption_key_id,
         }
 
-        token_data_encoded = (
-            jwt.encode(  # JWT is required by APNs for token based authentication
-                token_body,
-                notification_defaults.encryption_key,
-                algorithm=encryption_algorithm,
-                headers=token_headers,
-            )
+        token_data_encoded = jwt.encode(  # JWT is required by APNs for token based authentication
+            token_body,
+            notification_defaults.encryption_key,
+            algorithm=encryption_algorithm,
+            headers=token_headers,
         )
 
         # Set notification payload
@@ -261,9 +236,7 @@ async def price_drops_below_notification(
         response = None
 
         async with httpx.AsyncClient(http2=True) as client:
-            request = await client.post(
-                url, headers=request_headers, data=json.dumps(notification_payload)
-            )
+            request = await client.post(url, headers=request_headers, data=json.dumps(notification_payload))
             status_code = request.status_code
 
             if request.content.decode("utf-8") == "":
@@ -286,9 +259,7 @@ async def check_and_send(config, data, data_region, db_manager):
 
     if notification_defaults.is_initialized:
         all_data_to_check = {}
-        checked_regions_no_notifications = (
-            []
-        )  # Already checked regions which don't apply to receive notifications
+        checked_regions_no_notifications = []  # Already checked regions which don't apply to receive notifications
 
         await db_manager.acquire_lock()
         cursor = db_manager.db.cursor()
@@ -324,21 +295,13 @@ async def check_and_send(config, data, data_region, db_manager):
                         region_check_notification = True
                         region_data = data
                     else:
-                        region_data, region_check_notification = await poll.get_data(
-                            config=config, region=region
-                        )
+                        region_data, region_check_notification = await poll.get_data(config=config, region=region)
 
                     if region_check_notification:
-                        log.debug(
-                            f"Need to check and send notifications for data region {region.name}."
-                        )
-                        all_data_to_check[region.value] = DetailedPriceData(
-                            Box(region_data), region.value
-                        )
+                        log.debug(f"Need to check and send notifications for data region {region.name}.")
+                        all_data_to_check[region.value] = DetailedPriceData(Box(region_data), region.value)
                     else:
-                        log.debug(
-                            f"Don't need to check and send notifications for data region {region.name}."
-                        )
+                        log.debug(f"Don't need to check and send notifications for data region {region.name}.")
                         checked_regions_no_notifications.append(region.value)
                         continue
 
@@ -347,9 +310,7 @@ async def check_and_send(config, data, data_region, db_manager):
 
                 if configuration["price_below_value_notification"]["active"] is True:
                     # If user applies to get price below value notifications add following item to queue
-                    below_value = configuration["price_below_value_notification"][
-                        "below_value"
-                    ]
+                    below_value = configuration["price_below_value_notification"]["below_value"]
 
                     await notification_queue.put(
                         (

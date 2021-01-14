@@ -46,9 +46,7 @@ def config_updater_factory(config: Box) -> Tuple[Path, ConfigUpdater]:
     if "config_file_path" in config_updater_data:
         path = Path(config_updater_data.pop("config_file_path"))
     else:
-        raise AttributeError(
-            "The config is missing the config_file_path. This should not happen."
-        )
+        raise AttributeError("The config is missing the config_file_path. This should not happen.")
 
     config_updater = ConfigUpdater()
     to_add = []
@@ -68,10 +66,7 @@ def config_updater_factory(config: Box) -> Tuple[Path, ConfigUpdater]:
         else:
             tmp_updater = ConfigUpdater()
             section_txt = f"[{section}]\n" + "\n".join(
-                (
-                    f"{option}: {value}"
-                    for option, value in config_updater_data[section].items()
-                )
+                (f"{option}: {value}" for option, value in config_updater_data[section].items())
             )
             tmp_updater.read_string(section_txt)
             to_add.append(tmp_updater[section])
@@ -88,9 +83,7 @@ def config_updater_factory(config: Box) -> Tuple[Path, ConfigUpdater]:
 def write_config_updater(path: Path, config: ConfigUpdater) -> None:
     """Write the config file."""
     to_write_config = copy.deepcopy(config)
-    with os.fdopen(
-        os.open(path.as_posix(), os.O_WRONLY | os.O_CREAT, 0o600), "w"
-    ) as fh:
+    with os.fdopen(os.open(path.as_posix(), os.O_WRONLY | os.O_CREAT, 0o600), "w") as fh:
         to_write_config.write(fh)
 
 
@@ -118,9 +111,7 @@ def read_config(path: Optional[Path] = None) -> Box:
         sys.exit(1)
 
     if not verify_file_permissions(path):
-        log.error(
-            f"Could not ensure secure file permissions for {path}. Fix them and try again."
-        )
+        log.error(f"Could not ensure secure file permissions for {path}. Fix them and try again.")
         sys.exit(1)
 
     if found_config_file:
@@ -153,11 +144,7 @@ def read_config(path: Optional[Path] = None) -> Box:
 
     config.notifications.use_sandbox = run_on_sandbox
     config.notifications.dev_team_id = config.notifications.dev_team_id.strip("\"'")
-    config.notifications.apns_encryption_key_id = (
-        config.notifications.apns_encryption_key_id.strip("\"'")
-    )
-    config.notifications.apns_encryption_key = (
-        config.notifications.apns_encryption_key.strip("\"'")
-    )
+    config.notifications.apns_encryption_key_id = config.notifications.apns_encryption_key_id.strip("\"'")
+    config.notifications.apns_encryption_key = config.notifications.apns_encryption_key.strip("\"'")
 
     return config

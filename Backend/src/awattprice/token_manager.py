@@ -25,9 +25,7 @@ class TokenDatabaseManager:
     def connect(self, config):
         # Connect to the database
 
-        database_path = Path(config.file_location.apns_dir).expanduser() / Path(
-            "token.db"
-        )
+        database_path = Path(config.file_location.apns_dir).expanduser() / Path("token.db")
 
         database_dir = database_path.parent
         if not database_dir.expanduser().is_dir():
@@ -133,9 +131,7 @@ class APNsTokenManager:
         # Read existing data and appropriately create the final data which will be later written to the database
         cursor = self.db_manager.db.cursor()
         token = self.token_data["token"]
-        items = cursor.execute(
-            "SELECT * FROM token_storage WHERE token = ? LIMIT 1;", (token,)
-        ).fetchall()
+        items = cursor.execute("SELECT * FROM token_storage WHERE token = ? LIMIT 1;", (token,)).fetchall()
 
         if len(items) == 0:
             self.is_new_token = True
@@ -170,9 +166,7 @@ class APNsTokenManager:
 
     def remove_entry(self):
         cursor = self.db_manager.db.cursor()
-        cursor.execute(
-            "DELETE FROM token_storage WHERE token = ?", (self.token_data["token"],)
-        )
+        cursor.execute("DELETE FROM token_storage WHERE token = ?", (self.token_data["token"],))
         cursor.close()
         self.db_manager.db.commit()
 

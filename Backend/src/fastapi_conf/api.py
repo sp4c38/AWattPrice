@@ -35,9 +35,7 @@ async def no_region(background_tasks: BackgroundTasks):
     data, check_notification = await poll.get_data(config=config, region=region)
 
     if check_notification is True:
-        background_tasks.add_task(
-            notifications.check_and_send, config, data, region, db_manager
-        )
+        background_tasks.add_task(notifications.check_and_send, config, data, region, db_manager)
 
     headers = await poll.get_headers(config=config, data=data)
     return JSONResponse(content=data, headers=headers)
@@ -55,9 +53,7 @@ async def with_region(region_id, background_tasks: BackgroundTasks):
     #     True  # Activate for debugging and testing of the push notification system
     # )
     if check_notification is True:
-        background_tasks.add_task(
-            notifications.check_and_send, config, data, region, db_manager
-        )
+        background_tasks.add_task(notifications.check_and_send, config, data, region, db_manager)
 
     headers = await poll.get_headers(config=config, data=data)
     return JSONResponse(content=data, headers=headers)
@@ -69,9 +65,7 @@ async def send_token(request: Request, background_tasks: BackgroundTasks):
     request_data = apns.validate_token(request_body)
     if request_data is not None:
         background_tasks.add_task(apns.write_token, request_data, db_manager)
-        return JSONResponse(
-            {"tokenWasPassedSuccessfully": True}, status_code=status.HTTP_200_OK
-        )
+        return JSONResponse({"tokenWasPassedSuccessfully": True}, status_code=status.HTTP_200_OK)
     else:
         return JSONResponse(
             {"tokenWasPassedSuccessfully": False},

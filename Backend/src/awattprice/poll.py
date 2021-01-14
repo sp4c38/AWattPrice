@@ -89,9 +89,7 @@ async def verify_awattar_not_polled(updating_lock: FileLock):
     return True
 
 
-async def get_data(
-    config: Box, region: Optional[Region] = None, force: bool = False
-) -> (Dict, bool):
+async def get_data(config: Box, region: Optional[Region] = None, force: bool = False) -> (Dict, bool):
     """Request the Awattar data. Read it from file, if it is too old fetch it
     from the Awattar API endpoint.
 
@@ -101,9 +99,7 @@ async def get_data(
     if region is None:
         region = Region.DE
 
-    file_path = Path(config.file_location.data_dir).expanduser() / Path(
-        f"awattar-data-{region.name.lower()}.json"
-    )
+    file_path = Path(config.file_location.data_dir).expanduser() / Path(f"awattar-data-{region.name.lower()}.json")
 
     # If data directory doesn't exist create it.
     # This is also checked again when writing to the actual data file (if awattar data needs to be updated).
@@ -131,12 +127,7 @@ async def get_data(
         # data until tomorrow midnight. Let's ask for that. Further, set the start
         # time to the last full hour. The Awattar API expects microsecond timestamps.
         start = now.replace(minute=0, second=0, microsecond=0).timestamp * TIME_CORRECT
-        end = (
-            now.shift(days=+2)
-            .replace(hour=0, minute=0, second=0, microsecond=0)
-            .timestamp
-            * TIME_CORRECT
-        )
+        end = now.shift(days=+2).replace(hour=0, minute=0, second=0, microsecond=0).timestamp * TIME_CORRECT
 
         future = awattar_read_task(config=config, region=region, start=start, end=end)
         results = await asyncio.gather(*[future])
@@ -144,9 +135,7 @@ async def get_data(
         if results is None:
             return None, False
         if results:
-            log.info(
-                f"Successfully fetched fresh data from aWATTar for {region.name} region."
-            )
+            log.info(f"Successfully fetched fresh data from aWATTar for {region.name} region.")
             # We run one task in asyncio
             fetched_data = results.pop()
         else:
@@ -154,16 +143,12 @@ async def get_data(
             fetched_data = None
     else:
         updating_lock.release()
-        log.debug(
-            f"No need to update aWATTar data for region {region.name} from their API."
-        )
+        log.debug(f"No need to update aWATTar data for region {region.name} from their API.")
 
     # Update existing data
     must_write_data = False
     if data and fetched_data:
-        max_existing_data_start_timestamp = (
-            max([d.start_timestamp for d in data.prices]) * TIME_CORRECT
-        )
+        max_existing_data_start_timestamp = max([d.start_timestamp for d in data.prices]) * TIME_CORRECT
         for entry in fetched_data:
             ts = entry.start_timestamp
             if ts <= max_existing_data_start_timestamp:
@@ -225,9 +210,7 @@ async def get_headers(config: Box, data: Dict) -> Dict:
             # will continuously look for new price data.
             # max_age is set so that the client only caches until the backend
             # will start continuous requesting for new price data.
-            next_hour_start = now.replace(
-                hour=now.hour + 1, minute=0, second=0, microsecond=0
-            )
+            next_hour_start = now.replace(hour=now.hour + 1, minute=0, second=0, microsecond=0)
             difference = next_hour_start - now
             max_age = difference.seconds
         else:

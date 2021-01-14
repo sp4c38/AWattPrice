@@ -39,9 +39,7 @@ async def get(
         log.warning("Could not fetch Awattar data: {}.".format(str(e)))
     else:
         elapsed_time = arrow.utcnow() - start_ts
-        log.debug(
-            f"Fetching aWATTar data for {region.name} took {elapsed_time.total_seconds():.3f} s."
-        )
+        log.debug(f"Fetching aWATTar data for {region.name} took {elapsed_time.total_seconds():.3f} s.")
         return BoxList(data["data"])
     return None
 

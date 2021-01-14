@@ -128,9 +128,7 @@ def verify_file_permissions(path: Path) -> bool:
         else:
             log.warning(
                 "The file {} didn't have secure file permissions {}. "
-                "The permissions were changed to -rw------- for you. ".format(
-                    path, oct(file_stat.st_mode)
-                )
+                "The permissions were changed to -rw------- for you. ".format(path, oct(file_stat.st_mode))
             )
             return True
     return False
@@ -168,9 +166,7 @@ async def read_data(*, file_path: Path) -> Optional[Box]:
     return Box(data)
 
 
-async def write_data(
-    *, data: Union[List, Dict, Box], file_path: Path, compress: bool = False
-) -> None:
+async def write_data(*, data: Union[List, Dict, Box], file_path: Path, compress: bool = False) -> None:
     """Write the gz-iped raw data to file_path."""
     dst_dir = file_path.parent
     if not dst_dir.expanduser().is_dir():

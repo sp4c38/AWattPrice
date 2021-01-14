@@ -58,48 +58,34 @@ def validate_token(request: Request) -> Optional[Dict]:
         request_data["region_identifier"] = body_json["regionIdentifier"]
         request_data["vat_selection"] = body_json["vatSelection"]
         # Set default values which are replaced if certain values are contained in the request body
-        request_data["config"] = {
-            "price_below_value_notification": {"active": False, "below_value": float(0)}
-        }
+        request_data["config"] = {"price_below_value_notification": {"active": False, "below_value": float(0)}}
 
         # Always check with an if statement to ensure backwards-compatibility (in the future)
         if "priceBelowValueNotification" in body_json["notificationConfig"]:
             # Set price below value notification configuration if included in request body
-            below_notification = body_json["notificationConfig"][
-                "priceBelowValueNotification"
-            ]
+            below_notification = body_json["notificationConfig"]["priceBelowValueNotification"]
             if "active" in below_notification and "belowValue" in below_notification:
                 active = below_notification["active"]
                 below_value = float(below_notification["belowValue"])
                 # Limit below_value to two decimal places.
                 # The app normally should already have rounded this number to two decimal places - but to make sure.
                 below_value = round(below_value, 2)
-                request_data["config"]["price_below_value_notification"][
-                    "active"
-                ] = active
-                request_data["config"]["price_below_value_notification"][
-                    "below_value"
-                ] = below_value
+                request_data["config"]["price_below_value_notification"]["active"] = active
+                request_data["config"]["price_below_value_notification"]["below_value"] = below_value
 
         if request_data["token"] is not None and request_data["config"] is not None:
             # Validate types
             is_request_data_valid = all(
                 [
                     isinstance(request_data["token"], str),
-                    isinstance(request_data["region_identifier"], int)
-                    and request_data["region_identifier"] in [0, 1],
-                    isinstance(request_data["vat_selection"], int)
-                    and request_data["vat_selection"] in [0, 1],
+                    isinstance(request_data["region_identifier"], int) and request_data["region_identifier"] in [0, 1],
+                    isinstance(request_data["vat_selection"], int) and request_data["vat_selection"] in [0, 1],
                     isinstance(
-                        request_data["config"]["price_below_value_notification"][
-                            "active"
-                        ],
+                        request_data["config"]["price_below_value_notification"]["active"],
                         bool,
                     ),
                     isinstance(
-                        request_data["config"]["price_below_value_notification"][
-                            "below_value"
-                        ],
+                        request_data["config"]["price_below_value_notification"]["below_value"],
                         float,
                     ),
                 ]
@@ -111,9 +97,7 @@ def validate_token(request: Request) -> Optional[Dict]:
         log.warning(f"Caught a KeyError while validating APNs token: {e}")
         is_request_data_valid = False
     except Exception as e:
-        log.warning(
-            f"Caught an unknown exception while validating client APNs data: {e}"
-        )
+        log.warning(f"Caught an unknown exception while validating client APNs data: {e}")
         is_request_data_valid = False
 
     if not is_request_data_valid:

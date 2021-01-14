@@ -54,7 +54,7 @@ class DetailedPriceData:
             if region_identifier == 0 and vat_selection == 1:
                 price_point.marketprice = round(price_point.marketprice * 1.19, 2)
 
-            # Only check price points for the next day. Price points of the
+            # Only check price points for the next day. So price points for the
             # current day were already checked a day before.
             if price_point.start_timestamp >= tomorrow_hour_start.timestamp:
                 if price_point.marketprice <= below_value:
@@ -115,9 +115,11 @@ class Notifications:
             return
 
         if config.notifications.use_sandbox:
+            log.debug("Using sandbox APNs server.")
             self.apns_server_url = "https://api.sandbox.push.apple.com"
             self.bundle_id = "me.space8.AWattPrice.dev"
         else:
+            log.debug("Using production APNs server.")
             self.apns_server_url = "https://api.push.apple.com"
             self.bundle_id = "me.space8.AWattPrice"
         self.apns_server_port = 443
@@ -146,10 +148,8 @@ async def handle_apns_response(db_manager, token, response, status_code):
 
             if remove_token is True:
                 token_manager = APNsTokenManager({"token": token}, db_manager)
-                await token_manager.remove_entry_from_database()
+                token_manager.remove_entry()
                 log.debug("Removed invalid APNs token from database.")
-    else:
-        log.debug("Request to APNs was successful.")
 
 
 async def price_drops_below_notification(
@@ -324,7 +324,7 @@ async def check_and_send(config, data, data_region, db_manager):
                         )
                     else:
                         log.debug(
-                            f"Don't need to check and send notifications for data region {region.name}"
+                            f"Don't need to check and send notifications for data region {region.name}."
                         )
                         checked_regions_no_notifications.append(region.value)
                         continue

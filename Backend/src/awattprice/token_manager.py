@@ -176,10 +176,6 @@ class APNsTokenManager:
         cursor.close()
         self.db_manager.db.commit()
 
-    async def remove_entry_from_database(self):
-        loop = asyncio.get_event_loop()
-        await loop.run_in_executor(None, self.remove_entry)
-
     async def set_data(self):
         # Run synchronous set_data_task asynchronous
         loop = asyncio.get_event_loop()

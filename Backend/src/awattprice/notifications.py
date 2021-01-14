@@ -42,30 +42,34 @@ class DetailedPriceData:
         below_price_data = []
         current_index = 0
         lowest_index = None
-
+        # print(
+        #     f"started with below value {below_value} and rid {region_identifier} FOR {self.region_identifier}. VAT selection: {vat_selection}"
+        # )
         for price_point in self.data.prices:
             timezone = tzstr("CET-1CEST,M3.5.0/2,M10.5.0/3").tzname(
                 datetime.fromtimestamp(price_point.start_timestamp)
             )
             now = arrow.utcnow().to(timezone)
+
             now_day_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
             tomorrow_hour_start = now_day_start.shift(days=+1)
 
+            new_marketprice = price_point.marketprice
             if region_identifier == 0 and vat_selection == 1:
-                price_point.marketprice = round(price_point.marketprice * 1.19, 2)
+                new_marketprice = round(new_marketprice * 1.19, 2)
 
             # Only check price points for the next day. So price points for the
             # current day were already checked a day before.
             if price_point.start_timestamp >= tomorrow_hour_start.timestamp:
-                if price_point.marketprice <= below_value:
+                # print(f"future {new_marketprice}")
+                # print(new_marketprice <= below_value)
+                if new_marketprice <= below_value:
                     below_price_data.append(price_point)
                     if lowest_index is None:
                         lowest_index = current_index
                     else:
-                        if (
-                            price_point.marketprice
-                            < below_price_data[lowest_index].marketprice
-                        ):
+                        # print(f"2: {below_price_data[lowest_index].marketprice}")
+                        if new_marketprice < below_price_data[lowest_index].marketprice:
                             lowest_index = current_index
 
                     current_index += 1

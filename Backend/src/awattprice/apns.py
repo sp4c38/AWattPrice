@@ -44,7 +44,7 @@ def validate_token(request: Request) -> Optional[Dict]:
     try:
         body_json = json.loads(request.decode("utf-8"))
     except json.JSONDecodeError as e:
-        log.warning(f"Could not JSON encode the request: {e}")
+        log.warning(f"Could not JSON decode the request: {e}")
 
     request_data = {
         "token": None,
@@ -83,20 +83,32 @@ def validate_token(request: Request) -> Optional[Dict]:
 
         if request_data["token"] is not None and request_data["config"] is not None:
             # Validate types
-            is_request_data_valid = all([
-                isinstance(request_data["token"], str),
-                isinstance(request_data["region_identifier"], int) and request_data["region_identifier"] in [0, 1],
-                isinstance(request_data["vat_selection"], int) and request_data["vat_selection"] in [0, 1],
-                isinstance(request_data["config"]["price_below_value_notification"]["active"], bool),
-                isinstance(request_data["config"]["price_below_value_notification"]["below_value"], float),
-            ])
+            is_request_data_valid = all(
+                [
+                    isinstance(request_data["token"], str),
+                    isinstance(request_data["region_identifier"], int)
+                    and request_data["region_identifier"] in [0, 1],
+                    isinstance(request_data["vat_selection"], int)
+                    and request_data["vat_selection"] in [0, 1],
+                    isinstance(
+                        request_data["config"]["price_below_value_notification"][
+                            "active"
+                        ],
+                        bool,
+                    ),
+                    isinstance(
+                        request_data["config"]["price_below_value_notification"][
+                            "below_value"
+                        ],
+                        float,
+                    ),
+                ]
+            )
         else:
             is_request_data_valid = False
 
     except KeyError as e:
-        log.warning(
-            f"Caught a KeyError while validating APNs token: {e}"
-        )
+        log.warning(f"Caught a KeyError while validating APNs token: {e}")
         is_request_data_valid = False
     except Exception as e:
         log.warning(

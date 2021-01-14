@@ -55,5 +55,7 @@ class Region(Enum):
     AT = 1
 
 
+CURRENT_VAT = 1.19
+
 CONVERT_MWH_KWH = 100 * 0.001
 TIME_CORRECT = 1000  # Correct milli seconds used by aWATTar to seconds

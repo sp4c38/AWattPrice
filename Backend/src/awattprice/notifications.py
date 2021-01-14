@@ -25,7 +25,7 @@ from dateutil.tz import tzstr
 from loguru import logger as log
 
 from awattprice import poll
-from awattprice.defaults import Region
+from awattprice.defaults import CURRENT_VAT, Region
 from awattprice.token_manager import APNsTokenManager
 
 
@@ -55,7 +55,7 @@ class DetailedPriceData:
             tomorrow_hour_start = now_day_start.shift(days=+1)
 
             if region_identifier == 0 and vat_selection == 1:
-                marketprice_with_vat = round(price_point.marketprice * 1.19, 2)
+                marketprice_with_vat = round(price_point.marketprice * CURRENT_VAT, 2)
             else:
                 marketprice_with_vat = price_point.marketprice
 

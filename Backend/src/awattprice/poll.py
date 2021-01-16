@@ -119,7 +119,6 @@ async def get_data(
     check_notification = False  # If no cached data exists this value will stay False
     # and won't trigger any notification updates.
     # Notification updates are only run when cached data already exists.
-    last_update = 0
     now = arrow.utcnow()
     if data:
         need_update = check_data_needs_update(data, config)

@@ -162,7 +162,7 @@ async def get_data(
         # Must always equal True if new data was fetched to update update_ts to newest value.
         must_write_data = True
         data.meta.update_ts = now.timestamp
-        new_uuid = uuid.uuid4()
+        new_uuid = uuid.uuid4().hex
         while new_uuid == data.meta.uuid:
             new_uuid = uuid.uuid4().hex
         data.meta.uuid = new_uuid

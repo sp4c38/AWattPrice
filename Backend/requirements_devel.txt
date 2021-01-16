@@ -1,2 +1,4 @@
-pysnooper
 ipython
+pytest
+pytest-cov
+pysnooper

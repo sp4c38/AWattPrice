@@ -11,15 +11,15 @@ __license__ = "mit"
 
 import json
 
-from typing import Dict, Optional
+from typing import Optional
 
-from fastapi import Request
 from loguru import logger as log
 
 from awattprice.token_manager import APNsTokenManager
+from awattprice.types import APNSToken
 
 
-async def write_token(request_data, db_manager):
+async def write_token(request_data: APNSToken, db_manager):
     """Store APNs token configuration to the database."""
     log.info("Initiated a new background task to store an APNs configuration.")
     apns_token_manager = APNsTokenManager(request_data, db_manager)
@@ -31,7 +31,7 @@ async def write_token(request_data, db_manager):
     await db_manager.release_lock()
 
 
-def validate_token(request: Request) -> Optional[Dict]:
+def validate_token(raw_data: bytes) -> Optional[APNSToken]:
     """Checks if the backend can successfully read and decode the APNs token configuration
     sent from a client.
 
@@ -39,70 +39,56 @@ def validate_token(request: Request) -> Optional[Dict]:
     When refering to APNs token configuration or APNs configuration or token configuration
     the token and all config data (like selected region in app, selected notifications to receive, ...
     is meant.
+
+    Example data:
+
+    {"apnsDeviceToken": "ALovelyApnsToken", "regionIdentifier": 0, "vatSelection": 1,
+    "notificationConfig": {"priceBelowValueNotification": {"active": true, "belowValue": 20}}}
     """
 
     try:
-        body_json = json.loads(request.decode("utf-8"))
+        data = json.loads(raw_data.decode("utf-8"))
     except json.JSONDecodeError as e:
-        log.warning(f"Could not JSON decode the request: {e}")
+        log.warning(f"Could not JSON encode the request: {e}")
+        return None
 
-    request_data = {
-        "token": None,
-        "region_identifier": None,
-        "vat_selection": None,
-        "config": None,
-    }
+    mappings = [("apnsDeviceToken", "token"), ("regionIdentifier", "region_identifier"),
+                ("vatSelection", "vat_selection")]
 
-    try:
-        request_data["token"] = body_json["apnsDeviceToken"]
-        request_data["region_identifier"] = body_json["regionIdentifier"]
-        request_data["vat_selection"] = body_json["vatSelection"]
-        # Set default values which are replaced if certain values are contained in the request body
-        request_data["config"] = {"price_below_value_notification": {"active": False, "below_value": float(0)}}
+    request_data = {}
+    for mapping in mappings:
+        if mapping[0] not in data:
+            log.warning(f"Key {mapping[0]} was not found in request data.")
+            return None
+        request_data[mapping[1]] = data[mapping[0]]
 
-        # Always check with an if statement to ensure backwards-compatibility (in the future)
-        if "priceBelowValueNotification" in body_json["notificationConfig"]:
-            # Set price below value notification configuration if included in request body
-            below_notification = body_json["notificationConfig"]["priceBelowValueNotification"]
-            if "active" in below_notification and "belowValue" in below_notification:
-                active = below_notification["active"]
-                below_value = float(below_notification["belowValue"])
-                # Limit below_value to two decimal places.
-                # The app normally should already have rounded this number to two decimal places - but to make sure.
-                below_value = round(below_value, 2)
-                request_data["config"]["price_below_value_notification"]["active"] = active
-                request_data["config"]["price_below_value_notification"]["below_value"] = below_value
+    if "notificationConfig" not in data:
+        log.warning("Key notificationConfig not found in request data.")
+        return None
 
-        if request_data["token"] is not None and request_data["config"] is not None:
-            # Validate types
-            is_request_data_valid = all(
-                [
-                    isinstance(request_data["token"], str),
-                    isinstance(request_data["region_identifier"], int) and request_data["region_identifier"] in [0, 1],
-                    isinstance(request_data["vat_selection"], int) and request_data["vat_selection"] in [0, 1],
-                    isinstance(
-                        request_data["config"]["price_below_value_notification"]["active"],
-                        bool,
-                    ),
-                    isinstance(
-                        request_data["config"]["price_below_value_notification"]["below_value"],
-                        float,
-                    ),
-                ]
-            )
-        else:
-            is_request_data_valid = False
+    if "priceBelowValueNotification" not in data["notificationConfig"]:
+        log.warning("Key notificationConfig.priceBelowValueNotification not found in request data.")
+        return None
+    notification_config = data["notificationConfig"]["priceBelowValueNotification"]
+    notification_config_mapping = {"active": "active", "belowValue": "below_value"}
+    request_data["config"] = {"price_below_value_notification": {}}
+    for key in notification_config_mapping.keys():
+        if key not in notification_config:
+            log.warning(f"Key {key} was not found in the notification configuration.")
+            return None
 
-    except KeyError as e:
-        log.warning(f"Caught a KeyError while validating APNs token: {e}")
-        is_request_data_valid = False
-    except Exception as e:
-        log.warning(f"Caught an unknown exception while validating client APNs data: {e}")
-        is_request_data_valid = False
+        notification_config[notification_config_mapping[key]] = notification_config.pop(key)
+    notification_config["below_value"] = round(float(notification_config["below_value"]), 2)
+    request_data["config"]["price_below_value_notification"] = notification_config
 
+    is_request_data_valid = all([
+        isinstance(request_data["token"], str),
+        isinstance(request_data["region_identifier"], int) and request_data["region_identifier"] in [0, 1],
+        isinstance(request_data["vat_selection"], int) and request_data["vat_selection"] in [0, 1],
+        isinstance(request_data["config"]["price_below_value_notification"]["active"], bool),
+        isinstance(request_data["config"]["price_below_value_notification"]["below_value"], float),
+    ])
     if not is_request_data_valid:
-        log.info("APNs data (sent from a client) is NOT valid.")
-        request_data = None
-    else:
-        log.info("APNs data (sent from a client) is valid.")
-    return request_data
+        log.warning("The APNS data was not valid.")
+        return None
+    return APNSToken(**request_data)

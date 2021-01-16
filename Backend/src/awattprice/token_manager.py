@@ -18,6 +18,8 @@ from loguru import logger as log
 from multiprocessing import Lock
 from pathlib import Path
 
+from awattprice.types import APNSToken
+
 
 class TokenDatabaseManager:
     lock = Lock()
@@ -84,8 +86,8 @@ class TokenDatabaseManager:
 
 
 class APNsTokenManager:
-    def __init__(self, token_data, database_manager):
-        self.token_data = token_data
+    def __init__(self, token_data: APNSToken, database_manager):
+        self.token_data = token_data.dict()
         self.final_data = None
         self.db_manager = database_manager
         self.is_new_token = False  # Is set later

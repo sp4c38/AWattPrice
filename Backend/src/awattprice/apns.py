@@ -52,8 +52,11 @@ def validate_token(raw_data: bytes) -> Optional[APNSToken]:
         log.warning(f"Could not JSON encode the request: {e}")
         return None
 
-    mappings = [("apnsDeviceToken", "token"), ("regionIdentifier", "region_identifier"),
-                ("vatSelection", "vat_selection")]
+    mappings = [
+        ("apnsDeviceToken", "token"),
+        ("regionIdentifier", "region_identifier"),
+        ("vatSelection", "vat_selection"),
+    ]
 
     request_data = {}
     for mapping in mappings:
@@ -81,13 +84,15 @@ def validate_token(raw_data: bytes) -> Optional[APNSToken]:
     notification_config["below_value"] = round(float(notification_config["below_value"]), 2)
     request_data["config"]["price_below_value_notification"] = notification_config
 
-    is_request_data_valid = all([
-        isinstance(request_data["token"], str),
-        isinstance(request_data["region_identifier"], int) and request_data["region_identifier"] in [0, 1],
-        isinstance(request_data["vat_selection"], int) and request_data["vat_selection"] in [0, 1],
-        isinstance(request_data["config"]["price_below_value_notification"]["active"], bool),
-        isinstance(request_data["config"]["price_below_value_notification"]["below_value"], float),
-    ])
+    is_request_data_valid = all(
+        [
+            isinstance(request_data["token"], str),
+            isinstance(request_data["region_identifier"], int) and request_data["region_identifier"] in [0, 1],
+            isinstance(request_data["vat_selection"], int) and request_data["vat_selection"] in [0, 1],
+            isinstance(request_data["config"]["price_below_value_notification"]["active"], bool),
+            isinstance(request_data["config"]["price_below_value_notification"]["below_value"], float),
+        ]
+    )
     if not is_request_data_valid:
         log.warning("The APNS data was not valid.")
         return None

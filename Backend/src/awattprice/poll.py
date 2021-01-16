@@ -110,7 +110,7 @@ async def get_data(
         log.warning(f"Creating the data destination directory {check_dir}.")
         os.makedirs(check_dir.as_posix())
     updating_lock_path = check_dir / Path(f"updating-{region.name.lower()}-data.lck")
-    updating_lock = FileLock(updating_lock_path)
+    updating_lock = FileLock(updating_lock_path.as_posix())
     await verify_awattar_not_polled(updating_lock)
     data = await read_data(file_path=file_path)
 

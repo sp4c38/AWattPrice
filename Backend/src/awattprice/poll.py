@@ -75,7 +75,7 @@ async def awattar_read_task(
 async def verify_awattar_not_polled(updating_lock: FileLock):
     # Verify that awattar is currently not polled by a other task.
     no_request_running = False
-    while no_request_running == False:
+    while no_request_running is False:
         try:
             # Will raise exception if it can't acquire the lock immediately
             await async_acquire_lock(updating_lock, 0.001)

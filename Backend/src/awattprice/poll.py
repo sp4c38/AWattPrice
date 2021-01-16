@@ -80,7 +80,7 @@ async def verify_awattar_not_polled(updating_lock: FileLock):
             # Will raise exception if it can't acquire the lock immediately
             await async_acquire_lock(updating_lock, 0.001)
             no_request_running = True
-        except:
+        except Exception:
             # Currently a other task is polling the aWATTar API.
             # In this case wait until the other task completes to use the downloaded
             # data from that task. This avoids multiple requests initiated at about the same time

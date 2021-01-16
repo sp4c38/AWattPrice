@@ -14,12 +14,13 @@ from copy import copy
 from datetime import datetime
 from math import floor
 from pathlib import Path
+from typing import List, Optional, Tuple
 
 import arrow  # type: ignore
 import httpx
 import jwt
 
-from box import Box
+from box import Box  # type: ignore
 from configupdater import ConfigUpdater  # type: ignore
 from dateutil.tz import tzstr
 from loguru import logger as log
@@ -34,7 +35,9 @@ class DetailedPriceData:
         self.data = data
         self.region_identifier = region_identifier
 
-    def get_user_prices(self, below_value: int, region_identifier: int, vat_selection: int) -> (list, int):
+    def get_user_prices(
+        self, below_value: int, region_identifier: int, vat_selection: int
+    ) -> Tuple[List, Optional[int]]:
         """Returns a list of prices which drop below or on a certain value. Also returns a
         integer which represents the lowest price point in the returned list.
         The price point marketprices in the returned list have the VAT added if the user selected it (if vat_selection is 1).

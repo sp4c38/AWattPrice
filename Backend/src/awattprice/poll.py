@@ -13,15 +13,14 @@ import asyncio
 
 from pathlib import Path
 
-import arrow
+import arrow  # type: ignore
 import os
-import threading
 import uuid
 
-from box import Box
+from box import Box  # type: ignore
 from filelock import FileLock
 from loguru import logger as log
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 
 from . import awattar
 from .config import read_config

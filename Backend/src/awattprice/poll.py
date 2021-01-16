@@ -91,7 +91,7 @@ async def verify_awattar_not_polled(updating_lock: FileLock):
 
 async def get_data(
     config: Box, region: Optional[Region] = None, force: bool = False
-) -> Tuple[Dict, bool]:
+) -> Tuple[Optional[Box], bool]:
     """Request the Awattar data. Read it from file, if it is too old fetch it
     from the Awattar API endpoint.
 
@@ -196,7 +196,7 @@ async def get_data(
     return data, check_notification
 
 
-async def get_headers(config: Box, data: Dict) -> Dict:
+async def get_headers(config: Box, data: Box) -> Dict:
     data = Box(data)
     headers = {"Cache-Control": "public, max-age={}"}
     max_age = 0

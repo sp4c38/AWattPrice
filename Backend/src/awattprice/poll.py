@@ -89,7 +89,9 @@ async def verify_awattar_not_polled(updating_lock: FileLock):
     return True
 
 
-async def get_data(config: Box, region: Optional[Region] = None, force: bool = False) -> (Dict, bool):
+async def get_data(
+    config: Box, region: Optional[Region] = None, force: bool = False
+) -> Tuple[Dict, bool]:
     """Request the Awattar data. Read it from file, if it is too old fetch it
     from the Awattar API endpoint.
 

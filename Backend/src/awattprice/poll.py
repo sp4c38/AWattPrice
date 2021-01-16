@@ -16,6 +16,7 @@ from pathlib import Path
 import arrow
 import os
 import threading
+import uuid
 
 from box import Box
 from filelock import FileLock
@@ -147,6 +148,7 @@ async def get_data(config: Box, region: Optional[Region] = None, force: bool = F
 
     # Update existing data
     must_write_data = False
+    update_uuid = False
     if data and fetched_data:
         max_existing_data_start_timestamp = max([d.start_timestamp for d in data.prices]) * TIME_CORRECT
         for entry in fetched_data:
@@ -156,18 +158,25 @@ async def get_data(config: Box, region: Optional[Region] = None, force: bool = F
             entry = transform_entry(entry)
             if entry:
                 check_notification = True
+                update_uuid = True
                 data.prices.append(entry)
 
         # Must always equal True if new data was fetched to update update_ts to newest value.
         must_write_data = True
         data.meta.update_ts = now.timestamp
+        new_uuid = uuid.uuid4()
+        while new_uuid == data.meta.uuid:
+            new_uuid = uuid.uuid4().hex
+        data.meta.uuid = new_uuid
     elif fetched_data:
         data = Box({"prices": [], "meta": {}}, box_dots=True)
         data.meta["update_ts"] = now.timestamp
+        data.meta["uuid"] = uuid.uuid4().hex
         for entry in fetched_data:
             entry = transform_entry(entry)
             if entry:
                 must_write_data = True
+                update_uuid = True
                 data.prices.append(entry)
 
     # Filter out data older than 24h and write to disk

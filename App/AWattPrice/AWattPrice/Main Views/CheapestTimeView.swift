@@ -20,6 +20,40 @@ struct ViewSizePreferenceKey: PreferenceKey {
     }
 }
 
+struct CheapestTimeViewBody: View {
+    @State var inputOption: Int = 0
+    @Binding var fieldsEnteredErrorValues: [Int]
+    
+    init(_ errorValues: Binding<[Int]>) {
+        _fieldsEnteredErrorValues = errorValues
+    }
+    
+    var body: some View {
+        VStack {
+            Picker("", selection: $inputOption) {
+                Text("Mit kWh")
+                    .tag(0)
+                Text("Mit Dauer")
+                    .tag(1)
+            }
+            .pickerStyle(SegmentedPickerStyle())
+                
+            VStack(alignment: .center, spacing: 20) {
+                if inputOption == 0 {
+                    PowerOutputInputField(errorValues: fieldsEnteredErrorValues)
+                    EnergyUsageInputField(errorValues: fieldsEnteredErrorValues)
+                } else if inputOption == 1 {
+                    TimeIntervalPicker()
+                }
+                TimeRangeInputField(errorValues: fieldsEnteredErrorValues)
+            }
+        }
+        .padding(.top, 20)
+        .padding([.leading, .trailing], 20)
+        .padding(.bottom, 10)
+    }
+}
+
 /// A view which allows the user to find the cheapest hours for using energy. It optionally can also show
 /// the final price which the user would have to pay to aWATTar if consuming the specified amount of energy.
 struct CheapestTimeView: View {
@@ -29,17 +63,13 @@ struct CheapestTimeView: View {
     @EnvironmentObject var currentSetting: CurrentSetting
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
 
-    /// A list to which values representing different types of errors are added if any occur
     @State var fieldsEnteredErrorValues = [Int]()
-    /// State variable which if set to true triggers that extra informations is shown of what this view
-    /// does because it may not be exactly clear to the user at first usage.
     @State var redirectToComparisonResults: Int? = 0
 
     /**
-      A time range which goes from the start time of the first energy price data point to the end time
-     of the last energy price data point downloaded from the server
-     - This time range is used in date pickers to make only times selectable
-     for which also energy price data points currently exist
+        A time range which goes from the start time of the first energy price data point to the end time
+        of the last energy price data point.
+        Is used to not be able to set time range for hours for which there aren't any prices.
      */
     var energyDataTimeRange: ClosedRange<Date> {
         let maxHourIndex = awattarData.energyData!.prices.count - 1
@@ -59,14 +89,7 @@ struct CheapestTimeView: View {
                 if awattarData.energyData != nil && currentSetting.entity != nil {
                     ScrollView {
                         VStack(spacing: 0) {
-                            VStack(alignment: .center, spacing: 20) {
-                                PowerOutputInputField(errorValues: fieldsEnteredErrorValues)
-                                EnergyUsageInputField(errorValues: fieldsEnteredErrorValues)
-                                TimeRangeInputField(errorValues: fieldsEnteredErrorValues)
-                            }
-                            .padding(.top, 20)
-                            .padding([.leading, .trailing], 20)
-                            .padding(.bottom, 10)
+                            CheapestTimeViewBody($fieldsEnteredErrorValues)
 
                             Spacer()
 

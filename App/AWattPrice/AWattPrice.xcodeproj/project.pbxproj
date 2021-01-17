@@ -306,6 +306,7 @@
 			children = (
 				6198BD5A254C7FD700356A0F /* PowerInputField.swift */,
 				6198BD52254C7FA700356A0F /* TotalConsumptionInputField.swift */,
+				61D6F8782517834400027FD1 /* TimeIntervalPicker.swift */,
 				6198BD4A254C7F7100356A0F /* TimeRangeInputField.swift */,
 			);
 			path = "Input fields";
@@ -484,7 +485,6 @@
 			isa = PBXGroup;
 			children = (
 				616836BF259A4D6F00E91748 /* Input fields */,
-				61D6F8782517834400027FD1 /* TimeIntervalPicker.swift */,
 				61C963A6251E2032001B3E3C /* CheapestTimeClockView.swift */,
 			);
 			path = "Cheapest Time";

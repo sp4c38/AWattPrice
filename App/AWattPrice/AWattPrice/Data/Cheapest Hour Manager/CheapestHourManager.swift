@@ -9,23 +9,19 @@ import Foundation
 
 /// An object which manages the calculation of when the cheapest hours are for energy consumption
 class CheapestHourManager: ObservableObject {
-    // The power output of the electric device in kW
     @Published var powerOutputString = ""
     @Published var powerOutput: Double = 0
 
-    // The energy usage the electric device shall consume in kWh
     @Published var energyUsageString = ""
     @Published var energyUsage: Double = 0
 
-    // Time range from startDate to endDate in which to find the cheapest hours
     @Published var startDate = Date()
     @Published var endDate = Date().addingTimeInterval(3600)
 
     @Published var timeOfUsage: Double = 0
 
-    /// The results of the calculation of the cheapest hours for usage which are represented in an HourPair object.
     @Published var cheapestHoursForUsage: HourPair? = nil
-    /// A variable set to true if calculations have been performed but no cheapest hours were found.
+    /// Set to true if calculations have been performed but no cheapest hours could be found.
     @Published var errorOccurredFindingCheapestHours = false
 }
 

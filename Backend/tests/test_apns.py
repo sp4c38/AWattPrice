@@ -24,3 +24,13 @@ def test_validate_token():
             }
         }
     }
+    # apnsDeviceTokens is the wrong key
+    data = bytes('{"apnsDeviceTokens": "ALovelyApnsToken", "regionIdentifier": 0, "vatSelection": 1, '
+                 '"notificationConfig": {"priceBelowValueNotification": '
+                 '{"active": true, "belowValue": 20}}}'.encode())
+    assert validate_token(data) is None
+    # active is the wrong type
+    data = bytes('{"apnsDeviceTokens": "ALovelyApnsToken", "regionIdentifier": 0, "vatSelection": 1, '
+                 '"notificationConfig": {"priceBelowValueNotification": '
+                 '{"active": 0, "belowValue": 20}}}'.encode())
+    assert validate_token(data) is None

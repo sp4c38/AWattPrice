@@ -9,6 +9,8 @@ import Foundation
 
 /// An object which manages the calculation of when the cheapest hours are for energy consumption
 class CheapestHourManager: ObservableObject {
+    @Published var inputMode = 0
+    
     @Published var powerOutputString = ""
     @Published var powerOutput: Double = 0
 
@@ -18,6 +20,8 @@ class CheapestHourManager: ObservableObject {
     @Published var startDate = Date()
     @Published var endDate = Date().addingTimeInterval(3600)
 
+    @Published var timeOfUsageInterval = TimeInterval(0)
+    
     @Published var timeOfUsage: Double = 0
 
     @Published var cheapestHoursForUsage: HourPair? = nil

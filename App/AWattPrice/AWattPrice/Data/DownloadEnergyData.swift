@@ -83,65 +83,8 @@ class AwattarData: ObservableObject {
 
         let beforeTime = Date()
         URLSession.shared.dataTask(with: energyRequest) { data, _, error in
-            let jsonDecoder = JSONDecoder()
-            var decodedData = EnergyData(prices: [], minPrice: 0, maxPrice: 0)
-
             if let data = data {
-                do {
-                    decodedData = try jsonDecoder.decode(EnergyData.self, from: data)
-                    let currentHour = Calendar.current.date(bySettingHour: Calendar.current.component(.hour, from: Date()), minute: 0, second: 0, of: Date())!
-
-                    var usedPricesDecodedData = [EnergyPricePoint]()
-                    var minPrice: Double?
-                    var maxPrice: Double?
-
-                    for hourPoint in decodedData.prices {
-                        if Date(timeIntervalSince1970: TimeInterval(hourPoint.startTimestamp)) >= currentHour {
-                            var marketprice: Double = (hourPoint.marketprice * 100).rounded() / 100 // Round to two decimal places
-
-                            if marketprice.sign == .minus && marketprice == 0 {
-                                marketprice = 0
-                            }
-
-                            usedPricesDecodedData.append(EnergyPricePoint(startTimestamp: hourPoint.startTimestamp, endTimestamp: hourPoint.endTimestamp, marketprice: marketprice))
-
-                            if maxPrice == nil || marketprice > maxPrice! {
-                                maxPrice = marketprice
-                            }
-
-                            if minPrice == nil {
-                                if marketprice < 0 {
-                                    minPrice = marketprice
-                                }
-                            } else if marketprice < minPrice! {
-                                minPrice = marketprice
-                            }
-                        }
-                    }
-
-                    let currentEnergyData = EnergyData(prices: usedPricesDecodedData, minPrice: minPrice ?? 0, maxPrice: maxPrice ?? 0)
-
-                    DispatchQueue.main.async {
-                        if currentEnergyData.prices.isEmpty {
-                            print("No prices can be shown, because either there are none or they are outdated.")
-                            withAnimation {
-                                self.currentlyNoData = true
-                            }
-                        } else {
-                            self.energyData = currentEnergyData
-                        }
-
-                        self.dataRetrievalError = false
-                    }
-                } catch {
-                    print("Could not decode returned JSON data from server.")
-                    DispatchQueue.main.async {
-                        withAnimation {
-                            self.dataRetrievalError = true
-                        }
-                    }
-                }
-
+                self.parseResponseData(data)
             } else {
                 print("A data retrieval error occurred.")
                 if error != nil {
@@ -173,5 +116,90 @@ class AwattarData: ObservableObject {
                 }
             }
         }.resume()
+    }
+}
+
+extension AwattarData {
+    // Parsing functions
+    
+    func parseResponseData(_ data: Data) {
+        var decodedData = EnergyData(prices: [], minPrice: 0, maxPrice: 0)
+        do {
+            let jsonDecoder = JSONDecoder()
+            decodedData = try jsonDecoder.decode(EnergyData.self, from: data)
+            let currentHour = Calendar.current.date(bySettingHour: Calendar.current.component(.hour, from: Date()), minute: 0, second: 0, of: Date())!
+
+            var usedPricesDecodedData = [EnergyPricePoint]()
+            var minPrice: Double?
+            var maxPrice: Double?
+
+            for hourPoint in decodedData.prices {
+                if Date(timeIntervalSince1970: TimeInterval(hourPoint.startTimestamp)) >= currentHour {
+                    var marketprice: Double = (hourPoint.marketprice * 100).rounded() / 100 // Round to two decimal places
+
+                    if marketprice.sign == .minus && marketprice == 0 {
+                        marketprice = 0
+                    }
+
+                    usedPricesDecodedData.append(EnergyPricePoint(startTimestamp: hourPoint.startTimestamp, endTimestamp: hourPoint.endTimestamp, marketprice: marketprice))
+
+                    if maxPrice == nil || marketprice > maxPrice! {
+                        maxPrice = marketprice
+                    }
+
+                    if minPrice == nil {
+                        if marketprice < 0 {
+                            minPrice = marketprice
+                        }
+                    } else if marketprice < minPrice! {
+                        minPrice = marketprice
+                    }
+                }
+            }
+
+            let currentEnergyData = EnergyData(prices: usedPricesDecodedData, minPrice: minPrice ?? 0, maxPrice: maxPrice ?? 0)
+
+            DispatchQueue.main.async {
+                if currentEnergyData.prices.isEmpty {
+                    print("No prices can be shown, because either there are none or they are outdated.")
+                    withAnimation {
+                        self.currentlyNoData = true
+                    }
+                } else {
+                    self.energyData = currentEnergyData
+                }
+
+                self.dataRetrievalError = false
+            }
+        } catch {
+            print("Could not decode returned JSON data from server.")
+            DispatchQueue.main.async {
+                withAnimation {
+                    self.dataRetrievalError = true
+                }
+            }
+        }
+    }
+}
+
+extension AwattarData {
+    var minMaxTimeRange: ClosedRange<Date>? {
+        if energyData != nil {
+            if !(energyData!.prices.count > 0) {
+                return nil
+            }
+            let maxHourIndex = energyData!.prices.count - 1
+    
+            // Add one or subtract one to not overlap to the next or previouse day
+            let min = Date(
+                timeIntervalSince1970: TimeInterval(energyData!.prices[0].startTimestamp)
+            )
+            let max = Date(
+                timeIntervalSince1970: TimeInterval(energyData!.prices[maxHourIndex].endTimestamp)
+            )
+    
+            return min ... max
+        }
+        return nil
     }
 }

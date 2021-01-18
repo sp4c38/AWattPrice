@@ -32,13 +32,11 @@ struct TimeRangeInputField: View {
         return String(format: "cheapestPricePage.wrongTimeRangeError".localized(), totalTimeString)
     }
 
-    func setTimeIntervalValues(energyData: EnergyData) {
-        let maxHourIndex = energyData.prices.count - 1
-
-        if energyData.prices.count > 0 {
-            let inputDateRangeStartPoint = Date(timeIntervalSince1970: TimeInterval(energyData.prices[0].startTimestamp + 1))
-            cheapestHourManager.endDate = Date(timeIntervalSince1970: TimeInterval(energyData.prices[maxHourIndex].endTimestamp - 1))
-            inputDateRange = inputDateRangeStartPoint ... cheapestHourManager.endDate
+    func setTimeIntervalValues() {
+        if let minMaxTimeRange = awattarData.minMaxTimeRange {
+            let minTime = minMaxTimeRange.lowerBound.addingTimeInterval(-1)
+            let maxTime = minMaxTimeRange.lowerBound.addingTimeInterval(-1)
+            inputDateRange = minTime ... maxTime
         }
     }
 
@@ -143,9 +141,8 @@ struct TimeRangeInputField: View {
             .padding(.top, 3)
         }
         .frame(maxWidth: .infinity)
-        .onReceive(awattarData.$energyData) { newEnergyData in
-            guard let energyData = newEnergyData else { return }
-            self.setTimeIntervalValues(energyData: energyData)
+        .onReceive(awattarData.$energyData) { _ in
+            self.setTimeIntervalValues()
         }
     }
 }

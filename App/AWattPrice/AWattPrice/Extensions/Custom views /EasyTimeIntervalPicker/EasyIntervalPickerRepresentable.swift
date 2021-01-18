@@ -7,15 +7,15 @@
 
 import SwiftUI
 
-struct EasyTimeIntervalPickerRepresentable: UIViewRepresentable {
+struct EasyIntervalPickerRepresentable: UIViewRepresentable {
     // Wrap a EasyTimeIntervalPicker in a SwiftUI View
     
     @Binding var selectedTimeInterval: TimeInterval
     
     let pickerMaxTimeInterval: TimeInterval
     let pickerSelectionInterval: Int
-    
-    init(selectedTimeInterval: Binding<TimeInterval>, maxTimeInterval: TimeInterval, selectionInterval: Int) {
+
+    init(_ selectedTimeInterval: Binding<TimeInterval>, maxTimeInterval: TimeInterval, selectionInterval: Int) {
         _selectedTimeInterval = selectedTimeInterval
         pickerMaxTimeInterval = maxTimeInterval
         pickerSelectionInterval = selectionInterval

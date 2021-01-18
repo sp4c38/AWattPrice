@@ -20,8 +20,34 @@ struct ViewSizePreferenceKey: PreferenceKey {
     }
 }
 
+struct CheapestTimeViewBodyPicker: View {
+    @EnvironmentObject var awattarData: AwattarData
+    @EnvironmentObject var cheapestHourManager: CheapestHourManager
+    
+    func getMaxTimeInterval() -> TimeInterval? {
+        let minMaxRange = awattarData.minMaxTimeRange
+        if minMaxRange == nil {
+            return nil
+        }
+        return minMaxRange!.upperBound.timeIntervalSince(minMaxRange!.lowerBound)
+    }
+    
+    var body: some View {
+        VStack {
+            if let maxTimeInterval = getMaxTimeInterval() {
+                EasyIntervalPickerRepresentable(
+                    $cheapestHourManager.timeOfUsageInterval,
+                    maxTimeInterval: maxTimeInterval,
+                    selectionInterval: 5)
+            }
+        }
+    }
+}
+
 struct CheapestTimeViewBody: View {
-    @State var inputOption: Int = 0
+    @EnvironmentObject var cheapestHourManager: CheapestHourManager
+    
+    @State var inputMode: Int = 0
     @Binding var fieldsEnteredErrorValues: [Int]
     
     init(_ errorValues: Binding<[Int]>) {
@@ -30,7 +56,7 @@ struct CheapestTimeViewBody: View {
     
     var body: some View {
         VStack {
-            Picker("", selection: $inputOption) {
+            Picker("", selection: $inputMode) {
                 Text("Mit kWh")
                     .tag(0)
                 Text("Mit Dauer")
@@ -39,13 +65,16 @@ struct CheapestTimeViewBody: View {
             .pickerStyle(SegmentedPickerStyle())
                 
             VStack(alignment: .center, spacing: 20) {
-                if inputOption == 0 {
+                if inputMode == 0 {
                     PowerOutputInputField(errorValues: fieldsEnteredErrorValues)
                     EnergyUsageInputField(errorValues: fieldsEnteredErrorValues)
-                } else if inputOption == 1 {
-                    TimeIntervalPicker()
+                } else if inputMode == 1 {
+                    CheapestTimeViewBodyPicker()
                 }
                 TimeRangeInputField(errorValues: fieldsEnteredErrorValues)
+            }
+            .onChange(of: inputMode) { newInputMode in
+                cheapestHourManager.inputMode = newInputMode
             }
         }
         .padding(.top, 20)
@@ -66,11 +95,6 @@ struct CheapestTimeView: View {
     @State var fieldsEnteredErrorValues = [Int]()
     @State var redirectToComparisonResults: Int? = 0
 
-    /**
-        A time range which goes from the start time of the first energy price data point to the end time
-        of the last energy price data point.
-        Is used to not be able to set time range for hours for which there aren't any prices.
-     */
     var energyDataTimeRange: ClosedRange<Date> {
         let maxHourIndex = awattarData.energyData!.prices.count - 1
 

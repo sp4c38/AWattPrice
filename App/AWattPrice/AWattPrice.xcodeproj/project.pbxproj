@@ -36,6 +36,8 @@
 		6164ED27258D4B8E00F706DE /* KeyboardObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6164ED26258D4B8E00F706DE /* KeyboardObserver.swift */; };
 		6164ED3A258E11BD00F706DE /* NumberField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6164ED39258E11BD00F706DE /* NumberField.swift */; };
 		6164ED42258E952F00F706DE /* TotalTimeFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6164ED41258E952F00F706DE /* TotalTimeFormatter.swift */; };
+		61658DA825B5AF380083D25A /* EasyTimeIntervalPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61658DA725B5AF380083D25A /* EasyTimeIntervalPicker.swift */; };
+		61658DB125B5AF890083D25A /* EasyTimeIntervalPickerRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61658DB025B5AF890083D25A /* EasyTimeIntervalPickerRepresentable.swift */; };
 		61753B6E257818DF001379B9 /* SplashScreenFeaturesAndConsent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61753B6D257818DF001379B9 /* SplashScreenFeaturesAndConsent.swift */; };
 		617AD92725730AC100F905A5 /* TBItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617AD92625730AC100F905A5 /* TBItems.swift */; };
 		617D85B225052C35009E18FB /* AwattarApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617D85B125052C35009E18FB /* AwattarApp.swift */; };
@@ -125,6 +127,8 @@
 		6164ED26258D4B8E00F706DE /* KeyboardObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardObserver.swift; sourceTree = "<group>"; };
 		6164ED39258E11BD00F706DE /* NumberField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberField.swift; sourceTree = "<group>"; };
 		6164ED41258E952F00F706DE /* TotalTimeFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TotalTimeFormatter.swift; sourceTree = "<group>"; };
+		61658DA725B5AF380083D25A /* EasyTimeIntervalPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EasyTimeIntervalPicker.swift; sourceTree = "<group>"; };
+		61658DB025B5AF890083D25A /* EasyTimeIntervalPickerRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EasyTimeIntervalPickerRepresentable.swift; sourceTree = "<group>"; };
 		61753B6D257818DF001379B9 /* SplashScreenFeaturesAndConsent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SplashScreenFeaturesAndConsent.swift; sourceTree = "<group>"; };
 		617AD92625730AC100F905A5 /* TBItems.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TBItems.swift; sourceTree = "<group>"; };
 		617D85AE25052C35009E18FB /* AWattPrice.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AWattPrice.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -301,6 +305,15 @@
 			path = "Sub Views";
 			sourceTree = "<group>";
 		};
+		61658DAF25B5AF6C0083D25A /* EasyTimeIntervalPicker */ = {
+			isa = PBXGroup;
+			children = (
+				61658DA725B5AF380083D25A /* EasyTimeIntervalPicker.swift */,
+				61658DB025B5AF890083D25A /* EasyTimeIntervalPickerRepresentable.swift */,
+			);
+			path = EasyTimeIntervalPicker;
+			sourceTree = "<group>";
+		};
 		616836BF259A4D6F00E91748 /* Input fields */ = {
 			isa = PBXGroup;
 			children = (
@@ -321,14 +334,15 @@
 			path = Formatter;
 			sourceTree = "<group>";
 		};
-		616836C4259A4DC600E91748 /* Custom default views  */ = {
+		616836C4259A4DC600E91748 /* Custom views  */ = {
 			isa = PBXGroup;
 			children = (
 				61AA2D5D254DA4CD00C13D42 /* CustomInsetGroupedList.swift */,
 				6164ED39258E11BD00F706DE /* NumberField.swift */,
 				61D57124256DAA2300EA69C7 /* CustomDatePicker.swift */,
+				61658DAF25B5AF6C0083D25A /* EasyTimeIntervalPicker */,
 			);
-			path = "Custom default views ";
+			path = "Custom views ";
 			sourceTree = "<group>";
 		};
 		617D85A525052C35009E18FB = {
@@ -411,7 +425,7 @@
 		6184828825699E33004F3F62 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
-				616836C4259A4DC600E91748 /* Custom default views  */,
+				616836C4259A4DC600E91748 /* Custom views  */,
 				616836C3259A4DB400E91748 /* Formatter */,
 				61D88C0A2545EF9800DA2088 /* Extensions.swift */,
 				6164ED26258D4B8E00F706DE /* KeyboardObserver.swift */,
@@ -674,6 +688,7 @@
 				61D6F8792517834400027FD1 /* TimeIntervalPicker.swift in Sources */,
 				6181328C258A4AB3007FC6F2 /* SplashScreenSetupView.swift in Sources */,
 				614C55832573D421009B5241 /* UpdateDataTimeFormatter.swift in Sources */,
+				61658DA825B5AF380083D25A /* EasyTimeIntervalPicker.swift in Sources */,
 				61D196E52507F58D00E57BAC /* EnergyPriceGraph.swift in Sources */,
 				6122C061259DD42F003BE302 /* WhatsNewPage.swift in Sources */,
 				61753B6E257818DF001379B9 /* SplashScreenFeaturesAndConsent.swift in Sources */,
@@ -699,6 +714,7 @@
 				61D6F8882517AD5500027FD1 /* ButtonStyles.swift in Sources */,
 				6122114F25951BCE003D6512 /* NotificationSettingView.swift in Sources */,
 				618518F4258518EB00120D81 /* TabBar.swift in Sources */,
+				61658DB125B5AF890083D25A /* EasyTimeIntervalPickerRepresentable.swift in Sources */,
 				61BA0A542548467F00951321 /* HelpAndSuggestionView.swift in Sources */,
 				6156A579250C2161005174A5 /* SettingsPageView.swift in Sources */,
 				61286F0C25ABBCF300CE1D61 /* EnvironmentExtensions.swift in Sources */,

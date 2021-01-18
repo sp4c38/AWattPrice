@@ -37,7 +37,7 @@ def validate_token(raw_data: bytes) -> Optional[APNSToken]:
 
     Clarification:
     When refering to APNs token configuration or APNs configuration or token configuration
-    the token and all config data (like selected region in app, selected notifications to receive, ...
+    the token and all config data (like selected region in app, selected notifications to receive, ...)
     is meant.
 
     Example data:

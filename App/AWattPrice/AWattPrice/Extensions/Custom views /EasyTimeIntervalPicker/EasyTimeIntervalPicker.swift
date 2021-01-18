@@ -168,3 +168,46 @@ extension EasyTimeIntervalPicker {
         return 106
     }
 }
+
+extension EasyTimeIntervalPicker {
+    // Delegate functions
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        var hours = pickerView.selectedRow(inComponent: componentHoursID)
+        var currentlySelectedMinsRow = pickerView.selectedRow(inComponent: componentMinutesID)
+        var mins = (currentlySelectedMinsRow % countOfMinuteSteps) * step
+        
+        if allowZeroTimeInterval == false && hours == 0 && mins == 0 {
+            mins += step
+            self.selectRow(currentlySelectedMinsRow + 1, inComponent: componentMinutesID, animated: true)
+        }
+        
+        if component == componentHoursID && hours == countOfHours {
+            if mins > maxMinutesRemainder {
+                // Limit to maxMinutesRemainder, because we are at the max hour and exceeded minutes.
+                var changeOfMinutes = maxMinutesRemainder - mins
+                if changeOfMinutes > 30 {
+                    changeOfMinutes -= 60
+                }
+                var changeInSteps = changeOfMinutes / step
+                if changeInSteps == 0 {
+                    // We are over limit, but when devided by step, it gets rounded off to zero -> scroll down anyway
+                    changeInSteps -= 1
+                }
+                mins += changeOfMinutes
+                self.selectRow(currentlySelectedMinsRow + changeInSteps, inComponent: componentMinutesID, animated: true)
+                currentlySelectedMinsRow += changeInSteps
+            }
+        } else if component == componentMinutesID && countOfHours == hours {
+            // It was scrolled in the minutes component and we are at the highest hour.
+            // If we are over maxMinutesRemainder, scroll the hour down.
+            if mins > maxMinutesRemainder {
+                hours -= 1
+                self.selectRow(hours, inComponent: componentHoursID, animated: true)
+            }
+        }
+        let newTimeInterval = TimeInterval((mins + (hours * 60)) * 60)
+        self.timeIntervalChanged(TimeInterval(newTimeInterval))
+        self.timeInterval = newTimeInterval
+    }
+}

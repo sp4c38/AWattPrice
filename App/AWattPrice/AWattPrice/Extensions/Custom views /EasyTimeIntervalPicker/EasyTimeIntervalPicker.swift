@@ -54,3 +54,22 @@ class EasyTimeIntervalPicker: UIPickerView, UIPickerViewDelegate, UIPickerViewDa
         super.init(coder: coder)
     }
 }
+
+extension EasyTimeIntervalPicker {
+    private func newStaticLabelWithText(text: String) -> UILabel {
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 75, height: componentViewHeight))
+        label.text = text
+        label.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
+        return label
+    }
+
+    private func updateStaticLabelsPositions() {
+        // Position the static labels
+        let y: CGFloat = ((self.frame.height / 2) - 14.5)
+        let x1 = (self.frame.width / 2) - 45
+        let x2 = (self.frame.width / 2) + 66
+
+        self.hoursLabel!.frame = CGRect(x: x1, y: y, width: 75, height: componentViewHeight)
+        self.minLabel!.frame = CGRect(x: x2, y: y, width: 75, height: componentViewHeight)
+    }
+}

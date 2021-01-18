@@ -73,3 +73,45 @@ extension EasyTimeIntervalPicker {
         self.minLabel!.frame = CGRect(x: x2, y: y, width: 75, height: componentViewHeight)
     }
 }
+
+extension EasyTimeIntervalPicker {
+    // Public methods
+    
+    func setMaxTimeInterval(_ newMaxTimeInterval: TimeInterval) {
+        maxTimeInterval = newMaxTimeInterval
+
+        let hours = Int(newMaxTimeInterval / 3600)
+        let minutes = Int(newMaxTimeInterval / 60) - (hours * 60)
+        maxMinutesRemainder = minutes
+        countOfHours = hours
+        reloadAllComponents()
+        
+        self.timeInterval = min(self.timeInterval, self.maxTimeInterval)
+    }
+    
+    func setMinuteInterval(minuteInterval: Int) {
+        var minuteInterval = minuteInterval
+        let validMinuteIntervals = [1, 2, 3, 4, 5, 6, 10, 12, 15, 20, 30]
+        if !validMinuteIntervals.contains(minuteInterval) {
+            minuteInterval = 1 // Minute interval wasn't valid, use the default one
+        }
+        
+        step = minuteInterval
+        countOfMinuteSteps = 60 / step
+        self.reloadComponent(componentMinutesID)
+        
+        let timeIntervalInMinutes = Int(self.timeInterval / 60)
+        let minutes = timeIntervalInMinutes % 60
+        var newMinutesRow = Int(minutes / step)
+
+        if allowZeroTimeInterval == false && newMinutesRow == 0 {
+            newMinutesRow += 1
+        }
+        
+        if countOfHours > 0 {
+            newMinutesRow += (countOfMinuteSteps * (largeInteger / 2))
+        }
+
+        self.selectRow(newMinutesRow, inComponent: componentMinutesID, animated: false)
+    }
+}

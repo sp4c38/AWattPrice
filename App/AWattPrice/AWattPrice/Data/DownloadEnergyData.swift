@@ -183,7 +183,7 @@ extension AwattarData {
 }
 
 extension AwattarData {
-    var minMaxTimeRange: ClosedRange<Date>? {
+    var minMaxTimeRange: ClosedRange<Date>?     {
         if energyData != nil {
             if !(energyData!.prices.count > 0) {
                 return nil

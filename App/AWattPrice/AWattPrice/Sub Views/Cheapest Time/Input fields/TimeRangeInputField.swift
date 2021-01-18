@@ -34,8 +34,8 @@ struct TimeRangeInputField: View {
 
     func setTimeIntervalValues() {
         if let minMaxTimeRange = awattarData.minMaxTimeRange {
-            let minTime = minMaxTimeRange.lowerBound.addingTimeInterval(-1)
-            let maxTime = minMaxTimeRange.lowerBound.addingTimeInterval(-1)
+            let minTime = minMaxTimeRange.lowerBound.addingTimeInterval(+1)
+            let maxTime = minMaxTimeRange.upperBound.addingTimeInterval(-1)
             inputDateRange = minTime ... maxTime
         }
     }

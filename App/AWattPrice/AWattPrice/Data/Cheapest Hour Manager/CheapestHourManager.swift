@@ -30,9 +30,8 @@ class CheapestHourManager: ObservableObject {
 }
 
 extension CheapestHourManager {
-    /// Sets the values after the user entered them. This includes calculating time intervals and formatting raw text strings to floats.
-    /// If errors occur because of wrong input of the user and values cannot be set correctly a list is returned with error values.
-    /// - Returns: Returns a list with error values if any occur. If no errors occur a list is also returned but with a success value.
+    /// Sets the values after the user entered them.
+    /// - Returns: If errors occur because of wrong input of the user and values cannot be set correctly a list is returned with error values.
     ///     - [0] all values were entered correctly
     ///     - [1] powerOutputString is empty
     ///     - [2] powerOutputString contains wrong characters
@@ -43,41 +42,42 @@ extension CheapestHourManager {
     func setValues() -> [Int] {
         cheapestHoursForUsage = nil
         var errorValues = [Int]()
-
-        if powerOutputString.replacingOccurrences(of: " ", with: "") == "" {
-            errorValues.append(1)
-        } else {
-            if let powerOutputConverted = powerOutputString.doubleValue {
-                powerOutput = powerOutputConverted
+        
+        if inputMode == 1 {
+            if powerOutputString.replacingOccurrences(of: " ", with: "") == "" {
+                errorValues.append(1)
             } else {
-                errorValues.append(2)
+                if let powerOutputConverted = powerOutputString.doubleValue {
+                    powerOutput = powerOutputConverted
+                } else {
+                    errorValues.append(2)
+                }
+            }
+
+            if energyUsageString.replacingOccurrences(of: " ", with: "") == "" {
+                errorValues.append(3)
+            } else {
+                if let energyUsageConverted = energyUsageString.doubleValue {
+                    energyUsage = energyUsageConverted
+                } else {
+                    errorValues.append(4)
+                }
             }
         }
 
-        if energyUsageString.replacingOccurrences(of: " ", with: "") == "" {
-            errorValues.append(3)
-        } else {
-            if let energyUsageConverted = energyUsageString.doubleValue {
-                energyUsage = energyUsageConverted
-            } else {
-                errorValues.append(4)
+        if errorValues.isEmpty {
+            let timeRangeMax = endDate.timeIntervalSince(startDate)
+            var timeOfUsageInSeconds = timeOfUsageInterval
+            if inputMode == 0 {
+                timeOfUsageInSeconds = (energyUsage / powerOutput) * 60 * 60
             }
-        }
-
-        if !(errorValues.count > 0) {
-            let timeOfUsageInSeconds = (energyUsage / powerOutput) * 60 * 60
-            let timeRangeMax = abs(startDate.timeIntervalSince(endDate))
-            if timeOfUsageInSeconds <= timeRangeMax {
-                timeOfUsage = timeOfUsageInSeconds / 60 / 60 // Convert time of usage back to hours
-            } else {
-                timeOfUsage = timeOfUsageInSeconds / 60 / 60 // Also set the time of usage even if an error occurres to help to deliver a better error description
+            timeOfUsage = timeOfUsageInSeconds / 60 / 60 // Convert time of usage to hours
+            if timeOfUsageInSeconds > timeRangeMax {
                 errorValues.append(5)
             }
         }
 
-        if !(errorValues.count > 0) {
-            errorValues.append(0)
-        }
+        if errorValues.isEmpty { errorValues.append(0) }
 
         return errorValues
     }

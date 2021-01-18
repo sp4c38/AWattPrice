@@ -11,7 +11,7 @@ class EasyTimeIntervalPicker: UIPickerView, UIPickerViewDelegate, UIPickerViewDa
     // Class initialization with main attributes
     
     var timeInterval: TimeInterval = 0
-    var timeIntervalChanged: (Double) -> Void = {_ in }
+    var onTimeIntervalChanged: (Double) -> Void = {_ in }
     
     private let componentViewWidth: CGFloat = 80
     private let componentViewHeight: CGFloat = 32
@@ -207,7 +207,7 @@ extension EasyTimeIntervalPicker {
             }
         }
         let newTimeInterval = TimeInterval((mins + (hours * 60)) * 60)
-        self.timeIntervalChanged(TimeInterval(newTimeInterval))
+        self.onTimeIntervalChanged(TimeInterval(newTimeInterval))
         self.timeInterval = newTimeInterval
     }
 }

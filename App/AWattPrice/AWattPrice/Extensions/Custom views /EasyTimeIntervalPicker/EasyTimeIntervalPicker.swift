@@ -115,3 +115,56 @@ extension EasyTimeIntervalPicker {
         self.selectRow(newMinutesRow, inComponent: componentMinutesID, animated: false)
     }
 }
+
+extension EasyTimeIntervalPicker {
+    // Picker Datasources
+    
+    func numberOfComponents(in pickerView: UIPickerView) -> Int { 2 }
+
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        switch component {
+        case componentHoursID:
+            return countOfHours + 1 // We have to account for the "0 hours" row.
+        case componentMinutesID:
+            if countOfHours > 0 {
+                return countOfMinuteSteps * largeInteger
+            } else {
+                return (maxMinutesRemainder / step) + 1 // The "+1" is to account for the 0 at the beginning.
+            }
+        default:
+            break
+        }
+        return 0
+    }
+
+
+    func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {
+        var viewWithLabel = view
+        if viewWithLabel == nil {
+            viewWithLabel = UIView.init(frame: CGRect(x: 0, y: 0, width: componentViewWidth, height: componentViewHeight))
+            let label = UILabel.init(frame: CGRect(x: 11, y: 0, width: 30, height: componentViewHeight))
+            label.font = UIFont.systemFont(ofSize: 23)
+            label.textAlignment = .right
+            viewWithLabel!.addSubview(label)
+        }
+
+        var number = 0
+        if component == componentHoursID {
+            number = row
+        } else if component == componentMinutesID {
+            number = (row % countOfMinuteSteps) * step
+        }
+        let label: UILabel = viewWithLabel!.subviews[0] as! UILabel
+        label.text = String(format: "%lu", number)
+
+        return viewWithLabel!
+    }
+
+    func pickerView(_ pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat {
+        return componentViewHeight
+    }
+
+    func pickerView(_ pickerView: UIPickerView, widthForComponent component: Int) -> CGFloat {
+        return 106
+    }
+}

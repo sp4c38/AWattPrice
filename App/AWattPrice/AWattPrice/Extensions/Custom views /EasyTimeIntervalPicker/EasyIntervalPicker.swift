@@ -1,5 +1,5 @@
 //
-//  EasyTimeIntervalPicker.swift
+//  EasyIntervalPicker.swift
 //  AWattPrice
 //
 //  Created by Léon Becker on 18.01.21.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-class EasyTimeIntervalPicker: UIPickerView, UIPickerViewDelegate, UIPickerViewDataSource {
+class EasyIntervalPicker: UIPickerView, UIPickerViewDelegate, UIPickerViewDataSource {
     // Class initialization with main attributes
     
     var timeInterval: TimeInterval = 0
@@ -55,7 +55,7 @@ class EasyTimeIntervalPicker: UIPickerView, UIPickerViewDelegate, UIPickerViewDa
     }
 }
 
-extension EasyTimeIntervalPicker {
+extension EasyIntervalPicker {
     private func newStaticLabelWithText(text: String) -> UILabel {
         let label = UILabel(frame: CGRect(x: 0, y: 0, width: 75, height: componentViewHeight))
         label.text = text
@@ -74,7 +74,7 @@ extension EasyTimeIntervalPicker {
     }
 }
 
-extension EasyTimeIntervalPicker {
+extension EasyIntervalPicker {
     // Public methods
     
     func setMaxTimeInterval(_ newMaxTimeInterval: TimeInterval) {
@@ -116,7 +116,7 @@ extension EasyTimeIntervalPicker {
     }
 }
 
-extension EasyTimeIntervalPicker {
+extension EasyIntervalPicker {
     // Picker Datasources
     
     func numberOfComponents(in pickerView: UIPickerView) -> Int { 2 }
@@ -169,7 +169,7 @@ extension EasyTimeIntervalPicker {
     }
 }
 
-extension EasyTimeIntervalPicker {
+extension EasyIntervalPicker {
     // Delegate functions
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {

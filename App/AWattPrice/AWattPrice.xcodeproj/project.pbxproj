@@ -36,7 +36,7 @@
 		6164ED27258D4B8E00F706DE /* KeyboardObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6164ED26258D4B8E00F706DE /* KeyboardObserver.swift */; };
 		6164ED3A258E11BD00F706DE /* NumberField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6164ED39258E11BD00F706DE /* NumberField.swift */; };
 		6164ED42258E952F00F706DE /* TotalTimeFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6164ED41258E952F00F706DE /* TotalTimeFormatter.swift */; };
-		61658DA825B5AF380083D25A /* EasyTimeIntervalPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61658DA725B5AF380083D25A /* EasyTimeIntervalPicker.swift */; };
+		61658DA825B5AF380083D25A /* EasyIntervalPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61658DA725B5AF380083D25A /* EasyIntervalPicker.swift */; };
 		61658DB125B5AF890083D25A /* EasyTimeIntervalPickerRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61658DB025B5AF890083D25A /* EasyTimeIntervalPickerRepresentable.swift */; };
 		61753B6E257818DF001379B9 /* SplashScreenFeaturesAndConsent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61753B6D257818DF001379B9 /* SplashScreenFeaturesAndConsent.swift */; };
 		617AD92725730AC100F905A5 /* TBItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617AD92625730AC100F905A5 /* TBItems.swift */; };
@@ -127,7 +127,7 @@
 		6164ED26258D4B8E00F706DE /* KeyboardObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardObserver.swift; sourceTree = "<group>"; };
 		6164ED39258E11BD00F706DE /* NumberField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberField.swift; sourceTree = "<group>"; };
 		6164ED41258E952F00F706DE /* TotalTimeFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TotalTimeFormatter.swift; sourceTree = "<group>"; };
-		61658DA725B5AF380083D25A /* EasyTimeIntervalPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EasyTimeIntervalPicker.swift; sourceTree = "<group>"; };
+		61658DA725B5AF380083D25A /* EasyIntervalPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EasyIntervalPicker.swift; sourceTree = "<group>"; };
 		61658DB025B5AF890083D25A /* EasyTimeIntervalPickerRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EasyTimeIntervalPickerRepresentable.swift; sourceTree = "<group>"; };
 		61753B6D257818DF001379B9 /* SplashScreenFeaturesAndConsent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SplashScreenFeaturesAndConsent.swift; sourceTree = "<group>"; };
 		617AD92625730AC100F905A5 /* TBItems.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TBItems.swift; sourceTree = "<group>"; };
@@ -308,7 +308,7 @@
 		61658DAF25B5AF6C0083D25A /* EasyTimeIntervalPicker */ = {
 			isa = PBXGroup;
 			children = (
-				61658DA725B5AF380083D25A /* EasyTimeIntervalPicker.swift */,
+				61658DA725B5AF380083D25A /* EasyIntervalPicker.swift */,
 				61658DB025B5AF890083D25A /* EasyTimeIntervalPickerRepresentable.swift */,
 			);
 			path = EasyTimeIntervalPicker;
@@ -688,7 +688,7 @@
 				61D6F8792517834400027FD1 /* TimeIntervalPicker.swift in Sources */,
 				6181328C258A4AB3007FC6F2 /* SplashScreenSetupView.swift in Sources */,
 				614C55832573D421009B5241 /* UpdateDataTimeFormatter.swift in Sources */,
-				61658DA825B5AF380083D25A /* EasyTimeIntervalPicker.swift in Sources */,
+				61658DA825B5AF380083D25A /* EasyIntervalPicker.swift in Sources */,
 				61D196E52507F58D00E57BAC /* EnergyPriceGraph.swift in Sources */,
 				6122C061259DD42F003BE302 /* WhatsNewPage.swift in Sources */,
 				61753B6E257818DF001379B9 /* SplashScreenFeaturesAndConsent.swift in Sources */,

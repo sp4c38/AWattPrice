@@ -21,8 +21,8 @@ struct EasyTimeIntervalPickerRepresentable: UIViewRepresentable {
         pickerSelectionInterval = selectionInterval
     }
     
-    func makeUIView(context: Context) -> EasyTimeIntervalPicker {
-        let picker = EasyTimeIntervalPicker()
+    func makeUIView(context: Context) -> EasyIntervalPicker {
+        let picker = EasyIntervalPicker()
         picker.setMaxTimeInterval(pickerMaxTimeInterval)
         picker.setMinuteInterval(minuteInterval: pickerSelectionInterval)
         picker.onTimeIntervalChanged = { newSelection in
@@ -32,5 +32,5 @@ struct EasyTimeIntervalPickerRepresentable: UIViewRepresentable {
         return picker
     }
     
-    func updateUIView(_ uiView: EasyTimeIntervalPicker, context: Context) {}
+    func updateUIView(_ uiView: EasyIntervalPicker, context: Context) {}
 }

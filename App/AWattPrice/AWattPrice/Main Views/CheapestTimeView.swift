@@ -59,8 +59,8 @@ struct CheapestTimeViewBody: View {
             }
             .pickerStyle(SegmentedPickerStyle())
                 
-            VStack(alignment: .center, spacing: 10) {
-                VStack(alignment: .center, spacing: 20) {
+            VStack(alignment: .center, spacing: 0) {
+                VStack(alignment: .center, spacing: 25) {
                     if inputMode == 0 {
                         CheapestTimeViewBodyPicker()
                     } else if inputMode == 1 {
@@ -68,9 +68,7 @@ struct CheapestTimeViewBody: View {
                         EnergyUsageInputField(errorValues: cheapestHourManager.errorValues)
                     }
                 }
-                .padding(
-                    .bottom, inputMode == 0 ? 0 : 10
-                )
+                .padding(.bottom, inputMode == 0 ? 0 : 25)
                 
                 TimeRangeInputField()
             }

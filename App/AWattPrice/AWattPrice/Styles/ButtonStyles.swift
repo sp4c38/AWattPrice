@@ -35,9 +35,11 @@ struct ContinueButtonStyle: ButtonStyle {
 struct TimeRangeButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
+            .font(.callout)
+            
             .multilineTextAlignment(.center)
-            .padding(7)
-            .padding([.leading, .trailing], 4)
+            .padding([.top, .bottom], 5)
+            .padding([.leading, .trailing], 7)
             .foregroundColor(Color.white)
             .background(Color.blue)
             .cornerRadius(7)
@@ -71,6 +73,17 @@ struct RoundedBorderButtonStyle: ButtonStyle {
             .padding([.leading, .trailing], 8)
             .background(
                 RoundedRectangle(cornerRadius: 4)
-                    .stroke(Color.gray, lineWidth: 0.5))
+                    .stroke(Color.gray, lineWidth: 0.5)
+            )
+    }
+}
+
+struct TimeRangeButtonStyle_Preview: PreviewProvider {
+    static var previews: some View {
+        Button(action: {}) {
+            Text("nächste 3h")
+                .fontWeight(.semibold)
+        }
+        .buttonStyle(TimeRangeButtonStyle())
     }
 }

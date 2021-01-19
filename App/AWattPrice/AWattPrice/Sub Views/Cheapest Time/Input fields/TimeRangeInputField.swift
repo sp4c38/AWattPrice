@@ -60,7 +60,7 @@ struct TimeRangeInputFieldSelectionPart: View {
             ComparisonDatePicker(selection: $partSelection, in: range)
                 .frame(width: 205, height: 35, alignment: .center)
                 .clipped()
-                .offset(x: 15, y: 0)
+                .offset(x: 27, y: 0)
         }
         .modifier(TimeRangeInputFieldSelectionPartModifier())
     }
@@ -79,15 +79,6 @@ struct TimeRangeInputField: View {
 
     init() {
         totalTimeFormatter = TotalTimeFormatter()
-    }
-
-    func setTimeIntervalValues() {
-        if let minMaxTimeRange = awattarData.minMaxTimeRange {
-            let minTime = minMaxTimeRange.lowerBound.addingTimeInterval(+1)
-            let maxTime = minMaxTimeRange.upperBound.addingTimeInterval(-1)
-            cheapestHourManager.endDate = maxTime
-            inputDateRange = minTime ... maxTime
-        }
     }
 
     var body: some View {
@@ -121,34 +112,9 @@ struct TimeRangeInputField: View {
                 }
             }
             .padding(.top, 10)
-            .padding(.bottom, 20)
+            .padding(.bottom, 15)
 
-            HStack(alignment: .center) {
-                Button(action: {
-                    cheapestHourManager.setTimeIntervalThisNight(energyData: awattarData.energyData!)
-                }) {
-                    Text("cheapestPricePage.todayTonight")
-                        .bold()
-                }
-                .buttonStyle(TimeRangeButtonStyle())
-
-                Button(action: {
-                    cheapestHourManager.setTimeInterval(forNextHourAmount: 3, energyData: awattarData.energyData!)
-                }) {
-                    Text("cheapestPricePage.nextThreeHours")
-                        .bold()
-                }
-                .buttonStyle(TimeRangeButtonStyle())
-
-                Button(action: {
-                    cheapestHourManager.setTimeInterval(forNextHourAmount: 12, energyData: awattarData.energyData!)
-                }) {
-                    Text("cheapestPricePage.nextTwelveHours")
-                        .bold()
-                }
-                .buttonStyle(TimeRangeButtonStyle())
-            }
-            .padding(.top, 3)
+            quickSelectButtons
         }
         .frame(maxWidth: .infinity)
         .onReceive(awattarData.$energyData) { _ in
@@ -158,9 +124,50 @@ struct TimeRangeInputField: View {
 }
 
 extension TimeRangeInputField {
+    var quickSelectButtons: some View {
+        HStack(alignment: .center) {
+            Button(action: {
+                cheapestHourManager.setTimeIntervalThisNight(energyData: awattarData.energyData!)
+            }) {
+                Text("cheapestPricePage.todayTonight")
+                    .fontWeight(.semibold)
+            }
+            .buttonStyle(TimeRangeButtonStyle())
+
+            Button(action: {
+                cheapestHourManager.setTimeInterval(forNextHourAmount: 3, energyData: awattarData.energyData!)
+            }) {
+                Text("cheapestPricePage.nextThreeHours")
+                    .fontWeight(.semibold)
+            }
+            .buttonStyle(TimeRangeButtonStyle())
+
+            Button(action: {
+                cheapestHourManager.setTimeInterval(forNextHourAmount: 12, energyData: awattarData.energyData!)
+            }) {
+                Text("cheapestPricePage.nextTwelveHours")
+                    .fontWeight(.semibold)
+            }
+            .buttonStyle(TimeRangeButtonStyle())
+        }
+        .padding(.top, 3)
+    }
+}
+
+extension TimeRangeInputField {
     // Helper functions
     
-    /// Get error string indicating minimum time range needed
+    /// Set the max upper and lower bound for the time range input
+    func setTimeIntervalValues() {
+        if let minMaxTimeRange = awattarData.minMaxTimeRange {
+            let minTime = minMaxTimeRange.lowerBound.addingTimeInterval(+1)
+            let maxTime = minMaxTimeRange.upperBound.addingTimeInterval(-1)
+            cheapestHourManager.endDate = maxTime
+            inputDateRange = minTime ... maxTime
+        }
+    }
+    
+    /// Get error string indicating minimum time range needed.
     func getMinRangeNeededString() -> String {
         let hours = Int(
             (Double(cheapestHourManager.timeOfUsage) / 3600)

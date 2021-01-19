@@ -7,6 +7,65 @@
 
 import SwiftUI
 
+struct TimeRangeInputFieldSelectionPartModifier: ViewModifier {
+    @Environment(\.colorScheme) var colorScheme
+    @EnvironmentObject var cheapestHourManager: CheapestHourManager
+    
+    func body(content: Content) -> some View {
+        content
+        .padding(5)
+        .padding([.leading, .trailing], 2)
+        .background(
+            colorScheme == .light ?
+                Color(red: 0.96, green: 0.95, blue: 0.97) :
+                Color(hue: 0.6667, saturation: 0.0340, brightness: 0.1424)
+        )
+        .cornerRadius(7)
+        .ifTrue(cheapestHourManager.errorValues.contains(5)) { content in
+            content
+                .overlay(
+                    RoundedRectangle(cornerRadius: 7)
+                        .stroke(Color.red, lineWidth: 2)
+                )
+        }
+    }
+}
+
+struct TimeRangeInputFieldSelectionPart: View {
+    @Environment(\.colorScheme) var colorScheme
+    @Binding var partSelection: Date
+    
+    let name: String
+    let range: ClosedRange<Date>
+    
+    init(withName name: String, selection: Binding<Date>, in range: ClosedRange<Date>) {
+        self.name = name
+        _partSelection = selection
+        self.range = range
+    }
+    
+    var body: some View {
+        HStack {
+            Text(name.localized())
+                .bold()
+                .font(.callout)
+                .foregroundColor(
+                    colorScheme == .light ?
+                        Color(hue: 0.0000, saturation: 0.0000, brightness: 0.4314) :
+                        Color(hue: 0.0000, saturation: 0.0000, brightness: 0.8311)
+                )
+
+            Spacer()
+
+            ComparisonDatePicker(selection: $partSelection, in: range)
+                .frame(width: 205, height: 35, alignment: .center)
+                .clipped()
+                .offset(x: 15, y: 0)
+        }
+        .modifier(TimeRangeInputFieldSelectionPartModifier())
+    }
+}
+
 /// A input field for the time range in the consumption comparison view.
 struct TimeRangeInputField: View {
     @Environment(\.colorScheme) var colorScheme
@@ -20,23 +79,6 @@ struct TimeRangeInputField: View {
 
     init() {
         totalTimeFormatter = TotalTimeFormatter()
-    }
-
-    func getMinRangeNeededString() -> String {
-        let hours = Int(
-            (Double(cheapestHourManager.timeOfUsage) / 3600)
-                .rounded(.down)
-        )
-        let minutes: Int = Int(
-            (Double(cheapestHourManager.timeOfUsage % 3600) / 60)
-                .rounded()
-        )
-        let totalTimeString = totalTimeFormatter.localizedTotalTimeString(hour: hours, minute: minutes)
-        var baseString = "cheapestPricePage.inputMode.withDuration.wrongTimeRangeError"
-        if cheapestHourManager.inputMode == 1 {
-            baseString = "cheapestPricePage.inputMode.withKwh.wrongTimeRangeError"
-        }
-        return String(format: baseString.localized(), totalTimeString)
     }
 
     func setTimeIntervalValues() {
@@ -56,62 +98,20 @@ struct TimeRangeInputField: View {
                     .foregroundColor(Color.gray)
                 Spacer()
             }
-
+ 
             VStack(alignment: .leading, spacing: 8) {
-                HStack {
-                    Text("general.from")
-                        .bold()
-                        .font(.callout)
-                        .foregroundColor(colorScheme == .light ? Color(hue: 0.0000, saturation: 0.0000, brightness: 0.4314) : Color(hue: 0.0000, saturation: 0.0000, brightness: 0.8311))
-
-                    Spacer()
-
-                    ComparisonDatePicker(selection: $cheapestHourManager.startDate, in: inputDateRange)
-                        .frame(width: 165, height: 40)
-                }
-                .padding(5)
-                .padding([.leading, .trailing], 2)
-                .background(
-                    colorScheme == .light ?
-                        Color(red: 0.96, green: 0.95, blue: 0.97) :
-                        Color(hue: 0.6667, saturation: 0.0340, brightness: 0.1424)
+                TimeRangeInputFieldSelectionPart(
+                    withName: "general.from",
+                    selection: $cheapestHourManager.startDate,
+                    in: inputDateRange
                 )
-                .cornerRadius(7)
-                .ifTrue(cheapestHourManager.errorValues.contains(5)) { content in
-                    content
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 7)
-                                .stroke(Color.red, lineWidth: 2)
-                        )
-                }
-
-                HStack {
-                    Text("general.to")
-                        .bold()
-                        .font(.callout)
-                        .foregroundColor(colorScheme == .light ? Color(hue: 0.0000, saturation: 0.0000, brightness: 0.4314) : Color(hue: 0.0000, saturation: 0.0000, brightness: 0.8311))
-
-                    Spacer()
-
-                    ComparisonDatePicker(selection: $cheapestHourManager.endDate, in: inputDateRange)
-                        .frame(width: 167, height: 40)
-                }
-                .padding(5)
-                .padding([.leading, .trailing], 2)
-                .background(
-                    colorScheme == .light ?
-                        Color(red: 0.96, green: 0.95, blue: 0.97) :
-                        Color(hue: 0.6667, saturation: 0.0340, brightness: 0.1424)
+                
+                TimeRangeInputFieldSelectionPart(
+                    withName: "general.to",
+                    selection: $cheapestHourManager.endDate,
+                    in: inputDateRange
                 )
-                .cornerRadius(7)
-                .ifTrue(cheapestHourManager.errorValues.contains(5)) { content in
-                    content
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 7)
-                                .stroke(Color.red, lineWidth: 2)
-                        )
-                }
-
+                
                 if cheapestHourManager.errorValues.contains(5) {
                     Text(getMinRangeNeededString())
                         .font(.caption)
@@ -154,6 +154,28 @@ struct TimeRangeInputField: View {
         .onReceive(awattarData.$energyData) { _ in
             self.setTimeIntervalValues()
         }
+    }
+}
+
+extension TimeRangeInputField {
+    // Helper functions
+    
+    /// Get error string indicating minimum time range needed
+    func getMinRangeNeededString() -> String {
+        let hours = Int(
+            (Double(cheapestHourManager.timeOfUsage) / 3600)
+                .rounded(.down)
+        )
+        let minutes: Int = Int(
+            (Double(cheapestHourManager.timeOfUsage % 3600) / 60)
+                .rounded()
+        )
+        let totalTimeString = totalTimeFormatter.localizedTotalTimeString(hour: hours, minute: minutes)
+        var baseString = "cheapestPricePage.inputMode.withDuration.wrongTimeRangeError"
+        if cheapestHourManager.inputMode == 1 {
+            baseString = "cheapestPricePage.inputMode.withKwh.wrongTimeRangeError"
+        }
+        return String(format: baseString.localized(), totalTimeString)
     }
 }
 

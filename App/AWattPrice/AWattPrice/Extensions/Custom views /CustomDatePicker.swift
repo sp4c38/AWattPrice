@@ -33,8 +33,10 @@ struct ComparisonDatePicker: UIViewRepresentable {
         datePicker.datePickerMode = .dateAndTime
         datePicker.preferredDatePickerStyle = .compact
         datePicker.minuteInterval = 1
-        datePicker.addTarget(context.coordinator, action: #selector(Coordinator.dateChanged(_:)), for: .valueChanged)
-
+        datePicker.addTarget(
+            context.coordinator,
+            action: #selector(Coordinator.dateChanged(_:)), for: .valueChanged
+        )
         return datePicker
     }
 

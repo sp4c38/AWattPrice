@@ -42,6 +42,7 @@ extension CheapestHourManager {
     ///     - [5] the time which is needed with current power output and energy usage is smaller than the time range specified.
     ///     - [6] not supported in this beta release
     func setValues() {
+        errorValues = []
         cheapestHoursForUsage = nil
         if inputMode == 1 {
             if powerOutputString.replacingOccurrences(of: " ", with: "") == "" {

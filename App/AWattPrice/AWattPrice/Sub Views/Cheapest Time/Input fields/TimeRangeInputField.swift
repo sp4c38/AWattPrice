@@ -117,6 +117,7 @@ struct TimeRangeInputField: View {
                         .font(.caption)
                         .foregroundColor(Color.red)
                         .fixedSize(horizontal: false, vertical: true)
+                        .id("TimeRangeInputFieldErrorText" + getMinRangeNeededString())
                 }
             }
             .padding(.top, 10)

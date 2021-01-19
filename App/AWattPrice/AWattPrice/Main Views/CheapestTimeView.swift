@@ -69,7 +69,9 @@ struct CheapestTimeViewBody: View {
                 TimeRangeInputField()
             }
             .onChange(of: inputMode) { newInputMode in
-                cheapestHourManager.errorValues = []
+                DispatchQueue.main.asyncAfter(deadline: .now()) {
+                    cheapestHourManager.errorValues = []
+                }
                 cheapestHourManager.inputMode = newInputMode
             }
         }

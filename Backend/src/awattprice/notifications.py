@@ -87,16 +87,15 @@ class PriceDropsBelow:
 
     # Use localization keys which are resolved on the client side
     title_loc_key = "general.priceGuard"
-    subtitle_loc_key_sing = "notifications.price_drops_below.subtitle.sing"  # Price drops below value only once
-    subtitle_loc_key_mult = "notifications.price_drops_below.subtitle.mult"  # Price drops below value multiple times
-    body_loc_key = "notifications.price_drops_below.body"
+    body_loc_key_sing = "notifications.price_drops_below.body.sing"  # Price drops below value only once
+    body_loc_key_mult = "notifications.price_drops_below.body.mult"  # Price drops below value multiple times
     collapse_id = "collapse.priceDropsBelowNotification.3DK203W0"
 
-    def get_subtitle_loc_key(self, count: int) -> str:
+    def get_body_loc_key(self, count: int) -> str:
         if count == 1:
-            return self.subtitle_loc_key_sing
+            return self.body_loc_key_sing
         else:
-            return self.subtitle_loc_key_mult
+            return self.body_loc_key_mult
 
 
 class Notifications:
@@ -161,7 +160,7 @@ async def handle_apns_response(db_manager, token, response, status_code, config)
                 token_manager = APNsTokenManager(token_config, db_manager)
                 if not config.general.debug_mode:
                     token_manager.remove_entry()
-                log.debug("Removed invalid APNs token from database.")
+                log.debug(f"Removed invalid APNs token from database: {response}.")
 
 
 async def price_drops_below_notification(
@@ -222,12 +221,10 @@ async def price_drops_below_notification(
             "aps": {
                 "alert": {
                     "title-loc-key": notification_defaults.below_notification.title_loc_key,
-                    "subtitle-loc-key": notification_defaults.below_notification.get_subtitle_loc_key(
-                        len(below_price_data)
-                    ),
-                    "subtitle-loc-args": [formatted_below_value, len(below_price_data)],
-                    "loc-key": notification_defaults.below_notification.body_loc_key,
+                    "loc-key": notification_defaults.below_notification.get_body_loc_key(len(below_price_data)),
                     "loc-args": [
+                        len(below_price_data),
+                        formatted_below_value,
                         lowest_price_start.format("H"),
                         formatted_lowest_price,
                     ],

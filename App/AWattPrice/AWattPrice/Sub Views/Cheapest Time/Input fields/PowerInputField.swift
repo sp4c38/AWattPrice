@@ -70,13 +70,7 @@ struct PowerOutputInputField: View {
                         .transition(.opacity)
                 }
             }
-            .padding(.leading, 17)
-            .padding(.trailing, 14)
-            .padding([.top, .bottom], 10)
-            .background(
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke((emptyFieldError || wrongInputError) ? Color.red : Color(hue: 0.0000, saturation: 0.0000, brightness: 0.8706), lineWidth: 2)
-            )
+            .modifier(GeneralInputView(markedRed: emptyFieldError || wrongInputError))
 
             if emptyFieldError {
                 Text("cheapestPricePage.emptyFieldError")

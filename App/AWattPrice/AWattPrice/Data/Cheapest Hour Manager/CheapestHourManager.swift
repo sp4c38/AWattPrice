@@ -68,7 +68,7 @@ extension CheapestHourManager {
         if errorValues.isEmpty {
             let timeRangeMax = endDate.timeIntervalSince(startDate)
             var timeOfUsageInSeconds = timeOfUsageInterval
-            if inputMode == 0 {
+            if inputMode == 1 {
                 timeOfUsageInSeconds = (energyUsage / powerOutput) * 60 * 60
             }
             timeOfUsage = timeOfUsageInSeconds / 60 / 60 // Convert time of usage to hours

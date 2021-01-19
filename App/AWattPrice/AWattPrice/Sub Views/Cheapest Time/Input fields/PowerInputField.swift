@@ -42,8 +42,8 @@ struct PowerOutputInputField: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
                 Text("general.power")
-                    .font(.title3)
-                    .bold()
+                    .font(.subheadline)
+                    .foregroundColor(Color.gray)
                 Spacer()
             }
 

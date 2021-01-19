@@ -55,21 +55,21 @@ struct CheapestTimeViewBody: View {
     }
     
     var body: some View {
-        VStack {
+        VStack(spacing: 20) {
             Picker("", selection: $inputMode) {
-                Text("Mit kWh")
-                    .tag(0)
                 Text("Mit Dauer")
+                    .tag(0)
+                Text("Mit kWh")
                     .tag(1)
             }
             .pickerStyle(SegmentedPickerStyle())
                 
             VStack(alignment: .center, spacing: 20) {
                 if inputMode == 0 {
+                    CheapestTimeViewBodyPicker()
+                } else if inputMode == 1 {
                     PowerOutputInputField(errorValues: fieldsEnteredErrorValues)
                     EnergyUsageInputField(errorValues: fieldsEnteredErrorValues)
-                } else if inputMode == 1 {
-                    CheapestTimeViewBodyPicker()
                 }
                 TimeRangeInputField(errorValues: fieldsEnteredErrorValues)
             }

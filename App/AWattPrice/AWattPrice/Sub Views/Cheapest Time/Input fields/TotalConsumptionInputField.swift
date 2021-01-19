@@ -42,8 +42,8 @@ struct EnergyUsageInputField: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
                 Text("cheapestPricePage.totalConsumption")
-                    .font(.title3)
-                    .bold()
+                    .font(.subheadline)
+                    .foregroundColor(Color.gray)
                 Spacer()
             }
 

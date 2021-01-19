@@ -44,12 +44,12 @@ struct TimeRangeInputField: View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
                 Text("cheapestPricePage.timeRange")
-                    .font(.title3)
-                    .bold()
+                    .font(.subheadline)
+                    .foregroundColor(Color.gray)
                 Spacer()
             }
 
-            VStack(alignment: .leading, spacing: 10) {
+            VStack(alignment: .leading, spacing: 8) {
                 HStack {
                     Text("general.from")
                         .bold()
@@ -111,7 +111,8 @@ struct TimeRangeInputField: View {
                         .fixedSize(horizontal: false, vertical: true)
                 }
             }
-            .padding([.top, .bottom], 20)
+            .padding(.top, 10)
+            .padding(.bottom, 20)
 
             HStack(alignment: .center) {
                 Button(action: {
@@ -150,6 +151,7 @@ struct TimeRangeInputField: View {
 struct TimeRangeInputField_Previews: PreviewProvider {
     static var previews: some View {
         TimeRangeInputField(errorValues: [])
+            .environmentObject(AwattarData())
             .environmentObject(CheapestHourManager())
             .padding()
     }

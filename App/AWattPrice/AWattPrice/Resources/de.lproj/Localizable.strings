@@ -40,17 +40,17 @@
 
 // Cheapest Price page localizations
 "cheapestPricePage.cheapestPrice" = "Günstigste Zeit";
-"cheapestPricePage.inputMode.withDuration" = "Mit Dauer";
-"cheapestPricePage.inputMode.withKwh" = "Mit kWh";
+"cheapestPricePage.inputMode.withDuration" = "Dauer";
+"cheapestPricePage.inputMode.withKwh" = "kWh";
 "cheapestPricePage.emptyFieldError" = "Bitte füllen Sie dieses Feld aus.";
 "cheapestPricePage.wrongInputError" = "Dieses Feld darf nur Zahlen und , oder . enthalten.";
 "cheapestPricePage.totalConsumption" = "Gesamtverbrauch";
 "cheapestPricePage.timeRange" = "Zeitfenster";
 "cheapestPricePage.inputMode.withDuration.wrongTimeRangeError" = "Mit diesem Zeitintervall ist ein Mindestzeitfenster von %@ erforderlich.";
 "cheapestPricePage.inputMode.withKwh.wrongTimeRangeError" = "Mit dieser Leistung und diesem Gesamtverbrauch ist ein Mindestzeitfenster von %@ erforderlich.";
-"cheapestPricePage.todayTonight" = "Heute Nacht";
-"cheapestPricePage.nextThreeHours" = "Nächsten\n3h";
-"cheapestPricePage.nextTwelveHours" = "Nächsten\n12h";
+"cheapestPricePage.todayTonight" = "heute Nacht";
+"cheapestPricePage.nextThreeHours" = "näch. 3h";
+"cheapestPricePage.nextTwelveHours" = "näch. 12h";
 
 // Cheapest Price Result page localizations
 "cheapestPriceResultPage.cheapestTimeErrorOccurred" = "Es ist ein Fehler aufgetreten.\nBitte versuchen Sie es später noch einmal.";
@@ -81,9 +81,7 @@
 // Notification Page localizations
 "notificationPage.noNotificationAccessInfo" = "Bitte erlauben Sie Benachrichtigungen für AWattPrice in der Einstellungs-App.";
 "notificationPage.notification.priceDropsBelowValue" = "Preis fällt unter Wunschpreis";
-"notificationPage.notification.priceDropsBelowValue.wishPrice" = "Wunschpreis";
-"notificationPage.notification.priceDropsBelowValue.description" = "Erhalten Sie eine Benachrichtigung, sobald Preise unter einem bestimmten Wert fallen.";
-"notificationPage.notification.priceDropsBelowValue.description.extra.pt1" = "Sie erhalten eine Benachrichtigung, sobald die Preise";
+"notificationPage.notification.priceDropsBelowValue.description.extra.pt1" = "Sie erhalten eine Benachrichtigung, sobald Preise";
 "notificationPage.notification.priceDropsBelowValue.description.extra.pt2" = " auf ";
 "notificationPage.notification.priceDropsBelowValue.description.extra.pt3" = "oder";
 "notificationPage.notification.priceDropsBelowValue.description.extra.pt4" = " unter ";

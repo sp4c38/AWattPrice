@@ -41,8 +41,8 @@
 
 // Cheapest Price page localizations
 "cheapestPricePage.cheapestPrice" = "Cheapest Time";
-"cheapestPricePage.inputMode.withDuration" = "With duration";
-"cheapestPricePage.inputMode.withKwh" = "With kWh";
+"cheapestPricePage.inputMode.withDuration" = "Duration";
+"cheapestPricePage.inputMode.withKwh" = "kWh";
 "cheapestPricePage.emptyFieldError" = "Please fill out this field.";
 "cheapestPricePage.wrongInputError" = "This field may only contain numbers and , or .";
 "cheapestPricePage.totalConsumption" = "Total consumption";
@@ -50,8 +50,8 @@
 "cheapestPricePage.inputMode.withDuration.wrongTimeRangeError" = "With this time interval a minimum time range of %@ is required.";
 "cheapestPricePage.inputMode.withKwh.wrongTimeRangeError" = "With this power output and this total consumption a minimum time range of %@ is required.";
 "cheapestPricePage.todayTonight" = "Tonight";
-"cheapestPricePage.nextThreeHours" = "Next 3h";
-"cheapestPricePage.nextTwelveHours" = "Next 12h";
+"cheapestPricePage.nextThreeHours" = "next 3h";
+"cheapestPricePage.nextTwelveHours" = "next 12h";
 
 // Cheapest Price Result page localizations
 "cheapestPriceResultPage.cheapestTimeErrorOccurred" = "An error occurred.\nPlease try again later.";
@@ -79,16 +79,15 @@
 "settingsPage.suggestionByEmail" = "Send suggestions by email";
 "settingsPage.version" = "Version";
 
-// Notification Page localizations
+// Notification Page Setting localizations
 "notificationPage.noNotificationAccessInfo" = "Please allow AWattPrice notifications in the Settings App.";
-"notificationPage.notification.priceDropsBelowValue" = "Price drops below desired price";
-"notificationPage.notification.priceDropsBelowValue.wishPrice" = "Desired price";
 "notificationPage.notification.priceDropsBelowValue.description" = "Receive a notification as soon as prices fall below a certain value.";
-"notificationPage.notification.priceDropsBelowValue.description.extra.pt1" = "You will receive a notification as soon as the prices drop";
+"notificationPage.notification.priceDropsBelowValue" = "Price drops below wish-price";
+"notificationPage.notification.priceDropsBelowValue.description.extra.pt1" = "You will receive a notification as soon as prices drop";
 "notificationPage.notification.priceDropsBelowValue.description.extra.pt2" = " on ";
 "notificationPage.notification.priceDropsBelowValue.description.extra.pt3" = "or";
 "notificationPage.notification.priceDropsBelowValue.description.extra.pt4" = " below ";
-"notificationPage.notification.priceDropsBelowValue.description.extra.pt5" = "your desired price.";
+"notificationPage.notification.priceDropsBelowValue.description.extra.pt5" = "your wish-price.";
 "notificationPage.notification.priceDropsBelowValue.description.hint" = "Bitte beachten Sie, dass Benachrichtigungen immer nur über die Preise des nächsten Tages informieren, sobald sie verfügbar sind.";
 "notificationPage.notification.priceDropsBelowValue.description.hint" = "Hereby AWattPrice only informes about prices of the next day. Notifications for prices of the current day were therefor already sent the day before.";
 

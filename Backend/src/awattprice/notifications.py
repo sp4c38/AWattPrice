@@ -41,7 +41,7 @@ class DetailedPriceData:
     ) -> Tuple[List, Optional[int]]:
         """Returns a list of prices which drop below or on a certain value. Also returns a
         integer which represents the lowest price point in the returned list.
-        The price point marketprices in the returned list have the VAT added if the user selected it (if vat_selection is 1).
+        The marketprices of the price points in the returned list have VAT added if the user selected it (if vat_selection is 1).
         """
         below_price_data = []
         lowest_index = None
@@ -51,17 +51,18 @@ class DetailedPriceData:
             timezone = tzstr("CET-1CEST,M3.5.0/2,M10.5.0/3").tzname(datetime.fromtimestamp(price_point.start_timestamp))
             now_timezone = arrow.utcnow().to(timezone)
 
-            now_day_start = now_timezone.replace(hour=14, minute=0, second=0, microsecond=0)
-            tomorrow_hour_start = now_day_start.shift(days=+1)
+            today_boundary = now_timezone.replace(hour=14, minute=0, second=0, microsecond=0)
+            tomorrow_boundary = today_boundary.shift(days=+1)
 
+            marketprice_with_vat = price_point.marketprice
             if region_identifier == 0 and vat_selection == 1:
                 marketprice_with_vat = round(price_point.marketprice * CURRENT_VAT, 2)
-            else:
-                marketprice_with_vat = price_point.marketprice
 
-            # Only check price points for the next day. So price points for the
-            # current day were already checked a day before.
-            if price_point.start_timestamp >= tomorrow_hour_start.timestamp:
+            if (
+                price_point.start_timestamp >= today_boundary.timestamp
+                and price_point.end_timestamp <= tomorrow_boundary.timestamp
+            ):
+                print(f"VALID: {price_point}")
                 if marketprice_with_vat <= below_value:
                     below_price_data.append(
                         Box(
@@ -132,7 +133,7 @@ class Notifications:
         return self._is_initialized
 
 
-async def handle_apns_response(db_manager, token, response, status_code):
+async def handle_apns_response(db_manager, token, response, status_code, config):
     # For reference of returned response and status codes see: https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/handling_notification_responses_from_apns
     if not status_code == 200:
         if status_code in [400, 410]:
@@ -151,7 +152,8 @@ async def handle_apns_response(db_manager, token, response, status_code):
                     token=token, region_identifier=0, vat_selection=0, config={}
                 )  # Populate with token and some placeholder values
                 token_manager = APNsTokenManager(token_config, db_manager)
-                token_manager.remove_entry()
+                if not config.general.debug_mode:
+                    token_manager.remove_entry()
                 log.debug("Removed invalid APNs token from database.")
 
 
@@ -255,7 +257,7 @@ async def price_drops_below_notification(
                     log.warning(f"Couldn't decode response from APNs servers: {e}")
 
         if response is not None and status_code is not None:
-            await handle_apns_response(db_manager, token, response, status_code)
+            await handle_apns_response(db_manager, token, response, status_code, config)
 
 
 async def check_and_send(config, data, data_region, db_manager):

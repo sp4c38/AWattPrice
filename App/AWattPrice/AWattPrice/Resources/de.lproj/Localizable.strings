@@ -138,4 +138,6 @@
 
 // Notification localizations
 // Title managed by general.priceGuard
-"notifications.price_drops_below.body" = "Neue Preise verfügbar: Strompreis fällt morgen unter Wunschpreis von %1$@ ct. Günstigster Preis um %2$@ Uhr mit %3$@ ct.";
+"notifications.price_drops_below.subtitle.sing" = "Innerhalb der nächsten 24 Stunden fallen die Strompreise %1$@ Mal unter %2$@ ct."
+"notifications.price_drops_below.subtitle.mult" = "Innerhalb der nächsten 24 Stunden fallen die Strompreise %1$@ Mal unter %2$@ ct."
+"notifications.price_drops_below.body" = "Günstigster Preis um %1$@ Uhr mit %2$@ ct.";

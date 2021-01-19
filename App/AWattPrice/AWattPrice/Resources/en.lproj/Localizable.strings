@@ -140,4 +140,6 @@
 
 // Notification localizations
 // Title managed by general.priceGuard
-"notifications.price_drops_below.body" = "New prices available: Tomorrow electricity prices drop below desired price of %1$@ ct. Cheapest hour at %2$@ for %3$@ ct.";
+"notifications.price_drops_below.subtitle.sing" = "Within the next 24 hours, electricity prices will drop below %1$@ ct for %2$@ time."
+"notifications.price_drops_below.subtitle.mult" = "Within the next 24 hours, electricity prices will drop below %1$@ ct for %2$@ times."
+"notifications.price_drops_below.body" = "Cheapest hour at %2$@ with %3$@ ct."

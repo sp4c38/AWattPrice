@@ -28,6 +28,7 @@ from loguru import logger as log
 from awattprice import poll
 from awattprice.defaults import CURRENT_VAT, Region
 from awattprice.token_manager import APNsTokenManager
+from awattprice.types import APNSToken
 
 
 class DetailedPriceData:
@@ -51,7 +52,6 @@ class DetailedPriceData:
             now_timezone = arrow.utcnow().to(timezone)
 
             now_day_start = now_timezone.replace(hour=14, minute=0, second=0, microsecond=0)
-            print(now_day_start)
             tomorrow_hour_start = now_day_start.shift(days=+1)
 
             if region_identifier == 0 and vat_selection == 1:
@@ -147,7 +147,10 @@ async def handle_apns_response(db_manager, token, response, status_code):
                 remove_token = True
 
             if remove_token is True:
-                token_manager = APNsTokenManager({"token": token}, db_manager)
+                token_config = APNSToken(
+                    token=token, region_identifier=0, vat_selection=0, config={}
+                )  # Populate with token and some placeholder values
+                token_manager = APNsTokenManager(token_config, db_manager)
                 token_manager.remove_entry()
                 log.debug("Removed invalid APNs token from database.")
 

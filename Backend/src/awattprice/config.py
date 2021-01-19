@@ -88,6 +88,9 @@ def write_config_updater(path: Path, config: ConfigUpdater) -> None:
 
 
 def config_to_bool(config):
+    """Convert certain attributes of the config to bools.
+    Needed because bool attributes are of string type when config is read.
+    """
     true_values = ["yes", "true"]
     false_values = ["no", "false"]
     error_parts = []

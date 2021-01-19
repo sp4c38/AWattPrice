@@ -50,7 +50,7 @@ struct CheapestTimeViewBody: View {
     @State var inputMode: Int = 0
     
     var body: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: 15) {
             Picker("", selection: $inputMode) {
                 Text("cheapestPricePage.inputMode.withDuration")
                     .tag(0)
@@ -59,13 +59,19 @@ struct CheapestTimeViewBody: View {
             }
             .pickerStyle(SegmentedPickerStyle())
                 
-            VStack(alignment: .center, spacing: 20) {
-                if inputMode == 0 {
-                    CheapestTimeViewBodyPicker()
-                } else if inputMode == 1 {
-                    PowerOutputInputField(errorValues: cheapestHourManager.errorValues)
-                    EnergyUsageInputField(errorValues: cheapestHourManager.errorValues)
+            VStack(alignment: .center, spacing: 10) {
+                VStack(alignment: .center, spacing: 20) {
+                    if inputMode == 0 {
+                        CheapestTimeViewBodyPicker()
+                    } else if inputMode == 1 {
+                        PowerOutputInputField(errorValues: cheapestHourManager.errorValues)
+                        EnergyUsageInputField(errorValues: cheapestHourManager.errorValues)
+                    }
                 }
+                .padding(
+                    .bottom, inputMode == 0 ? 0 : 10
+                )
+                
                 TimeRangeInputField()
             }
             .onChange(of: inputMode) { newInputMode in
@@ -139,7 +145,7 @@ struct CheapestTimeView: View {
                             })
                             .buttonStyle(ActionButtonStyle())
                             .padding([.leading, .trailing, .bottom], 16)
-                            .padding(.top, 10)
+                            .padding(.top, 5)
                         }
                         .animation(.easeInOut)
                     }
@@ -153,3 +159,28 @@ struct CheapestTimeView: View {
         .navigationViewStyle(StackNavigationViewStyle())
     }
 }
+
+struct CheapestTimeView_Previews: PreviewProvider {
+    static var previews: some View {
+        let awattarData = AwattarData()
+        let networkManager = NetworkManager()
+        
+        return VStack(spacing: 0.0) {
+            CheapestTimeView()
+                .environmentObject(awattarData)
+                .environmentObject(CurrentNotificationSetting(managedObjectContext: PersistenceManager().persistentContainer.viewContext))
+                .environmentObject(CheapestHourManager())
+                .environmentObject(CurrentSetting(managedObjectContext: PersistenceManager().persistentContainer.viewContext))
+                .preferredColorScheme(.light)
+                .onAppear {
+                    awattarData.download(forRegion: 0, networkManager: networkManager)
+                }
+            Spacer(minLength: 0)
+            TabBar()
+                .environmentObject(TBItems())
+        }
+        .preferredColorScheme(.dark)
+        .environment(\.locale, Locale(identifier: "de_DE"))
+    }
+}
+

@@ -113,6 +113,9 @@ extension EasyIntervalPicker {
         }
 
         self.selectRow(newMinutesRow, inComponent: componentMinutesID, animated: false)
+        let newTimeInterval = TimeInterval((newMinutesRow % countOfMinuteSteps) * step * 60)
+        onTimeIntervalChanged(newTimeInterval)
+        self.timeInterval = newTimeInterval
     }
 }
 

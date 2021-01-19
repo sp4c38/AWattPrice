@@ -46,7 +46,8 @@
 "cheapestPricePage.wrongInputError" = "Dieses Feld darf nur Zahlen und , oder . enthalten.";
 "cheapestPricePage.totalConsumption" = "Gesamtverbrauch";
 "cheapestPricePage.timeRange" = "Zeitfenster";
-"cheapestPricePage.wrongTimeRangeError" = "Bei dieser Leistung und diesem Gesamtverbrauch ist ein Mindestzeitfenster von %@ erforderlich.";
+"cheapestPricePage.inputMode.withDuration.wrongTimeRangeError" = "Mit diesem Zeitintervall ist ein Mindestzeitfenster von %@ erforderlich.";
+"cheapestPricePage.inputMode.withKwh.wrongTimeRangeError" = "Mit dieser Leistung und diesem Gesamtverbrauch ist ein Mindestzeitfenster von %@ erforderlich.";
 "cheapestPricePage.todayTonight" = "Heute Nacht";
 "cheapestPricePage.nextThreeHours" = "Nächsten\n3h";
 "cheapestPricePage.nextTwelveHours" = "Nächsten\n12h";
@@ -119,8 +120,9 @@
 "general.openSettingsApp" = "Einstellungs-App öffnen";
 "general.priceGuard" = "Preiswächter";
 "general.notifications" = "Benachrichtigungen";
-"general.hours" = "hours";
-"general.min" = "min";
+"general.hour" = "Std.";
+"general.hours" = "Std.";
+"general.min" = "Min.";
 
 // Total Time Formatter localizations
 "totalTimeFormatter.onlyHour"  = "%@h";

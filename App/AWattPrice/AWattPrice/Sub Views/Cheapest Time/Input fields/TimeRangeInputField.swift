@@ -40,6 +40,7 @@ struct TimeRangeInputField: View {
         if let minMaxTimeRange = awattarData.minMaxTimeRange {
             let minTime = minMaxTimeRange.lowerBound.addingTimeInterval(+1)
             let maxTime = minMaxTimeRange.upperBound.addingTimeInterval(-1)
+            cheapestHourManager.endDate = maxTime
             inputDateRange = minTime ... maxTime
         }
     }

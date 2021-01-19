@@ -16,18 +16,21 @@ struct TimeRangeInputField: View {
 
     @State var inputDateRange: ClosedRange<Date> = Date() ... Date()
 
-    let errorValues: [Int]
     let totalTimeFormatter: TotalTimeFormatter
 
-    init(errorValues: [Int]) {
-        self.errorValues = errorValues
+    init() {
         totalTimeFormatter = TotalTimeFormatter()
     }
 
     func getMinRangeNeededString() -> String {
-        let minTimeNeeded = (cheapestHourManager.timeOfUsage * 100).rounded(.up) / 100
-        let hours = minTimeNeeded.rounded(.down)
-        let minutes = ((minTimeNeeded - hours) * 100).rounded() / 100 * 60
+        let hours = Int(
+            (Double(cheapestHourManager.timeOfUsage) / 3600)
+                .rounded(.down)
+        )
+        let minutes: Int = Int(
+            (Double(cheapestHourManager.timeOfUsage % 3600) / 60)
+                .rounded()
+        )
         let totalTimeString = totalTimeFormatter.localizedTotalTimeString(hour: hours, minute: minutes)
         var baseString = "cheapestPricePage.inputMode.withDuration.wrongTimeRangeError"
         if cheapestHourManager.inputMode == 1 {
@@ -74,7 +77,7 @@ struct TimeRangeInputField: View {
                         Color(hue: 0.6667, saturation: 0.0340, brightness: 0.1424)
                 )
                 .cornerRadius(7)
-                .ifTrue(errorValues.contains(5)) { content in
+                .ifTrue(cheapestHourManager.errorValues.contains(5)) { content in
                     content
                         .overlay(
                             RoundedRectangle(cornerRadius: 7)
@@ -101,7 +104,7 @@ struct TimeRangeInputField: View {
                         Color(hue: 0.6667, saturation: 0.0340, brightness: 0.1424)
                 )
                 .cornerRadius(7)
-                .ifTrue(errorValues.contains(5)) { content in
+                .ifTrue(cheapestHourManager.errorValues.contains(5)) { content in
                     content
                         .overlay(
                             RoundedRectangle(cornerRadius: 7)
@@ -109,7 +112,7 @@ struct TimeRangeInputField: View {
                         )
                 }
 
-                if errorValues.contains(5) {
+                if cheapestHourManager.errorValues.contains(5) {
                     Text(getMinRangeNeededString())
                         .font(.caption)
                         .foregroundColor(Color.red)
@@ -155,7 +158,7 @@ struct TimeRangeInputField: View {
 
 struct TimeRangeInputField_Previews: PreviewProvider {
     static var previews: some View {
-        TimeRangeInputField(errorValues: [])
+        TimeRangeInputField()
             .environmentObject(AwattarData())
             .environmentObject(CheapestHourManager())
             .padding()

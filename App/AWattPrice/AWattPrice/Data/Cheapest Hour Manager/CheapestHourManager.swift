@@ -10,6 +10,7 @@ import Foundation
 /// An object which manages the calculation of when the cheapest hours are for energy consumption
 class CheapestHourManager: ObservableObject {
     @Published var inputMode = 0
+    @Published var errorValues = [Int]()
     
     @Published var powerOutputString = ""
     @Published var powerOutput: Double = 0
@@ -22,9 +23,10 @@ class CheapestHourManager: ObservableObject {
 
     @Published var timeOfUsageInterval = TimeInterval(0)
     
-    @Published var timeOfUsage: Double = 0
+    @Published var timeOfUsage: Int = 0
 
     @Published var cheapestHoursForUsage: HourPair? = nil
+    
     /// Set to true if calculations have been performed but no cheapest hours could be found.
     @Published var errorOccurredFindingCheapestHours = false
 }
@@ -39,10 +41,8 @@ extension CheapestHourManager {
     ///     - [4] energyUsageString contains wrong characters
     ///     - [5] the time which is needed with current power output and energy usage is smaller than the time range specified.
     ///     - [6] not supported in this beta release
-    func setValues() -> [Int] {
+    func setValues() {
         cheapestHoursForUsage = nil
-        var errorValues = [Int]()
-        
         if inputMode == 1 {
             if powerOutputString.replacingOccurrences(of: " ", with: "") == "" {
                 errorValues.append(1)
@@ -66,20 +66,19 @@ extension CheapestHourManager {
         }
 
         if errorValues.isEmpty {
-            let timeRangeMax = endDate.timeIntervalSince(startDate)
-            var timeOfUsageInSeconds = timeOfUsageInterval
+            self.timeOfUsage = Int(timeOfUsageInterval)
             if inputMode == 1 {
-                timeOfUsageInSeconds = (energyUsage / powerOutput) * 60 * 60
+                self.timeOfUsage = Int(
+                    (energyUsage / powerOutput) * 60 * 60
+                )
             }
-            timeOfUsage = timeOfUsageInSeconds / 60 / 60 // Convert time of usage to hours
-            if timeOfUsageInSeconds > timeRangeMax {
+            let timeRangeMax = Int(endDate.timeIntervalSince(startDate))
+            if self.timeOfUsage > timeRangeMax {
                 errorValues.append(5)
             }
         }
 
         if errorValues.isEmpty { errorValues.append(0) }
-
-        return errorValues
     }
 }
 
@@ -243,7 +242,11 @@ extension CheapestHourManager {
         DispatchQueue.global(qos: .userInitiated).async {
             var startTime = self.startDate
             var endTime = self.endDate
-            let timeRangeNumber = Int(self.timeOfUsage.rounded(.up))
+            
+            let timeRangeNumber: Int = Int(
+                (Double(self.timeOfUsage) / 3600)
+                    .rounded(.up)
+            )
 
             var startTimeDifference = 0
             var endTimeDifference = 0
@@ -349,19 +352,30 @@ extension CheapestHourManager {
                 return cheapestPairIndex
             }
 
-            let allPairs = self.createHourPairs(forHours: timeRangeNumber, fromStartTime: startTime, toEndTime: endTime, with: energyData)
+            let allPairs = self.createHourPairs(
+                forHours: timeRangeNumber,
+                fromStartTime: startTime,
+                toEndTime: endTime,
+                with: energyData)
             let results = recursiveSearch(with: allPairs)
             let cheapestHourPairIndex = results
 
             if cheapestHourPairIndex != nil {
                 let cheapestPair = allPairs[cheapestHourPairIndex!]
 
-                let timeRangeDifference = ((((Double(timeRangeNumber) - self.timeOfUsage) * 10000).rounded(.down) / 10000) * 60).rounded(.down)
+                let timeRangeNumberInSeconds = timeRangeNumber * 3600
+                let timeRangeDifference = Int(
+                    (
+                        Double(timeRangeNumberInSeconds - self.timeOfUsage)
+                            / 60
+                    )
+                    .rounded()
+                )
+
                 if timeRangeDifference != 0 {
                     let maxPointIndex = cheapestPair.associatedPricePoints.count - 1
 
-                    // If the user searches for a time with hours and minutes like 2,3h or 1h 40min than this if statment triggers
-                    // It makes sure that the start timestamp and end timestamp is set correctly to met the users wished output (hours and minutes)
+                    // If the user searches for a time with hours and minutes like 2,3h or 1h 40min than this if statment triggers.
                     if cheapestPair.associatedPricePoints[0].marketprice <= cheapestPair.associatedPricePoints[maxPointIndex].marketprice {
                         cheapestPair.associatedPricePoints[maxPointIndex].endTimestamp -= Int(timeRangeDifference * 60)
                     } else {

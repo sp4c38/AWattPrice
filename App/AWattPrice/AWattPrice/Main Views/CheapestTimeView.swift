@@ -48,11 +48,6 @@ struct CheapestTimeViewBody: View {
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
     
     @State var inputMode: Int = 0
-    @Binding var fieldsEnteredErrorValues: [Int]
-    
-    init(_ errorValues: Binding<[Int]>) {
-        _fieldsEnteredErrorValues = errorValues
-    }
     
     var body: some View {
         VStack(spacing: 20) {
@@ -68,12 +63,13 @@ struct CheapestTimeViewBody: View {
                 if inputMode == 0 {
                     CheapestTimeViewBodyPicker()
                 } else if inputMode == 1 {
-                    PowerOutputInputField(errorValues: fieldsEnteredErrorValues)
-                    EnergyUsageInputField(errorValues: fieldsEnteredErrorValues)
+                    PowerOutputInputField(errorValues: cheapestHourManager.errorValues)
+                    EnergyUsageInputField(errorValues: cheapestHourManager.errorValues)
                 }
-                TimeRangeInputField(errorValues: fieldsEnteredErrorValues)
+                TimeRangeInputField()
             }
             .onChange(of: inputMode) { newInputMode in
+                cheapestHourManager.errorValues = []
                 cheapestHourManager.inputMode = newInputMode
             }
         }
@@ -92,7 +88,6 @@ struct CheapestTimeView: View {
     @EnvironmentObject var currentSetting: CurrentSetting
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
 
-    @State var fieldsEnteredErrorValues = [Int]()
     @State var redirectToComparisonResults: Int? = 0
 
     var energyDataTimeRange: ClosedRange<Date> {
@@ -113,7 +108,7 @@ struct CheapestTimeView: View {
                 if awattarData.energyData != nil && currentSetting.entity != nil {
                     ScrollView {
                         VStack(spacing: 0) {
-                            CheapestTimeViewBody($fieldsEnteredErrorValues)
+                            CheapestTimeViewBody()
 
                             Spacer()
 
@@ -127,8 +122,8 @@ struct CheapestTimeView: View {
                             // to redirect to the result view to show the results calculated
                             Button(action: {
                                 self.hideKeyboard()
-                                fieldsEnteredErrorValues = cheapestHourManager.setValues()
-                                if fieldsEnteredErrorValues.contains(0) {
+                                cheapestHourManager.setValues()
+                                if cheapestHourManager.errorValues.contains(0) {
                                     // All requirements are satisfied
                                     redirectToComparisonResults = 1
                                 }
@@ -154,6 +149,5 @@ struct CheapestTimeView: View {
             .navigationTitle("cheapestPricePage.cheapestPrice")
         }
         .navigationViewStyle(StackNavigationViewStyle())
-        .animation(nil)
     }
 }

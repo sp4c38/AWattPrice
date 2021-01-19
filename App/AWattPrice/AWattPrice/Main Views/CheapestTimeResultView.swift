@@ -88,12 +88,24 @@ struct CheapestTimeResultView: View {
     }
 
     func getTotalTime() -> String {
-        let firstItemStart = Date(timeIntervalSince1970: TimeInterval(cheapestHourManager.cheapestHoursForUsage!.associatedPricePoints[0].startTimestamp))
+        let firstItemStart = Date(
+            timeIntervalSince1970:
+                TimeInterval(cheapestHourManager.cheapestHoursForUsage!.associatedPricePoints[0].startTimestamp)
+        )
         let maxPointIndex = cheapestHourManager.cheapestHoursForUsage!.associatedPricePoints.count - 1
-        let lastItemEnd = Date(timeIntervalSince1970: TimeInterval(cheapestHourManager.cheapestHoursForUsage!.associatedPricePoints[maxPointIndex].endTimestamp))
-        let interval = lastItemEnd.timeIntervalSince(firstItemStart) / 60 / 60
-        let hours = interval.rounded(.down)
-        let minutes = 60 * (interval - hours)
+        let lastItemEnd = Date(
+            timeIntervalSince1970:
+                TimeInterval(cheapestHourManager.cheapestHoursForUsage!.associatedPricePoints[maxPointIndex].endTimestamp)
+        )
+        let interval = Int(lastItemEnd.timeIntervalSince(firstItemStart))
+        let hours = Int(
+            (Double(interval) / 3600)
+                .rounded(.down)
+        )
+        let minutes: Int = Int(
+            (Double(interval % 3600) / 60)
+                .rounded()
+        )
         return TotalTimeFormatter().localizedTotalTimeString(hour: hours, minute: minutes)
     }
     

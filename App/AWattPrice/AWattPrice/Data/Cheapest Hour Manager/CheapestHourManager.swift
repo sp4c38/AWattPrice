@@ -193,7 +193,9 @@ extension CheapestHourManager {
             if hourIndex + (timeRangeNumber - 1) <= energyData.prices.count - 1 {
                 let hourStartDate = Date(timeIntervalSince1970: TimeInterval(energyData.prices[hourIndex].startTimestamp))
 
-                let maxHourThisPairEndDate = Date(timeIntervalSince1970: TimeInterval(energyData.prices[hourIndex + timeRangeNumber - 1].endTimestamp))
+                let maxHourThisPairEndDate = Date(
+                    timeIntervalSince1970: TimeInterval(energyData.prices[hourIndex + timeRangeNumber - 1].endTimestamp)
+                )
 
                 if hourStartDate >= startTime, maxHourThisPairEndDate <= endTime {
                     let newPairNode = HourPair(associatedPricePoints: [energyData.prices[hourIndex]])

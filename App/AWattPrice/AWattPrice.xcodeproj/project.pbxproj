@@ -70,7 +70,6 @@
 		61C963A7251E2032001B3E3C /* CheapestTimeClockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61C963A6251E2032001B3E3C /* CheapestTimeClockView.swift */; };
 		61D196E52507F58D00E57BAC /* EnergyPriceGraph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61D196E42507F58D00E57BAC /* EnergyPriceGraph.swift */; };
 		61D57125256DAA2300EA69C7 /* CustomDatePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61D57124256DAA2300EA69C7 /* CustomDatePicker.swift */; };
-		61D6F8792517834400027FD1 /* TimeIntervalPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61D6F8782517834400027FD1 /* TimeIntervalPicker.swift */; };
 		61D6F8882517AD5500027FD1 /* ButtonStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61D6F8872517AD5500027FD1 /* ButtonStyles.swift */; };
 		61D88C0B2545EF9800DA2088 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61D88C0A2545EF9800DA2088 /* Extensions.swift */; };
 		61E2DFD7254214B100473E20 /* CheapestHourManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61E2DFD6254214B100473E20 /* CheapestHourManager.swift */; };
@@ -169,7 +168,6 @@
 		61C963A6251E2032001B3E3C /* CheapestTimeClockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheapestTimeClockView.swift; sourceTree = "<group>"; };
 		61D196E42507F58D00E57BAC /* EnergyPriceGraph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnergyPriceGraph.swift; sourceTree = "<group>"; };
 		61D57124256DAA2300EA69C7 /* CustomDatePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomDatePicker.swift; sourceTree = "<group>"; };
-		61D6F8782517834400027FD1 /* TimeIntervalPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeIntervalPicker.swift; sourceTree = "<group>"; };
 		61D6F8872517AD5500027FD1 /* ButtonStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonStyles.swift; sourceTree = "<group>"; };
 		61D88C0A2545EF9800DA2088 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		61E2DFD6254214B100473E20 /* CheapestHourManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheapestHourManager.swift; sourceTree = "<group>"; };
@@ -319,7 +317,6 @@
 			children = (
 				6198BD5A254C7FD700356A0F /* PowerInputField.swift */,
 				6198BD52254C7FA700356A0F /* TotalConsumptionInputField.swift */,
-				61D6F8782517834400027FD1 /* TimeIntervalPicker.swift */,
 				6198BD4A254C7F7100356A0F /* TimeRangeInputField.swift */,
 			);
 			path = "Input fields";
@@ -685,7 +682,6 @@
 				617DF01C2594AA1D004BF4E2 /* NotificationSetting+CoreDataClass.swift in Sources */,
 				61E2DFD7254214B100473E20 /* CheapestHourManager.swift in Sources */,
 				6156A577250C1F5E005174A5 /* Setting+CoreDataProperties.swift in Sources */,
-				61D6F8792517834400027FD1 /* TimeIntervalPicker.swift in Sources */,
 				6181328C258A4AB3007FC6F2 /* SplashScreenSetupView.swift in Sources */,
 				614C55832573D421009B5241 /* UpdateDataTimeFormatter.swift in Sources */,
 				61658DA825B5AF380083D25A /* EasyIntervalPicker.swift in Sources */,

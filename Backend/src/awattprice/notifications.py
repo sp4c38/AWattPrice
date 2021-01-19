@@ -48,9 +48,10 @@ class DetailedPriceData:
         current_index = 0
         for price_point in self.data.prices:
             timezone = tzstr("CET-1CEST,M3.5.0/2,M10.5.0/3").tzname(datetime.fromtimestamp(price_point.start_timestamp))
-            now = arrow.utcnow().to(timezone)
+            now_timezone = arrow.utcnow().to(timezone)
 
-            now_day_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+            now_day_start = now_timezone.replace(hour=14, minute=0, second=0, microsecond=0)
+            print(now_day_start)
             tomorrow_hour_start = now_day_start.shift(days=+1)
 
             if region_identifier == 0 and vat_selection == 1:

@@ -87,6 +87,28 @@ def write_config_updater(path: Path, config: ConfigUpdater) -> None:
         to_write_config.write(fh)
 
 
+def config_to_bool(config):
+    true_values = ["yes", "true"]
+    false_values = ["no", "false"]
+    error_parts = []
+
+    if config.notifications.use_sandbox.lower() in true_values:
+        config.notifications.use_sandbox = True
+    elif config.notifications.use_sandbox.lower() in false_values:
+        config.notifications.use_sandbox = False
+    else:
+        log.error("Config notifications.use_sandbox not valid value. Set to yes or no. Will use sandbox.")
+        config.notifications.use_sandbox = True
+
+    if config.general.debug_mode.lower() in true_values:
+        config.general.debug_mode = True
+    elif config.general.debug_mode.lower() in false_values:
+        config.general.debug_mode = False
+    else:
+        log.error("Config general.debug_mode not valid value. Set to yes or no. Will enable debug mode.")
+        config.general.debug_mode = True
+
+
 def read_config(path: Optional[Path] = None) -> Box:
     """Return the config"""
     config = Box(box_it_up=True)
@@ -130,19 +152,8 @@ def read_config(path: Optional[Path] = None) -> Box:
     config.file_location.log_dir = config.file_location.log_dir.strip("\"'")
     config.file_location.apns_dir = config.file_location.apns_dir.strip("\"'")
 
-    if config.notifications.use_sandbox.lower() == "true":
-        # Convert use_sandbox string to bool
-        run_on_sandbox = True
-    elif config.notifications.use_sandbox.lower() == "false":
-        run_on_sandbox = False
-    else:
-        log.error(
-            "Please specify a valid bool (True or False) in config.notifications.use_sandbox"
-            "Will use sandbox for this session."
-        )
-        run_on_sandbox = False
+    config_to_bool(config)
 
-    config.notifications.use_sandbox = run_on_sandbox
     config.notifications.dev_team_id = config.notifications.dev_team_id.strip("\"'")
     config.notifications.apns_encryption_key_id = config.notifications.apns_encryption_key_id.strip("\"'")
     config.notifications.apns_encryption_key = config.notifications.apns_encryption_key.strip("\"'")

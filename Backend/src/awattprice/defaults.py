@@ -12,6 +12,11 @@ __license__ = "mit"
 from enum import Enum
 
 DEFAULT_CONFIG = """
+[general]
+# Also if set to no debug logs will be outputted. If set to yes the Backend will enable/disable certain
+# code blocks to make debugging easier.
+debug_mode: no
+
 [awattar.de]
 host: https://api.awattar.de
 url: /v1/marketdata
@@ -26,8 +31,8 @@ log_dir: ~/awattprice/log/
 apns_dir: ~/awattprice/apns/
 
 [notifications]
-# If set to True the APNs sandbox server is used to send notifications.
-use_sandbox: True
+# If set to yes the APNs sandbox server is used to send notifications.
+use_sandbox: yes
 dev_team_id: ~/awattprice/apns/dev_team_id.txt
 apns_encryption_key_id: ~/awattprice/apns/encryption_key_id.txt
 apns_encryption_key: ~/awattprice/apns/encryption_key.p8

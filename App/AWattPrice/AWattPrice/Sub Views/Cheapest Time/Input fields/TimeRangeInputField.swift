@@ -29,7 +29,11 @@ struct TimeRangeInputField: View {
         let hours = minTimeNeeded.rounded(.down)
         let minutes = ((minTimeNeeded - hours) * 100).rounded() / 100 * 60
         let totalTimeString = totalTimeFormatter.localizedTotalTimeString(hour: hours, minute: minutes)
-        return String(format: "cheapestPricePage.wrongTimeRangeError".localized(), totalTimeString)
+        var baseString = "cheapestPricePage.inputMode.withDuration.wrongTimeRangeError"
+        if cheapestHourManager.inputMode == 1 {
+            baseString = "cheapestPricePage.inputMode.withKwh.wrongTimeRangeError"
+        }
+        return String(format: baseString.localized(), totalTimeString)
     }
 
     func setTimeIntervalValues() {

@@ -57,9 +57,9 @@ struct CheapestTimeViewBody: View {
     var body: some View {
         VStack(spacing: 20) {
             Picker("", selection: $inputMode) {
-                Text("Mit Dauer")
+                Text("cheapestPricePage.inputMode.withDuration")
                     .tag(0)
-                Text("Mit kWh")
+                Text("cheapestPricePage.inputMode.withKwh")
                     .tag(1)
             }
             .pickerStyle(SegmentedPickerStyle())

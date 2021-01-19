@@ -40,6 +40,8 @@
 
 // Cheapest Price page localizations
 "cheapestPricePage.cheapestPrice" = "Günstigste Zeit";
+"cheapestPricePage.inputMode.withDuration" = "Mit Dauer";
+"cheapestPricePage.inputMode.withKwh" = "Mit kWh";
 "cheapestPricePage.emptyFieldError" = "Bitte füllen Sie dieses Feld aus.";
 "cheapestPricePage.wrongInputError" = "Dieses Feld darf nur Zahlen und , oder . enthalten.";
 "cheapestPricePage.totalConsumption" = "Gesamtverbrauch";
@@ -117,6 +119,8 @@
 "general.openSettingsApp" = "Einstellungs-App öffnen";
 "general.priceGuard" = "Preiswächter";
 "general.notifications" = "Benachrichtigungen";
+"general.hours" = "hours";
+"general.min" = "min";
 
 // Total Time Formatter localizations
 "totalTimeFormatter.onlyHour"  = "%@h";

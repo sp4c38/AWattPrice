@@ -41,11 +41,14 @@
 
 // Cheapest Price page localizations
 "cheapestPricePage.cheapestPrice" = "Cheapest Time";
+"cheapestPricePage.inputMode.withDuration" = "With duration";
+"cheapestPricePage.inputMode.withKwh" = "With kWh";
 "cheapestPricePage.emptyFieldError" = "Please fill out this field.";
 "cheapestPricePage.wrongInputError" = "This field may only contain numbers and , or .";
 "cheapestPricePage.totalConsumption" = "Total consumption";
 "cheapestPricePage.timeRange" = "Time range";
-"cheapestPricePage.wrongTimeRangeError" = "With this power output and this total consumption a minimum time range of %@ is required.";
+"cheapestPricePage.inputMode.withDuration.wrongTimeRangeError" = "With this selected time interval a minimum time range of %@ is required.";
+"cheapestPricePage.inputMode.withKwh.wrongTimeRangeError" = "With this power output and this total consumption a minimum time range of %@ is required.";
 "cheapestPricePage.todayTonight" = "Tonight";
 "cheapestPricePage.nextThreeHours" = "Next 3h";
 "cheapestPricePage.nextTwelveHours" = "Next 12h";
@@ -119,6 +122,9 @@
 "general.openSettingsApp" = "Open Settings App";
 "general.priceGuard" = "Price Guard";
 "general.notifications" = "Notifications";
+"general.hour" = "hour";
+"general.hours" = "hours";
+"general.min" = "min";
 
 // Total Time Formatter localizations
 "totalTimeFormatter.onlyHour"  = "%@h";

@@ -37,8 +37,8 @@ class EasyIntervalPicker: UIPickerView, UIPickerViewDelegate, UIPickerViewDataSo
         self.dataSource = self
         self.delegate = self
         
-        self.hoursLabel = newStaticLabelWithText(text: NSLocalizedString("hours", comment: ""))
-        self.minLabel = newStaticLabelWithText(text: NSLocalizedString("min", comment: ""))
+        self.hoursLabel = newStaticLabelWithText(text: "general.hours".localized())
+        self.minLabel = newStaticLabelWithText(text: "general.min".localized())
         self.addSubview(self.hoursLabel!)
         self.addSubview(self.minLabel!)
         self.updateStaticLabelsPositions()
@@ -209,8 +209,26 @@ extension EasyIntervalPicker {
                 self.selectRow(hours, inComponent: componentHoursID, animated: true)
             }
         }
+        
+        let oldTimeIntervalHours = Int(self.timeInterval / 3600)
+        
         let newTimeInterval = TimeInterval((mins + (hours * 60)) * 60)
         self.onTimeIntervalChanged(TimeInterval(newTimeInterval))
         self.timeInterval = newTimeInterval
+        
+        let newTimeIntervalHours = Int(self.timeInterval / 3600)
+        if oldTimeIntervalHours != newTimeIntervalHours {
+            if hours == 1 {
+                self.hoursLabel!.text = "general.hour".localized()
+            } else {
+                // 0 or >1
+                self.hoursLabel!.text = "general.hours".localized()
+            }
+            let animation = CATransition()
+            animation.timingFunction = CAMediaTimingFunction.init(name: .easeInEaseOut)
+            animation.type = .fade
+            animation.duration = 0.2
+            self.hoursLabel!.layer.add(animation, forKey: "kCAFadeTransition")
+        }
     }
 }

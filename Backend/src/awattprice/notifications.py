@@ -24,11 +24,13 @@ from configupdater import ConfigUpdater  # type: ignore
 from dateutil.tz import tzstr
 from fastapi import status
 from loguru import logger as log
+from tenacity import retry, stop_after_attempt, stop_after_delay, wait_exponential  # type: ignore
 
 from awattprice import poll
 from awattprice.defaults import CURRENT_VAT, Region
 from awattprice.token_manager import APNsTokenManager
 from awattprice.types import APNSToken
+from awattprice.utils import before_log
 
 
 class DetailedPriceData:
@@ -165,6 +167,13 @@ async def handle_apns_response(db_manager, token, response, status_code, config)
                 token_manager.remove_entry()
             log.debug(f"Removed invalid APNs token from database: {response}.")
 
+
+@retry(
+    before=before_log(log, "debug"),
+    stop=(stop_after_delay(60) | stop_after_attempt(8)),
+    wait=wait_exponential(multiplier=1, min=4, max=10),
+    reraise=True,
+)
 async def price_drops_below_notification(
     db_manager,
     notification_defaults,
@@ -254,19 +263,34 @@ async def price_drops_below_notification(
         response = None
 
         async with httpx.AsyncClient(http2=True) as client:
-            request = await client.post(url, headers=request_headers, data=json.dumps(notification_payload))
-            status_code = request.status_code
-
-            if request.content.decode("utf-8") == "":
-                response = {}
+            try:
+                response = await client.post(url, headers=request_headers, data=json.dumps(notification_payload))
+            except httpx.ConnectTimeout:
+                log.warning(f"Connect attempt to {url} timed out.")
+                raise
+            except httpx.ReadTimeout:
+                log.warning(f"Read from {url} timed out.")
+                raise
+            except Exception as e:
+                log.warning(f"Unrecognized exception at POST request to {url}: {e}.")
+                raise
             else:
-                try:
-                    response = json.loads(request.content.decode("utf-8"))
-                except Exception as e:
-                    log.warning(f"Couldn't decode response from APNs servers: {e}")
+                status_code = response.status_code
+
+                if response.content.decode("utf-8") == "":
+                    data = {}
+                else:
+                    try:
+                        data = response.json()
+                    except json.JSONDecodeError as e:
+                        log.warning(f"Couldn't decode response from APNs servers: {e}")
+                        raise
+                    except Exception as e:
+                        log.warning(f"Unknown error while decoding response from APNs servers: {e}")
+                        raise
 
         if response is not None and status_code is not None:
-            await handle_apns_response(db_manager, token, response, status_code, config)
+            await handle_apns_response(db_manager, token, data, status_code, config)
 
 
 async def check_and_send(config, data, data_region, db_manager):

@@ -75,8 +75,8 @@ def start_logging(config: Box, for_scheduled_request: bool = False) -> None:
             },
             {
                 "sink": log_path,
-                "rotation": "100 KB",
                 "level": "TRACE",
+                "rotation": "0:00",
                 "compression": "gz",
                 "format": "{time:YYYY-MM-DDTHH:mm:ss.SSS} | {level} | {message}",
                 "backtrace": True,

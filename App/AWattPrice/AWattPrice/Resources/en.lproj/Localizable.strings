@@ -82,7 +82,8 @@
 // Notification Page Setting localizations
 "notificationPage.noNotificationAccessInfo" = "Please allow AWattPrice notifications in the Settings App.";
 "notificationPage.notification.priceDropsBelowValue.description" = "Receive a notification as soon as prices fall below a certain value.";
-"notificationPage.notification.priceDropsBelowValue" = "Price drops below wish-price";
+"notificationPage.notification.priceDropsBelowValue" = "24h notifications";
+"notificationPage.notification.priceDropsBelowValue.wishPrice" = "Wish-Price:";
 "notificationPage.notification.priceDropsBelowValue.description.extra.pt1" = "You will receive a notification as soon as prices drop";
 "notificationPage.notification.priceDropsBelowValue.description.extra.pt2" = " on ";
 "notificationPage.notification.priceDropsBelowValue.description.extra.pt3" = "or";

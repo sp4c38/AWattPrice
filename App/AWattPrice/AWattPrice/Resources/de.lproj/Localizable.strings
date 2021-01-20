@@ -80,13 +80,15 @@
 
 // Notification Page localizations
 "notificationPage.noNotificationAccessInfo" = "Bitte erlauben Sie Benachrichtigungen für AWattPrice in der Einstellungs-App.";
-"notificationPage.notification.priceDropsBelowValue" = "Preis fällt unter Wunschpreis";
-"notificationPage.notification.priceDropsBelowValue.description.extra.pt1" = "Sie erhalten eine Benachrichtigung, sobald Preise";
-"notificationPage.notification.priceDropsBelowValue.description.extra.pt2" = " auf ";
-"notificationPage.notification.priceDropsBelowValue.description.extra.pt3" = "oder";
-"notificationPage.notification.priceDropsBelowValue.description.extra.pt4" = " unter ";
-"notificationPage.notification.priceDropsBelowValue.description.extra.pt5" = "Ihren Wunschpreis fallen.";
-"notificationPage.notification.priceDropsBelowValue.description.hint" = "Hierbei wird nur über Preise des nächsten Tages informiert. Über Preise des akutellen Tages wurde somit schon am Tag davor benachrichtigt.";
+"notificationPage.notification.priceDropsBelowValue" = "24h Benachrichtigung";
+"notificationPage.notification.priceDropsBelowValue.wishPrice" = "Wunschpreis";
+"notificationPage.notification.priceDropsBelowValue.description" = "Erhalten Sie eine Benachrichtigung, sobald Preise uginter einem Wunschpreis fallen.";
+"notificationPage.notification.priceDropsBelowValue.description.firstLine.pt1" = "Sobald neue Preise verfügbar sind, scannt AWattPrice alle Preise bis zum nächsten Tag 14 Uhr.";
+"notificationPage.notification.priceDropsBelowValue.description.secondLine.pt1" = "Fällt einer der Preise";
+"notificationPage.notification.priceDropsBelowValue.description.secondLine.pt2" = " auf ";
+"notificationPage.notification.priceDropsBelowValue.description.secondLine.pt3" = "oder";
+"notificationPage.notification.priceDropsBelowValue.description.secondLine.pt4" = " unter ";
+"notificationPage.notification.priceDropsBelowValue.description.secondLine.pt5" = "Ihren Wunschpreis, erhalten Sie eine Benachrichtigung.";
 
 // Data download error view
 "dataError.tryAgainLater" = "Bitte versuchen Sie es\nspäter noch einmal.";

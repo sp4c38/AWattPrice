@@ -27,51 +27,54 @@ import validators
 
 from fastapi import status
 from loguru import logger as log
+from tenacity import retry, stop_after_attempt, stop_after_delay, wait_exponential  # type: ignore
 
 from awattprice.config import read_config
 from awattprice.defaults import Region
-from awattprice.utils import check_data_needs_update, read_data, start_logging
+from awattprice.utils import before_log, check_data_needs_update, read_data, start_logging
 
 
-async def send_request(url: str, client: httpx.AsyncClient, max_tries: int) -> bool:
+@retry(
+    before=before_log(log, "debug"),
+    stop=(stop_after_delay(60) | stop_after_attempt(8)),
+    wait=wait_exponential(multiplier=1, min=4, max=10),
+    reraise=True,
+)
+async def send_request(url: str, client: httpx.AsyncClient) -> bool:
+    """Send a HTTP GET request."""
     request_successful = False
-    tries_made = 0
-    while tries_made < max_tries and request_successful is False:
-        tries_made += 1
-        log.debug(f"Starting attempt {tries_made} for {url}.")
-
-        try:
-            response = await client.get(url, timeout=5)
-        except httpx.ConnectTimeout:
-            log.warning(f"Attempt {tries_made} to {url} timed out.")
-        except httpx.ReadTimeout:
-            log.warning(f"Attempt {tries_made} to {url} timed out.")
-        except Exception as e:
-            log.warning(f"Unrecognized exception at attempt {tries_made} for {url}: {e}.")
-        else:
-            if response.status_code == status.HTTP_200_OK:
-                try:
-                    json.loads(response.text)
-                except json.JSONDecodeError as e:
-                    log.warning(f"Could not decode valid json of response (status code 200) from Backend: {e}")
-                    request_successful = False
-                except Exception as e:
-                    log.warning(f"Unknown exception while parsing response (status code 200) from Backend: {e}")
-                    request_successful = False
-                else:
-                    request_successful = True
-                    log.debug(f"Attempt {tries_made} to {url} was successful.")
+    log.debug(f"Starting HTTP GET request to {url}.")
+    try:
+        response = await client.get(url, timeout=5)
+    except httpx.ConnectTimeout:
+        log.warning(f"Connect attempt to {url} timed out.")
+        raise
+    except httpx.ReadTimeout:
+        log.warning(f"Attempt to {url} timed out.")
+        raise
+    except Exception as e:
+        log.warning(f"Unrecognized exception at attempt for {url}: {e}.")
+        raise
+    else:
+        if response.status_code == status.HTTP_200_OK:
+            try:
+                json.loads(response.text)
+            except json.JSONDecodeError as e:
+                log.warning(f"Could not decode valid JSON of response (status code 200) from Backend: {e}")
+                raise
+            except Exception as e:
+                log.warning(f"Unknown exception while parsing response (status code 200) from Backend: {e}")
+                raise
             else:
-                log.warning(f"Server for {url} responded with status code other than 200.")
-                request_successful = False
-
-    if tries_made is max_tries:
-        log.warning(f"Maximal attemps ({max_tries}) for {url} exhausted.")
+                log.debug(f"HTTP GET to {url} was successful.")
+        else:
+            log.warning(f"Server for {url} responded with status code other than 200.")
+            response.raise_for_status()
 
     return request_successful
 
 
-async def run_request(region, max_tries, config):
+async def run_request(region, config):
     need_update_region = True
     async with httpx.AsyncClient() as client:
         url = urlparse(config.poll.backend_url)
@@ -90,7 +93,7 @@ async def run_request(region, max_tries, config):
             log.debug(f"{region.name} data doesn't need to be requested. It is already up-to date.")
             return
         else:
-            await send_request(url, client, max_tries)
+            await send_request(url, client)
 
 
 async def main():
@@ -100,7 +103,7 @@ async def main():
 
     if config.poll.backend_url:
         if validators.url(config.poll.backend_url) is True:
-            lock_file_path = Path(config.file_location.data_dir).expanduser() / "scheduled_event.lck"
+            lock_file_path = Path(config.file_location.data_dir).expanduser() / Path("scheduled_event.lck")
             if not lock_file_path.parent.is_dir():
                 os.makedirs(lock_file_path.parent.as_posix())
             scheduled_event_lock = filelock.FileLock(lock_file_path, timeout=5)
@@ -108,19 +111,11 @@ async def main():
             try:
                 with scheduled_event_lock.acquire():
                     tasks = []
-                    for region in [
-                        [
-                            getattr(Region, "de".upper(), None),
-                            3,
-                        ],  # region, number of attempts until a successful request could be made
-                        [getattr(Region, "at".upper(), None), 3],
-                    ]:
-                        if region[0].name is not None:
-                            tasks.append(asyncio.create_task(run_request(region[0], region[1], config)))
-
+                    for region in [Region.DE, Region.AT]:
+                        tasks.append(asyncio.create_task(run_request(region, config)))
                     await asyncio.gather(*tasks)
             except filelock.Timeout:
-                log.warning("Scheduled request lock still acquired. Won't run scheduled request.")
+                log.warning("Could not acquire the request lock. Won't run scheduled request.")
         else:
             log.warning(f'Value {config.poll.backend_url} set in "config.poll.backend_url" is no valid URL.')
     else:

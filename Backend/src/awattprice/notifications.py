@@ -351,16 +351,7 @@ async def check_and_send(config, data, data_region, db_manager):
         task = await notification_queue.get()
         tasks.append(
             asyncio.create_task(
-                task[0](
-                    task[1],
-                    task[2],
-                    task[3],
-                    task[4],
-                    task[5],
-                    task[6],
-                    task[7],
-                    task[8],
-                )
+                task[0](*[task[i] for i in range(1, 9)])
             )
         )
 

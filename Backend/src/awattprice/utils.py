@@ -2,7 +2,7 @@
 
 """
 
-Discovergy shared helper code
+AWattPrice Backend shared helper code
 
 """
 __author__ = "Frank Becker <fb@alien8.de>"

@@ -18,14 +18,15 @@ import asyncio
 import json
 import os
 
+from pathlib import Path
+from urllib.parse import urlparse
+
 import filelock
 import httpx
 import validators
 
 from fastapi import status
 from loguru import logger as log
-from pathlib import Path
-from urllib.parse import urlparse
 
 from awattprice.config import read_config
 from awattprice.defaults import Region

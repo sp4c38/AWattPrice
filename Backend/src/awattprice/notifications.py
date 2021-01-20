@@ -10,7 +10,6 @@ Send notifications via APNs to those users.
 import asyncio
 import json
 
-from copy import copy
 from datetime import datetime
 from math import floor
 from pathlib import Path

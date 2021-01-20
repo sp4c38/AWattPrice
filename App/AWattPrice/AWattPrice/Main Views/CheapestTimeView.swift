@@ -63,6 +63,7 @@ struct CheapestTimeViewBody: View {
                 VStack(alignment: .center, spacing: 25) {
                     if inputMode == 0 {
                         CheapestTimeViewBodyPicker()
+                            .padding([.leading, .trailing], 30)
                     } else if inputMode == 1 {
                         PowerOutputInputField(errorValues: cheapestHourManager.errorValues)
                         EnergyUsageInputField(errorValues: cheapestHourManager.errorValues)

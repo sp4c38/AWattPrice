@@ -49,8 +49,8 @@
 "cheapestPricePage.inputMode.withDuration.wrongTimeRangeError" = "Mit diesem Zeitintervall ist ein Mindestzeitfenster von %@ erforderlich.";
 "cheapestPricePage.inputMode.withKwh.wrongTimeRangeError" = "Mit dieser Leistung und diesem Gesamtverbrauch ist ein Mindestzeitfenster von %@ erforderlich.";
 "cheapestPricePage.todayTonight" = "heute Nacht";
-"cheapestPricePage.nextThreeHours" = "näch. 3h";
-"cheapestPricePage.nextTwelveHours" = "näch. 12h";
+"cheapestPricePage.nextThreeHours" = "nächste 3h";
+"cheapestPricePage.nextTwelveHours" = "nächste 12h";
 
 // Cheapest Price Result page localizations
 "cheapestPriceResultPage.cheapestTimeErrorOccurred" = "Es ist ein Fehler aufgetreten.\nBitte versuchen Sie es später noch einmal.";
@@ -80,15 +80,15 @@
 
 // Notification Page localizations
 "notificationPage.noNotificationAccessInfo" = "Bitte erlauben Sie Benachrichtigungen für AWattPrice in der Einstellungs-App.";
-"notificationPage.notification.priceDropsBelowValue" = "24h Benachrichtigung";
+"notificationPage.notification.priceDropsBelowValue" = "Preisbenachrichtigung";
 "notificationPage.notification.priceDropsBelowValue.wishPrice" = "Wunschpreis";
-"notificationPage.notification.priceDropsBelowValue.description" = "Erhalten Sie eine Benachrichtigung, sobald Preise uginter einem Wunschpreis fallen.";
-"notificationPage.notification.priceDropsBelowValue.description.firstLine.pt1" = "Sobald neue Preise verfügbar sind, scannt AWattPrice alle Preise bis zum nächsten Tag 14 Uhr.";
-"notificationPage.notification.priceDropsBelowValue.description.secondLine.pt1" = "Fällt einer der Preise";
-"notificationPage.notification.priceDropsBelowValue.description.secondLine.pt2" = " auf ";
-"notificationPage.notification.priceDropsBelowValue.description.secondLine.pt3" = "oder";
-"notificationPage.notification.priceDropsBelowValue.description.secondLine.pt4" = " unter ";
-"notificationPage.notification.priceDropsBelowValue.description.secondLine.pt5" = "Ihren Wunschpreis, erhalten Sie eine Benachrichtigung.";
+"notificationPage.notification.priceDropsBelowValue.description" = "Erhalten Sie eine Benachrichtigung, sobald Preise unter einen Wunschpreis fallen.";
+"notificationPage.notification.priceDropsBelowValue.description.firstLine.pt1" = "Sobald neue Preise verfügbar sind, erhalten Sie eine Benachrichtigung, falls ein Strompreis des Folgetages";
+"notificationPage.notification.priceDropsBelowValue.description.firstLine.pt2" = " auf ";
+"notificationPage.notification.priceDropsBelowValue.description.firstLine.pt3" = "oder";
+"notificationPage.notification.priceDropsBelowValue.description.firstLine.pt4" = " unter ";
+"notificationPage.notification.priceDropsBelowValue.description.firstLine.pt5" = "Ihren Wunschpreis sinkt.";
+"notificationPage.notification.priceDropsBelowValue.description.secondLine" = "Über Preise des aktuellen Tages wurde somit schon am Tag davor benachrichtigt.";
 
 // Data download error view
 "dataError.tryAgainLater" = "Bitte versuchen Sie es\nspäter noch einmal.";

@@ -13,13 +13,13 @@ struct PriceDropsBelowValueNotificationInfoView: View {
 
     init() {
         completeExtraTextLineTwo =
-            Text("notificationPage.notification.priceDropsBelowValue.description.secondLine.pt1")
-            + Text("notificationPage.notification.priceDropsBelowValue.description.secondLine.pt2")
+            Text("notificationPage.notification.priceDropsBelowValue.description.firstLine.pt1")
+            + Text("notificationPage.notification.priceDropsBelowValue.description.firstLine.pt2")
             .fontWeight(.heavy)
-            + Text("notificationPage.notification.priceDropsBelowValue.description.secondLine.pt3")
-            + Text("notificationPage.notification.priceDropsBelowValue.description.secondLine.pt4")
+            + Text("notificationPage.notification.priceDropsBelowValue.description.firstLine.pt3")
+            + Text("notificationPage.notification.priceDropsBelowValue.description.firstLine.pt4")
             .fontWeight(.heavy)
-            + Text("notificationPage.notification.priceDropsBelowValue.description.secondLine.pt5")
+            + Text("notificationPage.notification.priceDropsBelowValue.description.firstLine.pt5")
     }
 
     var body: some View {
@@ -27,9 +27,10 @@ struct PriceDropsBelowValueNotificationInfoView: View {
             Divider()
             
             VStack(alignment: .leading, spacing: 12) {
-                Text("notificationPage.notification.priceDropsBelowValue.description.firstLine.pt1")
-                
                 completeExtraTextLineTwo
+                
+                Text("notificationPage.notification.priceDropsBelowValue.description.secondLine")
+                    .foregroundColor(.blue)
             }
             .font(.caption)
             .lineSpacing(2)
@@ -169,6 +170,7 @@ struct NewPricesNotificationView_Previews: PreviewProvider {
             PriceDropsBelowValueNotificationView()
                 .environmentObject(CurrentNotificationSetting(managedObjectContext: PersistenceManager().persistentContainer.viewContext))
                 .preferredColorScheme(.light)
+                .environment(\.locale, Locale(identifier: "en"))
         }
     }
 }

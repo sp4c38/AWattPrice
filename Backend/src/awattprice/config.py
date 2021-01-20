@@ -93,7 +93,6 @@ def config_to_bool(config):
     """
     true_values = ["yes", "true"]
     false_values = ["no", "false"]
-    error_parts = []
 
     if config.notifications.use_sandbox.lower() in true_values:
         config.notifications.use_sandbox = True

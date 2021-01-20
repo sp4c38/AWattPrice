@@ -51,16 +51,17 @@ class DetailedPriceData:
             timezone = tzstr("CET-1CEST,M3.5.0/2,M10.5.0/3").tzname(datetime.fromtimestamp(price_point.start_timestamp))
             now_timezone = arrow.utcnow().to(timezone)
 
-            today_boundary = now_timezone.replace(hour=14, minute=0, second=0, microsecond=0)
-            tomorrow_boundary = today_boundary.shift(days=+1)
+            midnight = now_timezone.replace(hour=0, minute=0, second=0, microsecond=0)
+            tomorrow_boundary_start = midnight.shift(days=+1)
+            tomorrow_boundary_end = midnight.shift(days=+2)
 
             marketprice_with_vat = price_point.marketprice
             if region_identifier == 0 and vat_selection == 1:
                 marketprice_with_vat = round(price_point.marketprice * CURRENT_VAT, 2)
 
             if (
-                price_point.start_timestamp >= today_boundary.timestamp
-                and price_point.end_timestamp <= tomorrow_boundary.timestamp
+                price_point.start_timestamp >= tomorrow_boundary_start.timestamp
+                and price_point.end_timestamp <= tomorrow_boundary_end.timestamp
             ):
                 if marketprice_with_vat <= below_value:
                     below_price_data.append(

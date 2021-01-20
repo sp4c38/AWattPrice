@@ -75,7 +75,7 @@ async def run_request(region, max_tries, config):
     need_update_region = True
     async with httpx.AsyncClient() as client:
         url = urlparse(config.poll.backend_url)
-        url_path = Path("data") / region.name.upper()
+        url_path = Path("data") / region.name
         url = url._replace(path=url_path.as_posix()).geturl()
 
         region_file_path = Path(config.file_location.data_dir).expanduser() / Path(

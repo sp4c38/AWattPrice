@@ -22,6 +22,7 @@ import jwt
 from box import Box  # type: ignore
 from configupdater import ConfigUpdater  # type: ignore
 from dateutil.tz import tzstr
+from fastapi import status
 from loguru import logger as log
 
 from awattprice import poll
@@ -140,28 +141,29 @@ class Notifications:
 
 
 async def handle_apns_response(db_manager, token, response, status_code, config):
-    # For reference of returned response and status codes see: https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/handling_notification_responses_from_apns
-    if not status_code == 200:
-        if status_code in [400, 410]:
-            remove_token = False
-            if status_code == 410 and response["reason"] == "Unregistered":
-                remove_token = True
+    # For reference of returned response and status codes see:
+    # https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/handling_notification_responses_from_apns
+    if status_code == status.HTTP_200_OK:
+        return
+    if status_code in [status.HTTP_400_BAD_REQUEST, status.HTTP_410_GONE]:
+        remove_token = False
+        if status_code == status.HTTP_410_GONE and response["reason"] == "Unregistered":
+            remove_token = True
 
-            if status_code == 400 and response["reason"] in [
-                "BadDeviceToken",
-                "DeviceTokenNotForTopic",
-            ]:
-                remove_token = True
+        if status_code == status.HTTP_400_BAD_REQUEST and response["reason"] in [
+            "BadDeviceToken",
+            "DeviceTokenNotForTopic",
+        ]:
+            remove_token = True
 
-            if remove_token is True:
-                token_config = APNSToken(
-                    token=token, region_identifier=0, vat_selection=0, config={}
-                )  # Populate with token and some placeholder values
-                token_manager = APNsTokenManager(token_config, db_manager)
-                if not config.general.debug_mode:
-                    token_manager.remove_entry()
-                log.debug(f"Removed invalid APNs token from database: {response}.")
-
+        if remove_token is True:
+            token_config = APNSToken(
+                token=token, region_identifier=0, vat_selection=0, config={}
+            )  # Populate with token and some placeholder values
+            token_manager = APNsTokenManager(token_config, db_manager)
+            if not config.general.debug_mode:
+                token_manager.remove_entry()
+            log.debug(f"Removed invalid APNs token from database: {response}.")
 
 async def price_drops_below_notification(
     db_manager,

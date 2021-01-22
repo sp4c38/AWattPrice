@@ -8,6 +8,13 @@
 import Combine
 import SwiftUI
 
+extension AnyTransition {
+    static var belowScale: AnyTransition {
+        let animation = AnyTransition.scale.combined(with: .move(edge: .bottom))
+        return AnyTransition.asymmetric(insertion: animation, removal: animation)
+    }
+}
+
 struct NotificationSettingView: View {
     @Environment(\.scenePhase) var scenePhase
 
@@ -33,8 +40,11 @@ struct NotificationSettingView: View {
             
             if backendComm.notificationUploadError {
                 APNSUploadError()
+                    .padding(.bottom, 15)
+                    .transition(.belowScale)
             }
         }
+        .animation(.easeInOut)
         .navigationTitle("general.priceGuard")
     }
 }
@@ -91,6 +101,8 @@ struct NotificationSettingView_Previews: PreviewProvider {
     static var previews: some View {
         let notificationAccess = NotificationAccess()
         notificationAccess.access = true
+        let backendComm = BackendCommunicator()
+        backendComm.notificationUploadError = true
         
 //        GoToNotificationSettingView()
 //            .preferredColorScheme(.dark)
@@ -99,6 +111,7 @@ struct NotificationSettingView_Previews: PreviewProvider {
             NotificationSettingView()
                 .environmentObject(notificationAccess)
                 .environment(\.managedObjectContext, PersistenceManager().persistentContainer.viewContext)
+                .environmentObject(backendComm)
                 .environmentObject(
                     CurrentNotificationSetting(
                         backendComm: BackendCommunicator(),

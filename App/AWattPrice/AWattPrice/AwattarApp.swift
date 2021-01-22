@@ -50,6 +50,7 @@ struct AwattarApp: App {
         )
         notificationAccess = NotificationAccess()
 
+        appDelegate.backendComm = backendComm
         appDelegate.crtNotifiSetting = crtNotifiSetting
         appDelegate.currentSetting = currentSetting
     }

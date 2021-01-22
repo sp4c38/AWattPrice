@@ -98,8 +98,8 @@ extension PriceDropsBelowValueNotificationSubView {
                     crtNotifiSetting.changePriceDropsBelowValueNotifications(newValue: newValue)
                     crtNotifiSetting.changesAndStaged = true
                     crtNotifiSetting.pushNotificationUpdateManager.backgroundNotificationUpdate(
-                        currentSetting: currentSetting,
-                        crtNotifiSetting: crtNotifiSetting
+                        currentSetting,
+                        crtNotifiSetting
                     )
                 }
         }
@@ -126,7 +126,7 @@ extension PriceDropsBelowValueNotificationSubView {
                         priceBelowValue = newIntegerValue.priceString ?? ""
 
                         if keyboardCurrentlyClosed {
-                            crtNotifiSetting.pushNotificationUpdateManager.backgroundNotificationUpdate(currentSetting: currentSetting, crtNotifiSetting: crtNotifiSetting)
+                            crtNotifiSetting.pushNotificationUpdateManager.backgroundNotificationUpdate(currentSetting, crtNotifiSetting)
                         }
                     }
 

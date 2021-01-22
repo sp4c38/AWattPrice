@@ -109,10 +109,10 @@ class PushNotificationUpdateManager {
         currentlySleeping = false
     }
 
-    func backgroundNotificationUpdate(currentSetting: CurrentSetting, crtNotifiSetting: CurrentNotificationSetting) {
+    func backgroundNotificationUpdate(_ currentSetting: CurrentSetting, _ crtNotifiSetting: CurrentNotificationSetting) {
         self.currentSetting = currentSetting
         self.crtNotifiSetting = crtNotifiSetting
-
+        
         if currentlySleeping == false { // Don't need to wait
             backgroundQueue.async {
                 self.crtNotifiSetting!.currentlySendingToServer.lock() // Make sure no task is sending data to the backend

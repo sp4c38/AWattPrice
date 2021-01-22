@@ -7,18 +7,6 @@
 
 import SwiftUI
 
-func playErrorHapticFeedback() {
-    let notificationFeedbackGenerator = UINotificationFeedbackGenerator()
-    notificationFeedbackGenerator.prepare()
-    notificationFeedbackGenerator.notificationOccurred(.error)
-}
-
-func playSuccessHapticFeedback() {
-    let notificationFeedbackGenerator = UINotificationFeedbackGenerator()
-    notificationFeedbackGenerator.prepare()
-    notificationFeedbackGenerator.notificationOccurred(.success)
-}
-
 struct APNSUploadError: View {
     @EnvironmentObject var crtNotifiSetting: CurrentNotificationSetting
     @EnvironmentObject var currentSetting: CurrentSetting

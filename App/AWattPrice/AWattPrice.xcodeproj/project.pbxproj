@@ -75,6 +75,7 @@
 		61D6F8882517AD5500027FD1 /* ButtonStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61D6F8872517AD5500027FD1 /* ButtonStyles.swift */; };
 		61D88C0B2545EF9800DA2088 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61D88C0A2545EF9800DA2088 /* Extensions.swift */; };
 		61E0ACC025BAE6030011B0A1 /* APNSUploadError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61E0ACBF25BAE6030011B0A1 /* APNSUploadError.swift */; };
+		61E0ACC825BB13800011B0A1 /* HapticFeedbacks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61E0ACC725BB13800011B0A1 /* HapticFeedbacks.swift */; };
 		61E2DFD7254214B100473E20 /* CheapestHourManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61E2DFD6254214B100473E20 /* CheapestHourManager.swift */; };
 		61EC1C08254B41D800324ADA /* AwattarTariffSelectionSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61EC1C07254B41D800324ADA /* AwattarTariffSelectionSettings.swift */; };
 		61EC1C12254B425B00324ADA /* AppVersionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61EC1C11254B425B00324ADA /* AppVersionView.swift */; };
@@ -176,6 +177,7 @@
 		61D6F8872517AD5500027FD1 /* ButtonStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonStyles.swift; sourceTree = "<group>"; };
 		61D88C0A2545EF9800DA2088 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		61E0ACBF25BAE6030011B0A1 /* APNSUploadError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APNSUploadError.swift; sourceTree = "<group>"; };
+		61E0ACC725BB13800011B0A1 /* HapticFeedbacks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticFeedbacks.swift; sourceTree = "<group>"; };
 		61E2DFD6254214B100473E20 /* CheapestHourManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheapestHourManager.swift; sourceTree = "<group>"; };
 		61EC1C07254B41D800324ADA /* AwattarTariffSelectionSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AwattarTariffSelectionSettings.swift; sourceTree = "<group>"; };
 		61EC1C11254B425B00324ADA /* AppVersionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppVersionView.swift; sourceTree = "<group>"; };
@@ -433,6 +435,7 @@
 				61D88C0A2545EF9800DA2088 /* Extensions.swift */,
 				6164ED26258D4B8E00F706DE /* KeyboardObserver.swift */,
 				61286F0B25ABBCF300CE1D61 /* EnvironmentExtensions.swift */,
+				61E0ACC725BB13800011B0A1 /* HapticFeedbacks.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -692,6 +695,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				618CE22F25A0B4F8006116D3 /* NoNotificationAccessView.swift in Sources */,
+				61E0ACC825BB13800011B0A1 /* HapticFeedbacks.swift in Sources */,
 				612211442594C927003D6512 /* GetNotificationSetting.swift in Sources */,
 				618AF8622593F82600E21583 /* CurrentSetting.swift in Sources */,
 				61D88C0B2545EF9800DA2088 /* Extensions.swift in Sources */,

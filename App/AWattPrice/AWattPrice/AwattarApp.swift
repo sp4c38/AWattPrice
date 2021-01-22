@@ -42,6 +42,7 @@ struct AwattarApp: App {
     init() {
         backendComm = BackendCommunicator()
         crtNotifiSetting = CurrentNotificationSetting(
+            backendComm: backendComm,
             managedObjectContext: persistence.persistentContainer.viewContext
         )
         currentSetting = CurrentSetting(

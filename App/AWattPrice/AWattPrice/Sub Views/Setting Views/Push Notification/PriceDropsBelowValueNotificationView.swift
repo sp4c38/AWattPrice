@@ -168,7 +168,12 @@ struct NewPricesNotificationView_Previews: PreviewProvider {
 
         NavigationView {
             PriceDropsBelowValueNotificationView()
-                .environmentObject(CurrentNotificationSetting(managedObjectContext: PersistenceManager().persistentContainer.viewContext))
+                .environmentObject(
+                    CurrentNotificationSetting(
+                        backendComm: BackendCommunicator(),
+                        managedObjectContext: PersistenceManager().persistentContainer.viewContext
+                    )
+                )
                 .preferredColorScheme(.light)
                 .environment(\.locale, Locale(identifier: "de"))
         }

@@ -23,9 +23,10 @@ class CurrentNotificationSetting: AutoUpdatingEntity<NotificationSetting> {
     /// If set to true it indicates to the app that the app is currently sending APNs configuration to the server (backend).
     @Published var currentlySendingToServer = NSLock()
 
-    let pushNotificationUpdateManager = PushNotificationUpdateManager()
+    let pushNotificationUpdateManager: PushNotificationUpdateManager
 
-    init(managedObjectContext: NSManagedObjectContext) {
+    init(backendComm: BackendCommunicator, managedObjectContext: NSManagedObjectContext) {
+        self.pushNotificationUpdateManager = PushNotificationUpdateManager(backendComm)
         super.init(entityName: "NotificationSetting", managedObjectContext: managedObjectContext)
     }
 

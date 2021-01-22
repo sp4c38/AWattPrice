@@ -12,6 +12,7 @@ struct ContentView: View {
     @Environment(\.networkManager) var networkManager
     @Environment(\.scenePhase) var scenePhase
 
+    @EnvironmentObject var backendComm: BackendCommunicator
     @EnvironmentObject var crtNotifiSetting: CurrentNotificationSetting
     @EnvironmentObject var currentSetting: CurrentSetting
     @EnvironmentObject var notificationAccess: NotificationAccess
@@ -69,7 +70,7 @@ struct ContentView: View {
                 }
                 .onChange(of: crtNotifiSetting.entity!.changesButErrorUploading) { errorOccurred in
                     if errorOccurred == true {
-                        tryNotificationUploadAfterFailed(
+                        backendComm.tryNotificationUploadAfterFailed(
                             Int(currentSetting.entity!.regionIdentifier),
                             currentSetting.entity!.pricesWithVAT ? 1 : 0,
                             crtNotifiSetting,

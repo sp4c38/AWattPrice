@@ -54,16 +54,20 @@ func checkNotificationAccess() -> Bool {
     return returnResponse
 }
 
+/// Manages the correct initialization of a notification update on BackendCommunicator
+/// For example, takes care of not punching the Backend with too many requests.
 class PushNotificationUpdateManager {
     let backgroundQueue: DispatchQueue
     var currentlySleeping = false
     let updateInterval = 5 // In seconds
     var updateScheduled = false
 
+    var backendComm: BackendCommunicator
     var crtNotifiSetting: CurrentNotificationSetting?
     var currentSetting: CurrentSetting?
 
-    init() {
+    init(_ backendComm: BackendCommunicator) {
+        self.backendComm = backendComm
         let backgroundQueueName = "PushNotificationUpdateQueue"
         backgroundQueue = DispatchQueue(label: backgroundQueueName)
     }
@@ -81,7 +85,7 @@ class PushNotificationUpdateManager {
 
         if let token = crtNotifiSetting.entity!.lastApnsToken {
             let newConfig = UploadPushNotificationConfigRepresentable(token, regionIdentifier, vatSelection, crtNotifiSetting.entity!)
-            let requestSuccessful = uploadPushNotificationSettings(configuration: newConfig)
+            let requestSuccessful = backendComm.uploadPushNotificationSettings(configuration: newConfig)
 
             if !requestSuccessful {
                 DispatchQueue.main.async {

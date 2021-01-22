@@ -11,6 +11,7 @@ import UIKit
 import UserNotifications
 
 class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
+    var backendComm: BackendCommunicator?
     var crtNotifiSetting: CurrentNotificationSetting?
     var currentSetting: CurrentSetting?
 
@@ -39,7 +40,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
             String(format: "%02.2hhx", $0)
         }.joined()
 
-        if crtNotifiSetting != nil, currentSetting != nil {
+        if crtNotifiSetting != nil, currentSetting != nil, backendComm != nil {
             crtNotifiSetting!.currentlySendingToServer.lock()
 
             if crtNotifiSetting!.entity != nil, currentSetting!.entity != nil {
@@ -69,7 +70,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
                                 group.leave()
                             }
                             group.wait()
-                            let requestSuccessful = uploadPushNotificationSettings(
+                            let requestSuccessful = self.backendComm!.uploadPushNotificationSettings(
                                 configuration: notificationConfigRepresentable
                             )
                             if !requestSuccessful {

@@ -40,6 +40,7 @@ struct CheapestTimeViewBodyPicker: View {
                     maxTimeInterval: maxTimeInterval,
                     selectionInterval: 5
                 )
+                .frame(width: 275) // The UI View won't apply to this property. But it makes sure that the time interval picker won't go outside of display borders (i.e. on iPhone SE).
             }
         }
     }

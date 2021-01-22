@@ -19,11 +19,7 @@ func managePushNotificationsOnAppAppear(notificationAccessRepresentable: Notific
         }
 
         DispatchQueue.main.async {
-            if notificationAccess {
-                notificationAccessRepresentable.access = true
-            } else {
-                notificationAccessRepresentable.access = false
-            }
+            notificationAccessRepresentable.access = notificationAccess
         }
 
         completionHandler()

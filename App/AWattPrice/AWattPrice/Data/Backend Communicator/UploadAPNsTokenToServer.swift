@@ -101,14 +101,18 @@ extension BackendCommunicator {
         dispatchSemaphore.wait()
 
         if returnCode == nil {
+            notificationUploadError = true
             return false
         } else if returnCode!.tokenWasPassedSuccessfully == true {
             print("APNs token was successfully passed on to the Apps provider server.")
+            notificationUploadError = false
             return true
         } else if returnCode!.tokenWasPassedSuccessfully == false {
             print("APNs couldn't be passed on to the Apps provider server.")
+            notificationUploadError = true
             return false
         } else {
+            notificationUploadError = true
             return false
         }
     }

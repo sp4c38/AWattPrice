@@ -16,5 +16,6 @@ class BackendCommunicator: ObservableObject {
     @Published var dataRetrievalError = false
     @Published var energyData: EnergyData?
 
-    // Upload variables
+    // APNs Token upload variables
+    @Published var notificationUploadError = false
 }

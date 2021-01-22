@@ -11,10 +11,11 @@ import SwiftUI
 struct NotificationSettingView: View {
     @Environment(\.scenePhase) var scenePhase
 
+    @EnvironmentObject var backendComm: BackendCommunicator
     @EnvironmentObject var notificationAccess: NotificationAccess
 
     var body: some View {
-        VStack(alignment: .center, spacing: 0) {
+        ZStack(alignment: Alignment(horizontal: .center, vertical: .bottom)) {
             CustomInsetGroupedList {
                 VStack(spacing: 20) {
                     if notificationAccess.access == false {
@@ -28,6 +29,10 @@ struct NotificationSettingView: View {
                         .disabled(notificationAccess.access == false)
                 }
                 .animation(.easeInOut)
+            }
+            
+            if backendComm.notificationUploadError {
+                APNSUploadError()
             }
         }
         .navigationTitle("general.priceGuard")
@@ -82,11 +87,24 @@ struct GoToNotificationSettingView: View {
 }
 
 struct NotificationSettingView_Previews: PreviewProvider {
+
     static var previews: some View {
-        GoToNotificationSettingView()
-            .preferredColorScheme(.dark)
-//        NotificationSettingView()
-//            .environment(\.managedObjectContext, PersistenceManager().persistentContainer.viewContext)
-//            .environmentObject(CurrentNotificationSetting(managedObjectContext: PersistenceManager().persistentContainer.viewContext))
+        let notificationAccess = NotificationAccess()
+        notificationAccess.access = true
+        
+//        GoToNotificationSettingView()
+//            .preferredColorScheme(.dark)
+        
+        return NavigationView {
+            NotificationSettingView()
+                .environmentObject(notificationAccess)
+                .environment(\.managedObjectContext, PersistenceManager().persistentContainer.viewContext)
+                .environmentObject(
+                    CurrentNotificationSetting(
+                        backendComm: BackendCommunicator(),
+                        managedObjectContext: PersistenceManager().persistentContainer.viewContext
+                    )
+                )
+        }
     }
 }

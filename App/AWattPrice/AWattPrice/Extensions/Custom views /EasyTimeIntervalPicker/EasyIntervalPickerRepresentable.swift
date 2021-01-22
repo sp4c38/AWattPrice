@@ -9,9 +9,9 @@ import SwiftUI
 
 struct EasyIntervalPickerRepresentable: UIViewRepresentable {
     // Wrap a EasyTimeIntervalPicker in a SwiftUI View
-    
+
     @Binding var selectedTimeInterval: TimeInterval
-    
+
     let pickerMaxTimeInterval: TimeInterval
     let pickerSelectionInterval: Int
 
@@ -20,17 +20,17 @@ struct EasyIntervalPickerRepresentable: UIViewRepresentable {
         pickerMaxTimeInterval = maxTimeInterval
         pickerSelectionInterval = selectionInterval
     }
-    
-    func makeUIView(context: Context) -> EasyIntervalPicker {
+
+    func makeUIView(context _: Context) -> EasyIntervalPicker {
         let picker = EasyIntervalPicker()
         picker.setMaxTimeInterval(pickerMaxTimeInterval)
         picker.onTimeIntervalChanged = { newSelection in
             selectedTimeInterval = newSelection
         }
         picker.setMinuteInterval(minuteInterval: pickerSelectionInterval)
-        
+
         return picker
     }
-    
-    func updateUIView(_ uiView: EasyIntervalPicker, context: Context) {}
+
+    func updateUIView(_: EasyIntervalPicker, context _: Context) {}
 }

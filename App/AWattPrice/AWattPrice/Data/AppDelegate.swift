@@ -51,9 +51,11 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
                 )
 
                 if notificationConfigRepresentable.checkUserWantsNotifications() == true ||
-                    crtNotifiSetting!.entity!.changesButErrorUploading == true {
+                    crtNotifiSetting!.entity!.changesButErrorUploading == true
+                {
                     if crtNotifiSetting!.entity!.lastApnsToken != apnsDeviceTokenString ||
-                        crtNotifiSetting!.entity!.changesButErrorUploading == true {
+                        crtNotifiSetting!.entity!.changesButErrorUploading == true
+                    {
                         DispatchQueue.global(qos: .background).async {
                             print("""
                                 Need to update stored APNs configuration. Stored APNs token and current

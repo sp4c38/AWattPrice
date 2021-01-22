@@ -62,7 +62,7 @@ func uploadPushNotificationSettings(configuration: UploadPushNotificationConfigR
 
     let sendURL = GlobalAppSettings.rootURLString + "/data/apns/send_token"
     var request = URLRequest(url: URL(string: sendURL)!, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData)
-    
+
     let jsonEncoder = JSONEncoder()
     let encodedJSON: Data?
     do {
@@ -124,7 +124,8 @@ func tryNotificationUploadAfterFailed(_ regionIdentifier: Int, _ vatSelection: I
 
     let resolveNotificationErrorUploadingQueue = DispatchQueue(
         label: "NotificationErrorUploadingQueue",
-        qos: .background)
+        qos: .background
+    )
     resolveNotificationErrorUploadingQueue.async {
         crtNotifiSetting.currentlySendingToServer.lock()
         while (networkManager.networkStatus == .unsatisfied) || (crtNotifiSetting.entity!.lastApnsToken == nil) {

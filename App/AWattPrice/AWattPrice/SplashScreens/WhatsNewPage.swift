@@ -35,8 +35,8 @@ struct WhatsNewPage: View {
                 }, label: {
                     Text("general.done")
                 })
-                .buttonStyle(ContinueButtonStyle())
-                .padding(.bottom, 10)
+                    .buttonStyle(ContinueButtonStyle())
+                    .padding(.bottom, 10)
             }
             .padding([.leading, .trailing], 16)
             .padding(.top, 25)

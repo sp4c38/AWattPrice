@@ -34,21 +34,21 @@ struct EnergyData: Codable {
 }
 
 ///// A single aWATTar Profile with a name and an name of the image representing this profile.
-//struct Profile: Hashable {
+// struct Profile: Hashable {
 //    var name: String
 //    var imageName: String
-//}
+// }
 //
 ///// Defines all profiles that exist.
-//struct ProfilesData {
+// struct ProfilesData {
 //    var profiles = [
 //        Profile(name: "HOURLY", imageName: "HourlyProfilePicture"),
 //    ]
-//}
+// }
 
 extension BackendCommunicator {
     // Download methods
-    
+
     /// Downloads the newest aWATTar data
     func download(forRegion regionIdentifier: Int16, networkManager: NetworkManager) {
         currentlyUpdatingData = true
@@ -114,7 +114,7 @@ extension BackendCommunicator {
 
 extension BackendCommunicator {
     // Parsing methods
-    
+
     func parseResponseData(_ data: Data) {
         var decodedData = EnergyData(prices: [], minPrice: 0, maxPrice: 0)
         do {
@@ -176,13 +176,13 @@ extension BackendCommunicator {
 }
 
 extension BackendCommunicator {
-    var minMaxTimeRange: ClosedRange<Date>?     {
+    var minMaxTimeRange: ClosedRange<Date>? {
         if energyData != nil {
             if !(energyData!.prices.count > 0) {
                 return nil
             }
             let maxHourIndex = energyData!.prices.count - 1
-    
+
             // Add one or subtract one to not overlap to the next or previouse day
             let min = Date(
                 timeIntervalSince1970: TimeInterval(energyData!.prices[0].startTimestamp)
@@ -190,7 +190,7 @@ extension BackendCommunicator {
             let max = Date(
                 timeIntervalSince1970: TimeInterval(energyData!.prices[maxHourIndex].endTimestamp)
             )
-    
+
             return min ... max
         }
         return nil

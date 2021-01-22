@@ -48,7 +48,7 @@ struct AwattarApp: App {
             managedObjectContext: persistence.persistentContainer.viewContext
         )
         notificationAccess = NotificationAccess()
-        
+
         appDelegate.crtNotifiSetting = crtNotifiSetting
         appDelegate.currentSetting = currentSetting
     }

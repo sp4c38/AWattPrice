@@ -60,8 +60,7 @@ struct HomeView: View {
                             .padding(.bottom, 5)
                             .anchorPreference(key: HeaderSizePreferenceKey.self,
                                               value: .bounds,
-                                              transform: { HeaderSizePreferenceKey.SizeBounds(bounds: $0) }
-                            )
+                                              transform: { HeaderSizePreferenceKey.SizeBounds(bounds: $0) })
                             .backgroundPreferenceValue(HeaderSizePreferenceKey.self) { headerSize in
                                 if headerSize != nil {
                                     GeometryReader { geo in

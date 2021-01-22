@@ -36,7 +36,7 @@ class HelpMailContent: MailContent {
             encodedBody: ""
         )
     }
-    
+
     func setSubject() {
         if Locale.current.languageCode == "de" {
             subject = "AWattPrice Hilfe"
@@ -45,11 +45,11 @@ class HelpMailContent: MailContent {
         }
         encodedSubject = subject.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!
     }
-    
+
     func getDeviceModelString() -> String {
         var systemInfo = utsname()
         uname(&systemInfo)
-        
+
         let machineMirror = Mirror(reflecting: systemInfo.machine)
         let identifier = machineMirror.children.reduce("") { identifier, element in
             guard let value = element.value as? Int8, value != 0 else { return identifier }
@@ -57,10 +57,10 @@ class HelpMailContent: MailContent {
         }
         return identifier
     }
-    
+
     func setBody() {
         let isGermanLanguage = Locale.current.identifier == "de" ? true : false
-        
+
         if let currentVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String {
             if isGermanLanguage {
                 body += "\n\nApp Versionsnummer: "
@@ -72,11 +72,11 @@ class HelpMailContent: MailContent {
                 body += "\(currentAppName) "
             }
             body += "\(currentVersion)"
-            
+
             if let currentBuild = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String {
                 body += " (\(currentBuild))"
             }
-            
+
             if isGermanLanguage {
                 body += "\nGerätemodel Identifikation: \(getDeviceModelString()) (\(UIDevice.current.systemName))"
             } else {
@@ -85,7 +85,7 @@ class HelpMailContent: MailContent {
         }
         encodedBody = body.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!
     }
-    
+
     func setValues() {
         setSubject()
         setBody()

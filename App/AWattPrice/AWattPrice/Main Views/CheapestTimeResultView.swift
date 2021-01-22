@@ -51,15 +51,15 @@ struct CheapestTimeResultTimeRange: View {
 
 struct CheapestTimeResultViewClock: View {
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
-    
+
     var clockSize: CGFloat = 0
-    
+
     func getClockSize() -> CGFloat {
         let screenSize = UIScreen.main.bounds.width
         let clockSize = screenSize * 0.85
         return clockSize
     }
-    
+
     var body: some View {
         HStack(spacing: 10) {
             CheapestTimeClockView(cheapestHourManager.cheapestHoursForUsage!)
@@ -90,40 +90,40 @@ struct CheapestTimeResultView: View {
     func getTotalTime() -> String {
         let firstItemStart = Date(
             timeIntervalSince1970:
-                TimeInterval(cheapestHourManager.cheapestHoursForUsage!.associatedPricePoints[0].startTimestamp)
+            TimeInterval(cheapestHourManager.cheapestHoursForUsage!.associatedPricePoints[0].startTimestamp)
         )
         let maxPointIndex = cheapestHourManager.cheapestHoursForUsage!.associatedPricePoints.count - 1
         let lastItemEnd = Date(
             timeIntervalSince1970:
-                TimeInterval(cheapestHourManager.cheapestHoursForUsage!.associatedPricePoints[maxPointIndex].endTimestamp)
+            TimeInterval(cheapestHourManager.cheapestHoursForUsage!.associatedPricePoints[maxPointIndex].endTimestamp)
         )
         let interval = Int(lastItemEnd.timeIntervalSince(firstItemStart))
         let hours = Int(
             (Double(interval) / 3600)
                 .rounded(.down)
         )
-        let minutes: Int = Int(
+        let minutes = Int(
             (Double(interval % 3600) / 60)
                 .rounded()
         )
         return TotalTimeFormatter().localizedTotalTimeString(hour: hours, minute: minutes)
     }
-    
+
     var body: some View {
         VStack(alignment: .center, spacing: 0) {
             if cheapestHourManager.cheapestHoursForUsage != nil {
                 Spacer(minLength: 0)
-                
+
                 CheapestTimeResultTimeRange()
 
                 Spacer(minLength: 0)
-                
+
                 HStack(alignment: .center) {
                     Text("cheapestPriceResultPage.totalTime")
                     Text(getTotalTime())
                         .bold()
                 }
-                
+
                 Spacer(minLength: 0)
 
                 CheapestTimeResultViewClock()

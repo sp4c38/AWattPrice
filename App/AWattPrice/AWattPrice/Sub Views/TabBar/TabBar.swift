@@ -26,8 +26,8 @@ struct TabBar: View {
         ZStack {
             TBBarShape()
                 .foregroundColor(colorScheme == .light ?
-                                    Color(red: 0.96, green: 0.96, blue: 0.96) :
-                                    Color(red: 0.07, green: 0.07, blue: 0.07)
+                    Color(red: 0.96, green: 0.96, blue: 0.96) :
+                    Color(red: 0.07, green: 0.07, blue: 0.07)
                 )
                 .edgesIgnoringSafeArea(.all)
 

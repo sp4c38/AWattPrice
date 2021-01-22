@@ -33,7 +33,7 @@ struct AppFeatureView: View {
     var tipText: LocalizedStringKey? = nil
     /// Tuple out of String (1st item) and Bool (2nd item). 2nd item tells if image should be resolved as a SF icon.
     var imageName: (String, Bool)
-    
+
     var body: some View {
         HStack {
             VStack(alignment: .leading) {
@@ -179,17 +179,20 @@ struct SplashScreenFeaturesAndConsentView: View {
                 AppFeatureView(
                     title: "splashScreen.featuresAndConsent.viewPrices",
                     subTitle: "splashScreen.featuresAndConsent.viewPrices.info",
-                    imageName: ("magnifyingglass", true))
-                
+                    imageName: ("magnifyingglass", true)
+                )
+
                 AppFeatureView(
                     title: "splashScreen.featuresAndConsent.comparePrices",
                     subTitle: "splashScreen.featuresAndConsent.comparePrices.info",
-                    imageName: ("arrow.left.arrow.right", true))
-                
+                    imageName: ("arrow.left.arrow.right", true)
+                )
+
                 AppFeatureView(
                     title: "general.priceGuard",
                     subTitle: "notificationPage.notification.priceDropsBelowValue.description",
-                    imageName: ("PriceTag", false))
+                    imageName: ("PriceTag", false)
+                )
             }
 
             Spacer(minLength: 0)

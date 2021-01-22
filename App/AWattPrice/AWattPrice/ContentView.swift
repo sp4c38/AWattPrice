@@ -11,7 +11,7 @@ import SwiftUI
 struct ContentView: View {
     @Environment(\.networkManager) var networkManager
     @Environment(\.scenePhase) var scenePhase
-    
+
     @EnvironmentObject var crtNotifiSetting: CurrentNotificationSetting
     @EnvironmentObject var currentSetting: CurrentSetting
     @EnvironmentObject var notificationAccess: NotificationAccess

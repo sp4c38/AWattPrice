@@ -74,14 +74,16 @@ struct BarShape: Shape {
                                 y: startHeight + heightOfBar - attr.radius - attr.barPadding),
                 radius: attr.radius,
                 startAngle: .degrees(90),
-                delta: .degrees(90))
+                delta: .degrees(90)
+            )
 
             path.addRelativeArc(
                 center: CGPoint(x: attr.widthOfBar + attr.radius,
                                 y: startHeight + attr.barPadding + attr.radius),
                 radius: attr.radius,
                 startAngle: .degrees(180),
-                delta: .degrees(90))
+                delta: .degrees(90)
+            )
 
         } else if attr.lookToSide == .right {
             path.move(to: CGPoint(x: attr.startWidth + (attr.dividerLineWidth / 2), y: startHeight + attr.barPadding))
@@ -91,7 +93,8 @@ struct BarShape: Shape {
                                 y: startHeight + attr.barPadding + attr.radius),
                 radius: attr.radius,
                 startAngle: .degrees(270),
-                delta: .degrees(180))
+                delta: .degrees(180)
+            )
 
             path.addLine(to: CGPoint(x: attr.widthOfBar, y: startHeight + attr.barPadding + attr.radius))
             path.addRelativeArc(
@@ -99,7 +102,8 @@ struct BarShape: Shape {
                                 y: startHeight + heightOfBar - attr.barPadding - attr.radius),
                 radius: attr.radius,
                 startAngle: .degrees(0),
-                delta: .degrees(90))
+                delta: .degrees(90)
+            )
 
             path.addLine(
                 to: CGPoint(x: attr.startWidth + (attr.dividerLineWidth / 2),
@@ -185,7 +189,8 @@ struct DayMarkView: View {
                 radius: 2 + sizeDiff,
                 startAngle: .degrees(0),
                 endAngle: .degrees(360),
-                clockwise: true)
+                clockwise: true
+            )
             return path
         }
     }
@@ -199,7 +204,8 @@ struct DayMarkView: View {
          indexSelected: Int?,
          ownIndex: Int,
          maxIndex: Int,
-         height: CGFloat) {
+         height: CGFloat)
+    {
         self.graphPointItem = graphPointItem.0
 
         let results = calcSingleBarSizes(indexSelected, graphPointItem.1, ownIndex, maxIndex, height)

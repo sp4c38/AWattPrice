@@ -10,40 +10,40 @@ import SwiftUI
 struct TimeRangeInputFieldSelectionPartModifier: ViewModifier {
     @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
-    
+
     func body(content: Content) -> some View {
         content
-        .padding(5)
-        .padding([.leading, .trailing], 2)
-        .background(
-            colorScheme == .light ?
-                Color(red: 0.96, green: 0.95, blue: 0.97) :
-                Color(hue: 0.6667, saturation: 0.0340, brightness: 0.1424)
-        )
-        .cornerRadius(7)
-        .ifTrue(cheapestHourManager.errorValues.contains(5)) { content in
-            content
-                .overlay(
-                    RoundedRectangle(cornerRadius: 7)
-                        .stroke(Color.red, lineWidth: 2)
-                )
-        }
+            .padding(5)
+            .padding([.leading, .trailing], 2)
+            .background(
+                colorScheme == .light ?
+                    Color(red: 0.96, green: 0.95, blue: 0.97) :
+                    Color(hue: 0.6667, saturation: 0.0340, brightness: 0.1424)
+            )
+            .cornerRadius(7)
+            .ifTrue(cheapestHourManager.errorValues.contains(5)) { content in
+                content
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 7)
+                            .stroke(Color.red, lineWidth: 2)
+                    )
+            }
     }
 }
 
 struct TimeRangeInputFieldSelectionPart: View {
     @Environment(\.colorScheme) var colorScheme
     @Binding var partSelection: Date
-    
+
     let name: String
     let range: ClosedRange<Date>
-    
+
     init(withName name: String, selection: Binding<Date>, in range: ClosedRange<Date>) {
         self.name = name
         _partSelection = selection
         self.range = range
     }
-    
+
     var body: some View {
         HStack {
             Text(name.localized())
@@ -89,20 +89,20 @@ struct TimeRangeInputField: View {
                     .foregroundColor(Color.gray)
                 Spacer()
             }
- 
+
             VStack(alignment: .leading, spacing: 8) {
                 TimeRangeInputFieldSelectionPart(
                     withName: "general.from",
                     selection: $cheapestHourManager.startDate,
                     in: inputDateRange
                 )
-                
+
                 TimeRangeInputFieldSelectionPart(
                     withName: "general.to",
                     selection: $cheapestHourManager.endDate,
                     in: inputDateRange
                 )
-                
+
                 if cheapestHourManager.errorValues.contains(5) {
                     Text(getMinRangeNeededString())
                         .font(.caption)
@@ -156,7 +156,7 @@ extension TimeRangeInputField {
 
 extension TimeRangeInputField {
     // Helper functions
-    
+
     /// Set the max upper and lower bound for the time range input
     func setTimeIntervalValues() {
         if let minMaxTimeRange = backendComm.minMaxTimeRange {
@@ -166,14 +166,14 @@ extension TimeRangeInputField {
             inputDateRange = minTime ... maxTime
         }
     }
-    
+
     /// Get error string indicating minimum time range needed.
     func getMinRangeNeededString() -> String {
         let hours = Int(
             (Double(cheapestHourManager.timeOfUsage) / 3600)
                 .rounded(.down)
         )
-        let minutes: Int = Int(
+        let minutes = Int(
             (Double(cheapestHourManager.timeOfUsage % 3600) / 60)
                 .rounded()
         )

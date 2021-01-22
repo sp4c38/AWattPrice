@@ -33,7 +33,7 @@ struct CustomInsetGroupedListItem<Content: View>: View { // All content which is
     var backgroundColorDisabled = false
     var backgroundColor: Color?
 
-    init(header: Text? = nil, footer: Text? = nil, backgroundColorDisabled: Bool = false, @ViewBuilder content: () -> Content) {
+    init(header: Text? = nil, footer: Text? = nil, @ViewBuilder content: () -> Content) {
         self.header = header
         self.footer = footer
         self.content = content()

@@ -15,6 +15,6 @@ class BackendCommunicator: ObservableObject {
     @Published var dateDataLastUpdated: Date?
     @Published var dataRetrievalError = false
     @Published var energyData: EnergyData?
-    
+
     // Upload variables
 }

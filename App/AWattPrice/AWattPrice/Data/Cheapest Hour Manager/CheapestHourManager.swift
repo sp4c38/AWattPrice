@@ -11,7 +11,7 @@ import Foundation
 class CheapestHourManager: ObservableObject {
     @Published var inputMode = 0
     @Published var errorValues = [Int]()
-    
+
     @Published var powerOutputString = ""
     @Published var powerOutput: Double = 0
 
@@ -22,11 +22,11 @@ class CheapestHourManager: ObservableObject {
     @Published var endDate = Date().addingTimeInterval(3600)
 
     @Published var timeOfUsageInterval = TimeInterval(0)
-    
+
     @Published var timeOfUsage: Int = 0
 
     @Published var cheapestHoursForUsage: HourPair? = nil
-    
+
     /// Set to true if calculations have been performed but no cheapest hours could be found.
     @Published var errorOccurredFindingCheapestHours = false
 }
@@ -67,14 +67,14 @@ extension CheapestHourManager {
         }
 
         if errorValues.isEmpty {
-            self.timeOfUsage = Int(timeOfUsageInterval)
+            timeOfUsage = Int(timeOfUsageInterval)
             if inputMode == 1 {
-                self.timeOfUsage = Int(
+                timeOfUsage = Int(
                     (energyUsage / powerOutput) * 60 * 60
                 )
             }
             let timeRangeMax = Int(endDate.timeIntervalSince(startDate))
-            if self.timeOfUsage > timeRangeMax {
+            if timeOfUsage > timeRangeMax {
                 errorValues.append(5)
             }
         }
@@ -116,7 +116,7 @@ extension CheapestHourManager {
             endDate = possibleEndDate
         }
     }
-    
+
     /// Sets the selected time interval to the next x hours
     func setTimeInterval(forNextHourAmount hourAmount: Int, energyData: EnergyData) {
         startDate = Date()
@@ -232,7 +232,6 @@ extension CheapestHourManager {
     }
 }
 
-
 extension CheapestHourManager {
     /**
      Function to calculate when energy prices are cheapest.
@@ -243,8 +242,8 @@ extension CheapestHourManager {
         DispatchQueue.global(qos: .userInitiated).async {
             var startTime = self.startDate
             var endTime = self.endDate
-            
-            let timeRangeNumber: Int = Int(
+
+            let timeRangeNumber = Int(
                 (Double(self.timeOfUsage) / 3600)
                     .rounded(.up)
             )
@@ -357,7 +356,8 @@ extension CheapestHourManager {
                 forHours: timeRangeNumber,
                 fromStartTime: startTime,
                 toEndTime: endTime,
-                with: energyData)
+                with: energyData
+            )
             let results = recursiveSearch(with: allPairs)
             let cheapestHourPairIndex = results
 

@@ -14,21 +14,21 @@ struct PriceDropsBelowValueNotificationInfoView: View {
     init() {
         completeExtraTextLineTwo =
             Text("notificationPage.notification.priceDropsBelowValue.description.firstLine.pt1")
-            + Text("notificationPage.notification.priceDropsBelowValue.description.firstLine.pt2")
-            .fontWeight(.heavy)
-            + Text("notificationPage.notification.priceDropsBelowValue.description.firstLine.pt3")
-            + Text("notificationPage.notification.priceDropsBelowValue.description.firstLine.pt4")
-            .fontWeight(.heavy)
-            + Text("notificationPage.notification.priceDropsBelowValue.description.firstLine.pt5")
+                + Text("notificationPage.notification.priceDropsBelowValue.description.firstLine.pt2")
+                .fontWeight(.heavy)
+                + Text("notificationPage.notification.priceDropsBelowValue.description.firstLine.pt3")
+                + Text("notificationPage.notification.priceDropsBelowValue.description.firstLine.pt4")
+                .fontWeight(.heavy)
+                + Text("notificationPage.notification.priceDropsBelowValue.description.firstLine.pt5")
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             Divider()
-            
+
             VStack(alignment: .leading, spacing: 12) {
                 completeExtraTextLineTwo
-                
+
                 Text("notificationPage.notification.priceDropsBelowValue.description.secondLine")
                     .foregroundColor(.blue)
             }
@@ -50,12 +50,12 @@ struct PriceDropsBelowValueNotificationSubView: View {
     @State var keyboardCurrentlyClosed = false
     @State var priceDropsBelowValueNotificationSelection = false
     @State var priceBelowValue: String = ""
-    
+
     let showHeader: Bool
 
     init(crtNotifiSetting: CurrentNotificationSetting, showHeader showHeaderValue: Bool = false) {
         showHeader = showHeaderValue
-        
+
         _crtNotifiSetting = ObservedObject(initialValue: crtNotifiSetting)
         _priceDropsBelowValueNotificationSelection = State(initialValue: self.crtNotifiSetting.entity!.priceDropsBelowValueNotification)
         _priceBelowValue = State(initialValue: self.crtNotifiSetting.entity!.priceBelowValue.priceString ?? "")
@@ -113,7 +113,7 @@ extension PriceDropsBelowValueNotificationSubView {
                 .textCase(.uppercase)
                 .foregroundColor(.gray)
                 .font(.caption)
-            
+
             HStack {
                 NumberField(text: $priceBelowValue, placeholder: "general.cent.long".localized(), plusMinusButton: true, withDecimalSeperator: false)
                     .fixedSize(horizontal: false, vertical: true)
@@ -147,9 +147,9 @@ extension PriceDropsBelowValueNotificationSubView {
 
 struct PriceDropsBelowValueNotificationView: View {
     @EnvironmentObject var crtNotifiSetting: CurrentNotificationSetting
-    
+
     let showHeader: Bool
-    
+
     init(showHeader showHeaderValue: Bool = false) {
         showHeader = showHeaderValue
     }

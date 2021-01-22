@@ -23,7 +23,7 @@ struct ViewSizePreferenceKey: PreferenceKey {
 struct CheapestTimeViewBodyPicker: View {
     @EnvironmentObject var backendComm: BackendCommunicator
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
-    
+
     func getMaxTimeInterval() -> TimeInterval? {
         let minMaxRange = backendComm.minMaxTimeRange
         if minMaxRange == nil {
@@ -31,14 +31,15 @@ struct CheapestTimeViewBodyPicker: View {
         }
         return minMaxRange!.upperBound.timeIntervalSince(minMaxRange!.lowerBound)
     }
-    
+
     var body: some View {
         VStack {
             if let maxTimeInterval = getMaxTimeInterval() {
                 EasyIntervalPickerRepresentable(
                     $cheapestHourManager.timeOfUsageInterval,
                     maxTimeInterval: maxTimeInterval,
-                    selectionInterval: 5)
+                    selectionInterval: 5
+                )
             }
         }
     }
@@ -46,9 +47,9 @@ struct CheapestTimeViewBodyPicker: View {
 
 struct CheapestTimeViewBody: View {
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
-    
+
     @State var inputMode: Int = 0
-    
+
     var body: some View {
         VStack(spacing: 15) {
             Picker("", selection: $inputMode) {
@@ -58,7 +59,7 @@ struct CheapestTimeViewBody: View {
                     .tag(1)
             }
             .pickerStyle(SegmentedPickerStyle())
-                
+
             VStack(alignment: .center, spacing: 0) {
                 VStack(alignment: .center, spacing: 25) {
                     if inputMode == 0 {
@@ -69,7 +70,7 @@ struct CheapestTimeViewBody: View {
                     }
                 }
                 .padding(.bottom, inputMode == 0 ? 0 : 25)
-                
+
                 TimeRangeInputField()
             }
             .onChange(of: inputMode) { newInputMode in
@@ -102,7 +103,7 @@ struct CheapestTimeView: View {
         // Add one or subtract one to not overlap to the next or previouse day
         let min = Date(timeIntervalSince1970: TimeInterval(backendComm.energyData!.prices[0].startTimestamp + 1))
         let max = Date(timeIntervalSince1970:
-                        TimeInterval(backendComm.energyData!.prices[maxHourIndex].endTimestamp - 1)
+            TimeInterval(backendComm.energyData!.prices[maxHourIndex].endTimestamp - 1)
         )
 
         return min ... max
@@ -141,9 +142,9 @@ struct CheapestTimeView: View {
                                         .padding(.leading, 10)
                                 }
                             })
-                            .buttonStyle(ActionButtonStyle())
-                            .padding([.leading, .trailing, .bottom], 16)
-                            .padding(.top, 5)
+                                .buttonStyle(ActionButtonStyle())
+                                .padding([.leading, .trailing, .bottom], 16)
+                                .padding(.top, 5)
                         }
                         .animation(.easeInOut)
                     }
@@ -162,7 +163,7 @@ struct CheapestTimeView_Previews: PreviewProvider {
     static var previews: some View {
         let backendComm = BackendCommunicator()
         let networkManager = NetworkManager()
-        
+
         return VStack(spacing: 0.0) {
             CheapestTimeView()
                 .environmentObject(backendComm)
@@ -181,4 +182,3 @@ struct CheapestTimeView_Previews: PreviewProvider {
         .environment(\.locale, Locale(identifier: "de_DE"))
     }
 }
-

@@ -284,13 +284,13 @@ struct ConsumptionClockView_Previews: PreviewProvider {
         CheapestTimeClockView(
             HourPair(
                 associatedPricePoints: [EnergyPricePoint(
-                                            startTimestamp: 1_603_184_400,
-                                            endTimestamp: 1_603_189_800,
-                                            marketprice: 3
-                                        )]
+                    startTimestamp: 1_603_184_400,
+                    endTimestamp: 1_603_189_800,
+                    marketprice: 3
+                )]
             )
         )
-            .preferredColorScheme(.dark)
-            .padding(20)
+        .preferredColorScheme(.dark)
+        .padding(20)
     }
 }

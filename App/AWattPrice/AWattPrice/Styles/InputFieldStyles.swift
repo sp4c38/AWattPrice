@@ -9,12 +9,12 @@ import SwiftUI
 
 struct GeneralInputView: ViewModifier {
     @Environment(\.colorScheme) var colorScheme
-    
+
     let markedRed: Bool
     init(markedRed: Bool) {
         self.markedRed = markedRed
     }
-    
+
     func getBorderColor() -> Color {
         if markedRed {
             return Color.red
@@ -28,15 +28,15 @@ struct GeneralInputView: ViewModifier {
             }
         }
     }
-    
+
     func body(content: Content) -> some View {
         content
-        .padding([.leading, .trailing], 14)
-        .padding([.top, .bottom], 8)
-        .background(
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(getBorderColor(), lineWidth: 2)
-        )
+            .padding([.leading, .trailing], 14)
+            .padding([.top, .bottom], 8)
+            .background(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(getBorderColor(), lineWidth: 2)
+            )
     }
 }
 

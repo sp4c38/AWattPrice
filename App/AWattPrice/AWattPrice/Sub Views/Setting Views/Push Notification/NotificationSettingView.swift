@@ -12,7 +12,7 @@ struct NotificationSettingView: View {
     @Environment(\.scenePhase) var scenePhase
 
     @EnvironmentObject var notificationAccess: NotificationAccess
-    
+
     var body: some View {
         VStack(alignment: .center, spacing: 0) {
             CustomInsetGroupedList {

@@ -5,9 +5,9 @@
 //  Created by Léon Becker on 29.10.20.
 //
 
-//import SwiftUI
+// import SwiftUI
 //
-//struct AwattarBasicEnergyChargePriceSetting: View {
+// struct AwattarBasicEnergyChargePriceSetting: View {
 //    @EnvironmentObject var currentSetting: CurrentSetting
 //
 //    @State var baseEnergyPriceString = ""
@@ -69,9 +69,9 @@
 //            SettingFooter()
 //        }
 //    }
-//}
+// }
 //
-//struct AwattarTariffSelectionSetting: View {
+// struct AwattarTariffSelectionSetting: View {
 //    @Environment(\.colorScheme) var colorScheme
 //    @EnvironmentObject var backendComm: BackendCommunicator
 //    @EnvironmentObject var currentSetting: CurrentSetting
@@ -141,9 +141,9 @@
 //            .padding(.bottom, 10)
 //        }
 //    }
-//}
+// }
 //
-//struct AwattarTarifSelectionSettings_Previews: PreviewProvider {
+// struct AwattarTarifSelectionSettings_Previews: PreviewProvider {
 //    static var previews: some View {
 //        NavigationView {
 //            AwattarTariffSelectionSetting()
@@ -151,4 +151,4 @@
 //                .environmentObject(CurrentSetting(managedObjectContext: PersistenceManager().persistentContainer.viewContext))
 //        }
 //    }
-//}
+// }

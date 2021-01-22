@@ -36,7 +36,7 @@ struct TimeRangeButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.callout)
-            
+
             .multilineTextAlignment(.center)
             .padding([.top, .bottom], 5)
             .padding([.leading, .trailing], 7)

@@ -14,7 +14,8 @@ import SwiftUI
 ///             font size of the text,
 ///             font weight of the text)
 func calcSingleBarSizes(_ indexSelected: Int?, _ startHeight: CGFloat, _ ownIndex: Int, _ maxIndex: Int,
-    _ height: CGFloat) -> (CGFloat, Int16, CGFloat, CGFloat, Font.Weight) {
+                        _ height: CGFloat) -> (CGFloat, Int16, CGFloat, CGFloat, Font.Weight)
+{
     var height = height
     var isSelected: Int16 = 0
     var resultStartHeight: CGFloat = 0
@@ -95,7 +96,7 @@ struct EnergyPriceSingleBar: View {
     var height: CGFloat
     var startHeight: CGFloat
     let isSelected: Int16 // 0 if not selected and 1 if main selected and
-                          // 2 if co-selected (bars around the selected bar)
+    // 2 if co-selected (bars around the selected bar)
     let hourDataPoint: EnergyPricePoint
 
     init(singleBarSettings: SingleBarSettings,
@@ -159,9 +160,9 @@ struct EnergyPriceSingleBar: View {
 
                     .fill(
                         LinearGradient(gradient: Gradient(
-                                        colors: [Color(hue: 0.0849, saturation: 0.6797, brightness: 0.9059),
-                                                 Color(hue: 0.9978, saturation: 0.7163, brightness: 0.8431)]),
-                                       startPoint: .leading, endPoint: .trailing)
+                            colors: [Color(hue: 0.0849, saturation: 0.6797, brightness: 0.9059),
+                                     Color(hue: 0.9978, saturation: 0.7163, brightness: 0.8431)]),
+                        startPoint: .leading, endPoint: .trailing)
                     )
             } else if hourDataPoint.marketprice < 0 {
                 BarShape(barShapeAttributes: BarShape.BarShapeAttributes(
@@ -184,8 +185,9 @@ struct EnergyPriceSingleBar: View {
                     width: currentDividerLineWidth,
                     height: height,
                     startWidth: maximalNegativePriceBarWidth,
-                    startHeight: startHeight)
-                    .foregroundColor(colorScheme == .light ? Color.black : Color.white)
+                    startHeight: startHeight
+                )
+                .foregroundColor(colorScheme == .light ? Color.black : Color.white)
             }
 
             // Show the energy price as text with or without VAT/tax included

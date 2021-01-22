@@ -33,30 +33,23 @@ struct EnergyData: Codable {
     }
 }
 
-/// A single aWATTar Profile with a name and an name of the image representing this profile.
-struct Profile: Hashable {
-    var name: String
-    var imageName: String
-}
+///// A single aWATTar Profile with a name and an name of the image representing this profile.
+//struct Profile: Hashable {
+//    var name: String
+//    var imageName: String
+//}
+//
+///// Defines all profiles that exist.
+//struct ProfilesData {
+//    var profiles = [
+//        Profile(name: "HOURLY", imageName: "HourlyProfilePicture"),
+//    ]
+//}
 
-/// Defines all profiles that exist.
-struct ProfilesData {
-    var profiles = [
-        Profile(name: "HOURLY", imageName: "HourlyProfilePicture"),
-    ]
-}
-
-/// Object responsible for downloading the current energy prices from the backend,
-/// decoding this data and providing it to all views which need it. It also includes data for the different
-/// profiles/tariffs of aWATTar which don't need to be downloaded.
-class AwattarData: ObservableObject {
-    @Published var currentlyNoData = false // Set to true if the price data in the downloaded data is empty.
-    @Published var currentlyUpdatingData = false
-    @Published var dateDataLastUpdated: Date?
-    @Published var dataRetrievalError = false
-    @Published var energyData: EnergyData?
-    @Published var profilesData = ProfilesData()
-
+extension BackendCommunicator {
+    // Download methods
+    
+    /// Downloads the newest aWATTar data
     func download(forRegion regionIdentifier: Int16, networkManager: NetworkManager) {
         currentlyUpdatingData = true
         dataRetrievalError = false
@@ -119,8 +112,8 @@ class AwattarData: ObservableObject {
     }
 }
 
-extension AwattarData {
-    // Parsing functions
+extension BackendCommunicator {
+    // Parsing methods
     
     func parseResponseData(_ data: Data) {
         var decodedData = EnergyData(prices: [], minPrice: 0, maxPrice: 0)
@@ -182,7 +175,7 @@ extension AwattarData {
     }
 }
 
-extension AwattarData {
+extension BackendCommunicator {
     var minMaxTimeRange: ClosedRange<Date>?     {
         if energyData != nil {
             if !(energyData!.prices.count > 0) {

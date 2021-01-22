@@ -22,7 +22,7 @@ struct DataRetrievalLoadingView: View {
 struct DataRetrievalError: View {
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.networkManager) var networkManager
-    @EnvironmentObject var awattarData: AwattarData
+    @EnvironmentObject var backendComm: BackendCommunicator
     @EnvironmentObject var currentSetting: CurrentSetting
 
     var body: some View {
@@ -39,7 +39,7 @@ struct DataRetrievalError: View {
                     .multilineTextAlignment(.center)
 
                 Button(action: {
-                    awattarData.download(forRegion: currentSetting.entity!.regionIdentifier, networkManager: networkManager)
+                    backendComm.download(forRegion: currentSetting.entity!.regionIdentifier, networkManager: networkManager)
                 }) {
                     Text("general.retry")
                 }.buttonStyle(RetryButtonStyle())
@@ -58,7 +58,7 @@ struct DataRetrievalError: View {
 struct CurrentlyNoData: View {
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.networkManager) var networkManager
-    @EnvironmentObject var awattarData: AwattarData
+    @EnvironmentObject var backendComm: BackendCommunicator
     @EnvironmentObject var currentSetting: CurrentSetting
 
     var body: some View {
@@ -75,7 +75,7 @@ struct CurrentlyNoData: View {
                     .multilineTextAlignment(.center)
 
                 Button(action: {
-                    awattarData.download(forRegion: currentSetting.entity!.regionIdentifier, networkManager: networkManager)
+                    backendComm.download(forRegion: currentSetting.entity!.regionIdentifier, networkManager: networkManager)
                 }) {
                     Text("general.retry")
                 }.buttonStyle(RetryButtonStyle())
@@ -121,7 +121,7 @@ struct SettingLoadingError: View {
 
 /// Classify network errors
 struct DataDownloadAndError: View {
-    @EnvironmentObject var awattarData: AwattarData
+    @EnvironmentObject var backendComm: BackendCommunicator
     @EnvironmentObject var crtNotifiSetting: CurrentNotificationSetting
     @EnvironmentObject var currentSetting: CurrentSetting
 
@@ -129,13 +129,13 @@ struct DataDownloadAndError: View {
         VStack {
             if crtNotifiSetting.entity == nil || currentSetting.entity == nil {
                 SettingLoadingError()
-            } else if awattarData.dataRetrievalError == true {
+            } else if backendComm.dataRetrievalError == true {
                 DataRetrievalError()
                     .transition(.opacity)
-            } else if awattarData.currentlyNoData == true {
+            } else if backendComm.currentlyNoData == true {
                 CurrentlyNoData()
                     .transition(.opacity)
-            } else if awattarData.currentlyUpdatingData == true {
+            } else if backendComm.currentlyUpdatingData == true {
                 DataRetrievalLoadingView()
             }
         }

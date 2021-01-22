@@ -29,7 +29,7 @@ struct HomeView: View {
     @Environment(\.networkManager) var networkManager
     @Environment(\.scenePhase) var scenePhase
 
-    @EnvironmentObject var awattarData: AwattarData
+    @EnvironmentObject var backendComm: BackendCommunicator
     @EnvironmentObject var crtNotifiSetting: CurrentNotificationSetting
     @EnvironmentObject var currentSetting: CurrentSetting
     @EnvironmentObject var notificationAccess: NotificationAccess
@@ -48,7 +48,7 @@ struct HomeView: View {
     var body: some View {
         NavigationView {
             VStack {
-                if awattarData.energyData != nil, currentSetting.entity != nil, awattarData.currentlyNoData == false {
+                if backendComm.energyData != nil, currentSetting.entity != nil, backendComm.currentlyNoData == false {
                     ZStack {
                         VStack {
                             VStack(spacing: 5) {
@@ -84,7 +84,7 @@ struct HomeView: View {
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .onAppear {
-            awattarData.download(forRegion: currentSetting.entity!.regionIdentifier, networkManager: networkManager)
+            backendComm.download(forRegion: currentSetting.entity!.regionIdentifier, networkManager: networkManager)
             showWhatsNewPage = currentSetting.entity!.showWhatsNew
             initialAppearFinished = nil
         }
@@ -95,12 +95,12 @@ struct HomeView: View {
             }
             if phase == .active, initialAppearFinished == true {
                 print("App was reentered. Updating data.")
-                awattarData.download(forRegion: currentSetting.entity!.regionIdentifier, networkManager: networkManager)
+                backendComm.download(forRegion: currentSetting.entity!.regionIdentifier, networkManager: networkManager)
                 showWhatsNewPage = currentSetting.entity!.showWhatsNew
             }
         }
         .onChange(of: currentSetting.entity!.regionIdentifier) { _ in
-            awattarData.download(forRegion: currentSetting.entity!.regionIdentifier, networkManager: networkManager)
+            backendComm.download(forRegion: currentSetting.entity!.regionIdentifier, networkManager: networkManager)
         }
         .sheet(isPresented: $showWhatsNewPage) {
             WhatsNewPage()
@@ -121,7 +121,7 @@ struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
         HomeView()
             .environment(\.managedObjectContext, PersistenceManager().persistentContainer.viewContext)
-            .environmentObject(AwattarData())
+            .environmentObject(BackendCommunicator())
             .environmentObject(
                 CurrentSetting(
                     managedObjectContext: PersistenceManager().persistentContainer.viewContext

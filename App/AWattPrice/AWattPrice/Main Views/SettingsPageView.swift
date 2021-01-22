@@ -64,7 +64,7 @@ struct SettingsPageView_Previews: PreviewProvider {
     static var previews: some View {
         SettingsPageView()
             .environment(\.managedObjectContext, PersistenceManager().persistentContainer.viewContext)
-            .environmentObject(AwattarData())
+            .environmentObject(BackendCommunicator())
             .environmentObject(
                 CurrentSetting(
                     managedObjectContext: PersistenceManager().persistentContainer.viewContext

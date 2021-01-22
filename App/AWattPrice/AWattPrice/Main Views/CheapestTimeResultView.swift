@@ -75,7 +75,7 @@ struct CheapestTimeResultViewClock: View {
 /// A view which presents the results calculated by the CheapestHourManager of when the cheapest hours for the usage of energy are.
 struct CheapestTimeResultView: View {
     @Environment(\.colorScheme) var colorScheme
-    @EnvironmentObject var awattarData: AwattarData
+    @EnvironmentObject var backendComm: BackendCommunicator
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
     @EnvironmentObject var currentSetting: CurrentSetting
 
@@ -151,7 +151,7 @@ struct CheapestTimeResultView: View {
         .padding([.leading, .trailing], 16)
         .navigationTitle("general.result")
         .onAppear {
-            cheapestHourManager.calculateCheapestHours(energyData: awattarData.energyData!, currentSetting: currentSetting)
+            cheapestHourManager.calculateCheapestHours(energyData: backendComm.energyData!, currentSetting: currentSetting)
         }
         .onChange(of: currentSetting.entity!.awattarTariffIndex) { _ in
             // The tariff selection has affects on the hourly price which was calculated previously. That's why it has to be recalculated when the tariff selection changes.

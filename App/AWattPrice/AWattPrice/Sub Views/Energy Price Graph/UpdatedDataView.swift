@@ -9,7 +9,7 @@ import SwiftUI
 
 struct UpdatedDataView: View {
     @Environment(\.networkManager) var networkManager
-    @EnvironmentObject var awattarData: AwattarData
+    @EnvironmentObject var backendComm: BackendCommunicator
     @EnvironmentObject var currentSetting: CurrentSetting
 
     @State var firstAppear = true
@@ -23,14 +23,14 @@ struct UpdatedDataView: View {
     }
 
     func updateLocalizedTimeIntervalString() {
-        if awattarData.dateDataLastUpdated != nil {
-            localizedTimeIntervalString = dateFormatter.localizedTimeString(for: Date(), relativeTo: awattarData.dateDataLastUpdated!)
+        if backendComm.dateDataLastUpdated != nil {
+            localizedTimeIntervalString = dateFormatter.localizedTimeString(for: Date(), relativeTo: backendComm.dateDataLastUpdated!)
         }
     }
 
     var body: some View {
         HStack(spacing: 10) {
-            if awattarData.currentlyUpdatingData {
+            if backendComm.currentlyUpdatingData {
                 Text("general.loading")
                     .foregroundColor(Color.blue)
                     .transition(.opacity)
@@ -43,11 +43,11 @@ struct UpdatedDataView: View {
                     .progressViewStyle(CircularProgressViewStyle(tint: Color.blue))
             } else {
                 VStack(alignment: .leading, spacing: 4) {
-                    if awattarData.dataRetrievalError == true {
+                    if backendComm.dataRetrievalError == true {
                         Text("updateDataTimeFormatter.updateNewDataFailed")
                             .foregroundColor(Color.red)
                     } else {
-                        if awattarData.dateDataLastUpdated != nil {
+                        if backendComm.dateDataLastUpdated != nil {
                             Text(localizedTimeIntervalString)
                                 .foregroundColor(Color.gray)
                                 .transition(.opacity)
@@ -67,14 +67,14 @@ struct UpdatedDataView: View {
         .onReceive(timer) { _ in
             updateLocalizedTimeIntervalString()
         }
-        .onChange(of: awattarData.currentlyUpdatingData) { newValue in
+        .onChange(of: backendComm.currentlyUpdatingData) { newValue in
             if newValue == false {
                 updateLocalizedTimeIntervalString()
             }
         }
         .contentShape(Rectangle())
         .onTapGesture {
-            awattarData.download(forRegion: currentSetting.entity!.regionIdentifier, networkManager: networkManager)
+            backendComm.download(forRegion: currentSetting.entity!.regionIdentifier, networkManager: networkManager)
         }
     }
 }
@@ -82,6 +82,6 @@ struct UpdatedDataView: View {
 struct UpdatedDataView_Previews: PreviewProvider {
     static var previews: some View {
         UpdatedDataView()
-            .environmentObject(AwattarData())
+            .environmentObject(BackendCommunicator())
     }
 }

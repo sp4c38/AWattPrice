@@ -33,14 +33,14 @@ class PersistenceManager {
 struct AwattarApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
-    var awattarData: AwattarData
+    var backendComm: BackendCommunicator
     var crtNotifiSetting: CurrentNotificationSetting
     var currentSetting: CurrentSetting
     var notificationAccess: NotificationAccess
     var persistence = PersistenceManager()
 
     init() {
-        awattarData = AwattarData()
+        backendComm = BackendCommunicator()
         crtNotifiSetting = CurrentNotificationSetting(
             managedObjectContext: persistence.persistentContainer.viewContext
         )
@@ -58,7 +58,7 @@ struct AwattarApp: App {
             // The managedObjectContext from PersistenceManager mustn't be parsed to the views directly as environment value because views will only access it indirectly through CurrentSetting.
 
             ContentView()
-                .environmentObject(awattarData)
+                .environmentObject(backendComm)
                 .environmentObject(currentSetting)
                 .environmentObject(crtNotifiSetting)
                 .environmentObject(CheapestHourManager())

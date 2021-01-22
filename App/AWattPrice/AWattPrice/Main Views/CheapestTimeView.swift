@@ -21,11 +21,11 @@ struct ViewSizePreferenceKey: PreferenceKey {
 }
 
 struct CheapestTimeViewBodyPicker: View {
-    @EnvironmentObject var awattarData: AwattarData
+    @EnvironmentObject var backendComm: BackendCommunicator
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
     
     func getMaxTimeInterval() -> TimeInterval? {
-        let minMaxRange = awattarData.minMaxTimeRange
+        let minMaxRange = backendComm.minMaxTimeRange
         if minMaxRange == nil {
             return nil
         }
@@ -90,19 +90,19 @@ struct CheapestTimeViewBody: View {
 struct CheapestTimeView: View {
     @Environment(\.colorScheme) var colorScheme
 
-    @EnvironmentObject var awattarData: AwattarData
+    @EnvironmentObject var backendComm: BackendCommunicator
     @EnvironmentObject var currentSetting: CurrentSetting
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
 
     @State var redirectToComparisonResults: Int? = 0
 
     var energyDataTimeRange: ClosedRange<Date> {
-        let maxHourIndex = awattarData.energyData!.prices.count - 1
+        let maxHourIndex = backendComm.energyData!.prices.count - 1
 
         // Add one or subtract one to not overlap to the next or previouse day
-        let min = Date(timeIntervalSince1970: TimeInterval(awattarData.energyData!.prices[0].startTimestamp + 1))
+        let min = Date(timeIntervalSince1970: TimeInterval(backendComm.energyData!.prices[0].startTimestamp + 1))
         let max = Date(timeIntervalSince1970:
-                        TimeInterval(awattarData.energyData!.prices[maxHourIndex].endTimestamp - 1)
+                        TimeInterval(backendComm.energyData!.prices[maxHourIndex].endTimestamp - 1)
         )
 
         return min ... max
@@ -111,7 +111,7 @@ struct CheapestTimeView: View {
     var body: some View {
         NavigationView {
             VStack {
-                if awattarData.energyData != nil && currentSetting.entity != nil {
+                if backendComm.energyData != nil && currentSetting.entity != nil {
                     ScrollView {
                         VStack(spacing: 0) {
                             CheapestTimeViewBody()
@@ -160,18 +160,18 @@ struct CheapestTimeView: View {
 
 struct CheapestTimeView_Previews: PreviewProvider {
     static var previews: some View {
-        let awattarData = AwattarData()
+        let backendComm = BackendCommunicator()
         let networkManager = NetworkManager()
         
         return VStack(spacing: 0.0) {
             CheapestTimeView()
-                .environmentObject(awattarData)
+                .environmentObject(backendComm)
                 .environmentObject(CurrentNotificationSetting(managedObjectContext: PersistenceManager().persistentContainer.viewContext))
                 .environmentObject(CheapestHourManager())
                 .environmentObject(CurrentSetting(managedObjectContext: PersistenceManager().persistentContainer.viewContext))
                 .preferredColorScheme(.light)
                 .onAppear {
-                    awattarData.download(forRegion: 0, networkManager: networkManager)
+                    backendComm.download(forRegion: 0, networkManager: networkManager)
                 }
             Spacer(minLength: 0)
             TabBar()

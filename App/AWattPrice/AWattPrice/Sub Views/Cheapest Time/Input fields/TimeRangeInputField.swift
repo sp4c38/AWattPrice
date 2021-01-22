@@ -70,7 +70,7 @@ struct TimeRangeInputFieldSelectionPart: View {
 struct TimeRangeInputField: View {
     @Environment(\.colorScheme) var colorScheme
 
-    @EnvironmentObject var awattarData: AwattarData
+    @EnvironmentObject var backendComm: BackendCommunicator
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
 
     @State var inputDateRange: ClosedRange<Date> = Date() ... Date()
@@ -117,7 +117,7 @@ struct TimeRangeInputField: View {
             quickSelectButtons
         }
         .frame(maxWidth: .infinity)
-        .onReceive(awattarData.$energyData) { _ in
+        .onReceive(backendComm.$energyData) { _ in
             self.setTimeIntervalValues()
         }
     }
@@ -127,7 +127,7 @@ extension TimeRangeInputField {
     var quickSelectButtons: some View {
         HStack(alignment: .center) {
             Button(action: {
-                cheapestHourManager.setTimeIntervalThisNight(energyData: awattarData.energyData!)
+                cheapestHourManager.setTimeIntervalThisNight(energyData: backendComm.energyData!)
             }) {
                 Text("cheapestPricePage.todayTonight")
                     .fontWeight(.semibold)
@@ -135,7 +135,7 @@ extension TimeRangeInputField {
             .buttonStyle(TimeRangeButtonStyle())
 
             Button(action: {
-                cheapestHourManager.setTimeInterval(forNextHourAmount: 3, energyData: awattarData.energyData!)
+                cheapestHourManager.setTimeInterval(forNextHourAmount: 3, energyData: backendComm.energyData!)
             }) {
                 Text("cheapestPricePage.nextThreeHours")
                     .fontWeight(.semibold)
@@ -143,7 +143,7 @@ extension TimeRangeInputField {
             .buttonStyle(TimeRangeButtonStyle())
 
             Button(action: {
-                cheapestHourManager.setTimeInterval(forNextHourAmount: 12, energyData: awattarData.energyData!)
+                cheapestHourManager.setTimeInterval(forNextHourAmount: 12, energyData: backendComm.energyData!)
             }) {
                 Text("cheapestPricePage.nextTwelveHours")
                     .fontWeight(.semibold)
@@ -159,7 +159,7 @@ extension TimeRangeInputField {
     
     /// Set the max upper and lower bound for the time range input
     func setTimeIntervalValues() {
-        if let minMaxTimeRange = awattarData.minMaxTimeRange {
+        if let minMaxTimeRange = backendComm.minMaxTimeRange {
             let minTime = minMaxTimeRange.lowerBound.addingTimeInterval(+1)
             let maxTime = minMaxTimeRange.upperBound.addingTimeInterval(-1)
             cheapestHourManager.endDate = maxTime
@@ -189,7 +189,7 @@ extension TimeRangeInputField {
 struct TimeRangeInputField_Previews: PreviewProvider {
     static var previews: some View {
         TimeRangeInputField()
-            .environmentObject(AwattarData())
+            .environmentObject(BackendCommunicator())
             .environmentObject(CheapestHourManager())
             .padding()
     }

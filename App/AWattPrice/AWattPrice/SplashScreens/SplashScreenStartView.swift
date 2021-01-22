@@ -17,17 +17,13 @@ struct SplashScreenStartViewTitle: View {
             VStack(spacing: 5) {
                 Text("splashScreen.start.welcome")
                     .font(
-                        .custom("SFCompactDisplay-Black",
-                                size: 45,
-                                relativeTo: .largeTitle)
+                        .custom("SFCompactDisplay-Black", size: 35)
                     )
 
                 Text("AWattPrice")
                     .foregroundColor(Color(hue: 0.5648, saturation: 1.0000, brightness: 0.6235))
                     .font(
-                        .custom("SFCompactDisplay-Black",
-                                size: 50,
-                                relativeTo: .largeTitle)
+                        .custom("SFCompactDisplay-Black", size: 50)
                     )
             }
         }

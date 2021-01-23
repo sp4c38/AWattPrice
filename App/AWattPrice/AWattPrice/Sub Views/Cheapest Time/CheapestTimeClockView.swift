@@ -10,6 +10,7 @@ import SwiftUI
 /// A clock which job it is to visually present the cheapest hours for the consumption so that these informations can be immediately and fastly processed by the user.
 struct CheapestTimeClockView: View {
     @Environment(\.colorScheme) var colorScheme
+    @Environment(\.deviceType) var deviceType
 
     @State var currentLevel = 0
     @State var now = Date()
@@ -99,7 +100,10 @@ struct CheapestTimeClockView: View {
         let clockRightSideStartWidth = ((width - clockWidth) / 2)
         let clockStartHeight = (height / 2) - (width / 2) + clockRightSideStartWidth
 
-        let textPaddingToClock = CGFloat(23)
+        var textPaddingToClock = CGFloat(23)
+        if deviceType == .pad {
+            textPaddingToClock += 15
+        }
 
         let center = CGPoint(x: width / 2, y: height / 2)
 
@@ -140,6 +144,11 @@ struct CheapestTimeClockView: View {
             hourNamesAndPositions.append((String(hourName), textXCoord, textYCoord, lineFirstXCoord, lineFirstYCoord, lineSecondXCoord, lineSecondYCoord))
 
             currentDegree += 30
+        }
+        
+        var fontTextSize = Font.body
+        if deviceType == .pad {
+            fontTextSize = Font.title2
         }
 
         return ZStack {
@@ -190,6 +199,7 @@ struct CheapestTimeClockView: View {
                 .strokedPath(.init(lineWidth: hourIndicatorLineWidth, lineCap: .round))
                 .foregroundColor(colorScheme == .light ? Color.black : Color.white)
             }
+            .font(fontTextSize)
 
             // The start date and if needed also the end date which help the user understand from when to when the cheapest hours apply
             VStack(spacing: 0) {

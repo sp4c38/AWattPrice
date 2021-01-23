@@ -50,31 +50,30 @@ struct CheapestTimeResultTimeRange: View {
 }
 
 struct CheapestTimeResultViewClock: View {
+    @Environment(\.deviceOrientation) var deviceOrientation
     @Environment(\.deviceType) var deviceType
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
 
-    @State var clockSize: CGFloat = 0
+    @State var clockSize: CGFloat = 310
 
-    func getClockSize() {
+    func getClockSize(_ deviceOrientation: UIInterfaceOrientation) {
         let screenWidth = UIScreen.main.bounds.width
         let screenHeight = UIScreen.main.bounds.height
         var screenSizeValue: CGFloat = 310
-        if screenWidth >= screenHeight {
+        if deviceType == .phone {
             screenSizeValue = screenWidth
         } else {
-            screenSizeValue = screenHeight
+            if deviceOrientation.isLandscape {
+                screenSizeValue = screenHeight - 50
+            } else {
+                screenSizeValue = screenWidth
+            }
         }
-        
-        guard let orientation = UIApplication.shared.windows.first?.windowScene?.interfaceOrientation else {
-            fatalError("tjne ")
-        }
-        print(orientation.isLandscape)
-        print(orientation.isPortrait)
         
         if deviceType == .phone {
-            clockSize = screenSizeValue * 0.85
+            clockSize = screenSizeValue * 0.80
         } else {
-            clockSize = screenSizeValue * 0.40
+            clockSize = screenSizeValue * 0.55
         }
     }
 
@@ -84,11 +83,14 @@ struct CheapestTimeResultViewClock: View {
                 .padding([.leading, .trailing], 20)
                 .frame(
                     width: clockSize,
-                    height: clockSize
+                    height: (clockSize - 20)
                 )
         }
         .onAppear {
-            getClockSize()
+            getClockSize(deviceOrientation.deviceOrientation)
+        }
+        .onReceive(deviceOrientation.$deviceOrientation) { newDeviceOrientation in
+            getClockSize(newDeviceOrientation)
         }
     }
 }

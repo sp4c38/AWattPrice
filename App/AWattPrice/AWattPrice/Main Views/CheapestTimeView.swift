@@ -29,7 +29,22 @@ struct CheapestTimeViewBodyPicker: View {
         if minMaxRange == nil {
             return nil
         }
-        return minMaxRange!.upperBound.timeIntervalSince(minMaxRange!.lowerBound)
+        let nowHourStart = Calendar.current.date(
+            bySettingHour: Calendar.current.component(.hour, from: Date()),
+            minute: 0,
+            second: 0,
+            of: Date()
+        )!
+        let nowHourEnd = nowHourStart.addingTimeInterval(3600)
+        var differenceTimeInterval: Double = TimeInterval()
+        if minMaxRange!.lowerBound >= nowHourStart, minMaxRange!.lowerBound <= nowHourEnd {
+            differenceTimeInterval = TimeInterval(
+                nowHourStart.timeIntervalSince(
+                    Date()
+                ).rounded(.up)
+            )
+        }
+        return (minMaxRange!.upperBound.timeIntervalSince(minMaxRange!.lowerBound)) + differenceTimeInterval
     }
 
     var body: some View {

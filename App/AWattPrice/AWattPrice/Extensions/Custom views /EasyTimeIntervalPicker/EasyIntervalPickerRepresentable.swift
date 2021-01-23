@@ -28,9 +28,10 @@ struct EasyIntervalPickerRepresentable: UIViewRepresentable {
             selectedTimeInterval = newSelection
         }
         picker.setMinuteInterval(minuteInterval: pickerSelectionInterval)
-
         return picker
     }
 
-    func updateUIView(_: EasyIntervalPicker, context _: Context) {}
+    func updateUIView(_ picker: EasyIntervalPicker, context _: Context) {
+        picker.setMaxTimeInterval(pickerMaxTimeInterval)
+    }
 }

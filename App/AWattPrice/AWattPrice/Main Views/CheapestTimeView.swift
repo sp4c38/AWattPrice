@@ -24,10 +24,12 @@ struct CheapestTimeViewBodyPicker: View {
     @EnvironmentObject var backendComm: BackendCommunicator
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
 
-    func getMaxTimeInterval() -> TimeInterval? {
+    @State var maxTimeInterval = TimeInterval(3600)
+    
+    func setMaxTimeInterval() {
         let minMaxRange = backendComm.minMaxTimeRange
         if minMaxRange == nil {
-            return nil
+            return
         }
         let nowHourStart = Calendar.current.date(
             bySettingHour: Calendar.current.component(.hour, from: Date()),
@@ -44,18 +46,22 @@ struct CheapestTimeViewBodyPicker: View {
                 ).rounded(.up)
             )
         }
-        return (minMaxRange!.upperBound.timeIntervalSince(minMaxRange!.lowerBound)) + differenceTimeInterval
+        maxTimeInterval = (minMaxRange!.upperBound.timeIntervalSince(minMaxRange!.lowerBound)) + differenceTimeInterval
     }
 
     var body: some View {
         VStack {
-            if let maxTimeInterval = getMaxTimeInterval() {
-                EasyIntervalPickerRepresentable(
-                    $cheapestHourManager.timeOfUsageInterval,
-                    maxTimeInterval: maxTimeInterval,
-                    selectionInterval: 5
-                )
-                .frame(width: 275) // The UI View won't apply to this property. But it makes sure that the time interval picker won't go outside of display borders (i.e. on iPhone SE).
+            EasyIntervalPickerRepresentable(
+                $cheapestHourManager.timeOfUsageInterval,
+                maxTimeInterval: maxTimeInterval,
+                selectionInterval: 5
+            )
+            .frame(width: 275) // The UI View won't apply to this property. But it makes sure that the time interval picker won't go outside of display borders (i.e. on iPhone SE).
+            .onAppear {
+                setMaxTimeInterval()
+            }
+            .onReceive(backendComm.$energyData) { _ in
+                setMaxTimeInterval()
             }
         }
     }

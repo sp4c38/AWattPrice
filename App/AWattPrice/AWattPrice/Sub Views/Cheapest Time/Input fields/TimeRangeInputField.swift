@@ -55,12 +55,10 @@ struct TimeRangeInputFieldSelectionPart: View {
                         Color(hue: 0.0000, saturation: 0.0000, brightness: 0.8311)
                 )
 
-            Spacer()
+            Spacer(minLength: 0)
 
             ComparisonDatePicker(selection: $partSelection, in: range)
-                .frame(width: 205, height: 35, alignment: .center)
-                .clipped()
-                .offset(x: 27, y: 0)
+                .frame(width: 180, height: 35, alignment: .center)
         }
         .modifier(TimeRangeInputFieldSelectionPartModifier())
     }

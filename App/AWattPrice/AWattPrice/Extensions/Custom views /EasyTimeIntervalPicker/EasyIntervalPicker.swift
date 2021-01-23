@@ -82,7 +82,7 @@ extension EasyIntervalPicker {
 
         let hours = Int(newMaxTimeInterval / 3600)
         let minutes = Int(newMaxTimeInterval / 60) - (hours * 60)
-        maxMinutesRemainder = minutes
+        maxMinutesRemainder = minutes - (minutes % step)
         countOfHours = hours
         reloadAllComponents()
 
@@ -99,10 +99,13 @@ extension EasyIntervalPicker {
         step = minuteInterval
         countOfMinuteSteps = 60 / step
         reloadComponent(componentMinutesID)
+        
+        let maxTimeIntervalMinutes = Int(maxTimeInterval / 60) % 60
+        maxMinutesRemainder = maxTimeIntervalMinutes - (maxTimeIntervalMinutes % step)
 
         let timeIntervalInMinutes = Int(timeInterval / 60)
-        let minutes = timeIntervalInMinutes % 60
-        var newMinutesRow = Int(minutes / step)
+        let timeIntervalMinutes = timeIntervalInMinutes % 60
+        var newMinutesRow = Int(timeIntervalMinutes / step)
 
         if allowZeroTimeInterval == false, newMinutesRow == 0 {
             newMinutesRow += 1

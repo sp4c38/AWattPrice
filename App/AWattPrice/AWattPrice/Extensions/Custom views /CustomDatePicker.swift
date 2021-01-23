@@ -33,6 +33,8 @@ struct ComparisonDatePicker: UIViewRepresentable {
         datePicker.datePickerMode = .dateAndTime
         datePicker.preferredDatePickerStyle = .compact
         datePicker.minuteInterval = 1
+        datePicker.semanticContentAttribute = .forceRightToLeft
+        datePicker.subviews.first?.semanticContentAttribute = .forceRightToLeft
         datePicker.addTarget(
             context.coordinator,
             action: #selector(Coordinator.dateChanged(_:)), for: .valueChanged

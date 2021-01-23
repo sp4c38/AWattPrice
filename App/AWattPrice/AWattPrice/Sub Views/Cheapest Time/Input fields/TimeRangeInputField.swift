@@ -58,7 +58,7 @@ struct TimeRangeInputFieldSelectionPart: View {
             Spacer(minLength: 0)
 
             ComparisonDatePicker(selection: $partSelection, in: range)
-                .frame(width: 180, height: 35, alignment: .center)
+                .frame(height: 35, alignment: .center)
         }
         .modifier(TimeRangeInputFieldSelectionPartModifier())
     }

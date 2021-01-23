@@ -34,7 +34,7 @@ extension EnvironmentValues {
         }
         set {}
     }
-
+    
     var deviceType: UIUserInterfaceIdiom {
         get { UIDevice.current.userInterfaceIdiom }
         set {}

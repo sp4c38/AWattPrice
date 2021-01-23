@@ -50,14 +50,32 @@ struct CheapestTimeResultTimeRange: View {
 }
 
 struct CheapestTimeResultViewClock: View {
+    @Environment(\.deviceType) var deviceType
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
 
-    var clockSize: CGFloat = 0
+    @State var clockSize: CGFloat = 0
 
-    func getClockSize() -> CGFloat {
-        let screenSize = UIScreen.main.bounds.width
-        let clockSize = screenSize * 0.85
-        return clockSize
+    func getClockSize() {
+        let screenWidth = UIScreen.main.bounds.width
+        let screenHeight = UIScreen.main.bounds.height
+        var screenSizeValue: CGFloat = 310
+        if screenWidth >= screenHeight {
+            screenSizeValue = screenWidth
+        } else {
+            screenSizeValue = screenHeight
+        }
+        
+        guard let orientation = UIApplication.shared.windows.first?.windowScene?.interfaceOrientation else {
+            fatalError("tjne ")
+        }
+        print(orientation.isLandscape)
+        print(orientation.isPortrait)
+        
+        if deviceType == .phone {
+            clockSize = screenSizeValue * 0.85
+        } else {
+            clockSize = screenSizeValue * 0.40
+        }
     }
 
     var body: some View {
@@ -65,9 +83,12 @@ struct CheapestTimeResultViewClock: View {
             CheapestTimeClockView(cheapestHourManager.cheapestHoursForUsage!)
                 .padding([.leading, .trailing], 20)
                 .frame(
-                    width: getClockSize(),
-                    height: getClockSize()
+                    width: clockSize,
+                    height: clockSize
                 )
+        }
+        .onAppear {
+            getClockSize()
         }
     }
 }

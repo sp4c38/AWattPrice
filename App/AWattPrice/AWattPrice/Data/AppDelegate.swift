@@ -14,7 +14,8 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
     var backendComm: BackendCommunicator?
     var crtNotifiSetting: CurrentNotificationSetting?
     var currentSetting: CurrentSetting?
-
+    var notificationAccess: NotificationAccess?
+    
     func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
         let center = UNUserNotificationCenter.current()
         center.delegate = self
@@ -93,5 +94,9 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
 
     func application(_: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
         print("Registration to APNs for push notifications was NOT granted: \(error.localizedDescription)")
+        if notificationAccess != nil {
+            // App is allowed to send notification but failed to register for remote notifications.
+            notificationAccess!.access = false
+        }
     }
 }

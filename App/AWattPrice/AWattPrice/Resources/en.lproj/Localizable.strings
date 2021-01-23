@@ -18,10 +18,8 @@
 "splashScreen.featuresAndConsent.comparePrices.info" = "Find the cheapest hours for your electricity consumption.";
 // Notifications title handled by notificationPage.notifications
 "splashScreen.featuresAndConsent.notifications.info" = "Receive a notification as soon as electricity prices drop below a certain value.";
-"splashScreen.featuresAndConsent.termsOfUse.agree" = "I agree to the Terms Of Use.";
-"splashScreen.featuresAndConsent.termsOfUse.see" = "View Terms Of Use";
-"splashScreen.featuresAndConsent.privacyPolicy.agree" = "I agree to the Privacy Policy.";
-"splashScreen.featuresAndConsent.privacyPolicy.see" = "View Privacy Policy";
+"splashScreen.featuresAndConsent.termsOfUse.agree" = "Agree to the Terms Of Use";
+"splashScreen.featuresAndConsent.privacyPolicy.agree" = "Agree to the Privacy Policy.";
 
 // Setup splash screen localization
 "splashScreen.setup.title" = "Setup";
@@ -124,6 +122,7 @@
 "general.hour" = "hour";
 "general.hours" = "hours";
 "general.min" = "min";
+"general.view" = "View";
 
 // Total Time Formatter localizations
 "totalTimeFormatter.onlyHour"  = "%@h";

@@ -53,6 +53,7 @@ struct AwattarApp: App {
         appDelegate.backendComm = backendComm
         appDelegate.crtNotifiSetting = crtNotifiSetting
         appDelegate.currentSetting = currentSetting
+        appDelegate.notificationAccess = notificationAccess
     }
 
     var body: some Scene {

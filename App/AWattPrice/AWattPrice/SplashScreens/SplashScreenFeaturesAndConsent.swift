@@ -200,7 +200,7 @@ struct SplashScreenFeaturesAndConsentView: View {
             VStack(spacing: 10) {
                 AgreementConsentView(
                     agreeText: "splashScreen.featuresAndConsent.termsOfUse.agree",
-                    seeAgreementText: "splashScreen.featuresAndConsent.termsOfUse.see",
+                    seeAgreementText: "general.view",
                     agreementLinks: ("https://awattprice.space8.me/terms_of_use/german.html",
                                      "https://awattprice.space8.me/terms_of_use/english.html"),
                     isChecked: $termsOfUseIsChecked,
@@ -209,7 +209,7 @@ struct SplashScreenFeaturesAndConsentView: View {
 
                 AgreementConsentView(
                     agreeText: "splashScreen.featuresAndConsent.privacyPolicy.agree",
-                    seeAgreementText: "splashScreen.featuresAndConsent.privacyPolicy.see",
+                    seeAgreementText: "general.view",
                     agreementLinks: ("https://awattprice.space8.me/privacy_policy/german.html",
                                      "https://awattprice.space8.me/privacy_policy/english.html"),
                     isChecked: $privacyPolicyIsChecked,

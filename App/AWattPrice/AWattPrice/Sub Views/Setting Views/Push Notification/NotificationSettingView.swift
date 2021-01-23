@@ -38,13 +38,15 @@ struct NotificationSettingView: View {
                 .animation(.easeInOut)
             }
             
-            if backendComm.notificationUploadError {
-                APNSUploadError()
-                    .padding(.bottom, 15)
-                    .transition(.belowScale)
+            VStack {
+                if backendComm.notificationUploadError {
+                    APNSUploadError()
+                        .padding(.bottom, 15)
+                        .transition(.belowScale)
+                }
             }
+            .animation(.easeInOut)
         }
-        .animation(.easeInOut)
         .navigationTitle("general.priceGuard")
     }
 }

@@ -185,12 +185,6 @@ struct CheapestTimeView_Previews: PreviewProvider {
         return VStack(spacing: 0.0) {
             CheapestTimeView()
                 .environmentObject(backendComm)
-                .environmentObject(
-                    CurrentNotificationSetting(
-                        backendComm: BackendCommunicator(),
-                        managedObjectContext: PersistenceManager().persistentContainer.viewContext
-                    )
-                )
                 .environmentObject(CheapestHourManager())
                 .environmentObject(CurrentSetting(managedObjectContext: PersistenceManager().persistentContainer.viewContext))
                 .preferredColorScheme(.light)

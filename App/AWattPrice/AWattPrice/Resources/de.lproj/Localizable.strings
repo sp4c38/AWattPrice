@@ -16,7 +16,6 @@
 "splashScreen.featuresAndConsent.viewPrices.info" = "Sehen Sie sich die aktuellen Strompreise für jede Stunde des Tages an.";
 "splashScreen.featuresAndConsent.comparePrices" = "Preise vergleichen";
 "splashScreen.featuresAndConsent.comparePrices.info" = "Finden Sie die preislich günstigsten Stunden für Ihren Stromverbrauch.";
-// Notifications title handled by notificationPage.notifications
 "splashScreen.featuresAndConsent.termsOfUse.agree" = "Nutzungsbedingungen zustimmen";
 "splashScreen.featuresAndConsent.privacyPolicy.agree" = "Datenschutzrichtlinie zustimmen";
 
@@ -25,7 +24,6 @@
 
 // What's new splash screen localization
 "splashScreen.whatsNew.title" = "Was gibt's Neues?";
-"splashScreen.whatsNew.notifications.extrainfo" = "Tipp: Um Benachrichtigungen zu aktivieren, gehen Sie zum \"Einstellungen\"-Tab in AWattPrice.";
 "splashScreen.whatsNew.withDuration.title" = "Neue Option: Dauer";
 "splashScreen.whatsNew.withDuration.extraInfo" = "Geben Sie eine Verbrauchsdauer an, um die günstigste Zeit zu finden.";
 
@@ -79,18 +77,6 @@
 "settingsPage.helpByEmail" = "Hilfe per E-Mail";
 "settingsPage.suggestionByEmail" = "Vorschläge per E-Mail";
 
-// Notification Page localizations
-"notificationPage.noNotificationAccessInfo" = "Bitte erlauben Sie Benachrichtigungen für AWattPrice in der Einstellungs-App.";
-"notificationPage.notification.priceDropsBelowValue" = "Preisbenachrichtigung";
-"notificationPage.notification.priceDropsBelowValue.wishPrice" = "Wunschpreis";
-"notificationPage.notification.priceDropsBelowValue.description" = "Erhalten Sie eine Benachrichtigung, sobald Preise unter einen Wunschpreis fallen.";
-"notificationPage.notification.priceDropsBelowValue.description.firstLine.pt1" = "Sobald neue Preise verfügbar sind, erhalten Sie eine Benachrichtigung, falls ein Strompreis des Folgetages";
-"notificationPage.notification.priceDropsBelowValue.description.firstLine.pt2" = " auf ";
-"notificationPage.notification.priceDropsBelowValue.description.firstLine.pt3" = "oder";
-"notificationPage.notification.priceDropsBelowValue.description.firstLine.pt4" = " unter ";
-"notificationPage.notification.priceDropsBelowValue.description.firstLine.pt5" = "Ihren Wunschpreis sinkt.";
-"notificationPage.notification.priceDropsBelowValue.description.secondLine" = "Über Preise des aktuellen Tages wurde somit schon am Tag davor benachrichtigt.";
-
 // Data download error view
 "dataError.tryAgainLater" = "Bitte versuchen Sie es\nspäter noch einmal.";
 "dataError.noDataAvailable" = "Keine Daten verfügbar.\nBitte versuchen Sie es später erneut.";
@@ -120,7 +106,6 @@
 "general.done" = "Fertig";
 "general.openSettingsApp" = "Einstellungs-App öffnen";
 "general.priceGuard" = "Preiswächter";
-"general.notifications" = "Benachrichtigungen";
 "general.hour" = "Std.";
 "general.hours" = "Std.";
 "general.min" = "Min.";
@@ -137,8 +122,3 @@
 "updateDataTimeFormatter.moreThanMMAgoSingular" = "Vor %@ Minute aktualisiert";
 "updateDataTimeFormatter.moreThanMMAgoPlural" = "Vor %@ Minuten aktualisiert";
 "updateDataTimeFormatter.updateNewDataFailed" = "Neue Daten konnten nicht heruntergeladen werden. Tippe, um erneut zu versuchen.";
-
-// Notification localizations
-// Title managed by general.priceGuard
-"notifications.price_drops_below.body.sing" = "Morgen fallen die Strompreise %1$@ Mal unter %2$@ ct. Günstigster Preis um %3$@ Uhr mit %4$@ ct.";
-"notifications.price_drops_below.body.mult" = "Morgen fallen die Strompreise %1$@ Mal unter %2$@ ct. Günstigster Preis um %3$@ Uhr mit %4$@ ct.";

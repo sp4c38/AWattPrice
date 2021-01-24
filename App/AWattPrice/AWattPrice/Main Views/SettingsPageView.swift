@@ -11,7 +11,6 @@ import SwiftUI
 /// A place for the user to modify certain settings. Those changes are automatically stored (if modified) in persistent storage.
 struct SettingsPageView: View {
     @Environment(\.scenePhase) var scenePhase
-    @EnvironmentObject var crtNotifiSetting: CurrentNotificationSetting
     @EnvironmentObject var currentSetting: CurrentSetting
     @EnvironmentObject var tabBarItems: TBItems
 
@@ -23,10 +22,6 @@ struct SettingsPageView: View {
                         RegionAndVatSelection()
 
 //                        AwattarTariffSelectionSetting()
-
-                        if crtNotifiSetting.entity != nil {
-                            GoToNotificationSettingView()
-                        }
 
                         GetHelpView()
 

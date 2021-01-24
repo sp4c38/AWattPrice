@@ -18,13 +18,6 @@ struct WhatsNewPage: View {
             VStack(alignment: .leading) {
                 VStack(alignment: .leading, spacing: 15) {
                     AppFeatureView(
-                        title: "general.priceGuard",
-                        subTitle: "notificationPage.notification.priceDropsBelowValue.description",
-                        tipText: "splashScreen.whatsNew.notifications.extrainfo",
-                        imageName: ("PriceTag", false)
-                    )
-                    
-                    AppFeatureView(
                         title: "splashScreen.whatsNew.withDuration.title",
                         subTitle: "splashScreen.whatsNew.withDuration.extraInfo",
                         imageName: ("timer", true)

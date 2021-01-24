@@ -16,8 +16,6 @@
 "splashScreen.featuresAndConsent.viewPrices.info" = "Check the current electricity prices for each hour throughout the day.";
 "splashScreen.featuresAndConsent.comparePrices" = "Compare prices";
 "splashScreen.featuresAndConsent.comparePrices.info" = "Find the cheapest hours for your electricity consumption.";
-// Notifications title handled by notificationPage.notifications
-"splashScreen.featuresAndConsent.notifications.info" = "Receive a notification as soon as electricity prices drop below a certain value.";
 "splashScreen.featuresAndConsent.termsOfUse.agree" = "Agree to the Terms Of Use";
 "splashScreen.featuresAndConsent.privacyPolicy.agree" = "Agree to the Privacy Policy.";
 
@@ -26,7 +24,6 @@
 
 // What's new splash screen localization
 "splashScreen.whatsNew.title" = "What's new?";
-"splashScreen.whatsNew.notifications.extrainfo" = "Tip: Go to the Settings tab in AWattPrice to enable notifications.";
 "splashScreen.whatsNew.withDuration.title" = "New option: Duration";
 "splashScreen.whatsNew.withDuration.extraInfo" = "Enter a consumption duration to find the cheapest time.";
 
@@ -80,18 +77,6 @@
 "settingsPage.suggestionByEmail" = "Send suggestions by email";
 "settingsPage.version" = "Version";
 
-// Notification Page Setting localizations
-"notificationPage.noNotificationAccessInfo" = "Please allow AWattPrice notifications in the Settings App.";
-"notificationPage.notification.priceDropsBelowValue.description" = "Receive a notification as soon as prices fall below a certain value.";
-"notificationPage.notification.priceDropsBelowValue" = "Price notification";
-"notificationPage.notification.priceDropsBelowValue.wishPrice" = "Wish Price:";
-"notificationPage.notification.priceDropsBelowValue.description.firstLine.pt1" = "When new prices are available, you will receive a notification if a hourly price of the next day drops";
-"notificationPage.notification.priceDropsBelowValue.description.firstLine.pt2" = " on ";
-"notificationPage.notification.priceDropsBelowValue.description.firstLine.pt3" = "or";
-"notificationPage.notification.priceDropsBelowValue.description.firstLine.pt4" = " below ";
-"notificationPage.notification.priceDropsBelowValue.description.firstLine.pt5" = "your wish price.";
-"notificationPage.notification.priceDropsBelowValue.description.secondLine" = "Notifications for prices of the current day were therefore already sent the day before.";
-
 // Data download error view
 "dataError.tryAgainLater" = "Please try again later";
 "dataError.noDataAvailable" = "No data available\nPlease try again later";
@@ -121,7 +106,6 @@
 "general.done" = "Done";
 "general.openSettingsApp" = "Open Settings App";
 "general.priceGuard" = "Price Guard";
-"general.notifications" = "Notifications";
 "general.hour" = "hour";
 "general.hours" = "hours";
 "general.min" = "min";
@@ -138,8 +122,3 @@
 "updateDataTimeFormatter.moreThanMMAgoSingular" = "Updated %@ minute ago";
 "updateDataTimeFormatter.moreThanMMAgoPlural" = "Updated %@ minutes ago";
 "updateDataTimeFormatter.updateNewDataFailed" = "Couldn't get new data. Tap to retry.";
-
-// Notification localizations
-// Title managed by general.priceGuard
-"notifications.price_drops_below.body.sing" = "Tomorrow, electricity prices drop below %2$@ ct %1$@ time. Cheapest hour at %3$@ with %4$@ ct.";
-"notifications.price_drops_below.body.mult" = "Tomorrow, electricity prices drop below %2$@ ct %1$@ times. Cheapest hour at %3$@ with %4$@ ct.";

@@ -8,11 +8,6 @@
 import CoreData
 import SwiftUI
 
-/// Represents if AWattPrice has the permissions to send notifications.
-class NotificationAccess: ObservableObject {
-    @Published var access = false
-}
-
 /// An object which holds and loads a NSPersistentContainer to allow access to persistent stored data from Core Data.
 class PersistenceManager {
     var persistentContainer: NSPersistentContainer {
@@ -31,29 +26,15 @@ class PersistenceManager {
 /// Entry point of the app
 @main
 struct AwattarApp: App {
-    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-
     var backendComm: BackendCommunicator
-    var crtNotifiSetting: CurrentNotificationSetting
     var currentSetting: CurrentSetting
-    var notificationAccess: NotificationAccess
     var persistence = PersistenceManager()
 
     init() {
         backendComm = BackendCommunicator()
-        crtNotifiSetting = CurrentNotificationSetting(
-            backendComm: backendComm,
-            managedObjectContext: persistence.persistentContainer.viewContext
-        )
         currentSetting = CurrentSetting(
             managedObjectContext: persistence.persistentContainer.viewContext
         )
-        notificationAccess = NotificationAccess()
-
-        appDelegate.backendComm = backendComm
-        appDelegate.crtNotifiSetting = crtNotifiSetting
-        appDelegate.currentSetting = currentSetting
-        appDelegate.notificationAccess = notificationAccess
     }
 
     var body: some Scene {
@@ -63,9 +44,7 @@ struct AwattarApp: App {
             ContentView()
                 .environmentObject(backendComm)
                 .environmentObject(currentSetting)
-                .environmentObject(crtNotifiSetting)
                 .environmentObject(CheapestHourManager())
-                .environmentObject(notificationAccess)
         }
     }
 }

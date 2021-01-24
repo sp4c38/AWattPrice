@@ -122,12 +122,11 @@ struct SettingLoadingError: View {
 /// Classify network errors
 struct DataDownloadAndError: View {
     @EnvironmentObject var backendComm: BackendCommunicator
-    @EnvironmentObject var crtNotifiSetting: CurrentNotificationSetting
     @EnvironmentObject var currentSetting: CurrentSetting
 
     var body: some View {
         VStack {
-            if crtNotifiSetting.entity == nil || currentSetting.entity == nil {
+            if currentSetting.entity == nil {
                 SettingLoadingError()
             } else if backendComm.dataRetrievalError == true {
                 DataRetrievalError()

@@ -161,7 +161,6 @@ struct AgreementConsentView: View {
  */
 struct SplashScreenFeaturesAndConsentView: View {
     @EnvironmentObject var currentSetting: CurrentSetting
-    @EnvironmentObject var notificationAccess: NotificationAccess
 
     @State var privacyPolicyIsChecked: Bool = false
     @State var redirectToNextSplashScreen: Int? = 0
@@ -186,12 +185,6 @@ struct SplashScreenFeaturesAndConsentView: View {
                     title: "splashScreen.featuresAndConsent.comparePrices",
                     subTitle: "splashScreen.featuresAndConsent.comparePrices.info",
                     imageName: ("arrow.left.arrow.right", true)
-                )
-
-                AppFeatureView(
-                    title: "general.priceGuard",
-                    subTitle: "notificationPage.notification.priceDropsBelowValue.description",
-                    imageName: ("PriceTag", false)
                 )
             }
 
@@ -222,9 +215,7 @@ struct SplashScreenFeaturesAndConsentView: View {
                 if privacyPolicyIsChecked == true, termsOfUseIsChecked == true {
                     showTermsOfUseNotChecked = false
                     showPrivacyPolicyNotChecked = false
-                    managePushNotificationsOnAppAppear(notificationAccessRepresentable: notificationAccess, registerForRemoteNotifications: true) {
-                        redirectToNextSplashScreen = 1
-                    }
+                    redirectToNextSplashScreen = 1
                 } else {
                     if termsOfUseIsChecked == false {
                         showTermsOfUseNotChecked = true

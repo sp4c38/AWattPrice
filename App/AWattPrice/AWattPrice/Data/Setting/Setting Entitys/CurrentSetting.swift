@@ -44,7 +44,7 @@ class CurrentSetting: AutoUpdatingEntity<Setting> {
                 do {
                     try managedObjectContext.save()
                 } catch {
-                    print("Managed object context failed to store new notification setting (awattarBaseElectricityPrice) attribute: \(error).")
+                    print("Managed object context failed to store new setting (awattarBaseElectricityPrice) attribute: \(error).")
                     return
                 }
             }
@@ -63,7 +63,7 @@ class CurrentSetting: AutoUpdatingEntity<Setting> {
                 do {
                     try managedObjectContext.save()
                 } catch {
-                    print("Managed object context failed to store new notification setting (awattarTariffIndex) attribute: \(error).")
+                    print("Managed object context failed to store new setting (awattarTariffIndex) attribute: \(error).")
                     return
                 }
             }
@@ -81,7 +81,7 @@ class CurrentSetting: AutoUpdatingEntity<Setting> {
                 do {
                     try managedObjectContext.save()
                 } catch {
-                    print("Managed object context failed to store new notification setting (cheapestTimeLastConsumption) attribute: \(error).")
+                    print("Managed object context failed to store new setting (cheapestTimeLastConsumption) attribute: \(error).")
                     return
                 }
             }
@@ -100,7 +100,7 @@ class CurrentSetting: AutoUpdatingEntity<Setting> {
                 do {
                     try managedObjectContext.save()
                 } catch {
-                    print("Managed object context failed to store new notification setting (cheapestTimeLastPower) attribute: \(error).")
+                    print("Managed object context failed to store new setting (cheapestTimeLastPower) attribute: \(error).")
                     return
                 }
             }
@@ -119,7 +119,7 @@ class CurrentSetting: AutoUpdatingEntity<Setting> {
                 do {
                     try managedObjectContext.save()
                 } catch {
-                    print("Managed object context failed to store new notification setting (pricesWithVAT) attribute: \(error).")
+                    print("Managed object context failed to store new setting (pricesWithVAT) attribute: \(error).")
                     return
                 }
             }
@@ -137,7 +137,7 @@ class CurrentSetting: AutoUpdatingEntity<Setting> {
                 do {
                     try managedObjectContext.save()
                 } catch {
-                    print("Managed object context failed to store new notification setting (cheapestTimeLastConsumption) attribute: \(error).")
+                    print("Managed object context failed to store new setting (cheapestTimeLastConsumption) attribute: \(error).")
                     return
                 }
             }
@@ -152,7 +152,7 @@ class CurrentSetting: AutoUpdatingEntity<Setting> {
                 do {
                     try managedObjectContext.save()
                 } catch {
-                    print("Managed object context failed to store new notification setting (showWhatsNew) attribute: \(error).")
+                    print("Managed object context failed to store new setting (showWhatsNew) attribute: \(error).")
                     return
                 }
             }
@@ -171,7 +171,7 @@ class CurrentSetting: AutoUpdatingEntity<Setting> {
                 do {
                     try managedObjectContext.save()
                 } catch {
-                    print("Managed object context failed to store new notification setting (splashScreensFinished) attribute: \(error).")
+                    print("Managed object context failed to store new setting (splashScreensFinished) attribute: \(error).")
                     return
                 }
             }

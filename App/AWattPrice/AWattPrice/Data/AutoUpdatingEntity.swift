@@ -17,11 +17,7 @@ class AutoUpdatingEntity<T: NSManagedObject>: NSObject, NSFetchedResultsControll
         self.managedObjectContext = managedObjectContext
 
         let fetchRequest = NSFetchRequest<T>(entityName: entityName)
-//        if T.self == NotificationSetting.self {
-//            fetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \NotificationSetting.getNewPricesAvailableNotification, ascending: true)]
-//        } else {
         fetchRequest.sortDescriptors = []
-//        }
         entityController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: managedObjectContext, sectionNameKeyPath: nil, cacheName: nil)
 
         super.init()
@@ -37,14 +33,6 @@ class AutoUpdatingEntity<T: NSManagedObject>: NSObject, NSFetchedResultsControll
                 entityName: entityName,
                 managedObjectContext: self.managedObjectContext,
                 fetchRequestResults: (entityController as? NSFetchedResultsController<Setting>)?.fetchedObjects ?? []
-            ) as? T
-        } else if T.self == NotificationSetting.self {
-            entity = getNotificationSetting(
-                entityName: entityName,
-                managedObjectContext: self.managedObjectContext,
-                fetchRequestResults: (
-                    entityController as? NSFetchedResultsController<NotificationSetting>
-                )?.fetchedObjects ?? []
             ) as? T
         }
     }

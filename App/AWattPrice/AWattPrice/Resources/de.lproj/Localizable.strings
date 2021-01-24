@@ -25,7 +25,9 @@
 
 // What's new splash screen localization
 "splashScreen.whatsNew.title" = "Was gibt's Neues?";
-"splashScreen.whatsNew.notifications.extrainfo" = "Tipp: Um Benachrichtigungen zu aktivieren, gehe zum \"Einstellungen\"-Tab in AWattPrice.";
+"splashScreen.whatsNew.notifications.extrainfo" = "Tipp: Um Benachrichtigungen zu aktivieren, gehen Sie zum \"Einstellungen\"-Tab in AWattPrice.";
+"splashScreen.whatsNew.withDuration.title" = "Neue Option: Dauer";
+"splashScreen.whatsNew.withDuration.extraInfo" = "Geben Sie eine Verbrauchsdauer an, um die günstigste Zeit zu finden.";
 
 // Finish splash screen localization
 "splashScreen.finish.setupFinished" = "Einrichtung abgeschlossen";
@@ -46,10 +48,10 @@
 "cheapestPricePage.timeRange" = "Zeitfenster";
 "cheapestPricePage.inputMode.withDuration.wrongTimeRangeError" = "Mit diesem Zeitintervall ist ein Mindestzeitfenster von %@ erforderlich.";
 "cheapestPricePage.inputMode.withKwh.wrongTimeRangeError" = "Mit dieser Leistung und diesem Gesamtverbrauch ist ein Mindestzeitfenster von %@ erforderlich.";
-"cheapestPricePage.todayTonight" = "heute Nacht";
-"cheapestPricePage.nextThreeHours" = "nächste 3h";
-"cheapestPricePage.nextTwelveHours" = "nächste 12h";
-"cheapestPricePage.maximal" = "maximal";
+"cheapestPricePage.todayTonight" = "Nacht";
+"cheapestPricePage.nextThreeHours" = "3h";
+"cheapestPricePage.nextTwelveHours" = "12h";
+"cheapestPricePage.maximal" = "max.";
 
 // Cheapest Price Result page localizations
 "cheapestPriceResultPage.cheapestTimeErrorOccurred" = "Es ist ein Fehler aufgetreten.\nBitte versuchen Sie es später noch einmal.";

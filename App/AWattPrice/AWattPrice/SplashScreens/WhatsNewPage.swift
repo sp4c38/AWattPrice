@@ -23,12 +23,16 @@ struct WhatsNewPage: View {
                         tipText: "splashScreen.whatsNew.notifications.extrainfo",
                         imageName: ("PriceTag", false)
                     )
+                    
+                    AppFeatureView(
+                        title: "splashScreen.whatsNew.withDuration.title",
+                        subTitle: "splashScreen.whatsNew.withDuration.extraInfo",
+                        imageName: ("timer", true)
+                    )
                 }
                 .padding(.trailing, 14)
 
-                if deviceType == .phone {
-                    Spacer()
-                }
+                Spacer()
 
                 Button(action: {
                     presentationMode.wrappedValue.dismiss()
@@ -48,5 +52,11 @@ struct WhatsNewPage: View {
 struct WhatsNewPage_Previews: PreviewProvider {
     static var previews: some View {
         WhatsNewPage()
+            .environmentObject(
+                CurrentSetting(
+                    managedObjectContext: PersistenceManager().persistentContainer.viewContext
+                )
+            )
+            .environment(\.locale, Locale(identifier: "de"))
     }
 }

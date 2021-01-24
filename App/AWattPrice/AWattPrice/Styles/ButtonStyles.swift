@@ -27,7 +27,7 @@ struct ContinueButtonStyle: ButtonStyle {
             .foregroundColor(Color.white)
             .frame(maxWidth: .infinity)
             .padding()
-            .background(Color.orange)
+            .background(Color.blue)
             .cornerRadius(11)
     }
 }

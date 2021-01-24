@@ -27,6 +27,8 @@
 // What's new splash screen localization
 "splashScreen.whatsNew.title" = "What's new?";
 "splashScreen.whatsNew.notifications.extrainfo" = "Tip: Go to the Settings tab in AWattPrice to enable notifications.";
+"splashScreen.whatsNew.withDuration.title" = "New option: Duration";
+"splashScreen.whatsNew.withDuration.extraInfo" = "Enter a consumption duration to find the cheapest time.";
 
 // Finish splash screen localization
 "splashScreen.finish.setupFinished" = "Setup finished";
@@ -47,10 +49,10 @@
 "cheapestPricePage.timeRange" = "Time range";
 "cheapestPricePage.inputMode.withDuration.wrongTimeRangeError" = "With this time interval a minimum time range of %@ is required.";
 "cheapestPricePage.inputMode.withKwh.wrongTimeRangeError" = "With this power output and this total consumption a minimum time range of %@ is required.";
-"cheapestPricePage.todayTonight" = "Tonight";
-"cheapestPricePage.nextThreeHours" = "next 3h";
-"cheapestPricePage.nextTwelveHours" = "next 12h";
-"cheapestPricePage.maximal" = "maximal";
+"cheapestPricePage.todayTonight" = "night";
+"cheapestPricePage.nextThreeHours" = "3h";
+"cheapestPricePage.nextTwelveHours" = "12h";
+"cheapestPricePage.maximal" = "max.";
 
 // Cheapest Price Result page localizations
 "cheapestPriceResultPage.cheapestTimeErrorOccurred" = "An error occurred.\nPlease try again later.";

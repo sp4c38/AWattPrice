@@ -5,9 +5,10 @@
 //  Created by Léon Becker on 25.10.20.
 //
 
+// General extensions
+
 import SwiftUI
 
-// View extensions
 extension View {
     /// Hides the keyboard from the screen
     func hideKeyboard() {
@@ -64,7 +65,7 @@ extension AnyTransition {
     }
 }
 
-// String extensions
+// Basic types extensions
 extension String {
     /// The double value of a string. This supports , and . as seperator. This attribute is nil if the string can't be converted to a double and a double if conversion was successful.
     var doubleValue: Double? {
@@ -128,6 +129,14 @@ extension String {
     }
 }
 
+extension String {
+    /// Returns the localized string of a string.
+    /// If you wish to format a localized string use String(format: String.localized(), value)
+    func localized() -> String {
+        NSLocalizedString(self, comment: "")
+    }
+}
+
 extension Double {
     var priceString: String? {
         let numberFormatter = NumberFormatter()
@@ -157,13 +166,5 @@ extension Int {
         } else {
             return nil
         }
-    }
-}
-
-extension String {
-    /// Returns the localized string of a string.
-    /// If you wish to format a localized string use String(format: String.localized(), value)
-    func localized() -> String {
-        NSLocalizedString(self, comment: "")
     }
 }

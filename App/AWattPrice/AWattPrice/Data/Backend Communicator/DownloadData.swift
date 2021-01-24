@@ -10,7 +10,12 @@ import Network
 import SwiftUI
 
 /// A single energy price data point. It has a start and end time. Throughout this time range a certain marketprice/energy price applies. This price is also held in this energy price data point.
-struct EnergyPricePoint: Hashable, Codable {
+struct EnergyPricePoint: Hashable, Codable, Comparable {
+    /// Will compare by start timestamp.
+    static func < (lhs: EnergyPricePoint, rhs: EnergyPricePoint) -> Bool {
+        return lhs.startTimestamp < rhs.startTimestamp
+    }
+    
     var startTimestamp: Int
     var endTimestamp: Int
     var marketprice: Double

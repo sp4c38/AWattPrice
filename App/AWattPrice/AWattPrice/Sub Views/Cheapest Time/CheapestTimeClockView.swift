@@ -24,15 +24,12 @@ struct CheapestTimeClockView: View {
     var hourDegree = (0, 0)
 
     init(_ cheapestHourPair: HourPair) {
-        let minItemIndex = 0
-        let maxItemIndex = cheapestHourPair.associatedPricePoints.count - 1
-
         if cheapestHourPair.associatedPricePoints.count >= 1 {
-            let startTimeFirstItem = Date(timeIntervalSince1970: TimeInterval(cheapestHourPair.associatedPricePoints[minItemIndex].startTimestamp))
+            let startTimeFirstItem = cheapestHourPair.associatedPricePoints.first!.startTimestamp
             let startHour = Float(calendar.component(.hour, from: startTimeFirstItem))
             let startMinuteFraction = Float(calendar.component(.minute, from: startTimeFirstItem)) / 60
 
-            let endTimeLastItem = Date(timeIntervalSince1970: TimeInterval(cheapestHourPair.associatedPricePoints[maxItemIndex].endTimestamp))
+            let endTimeLastItem = cheapestHourPair.associatedPricePoints.last!.endTimestamp
             let endHour = Float(calendar.component(.hour, from: endTimeLastItem))
             let endMinuteFraction = Float(calendar.component(.minute, from: endTimeLastItem)) / 60
 
@@ -294,8 +291,8 @@ struct ConsumptionClockView_Previews: PreviewProvider {
         CheapestTimeClockView(
             HourPair(
                 associatedPricePoints: [EnergyPricePoint(
-                    startTimestamp: 1_603_184_400,
-                    endTimestamp: 1_603_189_800,
+                    startTimestamp: Date(timeIntervalSince1970: TimeInterval(1_603_184_400)),
+                    endTimestamp: Date(timeIntervalSince1970: TimeInterval(1_603_189_800)),
                     marketprice: 3
                 )]
             )

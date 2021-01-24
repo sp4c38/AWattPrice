@@ -19,14 +19,12 @@ struct CheapestTimeResultTimeRange: View {
 
     func getDateString(start: Bool, end: Bool) -> String {
         if !(start == false && end == false) && !(start == true && end == true) {
-            var timeInterval = TimeInterval(0)
+            var startDate = Date(timeIntervalSince1970: 0)
             if start == true {
-                timeInterval = TimeInterval(cheapestHourManager.cheapestHoursForUsage!.associatedPricePoints[0].startTimestamp)
+                startDate = cheapestHourManager.cheapestHoursForUsage!.associatedPricePoints.first!.startTimestamp
             } else if end == true {
-                let maxItem = cheapestHourManager.cheapestHoursForUsage!.associatedPricePoints.endIndex - 1
-                timeInterval = TimeInterval(cheapestHourManager.cheapestHoursForUsage!.associatedPricePoints[maxItem].endTimestamp)
+                startDate = cheapestHourManager.cheapestHoursForUsage!.associatedPricePoints.last!.endTimestamp
             }
-            let startDate = Date(timeIntervalSince1970: timeInterval)
             return dateFormatter.string(from: startDate)
         } else {
             return ""
@@ -111,15 +109,8 @@ struct CheapestTimeResultView: View {
     }
 
     func getTotalTime() -> String {
-        let firstItemStart = Date(
-            timeIntervalSince1970:
-            TimeInterval(cheapestHourManager.cheapestHoursForUsage!.associatedPricePoints[0].startTimestamp)
-        )
-        let maxPointIndex = cheapestHourManager.cheapestHoursForUsage!.associatedPricePoints.count - 1
-        let lastItemEnd = Date(
-            timeIntervalSince1970:
-            TimeInterval(cheapestHourManager.cheapestHoursForUsage!.associatedPricePoints[maxPointIndex].endTimestamp)
-        )
+        let firstItemStart = cheapestHourManager.cheapestHoursForUsage!.associatedPricePoints[0].startTimestamp
+        let lastItemEnd = cheapestHourManager.cheapestHoursForUsage!.associatedPricePoints.last!.endTimestamp
         let interval = Int(lastItemEnd.timeIntervalSince(firstItemStart))
         let hours = Int(
             (Double(interval) / 3600)
@@ -176,11 +167,11 @@ struct CheapestTimeResultView: View {
         .onAppear {
             cheapestHourManager.calculateCheapestHours(energyData: backendComm.energyData!, currentSetting: currentSetting)
         }
-        .onChange(of: currentSetting.entity!.awattarTariffIndex) { _ in
-            // The tariff selection has affects on the hourly price which was calculated previously. That's why it has to be recalculated when the tariff selection changes.
-            if cheapestHourManager.cheapestHoursForUsage != nil {
-                cheapestHourManager.cheapestHoursForUsage!.calculateHourlyPrice(currentSetting: currentSetting)
-            }
-        }
+//        .onChange(of: currentSetting.entity!.awattarTariffIndex) { _ in
+//            // The tariff selection has affects on the hourly price which was calculated previously. That's why it has to be recalculated when the tariff selection changes.
+//            if cheapestHourManager.cheapestHoursForUsage != nil {
+//                cheapestHourManager.cheapestHoursForUsage!.calculateHourlyPrice(currentSetting: currentSetting)
+//            }
+//        }
     }
 }

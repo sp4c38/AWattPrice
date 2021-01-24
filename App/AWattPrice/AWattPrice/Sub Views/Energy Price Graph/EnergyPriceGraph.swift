@@ -103,11 +103,11 @@ struct EnergyPriceGraph: View {
                 graphHourPointData = []
                 dateMarkPointIndex = nil
 
-                let firstItemDate = Date(timeIntervalSince1970: TimeInterval(energyData.prices[0].startTimestamp))
+                let firstItemDate = energyData.prices.first!.startTimestamp
                 var currentHeight: CGFloat = localHeaderSize.height
                 for hourPointEntry in energyData.prices {
                     graphHourPointData.append((hourPointEntry, currentHeight))
-                    let currentItemDate = Date(timeIntervalSince1970: TimeInterval(hourPointEntry.startTimestamp))
+                    let currentItemDate = hourPointEntry.startTimestamp
 
                     if !(Calendar.current.compare(firstItemDate, to: currentItemDate, toGranularity: .day) == .orderedSame), dateMarkPointIndex == nil {
                         var hourPointEntryIndex = (currentHeight - localHeaderSize.height) / singleHeight

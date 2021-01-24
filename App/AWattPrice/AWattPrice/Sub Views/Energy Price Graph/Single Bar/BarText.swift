@@ -54,9 +54,9 @@ struct HourOfDayText: View {
                 .position(x: (isSelected == 1 || isSelected == 2) ? startWidthPadding + 30 + fontSize : startWidthPadding + fontSize + 20, y: startHeight + (height / 2))
 
             HStack(spacing: 5) {
-                Text(singleBarSettings.hourFormatter.string(from: Date(timeIntervalSince1970: TimeInterval(hourDataPoint.startTimestamp))))
+                Text(singleBarSettings.hourFormatter.string(from: hourDataPoint.startTimestamp))
                 Text("-")
-                Text(singleBarSettings.hourFormatter.string(from: Date(timeIntervalSince1970: TimeInterval(hourDataPoint.endTimestamp))))
+                Text(singleBarSettings.hourFormatter.string(from: hourDataPoint.endTimestamp))
             }
             .foregroundColor(colorScheme == .light ? Color.black : Color.white)
             .animatableFont(size: fontSize + 2, weight: fontWeight)

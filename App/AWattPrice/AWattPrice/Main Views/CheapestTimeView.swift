@@ -120,13 +120,9 @@ struct CheapestTimeView: View {
     @State var redirectToComparisonResults: Int? = 0
 
     var energyDataTimeRange: ClosedRange<Date> {
-        let maxHourIndex = backendComm.energyData!.prices.count - 1
-
         // Add one or subtract one to not overlap to the next or previouse day
-        let min = Date(timeIntervalSince1970: TimeInterval(backendComm.energyData!.prices[0].startTimestamp + 1))
-        let max = Date(timeIntervalSince1970:
-            TimeInterval(backendComm.energyData!.prices[maxHourIndex].endTimestamp - 1)
-        )
+        let min = backendComm.energyData!.prices.first!.startTimestamp.addingTimeInterval(1)
+        let max = backendComm.energyData!.prices.last!.endTimestamp.addingTimeInterval(-1)
 
         return min ... max
     }

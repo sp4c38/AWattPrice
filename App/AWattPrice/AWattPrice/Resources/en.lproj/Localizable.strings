@@ -92,10 +92,11 @@
 "notificationPage.notification.priceDropsBelowValue.description.firstLine.pt5" = "your wish price.";
 "notificationPage.notification.priceDropsBelowValue.description.secondLine" = "Notifications for prices of the current day were therefore already sent the day before.";
 
-// Data download error view
-"dataError.tryAgainLater" = "Please try again later";
-"dataError.noDataAvailable" = "No data available\nPlease try again later";
-"dataError.settingsLoadingError" = "Settings couldn't be loaded\nPlease try again later";
+// Data error localizations
+"dataError.download.tryAgainLater" = "Please try again later";
+"dataError.download.noDataAvailable" = "No data available\nPlease try again later";
+"dataError.settings.settingsLoadingError" = "Settings couldn't be loaded\nPlease try again later";
+"dataError.apns.errorUploading" = "Error uploading notification settings."
 
 // General localizations
 "general.loading" = "Loading";
@@ -126,6 +127,7 @@
 "general.hours" = "hours";
 "general.min" = "min";
 "general.view" = "View";
+"general.tryAgain" = "Try again"
 
 // Total Time Formatter localizations
 "totalTimeFormatter.onlyHour"  = "%@h";

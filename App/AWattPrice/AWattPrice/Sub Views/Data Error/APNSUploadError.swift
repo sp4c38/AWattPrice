@@ -17,7 +17,7 @@ struct APNSUploadError: View {
                 Image(systemName: "exclamationmark.circle")
                     .font(.title)
                 
-                Text("Error uploading notification settings.")
+                Text("dataError.apns.errorUploading")
             }
             
             Button(action: {
@@ -25,7 +25,7 @@ struct APNSUploadError: View {
                     currentSetting, crtNotifiSetting
                 )
             }) {
-                Text("Try again")
+                Text("general.retry")
                     .bold()
                     .padding(5)
                     .overlay(

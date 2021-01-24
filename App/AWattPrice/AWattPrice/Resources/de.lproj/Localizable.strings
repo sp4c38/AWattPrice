@@ -91,10 +91,11 @@
 "notificationPage.notification.priceDropsBelowValue.description.firstLine.pt5" = "Ihren Wunschpreis sinkt.";
 "notificationPage.notification.priceDropsBelowValue.description.secondLine" = "Über Preise des aktuellen Tages wurde somit schon am Tag davor benachrichtigt.";
 
-// Data download error view
-"dataError.tryAgainLater" = "Bitte versuchen Sie es\nspäter noch einmal.";
-"dataError.noDataAvailable" = "Keine Daten verfügbar.\nBitte versuchen Sie es später erneut.";
-"dataError.settingsLoadingError" = "Einstellungen konnten nicht\ngeladen werden.\nBitte versuchen Sie es\nspäter erneut.";
+// Data error localizations
+"dataError.download.tryAgainLater" = "Bitte versuchen Sie es\nspäter noch einmal.";
+"dataError.download.noDataAvailable" = "Keine Daten verfügbar.\nBitte versuchen Sie es später erneut.";
+"dataError.settings.settingsLoadingError" = "Einstellungen konnten nicht\ngeladen werden.\nBitte versuchen Sie es\nspäter erneut.";
+"dataError.apns.errorUploading" = "Fehler beim Hochladen der Benachrichtigungseinstellungen."
 
 // General localizations
 "general.loading" = "Lädt";

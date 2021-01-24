@@ -34,7 +34,7 @@ struct DataRetrievalError: View {
                     .foregroundColor(Color.orange)
                     .font(.system(size: 60, weight: .light))
 
-                Text("dataError.tryAgainLater")
+                Text("dataError.download.tryAgainLater")
                     .font(.title3)
                     .multilineTextAlignment(.center)
 
@@ -70,7 +70,7 @@ struct CurrentlyNoData: View {
                     .foregroundColor(Color(red: 0.99, green: 0.74, blue: 0.04, opacity: 1.0))
                     .font(.system(size: 60, weight: .light))
 
-                Text("dataError.noDataAvailable")
+                Text("dataError.download.noDataAvailable")
                     .font(.title3)
                     .multilineTextAlignment(.center)
 
@@ -103,7 +103,7 @@ struct SettingLoadingError: View {
                     .foregroundColor(Color.red)
                     .font(.system(size: 60, weight: .light))
 
-                Text("dataError.settingsLoadingError")
+                Text("dataError.settings.settingsLoadingError")
                     .foregroundColor(Color.red)
                     .font(.title3)
                     .multilineTextAlignment(.center)

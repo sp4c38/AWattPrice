@@ -77,10 +77,10 @@
 "settingsPage.suggestionByEmail" = "Send suggestions by email";
 "settingsPage.version" = "Version";
 
-// Data download error view
-"dataError.tryAgainLater" = "Please try again later";
-"dataError.noDataAvailable" = "No data available\nPlease try again later";
-"dataError.settingsLoadingError" = "Settings couldn't be loaded\nPlease try again later";
+// Data error localizations
+"dataError.download.tryAgainLater" = "Please try again later";
+"dataError.download.noDataAvailable" = "No data available\nPlease try again later";
+"dataError.settings.settingsLoadingError" = "Settings couldn't be loaded\nPlease try again later";
 
 // General localizations
 "general.loading" = "Loading";
@@ -110,6 +110,7 @@
 "general.hours" = "hours";
 "general.min" = "min";
 "general.view" = "View";
+"general.tryAgain" = "Try again"
 
 // Total Time Formatter localizations
 "totalTimeFormatter.onlyHour"  = "%@h";

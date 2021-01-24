@@ -87,7 +87,9 @@ extension CheapestHourManager {
     /// Sets the selected time interval to tonight from 20pm first day to 7am next day
     func setTimeIntervalThisNight(with energyData: EnergyData) {
         var possibleStartDate = Date()
-        if Calendar.current.component(.hour, from: Date()) >= 0, Calendar.current.component(.hour, from: Date()) < 7 {
+        let currentHour = Calendar.current.component(.hour, from: possibleStartDate)
+        print(currentHour)
+        if currentHour >= 20 || currentHour < 7 {
             possibleStartDate = Date()
         } else {
             possibleStartDate = Calendar.current.date(bySettingHour: 20, minute: 0, second: 0, of: Date())!
@@ -96,13 +98,13 @@ extension CheapestHourManager {
 
         let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: Date())!
         var possibleEndDate = Date()
-        if Calendar.current.component(.hour, from: Date()) >= 0, Calendar.current.component(.hour, from: Date()) < 7 {
+        if currentHour >= 0, currentHour < 7 {
             possibleEndDate = Calendar.current.date(bySettingHour: 7, minute: 0, second: 0, of: Date())!
         } else {
             possibleEndDate = Calendar.current.date(bySettingHour: 7, minute: 0, second: 0, of: tomorrow)!
         }
         let lastPossibleEndDate = energyData.prices.last!.endTimestamp
-
+        
         if possibleStartDate >= firstPossibleStartDate, possibleStartDate <= lastPossibleEndDate {
             startDate = possibleStartDate
         } else {

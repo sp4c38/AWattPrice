@@ -72,12 +72,12 @@ struct TimeRangeInputFieldQuickSelectButtons: View {
     
     var buttons = [
         "cheapestPricePage.todayTonight",
-        "cheapestPricePage.maximal",
         "cheapestPricePage.nextThreeHours",
-        "cheapestPricePage.nextTwelveHours"
+        "cheapestPricePage.nextTwelveHours",
+        "cheapestPricePage.maximal"
     ]
     
-    var gridLayout = [GridItem(.adaptive(minimum: 100), spacing: 10, alignment: .center)]
+    var gridLayout = [GridItem(.adaptive(minimum: 70), spacing: 0, alignment: .center)]
     
     var body: some View {
         LazyVGrid(columns: gridLayout, alignment: .center, spacing: 10) {

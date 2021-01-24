@@ -64,6 +64,45 @@ struct TimeRangeInputFieldSelectionPart: View {
     }
 }
 
+struct TimeRangeInputFieldQuickSelectButtons: View {
+    @EnvironmentObject var backendComm: BackendCommunicator
+    @EnvironmentObject var cheapestHourManager: CheapestHourManager
+    
+    @State var buttonSize = CGSize(width: 0, height: 0)
+    
+    var buttons = [
+        "cheapestPricePage.todayTonight",
+        "cheapestPricePage.maximal",
+        "cheapestPricePage.nextThreeHours",
+        "cheapestPricePage.nextTwelveHours"
+    ]
+    
+    var gridLayout = [GridItem(.adaptive(minimum: 100), spacing: 10, alignment: .center)]
+    
+    var body: some View {
+        LazyVGrid(columns: gridLayout, alignment: .center, spacing: 10) {
+            ForEach(buttons, id: \.self) { name in
+                Button(action: {
+                    if name == "cheapestPricePage.todayTonight" {
+                        cheapestHourManager.setTimeIntervalThisNight(with: backendComm.energyData!)
+                    } else if name == "cheapestPricePage.maximal" {
+                        cheapestHourManager.setMaxTimeInterval(with: backendComm.energyData!)
+                    } else if name == "cheapestPricePage.nextThreeHours" {
+                        cheapestHourManager.setTimeInterval(forHours: 3, with: backendComm.energyData!)
+                    } else if name == "cheapestPricePage.nextTwelveHours" {
+                        cheapestHourManager.setTimeInterval(forHours: 12, with: backendComm.energyData!)
+                    }
+                }) {
+                    Text(name.localized())
+                        .fontWeight(.semibold)
+                }
+                .buttonStyle(TimeRangeButtonStyle())
+            }
+        }
+        .padding(.top, 3)
+    }
+}
+
 /// A input field for the time range in the consumption comparison view.
 struct TimeRangeInputField: View {
     @Environment(\.colorScheme) var colorScheme
@@ -112,43 +151,12 @@ struct TimeRangeInputField: View {
             .padding(.top, 10)
             .padding(.bottom, 15)
 
-            quickSelectButtons
+            TimeRangeInputFieldQuickSelectButtons()
         }
         .frame(maxWidth: .infinity)
         .onReceive(backendComm.$energyData) { _ in
             self.setTimeIntervalValues()
         }
-    }
-}
-
-extension TimeRangeInputField {
-    var quickSelectButtons: some View {
-        HStack(alignment: .center) {
-            Button(action: {
-                cheapestHourManager.setTimeIntervalThisNight(energyData: backendComm.energyData!)
-            }) {
-                Text("cheapestPricePage.todayTonight")
-                    .fontWeight(.semibold)
-            }
-            .buttonStyle(TimeRangeButtonStyle())
-
-            Button(action: {
-                cheapestHourManager.setTimeInterval(forNextHourAmount: 3, energyData: backendComm.energyData!)
-            }) {
-                Text("cheapestPricePage.nextThreeHours")
-                    .fontWeight(.semibold)
-            }
-            .buttonStyle(TimeRangeButtonStyle())
-
-            Button(action: {
-                cheapestHourManager.setTimeInterval(forNextHourAmount: 12, energyData: backendComm.energyData!)
-            }) {
-                Text("cheapestPricePage.nextTwelveHours")
-                    .fontWeight(.semibold)
-            }
-            .buttonStyle(TimeRangeButtonStyle())
-        }
-        .padding(.top, 3)
     }
 }
 

@@ -85,7 +85,7 @@ extension CheapestHourManager {
 
 extension CheapestHourManager {
     /// Sets the selected time interval to tonight from 20pm first day to 7am next day
-    func setTimeIntervalThisNight(energyData: EnergyData) {
+    func setTimeIntervalThisNight(with energyData: EnergyData) {
         var possibleStartDate = Date()
         if Calendar.current.component(.hour, from: Date()) >= 0, Calendar.current.component(.hour, from: Date()) < 7 {
             possibleStartDate = Date()
@@ -118,7 +118,7 @@ extension CheapestHourManager {
     }
 
     /// Sets the selected time interval to the next x hours
-    func setTimeInterval(forNextHourAmount hourAmount: Int, energyData: EnergyData) {
+    func setTimeInterval(forHours hourAmount: Int, with energyData: EnergyData) {
         startDate = Date()
         let possibleEndDate = Calendar.current.date(byAdding: .hour, value: hourAmount, to: Date())!
         let lastPossibleEndDate = Date(timeIntervalSince1970: TimeInterval(energyData.prices[energyData.prices.count - 1].endTimestamp))
@@ -127,6 +127,19 @@ extension CheapestHourManager {
             endDate = lastPossibleEndDate
         } else {
             endDate = possibleEndDate
+        }
+    }
+    
+    func setMaxTimeInterval(with energyData: EnergyData) {
+        startDate = Date()
+        endDate = Date(timeIntervalSince1970: TimeInterval(energyData.prices.last!.endTimestamp))
+        let calendar = Calendar.current
+        
+        if calendar.component(.hour, from: endDate) == 0 && startDate > endDate {
+            // Toggles if the last hour is the hour at midnight.
+            // In this case subtract 60 s because the end date time selection
+            // can't be set to 00:00 but needs to be set to 23:59.
+            endDate.addTimeInterval(-60)
         }
     }
 }

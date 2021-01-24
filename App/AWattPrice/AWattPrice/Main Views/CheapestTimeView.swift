@@ -205,7 +205,7 @@ struct CheapestTimeView_Previews: PreviewProvider {
             TabBar()
                 .environmentObject(TBItems())
         }
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(.light)
         .environment(\.locale, Locale(identifier: "de_DE"))
     }
 }

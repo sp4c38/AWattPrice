@@ -50,6 +50,7 @@
 "cheapestPricePage.todayTonight" = "Tonight";
 "cheapestPricePage.nextThreeHours" = "next 3h";
 "cheapestPricePage.nextTwelveHours" = "next 12h";
+"cheapestPricePage.maximal" = "maximal";
 
 // Cheapest Price Result page localizations
 "cheapestPriceResultPage.cheapestTimeErrorOccurred" = "An error occurred.\nPlease try again later.";

@@ -88,7 +88,7 @@ extension CheapestHourManager {
     func setTimeIntervalThisNight(with energyData: EnergyData) {
         var possibleStartDate = Date()
         let currentHour = Calendar.current.component(.hour, from: possibleStartDate)
-        print(currentHour)
+
         if currentHour >= 20 || currentHour < 7 {
             possibleStartDate = Date()
         } else {

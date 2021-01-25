@@ -17,13 +17,13 @@ struct SplashScreenStartViewTitle: View {
             VStack(spacing: 5) {
                 Text("splashScreen.start.welcome")
                     .font(
-                        .custom("SFCompactDisplay-Black", size: 35)
+                        .custom("SFCompactDisplay-Black", fixedSize: 35)
                     )
 
                 Text("AWattPrice")
                     .foregroundColor(Color(hue: 0.5648, saturation: 1.0000, brightness: 0.6235))
                     .font(
-                        .custom("SFCompactDisplay-Black", size: 50)
+                        .custom("SFCompactDisplay-Black", fixedSize: 50)
                     )
             }
         }
@@ -40,18 +40,18 @@ struct SplashScreenStartView: View {
     var body: some View {
         NavigationView {
             VStack {
-                Spacer()
+                Spacer(minLength: 5)
 
                 SplashScreenStartViewTitle()
 
-                Spacer()
-                Spacer()
+                Spacer(minLength: 5)
+                Spacer(minLength: 5)
 
                 NavigationLink("", destination: SplashScreenFeaturesAndConsentView(), tag: 1, selection: $redirectToNextSplashScreen)
                     .frame(width: 0, height: 0)
                     .hidden()
 
-                NotAffiliatedView(showGrayedOut: false)
+                NotAffiliatedView(setFixedSize: true, showGrayedOut: false)
                     .padding(.bottom, 20)
 
                 Button(action: {

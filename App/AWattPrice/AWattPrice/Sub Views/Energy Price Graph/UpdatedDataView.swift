@@ -59,7 +59,7 @@ struct UpdatedDataView: View {
 
             Spacer()
         }
-        .font(.caption)
+        .font(.fCaption)
         .animation(.easeInOut)
         .onAppear {
             updateLocalizedTimeIntervalString()

@@ -65,6 +65,17 @@ extension AnyTransition {
     }
 }
 
+// Font extensions
+extension Font {
+    /// Fixed text sizes
+    static let fTitle2 = Font.system(size: 20, weight: .regular)
+    static let fHeadline = Font.system(size: 19, weight: .bold)
+    static let fSubHeadline = Font.system(size: 15, weight: .regular)
+    static let fCallout = Font.system(size: 17, weight: .regular)
+    static let fBody = Font.system(size: 16, weight: .regular)
+    static let fCaption = Font.system(size: 12, weight: .regular)
+}
+
 // Basic types extensions
 extension String {
     /// The double value of a string. This supports , and . as seperator. This attribute is nil if the string can't be converted to a double and a double if conversion was successful.

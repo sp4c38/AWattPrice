@@ -35,15 +35,13 @@ struct CheapestTimeResultTimeRange: View {
         VStack(alignment: .center, spacing: 5) {
             Text(getDateString(start: true, end: false))
                 .bold()
-                .font(.title2)
-
+            
             Text("general.until")
-                .font(.title2)
 
             Text(getDateString(start: false, end: true))
                 .bold()
-                .font(.title2)
         }
+        .font(.fTitle2)
     }
 }
 
@@ -137,6 +135,7 @@ struct CheapestTimeResultView: View {
                     Text(getTotalTime())
                         .bold()
                 }
+                .font(.fBody)
 
                 Spacer(minLength: 0)
 
@@ -149,7 +148,7 @@ struct CheapestTimeResultView: View {
                     Text(todayDateFormatter.string(from: Date()))
                         .bold()
                 }
-                .font(.callout)
+                .font(.fCallout)
 
                 Spacer(minLength: 0)
             } else if cheapestHourManager.errorOccurredFindingCheapestHours == true {

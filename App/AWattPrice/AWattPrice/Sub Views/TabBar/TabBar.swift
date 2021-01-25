@@ -42,7 +42,7 @@ struct TabBar: View {
                                 .frame(width: 20, height: 20)
 
                             Text(tabBarItems.items[tabBarItemIndex].itemSubtitle.localized())
-                                .font(.caption)
+                                .font(.fCaption)
                         }
                         .foregroundColor(
                             tabBarItemIndex == tabBarItems.selectedItemIndex ?

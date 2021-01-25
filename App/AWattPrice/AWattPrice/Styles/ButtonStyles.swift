@@ -10,7 +10,7 @@ import SwiftUI
 struct ActionButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(.fHeadline)
+            .font(Font.fSubHeadline.bold())
             .foregroundColor(Color.white)
             .frame(maxWidth: .infinity)
             .padding()
@@ -24,7 +24,7 @@ struct ActionButtonStyle: ButtonStyle {
 struct ContinueButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(.fBody)
+            .font(Font.fBody.bold())
             .foregroundColor(Color.white)
             .frame(maxWidth: .infinity)
             .padding()

@@ -69,7 +69,7 @@ extension AnyTransition {
 extension Font {
     /// Fixed text sizes
     static let fTitle2 = Font.system(size: 20, weight: .regular)
-    static let fHeadline = Font.system(size: 19, weight: .bold)
+    static let fHeadline = Font.system(size: 17, weight: .bold)
     static let fSubHeadline = Font.system(size: 15, weight: .regular)
     static let fCallout = Font.system(size: 17, weight: .regular)
     static let fBody = Font.system(size: 16, weight: .regular)

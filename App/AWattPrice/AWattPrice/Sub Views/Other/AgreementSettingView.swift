@@ -25,7 +25,7 @@ struct AgreementSettingView: View {
                 Text(agreementName.localized())
                     .font(.subheadline)
 
-                Spacer()
+                Spacer(minLength: 3)
 
                 Image(systemName: "chevron.right")
                     .font(Font.caption.weight(.semibold))

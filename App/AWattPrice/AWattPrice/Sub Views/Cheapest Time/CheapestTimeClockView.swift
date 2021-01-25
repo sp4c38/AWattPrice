@@ -86,7 +86,7 @@ struct CheapestTimeClockView: View {
         let hourIndicatorLineWidth = CGFloat(2)
         let middlePointRadius = CGFloat(5)
 
-        let clockWidth = 6.5 * (width / 10)
+        let clockWidth = 6.3 * (width / 10)
         let hourBorderIndicatorWidth = CGFloat(4)
         let hourMarkerRadius = CGFloat(0.85 * ((clockWidth / 2) - circleLineWidth))
         let minuteIndicatorWidth = CGFloat((clockWidth / 2) - hourBorderIndicatorWidth - 10)
@@ -256,7 +256,7 @@ struct CheapestTimeClockView: View {
                     }
                 }
             }
-            .font(.fHeadline)
+            .font(deviceType == .phone ? .fHeadline : .fTitle2)
             .position(x: clockRightSideStartWidth + clockWidth / 2,
                       y: endDateString == nil ? clockStartHeight + (clockWidth / 4) + (hourMarkerLineWidth / 2) : clockStartHeight + (clockWidth / 3))
 

@@ -25,7 +25,7 @@
 // What's new splash screen localization
 "splashScreen.whatsNew.title" = "What's new?";
 "splashScreen.whatsNew.withDuration.title" = "New option: Duration";
-"splashScreen.whatsNew.withDuration.extraInfo" = "Enter a consumption duration to find the cheapest time.";
+"splashScreen.whatsNew.withDuration.extraInfo" = "You can now enter a duration for which to find the cheapest time.";
 
 // Finish splash screen localization
 "splashScreen.finish.setupFinished" = "Setup finished";

@@ -114,6 +114,11 @@ struct HomeView: View {
         .sheet(isPresented: $showWhatsNewPage) {
             WhatsNewPage()
         }
+        .onChange(of: showWhatsNewPage) { newValue in
+            if newValue == false {
+                currentSetting.changeShowWhatsNew(newValue: false)
+            }
+        }
     }
 }
 

@@ -25,7 +25,7 @@
 // What's new splash screen localization
 "splashScreen.whatsNew.title" = "Was gibt's Neues?";
 "splashScreen.whatsNew.withDuration.title" = "Neue Option: Dauer";
-"splashScreen.whatsNew.withDuration.extraInfo" = "Geben Sie eine Verbrauchsdauer an, um die günstigste Zeit zu finden.";
+"splashScreen.whatsNew.withDuration.extraInfo" = "Sie können nun eine Dauer eingeben, um die günstigste Zeit zu finden.";
 
 // Finish splash screen localization
 "splashScreen.finish.setupFinished" = "Einrichtung abgeschlossen";

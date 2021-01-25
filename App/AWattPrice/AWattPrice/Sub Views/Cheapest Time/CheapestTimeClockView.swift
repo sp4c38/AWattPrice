@@ -256,7 +256,7 @@ struct CheapestTimeClockView: View {
                     }
                 }
             }
-            .font(.headline)
+            .font(.fHeadline)
             .position(x: clockRightSideStartWidth + clockWidth / 2,
                       y: endDateString == nil ? clockStartHeight + (clockWidth / 4) + (hourMarkerLineWidth / 2) : clockStartHeight + (clockWidth / 3))
 

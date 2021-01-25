@@ -48,7 +48,7 @@ struct TimeRangeInputFieldSelectionPart: View {
         HStack {
             Text(name.localized())
                 .bold()
-                .font(.callout)
+                .font(.fCallout)
                 .foregroundColor(
                     colorScheme == .light ?
                         Color(hue: 0.0000, saturation: 0.0000, brightness: 0.4314) :
@@ -94,6 +94,7 @@ struct TimeRangeInputFieldQuickSelectButtons: View {
                     }
                 }) {
                     Text(name.localized())
+                        .font(.fBody)
                         .fontWeight(.semibold)
                 }
                 .buttonStyle(TimeRangeButtonStyle())

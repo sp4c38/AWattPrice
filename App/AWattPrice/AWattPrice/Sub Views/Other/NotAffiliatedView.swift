@@ -8,20 +8,27 @@
 import SwiftUI
 
 struct NotAffiliatedView: View {
-    var showGrayedOut: Bool
-
+    let setFixedSize: Bool
+    let showGrayedOut: Bool
+    
+    init(setFixedSize: Bool = false, showGrayedOut: Bool) {
+        self.setFixedSize = setFixedSize
+        self.showGrayedOut = showGrayedOut
+    }
+    
     var body: some View {
         HStack(alignment: .top, spacing: 10) {
             Image(systemName: "info.circle")
-                .font(.headline)
+                .font(.fSubHeadline)
                 .foregroundColor(Color.blue)
 
             Text("splashScreen.start.notAffiliatedNote")
-                .font(.subheadline)
+                .font(setFixedSize ? .fSubHeadline : .subheadline)
                 .ifTrue(showGrayedOut == true) { content in
                     content
                         .foregroundColor(Color.gray)
                 }
+                .fixedSize(horizontal: false, vertical: true)
         }
     }
 }

@@ -55,11 +55,12 @@ struct AppFeatureView: View {
 
                     VStack(alignment: .leading, spacing: 5) {
                         Text(title)
-                            .font(.headline)
+                            .font(.fHeadline)
+                            .bold()
                             .foregroundColor(colorScheme == .light ? Color.black : Color.white)
 
                         Text(subTitle)
-                            .font(.subheadline)
+                            .font(.fSubHeadline)
                             .foregroundColor(colorScheme == .light ? Color.black : Color.white)
                             .fixedSize(horizontal: false, vertical: true)
                     }
@@ -68,7 +69,7 @@ struct AppFeatureView: View {
                 if tipText != nil {
                     Text(tipText!)
                         .foregroundColor(Color.gray)
-                        .font(.subheadline)
+                        .font(.fSubHeadline)
                         .padding(.top, 10)
                         .padding(.leading, 80)
                 }
@@ -126,7 +127,7 @@ struct AgreementConsentView: View {
 
             VStack(alignment: .leading, spacing: 5) {
                 Text(agreeText.localized())
-                    .font(.subheadline)
+                    .font(.fSubHeadline)
                     .foregroundColor(Color.white)
                     .colorMultiply(getForegroundColor(isText: true))
 
@@ -135,7 +136,7 @@ struct AgreementConsentView: View {
                 }) {
                     HStack {
                         Text(seeAgreementText.localized())
-                            .font(.subheadline)
+                            .font(.fSubHeadline)
                         Image(systemName: "chevron.right")
                     }
                     .foregroundColor(Color.blue)
@@ -227,6 +228,7 @@ struct SplashScreenFeaturesAndConsentView: View {
                 }
             }) {
                 Text("general.continue")
+                    .font(.fBody)
             }
             .buttonStyle(ContinueButtonStyle())
         }

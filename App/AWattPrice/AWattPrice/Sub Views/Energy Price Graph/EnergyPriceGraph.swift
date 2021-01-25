@@ -17,7 +17,7 @@ struct GraphHeader: View {
 
             Text("electricityPage.hourOfDay")
         }
-        .font(.subheadline)
+        .font(.fSubHeadline)
         .animation(.easeInOut)
     }
 }

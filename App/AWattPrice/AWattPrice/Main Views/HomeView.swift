@@ -34,6 +34,7 @@ struct HomeView: View {
 
     @State var headerSize = CGSize(width: 0, height: 0)
     @State var initialAppearFinished: Bool? = false
+    @State var showSettingsPage: Bool = false
     @State var showWhatsNewPage: Bool = false
 
     func parseHeaderSize(preference: HeaderSizePreferenceKey.SizeBounds, geo: GeometryProxy) -> some View {
@@ -78,6 +79,17 @@ struct HomeView: View {
             }
             .navigationTitle("electricityPage.elecPrice")
             .navigationBarTitleDisplayMode(.large)
+            .navigationBarItems(trailing:
+                Button(action: { showSettingsPage.toggle() }) {
+                    Image(systemName: "gear")
+                        .resizable()
+                        .frame(width: 24, height: 24)
+                        .padding(.trailing, 5)
+                })
+            .fullScreenCover(isPresented: $showSettingsPage) {
+                SettingsPageView()
+                    .environmentObject(currentSetting)
+            }
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .onAppear {

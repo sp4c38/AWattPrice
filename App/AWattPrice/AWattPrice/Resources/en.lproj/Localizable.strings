@@ -110,10 +110,10 @@
 "general.hours" = "hours";
 "general.min" = "min";
 "general.view" = "View";
-"general.tryAgain" = "Try again"
+"general.tryAgain" = "Try again";
 
 // Total Time Formatter localizations
-"totalTimeFormatter.onlyHour"  = "%@h";
+"totalTimeFormatter.onlyHour" = "%@h";
 "totalTimeFormatter.onlyMinute" = "%@min";
 "totalTimeFormatter.hourCommaMinute" =  "%@h, %@min";
 "totalTimeFormatter.lessThanOneMinute" =  "<1min";

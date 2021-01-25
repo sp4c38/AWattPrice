@@ -10,6 +10,7 @@ import SwiftUI
 
 /// A place for the user to modify certain settings. Those changes are automatically stored (if modified) in persistent storage.
 struct SettingsPageView: View {
+    @Environment(\.presentationMode) var presentationMode
     @Environment(\.scenePhase) var scenePhase
     @EnvironmentObject var currentSetting: CurrentSetting
     @EnvironmentObject var tabBarItems: TBItems
@@ -49,8 +50,30 @@ struct SettingsPageView: View {
                 }
             }
             .navigationTitle(Text("settingsPage.settings"))
+            .navigationBarItems(trailing: DoneNavigationBarItem(presentationMode: presentationMode))
         }
         .navigationViewStyle(StackNavigationViewStyle())
+    }
+}
+
+struct DoneNavigationBarItem: View {
+    @EnvironmentObject var currentSetting: CurrentSetting
+    @Binding var presentationMode: PresentationMode
+    
+    var body: some View {
+        Button(action: {
+            self.hideKeyboard()
+            presentationMode.dismiss()
+        }) {
+            HStack {
+                Text("Done")
+                    .bold()
+                    .font(.subheadline)
+            }
+            .foregroundColor(Color.blue)
+            .padding(5)
+            .padding([.leading, .trailing], 3)
+        }
     }
 }
 

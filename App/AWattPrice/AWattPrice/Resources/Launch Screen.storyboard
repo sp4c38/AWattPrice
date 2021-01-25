@@ -23,7 +23,6 @@
                                     <constraint firstAttribute="height" constant="60" id="RzH-yg-tS5"/>
                                 </constraints>
                                 <items>
-                                    <tabBarItem title="" image="gear" catalog="system" id="CPt-0z-6Up"/>
                                     <tabBarItem title="" image="bolt" catalog="system" id="biv-9M-kPh"/>
                                     <tabBarItem title="" image="rectangle.and.text.magnifyingglass" catalog="system" id="gqa-oq-9lL"/>
                                 </items>
@@ -46,7 +45,6 @@
     </scenes>
     <resources>
         <image name="bolt" catalog="system" width="101" height="128"/>
-        <image name="gear" catalog="system" width="128" height="119"/>
         <image name="rectangle.and.text.magnifyingglass" catalog="system" width="128" height="95"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

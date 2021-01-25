@@ -160,9 +160,9 @@ struct CheapestTimeView: View {
                                         .padding(.leading, 10)
                                 }
                             })
-                                .buttonStyle(ActionButtonStyle())
-                                .padding([.leading, .trailing, .bottom], 16)
-                                .padding(.top, 5)
+                            .buttonStyle(ActionButtonStyle())
+                            .padding([.leading, .trailing, .bottom], 16)
+                            .padding(.top, 5)
                         }
                         .animation(.easeInOut)
                     }

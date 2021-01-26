@@ -1,8 +1,12 @@
+<div style="text-align:center">
+	<img src="https://github.com/sp4c38/AWattPrice/blob/master/App%20Icon/AppIconDesign2.png?raw=true" width=100>
+</div>
+
 # ⚡️ AWattPrice ⚡️
 
 <p>
-    <img src="https://img.shields.io/github/last-commit/sp4c38/AWattPrice?label=last%20modified" />
-    <img src="https://img.shields.io/tokei/lines/github/sp4c38/AWattPrice?label=total%20lines%20of%20code" />
+<img src="https://img.shields.io/github/last-commit/sp4c38/AWattPrice?label=last%20modified" />
+<img src="https://img.shields.io/tokei/lines/github/sp4c38/AWattPrice?label=total%20lines%20of%20code" />
 </p>
 
 ### App Store Download

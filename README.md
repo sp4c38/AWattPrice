@@ -11,22 +11,39 @@
 
 https://apps.apple.com/app/awattprice/id1536629626</a>
 
-🌍 <b>Supported regions</b>: Germany 🇩🇪 and Austria 🇦🇹
+🌍 <b>Supported regions:</b> Germany 🇩🇪 and Austria 🇦🇹
 
-📱 <b>Supported devices</b>: All iOS, iPadOS devices
+💬 <b>Supported languages:</b> German and English
+
+📱 <b>Supported devices:</b> iOS 14 and iPadOS 14 devices
+
+🗂 <b>App category:</b> Utilities
+
 
 ### Description
 
-AWattPrice is an app that displays electricity prices retrieved from the public aWATTar API.
+AWattPrice shows the hourly prices by the electricity provider aWATTar. The prices are based on factors like available wind and
+solar power generation. Hence, they vary over time. Let's say one wants to operate a washing machine for some time. It will pay
+off to run it when prices are low. That reduces the electricity bill and helps the grid to balance out peaks. Further it strengthens
+the use of regenerative power.
 
-aWATTar is an electricty provider, by which customers don't pay a fix price for electricity, but instead pay as much for the electricity as it currently costs at stock exchange 📉. This is possible because the electricity price changes every hour.
+The 2 main features of this app are:
 
-Current features are:
+1) Show the hourly electricity prices in an interactive chart. They are sourced from the public aWATTar data feed. One can
+switch between prices for Austria and Germany. At about 2 pm the data is updated to show prices for the next day.
 
-* View electricity prices throughout the day
-* Find the hours when electricity is cheapest (e.g.: find cheapest time to charge electric car, turn on the washing machine or run other electrical consumers)
+2) Based on the price info AWattPrice can find the time frame with the lowest energy cost. Example: One wants to charge the car by
+23 kWh via an 11 kW outlet. The app will tell when to start to minimize the cost.
+
+AWattPrice is a personal hobby project. Sharing is caring. The app is not related in any way to the company aWATTar GmbH.
+Feedback of all kind and patches are very welcome.
 
 ## Screenshots
+<div>
+	<img src="https://github.com/sp4c38/AWattPrice/blob/master/readme_assets/screenshots/1_screenshot.png?raw=true" width=270>
+	<img src="https://github.com/sp4c38/AWattPrice/blob/master/readme_assets/screenshots/2_screenshot.png?raw=true" width=270>
+	<img src="https://github.com/sp4c38/AWattPrice/blob/master/readme_assets/screenshots/3_screenshot.png?raw=true" width=270>
+</div>
 
 ### Technical Notes:
 AWattPrice consists out of two parts: The main app bundle and the backend part.

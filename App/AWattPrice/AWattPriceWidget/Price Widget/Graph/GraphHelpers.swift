@@ -12,14 +12,22 @@ class GraphPoint {
     let height: CGFloat
     let start: Date
     let marketprice: Double
+    let isNegative: Bool
     
     init(
         _ pointStartX: CGFloat, _ pointHeight: CGFloat,
         _ pointStart: Date, _ pointMarketprice: Double) {
+        
         startX = pointStartX
         height = pointHeight
         start = pointStart
         marketprice = pointMarketprice
+        
+        if pointMarketprice < 0 {
+            isNegative = true
+        } else {
+            isNegative = false
+        }
     }
 }
 

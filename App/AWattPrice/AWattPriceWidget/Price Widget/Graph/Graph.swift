@@ -41,8 +41,6 @@ struct Graph: View {
     func makeGraph(_ geoProxy: GeometryProxy) -> some View {
         let graphData = createGraphData(priceData, geoProxy)
         
-        return ZStack {
-            
-        }
+        return GraphBody(graphData)
     }
 }

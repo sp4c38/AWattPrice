@@ -15,13 +15,18 @@ struct PointText: View {
     }
     
     var body: some View {
-        Text(transformStartToString())
+        VStack {
+            Spacer()
+            Text(transformStartToString())
+                .bold()
+        }
+        .padding(.bottom, 6)
     }
 }
 
 extension PointText {
     private func transformStartToString() -> String {
-        
-        return ""
+        let hour = Calendar.current.component(.hour, from: startTime)
+        return String(hour)
     }
 }

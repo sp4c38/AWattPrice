@@ -10,6 +10,7 @@ import SwiftUI
 struct PointShape: Shape {
     let barPadding: CGFloat = 1.2
     let dividerLineWidth: CGFloat = 3
+    let radius: CGFloat = 5
 
     func path(in rect: CGRect) -> Path {
         var path = Path()
@@ -18,7 +19,6 @@ struct PointShape: Shape {
         let startY = rect.minY
         let endY = rect.maxY
         let width = rect.size.width
-        let height = rect.size.height
 
         path.move(
             to: CGPoint(
@@ -33,7 +33,6 @@ struct PointShape: Shape {
                     y: endY // - barPadding
                 )
         )
-        let radius = height / 14
         path.addRelativeArc(
             center:
                 CGPoint(

@@ -107,7 +107,7 @@ func createGraphData(
     let graphProperties = GraphProperties(
         maxWidth, maxHeight,
         numberOfPoints: energyData.prices.count,
-        paddings: [.leading: 16, .trailing: 16, .top: 16]
+        paddings: [.leading: 5, .trailing: 5, .top: 16]
     )
     let graphData = GraphData(graphProperties)
     

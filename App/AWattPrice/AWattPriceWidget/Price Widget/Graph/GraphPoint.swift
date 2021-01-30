@@ -51,9 +51,14 @@ struct GraphPointView: View {
             PointAtPosition {
                 PointShape()
                     .fill(getPointLinearColor(isNegative: graphPoint.isNegative))
-                
-                PointText(graphPoint.startTime)
             }
+            
+            PointText(graphPoint.startTime)
+                .frame(width: graphProperties.pointWidth, height: graphPoint.height)
+                .position(
+                    x: graphPoint.startX + (graphProperties.pointWidth / 2),
+                    y: graphPoint.startY + (graphPoint.height / 2)
+                )
         }
     }
 }

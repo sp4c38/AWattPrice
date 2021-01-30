@@ -10,21 +10,18 @@ import SwiftUI
 class GraphPoint {
     let startX: CGFloat
     let startY: CGFloat
-    let endY: CGFloat
     let height: CGFloat
     
     let startTime: Date
     let marketprice: Double
     let isNegative: Bool
     
-    init(_ pointStartX: CGFloat, _ pointStartY: CGFloat,
-         _ pointEndY: CGFloat, _ pointStartTime: Date,
-         _ pointMarketprice: Double
+    init(_ pointStartX: CGFloat, _ pointStartY: CGFloat, _ pointHeight: CGFloat,
+         _ pointStartTime: Date, _ pointMarketprice: Double
     ) {
         startX = pointStartX
         startY = pointStartY
-        endY = pointEndY
-        height = endY - startY
+        height = pointHeight
         
         startTime = pointStartTime
         marketprice = pointMarketprice
@@ -125,7 +122,7 @@ func createGraphData(
         let pointStartY = graphData.properties.endY - pointHeight
         
         let graphPoint = GraphPoint(
-            currentStartX, pointStartY, graphData.properties.endY,
+            currentStartX, pointStartY, pointHeight,
             point.startTimestamp, point.marketprice
         )
         graphData.points.append(graphPoint)

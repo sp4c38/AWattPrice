@@ -46,7 +46,6 @@ struct AWattPriceWidgetEntryView : View {
     }
 }
 
-@main
 struct AWattPriceWidget: Widget {
     let kind: String = "AWattPriceWidget"
 
@@ -54,14 +53,15 @@ struct AWattPriceWidget: Widget {
         StaticConfiguration(kind: kind, provider: Provider()) { entry in
             AWattPriceWidgetEntryView(entry: entry)
         }
-        .configurationDisplayName("My Widget")
-        .description("This is an example widget.")
+        .configurationDisplayName("prices.name")
+        .description("prices.description")
+        .supportedFamilies([.systemMedium])
     }
 }
 
 struct AWattPriceWidget_Previews: PreviewProvider {
     static var previews: some View {
         AWattPriceWidgetEntryView(entry: SimpleEntry(date: Date()))
-            .previewContext(WidgetPreviewContext(family: .systemSmall))
+            .previewContext(WidgetPreviewContext(family: .systemMedium))
     }
 }

@@ -5,3 +5,6 @@
   Created by Léon Becker on 30.01.21.
   
 */
+
+"prices.name" = "Preis Widget";
+"prices.description" = "Fragen Sie schnell die Strompreise des Tages ab.";

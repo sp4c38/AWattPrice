@@ -114,5 +114,6 @@ struct AWattPriceWidget_Previews: PreviewProvider {
     static var previews: some View {
         AWattPriceWidgetEntryView(entry: SimpleEntry(date: Date()))
             .previewContext(WidgetPreviewContext(family: .systemMedium))
+            .environment(\.colorScheme, .dark)
     }
 }

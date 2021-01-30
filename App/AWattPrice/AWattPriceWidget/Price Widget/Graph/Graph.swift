@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct Graph: View {
+    @Environment(\.colorScheme) var colorScheme
+    
     let priceData: EnergyData
 
     init(_ priceData: EnergyData) {
@@ -19,8 +21,8 @@ struct Graph: View {
             GeometryReader { geometry in
                 makeGraph(geometry)
             }
+            .background(background)
         }
-        .background(background)
     }
     
     func makeGraph(_ geoProxy: GeometryProxy) -> some View {
@@ -32,6 +34,11 @@ struct Graph: View {
 
 extension Graph {
     var background: some View {
-        Color.white
+        switch colorScheme {
+        case .dark:
+            return Color.black
+        default:
+            return Color.white
+        }
     }
 }

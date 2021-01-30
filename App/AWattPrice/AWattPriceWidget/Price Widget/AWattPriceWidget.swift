@@ -46,17 +46,17 @@ struct AWattPriceWidgetEntryView : View {
     let prices = [
         EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612008000), endTimestamp: Date(timeIntervalSince1970: 1612011600), marketprice: 5.06),
         
-//        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612011600), endTimestamp: Date(timeIntervalSince1970: 1612015200), marketprice: 4.8),
-//
-//        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612015200), endTimestamp: Date(timeIntervalSince1970: 1612018800), marketprice: 4.8),
-//
-//        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612018800), endTimestamp: Date(timeIntervalSince1970: 1612022400), marketprice: 5.66),
-//
-//        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612022400), endTimestamp: Date(timeIntervalSince1970: 1612026000), marketprice: 6.06),
-//
-//        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612026000), endTimestamp: Date(timeIntervalSince1970: 1612029600), marketprice: 6.17),
-//
-//        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612029600), endTimestamp: Date(timeIntervalSince1970: 1612033200), marketprice: 5.96),
+        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612011600), endTimestamp: Date(timeIntervalSince1970: 1612015200), marketprice: 4.8),
+
+        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612015200), endTimestamp: Date(timeIntervalSince1970: 1612018800), marketprice: 4.8),
+
+        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612018800), endTimestamp: Date(timeIntervalSince1970: 1612022400), marketprice: 5.66),
+
+        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612022400), endTimestamp: Date(timeIntervalSince1970: 1612026000), marketprice: 6.06),
+
+        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612026000), endTimestamp: Date(timeIntervalSince1970: 1612029600), marketprice: 6.17),
+
+        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612029600), endTimestamp: Date(timeIntervalSince1970: 1612033200), marketprice: 5.96),
 //
 //        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612033200), endTimestamp: Date(timeIntervalSince1970: 1612036800), marketprice: 5.28),
 //

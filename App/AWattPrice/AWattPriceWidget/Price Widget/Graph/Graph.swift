@@ -7,21 +7,6 @@
 
 import SwiftUI
 
-struct GraphBackground: View {
-    var body: some View {
-        LinearGradient(
-            gradient: Gradient(
-                colors: [
-                    Color(red: 0, green: 0.98, blue: 0.6, opacity: 1.0),
-                    Color(red: 0.8, green: 0.37, blue: 0.36, opacity: 1.0)
-                ]
-            ),
-            startPoint: .bottom,
-            endPoint: .top)
-            .opacity(0.7)
-    }
-}
-
 struct Graph: View {
     let priceData: EnergyData
 
@@ -35,12 +20,18 @@ struct Graph: View {
                 makeGraph(geometry)
             }
         }
-        .background(GraphBackground())
+        .background(background)
     }
     
     func makeGraph(_ geoProxy: GeometryProxy) -> some View {
         let graphData = createGraphData(priceData, geoProxy)
         
         return GraphBody(graphData)
+    }
+}
+
+extension Graph {
+    var background: some View {
+        Color.white
     }
 }

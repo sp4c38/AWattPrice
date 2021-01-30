@@ -38,13 +38,23 @@ struct GraphPointView: View {
     let graphProperties: GraphProperties
     
     var body: some View {
-        PointShape()
-            .fill(getPointLinearColor(isNegative: graphPoint.isNegative))
-            .frame(width: graphProperties.pointWidth, height: graphPoint.height)
-            .position(
-                x: graphPoint.startX + (graphProperties.pointWidth / 2),
-                y: graphProperties.allHeight - (graphPoint.height / 2)
-            )
+        ZStack {
+            PointShape()
+                .fill(getPointLinearColor(isNegative: graphPoint.isNegative))
+                .frame(width: graphProperties.pointWidth, height: graphPoint.height)
+                .position(
+                    x: graphPoint.startX + (graphProperties.pointWidth / 2),
+                    y: graphProperties.allHeight - (graphPoint.height / 2)
+                )
+            
+//            PointShape()
+//                .stroke(Color.black, lineWidth: 0.7)
+//                .frame(width: graphProperties.pointWidth, height: graphPoint.height)
+//                .position(
+//                    x: graphPoint.startX + (graphProperties.pointWidth / 2),
+//                    y: graphProperties.allHeight - (graphPoint.height / 2)
+//                )
+        }
     }
 }
 

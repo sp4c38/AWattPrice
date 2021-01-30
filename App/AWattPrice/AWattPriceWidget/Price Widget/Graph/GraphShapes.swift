@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct PointShape: Shape {
-    let barPadding: CGFloat = 1
+    let barPadding: CGFloat = 1.2
     let dividerLineWidth: CGFloat = 3
 
     func path(in rect: CGRect) -> Path {
@@ -22,14 +22,14 @@ struct PointShape: Shape {
 
         path.move(
             to: CGPoint(
-                x: startX, // - (dividerLineWidth / 2),
+                x: startX + barPadding, // - (dividerLineWidth / 2),
                 y: endY // + barPadding
             )
         )
         path.addLine(
             to:
                 CGPoint(
-                    x: endX,// - (dividerLineWidth / 2),
+                    x: endX - barPadding,// - (dividerLineWidth / 2),
                     y: endY // - barPadding
                 )
         )
@@ -37,7 +37,7 @@ struct PointShape: Shape {
         path.addRelativeArc(
             center:
                 CGPoint(
-                    x: width - radius,
+                    x: width - radius - barPadding,
                     y: startY + radius // - barPadding
                 ),
                 radius: radius,
@@ -46,7 +46,7 @@ struct PointShape: Shape {
         )
         path.addRelativeArc(
             center:
-                CGPoint(x: startX + radius,
+                CGPoint(x: startX + radius + barPadding,
                         y: startY + radius // + barPadding
                 ),
             radius: radius,
@@ -56,7 +56,7 @@ struct PointShape: Shape {
         path.addLine(
             to:
                 CGPoint(
-                    x: startX,// - (dividerLineWidth / 2),
+                    x: startX + barPadding,// - (dividerLineWidth / 2),
                     y: endY // - barPadding
                 )
         )
@@ -64,16 +64,17 @@ struct PointShape: Shape {
     }
 }
 
-struct GraphShape_Previews: PreviewProvider {
-    static var previews: some View {
-        GeometryReader { geometry in
-            PointShape()
-                .stroke()
-                .frame(width: 100, height: 200)
-                .position(
-                    x: UIScreen.main.bounds.width / 2,
-                    y: UIScreen.main.bounds.height - 148
-                )
-        }
-    }
-}
+//struct GraphShape_Previews: PreviewProvider {
+//    static var previews: some View {
+//        GeometryReader { geometry in
+//            PointShape()
+//                .stroke()
+//                .frame(width: 100, height: 200)
+//                .position(
+//                    x: UIScreen.main.bounds.width / 2,
+//                    y: UIScreen.main.bounds.height - 148
+//                )
+//        }
+//    }
+//}
+

@@ -12,16 +12,12 @@ struct GraphPointView: View {
     let graphProperties: GraphProperties
     
     var body: some View {
-        ZStack {
-            Path { path in
-                path.addRect(
-                    CGRect(
-                        x: graphPoint.startX, y: graphProperties.allHeight,
-                        width: graphProperties.pointWidth, height: -graphPoint.height
-                    )
-                )
-            }
-        }
+        PointShape()
+            .frame(width: graphProperties.pointWidth, height: graphPoint.height)
+            .position(
+                x: graphPoint.startX + (graphProperties.pointWidth / 2),
+                y: graphProperties.allHeight - (graphPoint.height / 2)
+            )
     }
 }
 

@@ -46,23 +46,23 @@ struct AWattPriceWidgetEntryView : View {
     let prices = [
         EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612008000), endTimestamp: Date(timeIntervalSince1970: 1612011600), marketprice: 5.06),
         
-        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612011600), endTimestamp: Date(timeIntervalSince1970: 1612015200), marketprice: 4.8),
-        
-        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612015200), endTimestamp: Date(timeIntervalSince1970: 1612018800), marketprice: 4.8),
-        
-        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612018800), endTimestamp: Date(timeIntervalSince1970: 1612022400), marketprice: 5.66),
-        
-        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612022400), endTimestamp: Date(timeIntervalSince1970: 1612026000), marketprice: 6.06),
-        
-        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612026000), endTimestamp: Date(timeIntervalSince1970: 1612029600), marketprice: 6.17),
-        
-        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612029600), endTimestamp: Date(timeIntervalSince1970: 1612033200), marketprice: 5.96),
-        
-        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612033200), endTimestamp: Date(timeIntervalSince1970: 1612036800), marketprice: 5.28),
-        
-        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612036800), endTimestamp: Date(timeIntervalSince1970: 1612040400), marketprice: 4.7),
-        
-        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612040400), endTimestamp: Date(timeIntervalSince1970: 1612044000), marketprice: 4.7),
+//        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612011600), endTimestamp: Date(timeIntervalSince1970: 1612015200), marketprice: 4.8),
+//
+//        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612015200), endTimestamp: Date(timeIntervalSince1970: 1612018800), marketprice: 4.8),
+//
+//        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612018800), endTimestamp: Date(timeIntervalSince1970: 1612022400), marketprice: 5.66),
+//
+//        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612022400), endTimestamp: Date(timeIntervalSince1970: 1612026000), marketprice: 6.06),
+//
+//        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612026000), endTimestamp: Date(timeIntervalSince1970: 1612029600), marketprice: 6.17),
+//
+//        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612029600), endTimestamp: Date(timeIntervalSince1970: 1612033200), marketprice: 5.96),
+//
+//        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612033200), endTimestamp: Date(timeIntervalSince1970: 1612036800), marketprice: 5.28),
+//
+//        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612036800), endTimestamp: Date(timeIntervalSince1970: 1612040400), marketprice: 4.7),
+//
+//        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612040400), endTimestamp: Date(timeIntervalSince1970: 1612044000), marketprice: 4.7),
 //        AWattPrice.EnergyPricePoint(startTimestamp: 2021-01-30 22:00:00 +0000, endTimestamp: 2021-01-30 23:00:00 +0000, marketprice: 4.23),
 //        AWattPrice.EnergyPricePoint(startTimestamp: 2021-01-30 23:00:00 +0000, endTimestamp: 2021-01-31 00:00:00 +0000, marketprice: 4.21),
 //        AWattPrice.EnergyPricePoint(startTimestamp: 2021-01-31 00:00:00 +0000, endTimestamp: 2021-01-31 01:00:00 +0000, marketprice: 4.1),

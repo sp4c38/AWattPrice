@@ -13,7 +13,6 @@ class GraphPoint {
     let height: CGFloat
     
     let startTime: Date
-    let marketprice: Double
     let isNegative: Bool
     
     init(_ pointStartX: CGFloat, _ pointStartY: CGFloat, _ pointHeight: CGFloat,
@@ -24,7 +23,6 @@ class GraphPoint {
         height = pointHeight
         
         startTime = pointStartTime
-        marketprice = pointMarketprice
         if pointMarketprice < 0 {
             isNegative = true
         } else {
@@ -109,7 +107,7 @@ func createGraphData(
     let graphProperties = GraphProperties(
         maxWidth, maxHeight,
         numberOfPoints: energyData.prices.count,
-        paddings: [.top: 20]
+        paddings: [.leading: 16, .trailing: 16, .top: 16]
     )
     let graphData = GraphData(graphProperties)
     

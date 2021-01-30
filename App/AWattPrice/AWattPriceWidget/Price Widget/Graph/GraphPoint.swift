@@ -37,23 +37,23 @@ struct GraphPointView: View {
     let graphPoint: GraphPoint
     let graphProperties: GraphProperties
     
+    func PointAtPosition<Content: View>(@ViewBuilder content: () -> Content) -> some View {
+        content()
+            .frame(width: graphProperties.pointWidth, height: graphPoint.height)
+            .position(
+                x: graphPoint.startX + (graphProperties.pointWidth / 2),
+                y: graphPoint.startY + (graphPoint.height / 2)
+            )
+    }
+    
     var body: some View {
         ZStack {
-            PointShape()
-                .fill(getPointLinearColor(isNegative: graphPoint.isNegative))
-                .frame(width: graphProperties.pointWidth, height: graphPoint.height)
-                .position(
-                    x: graphPoint.startX + (graphProperties.pointWidth / 2),
-                    y: graphPoint.startY + (graphPoint.height / 2)
-                )
-            
-//            PointShape()
-//                .stroke(Color.black, lineWidth: 0.7)
-//                .frame(width: graphProperties.pointWidth, height: graphPoint.height)
-//                .position(
-//                    x: graphPoint.startX + (graphProperties.pointWidth / 2),
-//                    y: graphProperties.allHeight - (graphPoint.height / 2)
-//                )
+            PointAtPosition {
+                PointShape()
+                    .fill(getPointLinearColor(isNegative: graphPoint.isNegative))
+                
+                PointText(graphPoint.startTime)
+            }
         }
     }
 }

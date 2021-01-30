@@ -56,8 +56,9 @@
 		6166E95525C58EE200281830 /* GraphBody.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6166E95425C58EE200281830 /* GraphBody.swift */; };
 		6166E95F25C5938500281830 /* GraphPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6166E95E25C5938500281830 /* GraphPoint.swift */; };
 		6166E97E25C59AA900281830 /* GraphHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6166E94925C589CC00281830 /* GraphHelpers.swift */; };
-		6166E98725C5B03000281830 /* GraphShapes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6166E97025C5975E00281830 /* GraphShapes.swift */; };
-		6166E98C25C5B03C00281830 /* GraphShapes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6166E97025C5975E00281830 /* GraphShapes.swift */; };
+		6166E98725C5B03000281830 /* PointShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6166E97025C5975E00281830 /* PointShape.swift */; };
+		6166E98C25C5B03C00281830 /* PointShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6166E97025C5975E00281830 /* PointShape.swift */; };
+		6166E99625C5D90500281830 /* PointText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6166E99525C5D90500281830 /* PointText.swift */; };
 		61753B6E257818DF001379B9 /* SplashScreenFeaturesAndConsent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61753B6D257818DF001379B9 /* SplashScreenFeaturesAndConsent.swift */; };
 		617AD92725730AC100F905A5 /* TBItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617AD92625730AC100F905A5 /* TBItems.swift */; };
 		617D85B225052C35009E18FB /* AwattarApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617D85B125052C35009E18FB /* AwattarApp.swift */; };
@@ -188,7 +189,8 @@
 		6166E94925C589CC00281830 /* GraphHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphHelpers.swift; sourceTree = "<group>"; };
 		6166E95425C58EE200281830 /* GraphBody.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphBody.swift; sourceTree = "<group>"; };
 		6166E95E25C5938500281830 /* GraphPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphPoint.swift; sourceTree = "<group>"; };
-		6166E97025C5975E00281830 /* GraphShapes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphShapes.swift; sourceTree = "<group>"; };
+		6166E97025C5975E00281830 /* PointShape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PointShape.swift; sourceTree = "<group>"; };
+		6166E99525C5D90500281830 /* PointText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PointText.swift; sourceTree = "<group>"; };
 		61753B6D257818DF001379B9 /* SplashScreenFeaturesAndConsent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SplashScreenFeaturesAndConsent.swift; sourceTree = "<group>"; };
 		617AD92625730AC100F905A5 /* TBItems.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TBItems.swift; sourceTree = "<group>"; };
 		617D85AE25052C35009E18FB /* AWattPrice.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AWattPrice.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -420,10 +422,11 @@
 			isa = PBXGroup;
 			children = (
 				6166E8D525C57EFF00281830 /* Graph.swift */,
-				6166E97025C5975E00281830 /* GraphShapes.swift */,
 				6166E94925C589CC00281830 /* GraphHelpers.swift */,
-				6166E95E25C5938500281830 /* GraphPoint.swift */,
 				6166E95425C58EE200281830 /* GraphBody.swift */,
+				6166E95E25C5938500281830 /* GraphPoint.swift */,
+				6166E97025C5975E00281830 /* PointShape.swift */,
+				6166E99525C5D90500281830 /* PointText.swift */,
 			);
 			path = Graph;
 			sourceTree = "<group>";
@@ -841,11 +844,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6166E98C25C5B03C00281830 /* GraphShapes.swift in Sources */,
+				6166E98C25C5B03C00281830 /* PointShape.swift in Sources */,
 				6166E8DB25C57F1D00281830 /* Graph.swift in Sources */,
 				6166E95F25C5938500281830 /* GraphPoint.swift in Sources */,
 				6166E91725C5802F00281830 /* GlobalAppSettings.swift in Sources */,
 				6166E92B25C580AA00281830 /* BackendCommunicator.swift in Sources */,
+				6166E99625C5D90500281830 /* PointText.swift in Sources */,
 				6166E97E25C59AA900281830 /* GraphHelpers.swift in Sources */,
 				6166E95525C58EE200281830 /* GraphBody.swift in Sources */,
 				6166E94425C5813A00281830 /* NetworkManager.swift in Sources */,
@@ -881,7 +885,7 @@
 				61A1367725B76D7900CB089D /* InputFieldStyles.swift in Sources */,
 				6117E9E12590B65C00A2B475 /* AppDelegate.swift in Sources */,
 				6117E9DB2590B52300A2B475 /* UploadAPNsTokenToServer.swift in Sources */,
-				6166E98725C5B03000281830 /* GraphShapes.swift in Sources */,
+				6166E98725C5B03000281830 /* PointShape.swift in Sources */,
 				618A6F6E2518F8C800A8778B /* CheapestTimeResultView.swift in Sources */,
 				6156A576250C1F5E005174A5 /* Setting+CoreDataClass.swift in Sources */,
 				613CFF7F250CCCA500337CB2 /* GetCurrentSetting.swift in Sources */,

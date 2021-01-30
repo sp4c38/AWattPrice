@@ -1,5 +1,5 @@
 //
-//  GraphShapes.swift
+//  PointShape.swift
 //  AWattPriceWidgetExtension
 //
 //  Created by Léon Becker on 30.01.21.

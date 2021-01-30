@@ -10,11 +10,15 @@ import SwiftUI
 class GraphPoint {
     let startX: CGFloat
     let height: CGFloat
+    let start: Date
     let marketprice: Double
     
-    init(_ pointStartX: CGFloat, _ pointHeight: CGFloat, _ pointMarketprice: Double) {
+    init(
+        _ pointStartX: CGFloat, _ pointHeight: CGFloat,
+        _ pointStart: Date, _ pointMarketprice: Double) {
         startX = pointStartX
         height = pointHeight
+        start = pointStart
         marketprice = pointMarketprice
     }
 }
@@ -30,7 +34,9 @@ class GraphProperties {
     let pointWidth: CGFloat
     
     init(_ width: CGFloat, _ height: CGFloat, _ pointWidth: CGFloat) {
-        
+        allWidth = width
+        allHeight = height
+        self.pointWidth = pointWidth
     }
 }
 
@@ -42,7 +48,7 @@ class GraphData {
     var points = [GraphPoint]()
     
     init(_ graphProperties: GraphProperties) {
-        
+        properties = graphProperties
     }
 }
 
@@ -65,7 +71,9 @@ func createGraphData(
             CGFloat(point.marketprice / energyData.maxPrice) * maxHeight
         )
         
-        let graphPoint = GraphPoint(currentStartX, pointHeight, point.marketprice)
+        let graphPoint = GraphPoint(
+            currentStartX, pointHeight, point.startTimestamp, point.marketprice
+        )
         graphData.points.append(graphPoint)
         
         currentStartX += graphData.properties.pointWidth

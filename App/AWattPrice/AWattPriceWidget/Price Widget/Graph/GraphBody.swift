@@ -16,7 +16,12 @@ struct GraphBody: View {
     
     var body: some View {
         ZStack {
-            ForEach(graphData.points, id: \.)
+            ForEach(graphData.points, id: \.startX) { point in
+                GraphPointView(
+                    graphPoint: point,
+                    graphProperties: graphData.properties
+                )
+            }
         }
     }
 }

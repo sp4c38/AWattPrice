@@ -44,7 +44,7 @@ struct GraphPointView: View {
                 .frame(width: graphProperties.pointWidth, height: graphPoint.height)
                 .position(
                     x: graphPoint.startX + (graphProperties.pointWidth / 2),
-                    y: graphProperties.allHeight - (graphPoint.height / 2)
+                    y: graphPoint.startY + (graphPoint.height / 2)
                 )
             
 //            PointShape()

@@ -9,20 +9,25 @@ import SwiftUI
 
 class GraphPoint {
     let startX: CGFloat
+    let startY: CGFloat
+    let endY: CGFloat
     let height: CGFloat
-    let start: Date
+    
+    let startTime: Date
     let marketprice: Double
     let isNegative: Bool
     
-    init(
-        _ pointStartX: CGFloat, _ pointHeight: CGFloat,
-        _ pointStart: Date, _ pointMarketprice: Double) {
-        
+    init(_ pointStartX: CGFloat, _ pointStartY: CGFloat,
+         _ pointEndY: CGFloat, _ pointStartTime: Date,
+         _ pointMarketprice: Double
+    ) {
         startX = pointStartX
-        height = pointHeight
-        start = pointStart
-        marketprice = pointMarketprice
+        startY = pointStartY
+        endY = pointEndY
+        height = endY - startY
         
+        startTime = pointStartTime
+        marketprice = pointMarketprice
         if pointMarketprice < 0 {
             isNegative = true
         } else {
@@ -47,20 +52,19 @@ class GraphProperties {
     var endX: CGFloat
     var startY: CGFloat
     var endY: CGFloat
-    let pointWidth: CGFloat
+    var pointWidth: CGFloat = 0
     
-    init(_ width: CGFloat, _ height: CGFloat,
-         _ pointWidth: CGFloat, paddings: [GraphPaddings: CGFloat]?) {
-        
+    init(_ width: CGFloat, _ height: CGFloat, numberOfPoints: Int,
+         paddings: [GraphPaddings: CGFloat]?) {
         allWidth = width
         allHeight = height
-        self.pointWidth = pointWidth
         
         startX = 0
         endX = width
         startY = 0
         endY = height
         applyPaddings(paddings)
+        pointWidth = allWidth / CGFloat(numberOfPoints) // Perform only after paddings were applied
     }
 }
 
@@ -104,23 +108,25 @@ func createGraphData(
 ) -> GraphData {
     let maxWidth = geoProxy.size.width
     let maxHeight = geoProxy.size.height
-    let pointWidth = maxWidth / CGFloat(energyData.prices.count)
     
     let graphProperties = GraphProperties(
-        geoProxy.size.width, maxHeight, pointWidth,
-        paddings: [.top: 16]
+        maxWidth, maxHeight,
+        numberOfPoints: energyData.prices.count,
+        paddings: [.top: 20]
     )
     let graphData = GraphData(graphProperties)
     
-    var currentStartX: CGFloat = 0
+    var currentStartX = graphProperties.startX
     for point in energyData.prices {
         let pointHeight = (
             CGFloat(point.marketprice / energyData.maxPrice) *
                 graphData.properties.allHeight
         )
+        let pointStartY = graphData.properties.endY - pointHeight
         
         let graphPoint = GraphPoint(
-            currentStartX, pointHeight, point.startTimestamp, point.marketprice
+            currentStartX, pointStartY, graphData.properties.endY,
+            point.startTimestamp, point.marketprice
         )
         graphData.points.append(graphPoint)
         

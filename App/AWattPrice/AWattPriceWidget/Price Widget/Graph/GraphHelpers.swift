@@ -19,20 +19,30 @@ class GraphPoint {
     }
 }
 
+class GraphProperties {
+    /* Store in an extra class to make it easier to only parse the properties, without
+     parsing all GraphPoints.
+    */
+    
+    let allWidth: CGFloat
+    let allHeight: CGFloat
+    
+    let pointWidth: CGFloat
+    
+    init(_ width: CGFloat, _ height: CGFloat, _ pointWidth: CGFloat) {
+        
+    }
+}
+
 class GraphData {
     /* Strictly speaking allWidth and allHeight aren't needed to be able to
      create the graph. They get stored for reference if needed elsewhere.
     */
-    let allWidth: CGFloat
-    let allHeight: CGFloat
-    
+    var properties: GraphProperties
     var points = [GraphPoint]()
-    var pointWidth: CGFloat
     
-    init(_ width: CGFloat, _ height: CGFloat, _ pointWidth: CGFloat) {
-        allWidth = width
-        allHeight = height
-        self.pointWidth = pointWidth
+    init(_ graphProperties: GraphProperties) {
+        
     }
 }
 
@@ -43,7 +53,11 @@ func createGraphData(
     let maxHeight = geoProxy.size.height
     let pointWidth = maxWidth / CGFloat(energyData.prices.count)
     
-    let graphData = GraphData(geoProxy.size.width, maxHeight, pointWidth)
+    let graphData = GraphData(
+        GraphProperties(
+            geoProxy.size.width, maxHeight, pointWidth
+        )
+    )
     
     var currentStartX: CGFloat = 0
     for point in energyData.prices {
@@ -54,7 +68,7 @@ func createGraphData(
         let graphPoint = GraphPoint(currentStartX, pointHeight, point.marketprice)
         graphData.points.append(graphPoint)
         
-        currentStartX += graphData.pointWidth
+        currentStartX += graphData.properties.pointWidth
     }
     
     return graphData

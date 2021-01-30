@@ -45,6 +45,15 @@
 		6166E89C25C5737800281830 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6166E80125C570A800281830 /* Assets.xcassets */; };
 		6166E8AE25C5740900281830 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 6166E88D25C5729500281830 /* Localizable.strings */; };
 		6166E8CF25C57B7600281830 /* WidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6166E8B925C57ABB00281830 /* WidgetBundle.swift */; };
+		6166E8DB25C57F1D00281830 /* Graph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6166E8D525C57EFF00281830 /* Graph.swift */; };
+		6166E91725C5802F00281830 /* GlobalAppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 618AF84F2593E94100E21583 /* GlobalAppSettings.swift */; };
+		6166E92125C5804800281830 /* Production.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 618AF8062593DB8500E21583 /* Production.xcconfig */; };
+		6166E92625C5804B00281830 /* Development.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 618AF8052593DB6800E21583 /* Development.xcconfig */; };
+		6166E92B25C580AA00281830 /* BackendCommunicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61936FC725BACDDF00D60BC5 /* BackendCommunicator.swift */; };
+		6166E93025C580AC00281830 /* DownloadData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 614E784C25068F6100A7ED83 /* DownloadData.swift */; };
+		6166E93B25C5812000281830 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6166E93A25C5812000281830 /* NetworkManager.swift */; };
+		6166E94425C5813A00281830 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6166E93A25C5812000281830 /* NetworkManager.swift */; };
+		6166E94F25C58AA000281830 /* GraphHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6166E94925C589CC00281830 /* GraphHelpers.swift */; };
 		61753B6E257818DF001379B9 /* SplashScreenFeaturesAndConsent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61753B6D257818DF001379B9 /* SplashScreenFeaturesAndConsent.swift */; };
 		617AD92725730AC100F905A5 /* TBItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617AD92625730AC100F905A5 /* TBItems.swift */; };
 		617D85B225052C35009E18FB /* AwattarApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617D85B125052C35009E18FB /* AwattarApp.swift */; };
@@ -170,6 +179,9 @@
 		6166E88C25C5729500281830 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		6166E89225C5729900281830 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
 		6166E8B925C57ABB00281830 /* WidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetBundle.swift; sourceTree = "<group>"; };
+		6166E8D525C57EFF00281830 /* Graph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Graph.swift; sourceTree = "<group>"; };
+		6166E93A25C5812000281830 /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
+		6166E94925C589CC00281830 /* GraphHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphHelpers.swift; sourceTree = "<group>"; };
 		61753B6D257818DF001379B9 /* SplashScreenFeaturesAndConsent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SplashScreenFeaturesAndConsent.swift; sourceTree = "<group>"; };
 		617AD92625730AC100F905A5 /* TBItems.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TBItems.swift; sourceTree = "<group>"; };
 		617D85AE25052C35009E18FB /* AWattPrice.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AWattPrice.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -391,9 +403,19 @@
 		6166E8B825C57AA000281830 /* Price Widget */ = {
 			isa = PBXGroup;
 			children = (
+				6166E8D425C57EF400281830 /* Graph */,
 				6166E7FF25C570A600281830 /* AWattPriceWidget.swift */,
 			);
 			path = "Price Widget";
+			sourceTree = "<group>";
+		};
+		6166E8D425C57EF400281830 /* Graph */ = {
+			isa = PBXGroup;
+			children = (
+				6166E8D525C57EFF00281830 /* Graph.swift */,
+				6166E94925C589CC00281830 /* GraphHelpers.swift */,
+			);
+			path = Graph;
 			sourceTree = "<group>";
 		};
 		616836BF259A4D6F00E91748 /* Input fields */ = {
@@ -516,6 +538,7 @@
 				6164ED26258D4B8E00F706DE /* KeyboardObserver.swift */,
 				61286F0B25ABBCF300CE1D61 /* EnvironmentExtensions.swift */,
 				61E0ACC725BB13800011B0A1 /* HapticFeedbacks.swift */,
+				6166E93A25C5812000281830 /* NetworkManager.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -768,6 +791,8 @@
 			files = (
 				6166E89C25C5737800281830 /* Assets.xcassets in Resources */,
 				6166E8AE25C5740900281830 /* Localizable.strings in Resources */,
+				6166E92625C5804B00281830 /* Development.xcconfig in Resources */,
+				6166E92125C5804800281830 /* Production.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -806,8 +831,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6166E8DB25C57F1D00281830 /* Graph.swift in Sources */,
+				6166E91725C5802F00281830 /* GlobalAppSettings.swift in Sources */,
+				6166E94F25C58AA000281830 /* GraphHelpers.swift in Sources */,
+				6166E92B25C580AA00281830 /* BackendCommunicator.swift in Sources */,
+				6166E94425C5813A00281830 /* NetworkManager.swift in Sources */,
 				6166E89725C5737400281830 /* AWattPriceWidget.swift in Sources */,
 				6166E8CF25C57B7600281830 /* WidgetBundle.swift in Sources */,
+				6166E93025C580AC00281830 /* DownloadData.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -857,6 +888,7 @@
 				61BA0A542548467F00951321 /* HelpAndSuggestionView.swift in Sources */,
 				6156A579250C2161005174A5 /* SettingsPageView.swift in Sources */,
 				61286F0C25ABBCF300CE1D61 /* EnvironmentExtensions.swift in Sources */,
+				6166E93B25C5812000281830 /* NetworkManager.swift in Sources */,
 				61B9F61A2598EB0200C14690 /* BarText.swift in Sources */,
 				61200EC3253A050700A104B1 /* SplashScreenStartView.swift in Sources */,
 				61190591256081E8007C04D3 /* EnergyPriceSingleBar.swift in Sources */,

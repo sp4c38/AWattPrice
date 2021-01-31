@@ -21,7 +21,7 @@
 		6122115D25951C8E003D6512 /* PriceDropsBelowValueNotificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6122115C25951C8D003D6512 /* PriceDropsBelowValueNotificationView.swift */; };
 		6122C061259DD42F003BE302 /* WhatsNewPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6122C060259DD42F003BE302 /* WhatsNewPage.swift */; };
 		61260069253B0AB9009E0126 /* DataDownloadAndError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61260068253B0AB9009E0126 /* DataDownloadAndError.swift */; };
-		61286F0C25ABBCF300CE1D61 /* EnvironmentExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61286F0B25ABBCF300CE1D61 /* EnvironmentExtensions.swift */; };
+		61286F0C25ABBCF300CE1D61 /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61286F0B25ABBCF300CE1D61 /* Environment.swift */; };
 		613CFF7F250CCCA500337CB2 /* GetCurrentSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 613CFF7E250CCCA500337CB2 /* GetCurrentSetting.swift */; };
 		6141BFF725ADC60000608290 /* SF-Compact-Display-Black.otf in Resources */ = {isa = PBXBuildFile; fileRef = 6141BFF625ADC60000608290 /* SF-Compact-Display-Black.otf */; };
 		6141BFF825ADC60000608290 /* SF-Compact-Display-Black.otf in Resources */ = {isa = PBXBuildFile; fileRef = 6141BFF625ADC60000608290 /* SF-Compact-Display-Black.otf */; };
@@ -92,12 +92,13 @@
 		61BA0A592548764400951321 /* MailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61BA0A582548764400951321 /* MailView.swift */; };
 		61C551C525C737C400E1CB0F /* Font.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61C551C425C737C400E1CB0F /* Font.swift */; };
 		61C551CA25C737EE00E1CB0F /* Font.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61C551C425C737C400E1CB0F /* Font.swift */; };
-		61C551D025C738E000E1CB0F /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61D88C0A2545EF9800DA2088 /* Extensions.swift */; };
+		61C551E725C73A1300E1CB0F /* ViewSizeCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61C551E625C73A1300E1CB0F /* ViewSizeCalculator.swift */; };
+		61C551E825C73A1300E1CB0F /* ViewSizeCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61C551E625C73A1300E1CB0F /* ViewSizeCalculator.swift */; };
 		61C963A7251E2032001B3E3C /* CheapestTimeClockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61C963A6251E2032001B3E3C /* CheapestTimeClockView.swift */; };
 		61D196E52507F58D00E57BAC /* EnergyPriceGraph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61D196E42507F58D00E57BAC /* EnergyPriceGraph.swift */; };
 		61D57125256DAA2300EA69C7 /* CustomDatePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61D57124256DAA2300EA69C7 /* CustomDatePicker.swift */; };
 		61D6F8882517AD5500027FD1 /* ButtonStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61D6F8872517AD5500027FD1 /* ButtonStyles.swift */; };
-		61D88C0B2545EF9800DA2088 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61D88C0A2545EF9800DA2088 /* Extensions.swift */; };
+		61D88C0B2545EF9800DA2088 /* General.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61D88C0A2545EF9800DA2088 /* General.swift */; };
 		61E0ACC025BAE6030011B0A1 /* APNSUploadError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61E0ACBF25BAE6030011B0A1 /* APNSUploadError.swift */; };
 		61E0ACC825BB13800011B0A1 /* HapticFeedbacks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61E0ACC725BB13800011B0A1 /* HapticFeedbacks.swift */; };
 		61E2DFD7254214B100473E20 /* CheapestHourManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61E2DFD6254214B100473E20 /* CheapestHourManager.swift */; };
@@ -160,7 +161,7 @@
 		6122C046259DCB61003BE302 /* Model 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Model 2.xcdatamodel"; sourceTree = "<group>"; };
 		6122C060259DD42F003BE302 /* WhatsNewPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatsNewPage.swift; sourceTree = "<group>"; };
 		61260068253B0AB9009E0126 /* DataDownloadAndError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataDownloadAndError.swift; sourceTree = "<group>"; };
-		61286F0B25ABBCF300CE1D61 /* EnvironmentExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentExtensions.swift; sourceTree = "<group>"; };
+		61286F0B25ABBCF300CE1D61 /* Environment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Environment.swift; sourceTree = "<group>"; };
 		613CFF7E250CCCA500337CB2 /* GetCurrentSetting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetCurrentSetting.swift; sourceTree = "<group>"; };
 		6141BFF625ADC60000608290 /* SF-Compact-Display-Black.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-Compact-Display-Black.otf"; sourceTree = "<group>"; };
 		614C55822573D421009B5241 /* UpdateDataTimeFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateDataTimeFormatter.swift; sourceTree = "<group>"; };
@@ -237,11 +238,12 @@
 		61BA0A532548467F00951321 /* HelpAndSuggestionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpAndSuggestionView.swift; sourceTree = "<group>"; };
 		61BA0A582548764400951321 /* MailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailView.swift; sourceTree = "<group>"; };
 		61C551C425C737C400E1CB0F /* Font.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Font.swift; sourceTree = "<group>"; };
+		61C551E625C73A1300E1CB0F /* ViewSizeCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewSizeCalculator.swift; sourceTree = "<group>"; };
 		61C963A6251E2032001B3E3C /* CheapestTimeClockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheapestTimeClockView.swift; sourceTree = "<group>"; };
 		61D196E42507F58D00E57BAC /* EnergyPriceGraph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnergyPriceGraph.swift; sourceTree = "<group>"; };
 		61D57124256DAA2300EA69C7 /* CustomDatePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomDatePicker.swift; sourceTree = "<group>"; };
 		61D6F8872517AD5500027FD1 /* ButtonStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonStyles.swift; sourceTree = "<group>"; };
-		61D88C0A2545EF9800DA2088 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		61D88C0A2545EF9800DA2088 /* General.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = General.swift; sourceTree = "<group>"; };
 		61E0ACBF25BAE6030011B0A1 /* APNSUploadError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APNSUploadError.swift; sourceTree = "<group>"; };
 		61E0ACC725BB13800011B0A1 /* HapticFeedbacks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticFeedbacks.swift; sourceTree = "<group>"; };
 		61E2DFD6254214B100473E20 /* CheapestHourManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheapestHourManager.swift; sourceTree = "<group>"; };
@@ -566,6 +568,7 @@
 		6184828825699E33004F3F62 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				61C551E525C739FA00E1CB0F /* TextSizer */,
 				616836C4259A4DC600E91748 /* Custom views  */,
 				616836C3259A4DB400E91748 /* Formatter */,
 				61C551CF25C738CD00E1CB0F /* Other */,
@@ -663,14 +666,22 @@
 		61C551CF25C738CD00E1CB0F /* Other */ = {
 			isa = PBXGroup;
 			children = (
-				61C551C425C737C400E1CB0F /* Font.swift */,
-				61D88C0A2545EF9800DA2088 /* Extensions.swift */,
-				6164ED26258D4B8E00F706DE /* KeyboardObserver.swift */,
-				61286F0B25ABBCF300CE1D61 /* EnvironmentExtensions.swift */,
-				61E0ACC725BB13800011B0A1 /* HapticFeedbacks.swift */,
 				6166E93A25C5812000281830 /* NetworkManager.swift */,
+				61E0ACC725BB13800011B0A1 /* HapticFeedbacks.swift */,
+				61C551C425C737C400E1CB0F /* Font.swift */,
+				6164ED26258D4B8E00F706DE /* KeyboardObserver.swift */,
+				61D88C0A2545EF9800DA2088 /* General.swift */,
+				61286F0B25ABBCF300CE1D61 /* Environment.swift */,
 			);
 			path = Other;
+			sourceTree = "<group>";
+		};
+		61C551E525C739FA00E1CB0F /* TextSizer */ = {
+			isa = PBXGroup;
+			children = (
+				61C551E625C73A1300E1CB0F /* ViewSizeCalculator.swift */,
+			);
+			path = TextSizer;
 			sourceTree = "<group>";
 		};
 		61DE42BA25AE534A002AF6C2 /* Cheapest Hour Manager */ = {
@@ -871,6 +882,7 @@
 			files = (
 				6166E98C25C5B03C00281830 /* PointShape.swift in Sources */,
 				6166E8DB25C57F1D00281830 /* Graph.swift in Sources */,
+				61C551E825C73A1300E1CB0F /* ViewSizeCalculator.swift in Sources */,
 				61C551CA25C737EE00E1CB0F /* Font.swift in Sources */,
 				6166E95F25C5938500281830 /* GraphPoint.swift in Sources */,
 				6166E91725C5802F00281830 /* GlobalAppSettings.swift in Sources */,
@@ -879,7 +891,6 @@
 				6166E9CB25C69FCD00281830 /* AppGroupManager.swift in Sources */,
 				6166E97E25C59AA900281830 /* GraphHelpers.swift in Sources */,
 				6166E95525C58EE200281830 /* GraphBody.swift in Sources */,
-				61C551D025C738E000E1CB0F /* Extensions.swift in Sources */,
 				6166E94425C5813A00281830 /* NetworkManager.swift in Sources */,
 				6166E89725C5737400281830 /* PriceWidget.swift in Sources */,
 				6166E8CF25C57B7600281830 /* WidgetBundle.swift in Sources */,
@@ -895,10 +906,11 @@
 				61E0ACC825BB13800011B0A1 /* HapticFeedbacks.swift in Sources */,
 				612211442594C927003D6512 /* GetNotificationSetting.swift in Sources */,
 				618AF8622593F82600E21583 /* CurrentSetting.swift in Sources */,
-				61D88C0B2545EF9800DA2088 /* Extensions.swift in Sources */,
+				61D88C0B2545EF9800DA2088 /* General.swift in Sources */,
 				618AF8502593E94100E21583 /* GlobalAppSettings.swift in Sources */,
 				617DF01C2594AA1D004BF4E2 /* NotificationSetting+CoreDataClass.swift in Sources */,
 				61E2DFD7254214B100473E20 /* CheapestHourManager.swift in Sources */,
+				61C551E725C73A1300E1CB0F /* ViewSizeCalculator.swift in Sources */,
 				6156A577250C1F5E005174A5 /* Setting+CoreDataProperties.swift in Sources */,
 				6181328C258A4AB3007FC6F2 /* SplashScreenSetupView.swift in Sources */,
 				614C55832573D421009B5241 /* UpdateDataTimeFormatter.swift in Sources */,
@@ -935,7 +947,7 @@
 				61658DB125B5AF890083D25A /* EasyIntervalPickerRepresentable.swift in Sources */,
 				61BA0A542548467F00951321 /* HelpAndSuggestionView.swift in Sources */,
 				6156A579250C2161005174A5 /* SettingsPageView.swift in Sources */,
-				61286F0C25ABBCF300CE1D61 /* EnvironmentExtensions.swift in Sources */,
+				61286F0C25ABBCF300CE1D61 /* Environment.swift in Sources */,
 				6166E93B25C5812000281830 /* NetworkManager.swift in Sources */,
 				61B9F61A2598EB0200C14690 /* BarText.swift in Sources */,
 				61200EC3253A050700A104B1 /* SplashScreenStartView.swift in Sources */,

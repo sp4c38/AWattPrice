@@ -1,5 +1,5 @@
 //
-//  EnvironmentExtensions.swift
+//  Environment.swift
 //  AWattPrice
 //
 //  Created by Léon Becker on 10.01.21.

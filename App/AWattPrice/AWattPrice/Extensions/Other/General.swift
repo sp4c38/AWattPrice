@@ -1,5 +1,5 @@
 //
-//  Extensions.swift
+//  General.swift
 //  AwattarApp
 //
 //  Created by Léon Becker on 25.10.20.

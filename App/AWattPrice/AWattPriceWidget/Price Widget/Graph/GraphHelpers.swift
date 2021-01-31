@@ -158,6 +158,12 @@ fileprivate func getGraphText(
         content: point.startTimestamp,
         startX: startX
     )
+    
+    let viewSizeCalculator = ViewSizeCalculator()
+    
+    
+    
+    
     return graphText
 }
 

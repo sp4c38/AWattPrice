@@ -59,6 +59,8 @@
 		6166E98725C5B03000281830 /* PointShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6166E97025C5975E00281830 /* PointShape.swift */; };
 		6166E98C25C5B03C00281830 /* PointShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6166E97025C5975E00281830 /* PointShape.swift */; };
 		6166E99625C5D90500281830 /* PointText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6166E99525C5D90500281830 /* PointText.swift */; };
+		6166E9CB25C69FCD00281830 /* AppGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6166E9CA25C69FCD00281830 /* AppGroup.swift */; };
+		6166E9D025C69FF700281830 /* AppGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6166E9CA25C69FCD00281830 /* AppGroup.swift */; };
 		61753B6E257818DF001379B9 /* SplashScreenFeaturesAndConsent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61753B6D257818DF001379B9 /* SplashScreenFeaturesAndConsent.swift */; };
 		617AD92725730AC100F905A5 /* TBItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617AD92625730AC100F905A5 /* TBItems.swift */; };
 		617D85B225052C35009E18FB /* AwattarApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617D85B125052C35009E18FB /* AwattarApp.swift */; };
@@ -161,7 +163,7 @@
 		613CFF7E250CCCA500337CB2 /* GetCurrentSetting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetCurrentSetting.swift; sourceTree = "<group>"; };
 		6141BFF625ADC60000608290 /* SF-Compact-Display-Black.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-Compact-Display-Black.otf"; sourceTree = "<group>"; };
 		614C55822573D421009B5241 /* UpdateDataTimeFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateDataTimeFormatter.swift; sourceTree = "<group>"; };
-		614E76CC258F65680097EF9B /* AWattPrice.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AWattPrice.entitlements; sourceTree = "<group>"; };
+		614E76CC258F65680097EF9B /* AWattPriceDevelopment.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AWattPriceDevelopment.entitlements; sourceTree = "<group>"; };
 		614E784C25068F6100A7ED83 /* DownloadData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadData.swift; sourceTree = "<group>"; };
 		615468542520D214004FBEF7 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		615468592520D223004FBEF7 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -180,7 +182,6 @@
 		6166E7FF25C570A600281830 /* AWattPriceWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AWattPriceWidget.swift; sourceTree = "<group>"; };
 		6166E80125C570A800281830 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6166E80325C570A800281830 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		6166E80725C570A800281830 /* AWattPriceWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AWattPriceWidgetExtension.entitlements; sourceTree = "<group>"; };
 		6166E88C25C5729500281830 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		6166E89225C5729900281830 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
 		6166E8B925C57ABB00281830 /* WidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetBundle.swift; sourceTree = "<group>"; };
@@ -193,6 +194,8 @@
 		6166E99525C5D90500281830 /* PointText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PointText.swift; sourceTree = "<group>"; };
 		6166E99F25C69E1100281830 /* AWattPriceProduction.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AWattPriceProduction.entitlements; sourceTree = "<group>"; };
 		6166E9AC25C69EF600281830 /* AWattPriceWidgetExtensionProduction.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AWattPriceWidgetExtensionProduction.entitlements; sourceTree = "<group>"; };
+		6166E9CA25C69FCD00281830 /* AppGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppGroup.swift; sourceTree = "<group>"; };
+		6166E9D925C6A10A00281830 /* AWattPriceWidgetExtensionDevelopment.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AWattPriceWidgetExtensionDevelopment.entitlements; sourceTree = "<group>"; };
 		61753B6D257818DF001379B9 /* SplashScreenFeaturesAndConsent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SplashScreenFeaturesAndConsent.swift; sourceTree = "<group>"; };
 		617AD92625730AC100F905A5 /* TBItems.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TBItems.swift; sourceTree = "<group>"; };
 		617D85AE25052C35009E18FB /* AWattPrice.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AWattPrice.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -433,6 +436,17 @@
 			path = Graph;
 			sourceTree = "<group>";
 		};
+		6166E9B525C69F6E00281830 /* Entitlements */ = {
+			isa = PBXGroup;
+			children = (
+				6166E9AC25C69EF600281830 /* AWattPriceWidgetExtensionProduction.entitlements */,
+				6166E9D925C6A10A00281830 /* AWattPriceWidgetExtensionDevelopment.entitlements */,
+				6166E99F25C69E1100281830 /* AWattPriceProduction.entitlements */,
+				614E76CC258F65680097EF9B /* AWattPriceDevelopment.entitlements */,
+			);
+			path = Entitlements;
+			sourceTree = "<group>";
+		};
 		616836BF259A4D6F00E91748 /* Input fields */ = {
 			isa = PBXGroup;
 			children = (
@@ -466,6 +480,9 @@
 		617D85A525052C35009E18FB = {
 			isa = PBXGroup;
 			children = (
+				6166E9CA25C69FCD00281830 /* AppGroup.swift */,
+				618AF84F2593E94100E21583 /* GlobalAppSettings.swift */,
+				6166E9B525C69F6E00281830 /* Entitlements */,
 				617D85B025052C35009E18FB /* AWattPrice */,
 				6166E7FE25C570A600281830 /* AWattPriceWidget */,
 				617D85C225052C37009E18FB /* AWattPriceAppTests */,
@@ -489,10 +506,6 @@
 		617D85B025052C35009E18FB /* AWattPrice */ = {
 			isa = PBXGroup;
 			children = (
-				6166E80725C570A800281830 /* AWattPriceWidgetExtension.entitlements */,
-				6166E9AC25C69EF600281830 /* AWattPriceWidgetExtensionProduction.entitlements */,
-				6166E99F25C69E1100281830 /* AWattPriceProduction.entitlements */,
-				614E76CC258F65680097EF9B /* AWattPrice.entitlements */,
 				618518E82585062F00120D81 /* CoreData */,
 				6184828825699E33004F3F62 /* Extensions */,
 				61260071253B22C4009E0126 /* Styles */,
@@ -596,7 +609,6 @@
 			isa = PBXGroup;
 			children = (
 				617D85BA25052C37009E18FB /* Info.plist */,
-				618AF84F2593E94100E21583 /* GlobalAppSettings.swift */,
 				618AF8052593DB6800E21583 /* Development.xcconfig */,
 				618AF8062593DB8500E21583 /* Production.xcconfig */,
 			);
@@ -854,6 +866,7 @@
 				6166E91725C5802F00281830 /* GlobalAppSettings.swift in Sources */,
 				6166E92B25C580AA00281830 /* BackendCommunicator.swift in Sources */,
 				6166E99625C5D90500281830 /* PointText.swift in Sources */,
+				6166E9CB25C69FCD00281830 /* AppGroup.swift in Sources */,
 				6166E97E25C59AA900281830 /* GraphHelpers.swift in Sources */,
 				6166E95525C58EE200281830 /* GraphBody.swift in Sources */,
 				6166E94425C5813A00281830 /* NetworkManager.swift in Sources */,
@@ -881,6 +894,7 @@
 				61658DA825B5AF380083D25A /* EasyIntervalPicker.swift in Sources */,
 				61D196E52507F58D00E57BAC /* EnergyPriceGraph.swift in Sources */,
 				6122C061259DD42F003BE302 /* WhatsNewPage.swift in Sources */,
+				6166E9D025C69FF700281830 /* AppGroup.swift in Sources */,
 				61753B6E257818DF001379B9 /* SplashScreenFeaturesAndConsent.swift in Sources */,
 				6122115D25951C8E003D6512 /* PriceDropsBelowValueNotificationView.swift in Sources */,
 				614E784D25068F6100A7ED83 /* DownloadData.swift in Sources */,
@@ -996,6 +1010,7 @@
 /* Begin XCBuildConfiguration section */
 		6166E80925C570A800281830 /* Development */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 618AF8052593DB6800E21583 /* Development.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -1029,7 +1044,7 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_ENTITLEMENTS = AWattPrice/AWattPriceWidgetExtension.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Entitlements/AWattPriceWidgetExtensionDevelopment.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
@@ -1078,6 +1093,7 @@
 		};
 		6166E80A25C570A800281830 /* Production */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 618AF8062593DB8500E21583 /* Production.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -1111,7 +1127,7 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_ENTITLEMENTS = AWattPrice/AWattPriceWidgetExtensionProduction.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Entitlements/AWattPriceWidgetExtensionProduction.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
@@ -1277,7 +1293,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = AWattPrice/AWattPrice.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Entitlements/AWattPriceDevelopment.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
@@ -1310,7 +1326,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = AWattPrice/AWattPriceProduction.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Entitlements/AWattPriceProduction.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 24;

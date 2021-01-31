@@ -19,6 +19,7 @@ struct GraphTextView: View {
             VStack {
                 Spacer()
                 Text(graphText.content)
+                    .font(.fCaption)
                     .bold()
                     .foregroundColor(.black)
             }

@@ -51,6 +51,9 @@ class GraphProperties {
     var allWidth: CGFloat
     var allHeight: CGFloat
     
+    // Add point text each X points. Set to 1 to add text for each bar.
+    var textRepeating: Int
+    
     var startX: CGFloat
     var endX: CGFloat
     var startY: CGFloat
@@ -58,9 +61,11 @@ class GraphProperties {
     var pointWidth: CGFloat = 0
     
     init(_ width: CGFloat, _ height: CGFloat, numberOfPoints: Int,
-         paddings: [GraphPaddings: CGFloat]?) {
+         textRepeating: Int, paddings: [GraphPaddings: CGFloat]?) {
         allWidth = width
         allHeight = height
+        
+        self.textRepeating = textRepeating
         
         startX = 0
         endX = width
@@ -142,8 +147,11 @@ fileprivate func getGraphText(
     _ point: EnergyPricePoint,
     _ graphData: GraphData
 ) -> GraphText? {
-    // Only add text each Xth point. Subtract one to comply with zero-indexing.
-    guard pointIndex % (4 - 1) == 0 else { return nil }
+    let textRepeating = graphData.properties.textRepeating
+    // Add text each Xth point. Subtract one to comply with zero-indexing.
+    if textRepeating > 1 {
+        guard pointIndex % (textRepeating - 1) == 0 else { return nil }
+    }
     let startX = getPointStartX(pointIndex, graphData.properties)
     
     let graphText = GraphText(
@@ -162,6 +170,7 @@ func createGraphData(
     let graphProperties = GraphProperties(
         maxWidth, maxHeight,
         numberOfPoints: energyData.prices.count,
+        textRepeating: 4,
         paddings: [.top: 16]
     )
     let graphData = GraphData(graphProperties)

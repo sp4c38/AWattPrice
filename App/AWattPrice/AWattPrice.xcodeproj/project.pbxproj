@@ -90,6 +90,9 @@
 		61B9F61A2598EB0200C14690 /* BarText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61B9F6192598EB0200C14690 /* BarText.swift */; };
 		61BA0A542548467F00951321 /* HelpAndSuggestionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61BA0A532548467F00951321 /* HelpAndSuggestionView.swift */; };
 		61BA0A592548764400951321 /* MailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61BA0A582548764400951321 /* MailView.swift */; };
+		61C551C525C737C400E1CB0F /* Font.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61C551C425C737C400E1CB0F /* Font.swift */; };
+		61C551CA25C737EE00E1CB0F /* Font.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61C551C425C737C400E1CB0F /* Font.swift */; };
+		61C551D025C738E000E1CB0F /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61D88C0A2545EF9800DA2088 /* Extensions.swift */; };
 		61C963A7251E2032001B3E3C /* CheapestTimeClockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61C963A6251E2032001B3E3C /* CheapestTimeClockView.swift */; };
 		61D196E52507F58D00E57BAC /* EnergyPriceGraph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61D196E42507F58D00E57BAC /* EnergyPriceGraph.swift */; };
 		61D57125256DAA2300EA69C7 /* CustomDatePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61D57124256DAA2300EA69C7 /* CustomDatePicker.swift */; };
@@ -233,6 +236,7 @@
 		61B9F6192598EB0200C14690 /* BarText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarText.swift; sourceTree = "<group>"; };
 		61BA0A532548467F00951321 /* HelpAndSuggestionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpAndSuggestionView.swift; sourceTree = "<group>"; };
 		61BA0A582548764400951321 /* MailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailView.swift; sourceTree = "<group>"; };
+		61C551C425C737C400E1CB0F /* Font.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Font.swift; sourceTree = "<group>"; };
 		61C963A6251E2032001B3E3C /* CheapestTimeClockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheapestTimeClockView.swift; sourceTree = "<group>"; };
 		61D196E42507F58D00E57BAC /* EnergyPriceGraph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnergyPriceGraph.swift; sourceTree = "<group>"; };
 		61D57124256DAA2300EA69C7 /* CustomDatePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomDatePicker.swift; sourceTree = "<group>"; };
@@ -564,11 +568,7 @@
 			children = (
 				616836C4259A4DC600E91748 /* Custom views  */,
 				616836C3259A4DB400E91748 /* Formatter */,
-				61D88C0A2545EF9800DA2088 /* Extensions.swift */,
-				6164ED26258D4B8E00F706DE /* KeyboardObserver.swift */,
-				61286F0B25ABBCF300CE1D61 /* EnvironmentExtensions.swift */,
-				61E0ACC725BB13800011B0A1 /* HapticFeedbacks.swift */,
-				6166E93A25C5812000281830 /* NetworkManager.swift */,
+				61C551CF25C738CD00E1CB0F /* Other */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -658,6 +658,19 @@
 				61B9F6192598EB0200C14690 /* BarText.swift */,
 			);
 			path = "Single Bar";
+			sourceTree = "<group>";
+		};
+		61C551CF25C738CD00E1CB0F /* Other */ = {
+			isa = PBXGroup;
+			children = (
+				61C551C425C737C400E1CB0F /* Font.swift */,
+				61D88C0A2545EF9800DA2088 /* Extensions.swift */,
+				6164ED26258D4B8E00F706DE /* KeyboardObserver.swift */,
+				61286F0B25ABBCF300CE1D61 /* EnvironmentExtensions.swift */,
+				61E0ACC725BB13800011B0A1 /* HapticFeedbacks.swift */,
+				6166E93A25C5812000281830 /* NetworkManager.swift */,
+			);
+			path = Other;
 			sourceTree = "<group>";
 		};
 		61DE42BA25AE534A002AF6C2 /* Cheapest Hour Manager */ = {
@@ -858,6 +871,7 @@
 			files = (
 				6166E98C25C5B03C00281830 /* PointShape.swift in Sources */,
 				6166E8DB25C57F1D00281830 /* Graph.swift in Sources */,
+				61C551CA25C737EE00E1CB0F /* Font.swift in Sources */,
 				6166E95F25C5938500281830 /* GraphPoint.swift in Sources */,
 				6166E91725C5802F00281830 /* GlobalAppSettings.swift in Sources */,
 				6166E92B25C580AA00281830 /* BackendCommunicator.swift in Sources */,
@@ -865,6 +879,7 @@
 				6166E9CB25C69FCD00281830 /* AppGroupManager.swift in Sources */,
 				6166E97E25C59AA900281830 /* GraphHelpers.swift in Sources */,
 				6166E95525C58EE200281830 /* GraphBody.swift in Sources */,
+				61C551D025C738E000E1CB0F /* Extensions.swift in Sources */,
 				6166E94425C5813A00281830 /* NetworkManager.swift in Sources */,
 				6166E89725C5737400281830 /* PriceWidget.swift in Sources */,
 				6166E8CF25C57B7600281830 /* WidgetBundle.swift in Sources */,
@@ -888,6 +903,7 @@
 				6181328C258A4AB3007FC6F2 /* SplashScreenSetupView.swift in Sources */,
 				614C55832573D421009B5241 /* UpdateDataTimeFormatter.swift in Sources */,
 				61658DA825B5AF380083D25A /* EasyIntervalPicker.swift in Sources */,
+				61C551C525C737C400E1CB0F /* Font.swift in Sources */,
 				61D196E52507F58D00E57BAC /* EnergyPriceGraph.swift in Sources */,
 				6122C061259DD42F003BE302 /* WhatsNewPage.swift in Sources */,
 				6166E9D025C69FF700281830 /* AppGroupManager.swift in Sources */,

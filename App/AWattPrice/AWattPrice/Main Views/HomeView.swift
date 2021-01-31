@@ -26,6 +26,7 @@ struct HeaderSizePreferenceKey: PreferenceKey {
 
 /// The home view mainly holds the graph which represents energy costs for each hour throughout the day.
 struct HomeView: View {
+    @Environment(\.appGroupManager) var appGroupManager
     @Environment(\.networkManager) var networkManager
     @Environment(\.scenePhase) var scenePhase
 

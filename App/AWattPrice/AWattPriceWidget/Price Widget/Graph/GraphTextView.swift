@@ -10,24 +10,26 @@ import SwiftUI
 struct GraphTextView: View {
     let graphText: GraphText
 
-    init(_ graphText: GraphText) {
+    init(_ graphText: GraphText, graphProperties: GraphProperties) {
         self.graphText = graphText
     }
     
     var body: some View {
-        VStack {
-            Spacer()
-            Text(graphText.content)
-                .bold()
-                .foregroundColor(.white)
+        TextAtPosition {
+            VStack {
+                Spacer()
+                Text(graphText.content)
+                    .bold()
+                    .foregroundColor(.black)
+            }
+            .padding(.bottom, 6)
         }
-        .padding(.bottom, 6)
     }
 }
 
 extension GraphTextView {
     func TextAtPosition<Content: View>(@ViewBuilder content: () -> Content) -> some View {
         content()
-            .position(x: 0, y: 0)
+            .position(x: graphText.startX, y: 0)
     }
 }

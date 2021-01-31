@@ -14,8 +14,8 @@ class GraphPoint {
     
     let isNegative: Bool
     
-    init(_ pointStartX: CGFloat, _ pointStartY: CGFloat, _ pointHeight: CGFloat,
-         _ pointMarketprice: Double) {
+    init(startX pointStartX: CGFloat, startY pointStartY: CGFloat, height pointHeight: CGFloat,
+         marketprice pointMarketprice: Double) {
         startX = pointStartX
         startY = pointStartY
         height = pointHeight
@@ -30,12 +30,12 @@ class GraphPoint {
 
 class GraphText {
     let content: String
-    let centerX: CGFloat
+    let startX: CGFloat
     
-    init(content startTime: Date, centerX: CGFloat) {
+    init(content startTime: Date, startX: CGFloat) {
         let hour = Calendar.current.component(.hour, from: startTime)
         content = String(hour)
-        self.centerX = centerX
+        self.startX = startX
     }
 }
 
@@ -107,28 +107,50 @@ class GraphData {
     }
 }
 
+fileprivate func getPointStartX(_ pointIndex: Int, _ graphProperties: GraphProperties) -> CGFloat {
+    let startX = (
+        graphProperties.startX + (CGFloat(pointIndex) * graphProperties.pointWidth)
+    )
+    return startX
+}
+
 fileprivate func getGraphPoint(
     _ pointIndex: Int,
-    _ graphData: GraphData
     _ point: EnergyPricePoint,
+    _ graphData: GraphData,
     _ maxPrice: Double
 ) -> GraphPoint {
-    let currentStartX = (
-        graphData.properties.startX + (CGFloat(pointIndex) * graphData.properties.pointWidth)
-    )
+    let pointStartX = getPointStartX(pointIndex, graphData.properties)
     
     let pointHeight = (
         CGFloat(point.marketprice / maxPrice) *
             graphData.properties.allHeight
     )
-    
     let pointStartY = graphData.properties.endY - pointHeight
     
     let graphPoint = GraphPoint(
-        currentStartX, pointStartY, pointHeight,
-        point.marketprice
+        startX: pointStartX,
+        startY: pointStartY,
+        height: pointHeight,
+        marketprice: point.marketprice
     )
     return graphPoint
+}
+
+fileprivate func getGraphText(
+    _ pointIndex: Int,
+    _ point: EnergyPricePoint,
+    _ graphData: GraphData
+) -> GraphText? {
+    // Only add text each Xth point. Subtract one to comply with zero-indexing.
+    guard pointIndex % (4 - 1) == 0 else { return nil }
+    let startX = getPointStartX(pointIndex, graphData.properties)
+    
+    let graphText = GraphText(
+        content: point.startTimestamp,
+        startX: startX
+    )
+    return graphText
 }
 
 func createGraphData(
@@ -147,13 +169,17 @@ func createGraphData(
     var indexCounter = 0
     for point in energyData.prices {
         let graphPoint = getGraphPoint(
-            indexCounter, graphData, point, energyData.maxPrice
+            indexCounter, point, graphData, energyData.maxPrice
         )
         graphData.points.append(graphPoint)
         
+        if let graphText = getGraphText(
+            indexCounter, point, graphData
+        ) {
+            graphData.texts.append(graphText)
+        }
         
         indexCounter += 1
     }
-    
     return graphData
 }

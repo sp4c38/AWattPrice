@@ -23,8 +23,11 @@ struct GraphBody: View {
                 )
             }
             
-            ForEach(graphData.texts, id: \.centerX) { text in
-                GraphTextView(text)
+            ForEach(graphData.texts, id: \.startX) { text in
+                GraphTextView(
+                    text,
+                    graphProperties: graphData.properties
+                )
             }
         }
     }

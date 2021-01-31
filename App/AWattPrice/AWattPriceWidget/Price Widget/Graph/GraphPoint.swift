@@ -37,13 +37,9 @@ struct GraphPointView: View {
     let graphPoint: GraphPoint
     let graphProperties: GraphProperties
     
-    func PointAtPosition<Content: View>(@ViewBuilder content: () -> Content) -> some View {
-        content()
-            .frame(width: graphProperties.pointWidth, height: graphPoint.height)
-            .position(
-                x: graphPoint.startX + (graphProperties.pointWidth / 2),
-                y: graphPoint.startY + (graphPoint.height / 2)
-            )
+    init(_ graphPoint: GraphPoint, graphProperties: GraphProperties) {
+        self.graphPoint = graphPoint
+        self.graphProperties = graphProperties
     }
     
     var body: some View {
@@ -52,14 +48,18 @@ struct GraphPointView: View {
                 PointShape()
                     .fill(getPointLinearColor(isNegative: graphPoint.isNegative))
             }
-            
-            PointText(graphPoint.startTime)
-                .frame(width: graphProperties.pointWidth, height: graphPoint.height)
-                .position(
-                    x: graphPoint.startX + (graphProperties.pointWidth / 2),
-                    y: graphPoint.startY + (graphPoint.height / 2)
-                )
         }
+    }
+}
+
+extension GraphPointView {
+    func PointAtPosition<Content: View>(@ViewBuilder content: () -> Content) -> some View {
+        content()
+            .frame(width: graphProperties.pointWidth, height: graphPoint.height)
+            .position(
+                x: graphPoint.startX + (graphProperties.pointWidth / 2),
+                y: graphPoint.startY + (graphPoint.height / 2)
+            )
     }
 }
 

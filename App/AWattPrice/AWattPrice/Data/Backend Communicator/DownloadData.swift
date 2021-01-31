@@ -8,6 +8,7 @@
 import Foundation
 import Network
 import SwiftUI
+import WidgetKit
 
 /// A single energy price data point. It has a start and end time. Throughout this time range a certain marketprice/energy price applies. This price is also held in this energy price data point.
 struct EnergyPricePoint: Hashable, Codable, Comparable {
@@ -227,6 +228,7 @@ extension BackendCommunicator {
         guard setGroupSuccessful else { return }
         let storedData = appGroupManager.readEnergyDataFromGroup()
         if storedData != newData {
+            WidgetCenter.shared.reloadTimelines(ofKind: "me.space8.AWattPrice.PriceWidget")
             let _ = appGroupManager.writeEnergyDataToGroup(energyData: newData)
         }
     }

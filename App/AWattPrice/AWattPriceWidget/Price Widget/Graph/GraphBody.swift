@@ -18,9 +18,13 @@ struct GraphBody: View {
         ZStack {
             ForEach(graphData.points, id: \.startX) { point in
                 GraphPointView(
-                    graphPoint: point,
+                    point,
                     graphProperties: graphData.properties
                 )
+            }
+            
+            ForEach(graphData.texts, id: \.centerX) { text in
+                GraphTextView(text)
             }
         }
     }

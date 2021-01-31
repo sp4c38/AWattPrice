@@ -61,7 +61,10 @@ class AppGroupManager {
     }
     
     public func readEnergyDataFromGroup() -> EnergyData? {
-        guard let parentURL = containerURL else { return nil }
+        guard let parentURL = containerURL else {
+            print("No app group set when trying to read energy data from app group container..")
+            return nil
+        }
         let storeURL = parentURL.appendingPathComponent("EnergyData.json")
         var encodedEnergyData = Data()
         do {

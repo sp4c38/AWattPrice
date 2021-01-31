@@ -28,13 +28,38 @@ struct EnergyPricePoint: Hashable, Codable, Comparable {
 }
 
 /// A object containing all EnergyPricePoint's. It also holds two values for the smallest and the largest energy price of all containing energy data points.
-struct EnergyData: Codable, Equatable {
+struct EnergyData: Equatable {
     var prices: [EnergyPricePoint]
     var minPrice: Double = 0
     var maxPrice: Double = 0
 
     enum CodingKeys: String, CodingKey {
         case prices
+        case minPrice
+        case maxPrice
+    }
+}
+
+extension EnergyData: Encodable {
+    func encode(to encoder: Encoder, withMinMaxPrice: Bool) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(prices, forKey: .prices)
+        try container.encodeIfPresent(minPrice, forKey: .minPrice)
+        try container.encodeIfPresent(maxPrice, forKey: .minPrice)
+    }
+}
+
+extension EnergyData: Decodable {
+    init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        prices = try values.decode([EnergyPricePoint].self, forKey: .prices)
+        
+        if let minPriceDecoded = try values.decodeIfPresent(Double.self, forKey: .minPrice) {
+            minPrice = minPriceDecoded
+        } else { minPrice = 0 }
+        if let maxPriceDecoded = try values.decodeIfPresent(Double.self, forKey: .maxPrice) {
+            maxPrice = maxPriceDecoded
+        } else { maxPrice = 0 }
     }
 }
 
@@ -103,7 +128,7 @@ extension BackendCommunicator {
                     self.dateDataLastUpdated = Date()
                     DispatchQueue.global(qos: .background).async {
                         var newEnergyData: EnergyData?
-                        DispatchQueue.main.async { newEnergyData = self.energyData }
+                        DispatchQueue.main.sync { newEnergyData = self.energyData }
                         self.checkAndStoreDataToAppGroup(appGroupManager, newEnergyData)
                     }
                 }

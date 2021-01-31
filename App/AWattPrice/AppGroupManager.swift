@@ -39,9 +39,12 @@ class AppGroupManager {
     public func writeEnergyDataToGroup(energyData: EnergyData) -> Bool {
         guard let parentURL = containerURL else { return false }
         let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .secondsSince1970
         var encodedEnergyData: Data?
         do {
+//            print(energyData)
             encodedEnergyData = try encoder.encode(energyData)
+//            print(String(data: encodedEnergyData!, encoding: .utf8))
         } catch {
             print("Could encode energy data when writing to app group container: \(error).")
             return false
@@ -49,6 +52,7 @@ class AppGroupManager {
         let storeURL = parentURL.appendingPathComponent("EnergyData.json")
         do {
             try encodedEnergyData!.write(to: storeURL)
+            print("Wrote energy data to group container.")
         } catch {
             print("Couldn't write energy data to app group container: \(error).")
             return false
@@ -67,9 +71,11 @@ class AppGroupManager {
             return nil
         }
         let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .secondsSince1970
         var decodedEnergyData: EnergyData? = nil
         do {
             decodedEnergyData = try decoder.decode(EnergyData.self, from: encodedEnergyData)
+            print("Read energy data from group container.")
         } catch {
             print("Couldn't decode energy data after reading from app group container: \(error).")
         }

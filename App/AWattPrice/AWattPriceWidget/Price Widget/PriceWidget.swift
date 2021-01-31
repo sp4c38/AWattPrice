@@ -38,30 +38,40 @@ struct SimpleEntry: TimelineEntry {
 }
 
 struct PriceWidgetEntryView : View {
+    @Environment(\.appGroupManager) var appGroupManager
     // @Environment(\.widgetFamily) var widgetFamily
     
     var entry: Provider.Entry
     
-    let prices = [
-        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612008000), endTimestamp: Date(timeIntervalSince1970: 1612011600), marketprice: 5.06),
-        
-        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612011600), endTimestamp: Date(timeIntervalSince1970: 1612015200), marketprice: 4.8),
-
-        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612015200), endTimestamp: Date(timeIntervalSince1970: 1612018800), marketprice: 4.8),
-
-        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612018800), endTimestamp: Date(timeIntervalSince1970: 1612022400), marketprice: 5.66),
-
-        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612022400), endTimestamp: Date(timeIntervalSince1970: 1612026000), marketprice: 6.06),
-
-        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612026000), endTimestamp: Date(timeIntervalSince1970: 1612029600), marketprice: 6.17),
-
-        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612029600), endTimestamp: Date(timeIntervalSince1970: 1612033200), marketprice: 5.96),
-
-        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612033200), endTimestamp: Date(timeIntervalSince1970: 1612036800), marketprice: 5.28),
-        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612036800), endTimestamp: Date(timeIntervalSince1970: 1612040400), marketprice: 4.7),
-        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612040400), endTimestamp: Date(timeIntervalSince1970: 1612044000), marketprice: 4.7),
-        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612044000), endTimestamp: Date(timeIntervalSince1970: 1612047600), marketprice: 4.23),
-        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612047600), endTimestamp: Date(timeIntervalSince1970: 1612051200), marketprice: 4.21),
+    func getPrices() -> [EnergyPricePoint] {
+        print("Run")
+        guard let energyData = appGroupManager.readEnergyDataFromGroup() else { return [] }
+        print(energyData)
+        return energyData.prices
+    }
+    
+    init(entry: SimpleEntry) {
+        self.entry = entry
+    }
+//        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612008000), endTimestamp: Date(timeIntervalSince1970: 1612011600), marketprice: 5.06),
+//
+//        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612011600), endTimestamp: Date(timeIntervalSince1970: 1612015200), marketprice: 4.8),
+//
+//        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612015200), endTimestamp: Date(timeIntervalSince1970: 1612018800), marketprice: 4.8),
+//
+//        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612018800), endTimestamp: Date(timeIntervalSince1970: 1612022400), marketprice: 5.66),
+//
+//        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612022400), endTimestamp: Date(timeIntervalSince1970: 1612026000), marketprice: 6.06),
+//
+//        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612026000), endTimestamp: Date(timeIntervalSince1970: 1612029600), marketprice: 6.17),
+//
+//        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612029600), endTimestamp: Date(timeIntervalSince1970: 1612033200), marketprice: 5.96),
+//
+//        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612033200), endTimestamp: Date(timeIntervalSince1970: 1612036800), marketprice: 5.28),
+//        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612036800), endTimestamp: Date(timeIntervalSince1970: 1612040400), marketprice: 4.7),
+//        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612040400), endTimestamp: Date(timeIntervalSince1970: 1612044000), marketprice: 4.7),
+//        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612044000), endTimestamp: Date(timeIntervalSince1970: 1612047600), marketprice: 4.23),
+//        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612047600), endTimestamp: Date(timeIntervalSince1970: 1612051200), marketprice: 4.21),
 //        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612051200), endTimestamp: Date(timeIntervalSince1970: 1612054800), marketprice: 4.1),
 //        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612054800), endTimestamp: Date(timeIntervalSince1970: 1612058400), marketprice: 4.05),
 //        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612058400), endTimestamp: Date(timeIntervalSince1970: 1612062000), marketprice: 3.95),
@@ -85,18 +95,18 @@ struct PriceWidgetEntryView : View {
 //        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612123200), endTimestamp: Date(timeIntervalSince1970: 1612126800), marketprice: 5.13),
 //        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612126800), endTimestamp: Date(timeIntervalSince1970: 1612130400), marketprice: 4.93),
 //        EnergyPricePoint(startTimestamp: Date(timeIntervalSince1970: 1612130400), endTimestamp: Date(timeIntervalSince1970: 1612134000), marketprice: 4.54)
-    ]
+//    ]
 
     var body: some View {
         HStack {
-            Graph(EnergyData(prices: prices, minPrice: 0, maxPrice: 6.17))
+            Graph(EnergyData(prices: getPrices(), minPrice: 0, maxPrice: 6.17))
         }
     }
 }
 
 struct PriceWidget: Widget {
     let kind: String = "me.space8.AWattPrice.PriceWidget"
-
+    
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: Provider()) { entry in
             PriceWidgetEntryView(entry: entry)

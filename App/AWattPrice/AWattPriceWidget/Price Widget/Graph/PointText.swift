@@ -19,6 +19,7 @@ struct PointText: View {
             Spacer()
             Text(transformStartToString())
                 .bold()
+                .foregroundColor(.white)
         }
         .padding(.bottom, 6)
     }

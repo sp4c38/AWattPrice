@@ -90,7 +90,7 @@ extension BackendCommunicator {
                         withAnimation {
                             self.dataRetrievalError = true
                         }
-                    }
+                     }
                 }
             }
 

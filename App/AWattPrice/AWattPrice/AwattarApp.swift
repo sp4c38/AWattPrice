@@ -33,11 +33,11 @@ class PersistenceManager {
 struct AwattarApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
-    var backendComm: BackendCommunicator
-    var crtNotifiSetting: CurrentNotificationSetting
-    var currentSetting: CurrentSetting
-    var notificationAccess: NotificationAccess
-    var persistence = PersistenceManager()
+    let backendComm: BackendCommunicator
+    let crtNotifiSetting: CurrentNotificationSetting
+    let currentSetting: CurrentSetting
+    let notificationAccess: NotificationAccess
+    let persistence = PersistenceManager()
 
     init() {
         backendComm = BackendCommunicator()

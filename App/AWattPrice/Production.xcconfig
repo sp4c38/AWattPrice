@@ -18,3 +18,4 @@ ROOT_URL = https:/$()/test-awp.space8.me // Without trailing /
 // General App settings
 APP_NAME = AWattPrice
 APP_BUNDLEID = me.space8.AWattPrice
+AWATTPRICE_GROUPID = group.me.space8.AWattPrice

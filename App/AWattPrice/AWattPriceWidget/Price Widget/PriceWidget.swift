@@ -1,6 +1,6 @@
 //
-//  AWattPriceWidget.swift
-//  AWattPriceWidget
+//  PriceWidget.swift
+//  PriceWidget
 //
 //  Created by Léon Becker on 30.01.21.
 //
@@ -20,7 +20,6 @@ struct Provider: TimelineProvider {
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
         var entries: [SimpleEntry] = []
-
         // Generate a timeline consisting of five entries an hour apart, starting from the current date.
         let currentDate = Date()
         for hourOffset in 0 ..< 5 {
@@ -38,7 +37,7 @@ struct SimpleEntry: TimelineEntry {
     let date: Date
 }
 
-struct AWattPriceWidgetEntryView : View {
+struct PriceWidgetEntryView : View {
     // @Environment(\.widgetFamily) var widgetFamily
     
     var entry: Provider.Entry
@@ -95,12 +94,12 @@ struct AWattPriceWidgetEntryView : View {
     }
 }
 
-struct AWattPriceWidget: Widget {
+struct PriceWidget: Widget {
     let kind: String = "me.space8.AWattPrice.PriceWidget"
 
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: Provider()) { entry in
-            AWattPriceWidgetEntryView(entry: entry)
+            PriceWidgetEntryView(entry: entry)
         }
         .configurationDisplayName("prices.name")
         .description("prices.description")
@@ -108,9 +107,9 @@ struct AWattPriceWidget: Widget {
     }
 }
 
-struct AWattPriceWidget_Previews: PreviewProvider {
+struct PriceWidget_Previews: PreviewProvider {
     static var previews: some View {
-        AWattPriceWidgetEntryView(entry: SimpleEntry(date: Date()))
+        PriceWidgetEntryView(entry: SimpleEntry(date: Date()))
             .previewContext(WidgetPreviewContext(family: .systemMedium))
             .environment(\.colorScheme, .dark)
     }

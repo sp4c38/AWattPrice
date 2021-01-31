@@ -25,5 +25,7 @@
 		<key>NSExtensionPointIdentifier</key>
 		<string>com.apple.widgetkit-extension</string>
 	</dict>
+	<key>AWATTPRICE_GROUPID</key>
+	<string>$(AWATTPRICE_GROUPID)</string>
 </dict>
 </plist>

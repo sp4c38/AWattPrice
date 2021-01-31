@@ -9,7 +9,7 @@ import CoreData
 
 /// Object which holds the current Setting object. Using NSFetchedResultsController the current setting stored in this object is updated if any changes occur to it.
 class CurrentSetting: AutoUpdatingEntity<Setting> {
-    @Published var currentVATToUse = GlobalAppSettings.NormalVATAmount
+    @Published var currentVATToUse = GlobalAppSettings.normalVATAmount
 
     init(managedObjectContext: NSManagedObjectContext) {
         super.init(entityName: "Setting", managedObjectContext: managedObjectContext)

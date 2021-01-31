@@ -12,6 +12,6 @@ import WidgetKit
 struct AWattPriceBundle: WidgetBundle {
     @WidgetBundleBuilder
     var body: some Widget {
-        AWattPriceWidget()
+        PriceWidget()
     }
 }

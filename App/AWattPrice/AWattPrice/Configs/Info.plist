@@ -62,5 +62,7 @@
 	</array>
 	<key>VAT_AMOUNT_NORMAL</key>
 	<string>$(VAT_AMOUNT_NORMAL)</string>
+	<key>AWATTPRICE_GROUPID</key>
+	<string>$(AWATTPRICE_GROUPID)</string>
 </dict>
 </plist>

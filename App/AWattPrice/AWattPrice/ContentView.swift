@@ -9,6 +9,7 @@ import SwiftUI
 
 /// Start of the application.
 struct ContentView: View {
+    @Environment(\.appGroupManager) var appGroupManager
     @Environment(\.networkManager) var networkManager
     @Environment(\.scenePhase) var scenePhase
 
@@ -47,6 +48,7 @@ struct ContentView: View {
                     }
                 }
                 .onAppear {
+                    initiateAppGroup()
                     // Check Notification access
                     if currentSetting.entity!.showWhatsNew == false && currentSetting.entity!.splashScreensFinished == true {
                         managePushNotificationsOnAppAppear(notificationAccessRepresentable: notificationAccess, registerForRemoteNotifications: true) {}
@@ -86,5 +88,13 @@ struct ContentView: View {
                 UIApplication.shared.applicationIconBadgeNumber = 0
             }
         }
+    }
+}
+
+extension ContentView {
+    func initiateAppGroup() {
+        let _ = appGroupManager.setGroup(AppGroups.awattpriceGroup)
+        print(appGroupManager.groupID)
+        appGroupManager.writeEnergyDataToGroup(energyData: EnergyData(prices: []))
     }
 }

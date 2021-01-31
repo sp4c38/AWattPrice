@@ -41,14 +41,12 @@
 		6166E7FB25C570A600281830 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6166E7FA25C570A600281830 /* WidgetKit.framework */; };
 		6166E7FD25C570A600281830 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6166E7FC25C570A600281830 /* SwiftUI.framework */; };
 		6166E80625C570A800281830 /* AWattPriceWidgetExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 6166E7F825C570A600281830 /* AWattPriceWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		6166E89725C5737400281830 /* AWattPriceWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6166E7FF25C570A600281830 /* AWattPriceWidget.swift */; };
+		6166E89725C5737400281830 /* PriceWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6166E7FF25C570A600281830 /* PriceWidget.swift */; };
 		6166E89C25C5737800281830 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6166E80125C570A800281830 /* Assets.xcassets */; };
 		6166E8AE25C5740900281830 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 6166E88D25C5729500281830 /* Localizable.strings */; };
 		6166E8CF25C57B7600281830 /* WidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6166E8B925C57ABB00281830 /* WidgetBundle.swift */; };
 		6166E8DB25C57F1D00281830 /* Graph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6166E8D525C57EFF00281830 /* Graph.swift */; };
 		6166E91725C5802F00281830 /* GlobalAppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 618AF84F2593E94100E21583 /* GlobalAppSettings.swift */; };
-		6166E92125C5804800281830 /* Production.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 618AF8062593DB8500E21583 /* Production.xcconfig */; };
-		6166E92625C5804B00281830 /* Development.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 618AF8052593DB6800E21583 /* Development.xcconfig */; };
 		6166E92B25C580AA00281830 /* BackendCommunicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61936FC725BACDDF00D60BC5 /* BackendCommunicator.swift */; };
 		6166E93025C580AC00281830 /* DownloadData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 614E784C25068F6100A7ED83 /* DownloadData.swift */; };
 		6166E93B25C5812000281830 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6166E93A25C5812000281830 /* NetworkManager.swift */; };
@@ -179,7 +177,7 @@
 		6166E7F825C570A600281830 /* AWattPriceWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = AWattPriceWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		6166E7FA25C570A600281830 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		6166E7FC25C570A600281830 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
-		6166E7FF25C570A600281830 /* AWattPriceWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AWattPriceWidget.swift; sourceTree = "<group>"; };
+		6166E7FF25C570A600281830 /* PriceWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceWidget.swift; sourceTree = "<group>"; };
 		6166E80125C570A800281830 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6166E80325C570A800281830 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6166E88C25C5729500281830 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -418,7 +416,7 @@
 			isa = PBXGroup;
 			children = (
 				6166E8D425C57EF400281830 /* Graph */,
-				6166E7FF25C570A600281830 /* AWattPriceWidget.swift */,
+				6166E7FF25C570A600281830 /* PriceWidget.swift */,
 			);
 			path = "Price Widget";
 			sourceTree = "<group>";
@@ -482,6 +480,8 @@
 			children = (
 				6166E9CA25C69FCD00281830 /* AppGroup.swift */,
 				618AF84F2593E94100E21583 /* GlobalAppSettings.swift */,
+				618AF8062593DB8500E21583 /* Production.xcconfig */,
+				618AF8052593DB6800E21583 /* Development.xcconfig */,
 				6166E9B525C69F6E00281830 /* Entitlements */,
 				617D85B025052C35009E18FB /* AWattPrice */,
 				6166E7FE25C570A600281830 /* AWattPriceWidget */,
@@ -609,8 +609,6 @@
 			isa = PBXGroup;
 			children = (
 				617D85BA25052C37009E18FB /* Info.plist */,
-				618AF8052593DB6800E21583 /* Development.xcconfig */,
-				618AF8062593DB8500E21583 /* Production.xcconfig */,
 			);
 			path = Configs;
 			sourceTree = "<group>";
@@ -773,7 +771,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1240;
-				LastUpgradeCheck = 1200;
+				LastUpgradeCheck = 1240;
 				TargetAttributes = {
 					6166E7F725C570A600281830 = {
 						CreatedOnToolsVersion = 12.4;
@@ -820,8 +818,6 @@
 			files = (
 				6166E89C25C5737800281830 /* Assets.xcassets in Resources */,
 				6166E8AE25C5740900281830 /* Localizable.strings in Resources */,
-				6166E92625C5804B00281830 /* Development.xcconfig in Resources */,
-				6166E92125C5804800281830 /* Production.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -870,7 +866,7 @@
 				6166E97E25C59AA900281830 /* GraphHelpers.swift in Sources */,
 				6166E95525C58EE200281830 /* GraphBody.swift in Sources */,
 				6166E94425C5813A00281830 /* NetworkManager.swift in Sources */,
-				6166E89725C5737400281830 /* AWattPriceWidget.swift in Sources */,
+				6166E89725C5737400281830 /* PriceWidget.swift in Sources */,
 				6166E8CF25C57B7600281830 /* WidgetBundle.swift in Sources */,
 				6166E93025C580AC00281830 /* DownloadData.swift in Sources */,
 			);

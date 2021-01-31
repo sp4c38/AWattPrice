@@ -195,7 +195,7 @@ struct CheapestTimeView_Previews: PreviewProvider {
                 .environmentObject(CurrentSetting(managedObjectContext: PersistenceManager().persistentContainer.viewContext))
                 .preferredColorScheme(.light)
                 .onAppear {
-                    backendComm.download(forRegion: 0, networkManager: networkManager)
+                    backendComm.download(AppGroupManager(), 0, networkManager)
                 }
             Spacer(minLength: 0)
             TabBar()

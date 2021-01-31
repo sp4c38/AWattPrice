@@ -8,7 +8,9 @@
 import SwiftUI
 
 struct UpdatedDataView: View {
+    @Environment(\.appGroupManager) var appGroupManager
     @Environment(\.networkManager) var networkManager
+    
     @EnvironmentObject var backendComm: BackendCommunicator
     @EnvironmentObject var currentSetting: CurrentSetting
 
@@ -21,7 +23,9 @@ struct UpdatedDataView: View {
     init() {
         dateFormatter = UpdatedDataTimeFormatter()
     }
+}
 
+extension UpdatedDataView {
     func updateLocalizedTimeIntervalString() {
         if backendComm.dateDataLastUpdated != nil {
             localizedTimeIntervalString = dateFormatter.localizedTimeString(for: Date(), relativeTo: backendComm.dateDataLastUpdated!)
@@ -74,7 +78,7 @@ struct UpdatedDataView: View {
         }
         .contentShape(Rectangle())
         .onTapGesture {
-            backendComm.download(forRegion: currentSetting.entity!.regionIdentifier, networkManager: networkManager)
+            backendComm.download(appGroupManager, currentSetting.entity!.regionIdentifier, networkManager)
         }
     }
 }

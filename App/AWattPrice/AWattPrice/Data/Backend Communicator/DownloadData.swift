@@ -55,7 +55,7 @@ extension BackendCommunicator {
     // Download methods
 
     /// Downloads the newest aWATTar data
-    func download(forRegion regionIdentifier: Int16, networkManager: NetworkManager) {
+    func download(_ appGroupManager: AppGroupManager, _ regionIdentifier: Int16, _ networkManager: NetworkManager) {
         currentlyUpdatingData = true
         dataRetrievalError = false
 
@@ -99,8 +99,11 @@ extension BackendCommunicator {
                     self.dataRetrievalError = true
                 }
 
-                if self.dataRetrievalError == false {
+                if !self.dataRetrievalError {
                     self.dateDataLastUpdated = Date()
+                    DispatchQueue.global(qos: .background).async {
+                        
+                    }
                 }
 
                 if Date().timeIntervalSince(beforeTime) < 0.6 {

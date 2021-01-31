@@ -84,7 +84,7 @@ struct HomeView: View {
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .onAppear {
-            backendComm.download(forRegion: currentSetting.entity!.regionIdentifier, networkManager: networkManager)
+            backendComm.download(appGroupManager, currentSetting.entity!.regionIdentifier,networkManager)
             showWhatsNewPage = currentSetting.entity!.showWhatsNew
             initialAppearFinished = nil
         }
@@ -95,12 +95,12 @@ struct HomeView: View {
             }
             if phase == .active, initialAppearFinished == true {
                 print("App was reentered. Updating data.")
-                backendComm.download(forRegion: currentSetting.entity!.regionIdentifier, networkManager: networkManager)
+                backendComm.download(appGroupManager, currentSetting.entity!.regionIdentifier, networkManager)
                 showWhatsNewPage = currentSetting.entity!.showWhatsNew
             }
         }
         .onChange(of: currentSetting.entity!.regionIdentifier) { _ in
-            backendComm.download(forRegion: currentSetting.entity!.regionIdentifier, networkManager: networkManager)
+            backendComm.download(appGroupManager, currentSetting.entity!.regionIdentifier, networkManager)
         }
         .sheet(isPresented: $showWhatsNewPage) {
             WhatsNewPage()

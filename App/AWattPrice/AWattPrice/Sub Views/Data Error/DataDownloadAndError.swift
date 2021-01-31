@@ -20,11 +20,15 @@ struct DataRetrievalLoadingView: View {
 }
 
 struct DataRetrievalError: View {
+    @Environment(\.appGroupManager) var appGroupManager
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.networkManager) var networkManager
+    
     @EnvironmentObject var backendComm: BackendCommunicator
     @EnvironmentObject var currentSetting: CurrentSetting
+}
 
+extension DataRetrievalError {
     var body: some View {
         VStack(alignment: .center) {
             Spacer()
@@ -39,7 +43,7 @@ struct DataRetrievalError: View {
                     .multilineTextAlignment(.center)
 
                 Button(action: {
-                    backendComm.download(forRegion: currentSetting.entity!.regionIdentifier, networkManager: networkManager)
+                    backendComm.download(appGroupManager, currentSetting.entity!.regionIdentifier, networkManager)
                 }) {
                     Text("general.retry")
                 }.buttonStyle(RetryButtonStyle())
@@ -56,11 +60,15 @@ struct DataRetrievalError: View {
 }
 
 struct CurrentlyNoData: View {
+    @Environment(\.appGroupManager) var appGroupManager
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.networkManager) var networkManager
+    
     @EnvironmentObject var backendComm: BackendCommunicator
     @EnvironmentObject var currentSetting: CurrentSetting
+}
 
+extension CurrentlyNoData {
     var body: some View {
         VStack(alignment: .center) {
             Spacer()
@@ -75,7 +83,7 @@ struct CurrentlyNoData: View {
                     .multilineTextAlignment(.center)
 
                 Button(action: {
-                    backendComm.download(forRegion: currentSetting.entity!.regionIdentifier, networkManager: networkManager)
+                    backendComm.download(appGroupManager, currentSetting.entity!.regionIdentifier, networkManager)
                 }) {
                     Text("general.retry")
                 }.buttonStyle(RetryButtonStyle())

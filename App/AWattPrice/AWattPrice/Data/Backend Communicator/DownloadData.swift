@@ -28,7 +28,7 @@ struct EnergyPricePoint: Hashable, Codable, Comparable {
 }
 
 /// A object containing all EnergyPricePoint's. It also holds two values for the smallest and the largest energy price of all containing energy data points.
-struct EnergyData: Codable {
+struct EnergyData: Codable, Equatable {
     var prices: [EnergyPricePoint]
     var minPrice: Double = 0
     var maxPrice: Double = 0
@@ -102,7 +102,9 @@ extension BackendCommunicator {
                 if !self.dataRetrievalError {
                     self.dateDataLastUpdated = Date()
                     DispatchQueue.global(qos: .background).async {
-                        
+                        var newEnergyData: EnergyData?
+                        DispatchQueue.main.async { newEnergyData = self.energyData }
+                        self.checkAndStoreDataToAppGroup(appGroupManager, newEnergyData)
                     }
                 }
 
@@ -189,6 +191,18 @@ extension BackendCommunicator {
                     self.dataRetrievalError = true
                 }
             }
+        }
+    }
+}
+
+extension BackendCommunicator {
+    func checkAndStoreDataToAppGroup(_ appGroupManager: AppGroupManager, _ newDataToCheck: EnergyData?) {
+        guard let newData = newDataToCheck else { return }
+        let setGroupSuccessful = appGroupManager.setGroup(AppGroups.awattpriceGroup)
+        guard setGroupSuccessful else { return }
+        let storedData = appGroupManager.readEnergyDataFromGroup()
+        if storedData != newData {
+            let _ = appGroupManager.writeEnergyDataToGroup(energyData: newData)
         }
     }
 }

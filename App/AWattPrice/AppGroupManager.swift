@@ -28,6 +28,7 @@ class AppGroupManager {
     }
     
     public func setGroup(_ newGroupID: String) -> Bool {
+        guard groupID != newGroupID else { return true }
         guard let newContainerURL = getContainerURL(newGroupID) else { return false }
         groupID = newGroupID
         containerURL = newContainerURL

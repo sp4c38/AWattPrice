@@ -191,6 +191,8 @@
 		6166E95E25C5938500281830 /* GraphPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphPoint.swift; sourceTree = "<group>"; };
 		6166E97025C5975E00281830 /* PointShape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PointShape.swift; sourceTree = "<group>"; };
 		6166E99525C5D90500281830 /* PointText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PointText.swift; sourceTree = "<group>"; };
+		6166E99F25C69E1100281830 /* AWattPriceProduction.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AWattPriceProduction.entitlements; sourceTree = "<group>"; };
+		6166E9AC25C69EF600281830 /* AWattPriceWidgetExtensionProduction.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AWattPriceWidgetExtensionProduction.entitlements; sourceTree = "<group>"; };
 		61753B6D257818DF001379B9 /* SplashScreenFeaturesAndConsent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SplashScreenFeaturesAndConsent.swift; sourceTree = "<group>"; };
 		617AD92625730AC100F905A5 /* TBItems.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TBItems.swift; sourceTree = "<group>"; };
 		617D85AE25052C35009E18FB /* AWattPrice.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AWattPrice.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -464,7 +466,6 @@
 		617D85A525052C35009E18FB = {
 			isa = PBXGroup;
 			children = (
-				6166E80725C570A800281830 /* AWattPriceWidgetExtension.entitlements */,
 				617D85B025052C35009E18FB /* AWattPrice */,
 				6166E7FE25C570A600281830 /* AWattPriceWidget */,
 				617D85C225052C37009E18FB /* AWattPriceAppTests */,
@@ -488,6 +489,9 @@
 		617D85B025052C35009E18FB /* AWattPrice */ = {
 			isa = PBXGroup;
 			children = (
+				6166E80725C570A800281830 /* AWattPriceWidgetExtension.entitlements */,
+				6166E9AC25C69EF600281830 /* AWattPriceWidgetExtensionProduction.entitlements */,
+				6166E99F25C69E1100281830 /* AWattPriceProduction.entitlements */,
 				614E76CC258F65680097EF9B /* AWattPrice.entitlements */,
 				618518E82585062F00120D81 /* CoreData */,
 				6184828825699E33004F3F62 /* Extensions */,
@@ -1025,7 +1029,7 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_ENTITLEMENTS = AWattPriceWidgetExtension.entitlements;
+				CODE_SIGN_ENTITLEMENTS = AWattPrice/AWattPriceWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
@@ -1107,7 +1111,7 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_ENTITLEMENTS = AWattPriceWidgetExtension.entitlements;
+				CODE_SIGN_ENTITLEMENTS = AWattPrice/AWattPriceWidgetExtensionProduction.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
@@ -1306,7 +1310,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = AWattPrice/AWattPrice.entitlements;
+				CODE_SIGN_ENTITLEMENTS = AWattPrice/AWattPriceProduction.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 24;

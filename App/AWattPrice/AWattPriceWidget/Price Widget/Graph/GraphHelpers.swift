@@ -159,11 +159,6 @@ fileprivate func getGraphText(
         startX: startX
     )
     
-    let viewSizeCalculator = ViewSizeCalculator()
-    
-    
-    
-    
     return graphText
 }
 
@@ -176,7 +171,7 @@ func createGraphData(
     let graphProperties = GraphProperties(
         maxWidth, maxHeight,
         numberOfPoints: energyData.prices.count,
-        textRepeating: 4,
+        textRepeating: 6,
         paddings: [.top: 16]
     )
     let graphData = GraphData(graphProperties)

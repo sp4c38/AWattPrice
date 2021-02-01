@@ -42,6 +42,7 @@ struct PriceWidgetEntryView : View {
     // @Environment(\.widgetFamily) var widgetFamily
     
     var entry: Provider.Entry
+    var energyData: EnergyData = EnergyData(prices: [], minPrice: 0, maxPrice: 0)
     
     func getEnergyData() -> EnergyData {
         let noEnergyData = EnergyData(prices: [], minPrice: 0, maxPrice: 0)
@@ -50,13 +51,18 @@ struct PriceWidgetEntryView : View {
         return energyData
     }
     
-    init(entry: SimpleEntry) {
+    init(entry: SimpleEntry, _ customEnergyData: EnergyData? = nil) {
         self.entry = entry
+        if customEnergyData != nil {
+            energyData = customEnergyData!
+        } else {
+            self.energyData = getEnergyData()
+        }
     }
-
+    
     var body: some View {
         HStack {
-            Graph(getEnergyData())
+            Graph(energyData)
         }
     }
 }
@@ -76,7 +82,35 @@ struct PriceWidget: Widget {
 
 struct PriceWidget_Previews: PreviewProvider {
     static var previews: some View {
-        PriceWidgetEntryView(entry: SimpleEntry(date: Date()))
+        let exampleEnergyData: EnergyData = {
+            // Dynamically create some example energy data
+            var newEnergyData = EnergyData(prices: [], minPrice: 0, maxPrice: 0)
+            
+            let tomorrow = Calendar.current.startOfDay(for: Date()).addingTimeInterval(86400)
+            var currentStartDate = Calendar.current.date(
+                bySettingHour: 9, minute: 0, second: 0, of: tomorrow)!
+            
+            for _ in 0...10 {
+                let currentEndDate = currentStartDate.addingTimeInterval(3600)
+                let randomMarketprice = Double.random(in: 0...15)
+                let newPoint = EnergyPricePoint(
+                    startTimestamp: currentStartDate, endTimestamp: currentEndDate,
+                    marketprice: randomMarketprice)
+                
+                if randomMarketprice > newEnergyData.maxPrice {
+                    newEnergyData.maxPrice = randomMarketprice
+                } else if randomMarketprice < 0, randomMarketprice < newEnergyData.minPrice {
+                    newEnergyData.minPrice = randomMarketprice
+                }
+                
+                newEnergyData.prices.append(newPoint)
+                currentStartDate = currentEndDate
+            }
+            
+            return newEnergyData
+        }()
+        
+        PriceWidgetEntryView(entry: SimpleEntry(date: Date()), exampleEnergyData)
             .previewContext(WidgetPreviewContext(family: .systemMedium))
             .environment(\.colorScheme, .dark)
     }

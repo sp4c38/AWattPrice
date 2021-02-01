@@ -61,7 +61,8 @@ class GraphProperties {
     var pointWidth: CGFloat = 0
     
     init(_ width: CGFloat, _ height: CGFloat, numberOfPoints: Int,
-         textRepeating: Int, paddings: [GraphPaddings: CGFloat]?) {
+         textRepeating: Int, textPaddings: [GraphTextPaddings: CGFloat]?,
+         graphPaddings: [GraphPaddings: CGFloat]?) {
         allWidth = width
         allHeight = height
         
@@ -71,13 +72,13 @@ class GraphProperties {
         endX = width
         startY = 0
         endY = height
-        applyPaddings(paddings)
+        applyGraphPaddings(graphPaddings)
         pointWidth = allWidth / CGFloat(numberOfPoints) // Perform only after paddings were applied
     }
 }
 
 extension GraphProperties {
-    private func applyPaddings(_ paddings: [GraphPaddings: CGFloat]?) {
+    private func applyGraphPaddings(_ paddings: [GraphPaddings: CGFloat]?) {
         if let paddings = paddings {
             if paddings.keys.contains(.top) {
                 startY += paddings[.top]!

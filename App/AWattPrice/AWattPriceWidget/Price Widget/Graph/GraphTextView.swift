@@ -43,13 +43,18 @@ struct GraphTextView: View {
     }
     
     var body: some View {
-        TextAtPosition {
-            Text(graphText.content)
-                .font(.fCaption)
-                .bold()
-                .foregroundColor(colorScheme == .light ? .black : .white)
-//                .padding(.bottom, 5)
-                .background(textBackground)
+        VStack {
+            TextAtPosition {
+                    Text(graphText.content)
+                        .font(.fCaption)
+                        .bold()
+                        .foregroundColor(colorScheme == .light ? .black : .white)
+                        .padding([.leading, .trailing], 3)
+                        .padding([.top, .bottom], 2)
+                        .background(textBackground)
+                        .cornerRadius(4)
+                        .padding(.bottom, 5)
+            }
         }
     }
 }
@@ -60,7 +65,7 @@ extension GraphTextView {
         content()
             .modifier(SizeModifier())
             .onPreferenceChange(SizeModifierPreferenceKey.self) { newSize in
-                self.contentSize = newSize
+                contentSize = newSize
             }
             .position(
                 x: graphText.startX,
@@ -69,29 +74,55 @@ extension GraphTextView {
             .offset(x: getOffsetX(), y: getOffsetY())
     }
     
-    func getOffsetX() -> CGFloat {
-        let textWidth = contentSize.width
-        
+    private func getOffsetX() -> CGFloat {
+        let contentWidth = contentSize.width
         let pointWidth = graphProperties.pointWidth
-        var offset: CGFloat = textWidth / 2
         
+        // Min x coordinate of the text box if it would be centered at the center of the graph point.
+        let centeredMinX = (
+            (graphText.startX + (pointWidth / 2)) // Center x coord of point
+            - (contentWidth / 2)
+        )
+        // The text box if centered at the center of the graph point.
+        let centeredFrame = CGRect(
+            x: centeredMinX, y: 0, // Here, use 0 for y because it isn't needed/used.
+            width: contentWidth, height: contentSize.height
+        )
+        
+        var offset = centeredFrame.width / 2
+    
+        let maxX = graphProperties.endX
+        // If the text box would be at graphText.startX/graphPoint.startX it would need to be x-offsetted by this value to be centered on the graph point.
+        let xDiffForCentered = -(centeredFrame.width / 4)
+        
+        if centeredFrame.minX < graphProperties.startX {
+            print("Text is smaller than graph start: \(graphText.content) by \(0 + centeredFrame.minX).")
+        } else if centeredFrame.maxX > maxX {
+            let contentOvercover = (
+                (centeredFrame.maxX - xDiffForCentered) // Text end x if text positioned at graphText.startX
+                - maxX
+            )
+            offset -= contentOvercover
+        } else {
+            offset += xDiffForCentered
+        }
         
         return offset
     }
     
-    func getOffsetY() -> CGFloat {
+    private func getOffsetY() -> CGFloat {
         return -(contentSize.height / 2) - 20
     }
 }
 
 extension GraphTextView {
     var textBackground: some View {
-        VStack {
-            if colorScheme == .light {
-                Color(red: 0.92, green: 0.91, blue: 0.93)
-            } else {
-                Color(red: 0.21, green: 0.21, blue: 0.21)
-            }
+        if colorScheme == .light {
+            return Color(red: 0.92, green: 0.91, blue: 0.93)
+                .opacity(0.7)
+        } else {
+            return Color(red: 0.21, green: 0.21, blue: 0.21)
+                .opacity(0.7)
         }
     }
 }

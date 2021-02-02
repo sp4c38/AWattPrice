@@ -1,13 +1,13 @@
 //
-//  AwattarAppUITests.swift
-//  AwattarAppUITests
+//  AWattPriceUITests.swift
+//  AWattPriceUITests
 //
 //  Created by Léon Becker on 06.09.20.
 //
 
 import XCTest
 
-class AwattarAppUITests: XCTestCase {
+class AWattPriceAppUITests: XCTestCase {
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
 
@@ -30,7 +30,7 @@ class AwattarAppUITests: XCTestCase {
         app.launch()
 
         // Use recording to get started writing UI tests.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+                        // Use XCTAssert and related functions to verify your tests produce the correct results.
     }
 
     func testLaunchPerformance() throws {

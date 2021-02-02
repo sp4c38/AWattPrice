@@ -64,8 +64,8 @@
 		617D85B425052C35009E18FB /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617D85B325052C35009E18FB /* HomeView.swift */; };
 		617D85B625052C37009E18FB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 617D85B525052C37009E18FB /* Assets.xcassets */; };
 		617D85B925052C37009E18FB /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 617D85B825052C37009E18FB /* Preview Assets.xcassets */; };
-		617D85C425052C37009E18FB /* AwattarAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617D85C325052C37009E18FB /* AwattarAppTests.swift */; };
-		617D85CF25052C37009E18FB /* AwattarAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617D85CE25052C37009E18FB /* AwattarAppUITests.swift */; };
+		617D85C425052C37009E18FB /* AWattPriceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617D85C325052C37009E18FB /* AWattPriceTests.swift */; };
+		617D85CF25052C37009E18FB /* AWattPriceUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617D85CE25052C37009E18FB /* AWattPriceUITests.swift */; };
 		617DF01C2594AA1D004BF4E2 /* NotificationSetting+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617DF01A2594AA1D004BF4E2 /* NotificationSetting+CoreDataClass.swift */; };
 		617DF01D2594AA1D004BF4E2 /* NotificationSetting+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617DF01B2594AA1D004BF4E2 /* NotificationSetting+CoreDataProperties.swift */; };
 		617DF0242594AAF5004BF4E2 /* NotificationSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617DF0222594AAF5004BF4E2 /* NotificationSetting.swift */; };
@@ -207,10 +207,10 @@
 		617D85B825052C37009E18FB /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		617D85BA25052C37009E18FB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		617D85BF25052C37009E18FB /* AwattarAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AwattarAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		617D85C325052C37009E18FB /* AwattarAppTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AwattarAppTests.swift; sourceTree = "<group>"; };
+		617D85C325052C37009E18FB /* AWattPriceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AWattPriceTests.swift; sourceTree = "<group>"; };
 		617D85C525052C37009E18FB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		617D85CA25052C37009E18FB /* AwattarAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AwattarAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		617D85CE25052C37009E18FB /* AwattarAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AwattarAppUITests.swift; sourceTree = "<group>"; };
+		617D85CE25052C37009E18FB /* AWattPriceUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AWattPriceUITests.swift; sourceTree = "<group>"; };
 		617D85D025052C37009E18FB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		617DF01A2594AA1D004BF4E2 /* NotificationSetting+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NotificationSetting+CoreDataClass.swift"; sourceTree = "<group>"; };
 		617DF01B2594AA1D004BF4E2 /* NotificationSetting+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NotificationSetting+CoreDataProperties.swift"; sourceTree = "<group>"; };
@@ -494,7 +494,7 @@
 				617D85B025052C35009E18FB /* AWattPrice */,
 				6166E7FE25C570A600281830 /* AWattPriceWidget */,
 				617D85C225052C37009E18FB /* AWattPriceAppTests */,
-				617D85CD25052C37009E18FB /* AWattPriceAppUITests */,
+				617D85CD25052C37009E18FB /* AWattPriceUITests */,
 				6166E7F925C570A600281830 /* Frameworks */,
 				617D85AF25052C35009E18FB /* Products */,
 			);
@@ -541,19 +541,19 @@
 		617D85C225052C37009E18FB /* AWattPriceAppTests */ = {
 			isa = PBXGroup;
 			children = (
-				617D85C325052C37009E18FB /* AwattarAppTests.swift */,
+				617D85C325052C37009E18FB /* AWattPriceTests.swift */,
 				617D85C525052C37009E18FB /* Info.plist */,
 			);
 			path = AWattPriceAppTests;
 			sourceTree = "<group>";
 		};
-		617D85CD25052C37009E18FB /* AWattPriceAppUITests */ = {
+		617D85CD25052C37009E18FB /* AWattPriceUITests */ = {
 			isa = PBXGroup;
 			children = (
-				617D85CE25052C37009E18FB /* AwattarAppUITests.swift */,
+				617D85CE25052C37009E18FB /* AWattPriceUITests.swift */,
 				617D85D025052C37009E18FB /* Info.plist */,
 			);
-			path = AWattPriceAppUITests;
+			path = AWattPriceUITests;
 			sourceTree = "<group>";
 		};
 		617DF0212594AAD8004BF4E2 /* Setting Entitys */ = {
@@ -980,7 +980,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				617D85C425052C37009E18FB /* AwattarAppTests.swift in Sources */,
+				617D85C425052C37009E18FB /* AWattPriceTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -988,7 +988,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				617D85CF25052C37009E18FB /* AwattarAppUITests.swift in Sources */,
+				617D85CF25052C37009E18FB /* AWattPriceUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

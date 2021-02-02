@@ -1,11 +1,11 @@
 //
-//  AwattarAppTests.swift
-//  AwattarAppTests
+//  AWattPriceTests.swift
+//  AWattPriceTests
 //
 //  Created by Léon Becker on 06.09.20.
 //
 
-@testable import AwattarApp
+@testable import AWattPrice
 import XCTest
 
 class AwattarAppTests: XCTestCase {

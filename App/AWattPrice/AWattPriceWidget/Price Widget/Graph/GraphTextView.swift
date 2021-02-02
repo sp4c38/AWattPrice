@@ -92,15 +92,22 @@ extension GraphTextView {
     
         let maxX = graphProperties.endX
         // If the text box would be at graphText.startX/graphPoint.startX it would need to be x-offsetted by this value to be centered on the graph point.
-        let xDiffForCentered = -(centeredFrame.width / 4)
+        let xDiffForCentered = (
+            centeredFrame.minX - graphText.startX
+        )
         
         if centeredFrame.minX < graphProperties.startX {
-            print("Text is smaller than graph start: \(graphText.content) by \(0 + centeredFrame.minX).")
+            if let contentPadding = graphProperties.textOverlapPaddings[.leading] {
+                offset += contentPadding
+            }
         } else if centeredFrame.maxX > maxX {
             let contentOvercover = (
                 (centeredFrame.maxX - xDiffForCentered) // Text end x if text positioned at graphText.startX
                 - maxX
             )
+            if let contentPadding = graphProperties.textOverlapPaddings[.trailing] {
+                offset -= contentPadding
+            }
             offset -= contentOvercover
         } else {
             offset += xDiffForCentered

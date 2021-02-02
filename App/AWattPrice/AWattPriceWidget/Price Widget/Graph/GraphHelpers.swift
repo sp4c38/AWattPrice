@@ -31,24 +31,22 @@ class GraphPoint {
 class GraphText {
     let content: String
     let startX: CGFloat
-    let position: [GraphTextPosition: Bool]
     
-    init(content startTime: Date, startX: CGFloat, position: [GraphTextPosition: Bool]) {
+    init(content startTime: Date, startX: CGFloat) {
         let hour = Calendar.current.component(.hour, from: startTime)
         content = String(hour)
         self.startX = startX
-        self.position = position
     }
 }
 
-enum GraphTextPaddings {
+enum GraphTextPadding {
     case bottom
 }
-enum GraphFirstLastTextPaddings {
+enum GraphTextOverlapPadding {
     case leading, trailing
 }
 
-enum GraphPaddings {
+enum GraphPadding {
     case top, bottom, leading, trailing
 }
 
@@ -62,10 +60,10 @@ class GraphProperties {
     
     // Add point text each X points. Set to 1 to add text for each bar.
     var textRepeating: Int
-    var textPaddings: [GraphTextPaddings: CGFloat] = [.bottom: 0] // Paddings to later apply to each text element
-    var firstLastTextPaddings: [GraphFirstLastTextPaddings: CGFloat] = [
+    var textPaddings: [GraphTextPadding: CGFloat] = [.bottom: 0] // Paddings to later apply to each text element
+    var textOverlapPaddings: [GraphTextOverlapPadding: CGFloat] = [
         .leading: 0, .trailing: 0
-    ] // Paddings to later apply to the first and last texts
+    ] // Paddings to apply to text which is exactly at start (leading) or end (trailing) of the graph.
     
     var startX: CGFloat
     var endX: CGFloat
@@ -89,18 +87,18 @@ class GraphProperties {
     }
     
     func addPaddings(
-        textPaddings: [GraphTextPaddings: CGFloat]?,
-        firstLastTextPaddings: [GraphFirstLastTextPaddings: CGFloat]?,
-        graphPaddings: [GraphPaddings: CGFloat]?
+        textPaddings: [GraphTextPadding: CGFloat]?,
+        textOverlapPaddings: [GraphTextOverlapPadding: CGFloat]?,
+        graphPaddings: [GraphPadding: CGFloat]?
     ) {
         makeTextPaddings(textPaddings)
-        makeFirstLastTextPaddings(firstLastTextPaddings)
+        makeTextOverlapPaddings(textOverlapPaddings)
         applyGraphPaddings(graphPaddings)
     }
 }
 
 extension GraphProperties {
-    private func makeTextPaddings(_ paddings: [GraphTextPaddings: CGFloat]?) {
+    private func makeTextPaddings(_ paddings: [GraphTextPadding: CGFloat]?) {
         if let paddings = paddings {
             if paddings.keys.contains(.bottom) {
                 textPaddings[.bottom] = paddings[.bottom]!
@@ -108,18 +106,18 @@ extension GraphProperties {
         }
     }
     
-    private func makeFirstLastTextPaddings(_ paddings: [GraphFirstLastTextPaddings: CGFloat]?) {
+    private func makeTextOverlapPaddings(_ paddings: [GraphTextOverlapPadding: CGFloat]?) {
         if let paddings = paddings {
             if paddings.keys.contains(.leading) {
-                firstLastTextPaddings[.leading] = paddings[.leading]!
+                textOverlapPaddings[.leading] = paddings[.leading]!
             }
             if paddings.keys.contains(.trailing) {
-                firstLastTextPaddings[.trailing] = paddings[.trailing]!
+                textOverlapPaddings[.trailing] = paddings[.trailing]!
             }
         }
     }
     
-    private func applyGraphPaddings(_ paddings: [GraphPaddings: CGFloat]?) {
+    private func applyGraphPaddings(_ paddings: [GraphPadding: CGFloat]?) {
         if let paddings = paddings {
             if paddings.keys.contains(.top) {
                 startY += paddings[.top]!
@@ -186,56 +184,30 @@ fileprivate func getGraphPoint(
 
 fileprivate func getTextStartX(
     _ pointIndex: Int,
-    _ graphProperties: GraphProperties,
-    _ position: [GraphTextPosition: Bool]
+    _ graphProperties: GraphProperties
 ) -> CGFloat {
-    var textLeadingPadding: CGFloat = 0
-    if position[.first] == true {
-        textLeadingPadding = graphProperties.firstLastTextPaddings[.leading]!
-    }
-    
     let startX = (
-        graphProperties.startX + textLeadingPadding // Start paddings
+        graphProperties.startX // Start paddings
             + (CGFloat(pointIndex) * graphProperties.pointWidth)
     )
     return startX
 }
 
-enum GraphTextPosition {
-    case first, last
-}
-
-fileprivate func resolveGraphTextPosition(_ textPositions: [GraphTextPosition: Bool]?) -> [GraphTextPosition: Bool] {
-    var defaultPosition: [GraphTextPosition: Bool] = [.first: false, .last: false]
-    if let positions = textPositions {
-        if positions.keys.contains(.first) {
-            defaultPosition[.first] = positions[.first]
-        }
-        if positions.keys.contains(.last) {
-            defaultPosition[.last] = positions[.last]
-        }
-    }
-    return defaultPosition
-}
-
 fileprivate func getGraphText(
     _ pointIndex: Int,
     _ point: EnergyPricePoint,
-    _ graphData: GraphData,
-    positions: [GraphTextPosition: Bool]?
+    _ graphData: GraphData
 ) -> GraphText? {
     let textRepeating = graphData.properties.textRepeating
     // Add text each Xth point. Subtract one to comply with zero-indexing.
     if textRepeating > 1 {
         guard pointIndex % (textRepeating - 1) == 0 else { return nil }
     }
-    let textPosition = resolveGraphTextPosition(positions)
-    let startX = getTextStartX(pointIndex, graphData.properties, textPosition)
+    let startX = getTextStartX(pointIndex, graphData.properties)
     
     let graphText = GraphText(
         content: point.startTimestamp,
-        startX: startX,
-        position: textPosition
+        startX: startX
     )
     
     return graphText
@@ -254,7 +226,7 @@ func createGraphData(
     )
     graphProperties.addPaddings(
         textPaddings: [.bottom: 10],
-        firstLastTextPaddings: [.leading: 16, .trailing: 0], // Extra paddings for the first and last text
+        textOverlapPaddings: [.leading: 5, .trailing: 5],
         graphPaddings: [.top: 25]
     )
     let graphData = GraphData(graphProperties)
@@ -266,11 +238,8 @@ func createGraphData(
         )
         graphData.points.append(graphPoint)
         
-        let isFirst = indexCounter == 0
-        let isLast = indexCounter == (energyData.prices.count - 1)
         if let graphText = getGraphText(
-            indexCounter, point, graphData,
-            positions: [.first: isFirst, .last: isLast]
+            indexCounter, point, graphData
         ) {
             graphData.texts.append(graphText)
         }

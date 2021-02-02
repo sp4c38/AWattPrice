@@ -82,7 +82,8 @@ class AppGroupManager {
         } catch {
             print("Couldn't decode energy data after reading from app group container: \(error).")
         }
-        return decodedEnergyData!
+        guard let energyData = decodedEnergyData else { return nil }
+        return energyData
     }
 }
 

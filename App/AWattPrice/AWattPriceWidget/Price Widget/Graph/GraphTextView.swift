@@ -52,7 +52,6 @@ struct GraphTextView: View {
                         .padding([.leading, .trailing], 3)
                         .padding([.top, .bottom], 2)
                         .background(textBackground)
-                        .cornerRadius(4)
                         .padding(.bottom, 5)
             }
         }
@@ -93,7 +92,7 @@ extension GraphTextView {
     
         let maxX = graphProperties.endX
         // If the text box would be at graphText.startX/graphPoint.startX it would need to be x-offsetted by this value to be centered on the graph point.
-        let xDiffForCentered = CGFloat(0)//-(centeredFrame.width / 4)
+        let xDiffForCentered = -(centeredFrame.width / 4)
         
         if centeredFrame.minX < graphProperties.startX {
             print("Text is smaller than graph start: \(graphText.content) by \(0 + centeredFrame.minX).")
@@ -117,12 +116,16 @@ extension GraphTextView {
 
 extension GraphTextView {
     var textBackground: some View {
-        if colorScheme == .light {
-            return Color(red: 0.92, green: 0.91, blue: 0.93)
-                .opacity(0.7)
-        } else {
-            return Color(red: 0.21, green: 0.21, blue: 0.21)
-                .opacity(0.7)
-        }
+        RoundedRectangle(cornerRadius: 4)
+            .stroke(Color.black, lineWidth: 1)
+            .background(
+                Group {
+                    colorScheme == .light ?
+                        Color(red: 0.92, green: 0.91, blue: 0.93)
+                        : Color(red: 0.21, green: 0.21, blue: 0.21)
+                }
+                .cornerRadius(4)
+                .opacity(0.8)
+            )
     }
 }

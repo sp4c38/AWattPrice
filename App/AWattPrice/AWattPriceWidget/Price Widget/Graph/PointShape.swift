@@ -8,10 +8,14 @@
 import SwiftUI
 
 struct PointShape: Shape {
-    let barPadding: CGFloat = 1.2
-    let dividerLineWidth: CGFloat = 3
-    let radius: CGFloat = 2
+    let pointSpacing: CGFloat
+    let radius: CGFloat
 
+    init(_ graphProperties: GraphProperties) {
+        pointSpacing = graphProperties.pointSpacing / 2
+        radius = 2
+    }
+    
     func path(in rect: CGRect) -> Path {
         var path = Path()
         let startX = rect.minX
@@ -22,21 +26,21 @@ struct PointShape: Shape {
 
         path.move(
             to: CGPoint(
-                x: startX + barPadding, // - (dividerLineWidth / 2),
+                x: startX + pointSpacing,
                 y: endY
             )
         )
         path.addLine(
             to:
                 CGPoint(
-                    x: endX - barPadding,// - (dividerLineWidth / 2),
+                    x: endX - pointSpacing,
                     y: endY
                 )
         )
         path.addRelativeArc(
             center:
                 CGPoint(
-                    x: width - radius - barPadding,
+                    x: width - radius - pointSpacing,
                     y: startY + radius
                 ),
                 radius: radius,
@@ -45,7 +49,7 @@ struct PointShape: Shape {
         )
         path.addRelativeArc(
             center:
-                CGPoint(x: startX + radius + barPadding,
+                CGPoint(x: startX + radius + pointSpacing,
                         y: startY + radius
                 ),
             radius: radius,
@@ -55,25 +59,10 @@ struct PointShape: Shape {
         path.addLine(
             to:
                 CGPoint(
-                    x: startX + barPadding,// - (dividerLineWidth / 2),
+                    x: startX + pointSpacing,
                     y: endY
                 )
         )
         return path
     }
 }
-
-//struct GraphShape_Previews: PreviewProvider {
-//    static var previews: some View {
-//        GeometryReader { geometry in
-//            PointShape()
-//                .stroke()
-//                .frame(width: 100, height: 200)
-//                .position(
-//                    x: UIScreen.main.bounds.width / 2,
-//                    y: UIScreen.main.bounds.height - 148
-//                )
-//        }
-//    }
-//}
-

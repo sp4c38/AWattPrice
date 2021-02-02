@@ -54,7 +54,6 @@
 		6166E95525C58EE200281830 /* GraphBody.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6166E95425C58EE200281830 /* GraphBody.swift */; };
 		6166E95F25C5938500281830 /* GraphPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6166E95E25C5938500281830 /* GraphPoint.swift */; };
 		6166E97E25C59AA900281830 /* GraphHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6166E94925C589CC00281830 /* GraphHelpers.swift */; };
-		6166E98725C5B03000281830 /* PointShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6166E97025C5975E00281830 /* PointShape.swift */; };
 		6166E98C25C5B03C00281830 /* PointShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6166E97025C5975E00281830 /* PointShape.swift */; };
 		6166E99625C5D90500281830 /* GraphTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6166E99525C5D90500281830 /* GraphTextView.swift */; };
 		6166E9CB25C69FCD00281830 /* AppGroupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6166E9CA25C69FCD00281830 /* AppGroupManager.swift */; };
@@ -99,6 +98,7 @@
 		61D57125256DAA2300EA69C7 /* CustomDatePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61D57124256DAA2300EA69C7 /* CustomDatePicker.swift */; };
 		61D6F8882517AD5500027FD1 /* ButtonStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61D6F8872517AD5500027FD1 /* ButtonStyles.swift */; };
 		61D88C0B2545EF9800DA2088 /* General.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61D88C0A2545EF9800DA2088 /* General.swift */; };
+		61DBC79725C98AE30049D4A8 /* GraphHelpersExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61DBC79625C98AE30049D4A8 /* GraphHelpersExtensions.swift */; };
 		61E0ACC025BAE6030011B0A1 /* APNSUploadError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61E0ACBF25BAE6030011B0A1 /* APNSUploadError.swift */; };
 		61E0ACC825BB13800011B0A1 /* HapticFeedbacks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61E0ACC725BB13800011B0A1 /* HapticFeedbacks.swift */; };
 		61E2DFD7254214B100473E20 /* CheapestHourManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61E2DFD6254214B100473E20 /* CheapestHourManager.swift */; };
@@ -244,6 +244,7 @@
 		61D57124256DAA2300EA69C7 /* CustomDatePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomDatePicker.swift; sourceTree = "<group>"; };
 		61D6F8872517AD5500027FD1 /* ButtonStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonStyles.swift; sourceTree = "<group>"; };
 		61D88C0A2545EF9800DA2088 /* General.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = General.swift; sourceTree = "<group>"; };
+		61DBC79625C98AE30049D4A8 /* GraphHelpersExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphHelpersExtensions.swift; sourceTree = "<group>"; };
 		61E0ACBF25BAE6030011B0A1 /* APNSUploadError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APNSUploadError.swift; sourceTree = "<group>"; };
 		61E0ACC725BB13800011B0A1 /* HapticFeedbacks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticFeedbacks.swift; sourceTree = "<group>"; };
 		61E2DFD6254214B100473E20 /* CheapestHourManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheapestHourManager.swift; sourceTree = "<group>"; };
@@ -432,6 +433,7 @@
 			children = (
 				6166E8D525C57EFF00281830 /* Graph.swift */,
 				6166E94925C589CC00281830 /* GraphHelpers.swift */,
+				61DBC79625C98AE30049D4A8 /* GraphHelpersExtensions.swift */,
 				6166E95425C58EE200281830 /* GraphBody.swift */,
 				6166E95E25C5938500281830 /* GraphPoint.swift */,
 				6166E97025C5975E00281830 /* PointShape.swift */,
@@ -892,6 +894,7 @@
 				6166E97E25C59AA900281830 /* GraphHelpers.swift in Sources */,
 				6166E95525C58EE200281830 /* GraphBody.swift in Sources */,
 				6166E94425C5813A00281830 /* NetworkManager.swift in Sources */,
+				61DBC79725C98AE30049D4A8 /* GraphHelpersExtensions.swift in Sources */,
 				6166E89725C5737400281830 /* PriceWidget.swift in Sources */,
 				6166E8CF25C57B7600281830 /* WidgetBundle.swift in Sources */,
 				6166E93025C580AC00281830 /* DownloadData.swift in Sources */,
@@ -927,7 +930,6 @@
 				61A1367725B76D7900CB089D /* InputFieldStyles.swift in Sources */,
 				6117E9E12590B65C00A2B475 /* AppDelegate.swift in Sources */,
 				6117E9DB2590B52300A2B475 /* UploadAPNsTokenToServer.swift in Sources */,
-				6166E98725C5B03000281830 /* PointShape.swift in Sources */,
 				618A6F6E2518F8C800A8778B /* CheapestTimeResultView.swift in Sources */,
 				6156A576250C1F5E005174A5 /* Setting+CoreDataClass.swift in Sources */,
 				613CFF7F250CCCA500337CB2 /* GetCurrentSetting.swift in Sources */,

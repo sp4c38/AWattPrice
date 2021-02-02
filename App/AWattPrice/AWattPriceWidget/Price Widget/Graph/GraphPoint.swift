@@ -45,7 +45,7 @@ struct GraphPointView: View {
     var body: some View {
         ZStack {
             PointAtPosition {
-                PointShape()
+                PointShape(graphProperties)
                     .fill(getPointLinearColor(isNegative: graphPoint.isNegative))
             }
         }

@@ -69,10 +69,12 @@ class GraphProperties {
     var endX: CGFloat
     var startY: CGFloat
     var endY: CGFloat
-    var pointWidth: CGFloat = 0
+    
+    var pointWidth: CGFloat
+    var pointSpacing: CGFloat
     
     init(_ width: CGFloat, _ height: CGFloat, numberOfPoints: Int,
-         textRepeating: Int) {
+         textRepeating: Int, pointSpacing: CGFloat) {
         allWidth = width
         allHeight = height
         
@@ -84,6 +86,7 @@ class GraphProperties {
         endY = height
         
         pointWidth = allWidth / CGFloat(numberOfPoints) // Perform only after paddings were applied
+        self.pointSpacing = pointSpacing
     }
     
     func addPaddings(
@@ -94,48 +97,6 @@ class GraphProperties {
         makeTextPaddings(textPaddings)
         makeTextOverlapPaddings(textOverlapPaddings)
         applyGraphPaddings(graphPaddings)
-    }
-}
-
-extension GraphProperties {
-    private func makeTextPaddings(_ paddings: [GraphTextPadding: CGFloat]?) {
-        if let paddings = paddings {
-            if paddings.keys.contains(.bottom) {
-                textPaddings[.bottom] = paddings[.bottom]!
-            }
-        }
-    }
-    
-    private func makeTextOverlapPaddings(_ paddings: [GraphTextOverlapPadding: CGFloat]?) {
-        if let paddings = paddings {
-            if paddings.keys.contains(.leading) {
-                textOverlapPaddings[.leading] = paddings[.leading]!
-            }
-            if paddings.keys.contains(.trailing) {
-                textOverlapPaddings[.trailing] = paddings[.trailing]!
-            }
-        }
-    }
-    
-    private func applyGraphPaddings(_ paddings: [GraphPadding: CGFloat]?) {
-        if let paddings = paddings {
-            if paddings.keys.contains(.top) {
-                startY += paddings[.top]!
-                allHeight -= paddings[.top]!
-            }
-            if paddings.keys.contains(.bottom) {
-                endY -= paddings[.bottom]!
-                allHeight -= paddings[.bottom]!
-            }
-            if paddings.keys.contains(.leading) {
-                startX += paddings[.leading]!
-                allWidth -= paddings[.leading]!
-            }
-            if paddings.keys.contains(.trailing) {
-                endX -= paddings[.trailing]!
-                allWidth -= paddings[.trailing]!
-            }
-        }
     }
 }
 
@@ -199,10 +160,13 @@ fileprivate func getGraphText(
     _ graphData: GraphData
 ) -> GraphText? {
     let textRepeating = graphData.properties.textRepeating
-    // Add text each Xth point. Subtract one to comply with zero-indexing.
+    
+    let pointStartHour = Calendar.current.component(.hour, from: point.startTimestamp)
+    // Only add text each Xth point. Subtract one to comply with zero-indexing.
     if textRepeating > 1 {
-        guard pointIndex % (textRepeating - 1) == 0 else { return nil }
+        guard pointStartHour % textRepeating == 0 else { return nil }
     }
+    
     let startX = getTextStartX(pointIndex, graphData.properties)
     
     let graphText = GraphText(
@@ -213,20 +177,40 @@ fileprivate func getGraphText(
     return graphText
 }
 
+func getTextRepeating(with numberOfPoints: Int) -> Int {
+    return 6
+}
+
+func getPointSpacing(with numberOfPoints: Int) -> CGFloat {
+    var spacing: CGFloat = 0
+    
+    if numberOfPoints < 10 {
+        spacing = 1.8
+    } else if numberOfPoints >= 10, numberOfPoints < 25 {
+        spacing = 1.5
+    } else {
+        spacing = 0.8
+    }
+    
+    return spacing
+}
+
 func createGraphData(
     _ energyData: EnergyData, _ geoProxy: GeometryProxy
 ) -> GraphData {
     let maxWidth = geoProxy.size.width
     let maxHeight = geoProxy.size.height
     
+    let numberOfPoints = energyData.prices.count
     let graphProperties = GraphProperties(
         maxWidth, maxHeight,
-        numberOfPoints: energyData.prices.count,
-        textRepeating: 6
+        numberOfPoints: numberOfPoints,
+        textRepeating: getTextRepeating(with: numberOfPoints),
+        pointSpacing: getPointSpacing(with: numberOfPoints)
     )
     graphProperties.addPaddings(
         textPaddings: [.bottom: 10],
-        textOverlapPaddings: [.leading: 5, .trailing: 5],
+        textOverlapPaddings: [.leading: 5, .trailing: 3],
         graphPaddings: [.top: 25]
     )
     let graphData = GraphData(graphProperties)

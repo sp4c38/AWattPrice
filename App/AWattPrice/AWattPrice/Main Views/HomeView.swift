@@ -84,7 +84,7 @@ struct HomeView: View {
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .onAppear {
-            backendComm.download(appGroupManager, currentSetting.entity!.regionIdentifier,networkManager)
+            backendComm.download(appGroupManager, currentSetting.entity!.regionIdentifier, networkManager)
             showWhatsNewPage = currentSetting.entity!.showWhatsNew
             initialAppearFinished = nil
         }

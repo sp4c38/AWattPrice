@@ -15,7 +15,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
     var crtNotifiSetting: CurrentNotificationSetting?
     var currentSetting: CurrentSetting?
     var notificationAccess: NotificationAccess?
-    
+
     func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
         let center = UNUserNotificationCenter.current()
         center.delegate = self

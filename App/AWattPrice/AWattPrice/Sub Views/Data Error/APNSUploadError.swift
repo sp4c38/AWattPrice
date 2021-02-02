@@ -10,16 +10,16 @@ import SwiftUI
 struct APNSUploadError: View {
     @EnvironmentObject var crtNotifiSetting: CurrentNotificationSetting
     @EnvironmentObject var currentSetting: CurrentSetting
-    
+
     var body: some View {
         VStack(alignment: .center, spacing: 10) {
             HStack {
                 Image(systemName: "exclamationmark.circle")
                     .font(.title)
-                
+
                 Text("dataError.apns.errorUploading")
             }
-            
+
             Button(action: {
                 crtNotifiSetting.pushNotificationUpdateManager.backgroundNotificationUpdate(
                     currentSetting, crtNotifiSetting

@@ -25,7 +25,7 @@ struct CheapestTimeViewBodyPicker: View {
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
 
     @State var maxTimeInterval = TimeInterval(3600)
-    
+
     func setMaxTimeInterval() {
         let minMaxRange = backendComm.minMaxTimeRange
         if minMaxRange == nil {
@@ -160,9 +160,9 @@ struct CheapestTimeView: View {
                                         .padding(.leading, 10)
                                 }
                             })
-                            .buttonStyle(ActionButtonStyle())
-                            .padding([.leading, .trailing, .bottom], 16)
-                            .padding(.top, 5)
+                                .buttonStyle(ActionButtonStyle())
+                                .padding([.leading, .trailing, .bottom], 16)
+                                .padding(.top, 5)
                         }
                         .animation(.easeInOut)
                     }

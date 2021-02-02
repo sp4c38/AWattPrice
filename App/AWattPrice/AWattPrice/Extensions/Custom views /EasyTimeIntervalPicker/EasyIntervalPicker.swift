@@ -99,7 +99,7 @@ extension EasyIntervalPicker {
         step = minuteInterval
         countOfMinuteSteps = 60 / step
         reloadComponent(componentMinutesID)
-        
+
         let maxTimeIntervalMinutes = Int(maxTimeInterval / 60) % 60
         maxMinutesRemainder = maxTimeIntervalMinutes - (maxTimeIntervalMinutes % step)
 

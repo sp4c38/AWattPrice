@@ -35,7 +35,7 @@ struct CheapestTimeResultTimeRange: View {
         VStack(alignment: .center, spacing: 5) {
             Text(getDateString(start: true, end: false))
                 .bold()
-            
+
             Text("general.until")
 
             Text(getDateString(start: false, end: true))
@@ -65,7 +65,7 @@ struct CheapestTimeResultViewClock: View {
                 screenSizeValue = screenWidth
             }
         }
-        
+
         if deviceType == .phone {
             clockSize = screenSizeValue * 0.80
         } else {
@@ -79,7 +79,7 @@ struct CheapestTimeResultViewClock: View {
                 .padding([.leading, .trailing], 20)
                 .frame(
                     width: clockSize,
-                    height: (clockSize - 20)
+                    height: clockSize - 20
                 )
         }
         .onAppear {

@@ -37,7 +37,7 @@ struct NotificationSettingView: View {
                 }
                 .animation(.easeInOut)
             }
-            
+
             VStack {
                 if backendComm.notificationUploadError {
                     APNSUploadError()
@@ -99,16 +99,15 @@ struct GoToNotificationSettingView: View {
 }
 
 struct NotificationSettingView_Previews: PreviewProvider {
-
     static var previews: some View {
         let notificationAccess = NotificationAccess()
         notificationAccess.access = true
         let backendComm = BackendCommunicator()
         backendComm.notificationUploadError = true
-        
+
 //        GoToNotificationSettingView()
 //            .preferredColorScheme(.dark)
-        
+
         return NavigationView {
             NotificationSettingView()
                 .environmentObject(notificationAccess)

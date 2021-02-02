@@ -23,7 +23,7 @@ struct DataRetrievalError: View {
     @Environment(\.appGroupManager) var appGroupManager
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.networkManager) var networkManager
-    
+
     @EnvironmentObject var backendComm: BackendCommunicator
     @EnvironmentObject var currentSetting: CurrentSetting
 }
@@ -63,7 +63,7 @@ struct CurrentlyNoData: View {
     @Environment(\.appGroupManager) var appGroupManager
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.networkManager) var networkManager
-    
+
     @EnvironmentObject var backendComm: BackendCommunicator
     @EnvironmentObject var currentSetting: CurrentSetting
 }

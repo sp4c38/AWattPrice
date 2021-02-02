@@ -26,7 +26,7 @@ class CurrentNotificationSetting: AutoUpdatingEntity<NotificationSetting> {
     let pushNotificationUpdateManager: PushNotificationUpdateManager
 
     init(backendComm: BackendCommunicator, managedObjectContext: NSManagedObjectContext) {
-        self.pushNotificationUpdateManager = PushNotificationUpdateManager(backendComm)
+        pushNotificationUpdateManager = PushNotificationUpdateManager(backendComm)
         super.init(entityName: "NotificationSetting", managedObjectContext: managedObjectContext)
     }
 

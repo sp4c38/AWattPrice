@@ -104,7 +104,7 @@ extension CheapestHourManager {
             possibleEndDate = Calendar.current.date(bySettingHour: 7, minute: 0, second: 0, of: tomorrow)!
         }
         let lastPossibleEndDate = energyData.prices.last!.endTimestamp
-        
+
         if possibleStartDate >= firstPossibleStartDate, possibleStartDate <= lastPossibleEndDate {
             startDate = possibleStartDate
         } else {
@@ -131,13 +131,13 @@ extension CheapestHourManager {
             endDate = possibleEndDate
         }
     }
-    
+
     func setMaxTimeInterval(with energyData: EnergyData) {
         startDate = Date()
         endDate = energyData.prices.last!.endTimestamp
         let calendar = Calendar.current
-        
-        if calendar.component(.hour, from: endDate) == 0 && startDate > endDate {
+
+        if calendar.component(.hour, from: endDate) == 0, startDate > endDate {
             // Toggles if the last hour is the hour at midnight.
             // In this case subtract 60 s because the end date time selection
             // can't be set to 00:00 but needs to be set to 23:59.
@@ -402,7 +402,7 @@ extension CheapestHourManager {
                         cheapestPair.associatedPricePoints[maxPointIndex].endTimestamp =
                             cheapestPair.associatedPricePoints[maxPointIndex].endTimestamp.addingTimeInterval(
                                 TimeInterval(-(timeRangeDifference * 60))
-                        )
+                            )
                     } else {
                         cheapestPair.associatedPricePoints[0].startTimestamp =
                             cheapestPair.associatedPricePoints[0].startTimestamp.addingTimeInterval(

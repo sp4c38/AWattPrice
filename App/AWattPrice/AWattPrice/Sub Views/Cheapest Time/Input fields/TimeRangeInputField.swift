@@ -67,18 +67,18 @@ struct TimeRangeInputFieldSelectionPart: View {
 struct TimeRangeInputFieldQuickSelectButtons: View {
     @EnvironmentObject var backendComm: BackendCommunicator
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
-    
+
     @State var buttonSize = CGSize(width: 0, height: 0)
-    
+
     var buttons = [
         "cheapestPricePage.todayTonight",
         "cheapestPricePage.nextThreeHours",
         "cheapestPricePage.nextTwelveHours",
-        "cheapestPricePage.maximal"
+        "cheapestPricePage.maximal",
     ]
-    
+
     var gridLayout = [GridItem(.adaptive(minimum: 70), spacing: 0, alignment: .center)]
-    
+
     var body: some View {
         LazyVGrid(columns: gridLayout, alignment: .center, spacing: 10) {
             ForEach(buttons, id: \.self) { name in

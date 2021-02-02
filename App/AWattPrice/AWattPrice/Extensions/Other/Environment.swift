@@ -9,14 +9,14 @@ import SwiftUI
 
 class DeviceOrientationManager: ObservableObject {
     @Published var deviceOrientation = UIInterfaceOrientation.portrait
-    
+
     init() {
         if let orientation = UIApplication.shared.windows.first?.windowScene?.interfaceOrientation {
-            self.deviceOrientation = orientation
+            deviceOrientation = orientation
         } else {
-            self.deviceOrientation = UIInterfaceOrientation.portrait
+            deviceOrientation = UIInterfaceOrientation.portrait
         }
-        
+
         NotificationCenter.default.addObserver(
             forName: UIDevice.orientationDidChangeNotification,
             object: nil,
@@ -27,7 +27,8 @@ class DeviceOrientationManager: ObservableObject {
                 } else {
                     self.deviceOrientation = UIInterfaceOrientation.portrait
                 }
-            })
+            }
+        )
     }
 }
 
@@ -42,12 +43,12 @@ extension EnvironmentValues {
         }
         set {}
     }
-    
+
     var deviceOrientation: DeviceOrientationManager {
         get { self[DeviceOrientationManagerKey.self] }
         set {}
     }
-    
+
     var deviceType: UIUserInterfaceIdiom {
         get { UIDevice.current.userInterfaceIdiom }
         set {}

@@ -23,7 +23,7 @@ struct WhatsNewPage: View {
                         tipText: "splashScreen.whatsNew.notifications.extrainfo",
                         imageName: ("PriceTag", false)
                     )
-                    
+
                     AppFeatureView(
                         title: "splashScreen.whatsNew.withDuration.title",
                         subTitle: "splashScreen.whatsNew.withDuration.extraInfo",

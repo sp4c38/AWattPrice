@@ -10,12 +10,12 @@ import SwiftUI
 struct NotAffiliatedView: View {
     let setFixedSize: Bool
     let showGrayedOut: Bool
-    
+
     init(setFixedSize: Bool = false, showGrayedOut: Bool) {
         self.setFixedSize = setFixedSize
         self.showGrayedOut = showGrayedOut
     }
-    
+
     var body: some View {
         HStack(alignment: .top, spacing: 10) {
             Image(systemName: "info.circle")

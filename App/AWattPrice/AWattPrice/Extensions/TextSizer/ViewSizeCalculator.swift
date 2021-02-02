@@ -5,10 +5,10 @@
 ////  Created by Léon Becker on 31.01.21.
 ////
 //
-//import SwiftUI
+// import SwiftUI
 //
 ///// Get the width and height of a Text object.
-//class ViewSizeCalculator {
+// class ViewSizeCalculator {
 //    private var view: AnyView?
 //    var viewSize: CGSize?
 //    private var viewSemaphore = DispatchSemaphore(value: 0)
@@ -17,9 +17,9 @@
 //        view = nil
 //        viewSize = nil
 //    }
-//}
+// }
 //
-//extension ViewSizeCalculator {
+// extension ViewSizeCalculator {
 //    private struct ViewSizePreferenceKey: PreferenceKey {
 //        struct SizeBounds: Equatable {
 //            static func == (
@@ -38,9 +38,9 @@
 //            value = nextValue()
 //        }
 //    }
-//}
+// }
 //
-//extension ViewSizeCalculator {
+// extension ViewSizeCalculator {
 //    func SizeViewMaker<Content: View>(@ViewBuilder content: () -> Content) -> AnyView {
 //        viewSemaphore = DispatchSemaphore(value: 0)
 //
@@ -79,11 +79,11 @@
 //        viewSemaphore.signal()
 //        return Color.clear
 //    }
-//}
+// }
 //
-//extension ViewSizeCalculator {
+// extension ViewSizeCalculator {
 //    func getViewSize() -> CGSize? {
 //        guard let size = viewSize else { return nil }
 //        return size
 //    }
-//}
+// }

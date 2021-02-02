@@ -14,9 +14,9 @@ import WidgetKit
 struct EnergyPricePoint: Hashable, Codable, Comparable {
     /// Will compare by start timestamp.
     static func < (lhs: EnergyPricePoint, rhs: EnergyPricePoint) -> Bool {
-        return lhs.startTimestamp < rhs.startTimestamp
+        lhs.startTimestamp < rhs.startTimestamp
     }
-    
+
     var startTimestamp: Date
     var endTimestamp: Date
     var marketprice: Double
@@ -42,7 +42,7 @@ struct EnergyData: Equatable {
 }
 
 extension EnergyData: Encodable {
-    func encode(to encoder: Encoder, withMinMaxPrice: Bool) throws {
+    func encode(to encoder: Encoder, withMinMaxPrice _: Bool) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(prices, forKey: .prices)
         try container.encodeIfPresent(minPrice, forKey: .minPrice)
@@ -54,7 +54,7 @@ extension EnergyData: Decodable {
     init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         prices = try values.decode([EnergyPricePoint].self, forKey: .prices)
-        
+
         if let minPriceDecoded = try values.decodeIfPresent(Double.self, forKey: .minPrice) {
             minPrice = minPriceDecoded
         } else { minPrice = 0 }
@@ -116,7 +116,7 @@ extension BackendCommunicator {
                         withAnimation {
                             self.dataRetrievalError = true
                         }
-                     }
+                    }
                 }
             }
 
@@ -156,7 +156,7 @@ extension BackendCommunicator {
         do {
             let jsonDecoder = JSONDecoder()
             jsonDecoder.dateDecodingStrategy = .secondsSince1970
-            
+
             decodedData = try jsonDecoder.decode(EnergyData.self, from: data)
             let currentHour = Calendar.current.date(
                 bySettingHour: Calendar.current.component(.hour, from: Date()),
@@ -229,7 +229,7 @@ extension BackendCommunicator {
         let storedData = appGroupManager.readEnergyDataFromGroup()
         if storedData != newData {
             WidgetCenter.shared.reloadTimelines(ofKind: "me.space8.AWattPrice.PriceWidget")
-            let _ = appGroupManager.writeEnergyDataToGroup(energyData: newData)
+            _ = appGroupManager.writeEnergyDataToGroup(energyData: newData)
         }
     }
 }

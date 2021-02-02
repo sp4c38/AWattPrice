@@ -11,7 +11,9 @@ import SwiftUI
 class KeyboardObserver: ObservableObject {
     var keyboardHeight: AnyPublisher<CGFloat, Never> {
         let willShow = NotificationCenter.default.publisher(for: UIApplication.keyboardWillShowNotification)
-            .map { $0.keyboardHeight }
+            .map { notification in
+                notification.keyboardHeight
+            }
         let willHide = NotificationCenter.default.publisher(for: UIApplication.keyboardWillHideNotification)
             .map { _ in CGFloat(0) }
 

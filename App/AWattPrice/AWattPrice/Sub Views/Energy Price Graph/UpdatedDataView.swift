@@ -10,7 +10,7 @@ import SwiftUI
 struct UpdatedDataView: View {
     @Environment(\.appGroupManager) var appGroupManager
     @Environment(\.networkManager) var networkManager
-    
+
     @EnvironmentObject var backendComm: BackendCommunicator
     @EnvironmentObject var currentSetting: CurrentSetting
 

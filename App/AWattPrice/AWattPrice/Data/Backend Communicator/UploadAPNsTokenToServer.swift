@@ -113,8 +113,8 @@ extension BackendCommunicator {
                 self.notificationUploadError = true
             }
         }
-        
-        return (self.notificationUploadError == true ? false : true) // Need to switch because returns as request successful
+
+        return (notificationUploadError == true ? false : true) // Need to switch because returns as request successful
     }
 
     func tryNotificationUploadAfterFailed(_ regionIdentifier: Int, _ vatSelection: Int, _ crtNotifiSetting: CurrentNotificationSetting, _ networkManager: NetworkManager) {

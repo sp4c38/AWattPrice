@@ -90,9 +90,9 @@ struct PriceWidget_Previews: PreviewProvider {
             var currentStartDate = Calendar.current.date(
                 bySettingHour: 9, minute: 0, second: 0, of: tomorrow)!
             
-            for _ in 0...10 {
+            for _ in 0...24 {
                 let currentEndDate = currentStartDate.addingTimeInterval(3600)
-                let randomMarketprice = Double.random(in: 0...15)
+                let randomMarketprice = Double.random(in: 5...10)
                 let newPoint = EnergyPricePoint(
                     startTimestamp: currentStartDate, endTimestamp: currentEndDate,
                     marketprice: randomMarketprice)

@@ -41,12 +41,15 @@ class GraphText {
     }
 }
 
-enum GraphPaddings {
-    case top, bottom, leading, trailing
+enum GraphTextPaddings {
+    case bottom
 }
-
 enum GraphFirstLastTextPaddings {
     case leading, trailing
+}
+
+enum GraphPaddings {
+    case top, bottom, leading, trailing
 }
 
 class GraphProperties {
@@ -59,7 +62,10 @@ class GraphProperties {
     
     // Add point text each X points. Set to 1 to add text for each bar.
     var textRepeating: Int
-    var firstLastTextPaddings = [GraphFirstLastTextPaddings: CGFloat]() // Paddings to apply to the first and last texts
+    var textPaddings: [GraphTextPaddings: CGFloat] = [.bottom: 0] // Paddings to later apply to each text element
+    var firstLastTextPaddings: [GraphFirstLastTextPaddings: CGFloat] = [
+        .leading: 0, .trailing: 0
+    ] // Paddings to later apply to the first and last texts
     
     var startX: CGFloat
     var endX: CGFloat
@@ -68,8 +74,7 @@ class GraphProperties {
     var pointWidth: CGFloat = 0
     
     init(_ width: CGFloat, _ height: CGFloat, numberOfPoints: Int,
-         textRepeating: Int, firstLastTextPaddings: [GraphFirstLastTextPaddings: CGFloat]?,
-         graphPaddings: [GraphPaddings: CGFloat]?) {
+         textRepeating: Int) {
         allWidth = width
         allHeight = height
         
@@ -80,14 +85,40 @@ class GraphProperties {
         startY = 0
         endY = height
         
+        pointWidth = allWidth / CGFloat(numberOfPoints) // Perform only after paddings were applied
+    }
+    
+    func addPaddings(
+        textPaddings: [GraphTextPaddings: CGFloat]?,
+        firstLastTextPaddings: [GraphFirstLastTextPaddings: CGFloat]?,
+        graphPaddings: [GraphPaddings: CGFloat]?
+    ) {
+        makeTextPaddings(textPaddings)
         makeFirstLastTextPaddings(firstLastTextPaddings)
         applyGraphPaddings(graphPaddings)
-        
-        pointWidth = allWidth / CGFloat(numberOfPoints) // Perform only after paddings were applied
     }
 }
 
 extension GraphProperties {
+    private func makeTextPaddings(_ paddings: [GraphTextPaddings: CGFloat]?) {
+        if let paddings = paddings {
+            if paddings.keys.contains(.bottom) {
+                textPaddings[.bottom] = paddings[.bottom]!
+            }
+        }
+    }
+    
+    private func makeFirstLastTextPaddings(_ paddings: [GraphFirstLastTextPaddings: CGFloat]?) {
+        if let paddings = paddings {
+            if paddings.keys.contains(.leading) {
+                firstLastTextPaddings[.leading] = paddings[.leading]!
+            }
+            if paddings.keys.contains(.trailing) {
+                firstLastTextPaddings[.trailing] = paddings[.trailing]!
+            }
+        }
+    }
+    
     private func applyGraphPaddings(_ paddings: [GraphPaddings: CGFloat]?) {
         if let paddings = paddings {
             if paddings.keys.contains(.top) {
@@ -107,22 +138,6 @@ extension GraphProperties {
                 allWidth -= paddings[.trailing]!
             }
         }
-    }
-    
-    private func makeFirstLastTextPaddings(_ paddings: [GraphFirstLastTextPaddings: CGFloat]?) {
-        var defaultPaddings: [GraphFirstLastTextPaddings: CGFloat] = [
-            GraphFirstLastTextPaddings.leading: 0,
-            GraphFirstLastTextPaddings.trailing: 0,
-        ]
-        if let paddings = paddings {
-            if paddings.keys.contains(.leading) {
-                defaultPaddings[.leading] = paddings[.leading]!
-            }
-            if paddings.keys.contains(.trailing) {
-                defaultPaddings[.trailing] = paddings[.trailing]!
-            }
-        }
-        firstLastTextPaddings = defaultPaddings
     }
 }
 
@@ -235,9 +250,12 @@ func createGraphData(
     let graphProperties = GraphProperties(
         maxWidth, maxHeight,
         numberOfPoints: energyData.prices.count,
-        textRepeating: 6,
-        firstLastTextPaddings: [.leading: 15, .trailing: 5],
-        graphPaddings: [.top: 16]
+        textRepeating: 6
+    )
+    graphProperties.addPaddings(
+        textPaddings: [.bottom: 10],
+        firstLastTextPaddings: [.leading: 16, .trailing: 0], // Extra paddings for the first and last text
+        graphPaddings: [.top: 25]
     )
     let graphData = GraphData(graphProperties)
     

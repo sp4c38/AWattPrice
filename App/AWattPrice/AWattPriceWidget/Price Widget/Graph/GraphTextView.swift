@@ -81,7 +81,7 @@ extension GraphTextView {
         // Min x coordinate of the text box if it would be centered at the center of the graph point.
         let centeredMinX = (
             (graphText.startX + (pointWidth / 2)) // Center x coord of point
-            - (contentWidth / 2)
+                - (contentWidth / 2)
         )
         // The text box if centered at the center of the graph point.
         let centeredFrame = CGRect(
@@ -93,7 +93,7 @@ extension GraphTextView {
     
         let maxX = graphProperties.endX
         // If the text box would be at graphText.startX/graphPoint.startX it would need to be x-offsetted by this value to be centered on the graph point.
-        let xDiffForCentered = -(centeredFrame.width / 4)
+        let xDiffForCentered = CGFloat(0)//-(centeredFrame.width / 4)
         
         if centeredFrame.minX < graphProperties.startX {
             print("Text is smaller than graph start: \(graphText.content) by \(0 + centeredFrame.minX).")
@@ -111,7 +111,7 @@ extension GraphTextView {
     }
     
     private func getOffsetY() -> CGFloat {
-        return -(contentSize.height / 2) - 20
+        return -(contentSize.height / 2) - graphProperties.textPaddings[.bottom]!
     }
 }
 

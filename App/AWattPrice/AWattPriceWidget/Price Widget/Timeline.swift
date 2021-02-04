@@ -14,21 +14,33 @@ func getNewEnergyData() {
 //func checkNeedContinuousUpdating(_ energyData: EnergyData) -> Bool {
 //
 //}
-//
-//func getCurrentSettings() -> CurrentSetting {
-//
-//}
 
-func checkAndGetCurrentEnergyData(_ setting: CurrentSetting) -> EnergyData? {
+fileprivate func checkStoredEnergyDataNeedsUpdate(_ energyData: EnergyData) -> Bool {
+    guard let firstItem = energyData.prices.first else { return true }
+    let now = Date()
+    if now >= firstItem.startTimestamp, now < firstItem.endTimestamp {
+        return false
+    } else {
+        return true
+    }
+}
+
+fileprivate func getCurrentEnergyData(_ setting: CurrentSetting) -> EnergyData? {
     let groupManager = AppGroupManager()
     let currentEnergyDataStored = groupManager.readEnergyDataFromGroup()
+    
     var currentEnergyData = EnergyData(prices: [], minPrice: 0, maxPrice: 0)
+    var appStorageDataNeedsUpdate = false
     
     if currentEnergyDataStored != nil {
-        currentEnergyData = currentEnergyDataStored!
-    } else {
-        let backendCommunicator = BackendCommunicator()
+        appStorageDataNeedsUpdate = checkStoredEnergyDataNeedsUpdate(currentEnergyDataStored!)
+        if !appStorageDataNeedsUpdate {
+            currentEnergyData = currentEnergyDataStored!
+        }
+    }
+    if appStorageDataNeedsUpdate || currentEnergyDataStored == nil {
         guard let entity = setting.entity else { return nil }
+        let backendCommunicator = BackendCommunicator()
         backendCommunicator.download(
             groupManager, entity.regionIdentifier, NetworkManager()
         )
@@ -37,7 +49,7 @@ func checkAndGetCurrentEnergyData(_ setting: CurrentSetting) -> EnergyData? {
     return currentEnergyData
 }
 
-func getPriceEntryInOneHour() -> PriceEntry? {
+fileprivate func getPriceEntryInOneHour() -> PriceEntry? {
     guard let startMinute = Calendar.current.date(bySetting: .minute, value: 0, of: Date()) else { return nil }
     guard let startHour = Calendar.current.date(bySetting: .second, value: 0, of: startMinute) else { return nil }
     let nextHour = startHour.addingTimeInterval(3600)
@@ -51,10 +63,11 @@ func makeNewPriceTimeline(
     completion: @escaping (Timeline<PriceEntry>) -> ()
 ) {
     let persistence = PersistenceManager()
-    let autoUpdatingEntity = AutoUpdatingEntity(
-        entityName: "Setting", managedObjectContext: persistence.persistentContainer.viewContext
-    )
-    let currentEnergyData = checkAndGetCurrentEnergyData(currentSetting)
+    let setting = CurrentSetting(persistence.persistentContainer.viewContext)
+    var currentEnergyData: EnergyData? = nil
+    if setting.entity != nil {
+        currentEnergyData = getCurrentEnergyData(setting)
+    }
 
     guard let energyData = currentEnergyData else {
         var entries = [PriceEntry]()
@@ -68,14 +81,14 @@ func makeNewPriceTimeline(
         completion(timeline)
         return
     }
-    let needContinuousUpdating = checkNeedContinuousUpdating(energyData)
-
-    let currentDate = Date()
-    for hourOffset in 0 ..< 5 {
-        let entryDate = Calendar.current.date(byAdding: .hour, value: hourOffset, to: currentDate)!
-        let entry = PriceEntry(date: entryDate)
-        entries.append(entry)
-    }
-    let timeline = Timeline(entries: entries, policy: .atEnd)
-    completion(timeline)
+//    let needContinuousUpdating = checkNeedContinuousUpdating(energyData)
+//
+//    let currentDate = Date()
+//    for hourOffset in 0 ..< 5 {
+//        let entryDate = Calendar.current.date(byAdding: .hour, value: hourOffset, to: currentDate)!
+//        let entry = PriceEntry(date: entryDate)
+//        entries.append(entry)
+//    }
+//    let timeline = Timeline(entries: entries, policy: .atEnd)
+//    completion(timeline)
 }

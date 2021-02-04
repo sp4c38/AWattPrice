@@ -11,8 +11,8 @@ import CoreData
 class CurrentSetting: AutoUpdatingEntity<Setting> {
     @Published var currentVATToUse = GlobalAppSettings.normalVATAmount
 
-    init(managedObjectContext: NSManagedObjectContext) {
-        super.init(entityName: "Setting", managedObjectContext: managedObjectContext)
+    init(_ managedObjectContext: NSManagedObjectContext) {
+        super.init("Setting", managedObjectContext)
     }
 }
 

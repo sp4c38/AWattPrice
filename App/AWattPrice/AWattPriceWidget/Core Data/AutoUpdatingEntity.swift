@@ -13,7 +13,7 @@ class AutoUpdatingEntity<T: NSManagedObject>: NSObject, NSFetchedResultsControll
     let entityController: NSFetchedResultsController<T> // settings controller which reports changes in the persistent stored Setting object
     var entity: T?
 
-    init(entityName: String, managedObjectContext: NSManagedObjectContext) {
+    init(_ entityName: String, _ managedObjectContext: NSManagedObjectContext) {
         self.managedObjectContext = managedObjectContext
 
         let fetchRequest = NSFetchRequest<T>(entityName: entityName)

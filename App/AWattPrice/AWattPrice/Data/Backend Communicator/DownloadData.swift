@@ -80,8 +80,36 @@ extension EnergyData: Decodable {
 extension BackendCommunicator {
     // Download methods
 
+    internal func runQueueSyncOrAsync(
+        _ runQueue: DispatchQueue,
+        _ runAsync: Bool,
+        deadlineIfAsync: DispatchTime? = nil,
+        tasks: @escaping () -> ()
+    ) {
+        if runAsync {
+            if deadlineIfAsync != nil {
+                runQueue.asyncAfter(deadline: deadlineIfAsync!) {
+                    tasks()
+                }
+            } else {
+                runQueue.async {
+                    tasks()
+                }
+            }
+        } else {
+            runQueue.sync {
+                tasks()
+            }
+        }
+    }
+    
     /// Downloads the newest aWATTar data
-    func download(_ appGroupManager: AppGroupManager, _ regionIdentifier: Int16, _ networkManager: NetworkManager) {
+    func download(
+        _ appGroupManager: AppGroupManager,
+        _ regionIdentifier: Int16,
+        _ networkManager: NetworkManager,
+        runAsync: Bool = true
+    ) {
         currentlyUpdatingData = true
         dataRetrievalError = false
 
@@ -104,15 +132,16 @@ extension BackendCommunicator {
         if URLCache.shared.cachedResponse(for: energyRequest) != nil {
             dataComesFromCache = true
         }
-
+        
+        let semaphore = DispatchSemaphore(value: 1)
         let beforeTime = Date()
         URLSession.shared.dataTask(with: energyRequest) { data, _, error in
             if let data = data {
-                self.parseResponseData(data)
+                self.parseResponseData(data, runAsync: runAsync)
             } else {
                 print("A data retrieval error occurred.")
                 if error != nil {
-                    DispatchQueue.main.async {
+                    self.runQueueSyncOrAsync(DispatchQueue.main, runAsync) {
                         withAnimation {
                             self.dataRetrievalError = true
                         }
@@ -120,14 +149,14 @@ extension BackendCommunicator {
                 }
             }
 
-            DispatchQueue.main.async {
+            self.runQueueSyncOrAsync(DispatchQueue.main, runAsync) {
                 if dataComesFromCache == true, networkManager.monitorer.currentPath.status == .unsatisfied {
                     self.dataRetrievalError = true
                 }
 
                 if !self.dataRetrievalError {
                     self.dateDataLastUpdated = Date()
-                    DispatchQueue.global(qos: .background).async {
+                    self.runQueueSyncOrAsync(DispatchQueue.global(qos: .background), runAsync) {
                         var newEnergyData: EnergyData?
                         DispatchQueue.main.sync { newEnergyData = self.energyData }
                         self.checkAndStoreDataToAppGroup(appGroupManager, newEnergyData)
@@ -135,7 +164,11 @@ extension BackendCommunicator {
                 }
 
                 if Date().timeIntervalSince(beforeTime) < 0.6 {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + (0.6 - Date().timeIntervalSince(beforeTime))) {
+                    self.runQueueSyncOrAsync(
+                        DispatchQueue.main,
+                        runAsync,
+                        deadlineIfAsync: .now() + (0.6 - Date().timeIntervalSince(beforeTime))
+                    ) {
                         // If the data could be retrieved very fast (< 0.6s) than changes to text, ... could look very sudden.
                         // Thats why add a small delay to result in a 0.6s delay.
                         self.currentlyUpdatingData = false
@@ -144,14 +177,19 @@ extension BackendCommunicator {
                     self.currentlyUpdatingData = false
                 }
             }
+            semaphore.signal()
         }.resume()
+        
+        if runAsync {
+            semaphore.wait()
+        }
     }
 }
 
 extension BackendCommunicator {
     // Parsing methods
 
-    func parseResponseData(_ data: Data) {
+    func parseResponseData(_ data: Data, runAsync: Bool = true) {
         var decodedData = EnergyData(prices: [], minPrice: 0, maxPrice: 0)
         do {
             let jsonDecoder = JSONDecoder()
@@ -198,7 +236,7 @@ extension BackendCommunicator {
 
             let currentEnergyData = EnergyData(prices: usedPricesDecodedData, minPrice: minPrice ?? 0, maxPrice: maxPrice ?? 0)
 
-            DispatchQueue.main.async {
+            self.runQueueSyncOrAsync(DispatchQueue.main, runAsync) {
                 if currentEnergyData.prices.isEmpty {
                     print("No prices can be shown, because either there are none or they are outdated.")
                     withAnimation {
@@ -212,7 +250,7 @@ extension BackendCommunicator {
             }
         } catch {
             print("Could not decode returned JSON data from server.")
-            DispatchQueue.main.async {
+            self.runQueueSyncOrAsync(DispatchQueue.main, runAsync) {
                 withAnimation {
                     self.dataRetrievalError = true
                 }

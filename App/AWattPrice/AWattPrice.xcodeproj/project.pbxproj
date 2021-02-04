@@ -23,6 +23,8 @@
 		61260069253B0AB9009E0126 /* DataDownloadAndError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61260068253B0AB9009E0126 /* DataDownloadAndError.swift */; };
 		61286F0C25ABBCF300CE1D61 /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61286F0B25ABBCF300CE1D61 /* Environment.swift */; };
 		613CFF7F250CCCA500337CB2 /* GetCurrentSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 613CFF7E250CCCA500337CB2 /* GetCurrentSetting.swift */; };
+		613F269725CBDE9A0038A211 /* TabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 613F269525CBDE9A0038A211 /* TabBar.swift */; };
+		613F269825CBDE9A0038A211 /* TBItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = 613F269625CBDE9A0038A211 /* TBItems.swift */; };
 		6141BFF725ADC60000608290 /* SF-Compact-Display-Black.otf in Resources */ = {isa = PBXBuildFile; fileRef = 6141BFF625ADC60000608290 /* SF-Compact-Display-Black.otf */; };
 		6141BFF825ADC60000608290 /* SF-Compact-Display-Black.otf in Resources */ = {isa = PBXBuildFile; fileRef = 6141BFF625ADC60000608290 /* SF-Compact-Display-Black.otf */; };
 		6141BFF925ADC60000608290 /* SF-Compact-Display-Black.otf in Resources */ = {isa = PBXBuildFile; fileRef = 6141BFF625ADC60000608290 /* SF-Compact-Display-Black.otf */; };
@@ -59,12 +61,10 @@
 		6166E9CB25C69FCD00281830 /* AppGroupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6166E9CA25C69FCD00281830 /* AppGroupManager.swift */; };
 		6166E9D025C69FF700281830 /* AppGroupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6166E9CA25C69FCD00281830 /* AppGroupManager.swift */; };
 		61753B6E257818DF001379B9 /* SplashScreenFeaturesAndConsent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61753B6D257818DF001379B9 /* SplashScreenFeaturesAndConsent.swift */; };
-		617AD92725730AC100F905A5 /* TBItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617AD92625730AC100F905A5 /* TBItems.swift */; };
 		617D85B225052C35009E18FB /* AwattarApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617D85B125052C35009E18FB /* AwattarApp.swift */; };
 		617D85B425052C35009E18FB /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617D85B325052C35009E18FB /* HomeView.swift */; };
 		617D85B625052C37009E18FB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 617D85B525052C37009E18FB /* Assets.xcassets */; };
 		617D85B925052C37009E18FB /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 617D85B825052C37009E18FB /* Preview Assets.xcassets */; };
-		617D85C425052C37009E18FB /* AWattPriceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617D85C325052C37009E18FB /* AWattPriceTests.swift */; };
 		617D85CF25052C37009E18FB /* AWattPriceUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617D85CE25052C37009E18FB /* AWattPriceUITests.swift */; };
 		617DF01C2594AA1D004BF4E2 /* NotificationSetting+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617DF01A2594AA1D004BF4E2 /* NotificationSetting+CoreDataClass.swift */; };
 		617DF01D2594AA1D004BF4E2 /* NotificationSetting+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617DF01B2594AA1D004BF4E2 /* NotificationSetting+CoreDataProperties.swift */; };
@@ -73,13 +73,14 @@
 		6181328C258A4AB3007FC6F2 /* SplashScreenSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6181328B258A4AB3007FC6F2 /* SplashScreenSetupView.swift */; };
 		61813291258A4B56007FC6F2 /* SplashScreenFinishView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61813290258A4B56007FC6F2 /* SplashScreenFinishView.swift */; };
 		6184828125699DEE004F3F62 /* RegionAndVatSelection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6184828025699DEE004F3F62 /* RegionAndVatSelection.swift */; };
-		618518F4258518EB00120D81 /* TabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 618518F3258518EB00120D81 /* TabBar.swift */; };
 		618A6F6E2518F8C800A8778B /* CheapestTimeResultView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 618A6F6D2518F8C800A8778B /* CheapestTimeResultView.swift */; };
 		618AF8502593E94100E21583 /* GlobalAppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 618AF84F2593E94100E21583 /* GlobalAppSettings.swift */; };
 		618AF8622593F82600E21583 /* CurrentSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 618AF8612593F82600E21583 /* CurrentSetting.swift */; };
 		618CE22F25A0B4F8006116D3 /* NoNotificationAccessView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 618CE22E25A0B4F8006116D3 /* NoNotificationAccessView.swift */; };
 		6191FF8F258D0CAF00C31D63 /* NotAffiliatedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6191FF8E258D0CAF00C31D63 /* NotAffiliatedView.swift */; };
 		61936FC825BACDDF00D60BC5 /* BackendCommunicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61936FC725BACDDF00D60BC5 /* BackendCommunicator.swift */; };
+		6196BEE625CBD52B00185FA0 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6196BEE425CBD52B00185FA0 /* Info.plist */; };
+		6196BEE725CBD52B00185FA0 /* AWattPriceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6196BEE525CBD52B00185FA0 /* AWattPriceTests.swift */; };
 		6198BD4B254C7F7100356A0F /* TimeRangeInputField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6198BD4A254C7F7100356A0F /* TimeRangeInputField.swift */; };
 		6198BD53254C7FA700356A0F /* TotalConsumptionInputField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6198BD52254C7FA700356A0F /* TotalConsumptionInputField.swift */; };
 		6198BD5B254C7FD700356A0F /* PowerInputField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6198BD5A254C7FD700356A0F /* PowerInputField.swift */; };
@@ -91,8 +92,6 @@
 		61BA0A592548764400951321 /* MailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61BA0A582548764400951321 /* MailView.swift */; };
 		61C551C525C737C400E1CB0F /* Font.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61C551C425C737C400E1CB0F /* Font.swift */; };
 		61C551CA25C737EE00E1CB0F /* Font.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61C551C425C737C400E1CB0F /* Font.swift */; };
-		61C551E725C73A1300E1CB0F /* ViewSizeCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61C551E625C73A1300E1CB0F /* ViewSizeCalculator.swift */; };
-		61C551E825C73A1300E1CB0F /* ViewSizeCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61C551E625C73A1300E1CB0F /* ViewSizeCalculator.swift */; };
 		61C963A7251E2032001B3E3C /* CheapestTimeClockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61C963A6251E2032001B3E3C /* CheapestTimeClockView.swift */; };
 		61D196E52507F58D00E57BAC /* EnergyPriceGraph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61D196E42507F58D00E57BAC /* EnergyPriceGraph.swift */; };
 		61D57125256DAA2300EA69C7 /* CustomDatePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61D57124256DAA2300EA69C7 /* CustomDatePicker.swift */; };
@@ -163,6 +162,8 @@
 		61260068253B0AB9009E0126 /* DataDownloadAndError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataDownloadAndError.swift; sourceTree = "<group>"; };
 		61286F0B25ABBCF300CE1D61 /* Environment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Environment.swift; sourceTree = "<group>"; };
 		613CFF7E250CCCA500337CB2 /* GetCurrentSetting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetCurrentSetting.swift; sourceTree = "<group>"; };
+		613F269525CBDE9A0038A211 /* TabBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabBar.swift; sourceTree = "<group>"; };
+		613F269625CBDE9A0038A211 /* TBItems.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TBItems.swift; sourceTree = "<group>"; };
 		6141BFF625ADC60000608290 /* SF-Compact-Display-Black.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-Compact-Display-Black.otf"; sourceTree = "<group>"; };
 		614C55822573D421009B5241 /* UpdateDataTimeFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateDataTimeFormatter.swift; sourceTree = "<group>"; };
 		614E76CC258F65680097EF9B /* AWattPriceDevelopment.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AWattPriceDevelopment.entitlements; sourceTree = "<group>"; };
@@ -199,7 +200,6 @@
 		6166E9CA25C69FCD00281830 /* AppGroupManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppGroupManager.swift; sourceTree = "<group>"; };
 		6166E9D925C6A10A00281830 /* AWattPriceWidgetExtensionDevelopment.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AWattPriceWidgetExtensionDevelopment.entitlements; sourceTree = "<group>"; };
 		61753B6D257818DF001379B9 /* SplashScreenFeaturesAndConsent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SplashScreenFeaturesAndConsent.swift; sourceTree = "<group>"; };
-		617AD92625730AC100F905A5 /* TBItems.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TBItems.swift; sourceTree = "<group>"; };
 		617D85AE25052C35009E18FB /* AWattPrice.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AWattPrice.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		617D85B125052C35009E18FB /* AwattarApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AwattarApp.swift; sourceTree = "<group>"; };
 		617D85B325052C35009E18FB /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
@@ -207,8 +207,6 @@
 		617D85B825052C37009E18FB /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		617D85BA25052C37009E18FB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		617D85BF25052C37009E18FB /* AwattarAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AwattarAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		617D85C325052C37009E18FB /* AWattPriceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AWattPriceTests.swift; sourceTree = "<group>"; };
-		617D85C525052C37009E18FB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		617D85CA25052C37009E18FB /* AwattarAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AwattarAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		617D85CE25052C37009E18FB /* AWattPriceUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AWattPriceUITests.swift; sourceTree = "<group>"; };
 		617D85D025052C37009E18FB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -219,7 +217,6 @@
 		6181328B258A4AB3007FC6F2 /* SplashScreenSetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashScreenSetupView.swift; sourceTree = "<group>"; };
 		61813290258A4B56007FC6F2 /* SplashScreenFinishView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashScreenFinishView.swift; sourceTree = "<group>"; };
 		6184828025699DEE004F3F62 /* RegionAndVatSelection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegionAndVatSelection.swift; sourceTree = "<group>"; };
-		618518F3258518EB00120D81 /* TabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBar.swift; sourceTree = "<group>"; };
 		618A6F6D2518F8C800A8778B /* CheapestTimeResultView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheapestTimeResultView.swift; sourceTree = "<group>"; };
 		618AF8052593DB6800E21583 /* Development.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Development.xcconfig; sourceTree = "<group>"; };
 		618AF8062593DB8500E21583 /* Production.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Production.xcconfig; sourceTree = "<group>"; };
@@ -228,6 +225,8 @@
 		618CE22E25A0B4F8006116D3 /* NoNotificationAccessView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoNotificationAccessView.swift; sourceTree = "<group>"; };
 		6191FF8E258D0CAF00C31D63 /* NotAffiliatedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotAffiliatedView.swift; sourceTree = "<group>"; };
 		61936FC725BACDDF00D60BC5 /* BackendCommunicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackendCommunicator.swift; sourceTree = "<group>"; };
+		6196BEE425CBD52B00185FA0 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		6196BEE525CBD52B00185FA0 /* AWattPriceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWattPriceTests.swift; sourceTree = "<group>"; };
 		6198BD4A254C7F7100356A0F /* TimeRangeInputField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeRangeInputField.swift; sourceTree = "<group>"; };
 		6198BD52254C7FA700356A0F /* TotalConsumptionInputField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TotalConsumptionInputField.swift; sourceTree = "<group>"; };
 		6198BD5A254C7FD700356A0F /* PowerInputField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PowerInputField.swift; sourceTree = "<group>"; };
@@ -238,7 +237,6 @@
 		61BA0A532548467F00951321 /* HelpAndSuggestionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpAndSuggestionView.swift; sourceTree = "<group>"; };
 		61BA0A582548764400951321 /* MailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailView.swift; sourceTree = "<group>"; };
 		61C551C425C737C400E1CB0F /* Font.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Font.swift; sourceTree = "<group>"; };
-		61C551E625C73A1300E1CB0F /* ViewSizeCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewSizeCalculator.swift; sourceTree = "<group>"; };
 		61C963A6251E2032001B3E3C /* CheapestTimeClockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheapestTimeClockView.swift; sourceTree = "<group>"; };
 		61D196E42507F58D00E57BAC /* EnergyPriceGraph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnergyPriceGraph.swift; sourceTree = "<group>"; };
 		61D57124256DAA2300EA69C7 /* CustomDatePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomDatePicker.swift; sourceTree = "<group>"; };
@@ -287,15 +285,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		610E64982573075600C1BAD9 /* TabBar */ = {
-			isa = PBXGroup;
-			children = (
-				618518F3258518EB00120D81 /* TabBar.swift */,
-				617AD92625730AC100F905A5 /* TBItems.swift */,
-			);
-			path = TabBar;
-			sourceTree = "<group>";
-		};
 		6117E9D62590B52300A2B475 /* Push Notifications */ = {
 			isa = PBXGroup;
 			children = (
@@ -355,6 +344,15 @@
 			path = Styles;
 			sourceTree = "<group>";
 		};
+		613F269425CBDE9A0038A211 /* TabBar */ = {
+			isa = PBXGroup;
+			children = (
+				613F269525CBDE9A0038A211 /* TabBar.swift */,
+				613F269625CBDE9A0038A211 /* TBItems.swift */,
+			);
+			path = TabBar;
+			sourceTree = "<group>";
+		};
 		6141BFED25ADC31400608290 /* Fonts */ = {
 			isa = PBXGroup;
 			children = (
@@ -379,7 +377,6 @@
 		61504CFC250FF46D00EF41D6 /* Sub Views */ = {
 			isa = PBXGroup;
 			children = (
-				610E64982573075600C1BAD9 /* TabBar */,
 				618518E72585060F00120D81 /* Data Error */,
 				6119058425608174007C04D3 /* Energy Price Graph */,
 				6198BD49254C7F4C00356A0F /* Cheapest Time */,
@@ -493,7 +490,7 @@
 				6166E9B525C69F6E00281830 /* Entitlements */,
 				617D85B025052C35009E18FB /* AWattPrice */,
 				6166E7FE25C570A600281830 /* AWattPriceWidget */,
-				617D85C225052C37009E18FB /* AWattPriceAppTests */,
+				6196BEE325CBD52B00185FA0 /* AWattPriceAppTests */,
 				617D85CD25052C37009E18FB /* AWattPriceUITests */,
 				6166E7F925C570A600281830 /* Frameworks */,
 				617D85AF25052C35009E18FB /* Products */,
@@ -538,15 +535,6 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
-		617D85C225052C37009E18FB /* AWattPriceAppTests */ = {
-			isa = PBXGroup;
-			children = (
-				617D85C325052C37009E18FB /* AWattPriceTests.swift */,
-				617D85C525052C37009E18FB /* Info.plist */,
-			);
-			path = AWattPriceAppTests;
-			sourceTree = "<group>";
-		};
 		617D85CD25052C37009E18FB /* AWattPriceUITests */ = {
 			isa = PBXGroup;
 			children = (
@@ -570,10 +558,10 @@
 		6184828825699E33004F3F62 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
-				61C551E525C739FA00E1CB0F /* TextSizer */,
 				616836C4259A4DC600E91748 /* Custom views  */,
 				616836C3259A4DB400E91748 /* Formatter */,
 				61C551CF25C738CD00E1CB0F /* Other */,
+				613F269425CBDE9A0038A211 /* TabBar */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -647,6 +635,15 @@
 			path = "Backend Communicator";
 			sourceTree = "<group>";
 		};
+		6196BEE325CBD52B00185FA0 /* AWattPriceAppTests */ = {
+			isa = PBXGroup;
+			children = (
+				6196BEE425CBD52B00185FA0 /* Info.plist */,
+				6196BEE525CBD52B00185FA0 /* AWattPriceTests.swift */,
+			);
+			path = AWattPriceAppTests;
+			sourceTree = "<group>";
+		};
 		6198BD49254C7F4C00356A0F /* Cheapest Time */ = {
 			isa = PBXGroup;
 			children = (
@@ -676,14 +673,6 @@
 				61286F0B25ABBCF300CE1D61 /* Environment.swift */,
 			);
 			path = Other;
-			sourceTree = "<group>";
-		};
-		61C551E525C739FA00E1CB0F /* TextSizer */ = {
-			isa = PBXGroup;
-			children = (
-				61C551E625C73A1300E1CB0F /* ViewSizeCalculator.swift */,
-			);
-			path = TextSizer;
 			sourceTree = "<group>";
 		};
 		61DE42BA25AE534A002AF6C2 /* Cheapest Hour Manager */ = {
@@ -863,6 +852,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6196BEE625CBD52B00185FA0 /* Info.plist in Resources */,
 				6141BFF825ADC60000608290 /* SF-Compact-Display-Black.otf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -884,7 +874,6 @@
 			files = (
 				6166E98C25C5B03C00281830 /* PointShape.swift in Sources */,
 				6166E8DB25C57F1D00281830 /* Graph.swift in Sources */,
-				61C551E825C73A1300E1CB0F /* ViewSizeCalculator.swift in Sources */,
 				61C551CA25C737EE00E1CB0F /* Font.swift in Sources */,
 				6166E95F25C5938500281830 /* GraphPoint.swift in Sources */,
 				6166E91725C5802F00281830 /* GlobalAppSettings.swift in Sources */,
@@ -913,7 +902,6 @@
 				618AF8502593E94100E21583 /* GlobalAppSettings.swift in Sources */,
 				617DF01C2594AA1D004BF4E2 /* NotificationSetting+CoreDataClass.swift in Sources */,
 				61E2DFD7254214B100473E20 /* CheapestHourManager.swift in Sources */,
-				61C551E725C73A1300E1CB0F /* ViewSizeCalculator.swift in Sources */,
 				6156A577250C1F5E005174A5 /* Setting+CoreDataProperties.swift in Sources */,
 				6181328C258A4AB3007FC6F2 /* SplashScreenSetupView.swift in Sources */,
 				614C55832573D421009B5241 /* UpdateDataTimeFormatter.swift in Sources */,
@@ -945,7 +933,6 @@
 				61EC1C12254B425B00324ADA /* AppVersionView.swift in Sources */,
 				61D6F8882517AD5500027FD1 /* ButtonStyles.swift in Sources */,
 				6122114F25951BCE003D6512 /* NotificationSettingView.swift in Sources */,
-				618518F4258518EB00120D81 /* TabBar.swift in Sources */,
 				61658DB125B5AF890083D25A /* EasyIntervalPickerRepresentable.swift in Sources */,
 				61BA0A542548467F00951321 /* HelpAndSuggestionView.swift in Sources */,
 				6156A579250C2161005174A5 /* SettingsPageView.swift in Sources */,
@@ -961,16 +948,17 @@
 				61EC1C08254B41D800324ADA /* AwattarTariffSelectionSettings.swift in Sources */,
 				61813291258A4B56007FC6F2 /* SplashScreenFinishView.swift in Sources */,
 				6198BD53254C7FA700356A0F /* TotalConsumptionInputField.swift in Sources */,
-				617AD92725730AC100F905A5 /* TBItems.swift in Sources */,
 				6184828125699DEE004F3F62 /* RegionAndVatSelection.swift in Sources */,
 				61D57125256DAA2300EA69C7 /* CustomDatePicker.swift in Sources */,
 				6164ED42258E952F00F706DE /* TotalTimeFormatter.swift in Sources */,
 				61936FC825BACDDF00D60BC5 /* BackendCommunicator.swift in Sources */,
+				613F269825CBDE9A0038A211 /* TBItems.swift in Sources */,
 				617D85B425052C35009E18FB /* HomeView.swift in Sources */,
 				611D15AF251680B9000691C6 /* CheapestTimeView.swift in Sources */,
 				617DF01D2594AA1D004BF4E2 /* NotificationSetting+CoreDataProperties.swift in Sources */,
 				617D85B225052C35009E18FB /* AwattarApp.swift in Sources */,
 				6198BD5B254C7FD700356A0F /* PowerInputField.swift in Sources */,
+				613F269725CBDE9A0038A211 /* TabBar.swift in Sources */,
 				61E0ACC025BAE6030011B0A1 /* APNSUploadError.swift in Sources */,
 				6156A573250C1F04005174A5 /* Model.xcdatamodeld in Sources */,
 			);
@@ -980,7 +968,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				617D85C425052C37009E18FB /* AWattPriceTests.swift in Sources */,
+				6196BEE725CBD52B00185FA0 /* AWattPriceTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

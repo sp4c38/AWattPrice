@@ -9,31 +9,24 @@ import WidgetKit
 import SwiftUI
 
 struct Provider: TimelineProvider {
-    func placeholder(in context: Context) -> SimpleEntry {
-        SimpleEntry(date: Date())
+    func placeholder(in context: Context) -> PriceEntry {
+        PriceEntry(date: Date())
     }
 
-    func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> ()) {
-        let entry = SimpleEntry(date: Date())
+    func getSnapshot(in context: Context, completion: @escaping (PriceEntry) -> ()) {
+        let entry = PriceEntry(date: Date())
         completion(entry)
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
-        var entries: [SimpleEntry] = []
-        // Generate a timeline consisting of five entries an hour apart, starting from the current date.
-        let currentDate = Date()
-        for hourOffset in 0 ..< 5 {
-            let entryDate = Calendar.current.date(byAdding: .hour, value: hourOffset, to: currentDate)!
-            let entry = SimpleEntry(date: entryDate)
-            entries.append(entry)
-        }
-
-        let timeline = Timeline(entries: entries, policy: .atEnd)
-        completion(timeline)
+        makeNewPriceTimeline(
+            in: context,
+            completion: completion
+        )
     }
 }
 
-struct SimpleEntry: TimelineEntry {
+struct PriceEntry: TimelineEntry {
     let date: Date
 }
 
@@ -51,7 +44,7 @@ struct PriceWidgetEntryView : View {
         return energyData
     }
     
-    init(entry: SimpleEntry, _ customEnergyData: EnergyData? = nil) {
+    init(entry: PriceEntry, _ customEnergyData: EnergyData? = nil) {
         self.entry = entry
         if customEnergyData != nil {
             energyData = customEnergyData!
@@ -110,7 +103,7 @@ struct PriceWidget_Previews: PreviewProvider {
             return newEnergyData
         }()
         
-        PriceWidgetEntryView(entry: SimpleEntry(date: Date()), exampleEnergyData)
+        PriceWidgetEntryView(entry: PriceEntry(date: Date()), exampleEnergyData)
             .previewContext(WidgetPreviewContext(family: .systemMedium))
             .environment(\.colorScheme, .dark)
     }

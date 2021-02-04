@@ -25,6 +25,7 @@
 		613CFF7F250CCCA500337CB2 /* GetCurrentSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 613CFF7E250CCCA500337CB2 /* GetCurrentSetting.swift */; };
 		613F269725CBDE9A0038A211 /* TabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 613F269525CBDE9A0038A211 /* TabBar.swift */; };
 		613F269825CBDE9A0038A211 /* TBItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = 613F269625CBDE9A0038A211 /* TBItems.swift */; };
+		613F26BB25CBE11C0038A211 /* AWattPriceUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617D85CE25052C37009E18FB /* AWattPriceUITests.swift */; };
 		6141BFF725ADC60000608290 /* SF-Compact-Display-Black.otf in Resources */ = {isa = PBXBuildFile; fileRef = 6141BFF625ADC60000608290 /* SF-Compact-Display-Black.otf */; };
 		6141BFF825ADC60000608290 /* SF-Compact-Display-Black.otf in Resources */ = {isa = PBXBuildFile; fileRef = 6141BFF625ADC60000608290 /* SF-Compact-Display-Black.otf */; };
 		6141BFF925ADC60000608290 /* SF-Compact-Display-Black.otf in Resources */ = {isa = PBXBuildFile; fileRef = 6141BFF625ADC60000608290 /* SF-Compact-Display-Black.otf */; };
@@ -65,7 +66,6 @@
 		617D85B425052C35009E18FB /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617D85B325052C35009E18FB /* HomeView.swift */; };
 		617D85B625052C37009E18FB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 617D85B525052C37009E18FB /* Assets.xcassets */; };
 		617D85B925052C37009E18FB /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 617D85B825052C37009E18FB /* Preview Assets.xcassets */; };
-		617D85CF25052C37009E18FB /* AWattPriceUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617D85CE25052C37009E18FB /* AWattPriceUITests.swift */; };
 		617DF01C2594AA1D004BF4E2 /* NotificationSetting+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617DF01A2594AA1D004BF4E2 /* NotificationSetting+CoreDataClass.swift */; };
 		617DF01D2594AA1D004BF4E2 /* NotificationSetting+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617DF01B2594AA1D004BF4E2 /* NotificationSetting+CoreDataProperties.swift */; };
 		617DF0242594AAF5004BF4E2 /* NotificationSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617DF0222594AAF5004BF4E2 /* NotificationSetting.swift */; };
@@ -79,7 +79,6 @@
 		618CE22F25A0B4F8006116D3 /* NoNotificationAccessView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 618CE22E25A0B4F8006116D3 /* NoNotificationAccessView.swift */; };
 		6191FF8F258D0CAF00C31D63 /* NotAffiliatedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6191FF8E258D0CAF00C31D63 /* NotAffiliatedView.swift */; };
 		61936FC825BACDDF00D60BC5 /* BackendCommunicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61936FC725BACDDF00D60BC5 /* BackendCommunicator.swift */; };
-		6196BEE625CBD52B00185FA0 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6196BEE425CBD52B00185FA0 /* Info.plist */; };
 		6196BEE725CBD52B00185FA0 /* AWattPriceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6196BEE525CBD52B00185FA0 /* AWattPriceTests.swift */; };
 		6198BD4B254C7F7100356A0F /* TimeRangeInputField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6198BD4A254C7F7100356A0F /* TimeRangeInputField.swift */; };
 		6198BD53254C7FA700356A0F /* TotalConsumptionInputField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6198BD52254C7FA700356A0F /* TotalConsumptionInputField.swift */; };
@@ -538,8 +537,8 @@
 		617D85CD25052C37009E18FB /* AWattPriceUITests */ = {
 			isa = PBXGroup;
 			children = (
-				617D85CE25052C37009E18FB /* AWattPriceUITests.swift */,
 				617D85D025052C37009E18FB /* Info.plist */,
+				617D85CE25052C37009E18FB /* AWattPriceUITests.swift */,
 			);
 			path = AWattPriceUITests;
 			sourceTree = "<group>";
@@ -852,7 +851,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6196BEE625CBD52B00185FA0 /* Info.plist in Resources */,
 				6141BFF825ADC60000608290 /* SF-Compact-Display-Black.otf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -976,7 +974,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				617D85CF25052C37009E18FB /* AWattPriceUITests.swift in Sources */,
+				613F26BB25CBE11C0038A211 /* AWattPriceUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1422,7 +1420,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = JC4B7WF2UL;
-				INFOPLIST_FILE = AwattarAppUITests/Info.plist;
+				INFOPLIST_FILE = AWattPriceUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1430,9 +1428,10 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = me.sp4c38.AwattarAppUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = AwattarApp;
+				TEST_TARGET_NAME = AWattPrice;
 			};
 			name = Development;
 		};
@@ -1443,7 +1442,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = JC4B7WF2UL;
-				INFOPLIST_FILE = AwattarAppUITests/Info.plist;
+				INFOPLIST_FILE = AWattPriceUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1451,9 +1450,10 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = me.sp4c38.AwattarAppUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = AwattarApp;
+				TEST_TARGET_NAME = AWattPrice;
 			};
 			name = Production;
 		};

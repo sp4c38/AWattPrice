@@ -26,15 +26,17 @@
       buildConfiguration = "Development"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      shouldUseLaunchSchemeArgsEnv = "YES">
+      shouldUseLaunchSchemeArgsEnv = "YES"
+      language = "en"
+      region = "DE">
       <Testables>
          <TestableReference
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "61EF1C3B25C9D944008E9724"
-               BuildableName = "AWattPriceUITests.xctest"
-               BlueprintName = "AWattPriceUITests"
+               BlueprintIdentifier = "617D85C925052C37009E18FB"
+               BuildableName = "AwattarAppUITests.xctest"
+               BlueprintName = "AwattarAppUITests"
                ReferencedContainer = "container:AWattPrice.xcodeproj">
             </BuildableReference>
          </TestableReference>

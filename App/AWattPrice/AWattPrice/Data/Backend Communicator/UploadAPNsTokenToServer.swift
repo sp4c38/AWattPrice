@@ -87,12 +87,15 @@ extension BackendCommunicator {
 
                     returnCode = decodedReturn
                 } catch {
-                    print("Couldn't decode the data returned from the provider server after trying to pass the notification token to the provider server. Error: \(error).")
+                    logger.error("""
+                        Couldn't decode returned data from the provider server after trying to pass the notification
+                        token to it: \(error.localizedDescription).
+                    """)
                 }
             }
 
             if let error = error {
-                print("Error sending APNs token to server: \(error).")
+                logger.notice("Error sending APNs token to server (e.g.: server maybe down?): \(error.localizedDescription).")
             }
             dispatchSemaphore.signal()
         }
@@ -104,10 +107,10 @@ extension BackendCommunicator {
             if returnCode == nil {
                 self.notificationUploadError = true
             } else if returnCode!.tokenWasPassedSuccessfully == true {
-                print("APNs token was successfully passed on to the Apps provider server.")
+                logger.debug("APNs token was successfully passed on to the provider server.")
                 self.notificationUploadError = false
             } else if returnCode!.tokenWasPassedSuccessfully == false {
-                print("APNs couldn't be passed on to the Apps provider server.")
+                logger.error("Provider-side received notification data couldn't be validated successfully (server-side).")
                 self.notificationUploadError = true
             } else {
                 self.notificationUploadError = true
@@ -118,7 +121,7 @@ extension BackendCommunicator {
     }
 
     func tryNotificationUploadAfterFailed(_ regionIdentifier: Int, _ vatSelection: Int, _ crtNotifiSetting: CurrentNotificationSetting, _ networkManager: NetworkManager) {
-        print("""
+        logger.info("""
             Detected changes to current notification configuration which could previously NOT be uploaded successful.
             Trying to upload again in background when network connection is satisfied and a APNs token was set.
         """)
@@ -145,10 +148,10 @@ extension BackendCommunicator {
             )
             let requestSuccessful = self.uploadPushNotificationSettings(configuration: notificationConfig)
             if requestSuccessful {
-                print("Could successfuly upload notification configuration after previously an upload failed.")
+                logger.debug("Could successfuly upload notification configuration after previously an upload failed.")
                 crtNotifiSetting.changeChangesButErrorUploading(newValue: false)
             } else {
-                print("Could still NOT upload notification configuration after previously also an upload failed.")
+                logger.notice("Could still NOT upload notification configuration after previously also an upload failed.")
             }
             crtNotifiSetting.currentlySendingToServer.unlock()
         }

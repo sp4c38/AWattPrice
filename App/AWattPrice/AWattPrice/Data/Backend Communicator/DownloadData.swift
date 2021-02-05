@@ -156,7 +156,7 @@ extension BackendCommunicator {
             if let data = data {
                 self.parseResponseData(data, runAsync: runAsync)
             } else {
-                print("A data retrieval error occurred.")
+                logger.notice("Data retrieval error after trying to reach server (e.g.: server could be offline).")
                 if error != nil {
                     self.runQueueSyncOrAsync(DispatchQueue.main, runAsync) {
                         withAnimation {
@@ -257,7 +257,7 @@ extension BackendCommunicator {
 
             self.runQueueSyncOrAsync(DispatchQueue.main, runAsync) {
                 if currentEnergyData.prices.isEmpty {
-                    print("No prices can be shown, because either there are none or they are outdated.")
+                    logger.notice("No prices can be displayed: either there are none or they are outdated.")
                     withAnimation {
                         self.currentlyNoData = true
                     }
@@ -268,7 +268,7 @@ extension BackendCommunicator {
                 self.dataRetrievalError = false
             }
         } catch {
-            print("Could not decode returned JSON data from server.")
+            logger.error("Could not decode returned JSON data from server.")
             self.runQueueSyncOrAsync(DispatchQueue.main, runAsync) {
                 withAnimation {
                     self.dataRetrievalError = true

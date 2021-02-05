@@ -42,9 +42,7 @@ class AppGroupManager {
         encoder.dateEncodingStrategy = .secondsSince1970
         var encodedEnergyData: Data?
         do {
-//            print(energyData)
             encodedEnergyData = try encoder.encode(energyData)
-//            print(String(data: encodedEnergyData!, encoding: .utf8))
         } catch {
             logger.error("Could encode energy data when writing to app group container: \(error.localizedDescription).")
             return false
@@ -54,7 +52,7 @@ class AppGroupManager {
             try encodedEnergyData!.write(to: storeURL)
             logger.debug("Wrote energy data to group container.")
         } catch {
-            print("Couldn't write energy data to app group container: \(error).")
+            logger.error("Couldn't write energy data to app group container: \(error.localizedDescription).")
             return false
         }
         return true
@@ -62,7 +60,7 @@ class AppGroupManager {
     
     public func readEnergyDataFromGroup() -> EnergyData? {
         guard let parentURL = containerURL else {
-            print("No app group set when trying to read energy data from app group container..")
+            logger.notice("No app group set when trying to read energy data from app group container..")
             return nil
         }
         let storeURL = parentURL.appendingPathComponent("EnergyData.json")
@@ -70,7 +68,8 @@ class AppGroupManager {
         do {
             encodedEnergyData = try Data(contentsOf: storeURL)
         } catch {
-            print("Couldn't read energy data from app group container: \(error).")
+            // Triggered if EnergyData.json doesn't yet exist.
+            logger.info("Couldn't read file with energy data from app group container: \(error.localizedDescription).")
             return nil
         }
         let decoder = JSONDecoder()
@@ -78,9 +77,9 @@ class AppGroupManager {
         var decodedEnergyData: EnergyData? = nil
         do {
             decodedEnergyData = try decoder.decode(EnergyData.self, from: encodedEnergyData)
-            print("Read energy data from group container.")
+            logger.debug("Read energy data from group container.")
         } catch {
-            print("Couldn't decode energy data after reading from app group container: \(error).")
+            logger.error("Couldn't decode energy data after reading from app group container: \(error.localizedDescription).")
         }
         guard let energyData = decodedEnergyData else { return nil }
         return energyData

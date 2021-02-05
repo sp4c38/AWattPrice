@@ -34,14 +34,13 @@ public enum GlobalAppSettings {
     }
 
     static var VATAmount: Double {
-        print(appSettings)
-//        guard let VATAmountString = Self.appSettings["VAT_AMOUNT"] as? String else {
-//            fatalError("VAT_AMOUNT setting wasn't set in .plist / .xcconfig file.")
-//        }
-//        guard let VATAmountDouble = Double(VATAmountString) else {
-//            fatalError("VAT_AMOUNT which is specified in .plist / .xcconfig file is no valid Double.")
-//        }
+        guard let VATAmountString = Self.appSettings["VAT_AMOUNT"] as? String else {
+            fatalError("VAT_AMOUNT setting wasn't set in .plist / .xcconfig file.")
+        }
+        guard let VATAmountDouble = Double(VATAmountString) else {
+            fatalError("VAT_AMOUNT which is specified in .plist / .xcconfig file is no valid Double.")
+        }
 
-        return 5//VATAmountDouble
+        return VATAmountDouble
     }
 }

@@ -86,14 +86,4 @@ func makeNewPriceTimeline(
         return
     }
 //    let needContinuousUpdating = checkNeedContinuousUpdating(energyData)
-
-    var entries = [PriceEntry]()
-    let currentDate = Date()
-    for hourOffset in 0 ..< 5 {
-        let entryDate = Calendar.current.date(byAdding: .hour, value: hourOffset, to: currentDate)!
-        let entry = PriceEntry(date: entryDate)
-        entries.append(entry)
-    }
-    let timeline = Timeline(entries: entries, policy: .atEnd)
-    completion(timeline)
 }

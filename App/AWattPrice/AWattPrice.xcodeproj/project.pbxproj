@@ -22,6 +22,7 @@
 		6122C061259DD42F003BE302 /* WhatsNewPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6122C060259DD42F003BE302 /* WhatsNewPage.swift */; };
 		61260069253B0AB9009E0126 /* DataDownloadAndError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61260068253B0AB9009E0126 /* DataDownloadAndError.swift */; };
 		61286F0C25ABBCF300CE1D61 /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61286F0B25ABBCF300CE1D61 /* Environment.swift */; };
+		6137124925CDD43900F93564 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6166E80125C570A800281830 /* Assets.xcassets */; };
 		613CFF7F250CCCA500337CB2 /* GetCurrentSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 613CFF7E250CCCA500337CB2 /* GetCurrentSetting.swift */; };
 		613F269725CBDE9A0038A211 /* TabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 613F269525CBDE9A0038A211 /* TabBar.swift */; };
 		613F269825CBDE9A0038A211 /* TBItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = 613F269625CBDE9A0038A211 /* TBItems.swift */; };
@@ -55,7 +56,6 @@
 		6166E7FD25C570A600281830 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6166E7FC25C570A600281830 /* SwiftUI.framework */; };
 		6166E80625C570A800281830 /* AWattPriceWidgetExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 6166E7F825C570A600281830 /* AWattPriceWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		6166E89725C5737400281830 /* PriceWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6166E7FF25C570A600281830 /* PriceWidget.swift */; };
-		6166E89C25C5737800281830 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6166E80125C570A800281830 /* Assets.xcassets */; };
 		6166E8AE25C5740900281830 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 6166E88D25C5729500281830 /* Localizable.strings */; };
 		6166E8CF25C57B7600281830 /* WidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6166E8B925C57ABB00281830 /* WidgetBundle.swift */; };
 		6166E8DB25C57F1D00281830 /* Graph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6166E8D525C57EFF00281830 /* Graph.swift */; };
@@ -864,7 +864,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6166E89C25C5737800281830 /* Assets.xcassets in Resources */,
+				6137124925CDD43900F93564 /* Assets.xcassets in Resources */,
 				6166E8AE25C5740900281830 /* Localizable.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

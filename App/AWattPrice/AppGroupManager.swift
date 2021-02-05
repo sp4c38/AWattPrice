@@ -46,13 +46,13 @@ class AppGroupManager {
             encodedEnergyData = try encoder.encode(energyData)
 //            print(String(data: encodedEnergyData!, encoding: .utf8))
         } catch {
-            print("Could encode energy data when writing to app group container: \(error).")
+            logger.error("Could encode energy data when writing to app group container: \(error.localizedDescription).")
             return false
         }
         let storeURL = parentURL.appendingPathComponent("EnergyData.json")
         do {
             try encodedEnergyData!.write(to: storeURL)
-            print("Wrote energy data to group container.")
+            logger.debug("Wrote energy data to group container.")
         } catch {
             print("Couldn't write energy data to app group container: \(error).")
             return false

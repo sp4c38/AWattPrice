@@ -5,8 +5,9 @@
 //  Created by Léon Becker on 30.01.21.
 //
 
-import WidgetKit
+import os
 import SwiftUI
+import WidgetKit
 
 struct Provider: TimelineProvider {
     func placeholder(in context: Context) -> PriceEntry {
@@ -72,6 +73,8 @@ struct PriceWidget: Widget {
         .supportedFamilies([.systemMedium])
     }
 }
+
+public let logger = Logger(subsystem: "me.space8.AWattPrice.PriceWidget", category: "general")
 
 struct PriceWidget_Previews: PreviewProvider {
     static var previews: some View {

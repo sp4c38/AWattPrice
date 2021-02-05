@@ -6,7 +6,10 @@
 //
 
 import CoreData
+import os
 import SwiftUI
+
+public let logger = Logger(subsystem: AppGroups.awattpriceGroup, category: "general")
 
 /// Represents if AWattPrice has the permissions to send notifications.
 class NotificationAccess: ObservableObject {

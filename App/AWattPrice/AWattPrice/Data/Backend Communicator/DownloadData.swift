@@ -80,6 +80,7 @@ extension EnergyData: Decodable {
 extension BackendCommunicator {
     // Download methods
 
+    /// Runs the tasks asynchronous if runAsync is true. If not the tasks will be ran synchronous. All tasks are run in in the specified run queue (for example: main queue, the global queue with qos background).
     internal func runQueueSyncOrAsync(
         _ runQueue: DispatchQueue,
         _ runAsync: Bool,
@@ -100,6 +101,22 @@ extension BackendCommunicator {
             runQueue.sync {
                 tasks()
             }
+        }
+    }
+    
+    /// Will run the tasks (synchronous or asynchronous) in the specified run queue if the condition is true. Therefor the function runQueueSyncOrAsync is used in the background. If the condition is false the tasks will be ran synchronous in the current queue.
+    internal func runInQueueIf(
+        isTrue condition: Bool,
+        in runQueue: DispatchQueue,
+        runAsync: Bool,
+        tasks: @escaping () -> ()
+    ) {
+        if condition {
+            runQueueSyncOrAsync(runQueue, runAsync) {
+                tasks()
+            }
+        } else {
+            tasks()
         }
     }
     
@@ -158,7 +175,9 @@ extension BackendCommunicator {
                     self.dateDataLastUpdated = Date()
                     self.runQueueSyncOrAsync(DispatchQueue.global(qos: .background), runAsync) {
                         var newEnergyData: EnergyData?
-                        DispatchQueue.main.sync { newEnergyData = self.energyData }
+                        self.runInQueueIf(isTrue: runAsync, in: DispatchQueue.main, runAsync: false) {
+                            newEnergyData = self.energyData
+                        }
                         self.checkAndStoreDataToAppGroup(appGroupManager, newEnergyData)
                     }
                 }

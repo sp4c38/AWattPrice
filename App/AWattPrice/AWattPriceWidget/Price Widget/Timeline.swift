@@ -27,26 +27,29 @@ fileprivate func checkStoredEnergyDataNeedsUpdate(_ energyData: EnergyData) -> B
 
 fileprivate func getCurrentEnergyData(_ setting: CurrentSetting) -> EnergyData? {
     let groupManager = AppGroupManager()
+    _ = groupManager.setGroup(AppGroups.awattpriceGroup)
     let currentEnergyDataStored = groupManager.readEnergyDataFromGroup()
     
-    var currentEnergyData = EnergyData(prices: [], minPrice: 0, maxPrice: 0)
+    var energyData = EnergyData(prices: [], minPrice: 0, maxPrice: 0)
     var appStorageDataNeedsUpdate = false
     
     if currentEnergyDataStored != nil {
         appStorageDataNeedsUpdate = checkStoredEnergyDataNeedsUpdate(currentEnergyDataStored!)
         if !appStorageDataNeedsUpdate {
-            currentEnergyData = currentEnergyDataStored!
+            energyData = currentEnergyDataStored!
         }
     }
     if appStorageDataNeedsUpdate || currentEnergyDataStored == nil {
         guard let entity = setting.entity else { return nil }
         let backendCommunicator = BackendCommunicator()
         backendCommunicator.download(
-            groupManager, entity.regionIdentifier, NetworkManager()
+            groupManager, entity.regionIdentifier, NetworkManager(), runAsync: false
         )
+        guard let currentEnergyData = backendCommunicator.energyData else { return nil }
+        energyData = currentEnergyData
     }
     
-    return currentEnergyData
+    return energyData
 }
 
 fileprivate func getPriceEntryInOneHour() -> PriceEntry? {
@@ -67,6 +70,7 @@ func makeNewPriceTimeline(
     var currentEnergyData: EnergyData? = nil
     if setting.entity != nil {
         currentEnergyData = getCurrentEnergyData(setting)
+        print(currentEnergyData)
     }
 
     guard let energyData = currentEnergyData else {
@@ -82,13 +86,14 @@ func makeNewPriceTimeline(
         return
     }
 //    let needContinuousUpdating = checkNeedContinuousUpdating(energyData)
-//
-//    let currentDate = Date()
-//    for hourOffset in 0 ..< 5 {
-//        let entryDate = Calendar.current.date(byAdding: .hour, value: hourOffset, to: currentDate)!
-//        let entry = PriceEntry(date: entryDate)
-//        entries.append(entry)
-//    }
-//    let timeline = Timeline(entries: entries, policy: .atEnd)
-//    completion(timeline)
+
+    var entries = [PriceEntry]()
+    let currentDate = Date()
+    for hourOffset in 0 ..< 5 {
+        let entryDate = Calendar.current.date(byAdding: .hour, value: hourOffset, to: currentDate)!
+        let entry = PriceEntry(date: entryDate)
+        entries.append(entry)
+    }
+    let timeline = Timeline(entries: entries, policy: .atEnd)
+    completion(timeline)
 }

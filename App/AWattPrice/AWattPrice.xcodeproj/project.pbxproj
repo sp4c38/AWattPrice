@@ -218,7 +218,6 @@
 		617D85B325052C35009E18FB /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		617D85B525052C37009E18FB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		617D85B825052C37009E18FB /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		617D85BA25052C37009E18FB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		617D85BF25052C37009E18FB /* AwattarAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AwattarAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		617D85CA25052C37009E18FB /* AwattarAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AwattarAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		617D85CE25052C37009E18FB /* AWattPriceUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AWattPriceUITests.swift; sourceTree = "<group>"; };
@@ -251,6 +250,7 @@
 		61BA0A582548764400951321 /* MailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailView.swift; sourceTree = "<group>"; };
 		61C551C425C737C400E1CB0F /* Font.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Font.swift; sourceTree = "<group>"; };
 		61C963A6251E2032001B3E3C /* CheapestTimeClockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheapestTimeClockView.swift; sourceTree = "<group>"; };
+		61D11F4325CC386200E2A168 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		61D196E42507F58D00E57BAC /* EnergyPriceGraph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnergyPriceGraph.swift; sourceTree = "<group>"; };
 		61D57124256DAA2300EA69C7 /* CustomDatePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomDatePicker.swift; sourceTree = "<group>"; };
 		61D6F8872517AD5500027FD1 /* ButtonStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonStyles.swift; sourceTree = "<group>"; };
@@ -634,7 +634,7 @@
 		618AF8032593DAF600E21583 /* Configs */ = {
 			isa = PBXGroup;
 			children = (
-				617D85BA25052C37009E18FB /* Info.plist */,
+				61D11F4325CC386200E2A168 /* Info.plist */,
 			);
 			path = Configs;
 			sourceTree = "<group>";

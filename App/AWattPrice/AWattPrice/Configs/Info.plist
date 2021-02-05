@@ -26,8 +26,6 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>ROOT_URL</key>
-	<string>$(ROOT_URL)</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>SF-Compact-Display-Black.otf</string>
@@ -60,9 +58,14 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>VAT_AMOUNT_NORMAL</key>
-	<string>$(VAT_AMOUNT_NORMAL)</string>
-	<key>AWATTPRICE_GROUPID</key>
-	<string>$(AWATTPRICE_GROUPID)</string>
+	<key>AWATTPRICE_VALUES</key>
+	<dict>
+		<key>ROOT_URL</key>
+		<string>$(ROOT_URL)</string>
+		<key>VAT_AMOUNT</key>
+		<string>$(VAT_AMOUNT_NORMAL)</string>
+		<key>AWATTPRICE_GROUPID</key>
+		<string>$(AWATTPRICE_GROUPID)</string>
+	</dict>
 </dict>
 </plist>

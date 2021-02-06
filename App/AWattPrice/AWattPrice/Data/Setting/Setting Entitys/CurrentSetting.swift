@@ -7,21 +7,6 @@
 
 import CoreData
 
-func changeSetting<O: NSManagedObject, T: AutoUpdatingEntity<O>>(
-    _ setting: T, isNew: (O) -> Bool, bySetting: (O) -> ()
-) {
-    if setting.entity != nil {
-        bySetting(setting.entity!)
-        
-        do {
-            try setting.managedObjectContext.save()
-        } catch {
-            logger.fault("Couldn't save changes to the managedObjectContext: \(error.localizedDescription).")
-        }
-    }
-}
-
-/// Object which holds the current Setting object. Using NSFetchedResultsController the current setting stored in this object is updated if any changes occur to it.
 class CurrentSetting: AutoUpdatingEntity<Setting> {
     @Published var currentVATToUse = GlobalAppSettings.VATAmount
 

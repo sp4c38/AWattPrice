@@ -26,7 +26,16 @@ class CurrentNotificationSetting: AutoUpdatingEntity<NotificationSetting> {
 
     init(backendComm: BackendCommunicator, managedObjectContext: NSManagedObjectContext) {
         pushNotificationUpdateManager = PushNotificationUpdateManager(backendComm)
-        super.init(entityName: "NotificationSetting", managedObjectContext: managedObjectContext)
+        super.init(
+            entityName: "NotificationSetting",
+            managedObjectContext: managedObjectContext,
+            setDefaultValues: { newEntry in
+                newEntry.changesButErrorUploading = false
+                newEntry.lastApnsToken = nil
+                newEntry.priceBelowValue = 0
+                newEntry.priceDropsBelowValueNotification = false
+            }
+        )
     }
 
     func changeChangesButErrorUploading(to newValue: Bool) {

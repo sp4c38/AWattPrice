@@ -7,31 +7,40 @@
 
 import CoreData
 
-/// Object which holds a certain CoreData object. Using NSFetchedResultsController the object is updated if any changes occur to it.
-class AutoUpdatingEntity<T: NSManagedObject>: NSObject, NSFetchedResultsControllerDelegate, ObservableObject {
-    var managedObjectContext: NSManagedObjectContext // managed object context is stored with this object because it is later needed to change settings
-    let entityController: NSFetchedResultsController<T> // settings controller which reports changes in the persistent stored Setting object
+/* Object which holds a single CoreData entity entry (useful for settings stored in only one setting entry).
+ The class informs about changes to the entry by using ObservableObject.
+*/
+class AutoUpdatingSingleEntity<T: NSManagedObject>: NSObject, NSFetchedResultsControllerDelegate, ObservableObject {
+    var managedObjectContext: NSManagedObjectContext
+    let entityController: NSFetchedResultsController<T> // Reports changes in the persistent stored object.
     var entity: T?
 
-    init(entityName: String, managedObjectContext: NSManagedObjectContext) {
+    init(
+        entityName: String,
+        managedObjectContext: NSManagedObjectContext,
+        setDefaultValues: (T) -> ()
+    ) {
         self.managedObjectContext = managedObjectContext
 
         let fetchRequest = NSFetchRequest<T>(entityName: entityName)
-//        if T.self == NotificationSetting.self {
-//            fetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \NotificationSetting.getNewPricesAvailableNotification, ascending: true)]
-//        } else {
         fetchRequest.sortDescriptors = []
-//        }
-        entityController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: managedObjectContext, sectionNameKeyPath: nil, cacheName: nil)
-
+        entityController = NSFetchedResultsController(
+            fetchRequest: fetchRequest,
+            managedObjectContext: managedObjectContext,
+            sectionNameKeyPath: nil,
+            cacheName: nil
+        )
+        
         super.init()
         entityController.delegate = self
-        do {
-            try entityController.performFetch()
-        } catch {
-            logger.error("Error performing fetch request on Setting-Item out of Core Data: \(error.localizedDescription).")
-        }
-
+        
+        getSingleEntry(
+            entityName,
+            managedObjectContext,
+            fetchRequest,
+            setDefaultValues
+        )
+        
         if T.self == Setting.self {
             entity = getCurrentSetting(
                 entityName: entityName,

@@ -11,7 +11,18 @@ class CurrentSetting: AutoUpdatingEntity<Setting> {
     @Published var currentVATToUse = GlobalAppSettings.VATAmount
 
     init(managedObjectContext: NSManagedObjectContext) {
-        super.init(entityName: "Setting", managedObjectContext: managedObjectContext)
+        super.init(
+            entityName: "Setting",
+            managedObjectContext: managedObjectContext,
+            setDefaultValues: { newEntry in
+                newEntry.cheapestTimeLastConsumption = 0
+                newEntry.cheapestTimeLastPower = 0
+                newEntry.pricesWithVAT = true
+                newEntry.regionIdentifier = 0
+                newEntry.showWhatsNew = false
+                newEntry.splashScreensFinished = false
+            }
+        )
     }
 
     func changeCheapestTimeLastConsumption(to newValue: Double) {

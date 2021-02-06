@@ -65,7 +65,7 @@ struct ContentView: View {
                 .onAppear {
                     // Check Show Whats New
                     if currentSetting.entity!.splashScreensFinished == false && currentSetting.entity!.showWhatsNew == true {
-                        currentSetting.changeShowWhatsNew(newValue: false)
+                        currentSetting.changeShowWhatsNew(to: false)
                     }
                 }
                 .onChange(of: crtNotifiSetting.entity!.changesButErrorUploading) { errorOccurred in

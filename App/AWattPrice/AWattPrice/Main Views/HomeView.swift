@@ -107,7 +107,7 @@ struct HomeView: View {
         }
         .onChange(of: showWhatsNewPage) { newValue in
             if newValue == false {
-                currentSetting.changeShowWhatsNew(newValue: false)
+                currentSetting.changeShowWhatsNew(to: false)
                 managePushNotificationsOnAppAppear(
                     notificationAccessRepresentable: notificationAccess,
                     registerForRemoteNotifications: true

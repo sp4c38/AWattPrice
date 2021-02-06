@@ -14,42 +14,32 @@ class CurrentSetting: AutoUpdatingEntity<Setting> {
         super.init(entityName: "Setting", managedObjectContext: managedObjectContext)
     }
 
-    func changeBaseElectricityCharge(newValue: Double) {
-        changeSetting(self, isNew: { $0.awattarBaseElectricityPrice != newValue },
-                      bySetting: { $0.awattarBaseElectricityPrice = newValue })
-        }
-
-    func changeAwattarTariffIndex(newValue: Int16) {
-        changeSetting(self, isNew: { $0.awattarTariffIndex != newValue },
-                      bySetting: { $0.awattarTariffIndex = newValue })
-        }
-
-    func changeCheapestTimeLastConsumption(newValue: Double) {
+    func changeCheapestTimeLastConsumption(to newValue: Double) {
         changeSetting(self, isNew: { $0.cheapestTimeLastConsumption != newValue },
                       bySetting: { $0.cheapestTimeLastConsumption = newValue })
     }
 
-    func changeCheapestTimeLastPower(newValue: Double) {
+    func changeCheapestTimeLastPower(to newValue: Double) {
         changeSetting(self, isNew: { $0.cheapestTimeLastPower != newValue },
                       bySetting: { $0.cheapestTimeLastPower = newValue })
     }
 
-    func changeTaxSelection(newValue: Bool) {
+    func changeTaxSelection(to newValue: Bool) {
         changeSetting(self, isNew: { $0.pricesWithVAT != newValue },
                       bySetting: { $0.pricesWithVAT = newValue })
     }
 
-    func changeRegionIdentifier(newValue: Int16) {
+    func changeRegionIdentifier(to newValue: Int16) {
         changeSetting(self, isNew: { $0.regionIdentifier != newValue },
                       bySetting: { $0.regionIdentifier = newValue })
     }
 
-    func changeShowWhatsNew(newValue: Bool) {
+    func changeShowWhatsNew(to newValue: Bool) {
         changeSetting(self, isNew: { $0.showWhatsNew != newValue },
                       bySetting: { $0.showWhatsNew = newValue })
     }
 
-    func changeSplashScreenFinished(newValue: Bool) {
+    func changeSplashScreenFinished(to newValue: Bool) {
         changeSetting(self, isNew: { $0.splashScreensFinished != newValue },
                       bySetting: { $0.splashScreensFinished = newValue })
     }

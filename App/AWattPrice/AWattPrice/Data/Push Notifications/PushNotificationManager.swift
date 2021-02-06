@@ -74,7 +74,7 @@ class PushNotificationUpdateManager {
         let group = DispatchGroup()
         group.enter()
         DispatchQueue.main.async {
-            crtNotifiSetting.changeChangesButErrorUploading(newValue: false)
+            crtNotifiSetting.changeChangesButErrorUploading(to: false)
             group.leave()
         }
         group.wait()
@@ -85,7 +85,7 @@ class PushNotificationUpdateManager {
 
             if !requestSuccessful {
                 DispatchQueue.main.async {
-                    crtNotifiSetting.changeChangesButErrorUploading(newValue: true)
+                    crtNotifiSetting.changeChangesButErrorUploading(to: true)
                 }
             }
         } else {

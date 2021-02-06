@@ -54,7 +54,7 @@ struct EnergyUsageInputField: View {
                     .ifTrue(firstAppear == false) { content in
                         content
                             .onChange(of: cheapestHourManager.energyUsageString) { newValue in
-                                currentSetting.changeCheapestTimeLastConsumption(newValue: newValue.doubleValue ?? 0)
+                                currentSetting.changeCheapestTimeLastConsumption(to: newValue.doubleValue ?? 0)
                                 if let energyUsageString = (newValue.doubleValue ?? 0).priceString {
                                     cheapestHourManager.energyUsageString = energyUsageString
                                 }

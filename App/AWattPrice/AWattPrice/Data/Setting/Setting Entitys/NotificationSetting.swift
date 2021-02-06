@@ -29,7 +29,7 @@ class CurrentNotificationSetting: AutoUpdatingEntity<NotificationSetting> {
         super.init(entityName: "NotificationSetting", managedObjectContext: managedObjectContext)
     }
 
-    func changeChangesButErrorUploading(newValue: Bool) {
+    func changeChangesButErrorUploading(to newValue: Bool) {
         changeSetting(self, isNew: { $0.changesButErrorUploading != newValue },
                       bySetting: { $0.changesButErrorUploading = newValue })
     }

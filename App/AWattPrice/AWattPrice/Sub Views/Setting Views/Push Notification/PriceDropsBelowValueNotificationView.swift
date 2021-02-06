@@ -95,7 +95,7 @@ extension PriceDropsBelowValueNotificationSubView {
             Toggle("", isOn: $priceDropsBelowValueNotificationSelection.animation())
                 .labelsHidden()
                 .onChange(of: priceDropsBelowValueNotificationSelection) { newValue in
-                    crtNotifiSetting.changePriceDropsBelowValueNotifications(newValue: newValue)
+                    crtNotifiSetting.changePriceDropsBelowValueNotifications(to: newValue)
                     crtNotifiSetting.changesAndStaged = true
                     crtNotifiSetting.pushNotificationUpdateManager.backgroundNotificationUpdate(
                         currentSetting,
@@ -122,7 +122,7 @@ extension PriceDropsBelowValueNotificationSubView {
                         if let newConvertedIntegerValue = newValue.integerValue {
                             newIntegerValue = newConvertedIntegerValue
                         }
-                        crtNotifiSetting.changePriceBelowValue(newValue: newIntegerValue)
+                        crtNotifiSetting.changePriceBelowValue(to: newIntegerValue)
                         priceBelowValue = newIntegerValue.priceString ?? ""
 
                         if keyboardCurrentlyClosed {

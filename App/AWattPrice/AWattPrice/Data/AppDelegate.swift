@@ -27,7 +27,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
             if crtNotifiSetting!.changesAndStaged == true {
                 if crtNotifiSetting!.entity != nil {
                     if crtNotifiSetting!.entity!.changesButErrorUploading == false {
-                        crtNotifiSetting!.changeChangesButErrorUploading(newValue: true)
+                        crtNotifiSetting!.changeChangesButErrorUploading(to: true)
                     }
                 }
             }
@@ -67,7 +67,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
                             let group = DispatchGroup()
                             group.enter()
                             DispatchQueue.main.async {
-                                self.crtNotifiSetting!.changeChangesButErrorUploading(newValue: false)
+                                self.crtNotifiSetting!.changeChangesButErrorUploading(to: false)
                                 group.leave()
                             }
                             group.wait()
@@ -76,7 +76,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
                             )
                             if !requestSuccessful {
                                 DispatchQueue.main.async {
-                                    self.crtNotifiSetting!.changeChangesButErrorUploading(newValue: true)
+                                    self.crtNotifiSetting!.changeChangesButErrorUploading(to: true)
                                 }
                             }
                         }
@@ -87,7 +87,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
                         """)
                     }
                 }
-                crtNotifiSetting!.changeLastApnsToken(newValue: apnsDeviceTokenString)
+                crtNotifiSetting!.changeLastApnsToken(to: apnsDeviceTokenString)
             }
             crtNotifiSetting!.currentlySendingToServer.unlock()
         } else {

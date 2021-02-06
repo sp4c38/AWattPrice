@@ -149,7 +149,7 @@ extension BackendCommunicator {
             let requestSuccessful = self.uploadPushNotificationSettings(configuration: notificationConfig)
             if requestSuccessful {
                 logger.debug("Could successfuly upload notification configuration after previously an upload failed.")
-                crtNotifiSetting.changeChangesButErrorUploading(newValue: false)
+                crtNotifiSetting.changeChangesButErrorUploading(to: false)
             } else {
                 logger.notice("Could still NOT upload notification configuration after previously also an upload failed.")
             }

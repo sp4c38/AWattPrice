@@ -7,6 +7,20 @@
 
 import CoreData
 
+func changeSetting<O: NSManagedObject, T: AutoUpdatingEntity<O>>(
+    _ setting: T, isNew: (O) -> Bool, bySetting: (O) -> ()
+) {
+    if setting.entity != nil {
+        bySetting(setting.entity!)
+        
+        do {
+            try setting.managedObjectContext.save()
+        } catch {
+            logger.fault("Couldn't save changes to the managedObjectContext: \(error.localizedDescription).")
+        }
+    }
+}
+
 /// Object which holds the current Setting object. Using NSFetchedResultsController the current setting stored in this object is updated if any changes occur to it.
 class CurrentSetting: AutoUpdatingEntity<Setting> {
     @Published var currentVATToUse = GlobalAppSettings.VATAmount
@@ -32,149 +46,43 @@ class CurrentSetting: AutoUpdatingEntity<Setting> {
 //        }
 //    }
 
-    /**
-     Changes the price of the base energy charge to the specified new value.
-     - Parameter newValue: The new price to which the setting should be changed to.
-     */
     func changeBaseElectricityCharge(newValue: Double) {
-        if entity != nil {
-            if entity!.awattarBaseElectricityPrice != newValue {
-                entity!.awattarBaseElectricityPrice = newValue
-
-                do {
-                    try managedObjectContext.save()
-                } catch {
-                    print("Managed object context failed to store new notification setting (awattarBaseElectricityPrice) attribute: \(error).")
-                    return
-                }
-            }
+        changeSetting(self, isNew: { $0.awattarBaseElectricityPrice != newValue },
+                      bySetting: { $0.awattarBaseElectricityPrice = newValue })
         }
-    }
 
-    /**
-     Changes the index of which energy profile/tariff is selected to the specified new index.
-     - Parameter newValue: The new index to which the setting should be changed to.
-     */
     func changeAwattarTariffIndex(newValue: Int16) {
-        if entity != nil {
-            if entity!.awattarTariffIndex != newValue {
-                entity!.awattarTariffIndex = newValue
-
-                do {
-                    try managedObjectContext.save()
-                } catch {
-                    print("Managed object context failed to store new notification setting (awattarTariffIndex) attribute: \(error).")
-                    return
-                }
-            }
+        changeSetting(self, isNew: { $0.awattarTariffIndex != newValue },
+                      bySetting: { $0.awattarTariffIndex = newValue })
         }
-    }
 
-    /* Changes the last total consumption setting which is used on the cheapest time page.
-     - Parameter newValue: The new last power usage to which the setting should be changed to.
-     */
     func changeCheapestTimeLastConsumption(newValue: Double) {
-        if entity != nil {
-            if entity!.cheapestTimeLastConsumption != newValue {
-                entity!.cheapestTimeLastConsumption = newValue
-
-                do {
-                    try managedObjectContext.save()
-                } catch {
-                    print("Managed object context failed to store new notification setting (cheapestTimeLastConsumption) attribute: \(error).")
-                    return
-                }
-            }
-        }
+        changeSetting(self, isNew: { $0.cheapestTimeLastConsumption != newValue },
+                      bySetting: { $0.cheapestTimeLastConsumption = newValue })
     }
 
-    /**
-     Changes the last power usage setting which is used on the cheapest time page.
-     - Parameter newValue: The new last power usage to which the setting should be changed to.
-     */
     func changeCheapestTimeLastPower(newValue: Double) {
-        if entity != nil {
-            if entity!.cheapestTimeLastPower != newValue {
-                entity!.cheapestTimeLastPower = newValue
-
-                do {
-                    try managedObjectContext.save()
-                } catch {
-                    print("Managed object context failed to store new notification setting (cheapestTimeLastPower) attribute: \(error).")
-                    return
-                }
-            }
-        }
+        changeSetting(self, isNew: { $0.cheapestTimeLastPower != newValue },
+                      bySetting: { $0.cheapestTimeLastPower = newValue })
     }
 
-    /**
-     Changes the value if prices are shown with tax/VAT included to the specified new value.
-     - Parameter newValue: The new state to which the setting should be changed to.
-     */
     func changeTaxSelection(newValue: Bool) {
-        if entity != nil {
-            if entity!.pricesWithVAT != newValue {
-                entity!.pricesWithVAT = newValue
-
-                do {
-                    try managedObjectContext.save()
-                } catch {
-                    print("Managed object context failed to store new notification setting (pricesWithVAT) attribute: \(error).")
-                    return
-                }
-            }
-        }
+        changeSetting(self, isNew: { $0.pricesWithVAT != newValue },
+                      bySetting: { $0.pricesWithVAT = newValue })
     }
 
-    /* Changes the current region which is selected to get aWATTar prices.
-     - Parameter newValue: The new region identifier which was selected and to which this setting should be changed to.
-     */
     func changeRegionIdentifier(newValue: Int16) {
-        if entity != nil {
-            if entity!.regionIdentifier != newValue {
-                entity!.regionIdentifier = newValue
-
-                do {
-                    try managedObjectContext.save()
-                } catch {
-                    print("Managed object context failed to store new notification setting (cheapestTimeLastConsumption) attribute: \(error).")
-                    return
-                }
-            }
-        }
+        changeSetting(self, isNew: { $0.regionIdentifier != newValue },
+                      bySetting: { $0.regionIdentifier = newValue })
     }
 
     func changeShowWhatsNew(newValue: Bool) {
-        if entity != nil {
-            if entity!.showWhatsNew != newValue {
-                entity!.showWhatsNew = newValue
-
-                do {
-                    try managedObjectContext.save()
-                } catch {
-                    print("Managed object context failed to store new notification setting (showWhatsNew) attribute: \(error).")
-                    return
-                }
-            }
-        }
+        changeSetting(self, isNew: { $0.showWhatsNew != newValue },
+                      bySetting: { $0.showWhatsNew = newValue })
     }
 
-    /*
-     Changes the value if the splash screen is finished to the specified new value.
-     - Parameter newValue: The new state to which the setting should be changed to.
-     */
     func changeSplashScreenFinished(newValue: Bool) {
-        if entity != nil {
-            if entity!.splashScreensFinished != newValue {
-                entity!.splashScreensFinished = newValue
-
-                do {
-                    try managedObjectContext.save()
-                } catch {
-                    print("Managed object context failed to store new notification setting (splashScreensFinished) attribute: \(error).")
-                    return
-                }
-            }
-        }
+        changeSetting(self, isNew: { $0.splashScreensFinished != newValue },
+                      bySetting: { $0.splashScreensFinished = newValue })
     }
 }

@@ -34,28 +34,12 @@ class AutoUpdatingSingleEntity<T: NSManagedObject>: NSObject, NSFetchedResultsCo
         super.init()
         entityController.delegate = self
         
-        getSingleEntry(
+        entity = getSingleEntry(
             entityName,
             managedObjectContext,
             fetchRequest,
             setDefaultValues
         )
-        
-        if T.self == Setting.self {
-            entity = getCurrentSetting(
-                entityName: entityName,
-                managedObjectContext: self.managedObjectContext,
-                fetchRequestResults: (entityController as? NSFetchedResultsController<Setting>)?.fetchedObjects ?? []
-            ) as? T
-        } else if T.self == NotificationSetting.self {
-            entity = getNotificationSetting(
-                entityName: entityName,
-                managedObjectContext: self.managedObjectContext,
-                fetchRequestResults: (
-                    entityController as? NSFetchedResultsController<NotificationSetting>
-                )?.fetchedObjects ?? []
-            ) as? T
-        }
     }
 
     func controllerWillChangeContent(_: NSFetchedResultsController<NSFetchRequestResult>) {

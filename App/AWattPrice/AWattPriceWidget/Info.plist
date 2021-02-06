@@ -30,7 +30,7 @@
 		<key>ROOT_URL</key>
 		<string>$(ROOT_URL)</string>
 		<key>VAT_AMOUNT</key>
-		<string>$(VAT_AMOUNT_NORMAL)</string>
+		<string>$(VAT_AMOUNT)</string>
 		<key>AWATTPRICE_GROUPID</key>
 		<string>$(AWATTPRICE_GROUPID)</string>
 	</dict>

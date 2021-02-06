@@ -7,7 +7,7 @@
 
 import CoreData
 
-func changeSetting<O: NSManagedObject, T: AutoUpdatingEntity<O>>(
+func changeSetting<O: NSManagedObject, T: AutoUpdatingSingleEntity<O>>(
     _ setting: T, isNew: (O) -> Bool, bySetting: (O) -> ()
 ) {
     if setting.entity != nil {
@@ -57,7 +57,7 @@ fileprivate func getAndInsertNewEntry<T: NSManagedObject>(
     return newEntry
 }
 
-func getEntry<T: NSManagedObject>(
+func getSingleEntry<T: NSManagedObject>(
     _ entityName: String,
     _ context: NSManagedObjectContext,
     _ fetchRequest: NSFetchRequest<T>,

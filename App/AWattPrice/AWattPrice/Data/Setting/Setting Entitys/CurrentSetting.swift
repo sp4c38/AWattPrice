@@ -7,7 +7,7 @@
 
 import CoreData
 
-class CurrentSetting: AutoUpdatingEntity<Setting> {
+class CurrentSetting: AutoUpdatingSingleEntity<Setting> {
     @Published var currentVATToUse = GlobalAppSettings.VATAmount
 
     init(managedObjectContext: NSManagedObjectContext) {

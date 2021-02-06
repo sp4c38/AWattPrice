@@ -16,7 +16,7 @@ import CoreData
 
 import CoreData
 
-class CurrentNotificationSetting: AutoUpdatingEntity<NotificationSetting> {
+class CurrentNotificationSetting: AutoUpdatingSingleEntity<NotificationSetting> {
     /// Set to true if changes were made, but not yet uploaded.
     @Published var changesAndStaged = false
     /// Indication if app is currently sending APNs configuration to the backend.

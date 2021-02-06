@@ -132,7 +132,7 @@ struct EnergyPriceGraph: View {
                 hapticEngine = nil
             }
         } catch {
-            print("There was an error initiating the haptic engine: \(error)")
+            logger.error("There was an error initiating the haptic engine: \(error.localizedDescription).")
         }
     }
 
@@ -151,7 +151,7 @@ struct EnergyPriceGraph: View {
             let player = try hapticEngine!.makePlayer(with: pattern)
             try player.start(atTime: 0)
         } catch {
-            print("Failed to play haptic pattern: \(error)")
+            logger.error("Failed to play haptic pattern: \(error.localizedDescription).")
         }
     }
 
@@ -160,7 +160,7 @@ struct EnergyPriceGraph: View {
         DispatchQueue.main.async {
             guard newSizeRect != self.sizeRect else { return }
             self.sizeRect = newSizeRect
-//             print("Set graph size to \(newSizeRect)")
+            // logger.debug("Set graph size to \(newSizeRect.debugDescription)")
         }
         return Color.clear
     }

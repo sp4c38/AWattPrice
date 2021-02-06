@@ -28,7 +28,7 @@ func getCurrentSetting(entityName: String, managedObjectContext: NSManagedObject
             do {
                 try managedObjectContext.save()
             } catch {
-                print("Error storing new settings object.")
+                logger.error("Error storing new settings object: \(error.localizedDescription).")
                 return nil
             }
 
@@ -37,9 +37,10 @@ func getCurrentSetting(entityName: String, managedObjectContext: NSManagedObject
             return nil
         }
     } else {
-        // Shouldn't happen because would mean that there are multiple Settings objects stored in the persistent storage
-        // Only one should exist
-        print("Multiple Settings objects found in persistent storage. This shouldn't happen with Settings objects. Will delete all Settings objects except of the last which is kept.")
+        logger.fault("""
+            Multiple Setting objects found in persistent storage. This shouldn't happen with Settings objects.
+            At any time, only one should exist. Will delete all Settings objects except of the last, which is kept.
+        """)
 
         for x in 0 ... (fetchRequestResults.count - 1) {
             // Deletes all Settings objects except of the last
@@ -51,7 +52,7 @@ func getCurrentSetting(entityName: String, managedObjectContext: NSManagedObject
         do {
             try managedObjectContext.save()
         } catch {
-            print("Error storing new settings object.")
+            logger.error("Error storing new settings object: \(error.localizedDescription).")
             return nil
         }
 

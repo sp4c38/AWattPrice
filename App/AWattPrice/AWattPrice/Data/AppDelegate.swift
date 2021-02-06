@@ -35,7 +35,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
     }
 
     func application(_: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        print("Registration from APNs for push notifications was granted.")
+        logger.debug("Registration from APNs for push notifications was granted.")
 
         let apnsDeviceTokenString = deviceToken.map {
             String(format: "%02.2hhx", $0)
@@ -59,7 +59,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
                         crtNotifiSetting!.entity!.changesButErrorUploading == true
                     {
                         DispatchQueue.global(qos: .background).async {
-                            print("""
+                            logger.info("""
                                 Need to update stored APNs configuration. Stored APNs token and current
                                 APNs token mismatch OR previously notification configuration couldn't be
                                 uploaded because of some issue.
@@ -81,19 +81,22 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
                             }
                         }
                     } else {
-                        print("No need to update stored APNs configuration. Stored token matches current APNs token and no errors previously occurred when uploading changes.")
+                        logger.debug("""
+                            No need to update stored APNs configuration. Stored token matches current APNs
+                            token and no errors previously occurred when uploading changes.
+                        """)
                     }
                 }
                 crtNotifiSetting!.changeLastApnsToken(newValue: apnsDeviceTokenString)
             }
             crtNotifiSetting!.currentlySendingToServer.unlock()
         } else {
-            print("Settings could not be found. Therefor can't store last APNs token.")
+            logger.error("Settings could not be found. Therefor can't store last APNs token.")
         }
     }
 
     func application(_: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
-        print("Registration to APNs for push notifications was NOT granted: \(error.localizedDescription)")
+        logger.debug("Registration to APNs for push notifications was NOT granted: \(error.localizedDescription).")
         if notificationAccess != nil {
             // App is allowed to send notification but failed to register for remote notifications.
             notificationAccess!.access = false

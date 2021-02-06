@@ -94,7 +94,7 @@ struct HomeView: View {
                 return
             }
             if phase == .active, initialAppearFinished == true {
-                print("App was reentered. Updating data.")
+                logger.debug("App was reentered. Updating data.")
                 backendComm.download(appGroupManager, currentSetting.entity!.regionIdentifier, networkManager)
                 showWhatsNewPage = currentSetting.entity!.showWhatsNew
             }

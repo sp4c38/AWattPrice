@@ -33,13 +33,13 @@ func checkNotificationAccess() -> Bool {
     let dispatchSemaphore = DispatchSemaphore(value: 0)
     UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { successful, error in
         if successful == true, error == nil {
-            print("Notification center access was granted.")
+            logger.debug("Notification center access was granted.")
             returnResponse = true
         } else if successful == false, error == nil {
-            print("Notification center access was rejected.")
+            logger.debug("Notification center access was rejected.")
             returnResponse = false
         } else if error != nil {
-            print("Notification center access failed with error: \(error?.localizedDescription ?? "[Couldn't unpack optional as localized description]").")
+            logger.notice("Notification center access failed with error: \(error!.localizedDescription).")
             returnResponse = false
         }
 
@@ -69,7 +69,7 @@ class PushNotificationUpdateManager {
     }
 
     func notificationConfigChanged(regionIdentifier: Int, vatSelection: Int, _ crtNotifiSetting: CurrentNotificationSetting) {
-        print("Notification configuration has changed. Trying to upload to server.")
+        logger.debug("Notification configuration has changed. Trying to upload to server.")
 
         let group = DispatchGroup()
         group.enter()
@@ -89,7 +89,7 @@ class PushNotificationUpdateManager {
                 }
             }
         } else {
-            print("No token is set yet. Will perform upload in background task later.")
+            logger.info("No token is set yet. Will perform upload in background task later.")
         }
 
         self.crtNotifiSetting!.currentlySendingToServer.unlock()
@@ -118,7 +118,9 @@ class PushNotificationUpdateManager {
                 self.crtNotifiSetting!.currentlySendingToServer.lock() // Make sure no task is sending data to the backend
                 self.updateScheduled = false
                 self.doNotificationUpdate()
-                self.crtNotifiSetting!.changesAndStaged = false
+                DispatchQueue.main.sync {
+                    self.crtNotifiSetting!.changesAndStaged = false
+                }
                 self.startTimer()
             }
         } else {
@@ -127,7 +129,9 @@ class PushNotificationUpdateManager {
                 backgroundQueue.async {
                     self.updateScheduled = false
                     self.doNotificationUpdate()
-                    self.crtNotifiSetting!.changesAndStaged = false
+                    DispatchQueue.main.sync {
+                        self.crtNotifiSetting!.changesAndStaged = false
+                    }
                     self.startTimer()
                 }
             } else {} // Don't need to do anything. Values were set before.

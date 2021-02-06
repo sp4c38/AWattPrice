@@ -29,7 +29,7 @@ class AutoUpdatingEntity<T: NSManagedObject>: NSObject, NSFetchedResultsControll
         do {
             try entityController.performFetch()
         } catch {
-            print("Error performing fetch request on Setting-Item out of Core Data.")
+            logger.error("Error performing fetch request on Setting-Item out of Core Data: \(error.localizedDescription).")
         }
 
         if T.self == Setting.self {

@@ -14,23 +14,6 @@ class CurrentSetting: AutoUpdatingEntity<Setting> {
         super.init(entityName: "Setting", managedObjectContext: managedObjectContext)
     }
 
-//    /// This will check that when a tariff is selected that also a non-empty electricity price was set
-//    func validateTariffAndEnergyPriceSet() {
-//        if self.entity != nil {
-//            if self.entity!.awattarTariffIndex > -1 {
-//                if self.entity!.awattarBaseElectricityPrice == 0 {
-//                    self.entity!.awattarTariffIndex = -1
-//
-//                    do {
-//                        try self.managedObjectContext.save()
-//                    } catch {
-//                        print("Tried to change the awattar tariff index in Setting because no base electricity was given. This failed.")
-//                    }
-//                }
-//            }
-//        }
-//    }
-
     func changeBaseElectricityCharge(newValue: Double) {
         changeSetting(self, isNew: { $0.awattarBaseElectricityPrice != newValue },
                       bySetting: { $0.awattarBaseElectricityPrice = newValue })

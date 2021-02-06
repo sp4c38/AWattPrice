@@ -35,9 +35,11 @@ fileprivate func handleMoreThenOneEntry<T: NSManagedObject>(
     _ context: NSManagedObjectContext
 ) -> T {
     logger.fault("Multiple entries found in persistent storage. Only one should exist.")
-    for entry in allItems {
-        
+    let lastElement = allItems.last!
+    for entry in allItems.dropLast() {
+        context.delete(entry)
     }
+    return lastElement
 }
 
 fileprivate func getAndInsertNewEntry<T: NSManagedObject>(

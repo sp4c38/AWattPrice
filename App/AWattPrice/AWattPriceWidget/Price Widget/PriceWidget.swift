@@ -20,7 +20,7 @@ struct Provider: TimelineProvider {
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
-        makeNewPriceTimeline(
+        getNewPriceTimeline(
             in: context,
             completion: completion
         )
@@ -41,7 +41,7 @@ struct PriceWidgetEntryView : View {
     func getEnergyData() -> EnergyData {
         let noEnergyData = EnergyData(prices: [], minPrice: 0, maxPrice: 0)
         guard appGroupManager.setGroup(AppGroups.awattpriceGroup) == true else { return noEnergyData }
-        guard let energyData = appGroupManager.readEnergyDataFromGroup() else { return noEnergyData }
+        guard let energyData = appGroupManager.readEnergyData() else { return noEnergyData }
         return energyData
     }
     

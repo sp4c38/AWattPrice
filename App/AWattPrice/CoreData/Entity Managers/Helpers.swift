@@ -51,9 +51,6 @@ fileprivate func getAndInsertNewEntry<T: NSManagedObject>(
     guard let description = entityDescription else { return nil }
     let newEntry = T(entity: description, insertInto: context)
     setDefaultValues(newEntry)
-    if T.self == Setting.self {
-        print((newEntry as! Setting).pricesWithVAT)
-    }
     return newEntry
 }
 

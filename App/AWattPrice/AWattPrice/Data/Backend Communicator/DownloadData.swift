@@ -283,7 +283,7 @@ extension BackendCommunicator {
         guard let newData = newDataToCheck else { return }
         let setGroupSuccessful = appGroupManager.setGroup(AppGroups.awattpriceGroup)
         guard setGroupSuccessful else { return }
-        let storedData = appGroupManager.readEnergyDataFromGroup()
+        let storedData = appGroupManager.readEnergyData()
         if storedData != newData {
             WidgetCenter.shared.reloadTimelines(ofKind: "me.space8.AWattPrice.PriceWidget")
             _ = appGroupManager.writeEnergyDataToGroup(energyData: newData)
@@ -304,5 +304,16 @@ extension BackendCommunicator {
             return min ... max
         }
         return nil
+    }
+}
+
+/// Returns false if the current time is inside of the first energy data items time.
+func checkEnergyDataNeedsUpdate(_ energyData: EnergyData) -> Bool {
+    guard let firstItem = energyData.prices.first else { return true }
+    let now = Date()
+    if now >= firstItem.startTimestamp, now < firstItem.endTimestamp {
+        return false
+    } else {
+        return true
     }
 }

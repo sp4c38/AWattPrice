@@ -58,7 +58,7 @@ class AppGroupManager {
         return true
     }
     
-    public func readEnergyDataFromGroup() -> EnergyData? {
+    public func readEnergyData() -> EnergyData? {
         guard let parentURL = containerURL else {
             logger.notice("No app group set when trying to read energy data from app group container..")
             return nil

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17709" systemVersion="20E5172i" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="NotificationSetting" representedClassName="NotificationSetting" syncable="YES">
+        <attribute name="changesButErrorUploading" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="lastApnsToken" optional="YES" attributeType="String"/>
+        <attribute name="notifiPreviouslyAllowed" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="priceBelowValue" optional="YES" attributeType="Integer 64" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="priceDropsBelowValueNotification" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+    </entity>
+    <entity name="Setting" representedClassName="Setting" syncable="YES">
+        <attribute name="cheapestTimeLastConsumption" optional="YES" attributeType="Double" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="cheapestTimeLastPower" optional="YES" attributeType="Double" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="pricesWithVAT" optional="YES" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
+        <attribute name="regionIdentifier" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="showWhatsNew" optional="YES" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
+        <attribute name="splashScreensFinished" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+    </entity>
+    <elements>
+        <element name="NotificationSetting" positionX="13833" positionY="-567" width="128" height="104"/>
+        <element name="Setting" positionX="13622.15289306641" positionY="-640.1206970214844" width="698.1566162109375" height="119"/>
+    </elements>
+</model>

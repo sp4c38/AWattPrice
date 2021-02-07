@@ -109,10 +109,11 @@ extension BackendCommunicator {
         isTrue condition: Bool,
         in runQueue: DispatchQueue,
         runAsync: Bool,
+        withDeadlineIfAsync: DispatchTime? = nil,
         tasks: @escaping () -> ()
     ) {
         if condition {
-            runQueueSyncOrAsync(runQueue, runAsync) {
+            runQueueSyncOrAsync(runQueue, runAsync, deadlineIfAsync: withDeadlineIfAsync) {
                 tasks()
             }
         } else {
@@ -127,6 +128,7 @@ extension BackendCommunicator {
         _ networkManager: NetworkManager,
         runAsync: Bool = true
     ) {
+        logger.debug("Downloading aWATTar data ")
         currentlyUpdatingData = true
         dataRetrievalError = false
 
@@ -150,7 +152,7 @@ extension BackendCommunicator {
             dataComesFromCache = true
         }
         
-        let semaphore = DispatchSemaphore(value: 1)
+        let semaphore = DispatchSemaphore(value: 0)
         let beforeTime = Date()
         URLSession.shared.dataTask(with: energyRequest) { data, _, error in
             if let data = data {
@@ -158,7 +160,7 @@ extension BackendCommunicator {
             } else {
                 logger.notice("Data retrieval error after trying to reach server (e.g.: server could be offline).")
                 if error != nil {
-                    self.runQueueSyncOrAsync(DispatchQueue.main, runAsync) {
+                    self.runInQueueIf(isTrue: runAsync, in: DispatchQueue.main, runAsync: runAsync) {
                         withAnimation {
                             self.dataRetrievalError = true
                         }
@@ -166,7 +168,7 @@ extension BackendCommunicator {
                 }
             }
 
-            self.runQueueSyncOrAsync(DispatchQueue.main, runAsync) {
+            self.runInQueueIf(isTrue: runAsync, in: DispatchQueue.main, runAsync: runAsync) {
                 if dataComesFromCache == true, networkManager.monitorer.currentPath.status == .unsatisfied {
                     self.dataRetrievalError = true
                 }
@@ -174,7 +176,7 @@ extension BackendCommunicator {
                 if !self.dataRetrievalError {
                     self.dateDataLastUpdated = Date()
                     self.runQueueSyncOrAsync(DispatchQueue.global(qos: .background), runAsync) {
-                        var newEnergyData: EnergyData?
+                        var newEnergyData: EnergyData? = nil
                         self.runInQueueIf(isTrue: runAsync, in: DispatchQueue.main, runAsync: false) {
                             newEnergyData = self.energyData
                         }
@@ -183,10 +185,11 @@ extension BackendCommunicator {
                 }
 
                 if Date().timeIntervalSince(beforeTime) < 0.6 {
-                    self.runQueueSyncOrAsync(
-                        DispatchQueue.main,
-                        runAsync,
-                        deadlineIfAsync: .now() + (0.6 - Date().timeIntervalSince(beforeTime))
+                    self.runInQueueIf(
+                        isTrue: runAsync,
+                        in: DispatchQueue.main,
+                        runAsync: true,
+                        withDeadlineIfAsync: .now() + (0.6 - Date().timeIntervalSince(beforeTime))
                     ) {
                         // If the data could be retrieved very fast (< 0.6s) than changes to text, ... could look very sudden.
                         // Thats why add a small delay to result in a 0.6s delay.
@@ -199,7 +202,7 @@ extension BackendCommunicator {
             semaphore.signal()
         }.resume()
         
-        if runAsync {
+        if !runAsync {
             semaphore.wait()
         }
     }
@@ -255,7 +258,7 @@ extension BackendCommunicator {
 
             let currentEnergyData = EnergyData(prices: usedPricesDecodedData, minPrice: minPrice ?? 0, maxPrice: maxPrice ?? 0)
 
-            self.runQueueSyncOrAsync(DispatchQueue.main, runAsync) {
+            self.runInQueueIf(isTrue: runAsync, in: DispatchQueue.main, runAsync: runAsync) {
                 if currentEnergyData.prices.isEmpty {
                     logger.notice("No prices can be displayed: either there are none or they are outdated.")
                     withAnimation {
@@ -269,7 +272,7 @@ extension BackendCommunicator {
             }
         } catch {
             logger.error("Could not decode returned JSON data from server.")
-            self.runQueueSyncOrAsync(DispatchQueue.main, runAsync) {
+            self.runInQueueIf(isTrue: runAsync, in: DispatchQueue.main, runAsync: runAsync) {
                 withAnimation {
                     self.dataRetrievalError = true
                 }

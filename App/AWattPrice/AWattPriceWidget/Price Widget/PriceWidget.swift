@@ -10,12 +10,12 @@ import SwiftUI
 import WidgetKit
 
 struct Provider: TimelineProvider {
-    func placeholder(in context: Context) -> PriceEntry {
-        PriceEntry(date: Date())
+    func placeholder(in context: Context) -> PriceWidgetEntry {
+        PriceWidgetEntry(date: Date())
     }
 
-    func getSnapshot(in context: Context, completion: @escaping (PriceEntry) -> ()) {
-        let entry = PriceEntry(date: Date())
+    func getSnapshot(in context: Context, completion: @escaping (PriceWidgetEntry) -> ()) {
+        let entry = PriceWidgetEntry(date: Date())
         completion(entry)
     }
 
@@ -27,7 +27,7 @@ struct Provider: TimelineProvider {
     }
 }
 
-struct PriceEntry: TimelineEntry {
+struct PriceWidgetEntry: TimelineEntry {
     let date: Date
 }
 
@@ -45,7 +45,7 @@ struct PriceWidgetEntryView : View {
         return energyData
     }
     
-    init(entry: PriceEntry, _ customEnergyData: EnergyData? = nil) {
+    init(entry: PriceWidgetEntry, _ customEnergyData: EnergyData? = nil) {
         self.entry = entry
         if customEnergyData != nil {
             energyData = customEnergyData!
@@ -106,7 +106,7 @@ struct PriceWidget_Previews: PreviewProvider {
             return newEnergyData
         }()
         
-        PriceWidgetEntryView(entry: PriceEntry(date: Date()), exampleEnergyData)
+        PriceWidgetEntryView(entry: PriceWidgetEntry(date: Date()), exampleEnergyData)
             .previewContext(WidgetPreviewContext(family: .systemMedium))
             .environment(\.colorScheme, .dark)
     }

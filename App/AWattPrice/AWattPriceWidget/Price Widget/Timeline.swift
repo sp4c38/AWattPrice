@@ -5,6 +5,7 @@
 //  Created by Léon Becker on 04.02.21.
 //
 
+import Network
 import WidgetKit
 
 func getNewEnergyData() {
@@ -24,6 +25,7 @@ fileprivate func getPriceEntryInOneHour() -> PriceEntry? {
     return entry
 }
 
+/// Get the current energy data from the app storage. If this energy data needs to be updated or doesn't exist yet the backend is polled. If no energy data could be found at all a a empty energy data object will be returned.
 fileprivate func getCurrentEnergyData(_ setting: CurrentSetting) -> EnergyData {
     // Energy data with default values
     var energyData = EnergyData(prices: [], minPrice: 0, maxPrice: 0)
@@ -38,20 +40,17 @@ fileprivate func getCurrentEnergyData(_ setting: CurrentSetting) -> EnergyData {
     if energyDataStored != nil {
         storedDataNeedsUpdate = checkEnergyDataNeedsUpdate(energyDataStored!)
     }
-
+    storedDataNeedsUpdate = true
     if storedDataNeedsUpdate {
         guard let entity = setting.entity else { return energyData }
         
         let backendCommunicator = BackendCommunicator()
-        let networkManager = NetworkManager()
-        print(networkManager.networkStatus)
+        let networkManager = NetworkManager(waitUntilFirstStatusWasRetrieved: true)
         backendCommunicator.download(
             groupManager, entity.regionIdentifier, networkManager, runAsync: false
         )
-        
         guard let currentEnergyData = backendCommunicator.energyData else { return energyData }
         energyData = currentEnergyData
-        print(energyData)
     }
     
     return energyData
@@ -65,6 +64,7 @@ func getNewPriceTimeline(
     let persistence = PersistenceManager()
     let setting = CurrentSetting(managedObjectContext: persistence.persistentContainer.viewContext)
     var currentEnergyData: EnergyData? = nil
+    
     if setting.entity != nil {
         currentEnergyData = getCurrentEnergyData(setting)
     }

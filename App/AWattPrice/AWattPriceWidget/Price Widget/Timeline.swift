@@ -79,6 +79,22 @@ fileprivate func needToCheckForNewData(basedOn energyData: EnergyData, withRotat
     }
 }
 
+/** Creates the max. amount of price entries from the start of the following hour till the rotation time. A entry is created each n step seconds.
+*/
+func priceEntriesUntilNextRoatationTime(withStepSeconds stepSeconds: TimeInterval, _ rotationTime: Date) -> [PriceWidgetEntry] {
+    var hourCounter = Calendar.current.startOfHour(
+        for: Date() + 3600
+    ) // Starts with the start of the following hour
+    
+    var entries = [PriceWidgetEntry]()
+    while hourCounter <= rotationTime {
+        entries.append(PriceWidgetEntry(date: hourCounter))
+        hourCounter += stepSeconds
+    }
+    
+    return entries
+}
+
 func getNewPriceTimeline(
     in context: TimelineProviderContext,
     completion: @escaping (Timeline<PriceWidgetEntry>) -> ()
@@ -86,16 +102,16 @@ func getNewPriceTimeline(
     // Get current persistently stored settings
     let persistence = PersistenceManager()
     let setting = CurrentSetting(managedObjectContext: persistence.persistentContainer.viewContext)
-    var energyData = getCurrentEnergyData(setting)
+    let energyData = getCurrentEnergyData(setting)
     let rotationTime = getTimeZoneTime(hour: 12, minute: 0, second: 0, fromTimeZone: "Europe/Berlin") // Set time after which AWattPrice should check for new energy data.
     let needToCheckForNewData = needToCheckForNewData(basedOn: energyData, withRotationTime: rotationTime)
 
-    var entries = [PriceWidgetEntry]()
-    let timeline: Timeline<PriceWidgetEntry>? = nil
+    var timeline: Timeline<PriceWidgetEntry>? = nil
     if needToCheckForNewData {
         
     } else {
-        timeline = timelineUntilNextRotationTime(rotationTime)
+        let entries = priceEntriesUntilNextRoatationTime(withStepSeconds: 3600, rotationTime)
+        timeline = Timeline(entries: entries, policy: .atEnd)
     }
     
     completion(timeline!)

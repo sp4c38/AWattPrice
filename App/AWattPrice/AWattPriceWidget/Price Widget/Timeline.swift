@@ -102,10 +102,14 @@ fileprivate func priceEntriesUntilNextRoatationTime(
 
 
 struct Rotation {
+    // The hour, minute, second from which on to check for new price data.
     var hour: Int
     var minute: Int
     var second: Int = 0
+    // If now < rotation hour or there already is new data for the following day, entries are created, apart of each other in this time interval.
     var stepSeconds: TimeInterval
+    // Time interval in which entries are created apart from each other when now > rotation hour and no new data for the following day exists.
+    var updateStepSeconds: TimeInterval
     var rotationDate: Date? = nil
 }
 
@@ -119,12 +123,17 @@ fileprivate func checkStepAndRotationValid(_ rotation: Rotation) -> Bool {
     }
 }
 
-fileprivate func priceEntriesForCheckNewData() -> [PriceWidgetEntry] {
+fileprivate func priceEntriesForCheckNewData(_ rotation: Rotation) -> [PriceWidgetEntry] {
+    guard let rotationDate = rotation.rotationDate else { return [] }
     var entries = [PriceWidgetEntry]()
-    
-    let now = Date()
-    let nowMinutes = Calendar.current.component(.minute, from: now)
-    
+
+    var secondCounter: TimeInterval = 10
+    while (3600 / secondCounter) >= 1 {
+        let newEntry = PriceWidgetEntry(date: rotationDate + secondCounter)
+        entries.append(newEntry)
+        
+        secondCounter += rotation.updateStepSeconds
+    }
     
     return entries
 }
@@ -160,21 +169,23 @@ func getNewPriceTimeline(
     
     var timelineErrors = [TimeLineError]()
     
-    var cetRotation: Rotation = Rotation(hour: 13, minute: 0, stepSeconds: 3600) // The hour, minute (in CET/CEST timezone) after which to check for new price data. If now < rotationHour or there already is new data for the following day, entries are created, apart of each other in the set step second interval.
-    if checkStepAndRotationValid(cetRotation) == false {
+    var rotation: Rotation = Rotation(
+        hour: 13, minute: 0, stepSeconds: 3600, updateStepSeconds: 600
+    )
+    if checkStepAndRotationValid(rotation) == false {
         timelineErrors.append(.stepAndRotationHourNotValid)
     }
     
     var timeline: Timeline<PriceWidgetEntry>? = nil
     if timelineErrors.isEmpty {
-        cetRotation.rotationDate = getTimeZoneTime(for: cetRotation, fromTimeZone: "Europe/Berlin") // Set time after which AWattPrice should check for new energy data.
-        let needToCheckForNewData = needToCheckForNewData(basedOn: energyData, cetRotation)
+        rotation.rotationDate = getTimeZoneTime(for: rotation, fromTimeZone: "Europe/Berlin") // Set time after which AWattPrice should check for new energy data.
+        let needToCheckForNewData = needToCheckForNewData(basedOn: energyData, rotation)
 
         var entries: [PriceWidgetEntry]? = nil
         if needToCheckForNewData {
-            entries = priceEntriesForCheckNewData()
+            entries = priceEntriesForCheckNewData(rotation)
         } else {
-            entries = priceEntriesUntilNextRoatationTime(cetRotation)
+            entries = priceEntriesUntilNextRoatationTime(rotation)
         }
         timeline = Timeline(entries: entries!, policy: .atEnd)
     } else {

@@ -5,7 +5,7 @@
 //  Created by Léon Becker on 09.02.21.
 //
 
-import Foundation
+import SwiftUI
 
 extension View {
     /// Hides the keyboard from the screen

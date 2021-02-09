@@ -63,13 +63,15 @@ fileprivate func priceEntriesUntilNextRoatationTime(
     _ rotation: Rotation
 ) -> [PriceWidgetEntry] {
     guard let rotationTime = rotation.rotationDate else { return [] }
+    let tomorrowRotationTime = rotationTime + 86400
+    
     var entries = [PriceWidgetEntry]()
     
     var hourCounter = Calendar.current.startOfHour(
         for: Date() + 3600
     ) // Starts with the start of the following hour
     
-    while hourCounter <= rotationTime {
+    while hourCounter <= tomorrowRotationTime {
         entries.append(PriceWidgetEntry(date: hourCounter))
         hourCounter += rotation.noUpdateStepSeconds
     }
@@ -88,7 +90,7 @@ struct Rotation {
     var updateStepSeconds: TimeInterval
     // If now < rotation hour or there already is new data for the following day, entries are created, apart of each other in this time interval.
     var noUpdateStepSeconds: TimeInterval
-    var rotationDate: Date? = nil
+    var rotationDate: Date? = nil // Todays (based on timezoneID) rotation time
 }
 
 fileprivate func checkStepAndRotationValid(_ rotation: Rotation) -> Bool {
@@ -102,16 +104,9 @@ fileprivate func checkStepAndRotationValid(_ rotation: Rotation) -> Bool {
 }
 
 fileprivate func priceEntriesForCheckNewData(_ rotation: Rotation) -> [PriceWidgetEntry] {
-    guard let rotationDate = rotation.rotationDate else { return [] }
-    var entries = [PriceWidgetEntry]()
-
-    var secondCounter: TimeInterval = 10
-    while (3600 / secondCounter) >= 1 {
-        let newEntry = PriceWidgetEntry(date: rotationDate + secondCounter)
-        entries.append(newEntry)
-        
-        secondCounter += rotation.updateStepSeconds
-    }
+    let entries = [
+        PriceWidgetEntry(date: Date() + rotation.updateStepSeconds)
+    ]
     
     return entries
 }
@@ -145,7 +140,8 @@ func getNewPriceTimeline(
     let energyData = getCurrentEnergyData(setting)
     
     var rotation: Rotation = Rotation(
-        hour: 13, minute: 0, second: 0, timezoneID: "Europe/Berlin", updateStepSeconds: 600, noUpdateStepSeconds: 3600
+        hour: 13, minute: 0, second: 0, timezoneID: "Europe/Berlin", updateStepSeconds: 600,
+        noUpdateStepSeconds: 3600
     )
     
     var timelineErrors = [TimeLineError]()

@@ -103,7 +103,7 @@
 		61C963A7251E2032001B3E3C /* CheapestTimeClockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61C963A6251E2032001B3E3C /* CheapestTimeClockView.swift */; };
 		61CD719825D27E91009E51AD /* TimeZoneTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61CD719725D27E91009E51AD /* TimeZoneTime.swift */; };
 		61CD719925D29DC7009E51AD /* TimeZoneTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61CD719725D27E91009E51AD /* TimeZoneTime.swift */; };
-		61CD71A025D29EE8009E51AD /* General.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61CD719F25D29EE8009E51AD /* General.swift */; };
+		61CD71A025D29EE8009E51AD /* GeneralAWattPrice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61CD719F25D29EE8009E51AD /* GeneralAWattPrice.swift */; };
 		61CD71A125D29F1B009E51AD /* General.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61D88C0A2545EF9800DA2088 /* General.swift */; };
 		61D1051E25CF2C0300E44883 /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6154C51E25CE97A700A1304E /* Helpers.swift */; };
 		61D1052325CF2C1600E44883 /* AutoUpdatingEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617DF0322594B573004BF4E2 /* AutoUpdatingEntity.swift */; };
@@ -255,7 +255,7 @@
 		61C551C425C737C400E1CB0F /* Font.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Font.swift; sourceTree = "<group>"; };
 		61C963A6251E2032001B3E3C /* CheapestTimeClockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheapestTimeClockView.swift; sourceTree = "<group>"; };
 		61CD719725D27E91009E51AD /* TimeZoneTime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeZoneTime.swift; sourceTree = "<group>"; };
-		61CD719F25D29EE8009E51AD /* General.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = General.swift; sourceTree = "<group>"; };
+		61CD719F25D29EE8009E51AD /* GeneralAWattPrice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralAWattPrice.swift; sourceTree = "<group>"; };
 		61D1053125CF2CA800E44883 /* Model 3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Model 3.xcdatamodel"; sourceTree = "<group>"; };
 		61D11F4325CC386200E2A168 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		61D196E42507F58D00E57BAC /* EnergyPriceGraph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnergyPriceGraph.swift; sourceTree = "<group>"; };
@@ -702,7 +702,7 @@
 		61CD719E25D29ED6009E51AD /* Only AWattPrice */ = {
 			isa = PBXGroup;
 			children = (
-				61CD719F25D29EE8009E51AD /* General.swift */,
+				61CD719F25D29EE8009E51AD /* GeneralAWattPrice.swift */,
 			);
 			path = "Only AWattPrice";
 			sourceTree = "<group>";
@@ -984,7 +984,7 @@
 				6156A579250C2161005174A5 /* SettingsPageView.swift in Sources */,
 				61286F0C25ABBCF300CE1D61 /* Environment.swift in Sources */,
 				6166E93B25C5812000281830 /* NetworkManager.swift in Sources */,
-				61CD71A025D29EE8009E51AD /* General.swift in Sources */,
+				61CD71A025D29EE8009E51AD /* GeneralAWattPrice.swift in Sources */,
 				61B9F61A2598EB0200C14690 /* BarText.swift in Sources */,
 				61200EC3253A050700A104B1 /* SplashScreenStartView.swift in Sources */,
 				61190591256081E8007C04D3 /* EnergyPriceSingleBar.swift in Sources */,

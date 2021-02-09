@@ -9,6 +9,17 @@
 
 import SwiftUI
 
+extension View {
+    /// Applies modifiers only than to the content if a conditional evaluates to true
+    @ViewBuilder func ifTrue<Content: View>(_ conditional: Bool, content: (Self) -> Content) -> some View {
+        if conditional {
+            content(self)
+        } else {
+            self
+        }
+    }
+}
+
 // AnyTransition extensions
 extension AnyTransition {
     /// A transition used for presenting a view with extra information to the screen.

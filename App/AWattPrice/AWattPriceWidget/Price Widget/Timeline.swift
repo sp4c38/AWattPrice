@@ -38,29 +38,6 @@ fileprivate func getCurrentEnergyData(_ setting: CurrentSetting) -> EnergyData {
     return energyData
 }
 
-func getTimeZoneTime(for rotation: Rotation, fromTimeZone timeZone: String) -> Date {
-    let timeComponentFormatter = NumberFormatter()
-    timeComponentFormatter.maximumIntegerDigits = 2
-    let hourString = timeComponentFormatter.string(from: NSNumber(value: rotation.hour)) ?? "00"
-    let minuteString = timeComponentFormatter.string(from: NSNumber(value: rotation.minute)) ?? "00"
-    let secondString = timeComponentFormatter.string(from: NSNumber(value: rotation.second)) ?? "00"
-    
-    let isoDateFormatter = DateFormatter()
-    isoDateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZZZZZ"
-    isoDateFormatter.timeZone = TimeZone(identifier: "Europe/Berlin")
-    let nowBerlinISO = isoDateFormatter.string(from: Date())
-    
-    let noonTimeDate = nowBerlinISO.prefix(11)
-    let noonTimeTime = "\(hourString):\(minuteString):\(secondString)"
-    let noonTimeTimezone = nowBerlinISO.suffix(6)
-    let noonTimeZoneISO = String(noonTimeDate + noonTimeTime + noonTimeTimezone)
-    
-    let noonDateFormatter = DateFormatter()
-    noonDateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZZZZZ"
-    let noon = noonDateFormatter.date(from: noonTimeZoneISO)
-    return noon!
-}
-
 /// Returns bool indicating if the app/widget should check for new data in near future.
 fileprivate func needToCheckForNewData(basedOn energyData: EnergyData, _ rotation: Rotation) -> Bool {
     guard let lastItemStart = energyData.prices.last?.startTimestamp else { return true }
@@ -94,7 +71,7 @@ fileprivate func priceEntriesUntilNextRoatationTime(
     
     while hourCounter <= rotationTime {
         entries.append(PriceWidgetEntry(date: hourCounter))
-        hourCounter += rotation.stepSeconds
+        hourCounter += rotation.noUpdateStepSeconds
     }
     
     return entries
@@ -105,17 +82,18 @@ struct Rotation {
     // The hour, minute, second from which on to check for new price data.
     var hour: Int
     var minute: Int
-    var second: Int = 0
-    // If now < rotation hour or there already is new data for the following day, entries are created, apart of each other in this time interval.
-    var stepSeconds: TimeInterval
+    var second: Int
+    var timezoneID: String
     // Time interval in which entries are created apart from each other when now > rotation hour and no new data for the following day exists.
     var updateStepSeconds: TimeInterval
+    // If now < rotation hour or there already is new data for the following day, entries are created, apart of each other in this time interval.
+    var noUpdateStepSeconds: TimeInterval
     var rotationDate: Date? = nil
 }
 
 fileprivate func checkStepAndRotationValid(_ rotation: Rotation) -> Bool {
     let rotationHourSeconds = rotation.hour * 60 * 60
-    let rotationRemainder = rotationHourSeconds % Int(rotation.stepSeconds)
+    let rotationRemainder = rotationHourSeconds % Int(rotation.noUpdateStepSeconds)
     if rotationRemainder != 0 {
         return false
     } else {
@@ -162,39 +140,40 @@ func getNewPriceTimeline(
     in context: TimelineProviderContext,
     completion: @escaping (Timeline<PriceWidgetEntry>) -> ()
 ) {
-    // Get current persistently stored settings
     let persistence = PersistenceManager()
     let setting = CurrentSetting(managedObjectContext: persistence.persistentContainer.viewContext)
     let energyData = getCurrentEnergyData(setting)
     
-    var timelineErrors = [TimeLineError]()
-    
     var rotation: Rotation = Rotation(
-        hour: 13, minute: 0, stepSeconds: 3600, updateStepSeconds: 600
+        hour: 13, minute: 0, second: 0, timezoneID: "Europe/Berlin", updateStepSeconds: 600, noUpdateStepSeconds: 3600
     )
+    
+    var timelineErrors = [TimeLineError]()
     if checkStepAndRotationValid(rotation) == false {
         timelineErrors.append(.stepAndRotationHourNotValid)
     }
     
     var timeline: Timeline<PriceWidgetEntry>? = nil
     if timelineErrors.isEmpty {
-        rotation.rotationDate = getTimeZoneTime(for: rotation, fromTimeZone: "Europe/Berlin") // Set time after which AWattPrice should check for new energy data.
+        rotation.rotationDate = getTimeZoneTimeBySetting(
+            hour: rotation.hour, minute: rotation.minute, second: rotation.second, usingTimeZone: rotation.timezoneID
+        ) // Set time after which AWattPrice should check for new energy data.
         let needToCheckForNewData = needToCheckForNewData(basedOn: energyData, rotation)
 
         var entries: [PriceWidgetEntry]? = nil
         if needToCheckForNewData {
-            print("Getting price entries, knowing that new price data will soon be available.")
+            logger.debug("Getting price entries, knowing that new price data will soon be available.")
             entries = priceEntriesForCheckNewData(rotation)
         } else {
             logger.debug("Getting price entries until next rotation time.")
             entries = priceEntriesUntilNextRoatationTime(rotation)
         }
         timeline = Timeline(entries: entries!, policy: .atEnd)
+        print(timeline)
     } else {
         logger.error("Timeline errors occurred: \(timelineErrors).")
         timeline = getTimeLineWhenErrors(timelineErrors)
     }
-    completion(timeline!)
     
-    return
+    completion(timeline!)
 }

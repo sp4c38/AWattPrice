@@ -115,7 +115,7 @@ struct Rotation {
 
 fileprivate func checkStepAndRotationValid(_ rotation: Rotation) -> Bool {
     let rotationHourSeconds = rotation.hour * 60 * 60
-    let rotationRemainder = Int(rotation.stepSeconds) % rotationHourSeconds
+    let rotationRemainder = rotationHourSeconds % Int(rotation.stepSeconds)
     if rotationRemainder != 0 {
         return false
     } else {
@@ -183,15 +183,17 @@ func getNewPriceTimeline(
 
         var entries: [PriceWidgetEntry]? = nil
         if needToCheckForNewData {
+            print("Getting price entries, knowing that new price data will soon be available.")
             entries = priceEntriesForCheckNewData(rotation)
         } else {
+            logger.debug("Getting price entries until next rotation time.")
             entries = priceEntriesUntilNextRoatationTime(rotation)
         }
         timeline = Timeline(entries: entries!, policy: .atEnd)
     } else {
+        logger.error("Timeline errors occurred: \(timelineErrors).")
         timeline = getTimeLineWhenErrors(timelineErrors)
     }
-    
     completion(timeline!)
     
     return

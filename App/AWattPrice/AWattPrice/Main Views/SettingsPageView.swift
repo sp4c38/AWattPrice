@@ -8,12 +8,10 @@
 import SceneKit
 import SwiftUI
 
-/// A place for the user to modify certain settings. Those changes are automatically stored (if modified) in persistent storage.
+/// A place for the user to modify certain settings.
 struct SettingsPageView: View {
-    @Environment(\.scenePhase) var scenePhase
     @EnvironmentObject var crtNotifiSetting: CurrentNotificationSetting
     @EnvironmentObject var currentSetting: CurrentSetting
-    @EnvironmentObject var tabBarItems: TBItems
 
     var body: some View {
         NavigationView {

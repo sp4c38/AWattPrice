@@ -141,7 +141,11 @@ struct GetHelpView: View {
     var body: some View {
         CustomInsetGroupedListItem {
             HStack(spacing: 0) {
-                NavigationLink("", destination: HelpAndSuggestionView(), tag: 1, selection: $redirectToHelpAndSuggestionView)
+                NavigationLink(
+                    destination: LazyNavigationDestination(HelpAndSuggestionView()),
+                    tag: 1,
+                    selection: $redirectToHelpAndSuggestionView
+                ) {}
                     .frame(width: 0, height: 0)
                     .hidden()
 

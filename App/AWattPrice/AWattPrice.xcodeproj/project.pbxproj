@@ -105,6 +105,7 @@
 		61CD719925D29DC7009E51AD /* TimeZoneTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61CD719725D27E91009E51AD /* TimeZoneTime.swift */; };
 		61CD71A025D29EE8009E51AD /* GeneralAWattPrice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61CD719F25D29EE8009E51AD /* GeneralAWattPrice.swift */; };
 		61CD71A125D29F1B009E51AD /* General.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61D88C0A2545EF9800DA2088 /* General.swift */; };
+		61CD71A425D2E295009E51AD /* LazyNavigationDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61CD71A325D2E295009E51AD /* LazyNavigationDestination.swift */; };
 		61D1051E25CF2C0300E44883 /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6154C51E25CE97A700A1304E /* Helpers.swift */; };
 		61D1052325CF2C1600E44883 /* AutoUpdatingEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617DF0322594B573004BF4E2 /* AutoUpdatingEntity.swift */; };
 		61D1052825CF2C2000E44883 /* CurrentSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 618AF8612593F82600E21583 /* CurrentSetting.swift */; };
@@ -256,6 +257,7 @@
 		61C963A6251E2032001B3E3C /* CheapestTimeClockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheapestTimeClockView.swift; sourceTree = "<group>"; };
 		61CD719725D27E91009E51AD /* TimeZoneTime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeZoneTime.swift; sourceTree = "<group>"; };
 		61CD719F25D29EE8009E51AD /* GeneralAWattPrice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralAWattPrice.swift; sourceTree = "<group>"; };
+		61CD71A325D2E295009E51AD /* LazyNavigationDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LazyNavigationDestination.swift; sourceTree = "<group>"; };
 		61D1053125CF2CA800E44883 /* Model 3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Model 3.xcdatamodel"; sourceTree = "<group>"; };
 		61D11F4325CC386200E2A168 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		61D196E42507F58D00E57BAC /* EnergyPriceGraph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnergyPriceGraph.swift; sourceTree = "<group>"; };
@@ -505,6 +507,7 @@
 				61AA2D5D254DA4CD00C13D42 /* CustomInsetGroupedList.swift */,
 				6164ED39258E11BD00F706DE /* NumberField.swift */,
 				61D57124256DAA2300EA69C7 /* CustomDatePicker.swift */,
+				61CD71A325D2E295009E51AD /* LazyNavigationDestination.swift */,
 				61658DAF25B5AF6C0083D25A /* EasyTimeIntervalPicker */,
 			);
 			path = "Custom views ";
@@ -1001,6 +1004,7 @@
 				61936FC825BACDDF00D60BC5 /* BackendCommunicator.swift in Sources */,
 				613F269825CBDE9A0038A211 /* TBItems.swift in Sources */,
 				617D85B425052C35009E18FB /* HomeView.swift in Sources */,
+				61CD71A425D2E295009E51AD /* LazyNavigationDestination.swift in Sources */,
 				611D15AF251680B9000691C6 /* CheapestTimeView.swift in Sources */,
 				617DF01D2594AA1D004BF4E2 /* NotificationSetting+CoreDataProperties.swift in Sources */,
 				617D85B225052C35009E18FB /* AwattarApp.swift in Sources */,

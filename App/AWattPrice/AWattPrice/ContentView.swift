@@ -29,7 +29,6 @@ struct ContentView: View {
                         ZStack {
                             SettingsPageView()
                                 .opacity(tabBarItems.selectedItemIndex == 0 ? 1 : 0)
-                                .environmentObject(tabBarItems)
 
                             HomeView()
                                 .opacity(tabBarItems.selectedItemIndex == 1 ? 1 : 0)
@@ -49,7 +48,9 @@ struct ContentView: View {
                 .onAppear {
                     // Check Notification access
                     if currentSetting.entity!.showWhatsNew == false && currentSetting.entity!.splashScreensFinished == true {
-                        managePushNotificationsOnAppAppear(notificationAccessRepresentable: notificationAccess, registerForRemoteNotifications: true) {}
+                        managePushNotificationsOnAppAppear(
+                            notificationAccessRepresentable: notificationAccess, registerForRemoteNotifications: true
+                        ) {}
                     }
                     initialAppearFinished = nil
                 }

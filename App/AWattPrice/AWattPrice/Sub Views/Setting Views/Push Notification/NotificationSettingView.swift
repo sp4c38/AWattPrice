@@ -56,12 +56,16 @@ struct GoToNotificationSettingView: View {
     @EnvironmentObject var crtNotifiSetting: CurrentNotificationSetting
     @EnvironmentObject var currentSetting: CurrentSetting
 
-    @State var redirectToNotificationPage: Int? = nil
+    @State var redirectToNotificationPage: Int? = 0
 
     var body: some View {
         CustomInsetGroupedListItem(
         ) {
-            NavigationLink("", destination: NotificationSettingView(), tag: 1, selection: $redirectToNotificationPage)
+            NavigationLink(
+                destination: LazyNavigationDestination(NotificationSettingView()),
+                tag: 1,
+                selection: $redirectToNotificationPage
+            ) {}
                 .frame(width: 0, height: 0)
                 .hidden()
 

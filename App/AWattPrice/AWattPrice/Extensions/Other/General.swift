@@ -9,24 +9,6 @@
 
 import SwiftUI
 
-extension View {
-    /// Hides the keyboard from the screen
-    func hideKeyboard() {
-        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-    }
-}
-
-extension View {
-    /// Applies modifiers only than to the content if a conditional evaluates to true
-    @ViewBuilder func ifTrue<Content: View>(_ conditional: Bool, content: (Self) -> Content) -> some View {
-        if conditional {
-            content(self)
-        } else {
-            self
-        }
-    }
-}
-
 // AnyTransition extensions
 extension AnyTransition {
     /// A transition used for presenting a view with extra information to the screen.
@@ -108,6 +90,17 @@ extension String {
         NSLocalizedString(self, comment: "")
     }
 }
+
+extension String {
+    func part(inRange range: Range<Int>) -> String {
+        let start = index(startIndex, offsetBy: range.lowerBound)
+        let end = index(startIndex, offsetBy: range.upperBound)
+        
+        let range = start..<end
+        return String(self[range])
+    }
+}
+
 
 extension Double {
     var priceString: String? {

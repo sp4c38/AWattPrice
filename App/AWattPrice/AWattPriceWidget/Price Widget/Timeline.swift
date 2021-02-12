@@ -165,7 +165,6 @@ func getNewPriceTimeline(
             entries = priceEntriesUntilNextRoatationTime(rotation)
         }
         timeline = Timeline(entries: entries!, policy: .atEnd)
-        print(timeline)
     } else {
         logger.error("Timeline errors occurred: \(timelineErrors).")
         timeline = getTimeLineWhenErrors(timelineErrors)

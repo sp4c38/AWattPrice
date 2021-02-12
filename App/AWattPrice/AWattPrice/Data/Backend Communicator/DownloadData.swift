@@ -79,47 +79,6 @@ extension EnergyData: Decodable {
 
 extension BackendCommunicator {
     // Download methods
-
-    /// Runs the tasks asynchronous if runAsync is true. If not the tasks will be ran synchronous. All tasks are run in in the specified run queue (for example: main queue, the global queue with qos background).
-    internal func runQueueSyncOrAsync(
-        _ runQueue: DispatchQueue,
-        _ runAsync: Bool,
-        deadlineIfAsync: DispatchTime? = nil,
-        tasks: @escaping () -> ()
-    ) {
-        if runAsync {
-            if deadlineIfAsync != nil {
-                runQueue.asyncAfter(deadline: deadlineIfAsync!) {
-                    tasks()
-                }
-            } else {
-                runQueue.async {
-                    tasks()
-                }
-            }
-        } else {
-            runQueue.sync {
-                tasks()
-            }
-        }
-    }
-    
-    /// Will run the tasks (synchronous or asynchronous) in the specified run queue if the condition is true. Therefor the function runQueueSyncOrAsync is used in the background. If the condition is false the tasks will be ran synchronous in the current queue.
-    internal func runInQueueIf(
-        isTrue condition: Bool,
-        in runQueue: DispatchQueue,
-        runAsync: Bool,
-        withDeadlineIfAsync: DispatchTime? = nil,
-        tasks: @escaping () -> ()
-    ) {
-        if condition {
-            runQueueSyncOrAsync(runQueue, runAsync, deadlineIfAsync: withDeadlineIfAsync) {
-                tasks()
-            }
-        } else {
-            tasks()
-        }
-    }
     
     /// Downloads the newest aWATTar data
     func download(
@@ -160,7 +119,7 @@ extension BackendCommunicator {
             } else {
                 logger.notice("Data retrieval error after trying to reach server (e.g.: server could be offline).")
                 if error != nil {
-                    self.runInQueueIf(isTrue: runAsync, in: DispatchQueue.main, runAsync: runAsync) {
+                runInQueueIf(isTrue: runAsync, in: DispatchQueue.main, runAsync: runAsync) {
                         withAnimation {
                             self.dataRetrievalError = true
                         }
@@ -168,16 +127,16 @@ extension BackendCommunicator {
                 }
             }
 
-            self.runInQueueIf(isTrue: runAsync, in: DispatchQueue.main, runAsync: runAsync) {
+            runInQueueIf(isTrue: runAsync, in: DispatchQueue.main, runAsync: runAsync) {
                 if dataComesFromCache == true, networkManager.monitorer.currentPath.status == .unsatisfied {
                     self.dataRetrievalError = true
                 }
 
                 if !self.dataRetrievalError {
                     self.dateDataLastUpdated = Date()
-                    self.runQueueSyncOrAsync(DispatchQueue.global(qos: .background), runAsync) {
+                    runQueueSyncOrAsync(DispatchQueue.global(qos: .background), runAsync) {
                         var newEnergyData: EnergyData? = nil
-                        self.runInQueueIf(isTrue: runAsync, in: DispatchQueue.main, runAsync: false) {
+                        runInQueueIf(isTrue: runAsync, in: DispatchQueue.main, runAsync: false) {
                             newEnergyData = self.energyData
                         }
                         self.checkAndStoreDataToAppGroup(appGroupManager, newEnergyData)
@@ -185,7 +144,7 @@ extension BackendCommunicator {
                 }
 
                 if Date().timeIntervalSince(beforeTime) < 0.6 {
-                    self.runInQueueIf(
+                    runInQueueIf(
                         isTrue: runAsync,
                         in: DispatchQueue.main,
                         runAsync: true,
@@ -258,7 +217,7 @@ extension BackendCommunicator {
 
             let currentEnergyData = EnergyData(prices: usedPricesDecodedData, minPrice: minPrice ?? 0, maxPrice: maxPrice ?? 0)
 
-            self.runInQueueIf(isTrue: runAsync, in: DispatchQueue.main, runAsync: runAsync) {
+            runInQueueIf(isTrue: runAsync, in: DispatchQueue.main, runAsync: runAsync) {
                 if currentEnergyData.prices.isEmpty {
                     logger.notice("No prices can be displayed: either there are none or they are outdated.")
                     withAnimation {
@@ -272,7 +231,7 @@ extension BackendCommunicator {
             }
         } catch {
             logger.error("Could not decode returned JSON data from server.")
-            self.runInQueueIf(isTrue: runAsync, in: DispatchQueue.main, runAsync: runAsync) {
+            runInQueueIf(isTrue: runAsync, in: DispatchQueue.main, runAsync: runAsync) {
                 withAnimation {
                     self.dataRetrievalError = true
                 }

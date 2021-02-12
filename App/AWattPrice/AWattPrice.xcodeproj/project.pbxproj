@@ -42,6 +42,9 @@
 		614E784D25068F6100A7ED83 /* DownloadData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 614E784C25068F6100A7ED83 /* DownloadData.swift */; };
 		615468532520D214004FBEF7 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 615468552520D214004FBEF7 /* Localizable.strings */; };
 		6154C51F25CE97A700A1304E /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6154C51E25CE97A700A1304E /* Helpers.swift */; };
+		615609E925D6772800A5CDAD /* QueueHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 615609E825D6772800A5CDAD /* QueueHelpers.swift */; };
+		615609EC25D6775A00A5CDAD /* KeyboardObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6164ED26258D4B8E00F706DE /* KeyboardObserver.swift */; };
+		615609ED25D677ED00A5CDAD /* QueueHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 615609E825D6772800A5CDAD /* QueueHelpers.swift */; };
 		6156A573250C1F04005174A5 /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 6156A571250C1F04005174A5 /* Model.xcdatamodeld */; };
 		6156A576250C1F5E005174A5 /* Setting+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6156A574250C1F5E005174A5 /* Setting+CoreDataClass.swift */; };
 		6156A577250C1F5E005174A5 /* Setting+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6156A575250C1F5E005174A5 /* Setting+CoreDataProperties.swift */; };
@@ -188,6 +191,7 @@
 		615468542520D214004FBEF7 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		615468592520D223004FBEF7 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
 		6154C51E25CE97A700A1304E /* Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
+		615609E825D6772800A5CDAD /* QueueHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueueHelpers.swift; sourceTree = "<group>"; };
 		6156A572250C1F04005174A5 /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
 		6156A574250C1F5E005174A5 /* Setting+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Setting+CoreDataClass.swift"; sourceTree = "<group>"; };
 		6156A575250C1F5E005174A5 /* Setting+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Setting+CoreDataProperties.swift"; sourceTree = "<group>"; };
@@ -417,6 +421,23 @@
 			path = "Sub Views";
 			sourceTree = "<group>";
 		};
+		615609EA25D6773A00A5CDAD /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				615609E825D6772800A5CDAD /* QueueHelpers.swift */,
+			);
+			path = Helpers;
+			sourceTree = "<group>";
+		};
+		615609EB25D6774E00A5CDAD /* Managers */ = {
+			isa = PBXGroup;
+			children = (
+				6166E93A25C5812000281830 /* NetworkManager.swift */,
+				6164ED26258D4B8E00F706DE /* KeyboardObserver.swift */,
+			);
+			path = Managers;
+			sourceTree = "<group>";
+		};
 		61658DAF25B5AF6C0083D25A /* EasyTimeIntervalPicker */ = {
 			isa = PBXGroup;
 			children = (
@@ -492,13 +513,13 @@
 			path = "Input fields";
 			sourceTree = "<group>";
 		};
-		616836C3259A4DB400E91748 /* Formatter */ = {
+		616836C3259A4DB400E91748 /* Formatters */ = {
 			isa = PBXGroup;
 			children = (
 				6164ED41258E952F00F706DE /* TotalTimeFormatter.swift */,
 				614C55822573D421009B5241 /* UpdateDataTimeFormatter.swift */,
 			);
-			path = Formatter;
+			path = Formatters;
 			sourceTree = "<group>";
 		};
 		616836C4259A4DC600E91748 /* Custom views  */ = {
@@ -592,7 +613,9 @@
 			children = (
 				61CD719E25D29ED6009E51AD /* Only AWattPrice */,
 				616836C4259A4DC600E91748 /* Custom views  */,
-				616836C3259A4DB400E91748 /* Formatter */,
+				616836C3259A4DB400E91748 /* Formatters */,
+				615609EA25D6773A00A5CDAD /* Helpers */,
+				615609EB25D6774E00A5CDAD /* Managers */,
 				61C551CF25C738CD00E1CB0F /* Other */,
 				613F269425CBDE9A0038A211 /* TabBar */,
 			);
@@ -690,9 +713,7 @@
 		61C551CF25C738CD00E1CB0F /* Other */ = {
 			isa = PBXGroup;
 			children = (
-				6166E93A25C5812000281830 /* NetworkManager.swift */,
 				61E0ACC725BB13800011B0A1 /* HapticFeedbacks.swift */,
-				6164ED26258D4B8E00F706DE /* KeyboardObserver.swift */,
 				610BC1E725D14DAE00699EF9 /* Calendar.swift */,
 				61D88C0A2545EF9800DA2088 /* General.swift */,
 				61C551C425C737C400E1CB0F /* Font.swift */,
@@ -919,6 +940,7 @@
 				610BC1E925D14DB300699EF9 /* Calendar.swift in Sources */,
 				6166E92B25C580AA00281830 /* BackendCommunicator.swift in Sources */,
 				613F272825CBFAA20038A211 /* NotificationSetting+CoreDataProperties.swift in Sources */,
+				615609EC25D6775A00A5CDAD /* KeyboardObserver.swift in Sources */,
 				6166E99625C5D90500281830 /* GraphTextView.swift in Sources */,
 				6166E9CB25C69FCD00281830 /* AppGroupManager.swift in Sources */,
 				6166E97E25C59AA900281830 /* GraphHelpers.swift in Sources */,
@@ -928,6 +950,7 @@
 				613F272625CBFAA20038A211 /* Setting+CoreDataProperties.swift in Sources */,
 				61D1052825CF2C2000E44883 /* CurrentSetting.swift in Sources */,
 				613F272725CBFAA20038A211 /* NotificationSetting+CoreDataClass.swift in Sources */,
+				615609ED25D677ED00A5CDAD /* QueueHelpers.swift in Sources */,
 				6166E89725C5737400281830 /* PriceWidget.swift in Sources */,
 				6166E8CF25C57B7600281830 /* WidgetBundle.swift in Sources */,
 				6166E93025C580AC00281830 /* DownloadData.swift in Sources */,
@@ -994,6 +1017,7 @@
 				61C963A7251E2032001B3E3C /* CheapestTimeClockView.swift in Sources */,
 				61BA0A592548764400951321 /* MailView.swift in Sources */,
 				617DF0242594AAF5004BF4E2 /* NotificationSetting.swift in Sources */,
+				615609E925D6772800A5CDAD /* QueueHelpers.swift in Sources */,
 				6191FF8F258D0CAF00C31D63 /* NotAffiliatedView.swift in Sources */,
 				61EC1C08254B41D800324ADA /* AwattarTariffSelectionSettings.swift in Sources */,
 				61813291258A4B56007FC6F2 /* SplashScreenFinishView.swift in Sources */,

@@ -62,7 +62,7 @@ extension EnergyData: Decodable {
 }
 
 extension BackendCommunicator {
-    internal func handleNonSuccessfulDownload(_ runAsync: Bool) {
+    private func handleNonSuccessfulDownload(_ runAsync: Bool) {
         logger.error("Could not decode returned JSON data from server.")
         runInQueueIf(isTrue: runAsync, in: DispatchQueue.main, runAsync: runAsync) {
             withAnimation {
@@ -71,7 +71,7 @@ extension BackendCommunicator {
         }
     }
     
-    internal func parseMarketprice(_ marketprice: Double) -> Double {
+    private func parseMarketprice(_ marketprice: Double) -> Double {
         var newMarketprice: Double = (marketprice * 100).rounded() / 100 // Round to two decimal places
 
         if marketprice.sign == .minus && marketprice == 0 {
@@ -80,7 +80,7 @@ extension BackendCommunicator {
         return newMarketprice
     }
     
-    internal func getNewMinMaxPrices(
+    private func getNewMinMaxPrices(
         _ marketprice: Double, _ minPrice: Double, _ maxPrice: Double
     ) -> (Double, Double) {
         var newMinPrice = minPrice

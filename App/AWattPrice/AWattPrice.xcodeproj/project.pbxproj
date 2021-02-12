@@ -45,6 +45,10 @@
 		615609E925D6772800A5CDAD /* QueueHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 615609E825D6772800A5CDAD /* QueueHelpers.swift */; };
 		615609EC25D6775A00A5CDAD /* KeyboardObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6164ED26258D4B8E00F706DE /* KeyboardObserver.swift */; };
 		615609ED25D677ED00A5CDAD /* QueueHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 615609E825D6772800A5CDAD /* QueueHelpers.swift */; };
+		615609F025D678A400A5CDAD /* DataParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 615609EF25D678A400A5CDAD /* DataParser.swift */; };
+		615609F125D679DC00A5CDAD /* DataParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 615609EF25D678A400A5CDAD /* DataParser.swift */; };
+		615609F325D67A8600A5CDAD /* DataHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 615609F225D67A8600A5CDAD /* DataHelpers.swift */; };
+		615609F425D67B3900A5CDAD /* DataHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 615609F225D67A8600A5CDAD /* DataHelpers.swift */; };
 		6156A573250C1F04005174A5 /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 6156A571250C1F04005174A5 /* Model.xcdatamodeld */; };
 		6156A576250C1F5E005174A5 /* Setting+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6156A574250C1F5E005174A5 /* Setting+CoreDataClass.swift */; };
 		6156A577250C1F5E005174A5 /* Setting+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6156A575250C1F5E005174A5 /* Setting+CoreDataProperties.swift */; };
@@ -192,6 +196,8 @@
 		615468592520D223004FBEF7 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
 		6154C51E25CE97A700A1304E /* Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
 		615609E825D6772800A5CDAD /* QueueHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueueHelpers.swift; sourceTree = "<group>"; };
+		615609EF25D678A400A5CDAD /* DataParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataParser.swift; sourceTree = "<group>"; };
+		615609F225D67A8600A5CDAD /* DataHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataHelpers.swift; sourceTree = "<group>"; };
 		6156A572250C1F04005174A5 /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
 		6156A574250C1F5E005174A5 /* Setting+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Setting+CoreDataClass.swift"; sourceTree = "<group>"; };
 		6156A575250C1F5E005174A5 /* Setting+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Setting+CoreDataProperties.swift"; sourceTree = "<group>"; };
@@ -425,6 +431,7 @@
 			isa = PBXGroup;
 			children = (
 				615609E825D6772800A5CDAD /* QueueHelpers.swift */,
+				615609F225D67A8600A5CDAD /* DataHelpers.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -436,6 +443,15 @@
 				6164ED26258D4B8E00F706DE /* KeyboardObserver.swift */,
 			);
 			path = Managers;
+			sourceTree = "<group>";
+		};
+		615609EE25D6789400A5CDAD /* Download Data */ = {
+			isa = PBXGroup;
+			children = (
+				614E784C25068F6100A7ED83 /* DownloadData.swift */,
+				615609EF25D678A400A5CDAD /* DataParser.swift */,
+			);
+			path = "Download Data";
 			sourceTree = "<group>";
 		};
 		61658DAF25B5AF6C0083D25A /* EasyTimeIntervalPicker */ = {
@@ -676,8 +692,8 @@
 		61936FC325BACDA600D60BC5 /* Backend Communicator */ = {
 			isa = PBXGroup;
 			children = (
+				615609EE25D6789400A5CDAD /* Download Data */,
 				61936FC725BACDDF00D60BC5 /* BackendCommunicator.swift */,
-				614E784C25068F6100A7ED83 /* DownloadData.swift */,
 				6117E9D82590B52300A2B475 /* UploadAPNsTokenToServer.swift */,
 			);
 			path = "Backend Communicator";
@@ -936,6 +952,7 @@
 				61D1052325CF2C1600E44883 /* AutoUpdatingEntity.swift in Sources */,
 				61C551CA25C737EE00E1CB0F /* Font.swift in Sources */,
 				6166E95F25C5938500281830 /* GraphPoint.swift in Sources */,
+				615609F125D679DC00A5CDAD /* DataParser.swift in Sources */,
 				6166E91725C5802F00281830 /* GlobalAppSettings.swift in Sources */,
 				610BC1E925D14DB300699EF9 /* Calendar.swift in Sources */,
 				6166E92B25C580AA00281830 /* BackendCommunicator.swift in Sources */,
@@ -951,6 +968,7 @@
 				61D1052825CF2C2000E44883 /* CurrentSetting.swift in Sources */,
 				613F272725CBFAA20038A211 /* NotificationSetting+CoreDataClass.swift in Sources */,
 				615609ED25D677ED00A5CDAD /* QueueHelpers.swift in Sources */,
+				615609F425D67B3900A5CDAD /* DataHelpers.swift in Sources */,
 				6166E89725C5737400281830 /* PriceWidget.swift in Sources */,
 				6166E8CF25C57B7600281830 /* WidgetBundle.swift in Sources */,
 				6166E93025C580AC00281830 /* DownloadData.swift in Sources */,
@@ -987,6 +1005,7 @@
 				614E784D25068F6100A7ED83 /* DownloadData.swift in Sources */,
 				61260069253B0AB9009E0126 /* DataDownloadAndError.swift in Sources */,
 				610E649A2573077900C1BAD9 /* ContentView.swift in Sources */,
+				615609F025D678A400A5CDAD /* DataParser.swift in Sources */,
 				61A1367725B76D7900CB089D /* InputFieldStyles.swift in Sources */,
 				6117E9E12590B65C00A2B475 /* AppDelegate.swift in Sources */,
 				6117E9DB2590B52300A2B475 /* UploadAPNsTokenToServer.swift in Sources */,
@@ -1026,6 +1045,7 @@
 				61D57125256DAA2300EA69C7 /* CustomDatePicker.swift in Sources */,
 				6164ED42258E952F00F706DE /* TotalTimeFormatter.swift in Sources */,
 				61936FC825BACDDF00D60BC5 /* BackendCommunicator.swift in Sources */,
+				615609F325D67A8600A5CDAD /* DataHelpers.swift in Sources */,
 				613F269825CBDE9A0038A211 /* TBItems.swift in Sources */,
 				617D85B425052C35009E18FB /* HomeView.swift in Sources */,
 				61CD71A425D2E295009E51AD /* LazyNavigationDestination.swift in Sources */,

@@ -8,7 +8,7 @@
 import Network
 import WidgetKit
 
-/// Get the current energy data from the app storage. If this energy data needs to be updated or doesn't exist yet the backend is polled. If no energy data could be found at all a a empty energy data object will be returned.
+/// Get the current energy data from the app storage. If this energy data needs to be updated or doesn't exist yet the backend is polled. If no energy data could be found at all a empty energy data object will be returned.
 fileprivate func getCurrentEnergyData(_ setting: CurrentSetting) -> EnergyData {
     // Energy data with default values
     var energyData = EnergyData(prices: [], minPrice: 0, maxPrice: 0)

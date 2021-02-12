@@ -62,9 +62,9 @@ extension EnergyData: Decodable {
 }
 
 extension BackendCommunicator {
-    private func handleNonSuccessfulDownload(_ runAsync: Bool) {
+    private func handleNonSuccessfulDownload() {
         logger.error("Could not decode returned JSON data from server.")
-        runInQueueIf(isTrue: runAsync, in: DispatchQueue.main, runAsync: runAsync) {
+        DispatchQueue.main.sync {
             withAnimation {
                 self.dataRetrievalError = true
             }
@@ -96,11 +96,11 @@ extension BackendCommunicator {
         return (newMinPrice, newMaxPrice)
     }
     
-    internal func parseResponseData(_ data: Data, runAsync: Bool = true) {        
+    internal func parseResponseData(_ data: Data) -> EnergyData? {
         let decodedData = decodeJSONResponse(data, asType: EnergyData.self)
         guard var data = decodedData else {
-            handleNonSuccessfulDownload(runAsync)
-            return
+            handleNonSuccessfulDownload()
+            return nil
         }
 
         let startCurrentHour = Calendar.current.startOfHour(for: Date())
@@ -125,17 +125,6 @@ extension BackendCommunicator {
         data.minPrice = newMinPrice
         data.maxPrice = newMaxPrice
         
-        runInQueueIf(isTrue: runAsync, in: DispatchQueue.main, runAsync: runAsync) {
-            if data.prices.isEmpty {
-                logger.notice("No prices can be displayed: either there are none or they are outdated.")
-                withAnimation {
-                    self.currentlyNoData = true
-                }
-            } else {
-                self.energyData = data
-            }
-
-            self.dataRetrievalError = false
-        }
+        return energyData
     }
 }

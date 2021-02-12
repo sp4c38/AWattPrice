@@ -77,6 +77,8 @@
 		6166E99625C5D90500281830 /* GraphTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6166E99525C5D90500281830 /* GraphTextView.swift */; };
 		6166E9CB25C69FCD00281830 /* AppGroupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6166E9CA25C69FCD00281830 /* AppGroupManager.swift */; };
 		6166E9D025C69FF700281830 /* AppGroupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6166E9CA25C69FCD00281830 /* AppGroupManager.swift */; };
+		616D29C025D720AA00367CC4 /* GetData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 616D29BF25D720AA00367CC4 /* GetData.swift */; };
+		616D29C125D720B200367CC4 /* GetData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 616D29BF25D720AA00367CC4 /* GetData.swift */; };
 		61753B6E257818DF001379B9 /* SplashScreenFeaturesAndConsent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61753B6D257818DF001379B9 /* SplashScreenFeaturesAndConsent.swift */; };
 		617D85B225052C35009E18FB /* AwattarApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617D85B125052C35009E18FB /* AwattarApp.swift */; };
 		617D85B425052C35009E18FB /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617D85B325052C35009E18FB /* HomeView.swift */; };
@@ -227,6 +229,7 @@
 		6166E9AC25C69EF600281830 /* AWattPriceWidgetExtensionProduction.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AWattPriceWidgetExtensionProduction.entitlements; sourceTree = "<group>"; };
 		6166E9CA25C69FCD00281830 /* AppGroupManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppGroupManager.swift; sourceTree = "<group>"; };
 		6166E9D925C6A10A00281830 /* AWattPriceWidgetExtensionDevelopment.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AWattPriceWidgetExtensionDevelopment.entitlements; sourceTree = "<group>"; };
+		616D29BF25D720AA00367CC4 /* GetData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetData.swift; sourceTree = "<group>"; };
 		61753B6D257818DF001379B9 /* SplashScreenFeaturesAndConsent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SplashScreenFeaturesAndConsent.swift; sourceTree = "<group>"; };
 		617D85AE25052C35009E18FB /* AWattPrice.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AWattPrice.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		617D85B125052C35009E18FB /* AwattarApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AwattarApp.swift; sourceTree = "<group>"; };
@@ -448,6 +451,7 @@
 		615609EE25D6789400A5CDAD /* Download Data */ = {
 			isa = PBXGroup;
 			children = (
+				616D29BF25D720AA00367CC4 /* GetData.swift */,
 				614E784C25068F6100A7ED83 /* DownloadData.swift */,
 				615609EF25D678A400A5CDAD /* DataParser.swift */,
 			);
@@ -945,6 +949,7 @@
 			files = (
 				613F270825CBE3B80038A211 /* Timeline.swift in Sources */,
 				6166E98C25C5B03C00281830 /* PointShape.swift in Sources */,
+				616D29C125D720B200367CC4 /* GetData.swift in Sources */,
 				61CD719925D29DC7009E51AD /* TimeZoneTime.swift in Sources */,
 				613F275D25CBFE560038A211 /* PersistenceManager.swift in Sources */,
 				6166E8DB25C57F1D00281830 /* Graph.swift in Sources */,
@@ -1035,6 +1040,7 @@
 				61190591256081E8007C04D3 /* EnergyPriceSingleBar.swift in Sources */,
 				61C963A7251E2032001B3E3C /* CheapestTimeClockView.swift in Sources */,
 				61BA0A592548764400951321 /* MailView.swift in Sources */,
+				616D29C025D720AA00367CC4 /* GetData.swift in Sources */,
 				617DF0242594AAF5004BF4E2 /* NotificationSetting.swift in Sources */,
 				615609E925D6772800A5CDAD /* QueueHelpers.swift in Sources */,
 				6191FF8F258D0CAF00C31D63 /* NotAffiliatedView.swift in Sources */,

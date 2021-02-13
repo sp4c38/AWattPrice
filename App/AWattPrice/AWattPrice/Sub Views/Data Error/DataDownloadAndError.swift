@@ -43,7 +43,8 @@ extension DataRetrievalError {
                     .multilineTextAlignment(.center)
 
                 Button(action: {
-                    backendComm.download(appGroupManager, currentSetting.entity!.regionIdentifier, networkManager)
+                    let regionIdentifier = currentSetting.entity!.regionIdentifier
+                    backendComm.getEnergyData(appGroupManager, regionIdentifier, networkManager)
                 }) {
                     Text("general.retry")
                 }.buttonStyle(RetryButtonStyle())
@@ -83,7 +84,8 @@ extension CurrentlyNoData {
                     .multilineTextAlignment(.center)
 
                 Button(action: {
-                    backendComm.download(appGroupManager, currentSetting.entity!.regionIdentifier, networkManager)
+                    let regionIdentifier = currentSetting.entity!.regionIdentifier
+                    backendComm.getEnergyData(appGroupManager, regionIdentifier, networkManager)
                 }) {
                     Text("general.retry")
                 }.buttonStyle(RetryButtonStyle())

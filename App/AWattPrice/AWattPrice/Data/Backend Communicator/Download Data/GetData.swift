@@ -76,9 +76,9 @@ extension BackendCommunicator {
     
     /// Get the current energy data from the app storage. If this energy data needs to be updated or doesn't exist yet the backend is polled. If no energy data could be found at all a empty energy data object will be returned.
     func getEnergyData(
-        appGroupManager: AppGroupManager,
-        regionIdentifier: Int16,
-        networkManager: NetworkManager,
+        _ appGroupManager: AppGroupManager,
+        _ regionIdentifier: Int16,
+        _ networkManager: NetworkManager,
         runAsync: Bool = true
     ) {
         var pollFromServer = false

@@ -84,7 +84,7 @@ struct HomeView: View {
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .onAppear {
-            backendComm.download(appGroupManager, currentSetting.entity!.regionIdentifier, networkManager)
+            loadEnergyData()
             showWhatsNewPage = currentSetting.entity!.showWhatsNew
             initialAppearFinished = nil
         }
@@ -95,12 +95,12 @@ struct HomeView: View {
             }
             if phase == .active, initialAppearFinished == true {
                 logger.debug("App was reentered. Updating data.")
-                backendComm.download(appGroupManager, currentSetting.entity!.regionIdentifier, networkManager)
+                loadEnergyData()
                 showWhatsNewPage = currentSetting.entity!.showWhatsNew
             }
         }
         .onChange(of: currentSetting.entity!.regionIdentifier) { _ in
-            backendComm.download(appGroupManager, currentSetting.entity!.regionIdentifier, networkManager)
+            loadEnergyData()
         }
         .sheet(isPresented: $showWhatsNewPage) {
             WhatsNewPage()
@@ -114,6 +114,11 @@ struct HomeView: View {
                 ) {}
             }
         }
+    }
+    
+    func loadEnergyData() {
+        let regionIdentifier = currentSetting.entity!.regionIdentifier
+        backendComm.getEnergyData(appGroupManager, regionIdentifier, networkManager)
     }
 }
 

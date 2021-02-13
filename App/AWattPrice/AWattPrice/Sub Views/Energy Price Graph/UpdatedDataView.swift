@@ -78,7 +78,8 @@ extension UpdatedDataView {
         }
         .contentShape(Rectangle())
         .onTapGesture {
-            backendComm.download(appGroupManager, currentSetting.entity!.regionIdentifier, networkManager)
+            let regionIdentifier = currentSetting.entity!.regionIdentifier
+            backendComm.getEnergyData(appGroupManager, regionIdentifier, networkManager)
         }
     }
 }

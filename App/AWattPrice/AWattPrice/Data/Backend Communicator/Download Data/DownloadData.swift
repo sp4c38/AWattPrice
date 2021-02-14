@@ -56,18 +56,13 @@ extension BackendCommunicator {
                 }
             } else {
                 logger.notice("Data retrieval error after trying to reach server (e.g.: server could be offline).")
-                
-                if error != nil {
-                    DispatchQueue.main.sync {
-                        withAnimation {
-                            self.dataRetrievalError = true
-                        }
-                    }
+                withAnimation {
+                    self.dataRetrievalError = true
                 }
             }
             
             if dataFromCache == true, networkManager.monitorer.currentPath.status == .unsatisfied {
-                // Show cached data and a notice that no data could be fetched.
+                // Show cached data and a notice that no fresh data could be fetched.
                 self.dataRetrievalError = true
             }
 
@@ -88,11 +83,7 @@ extension BackendCommunicator {
     }
     
     /// Downloads the newest aWATTar data. This function must be run in a queue other than DispatchQueue.main!
-    internal func download(
-        _ appGroupManager: AppGroupManager,
-        _ regionIdentifier: Int16,
-        _ networkManager: NetworkManager
-    ) -> (Data?, Bool, Error?) {
+    internal func download(_ region: Region) -> (Data?, Bool, Error?) {
         logger.debug("Downloading aWATTar data.")
         
         DispatchQueue.main.sync {
@@ -101,10 +92,10 @@ extension BackendCommunicator {
         }
         
         var downloadURL = ""
-        if regionIdentifier == 1 {
-            downloadURL = GlobalAppSettings.rootURLString + "/data/AT"
-        } else {
+        if region == .DE {
             downloadURL = GlobalAppSettings.rootURLString + "/data/DE"
+        } else if region == .AT {
+            downloadURL = GlobalAppSettings.rootURLString + "/data/AT"
         }
         
         var energyRequest = URLRequest(
@@ -113,23 +104,24 @@ extension BackendCommunicator {
         )
         energyRequest.httpMethod = "GET"
         
-        var dataFromCache = false
-        if URLCache.shared.cachedResponse(for: energyRequest) != nil {
-            dataFromCache = true
-        }
-        
-        let semaphore = DispatchSemaphore(value: 0)
-        
         var dataDownloaded: Data? = nil
+        var dataFromCache = false
         var downloadErrors: Error? = nil
-        URLSession.shared.dataTask(with: energyRequest) { data, _, error in
-            dataDownloaded = data
-            downloadErrors = error
+        if let cachedResponse = URLCache.shared.cachedResponse(for: energyRequest) {
+            dataDownloaded = cachedResponse.data
+            dataFromCache = true
+        } else {
+            let semaphore = DispatchSemaphore(value: 0)
             
-            semaphore.signal()
-        }.resume()
-        
-        semaphore.wait()
+            URLSession.shared.dataTask(with: energyRequest) { data, _, error in
+                dataDownloaded = data
+                downloadErrors = error
+                
+                semaphore.signal()
+            }.resume()
+            
+            semaphore.wait()
+        }
         
         return (dataDownloaded, dataFromCache, downloadErrors)
     }

@@ -7,12 +7,30 @@
 
 import Foundation
 
-func decodeJSONResponse<T: Decodable>(_ data: Data, asType: T.Type) -> T? {
-    let jsonDecoder = JSONDecoder()
-    jsonDecoder.dateDecodingStrategy = .secondsSince1970
+func jsonEncode<T: Encodable>(_ value: T, setEncoder: ((JSONEncoder) -> ())? = nil) -> Data? {
+    let encoder = JSONEncoder()
+    if setEncoder != nil {
+        setEncoder!(encoder)
+    }
+    
     do {
-        let decodedData = try jsonDecoder.decode(asType, from: data)
-        return decodedData
+        let encodedData = try encoder.encode(value)
+        return encodedData
+    } catch {
+        return nil
+    }
+}
+
+func jsonDecode<T: Decodable>(_ data: Data, asType: T.Type, setDecoder: ((JSONDecoder) -> ())? = nil) -> T? {
+    let decoder = JSONDecoder()
+    if setDecoder != nil {
+        // Caller of this function could modify the jsonDecoder. For example: setting .dateDecodingStrategy.
+        setDecoder!(decoder)
+    }
+    
+    do {
+        let data = try decoder.decode(asType, from: data)
+        return data
     } catch {
         return nil
     }

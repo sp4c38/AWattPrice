@@ -125,6 +125,6 @@ extension BackendCommunicator {
         data.minPrice = newMinPrice
         data.maxPrice = newMaxPrice
         
-        return energyData
+        return data
     }
 }

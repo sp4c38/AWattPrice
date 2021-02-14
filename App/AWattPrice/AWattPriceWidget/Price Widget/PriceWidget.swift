@@ -20,10 +20,10 @@ struct Provider: TimelineProvider {
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
-        getNewPriceTimeline(
-            in: context,
-            completion: completion
-        )
+//        getNewPriceTimeline(
+//            in: context,
+//            completion: completion
+//        )
     }
 }
 

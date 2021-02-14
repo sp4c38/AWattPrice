@@ -87,15 +87,18 @@ extension BackendCommunicator {
         }
     }
     
-    /// Downloads the newest aWATTar data
+    /// Downloads the newest aWATTar data. This function must be run in a queue other than DispatchQueue.main!
     internal func download(
         _ appGroupManager: AppGroupManager,
         _ regionIdentifier: Int16,
         _ networkManager: NetworkManager
     ) -> (Data?, Bool, Error?) {
         logger.debug("Downloading aWATTar data.")
-        currentlyUpdatingData = true
-        dataRetrievalError = false
+        
+        DispatchQueue.main.sync {
+            currentlyUpdatingData = true
+            dataRetrievalError = false
+        }
         
         var downloadURL = ""
         if regionIdentifier == 1 {

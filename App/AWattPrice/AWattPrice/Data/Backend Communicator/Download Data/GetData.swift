@@ -32,24 +32,6 @@ extension BackendCommunicator {
         }
     }
     
-    struct Rotation {
-        // The hour, minute, second from which on to check for new price data.
-        var hour: Int
-        var minute: Int
-        var second: Int
-        var timeZoneID: String
-        var rotationDate: Date? = nil // Todays (based on timezoneID) rotation time
-        
-        init(
-            hour: Int, minute: Int, second: Int, of timeZoneID: String
-        ) {
-            self.hour = hour
-            self.minute = minute
-            self.second = second
-            self.timeZoneID = timeZoneID
-        }
-    }
-    
     private func handlePollFromServer(
         _ appGroupManager: AppGroupManager,
         _ regionIdentifier: Int16,
@@ -61,43 +43,44 @@ extension BackendCommunicator {
         let (data, dataFromCache, error) = self.download(
             appGroupManager, regionIdentifier, networkManager
         )
-        
+
         var energyData: EnergyData? = nil
         if data != nil {
             energyData = self.parseResponseData(data!)
         }
-        
+
         self.setClassDataAndErrors(
             energyData, error,
             timeBefore, dataFromCache, networkManager, runAsync
         )
         self.checkAndStoreToAppGroup(appGroupManager, energyData)
     }
-    
-    /// Get the current energy data from the app storage. If this energy data needs to be updated or doesn't exist yet the backend is polled. If no energy data could be found at all a empty energy data object will be returned.
+
+    /**
+     Gets current energy data.
+     
+     First, checks if a app storage entry for the energy data entry exists.
+     If not it polls energy data from the backend.
+     If an entry exists, it checks if the stored data is due for update. If not it just parses the data. If it is due it downloads from the backend and parses.
+    */
     func getEnergyData(
         _ appGroupManager: AppGroupManager,
         _ regionIdentifier: Int16,
         _ networkManager: NetworkManager,
         runAsync: Bool = true
     ) {
-        var pollFromServer = false
+        var pollFromServer = true
         
         let energyDataStored = appGroupManager.readEnergyData()
-        if energyDataStored == nil {
-            pollFromServer = true
-        }
-        
-        let rotation = Rotation( // Time from which to check for new prices
-            hour: 12, minute: 0, second: 0, of: "Europe/Berlin"
-        )
-        if pollFromServer == false || energyDataStored != nil {
+        // Also if energyDataStored is nil, pollFromServer is already set to true.
+
+        if energyDataStored != nil {
             pollFromServer = self.checkEnergyDataNeedsBackendUpdate(basedOn: energyDataStored!, rotation)
         }
 
         let backgroundQueue = DispatchQueue.global(qos: .userInteractive)
-        runInQueueIf(isTrue: runAsync, in: backgroundQueue, runAsync: runAsync) {
-            if pollFromServer {
+        if pollFromServer {
+            runInQueueIf(isTrue: runAsync, in: backgroundQueue, runAsync: runAsync) {
                 self.handlePollFromServer(appGroupManager, regionIdentifier, networkManager, runAsync)
             }
         }

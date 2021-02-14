@@ -25,7 +25,7 @@ fileprivate func addNewTimeComponent(
     }
 }
 
-fileprivate func setLongISOTimeComponents(hour: Int?, minute: Int?, second: Int?, of timeISO: String) -> String {
+fileprivate func longISOSetTimeComponents(toHour hour: Int?, minute: Int?, second: Int?, of timeISO: String) -> String {
     let timeComponentFormatter = NumberFormatter()
     timeComponentFormatter.minimumIntegerDigits = 2
     timeComponentFormatter.maximumIntegerDigits = 2
@@ -35,7 +35,7 @@ fileprivate func setLongISOTimeComponents(hour: Int?, minute: Int?, second: Int?
     
     let dateComp = timeISO.part(inRange: 0..<11)
     let timeComp = timeISO.part(inRange: 11..<19)
-    let utcOffsetComp = timeISO.part(inRange: 19..<25)
+    let utcOffsetComp = timeISO.part(inRange: 19..<25) // Indicates the timezone of the iso
     
     let hourComp = timeComp.part(inRange: 0..<2)
     let minuteComp = timeComp.part(inRange: 3..<5)
@@ -56,8 +56,8 @@ func getTimeZoneTimeBySetting(hour: Int?, minute: Int?, second: Int?, usingTimeZ
     isoFormatter.timeZone = TimeZone(identifier: "Europe/Berlin")
     let nowTimeZoneISO = isoFormatter.string(from: Date())
     
-    let modifiedISO = setLongISOTimeComponents(
-        hour: hour, minute: minute, second: second, of: nowTimeZoneISO
+    let modifiedISO = longISOSetTimeComponents(
+        toHour: hour, minute: minute, second: second, of: nowTimeZoneISO
     )
     let modifiedTimeZoneDate = isoFormatter.date(from: modifiedISO)
 

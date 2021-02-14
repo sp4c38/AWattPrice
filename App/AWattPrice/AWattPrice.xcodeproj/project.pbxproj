@@ -696,8 +696,8 @@
 		61936FC325BACDA600D60BC5 /* Backend Communicator */ = {
 			isa = PBXGroup;
 			children = (
-				615609EE25D6789400A5CDAD /* Download Data */,
 				61936FC725BACDDF00D60BC5 /* BackendCommunicator.swift */,
+				615609EE25D6789400A5CDAD /* Download Data */,
 				6117E9D82590B52300A2B475 /* UploadAPNsTokenToServer.swift */,
 			);
 			path = "Backend Communicator";

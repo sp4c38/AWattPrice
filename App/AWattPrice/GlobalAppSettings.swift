@@ -7,6 +7,11 @@
 
 import Foundation
 
+enum Region: Int {
+    case DE = 0
+    case AT = 1
+}
+
 public enum GlobalAppSettings {
     private static let appSettings: [String: Any] = {
         guard let dict = Bundle.main.infoDictionary else {

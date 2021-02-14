@@ -20,7 +20,6 @@ struct DataRetrievalLoadingView: View {
 }
 
 struct DataRetrievalError: View {
-    @Environment(\.appGroupManager) var appGroupManager
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.networkManager) var networkManager
 
@@ -44,7 +43,7 @@ extension DataRetrievalError {
 
                 Button(action: {
                     let regionIdentifier = currentSetting.entity!.regionIdentifier
-                    backendComm.getEnergyData(appGroupManager, regionIdentifier, networkManager)
+                    backendComm.getEnergyData(regionIdentifier, networkManager)
                 }) {
                     Text("general.retry")
                 }.buttonStyle(RetryButtonStyle())
@@ -61,7 +60,6 @@ extension DataRetrievalError {
 }
 
 struct CurrentlyNoData: View {
-    @Environment(\.appGroupManager) var appGroupManager
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.networkManager) var networkManager
 
@@ -85,7 +83,7 @@ extension CurrentlyNoData {
 
                 Button(action: {
                     let regionIdentifier = currentSetting.entity!.regionIdentifier
-                    backendComm.getEnergyData(appGroupManager, regionIdentifier, networkManager)
+                    backendComm.getEnergyData(regionIdentifier, networkManager)
                 }) {
                     Text("general.retry")
                 }.buttonStyle(RetryButtonStyle())

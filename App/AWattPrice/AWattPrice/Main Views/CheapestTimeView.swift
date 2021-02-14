@@ -179,7 +179,6 @@ struct CheapestTimeView: View {
 
 struct CheapestTimeView_Previews: PreviewProvider {
     static var previews: some View {
-        let appGroupManager = AppGroupManager()
         let backendComm = BackendCommunicator()
         let networkManager = NetworkManager()
 
@@ -196,7 +195,7 @@ struct CheapestTimeView_Previews: PreviewProvider {
                 .environmentObject(CurrentSetting(managedObjectContext: PersistenceManager().persistentContainer.viewContext))
                 .preferredColorScheme(.light)
                 .onAppear {
-                    backendComm.getEnergyData(appGroupManager, 0, networkManager)
+                    backendComm.getEnergyData(0, networkManager)
                 }
             Spacer(minLength: 0)
             TabBar()

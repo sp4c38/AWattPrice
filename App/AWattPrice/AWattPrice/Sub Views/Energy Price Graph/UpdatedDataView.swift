@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct UpdatedDataView: View {
-    @Environment(\.appGroupManager) var appGroupManager
     @Environment(\.networkManager) var networkManager
 
     @EnvironmentObject var backendComm: BackendCommunicator
@@ -79,7 +78,7 @@ extension UpdatedDataView {
         .contentShape(Rectangle())
         .onTapGesture {
             let regionIdentifier = currentSetting.entity!.regionIdentifier
-            backendComm.getEnergyData(appGroupManager, regionIdentifier, networkManager)
+            backendComm.getEnergyData(regionIdentifier, networkManager)
         }
     }
 }

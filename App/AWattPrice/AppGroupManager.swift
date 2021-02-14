@@ -57,21 +57,13 @@ class AppGroupManager {
     }
     
     public func writeEnergyDataToGroup(energyData: EnergyData, forRegion region: Region) -> Error? {
-        // Encode
-        let encoder = JSONEncoder()
-        encoder.dateEncodingStrategy = .secondsSince1970
-        var encodedEnergyData: Data?
-        do {
-            encodedEnergyData = try encoder.encode(energyData)
-        } catch {
-            logger.error("Could encode energy data when writing to app group container: \(error.localizedDescription).")
-            return ReadWriteError.writeEncodingError
-        }
+        guard let encodedData = quickJSONEncode(energyData, setEncoder: { jsonEncoder in
+            jsonEncoder.dateEncodingStrategy = .secondsSince1970
+        }) else { return ReadWriteError.writeEncodingError }
         
-        // Write to file
-        let storeURL = containerURL.appendingPathComponent("EnergyData.json")
+        let storeURL = containerURL.appendingPathComponent(regionToFileName(region))
         do {
-            try encodedEnergyData!.write(to: storeURL)
+            try encodedData.write(to: storeURL)
             logger.debug("Wrote energy data to group container.")
         } catch {
             logger.error("Couldn't write energy data to app group container: \(error.localizedDescription).")

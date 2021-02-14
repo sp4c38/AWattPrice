@@ -7,31 +7,33 @@
 
 import Foundation
 
-func jsonEncode<T: Encodable>(_ value: T, setEncoder: ((JSONEncoder) -> ())? = nil) -> Data? {
+/// Quickly json encode a value. Function will output errors through Logger. For custom handling of the specifc error which occurred, don't use this.
+func quickJSONEncode<T: Encodable>(_ value: T, setEncoder: ((JSONEncoder) -> ())? = nil) -> Data? {
     let encoder = JSONEncoder()
-    if setEncoder != nil {
-        setEncoder!(encoder)
-    }
+    
+    // Caller of this function could modify the JSONEncoder. For example: setting .dateEncodingStrategy.
+    setEncoder?(encoder)
     
     do {
         let encodedData = try encoder.encode(value)
         return encodedData
     } catch {
+        logger.error("Couldn't encode value: \(error.localizedDescription).")
         return nil
     }
 }
 
-func jsonDecode<T: Decodable>(_ data: Data, asType: T.Type, setDecoder: ((JSONDecoder) -> ())? = nil) -> T? {
+///Quickly json decode a value. Function will output errors through Logger. For custom handling of the specifc error which occurred, don't use this.
+func quickJSONDecode<T: Decodable>(_ data: Data, asType: T.Type, setDecoder: ((JSONDecoder) -> ())? = nil) -> T? {
     let decoder = JSONDecoder()
-    if setDecoder != nil {
-        // Caller of this function could modify the jsonDecoder. For example: setting .dateDecodingStrategy.
-        setDecoder!(decoder)
-    }
+    
+    setDecoder?(decoder)
     
     do {
         let data = try decoder.decode(asType, from: data)
         return data
     } catch {
+        logger.error("Couldn't decode encoded data: \(error.localizedDescription)")
         return nil
     }
 }

@@ -28,6 +28,7 @@ struct EnergyPricePoint: Hashable, Codable, Comparable {
 /// A object containing all EnergyPricePoint's. It also holds two values for the smallest and the largest energy price of all containing energy data points.
 struct EnergyData: Equatable {
     var prices: [EnergyPricePoint]
+    var region = Region(rawValue: 0)! // Set default region Germany. Correct region must be set later.
     var minPrice: Double = 0
     var maxPrice: Double = 0
 
@@ -62,8 +63,8 @@ extension EnergyData: Decodable {
 }
 
 extension BackendCommunicator {
-    private func handleNonSuccessfulDownload() {
-        logger.error("Could not decode returned JSON data from server.")
+    private func handleNonSuccessfulDownload(_ error: Error) {
+        logger.error("Could not decode returned JSON data from server: \(error.localizedDescription).")
         DispatchQueue.main.sync {
             withAnimation {
                 self.dataRetrievalError = true
@@ -96,13 +97,11 @@ extension BackendCommunicator {
         return (newMinPrice, newMaxPrice)
     }
     
-    internal func parseResponseData(_ data: Data) -> EnergyData? {
-        let decodedData = decodeJSONResponse(data, asType: EnergyData.self)
-        guard var data = decodedData else {
-            handleNonSuccessfulDownload()
-            return nil
-        }
-
+    internal func parseResponseData(_ data: Data, _ region: Region) -> EnergyData? {
+        guard var data = quickJSONDecode(data, asType: EnergyData.self, setDecoder: { jsonDecoder in
+            jsonDecoder.dateDecodingStrategy = .secondsSince1970
+        }) else { return nil }
+        
         let startCurrentHour = Calendar.current.startOfHour(for: Date())
         
         var newPrices = [EnergyPricePoint]()
@@ -122,6 +121,7 @@ extension BackendCommunicator {
         }
 
         data.prices = newPrices
+        data.region = region
         data.minPrice = newMinPrice
         data.maxPrice = newMaxPrice
         

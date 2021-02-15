@@ -12,18 +12,41 @@ struct Rotation {
     var hour: Int
     var minute: Int
     var second: Int
-    var timeZoneID: String
-    var rotationDate: Date? = nil // Todays (based on timezoneID) rotation time
+    var timeZone: TimeZone
+    var rotationDate: Date // Todays (based on timezoneID) rotation time
     
-    init(
-        hour: Int, minute: Int, second: Int, ofTimeZone timeZoneID: String
+    init(hour: Int, minute: Int, second: Int, timeZone: TimeZone, rotationDate: Date) {
+        self.hour = hour
+        self.minute = minute
+        self.second = second
+        self.timeZone = timeZone
+        self.rotationDate = rotationDate
+    }
+    
+    init?(
+        hour: Int, minute: Int, second: Int, ofTimeZone timeZone: TimeZone
     ) {
         self.hour = hour
         self.minute = minute
         self.second = second
-        self.timeZoneID = timeZoneID
-        rotationDate = getTimeZoneTimeBySetting(hour: hour, minute: minute, second: second, usingTimeZone: timeZoneID)
+        self.timeZone = timeZone
+        
+        guard let newRotationDate = getTimeBySetting(
+            [.hour: hour, .minute: minute, .second: second], inTimeZone: timeZone
+        ) else {
+            return nil
+        }
+        rotationDate = newRotationDate
     }
+}
+
+func rotationAtStartOfToday() -> Rotation {
+    let currentTimeZone = TimeZone.current
+    let todayStart = Calendar.current.startOfDay(for: Date())
+    let newRotation = Rotation(
+        hour: 0, minute: 0, second: 0, timeZone: currentTimeZone, rotationDate: todayStart
+    )
+    return newRotation
 }
 
 /// Object responsible for handling any communication with the AWattPrice Backend
@@ -41,6 +64,13 @@ class BackendCommunicator: ObservableObject {
     let rotation: Rotation
     init() {
         // Rotation defines the time in an certain time zone from which on, to check for new data.
-        rotation = Rotation(hour: 12, minute: 30, second: 0, ofTimeZone: "Europe/Berlin")
+        // If the rotation cannot be created use the start of the current day.
+        
+        if let timeZone = TimeZone(identifier: "Europe/Berlin"),
+           let newRotation = Rotation(hour: 12, minute: 30, second: 0, ofTimeZone: timeZone) {
+            rotation = newRotation
+        } else {
+            rotation = rotationAtStartOfToday()
+        }
     }
 }

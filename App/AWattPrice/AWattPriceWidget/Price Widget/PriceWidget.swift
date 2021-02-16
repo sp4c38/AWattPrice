@@ -32,31 +32,30 @@ struct PriceWidgetEntry: TimelineEntry {
 }
 
 struct PriceWidgetEntryView : View {
-    @Environment(\.appGroupManager) var appGroupManager
     // @Environment(\.widgetFamily) var widgetFamily
     
     var entry: Provider.Entry
     var energyData: EnergyData = EnergyData(prices: [], minPrice: 0, maxPrice: 0)
     
-    func getEnergyData() -> EnergyData {
-        let noEnergyData = EnergyData(prices: [], minPrice: 0, maxPrice: 0)
-        guard appGroupManager.setGroup(AppGroups.awattpriceGroup) == true else { return noEnergyData }
-        guard let energyData = appGroupManager.readEnergyData() else { return noEnergyData }
-        return energyData
-    }
+//    func getEnergyData() -> EnergyData {
+//        let noEnergyData = EnergyData(prices: [], minPrice: 0, maxPrice: 0)
+//        guard appGroupManager.setGroup(AppGroups.awattpriceGroup) == true else { return noEnergyData }
+//        guard let energyData = appGroupManager.getEnergyDataStored(for: .DE).0 else { return noEnergyData }
+//        return energyData
+//    }
     
     init(entry: PriceWidgetEntry, _ customEnergyData: EnergyData? = nil) {
         self.entry = entry
-        if customEnergyData != nil {
-            energyData = customEnergyData!
-        } else {
-            self.energyData = getEnergyData()
-        }
+//        if customEnergyData != nil {
+//            energyData = customEnergyData!
+//        } else {
+//            self.energyData = getEnergyData()
+//        }
     }
     
     var body: some View {
         HStack {
-            Graph(energyData)
+//            Graph(energyData)
         }
     }
 }

@@ -24,18 +24,21 @@ import WidgetKit
 // }
 
 extension BackendCommunicator {
-    internal func checkAndStoreToAppGroup(_ appGroupManager: AppGroupManager, _ newDataToCheck: EnergyData?) {
-        guard let newData = newDataToCheck else { return }
-        let setGroupSuccessful = appGroupManager.setGroup(AppGroups.awattpriceGroup)
-        guard setGroupSuccessful else { return }
-        
-        let storedData = appGroupManager.readEnergyData()
-        if storedData != newData {
-            _ = appGroupManager.writeEnergyDataToGroup(energyData: newData)
-            WidgetCenter.shared.reloadTimelines(ofKind: "me.space8.AWattPrice.PriceWidget")
-        }
-    }
+//    internal func checkAndStoreToAppGroup(_ appGroupManager: AppGroupManager, _ newDataToCheck: EnergyData?) {
+//        guard let newData = newDataToCheck else { return }
+//        let setGroupSuccessful = appGroupManager.setGroup(AppGroups.awattpriceGroup)
+//        guard setGroupSuccessful else { return }
+//
+//        let storedData = appGroupManager.readEnergyData()
+//        if storedData != newData {
+//            _ = appGroupManager.writeEnergyDataToGroup(energyData: newData)
+//            WidgetCenter.shared.reloadTimelines(ofKind: "me.space8.AWattPrice.PriceWidget")
+//        }
+//    }
     
+    /**
+     Set class variables to hold parsed data and reflect errors.
+     */
     internal func setClassDataAndErrors(
         _ data: EnergyData?,
         _ error: Error?,
@@ -66,12 +69,9 @@ extension BackendCommunicator {
                 self.dataRetrievalError = true
             }
 
-            if Date().timeIntervalSince(timeBefore) < 0.6 {
-                runInQueueIf(
-                    isTrue: runAsync,
-                    in: DispatchQueue.main,
-                    runAsync: runAsync,
-                    withDeadlineIfAsync: .now() + (0.6 - Date().timeIntervalSince(timeBefore))
+            if runAsync && Date().timeIntervalSince(timeBefore) < 0.6 {
+                DispatchQueue.main.asyncAfter(
+                    deadline: .now() + (0.6 - Date().timeIntervalSince(timeBefore))
                 ) {
                     // If the data could be retrieved very fast (< 0.6s) than changes to text, ... could look very sudden -> add delay.
                     self.currentlyUpdatingData = false
@@ -81,8 +81,11 @@ extension BackendCommunicator {
             }
         }
     }
-    
-    /// Downloads the newest aWATTar data. This function must be run in a queue other than DispatchQueue.main!
+    /**
+     Downloads the newest aWATTar data.
+     
+     Never run in DispatchQueue.main.
+     */
     internal func download(_ region: Region) -> (Data?, Bool, Error?) {
         logger.debug("Downloading aWATTar data.")
         

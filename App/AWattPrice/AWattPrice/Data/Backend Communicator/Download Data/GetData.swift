@@ -12,23 +12,27 @@ import WidgetKit
 
 extension BackendCommunicator {
     /// Returns bool indicating if the app/widget needs to check for new data polling the backend.
-    fileprivate func checkEnergyDataNeedsBackendUpdate(basedOn energyData: EnergyData, _ rotation: Rotation) -> Bool {
+    private func energyDataNeedsBackendUpdate(_ energyData: EnergyData) -> Bool {
         guard let lastItemStart = energyData.prices.last?.startTimestamp else { return true }
-        guard let rotationDate = rotation.rotationDate else { return true }
         
         let now = Date()
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = rotation.timeZone
 
-        let difference = Calendar.init(identifier: .gregorian).compare(
-            lastItemStart, to: now, toGranularity: .day
         ).rawValue
-        if difference > 0 {
-            return false
-        } else {
-            if now >= rotationDate {
-                 return true
+        let startToday = calendar.startOfDay(for: now)
+        let dayDifference = calendar.dateComponents([.day], from: startToday, to: lastItemStart).day!
+        
+        if dayDifference == 1 { // Price data for the following day either doesn't exist at all or is uncomplete.
+            if now >= self.rotation.rotationDate {
+                return true
             } else {
                 return false
             }
+        } else if dayDifference > 1 { // Price data for following day is already completely available
+            return false
+        } else if dayDifference < 1 { // Should never happen. Occurs when price data for the current day either doesn't exist or is uncomplete.
+            return true
         }
     }
     

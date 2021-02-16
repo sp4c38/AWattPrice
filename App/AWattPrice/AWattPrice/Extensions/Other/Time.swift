@@ -1,5 +1,5 @@
 //
-//  TimezoneTime.swift
+//  Time.swift
 //  AWattPrice
 //
 //  Created by Léon Becker on 09.02.21.

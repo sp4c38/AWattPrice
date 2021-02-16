@@ -19,7 +19,6 @@ extension BackendCommunicator {
         var calendar = Calendar(identifier: .gregorian)
         calendar.timeZone = rotation.timeZone
 
-        ).rawValue
         let startToday = calendar.startOfDay(for: now)
         let dayDifference = calendar.dateComponents([.day], from: startToday, to: lastItemStart).day!
         
@@ -34,32 +33,36 @@ extension BackendCommunicator {
         } else if dayDifference < 1 { // Should never happen. Occurs when price data for the current day either doesn't exist or is uncomplete.
             return true
         }
+        return true
+    }
+
+    private func getParsedData(
+        _ region: Region,
+        _ appGroupManager: AppGroupManager
+    ) -> (EnergyData?, Bool, Error?) {
+        var (data, dataFromCache, error): (Data?, Bool, Error?) = (nil, true, nil)
+        (data, error) = appGroupManager.getEnergyDataStored(for: region)
+        
+        var pollFromServer = true
+        // If data is nil, pollFromServer is already set to true.
+        
+        var parsed: EnergyData? = nil
+        if data != nil {
+            parsed = self.parseResponseData(data!, region)
+            if parsed != nil {
+                pollFromServer = energyDataNeedsBackendUpdate(parsed!)
+            }
+        }
+        if pollFromServer {
+            (data, dataFromCache, error) = self.download(region)
+            if data != nil {
+                parsed = self.parseResponseData(data!, region)
+            }
+        }
+        
+        return (parsed, dataFromCache, error)
     }
     
-    private func handlePollFromServer(
-        _ appGroupManager: AppGroupManager,
-        _ regionIdentifier: Int16,
-        _ networkManager: NetworkManager,
-        _ runAsync: Bool
-    ) {
-        let timeBefore = Date()
-        
-        let (data, dataFromCache, error) = self.download(
-            appGroupManager, regionIdentifier, networkManager
-        )
-
-        var energyData: EnergyData? = nil
-        if data != nil {
-            energyData = self.parseResponseData(data!)
-        }
-
-        self.setClassDataAndErrors(
-            energyData, error,
-            timeBefore, dataFromCache, networkManager, runAsync
-        )
-        self.checkAndStoreToAppGroup(appGroupManager, energyData)
-    }
-
     /**
      Gets current energy data.
      
@@ -68,25 +71,32 @@ extension BackendCommunicator {
      If an entry exists, it checks if the stored data is due for update. If not it just parses the data. If it is due it downloads from the backend and parses.
     */
     func getEnergyData(
-        _ appGroupManager: AppGroupManager,
         _ regionIdentifier: Int16,
         _ networkManager: NetworkManager,
         runAsync: Bool = true
     ) {
-        var pollFromServer = true
-        
-        let energyDataStored = appGroupManager.readEnergyData()
-        // Also if energyDataStored is nil, pollFromServer is already set to true.
-
-        if energyDataStored != nil {
-            pollFromServer = self.checkEnergyDataNeedsBackendUpdate(basedOn: energyDataStored!, rotation)
+        guard let region = Region(rawValue: Int(regionIdentifier)) else {
+            logger.error("Invalid region parsed when getting energy data.")
+            return
         }
-
+        guard let appGroupManager = AppGroupManager(withID: AppGroups.awattpriceGroup) else { return }
+        
+        let timeBefore = Date()
         let backgroundQueue = DispatchQueue.global(qos: .userInteractive)
-        if pollFromServer {
-            runInQueueIf(isTrue: runAsync, in: backgroundQueue, runAsync: runAsync) {
-                self.handlePollFromServer(appGroupManager, regionIdentifier, networkManager, runAsync)
-            }
+        runInQueueIf(isTrue: runAsync, in: backgroundQueue) {
+            let (parsedData, dataFromCache, error) = self.getParsedData(
+                region, appGroupManager
+            )
+            
+            self.setClassDataAndErrors(
+                parsedData,
+                error,
+                timeBefore,
+                dataFromCache,
+                networkManager,
+                runAsync
+            )
+//            self.checkAndStoreToAppGroup(appGroupManager, energyData)
         }
     }
 }

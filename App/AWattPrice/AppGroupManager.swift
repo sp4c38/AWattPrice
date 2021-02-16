@@ -80,7 +80,7 @@ class AppGroupManager {
             data = try Data(contentsOf: storeURL)
         } catch {
             // Triggered if EnergyData.json doesn't yet exist.
-            logger.info("Couldn't read file with energy data from app group container: \(error.localizedDescription).")
+            logger.info("Couldn't read file with energy data from app group container: \(error.localizedDescription)")
             return (nil, ReadWriteError.readFromFileError)
         }
         return (data, nil)

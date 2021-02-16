@@ -33,11 +33,16 @@ class AutoUpdatingSingleEntity<T: NSManagedObject>: NSObject, NSFetchedResultsCo
         
         super.init()
         entityController.delegate = self
+        do {
+            try entityController.performFetch()
+        } catch {
+            logger.error("Couldn't perform fetch request for entity \(entityName) controller.")
+        }
         
         entity = getSingleEntry(
             entityName,
-            managedObjectContext,
-            fetchRequest,
+            ofAllEntries: entityController.fetchedObjects ?? [], // Should never be nil! Use empty list to be safe.
+            from: entityController.managedObjectContext,
             setDefaultValues
         )
     }

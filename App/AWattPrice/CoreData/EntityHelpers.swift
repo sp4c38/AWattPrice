@@ -1,5 +1,5 @@
 //
-//  Helpers.swift
+//  EntityHelpers.swift
 //  AWattPrice
 //
 //  Created by Léon Becker on 06.02.21.
@@ -56,28 +56,20 @@ fileprivate func getAndInsertNewEntry<T: NSManagedObject>(
 
 func getSingleEntry<T: NSManagedObject>(
     _ entityName: String,
-    _ context: NSManagedObjectContext,
-    _ fetchRequest: NSFetchRequest<T>,
+    ofAllEntries entries: [T],
+    from context: NSManagedObjectContext,
     _ setDefaultValues: (T) -> ()
 ) -> T? {
-    var fetchedEntries: [T]? = nil
-    do {
-        fetchedEntries = try context.fetch(fetchRequest)
-    } catch {
-        logger.error("Error performing fetch request on Core Data \"\(entityName)\"-entity: \(error.localizedDescription).")
-    }
-    guard let entries = fetchedEntries else { return nil }
-    
-    if entries.count == 1 {
+    if entries.count <= 0 {
+        let newEntry = getAndInsertNewEntry(entityName, context, setDefaultValues) as T?
+        guard saveContext(context) == true else { return nil }
+        return newEntry
+    } else if entries.count == 1 {
         return entries.first!
     } else if entries.count > 1 {
         let entry = handleMoreThenOneEntry(allItems: entries, context) // Removes redundant entries
         guard saveContext(context) == true else { return nil }
         return entry
-    } else if entries.count == 0 {
-        let newEntry = getAndInsertNewEntry(entityName, context, setDefaultValues) as T?
-        guard saveContext(context) == true else { return nil }
-        return newEntry
     }
     return nil
 }

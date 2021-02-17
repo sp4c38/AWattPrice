@@ -10,19 +10,6 @@ import Network
 import SwiftUI
 import WidgetKit
 
-///// A single aWATTar Profile with a name and an name of the image representing this profile.
-// struct Profile: Hashable {
-//    var name: String
-//    var imageName: String
-// }
-//
-///// Defines all profiles that exist.
-// struct ProfilesData {
-//    var profiles = [
-//        Profile(name: "HOURLY", imageName: "HourlyProfilePicture"),
-//    ]
-// }
-
 extension BackendCommunicator {
     internal func setValuesForDataLoading(_ runAsync: Bool) {
         runAsyncInQueueIf(isTrue: runAsync, in: DispatchQueue.main) {

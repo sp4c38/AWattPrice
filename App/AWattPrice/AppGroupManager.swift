@@ -56,20 +56,22 @@ class AppGroupManager {
         case writeToFileError
     }
     
-    public func writeEnergyDataToGroup(energyData: EnergyData, forRegion region: Region) -> Error? {
+    public func writeEnergyDataToGroup(_ energyData: EnergyData) throws {
         guard let encodedData = quickJSONEncode(energyData, setEncoder: { jsonEncoder in
             jsonEncoder.dateEncodingStrategy = .secondsSince1970
-        }) else { return ReadWriteError.writeEncodingError }
+        }) else { throw ReadWriteError.writeEncodingError }
         
+        let region = energyData.region
         let storeURL = containerURL.appendingPathComponent(regionToFileName(region))
+        
         do {
             try encodedData.write(to: storeURL)
-            logger.debug("Wrote energy data to group container.")
+            logger.debug("Wrote energy data to group container: \(storeURL).")
         } catch {
             logger.error("Couldn't write energy data to app group container: \(error.localizedDescription).")
-            return ReadWriteError.writeToFileError
+            throw ReadWriteError.writeToFileError
         }
-        return nil
+        return
     }
     
     public func getEnergyDataStored(for region: Region) -> (Data?, Error?) {
@@ -78,8 +80,9 @@ class AppGroupManager {
         var data = Data()
         do {
             data = try Data(contentsOf: storeURL)
+            logger.debug("Read store energy data from \(storeURL).")
         } catch {
-            // Triggered if EnergyData.json doesn't yet exist.
+            // Triggered if file doesn't exist yet (e.g.: on very first app launch).
             logger.info("Couldn't read file with energy data from app group container: \(error.localizedDescription)")
             return (nil, ReadWriteError.readFromFileError)
         }

@@ -7,8 +7,8 @@
 
 import Foundation
 
-/// Run task in queue if condition is true. Optionally parse deadline - is only needed if condition is true, as tasks are only then run asynchronous.
-func runInQueueIf(
+/// Run task asynchronous in queue if condition is true. Optionally parse deadline - is only used if condition is true, as tasks are only then run asynchronous.
+func runAsyncInQueueIf(
     isTrue condition: Bool,
     in runQueue: DispatchQueue,
     withDeadline deadline: DispatchTime? = nil,

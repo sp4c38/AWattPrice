@@ -12,16 +12,18 @@ import WidgetKit
 
 extension BackendCommunicator {
     /**
-     Store parsed energy data to a app group represented by the parsed AppGroupManager.
-     
-     Function won't make sure that new energy data != currently stored energy data.
+     Performs multiple tasks which are needed when new price points could be retrieved.
      */
-    internal func storeEnergyData(_ energyData: EnergyData, forRegion: Region, _ appGroupManager: AppGroupManager) {
-        appGroupManager.writeEnergyDataToGroup(eneryData: energyData, forRegion: region)
+    internal func newPricePointsAvailable(_ parsed: ExtendedParsedData, _ appGroupManager: AppGroupManager) {
+        var writeToAppGroupSuccessful = false
         
-        let storedData = appGroupManager.readEnergyData()
-        if storedData != newData {
-            _ = appGroupManager.writeEnergyDataToGroup(energyData: newData)
+        do {
+            try appGroupManager.writeEnergyDataToGroup(parsed.data!)
+            writeToAppGroupSuccessful = true
+        } catch {
+            logger.error("New price points available, but error storing to app group: \(error.localizedDescription).")
+        }
+        if writeToAppGroupSuccessful {
             WidgetCenter.shared.reloadTimelines(ofKind: "me.space8.AWattPrice.PriceWidget")
         }
     }
@@ -88,10 +90,15 @@ extension BackendCommunicator {
                 parsedRemotely = parseResponseData(data!, region, includingAllPricePointsAfter: includeDate)
             }
         }
-
-        if parsedLocally != nil, parsedRemotely != nil, parsedLocally != parsedRemotely {
+        print(parsedLocally)
+        print("--------------------")
+        print(parsedRemotely)
+        if (parsedLocally == nil && parsedRemotely != nil),
+           (parsedLocally != nil && parsedRemotely != nil && parsedLocally != parsedRemotely)
+        {
             newDataPricePoints = true
         }
+        print(newDataPricePoints)
         
         // Parsed data to actually use
         let parsed = parsedRemotely != nil ? parsedRemotely : parsedLocally
@@ -106,14 +113,13 @@ extension BackendCommunicator {
     /**
      Gets current energy data.
      
-     First, checks if a app storage entry for the energy data entry exists.
-     If not it polls energy data from the backend.
-     If an entry exists, it checks if the stored data is due for update. If not it just parses the data. If it is due it downloads from the backend and parses.
+     Always run on DispatchQueue.main - use runAsync to specify if function should fall through or if it should wait until results were retrieved.
+     If app storage energy data is still up to date, return, otherwise return energy data polled from backend.
     */
     func getEnergyData(
         _ regionIdentifier: Int16,
         _ networkManager: NetworkManager,
-        runAsync: Bool = true
+        runAsync: Bool = false
     ) {
         guard let region = Region(rawValue: Int(regionIdentifier)) else {
             logger.error("Invalid region parsed when getting energy data.")
@@ -122,8 +128,8 @@ extension BackendCommunicator {
         guard let appGroupManager = AppGroupManager(withID: AppGroups.awattpriceGroup) else { return }
         
         let timeBefore = Date()
-        let backgroundQueue = DispatchQueue.global(qos: .userInteractive)
-        runInQueueIf(isTrue: runAsync, in: backgroundQueue) {
+        let runQueue = DispatchQueue.global(qos: .userInteractive)
+        runAsyncInQueueIf(isTrue: runAsync, in: runQueue) {
             let parsedData = self.getParsedData(
                 region, appGroupManager
             )
@@ -135,9 +141,8 @@ extension BackendCommunicator {
                 runAsync
             )
             
-            if parsedData.newDataPricePoints {
-                // newDataPricePoints is only set to true if data != nil
-                self.storeEnergyData(parsedData.data!, forRegion: region, appGroupManager)
+            if parsedData.newDataPricePoints, parsedData.data != nil {
+                self.newPricePointsAvailable(parsedData, appGroupManager)
             }
         }
     }

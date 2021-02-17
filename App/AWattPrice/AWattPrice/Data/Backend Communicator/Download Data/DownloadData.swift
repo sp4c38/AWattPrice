@@ -33,7 +33,11 @@ extension BackendCommunicator {
         _ networkManager: NetworkManager,
         _ runAsync: Bool
     ) {
-        DispatchQueue.main.sync {
+        runAsyncInQueueIf(isTrue: runAsync, in: DispatchQueue.main) {
+            // Reset to defaults
+            self.currentlyUpdatingData = true
+            self.dataRetrievalError = false
+            
             if parsed.data != nil {
                 if parsed.data!.prices.isEmpty {
                     logger.notice("No prices can be displayed: either there are none or they are outdated.")
@@ -74,11 +78,6 @@ extension BackendCommunicator {
      */
     internal func download(_ region: Region) -> (Data?, Bool, Error?) {
         logger.debug("Downloading aWATTar data.")
-        
-        DispatchQueue.main.sync {
-            currentlyUpdatingData = true
-            dataRetrievalError = false
-        }
         
         var downloadURL = ""
         if region == .DE {

@@ -80,7 +80,7 @@ class AppGroupManager {
         var data = Data()
         do {
             data = try Data(contentsOf: storeURL)
-            logger.debug("Read store energy data from \(storeURL).")
+            logger.debug("Read stored energy data.")
         } catch {
             // Triggered if file doesn't exist yet (e.g.: on very first app launch).
             logger.info("Couldn't read file with energy data from app group container: \(error.localizedDescription)")

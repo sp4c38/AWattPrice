@@ -40,7 +40,7 @@ extension BackendCommunicator {
             
             if parsed.data != nil {
                 if parsed.data!.prices.isEmpty {
-                    logger.notice("No prices can be displayed: either there are none or they are outdated.")
+                    logger.notice("No prices can be displayed, either there are none or they are outdated.")
                     withAnimation {
                         self.currentlyNoData = true
                     }

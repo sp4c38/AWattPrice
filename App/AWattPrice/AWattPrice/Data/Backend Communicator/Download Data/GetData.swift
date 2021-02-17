@@ -30,14 +30,14 @@ extension BackendCommunicator {
     
     /// Returns bool indicating if the app/widget needs to check for new data polling the backend.
     private func energyDataNeedsBackendUpdate(_ energyData: EnergyData) -> Bool {
-        guard let lastItemStart = energyData.prices.last?.startTimestamp else { return true }
+        guard let lastItemEnd = energyData.prices.last?.endTimestamp else { return true }
         
         let now = Date()
         var calendar = Calendar(identifier: .gregorian)
         calendar.timeZone = rotation.timeZone
 
         let startToday = calendar.startOfDay(for: now)
-        let dayDifference = calendar.dateComponents([.day], from: startToday, to: lastItemStart).day!
+        let dayDifference = calendar.dateComponents([.day], from: startToday, to: lastItemEnd).day!
         
         if dayDifference == 1 { // Price data for the following day either doesn't exist at all or is uncomplete.
             if now >= self.rotation.rotationDate {
@@ -85,20 +85,20 @@ extension BackendCommunicator {
         
         var parsedRemotely: EnergyData? = nil // Remotely parsed energy data
         if pollFromServer {
+            logger.debug("Need to download energy data from backend.")
             (data, dataFromCache, error) = download(region)
             if data != nil {
                 parsedRemotely = parseResponseData(data!, region, includingAllPricePointsAfter: includeDate)
             }
+        } else {
+            logger.debug("Local energy data up to date.")
         }
-        print(parsedLocally)
-        print("--------------------")
-        print(parsedRemotely)
-        if (parsedLocally == nil && parsedRemotely != nil),
+
+        if (parsedLocally == nil && parsedRemotely != nil) ||
            (parsedLocally != nil && parsedRemotely != nil && parsedLocally != parsedRemotely)
         {
             newDataPricePoints = true
         }
-        print(newDataPricePoints)
         
         // Parsed data to actually use
         let parsed = parsedRemotely != nil ? parsedRemotely : parsedLocally
@@ -119,7 +119,7 @@ extension BackendCommunicator {
     func getEnergyData(
         _ regionIdentifier: Int16,
         _ networkManager: NetworkManager,
-        runAsync: Bool = false
+        runAsync: Bool = true
     ) {
         guard let region = Region(rawValue: Int(regionIdentifier)) else {
             logger.error("Invalid region parsed when getting energy data.")
@@ -142,6 +142,7 @@ extension BackendCommunicator {
             )
             
             if parsedData.newDataPricePoints, parsedData.data != nil {
+                logger.debug("Energy data contains new prices.")
                 self.newPricePointsAvailable(parsedData, appGroupManager)
             }
         }

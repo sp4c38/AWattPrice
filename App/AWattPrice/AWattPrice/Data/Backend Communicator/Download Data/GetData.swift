@@ -130,6 +130,8 @@ extension BackendCommunicator {
         let timeBefore = Date()
         let runQueue = DispatchQueue.global(qos: .userInteractive)
         runAsyncInQueueIf(isTrue: runAsync, in: runQueue) {
+            self.setValuesForDataLoading(runAsync)
+            
             let parsedData = self.getParsedData(
                 region, appGroupManager
             )
@@ -142,7 +144,6 @@ extension BackendCommunicator {
             )
             
             if parsedData.newDataPricePoints, parsedData.data != nil {
-                logger.debug("Energy data contains new prices.")
                 self.newPricePointsAvailable(parsedData, appGroupManager)
             }
         }

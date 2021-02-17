@@ -66,7 +66,7 @@ class AppGroupManager {
         
         do {
             try encodedData.write(to: storeURL)
-            logger.debug("Wrote energy data to group container: \(storeURL).")
+            logger.debug("Wrote energy data to group container.")
         } catch {
             logger.error("Couldn't write energy data to app group container: \(error.localizedDescription).")
             throw ReadWriteError.writeToFileError

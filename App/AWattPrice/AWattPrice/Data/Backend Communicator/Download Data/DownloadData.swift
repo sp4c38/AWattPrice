@@ -23,7 +23,14 @@ import WidgetKit
 //    ]
 // }
 
-extension BackendCommunicator {    
+extension BackendCommunicator {
+    internal func setValuesForDataLoading(_ runAsync: Bool) {
+        runAsyncInQueueIf(isTrue: runAsync, in: DispatchQueue.main) {
+            self.currentlyUpdatingData = true
+            self.dataRetrievalError = false
+        }
+    }
+    
     /**
      Set class variables to hold parsed data and reflect errors.
      */
@@ -34,10 +41,6 @@ extension BackendCommunicator {
         _ runAsync: Bool
     ) {
         runAsyncInQueueIf(isTrue: runAsync, in: DispatchQueue.main) {
-            // Reset to defaults
-            self.currentlyUpdatingData = true
-            self.dataRetrievalError = false
-            
             if parsed.data != nil {
                 if parsed.data!.prices.isEmpty {
                     logger.notice("No prices can be displayed, either there are none or they are outdated.")
@@ -77,8 +80,6 @@ extension BackendCommunicator {
      Never run in DispatchQueue.main.
      */
     internal func download(_ region: Region) -> (Data?, Bool, Error?) {
-        logger.debug("Downloading aWATTar data.")
-        
         var downloadURL = ""
         if region == .DE {
             downloadURL = GlobalAppSettings.rootURLString + "/data/DE"

@@ -97,18 +97,18 @@ extension BackendCommunicator {
         return (newMinPrice, newMaxPrice)
     }
     
-    internal func parseResponseData(_ data: Data, _ region: Region) -> EnergyData? {
+    internal func parseResponseData(
+        _ data: Data, _ region: Region, includingAllPricePointsAfter includeDate: Date
+    ) -> EnergyData? {
         guard var data = quickJSONDecode(data, asType: EnergyData.self, setDecoder: { jsonDecoder in
             jsonDecoder.dateDecodingStrategy = .secondsSince1970
         }) else { return nil }
-        
-        let startCurrentHour = Calendar.current.startOfHour(for: Date())
         
         var newPrices = [EnergyPricePoint]()
         var newMinPrice: Double = 0
         var newMaxPrice: Double = 0
         for pointIndex in 0..<data.prices.count {
-            if data.prices[pointIndex].startTimestamp < startCurrentHour {
+            if data.prices[pointIndex].startTimestamp < includeDate {
                 continue
             }
             

@@ -23,39 +23,25 @@ import WidgetKit
 //    ]
 // }
 
-extension BackendCommunicator {
-//    internal func checkAndStoreToAppGroup(_ appGroupManager: AppGroupManager, _ newDataToCheck: EnergyData?) {
-//        guard let newData = newDataToCheck else { return }
-//        let setGroupSuccessful = appGroupManager.setGroup(AppGroups.awattpriceGroup)
-//        guard setGroupSuccessful else { return }
-//
-//        let storedData = appGroupManager.readEnergyData()
-//        if storedData != newData {
-//            _ = appGroupManager.writeEnergyDataToGroup(energyData: newData)
-//            WidgetCenter.shared.reloadTimelines(ofKind: "me.space8.AWattPrice.PriceWidget")
-//        }
-//    }
-    
+extension BackendCommunicator {    
     /**
      Set class variables to hold parsed data and reflect errors.
      */
     internal func setClassDataAndErrors(
-        _ data: EnergyData?,
-        _ error: Error?,
+        _ parsed: ExtendedParsedData,
         _ timeBefore: Date,
-        _ dataFromCache: Bool,
         _ networkManager: NetworkManager,
         _ runAsync: Bool
     ) {
         DispatchQueue.main.sync {
-            if data != nil {
-                if data!.prices.isEmpty {
+            if parsed.data != nil {
+                if parsed.data!.prices.isEmpty {
                     logger.notice("No prices can be displayed: either there are none or they are outdated.")
                     withAnimation {
                         self.currentlyNoData = true
                     }
                 } else {
-                    self.energyData = data!
+                    self.energyData = parsed.data!
                 }
             } else {
                 logger.notice("Data retrieval error after trying to reach server (e.g.: server could be offline).")
@@ -64,7 +50,7 @@ extension BackendCommunicator {
                 }
             }
             
-            if dataFromCache == true, networkManager.monitorer.currentPath.status == .unsatisfied {
+            if parsed.dataFromCache == true, networkManager.monitorer.currentPath.status == .unsatisfied {
                 // Show cached data and a notice that no fresh data could be fetched.
                 self.dataRetrievalError = true
             }

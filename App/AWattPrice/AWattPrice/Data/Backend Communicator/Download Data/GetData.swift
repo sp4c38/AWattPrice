@@ -11,6 +11,21 @@ import Network
 import WidgetKit
 
 extension BackendCommunicator {
+    /**
+     Store parsed energy data to a app group represented by the parsed AppGroupManager.
+     
+     Function won't make sure that new energy data != currently stored energy data.
+     */
+    internal func storeEnergyData(_ energyData: EnergyData, forRegion: Region, _ appGroupManager: AppGroupManager) {
+        appGroupManager.writeEnergyDataToGroup(eneryData: energyData, forRegion: region)
+        
+        let storedData = appGroupManager.readEnergyData()
+        if storedData != newData {
+            _ = appGroupManager.writeEnergyDataToGroup(energyData: newData)
+            WidgetCenter.shared.reloadTimelines(ofKind: "me.space8.AWattPrice.PriceWidget")
+        }
+    }
+    
     /// Returns bool indicating if the app/widget needs to check for new data polling the backend.
     private func energyDataNeedsBackendUpdate(_ energyData: EnergyData) -> Bool {
         guard let lastItemStart = energyData.prices.last?.startTimestamp else { return true }
@@ -36,31 +51,56 @@ extension BackendCommunicator {
         return true
     }
 
+    struct ExtendedParsedData {
+        var data: EnergyData?
+        var newDataPricePoints: Bool // Set to true if new data price points were added
+        var dataFromCache: Bool
+        var error: Error? // Any error occurred while retrieving the data.
+    }
+    
     private func getParsedData(
         _ region: Region,
         _ appGroupManager: AppGroupManager
-    ) -> (EnergyData?, Bool, Error?) {
-        var (data, dataFromCache, error): (Data?, Bool, Error?) = (nil, true, nil)
-        (data, error) = appGroupManager.getEnergyDataStored(for: region)
+    ) -> ExtendedParsedData {
+        var dataFromCache = true
+        var newDataPricePoints = false
+        var (data, error) = appGroupManager.getEnergyDataStored(for: region)
+        
+        let now = Date()
+        // Include all energy price points >= this time
+        let includeDate = Calendar.current.startOfHour(for: now)
         
         var pollFromServer = true
         // If data is nil, pollFromServer is already set to true.
         
-        var parsed: EnergyData? = nil
+        var parsedLocally: EnergyData? = nil // Stored parsed energy data
         if data != nil {
-            parsed = self.parseResponseData(data!, region)
-            if parsed != nil {
-                pollFromServer = energyDataNeedsBackendUpdate(parsed!)
-            }
-        }
-        if pollFromServer {
-            (data, dataFromCache, error) = self.download(region)
-            if data != nil {
-                parsed = self.parseResponseData(data!, region)
+            parsedLocally = parseResponseData(data!, region, includingAllPricePointsAfter: includeDate)
+            if parsedLocally != nil {
+                pollFromServer = energyDataNeedsBackendUpdate(parsedLocally!)
             }
         }
         
-        return (parsed, dataFromCache, error)
+        var parsedRemotely: EnergyData? = nil // Remotely parsed energy data
+        if pollFromServer {
+            (data, dataFromCache, error) = download(region)
+            if data != nil {
+                parsedRemotely = parseResponseData(data!, region, includingAllPricePointsAfter: includeDate)
+            }
+        }
+
+        if parsedLocally != nil, parsedRemotely != nil, parsedLocally != parsedRemotely {
+            newDataPricePoints = true
+        }
+        
+        // Parsed data to actually use
+        let parsed = parsedRemotely != nil ? parsedRemotely : parsedLocally
+        
+        let parsedData = ExtendedParsedData(
+            data: parsed, newDataPricePoints: newDataPricePoints, dataFromCache: dataFromCache, error: error
+        )
+        
+        return parsedData
     }
     
     /**
@@ -84,19 +124,21 @@ extension BackendCommunicator {
         let timeBefore = Date()
         let backgroundQueue = DispatchQueue.global(qos: .userInteractive)
         runInQueueIf(isTrue: runAsync, in: backgroundQueue) {
-            let (parsedData, dataFromCache, error) = self.getParsedData(
+            let parsedData = self.getParsedData(
                 region, appGroupManager
             )
-            
+
             self.setClassDataAndErrors(
                 parsedData,
-                error,
                 timeBefore,
-                dataFromCache,
                 networkManager,
                 runAsync
             )
-//            self.checkAndStoreToAppGroup(appGroupManager, energyData)
+            
+            if parsedData.newDataPricePoints {
+                // newDataPricePoints is only set to true if data != nil
+                self.storeEnergyData(parsedData.data!, forRegion: region, appGroupManager)
+            }
         }
     }
 }

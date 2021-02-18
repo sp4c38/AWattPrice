@@ -10,9 +10,9 @@ When you use the Mobile Application, our servers automatically record informatio
 
 When sending an e-mail to any of our addresses we will collect any information provided in this message (also see section in "Collection of personal information").
 
-If you allow AWattPrice to send notifications we will need to collect certain information to provide you with this service:
+If you allow AWattPrice notifications we will need to collect certain information to provide you with this service:
 
-- An Apple Push Notification Service device token ("APNs token"). This APNs token doesn't allow us to identify a specific user, as it could change anytime (see https://developer.apple.com/documentation/usernotifications/registering_your_app_with_apns).
+- An Apple Push Notification Service device token ("APNs token"). This APNs token doesn't allow us to identify you as a specific user, as it could change anytime (see https://developer.apple.com/documentation/usernotifications/registering_your_app_with_apns).
 - Settings specified by you from inside AWattPrice.
 
 ### Collection of personal information
@@ -72,9 +72,9 @@ You acknowledge that you have read this Policy and agree to all its terms and co
 
 If you would like to contact us to understand more about this Policy or wish to contact us concerning any matter relating to individual rights and your information, you may send an email to contact-awattprice@space8.me
 
-This document was last updated on February 18, 2021
+This document was last updated on February 19, 2021
 
 ### Changes to this policy:
-02.12.2020: First published
+12/02/2020: First published
 
-18.02.2021: Added section for collection of data when enabling AWattPrice notifications.
+02/18/2021: Section that describes the collection of data when AWattPrice notifications are enabled.

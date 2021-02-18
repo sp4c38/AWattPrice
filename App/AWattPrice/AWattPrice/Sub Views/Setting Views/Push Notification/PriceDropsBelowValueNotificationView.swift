@@ -20,6 +20,9 @@ struct PriceDropsBelowValueNotificationInfoView: View {
                 + Text("notificationPage.notification.priceDropsBelowValue.description.firstLine.pt4")
                 .fontWeight(.heavy)
                 + Text("notificationPage.notification.priceDropsBelowValue.description.firstLine.pt5")
+                + Text("notificationPage.notification.priceDropsBelowValue.description.firstLine.pt6")
+                .fontWeight(.heavy)
+                + Text("notificationPage.notification.priceDropsBelowValue.description.firstLine.pt7")
     }
 
     var body: some View {
@@ -28,8 +31,6 @@ struct PriceDropsBelowValueNotificationInfoView: View {
 
             VStack(alignment: .leading, spacing: 12) {
                 completeExtraTextLineTwo
-
-                Text("notificationPage.notification.priceDropsBelowValue.description.secondLine")
                     .foregroundColor(.blue)
             }
             .font(.caption)

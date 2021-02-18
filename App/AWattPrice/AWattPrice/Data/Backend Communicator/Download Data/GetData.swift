@@ -41,13 +41,19 @@ extension BackendCommunicator {
         
         if dayDifference == 1 { // Price data for the following day either doesn't exist at all or is uncomplete.
             if now >= self.rotation.rotationDate {
+                logger.debug("Energy data due to update.")
                 return true
             } else {
+                let hoursRemaining = rotation.rotationDate.timeIntervalSince(now) / 3600
+                let remainingRounded = (hoursRemaining * 1000).rounded() / 1000
+                logger.debug("Energy data due update today but not yet past rotation time: \(remainingRounded)h remaining.")
                 return false
             }
         } else if dayDifference > 1 { // Price data for following day is already completely available
+            logger.debug("Energy data up to date.")
             return false
         } else if dayDifference < 1 { // Should never happen. Occurs when price data for the current day either doesn't exist or is uncomplete.
+            logger.debug("Energy data for current day uncomplete and due for update.")
             return true
         }
         return true
@@ -85,19 +91,19 @@ extension BackendCommunicator {
         
         var parsedRemotely: EnergyData? = nil // Remotely parsed energy data
         if pollFromServer {
-            logger.debug("Need to download energy data from backend.")
             (data, dataFromCache, error) = download(region)
             if data != nil {
                 parsedRemotely = parseResponseData(data!, region, includingAllPricePointsAfter: includeDate)
             }
-        } else {
-            logger.debug("Local energy data up to date.")
         }
 
         if (parsedLocally == nil && parsedRemotely != nil) ||
            (parsedLocally != nil && parsedRemotely != nil && parsedLocally != parsedRemotely)
         {
+            logger.debug("Downloaded data contains new price points.")
             newDataPricePoints = true
+        } else {
+            logger.debug("No new price points in downloaded data.")
         }
         
         // Parsed data to actually use

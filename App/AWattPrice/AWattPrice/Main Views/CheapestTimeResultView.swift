@@ -42,7 +42,7 @@ struct CheapestTimeResultTimeRange: View {
                 }
             }
         }
-        .font(.title3)
+        .font(.fTitle2)
         .onReceive(cheapestHourManager.$startDate) { _ in setStart() }
         .onReceive(cheapestHourManager.$endDate) { _ in setEnd() }
         .onReceive(updateTimer) { _ in
@@ -105,11 +105,11 @@ extension CheapestTimeResultTimeRange {
         let difference = referenceDate.timeIntervalSince(now)
         
         let hours = Int(
-            difference / 3600
+            (difference / 3600)
                 .rounded(.down)
         )
         let minutes = Int(
-            Double(Int(difference) % 3600) / 60
+            (Double(Int(difference) % 3600) / 60)
                 .rounded(.up)
         )
         
@@ -211,11 +211,11 @@ struct CheapestTimeResultView: View {
                 Spacer(minLength: 0)
                 
                 HStack(alignment: .center) {
-                    Text("cheapestPriceResultPage.totalTime")
+                    Text("cheapestPriceResultPage.duration")
                     Text(getTotalTime())
                         .bold()
                 }
-                .font(.callout)
+                .font(.fCallout)
 
                 Spacer(minLength: 0)
             } else if cheapestHourManager.errorOccurredFindingCheapestHours == true {

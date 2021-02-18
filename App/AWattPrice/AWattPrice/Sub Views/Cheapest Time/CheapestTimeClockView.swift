@@ -143,9 +143,9 @@ struct CheapestTimeClockView: View {
             currentDegree += 30
         }
 
-        var fontTextSize = Font.body
+        var fontTextSize = Font.fBody
         if deviceType == .pad {
-            fontTextSize = Font.title2
+            fontTextSize = Font.fTitle2
         }
 
         return ZStack {

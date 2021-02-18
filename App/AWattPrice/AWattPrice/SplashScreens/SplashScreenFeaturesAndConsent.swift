@@ -136,9 +136,9 @@ struct AgreementConsentView: View {
                 }) {
                     HStack {
                         Text(seeAgreementText.localized())
-                            .font(.fSubHeadline)
                         Image(systemName: "chevron.right")
                     }
+                    .font(.fSubHeadline)
                     .foregroundColor(Color.blue)
                 }
             }

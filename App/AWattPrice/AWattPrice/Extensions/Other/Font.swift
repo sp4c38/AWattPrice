@@ -12,6 +12,7 @@ extension Font {
     /// Fixed text sizes
     static let fTitle = Font.system(size: 26, weight: .regular)
     static let fTitle2 = Font.system(size: 20, weight: .regular)
+    static let fTitle3 = Font.system(size: 18, weight: .regular)
     static let fHeadline = Font.system(size: 17, weight: .bold)
     static let fSubHeadline = Font.system(size: 15, weight: .regular)
     static let fCallout = Font.system(size: 17, weight: .regular)

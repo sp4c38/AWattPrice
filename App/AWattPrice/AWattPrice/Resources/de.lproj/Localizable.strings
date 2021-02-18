@@ -55,7 +55,7 @@
 
 // Cheapest Price Result page localizations
 "cheapestPriceResultPage.cheapestTimeErrorOccurred" = "Es ist ein Fehler aufgetreten.\nBitte versuchen Sie es später noch einmal.";
-"cheapestPriceResultPage.totalTime" = "Dauer:";
+"cheapestPriceResultPage.duration" = "Dauer:";
 "cheapestPriceResultPage.elecCosts" = "Stromkosten";
 "cheapestPriceResultPage.priceWithVatNote" = "(Preis mit MwSt., änderbar in Einstellungen)";
 "cheapestPriceResultPage.priceWithoutVatNote" = "(Preis ohne MwSt., änderbar in Einstellungen)";
@@ -84,12 +84,13 @@
 "notificationPage.notification.priceDropsBelowValue" = "Preisbenachrichtigung";
 "notificationPage.notification.priceDropsBelowValue.wishPrice" = "Wunschpreis";
 "notificationPage.notification.priceDropsBelowValue.description" = "Erhalten Sie eine Benachrichtigung, sobald Preise unter einen Wunschpreis fallen.";
-"notificationPage.notification.priceDropsBelowValue.description.firstLine.pt1" = "Sobald neue Preise verfügbar sind, erhalten Sie eine Benachrichtigung, falls ein Strompreis des Folgetages";
-"notificationPage.notification.priceDropsBelowValue.description.firstLine.pt2" = " auf ";
-"notificationPage.notification.priceDropsBelowValue.description.firstLine.pt3" = "oder";
-"notificationPage.notification.priceDropsBelowValue.description.firstLine.pt4" = " unter ";
-"notificationPage.notification.priceDropsBelowValue.description.firstLine.pt5" = "Ihren Wunschpreis sinkt.";
-"notificationPage.notification.priceDropsBelowValue.description.secondLine" = "Über Preise des aktuellen Tages wurde somit schon am Tag davor benachrichtigt.";
+"notificationPage.notification.priceDropsBelowValue.description.firstLine.pt1" = "Sobald neue Preise verfügbar sind, erhalten Sie eine Benachrichtigung, falls ein Strompreis des";
+"notificationPage.notification.priceDropsBelowValue.description.firstLine.pt2" = " Folgetages ";
+"notificationPage.notification.priceDropsBelowValue.description.firstLine.pt3" = "";
+"notificationPage.notification.priceDropsBelowValue.description.firstLine.pt4" = " auf ";
+"notificationPage.notification.priceDropsBelowValue.description.firstLine.pt5" = "oder";
+"notificationPage.notification.priceDropsBelowValue.description.firstLine.pt6" = " unter ";
+"notificationPage.notification.priceDropsBelowValue.description.firstLine.pt7" = "Ihren Wunschpreis sinkt.";
 
 // Data error localizations
 "dataError.download.tryAgainLater" = "Bitte versuchen Sie es\nspäter noch einmal.";

@@ -49,6 +49,10 @@ extension BackendCommunicator {
                 self.dataRetrievalError = true
             }
 
+            if !self.dataRetrievalError {
+                self.dateDataLastUpdated = timeBefore
+            }
+            
             if runAsync && Date().timeIntervalSince(timeBefore) < 0.6 {
                 DispatchQueue.main.asyncAfter(
                     deadline: .now() + (0.6 - Date().timeIntervalSince(timeBefore))
@@ -67,6 +71,7 @@ extension BackendCommunicator {
      Never run in DispatchQueue.main.
      */
     internal func download(_ region: Region) -> (Data?, Bool, Error?) {
+        logger.debug("Downloading energy data from backend server.")
         var downloadURL = ""
         if region == .DE {
             downloadURL = GlobalAppSettings.rootURLString + "/data/DE"

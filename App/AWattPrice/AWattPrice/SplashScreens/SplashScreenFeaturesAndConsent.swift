@@ -145,7 +145,7 @@ struct AgreementConsentView: View {
 
             Spacer()
         }
-        .animation(.easeInOut(duration: 0.4))
+        .animation(.none)
         .contentShape(Rectangle())
         .onTapGesture {
             isChecked.toggle()

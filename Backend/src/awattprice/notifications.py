@@ -146,6 +146,7 @@ async def handle_apns_response(db_manager, token, response, status_code, config)
     # For reference of returned response and status codes see:
     # https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/handling_notification_responses_from_apns
     if status_code == status.HTTP_200_OK:
+        log.debug(f"APNs notification sent successful.")
         return
     if status_code in [status.HTTP_400_BAD_REQUEST, status.HTTP_410_GONE]:
         remove_token = False
@@ -252,13 +253,12 @@ async def price_drops_below_notification(
             "authorization": f"bearer {token_data_encoded}",
             "apns-push-type": "alert",
             "apns-topic": notification_defaults.bundle_id,
-            "apns-expiration": f"{lowest_price_start.timestamp - 3600}",
+            "apns-expiration": f"{lowest_price_start.timestamp + 3600}",
             "apns-priority": "5",
             "apns-collapse-id": notification_defaults.below_notification.collapse_id,
         }
-
+     
         url = f"{notification_defaults.apns_server_url}:{notification_defaults.apns_server_port}{notification_defaults.url_path.format(token)}"
-
         status_code = None
         response = None
 

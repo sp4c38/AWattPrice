@@ -56,7 +56,7 @@
 
 // Cheapest Price Result page localizations
 "cheapestPriceResultPage.cheapestTimeErrorOccurred" = "An error occurred.\nPlease try again later.";
-"cheapestPriceResultPage.totalTime" = "Time:";
+"cheapestPriceResultPage.totalTime" = "Duration:";
 "cheapestPriceResultPage.elecCosts" = "Electricity costs";
 "cheapestPriceResultPage.priceWithVatNote" = "(price with VAT, changeable in settings)";
 "cheapestPriceResultPage.priceWithoutVatNote" = "(price without VAT, changeable in settings)";

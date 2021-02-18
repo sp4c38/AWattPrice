@@ -10,38 +10,114 @@ import SwiftUI
 struct CheapestTimeResultTimeRange: View {
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
 
-    var dateFormatter: DateFormatter
-    init() {
-        dateFormatter = DateFormatter()
-        dateFormatter.dateStyle = .short
-        dateFormatter.timeStyle = .short
-    }
-
-    func getDateString(start: Bool, end: Bool) -> String {
-        if !(start == false && end == false) && !(start == true && end == true) {
-            var startDate = Date(timeIntervalSince1970: 0)
-            if start == true {
-                startDate = cheapestHourManager.cheapestHoursForUsage!.associatedPricePoints.first!.startTimestamp
-            } else if end == true {
-                startDate = cheapestHourManager.cheapestHoursForUsage!.associatedPricePoints.last!.endTimestamp
-            }
-            return dateFormatter.string(from: startDate)
-        } else {
-            return ""
-        }
-    }
-
+    @State var startDate: Date? = nil
+    @State var startDifferenceString = ""
+    @State var endDate: Date? = nil
+    @State var endDifferenceString = ""
+    
+    let updateTimer = Timer.publish(every: 2, on: .main, in: .default).autoconnect()
+    
     var body: some View {
-        VStack(alignment: .center, spacing: 5) {
-            Text(getDateString(start: true, end: false))
-                .bold()
+        VStack(alignment: .center, spacing: 7) {
+            if startDate != nil {
+                VStack(spacing: 4) {
+                    Text(getDateString(startDate!))
+                        .bold()
+                    Text("in \(startDifferenceString)")
+                        .bold()
+                        .modifier(DifferenceTimeModifier())
+                }
+            }
 
+            
             Text("general.until")
 
-            Text(getDateString(start: false, end: true))
-                .bold()
+            if endDate != nil {
+                VStack(spacing: 4) {
+                    Text(getDateString(endDate!))
+                        .bold()
+                    Text("in \(endDifferenceString)")
+                        .bold()
+                        .modifier(DifferenceTimeModifier())
+                }
+            }
         }
-        .font(.fTitle2)
+        .font(.title3)
+        .onReceive(cheapestHourManager.$startDate) { _ in setStart() }
+        .onReceive(cheapestHourManager.$endDate) { _ in setEnd() }
+        .onReceive(updateTimer) { _ in
+            setStart()
+            setEnd()
+        }
+    }
+    
+    func setStart() {
+        startDate = getDate(.start)
+        startDifferenceString = getNowDifferenceString(referencingTo: startDate!)
+    }
+    func setEnd() {
+        endDate = getDate(.end)
+        endDifferenceString = getNowDifferenceString(referencingTo: endDate!)
+    }
+    
+    struct DifferenceTimeModifier: ViewModifier {
+        func body(content: Content) -> some View {
+            content
+                .font(.fCallout)
+                .foregroundColor(.gray)
+        }
+    }
+}
+
+extension CheapestTimeResultTimeRange {
+    enum DateType {
+        case start
+        case end
+    }
+    
+    func getDate(_ dateType: DateType) -> Date {
+        let pricePoints = cheapestHourManager.cheapestHoursForUsage!.associatedPricePoints
+        
+        var useDate: Date? = nil
+        switch dateType {
+        case .start:
+            useDate = pricePoints.first!.startTimestamp
+        case .end:
+            useDate = pricePoints.last!.endTimestamp
+        }
+        
+        return useDate!
+    }
+    
+    func getDateString(_ date: Date) -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateStyle = .short
+        dateFormatter.timeStyle = .short
+        
+        let dateString = dateFormatter.string(from: date)
+        return dateString
+    }
+    
+    func getNowDifferenceString(referencingTo referenceDate: Date) -> String {
+        let timeFormatter = TotalTimeFormatter()
+        
+        let now = Date()
+        let difference = referenceDate.timeIntervalSince(now)
+        
+        let hours = Int(
+            difference / 3600
+                .rounded(.down)
+        )
+        let minutes = Int(
+            Double(Int(difference) % 3600) / 60
+                .rounded(.up)
+        )
+        
+        let differenceString = timeFormatter.string(
+            hour: hours, minute: minutes
+        )
+        
+        return differenceString
     }
 }
 
@@ -118,7 +194,7 @@ struct CheapestTimeResultView: View {
             (Double(interval % 3600) / 60)
                 .rounded()
         )
-        return TotalTimeFormatter().localizedTotalTimeString(hour: hours, minute: minutes)
+        return TotalTimeFormatter().string(hour: hours, minute: minutes)
     }
 
     var body: some View {
@@ -130,25 +206,16 @@ struct CheapestTimeResultView: View {
 
                 Spacer(minLength: 0)
 
+                CheapestTimeResultViewClock()
+
+                Spacer(minLength: 0)
+                
                 HStack(alignment: .center) {
                     Text("cheapestPriceResultPage.totalTime")
                     Text(getTotalTime())
                         .bold()
                 }
-                .font(.fBody)
-
-                Spacer(minLength: 0)
-
-                CheapestTimeResultViewClock()
-
-                Spacer(minLength: 0)
-
-                HStack(alignment: .center) {
-                    Text("general.today")
-                    Text(todayDateFormatter.string(from: Date()))
-                        .bold()
-                }
-                .font(.fCallout)
+                .font(.callout)
 
                 Spacer(minLength: 0)
             } else if cheapestHourManager.errorOccurredFindingCheapestHours == true {
@@ -166,11 +233,27 @@ struct CheapestTimeResultView: View {
         .onAppear {
             cheapestHourManager.calculateCheapestHours(energyData: backendComm.energyData!, currentSetting: currentSetting)
         }
-//        .onChange(of: currentSetting.entity!.awattarTariffIndex) { _ in
-//            // The tariff selection has affects on the hourly price which was calculated previously. That's why it has to be recalculated when the tariff selection changes.
-//            if cheapestHourManager.cheapestHoursForUsage != nil {
-//                cheapestHourManager.cheapestHoursForUsage!.calculateHourlyPrice(currentSetting: currentSetting)
-//            }
-//        }
+    }
+}
+
+struct CheapestTimeResultView_Previews: PreviewProvider {
+    static var previews: some View {
+        
+        let cheapestHourManager: CheapestHourManager = {
+            let cheapestHourManager = CheapestHourManager()
+            cheapestHourManager.cheapestHoursForUsage = HourPair(
+                associatedPricePoints: [
+                    EnergyPricePoint(
+                        startTimestamp: Date(timeIntervalSince1970: 1613602800),
+                        endTimestamp: Date(timeIntervalSince1970: 1613606400),
+                        marketprice: 10
+                    )
+                ]
+            )
+            return cheapestHourManager
+        }()
+        
+        CheapestTimeResultTimeRange()
+            .environmentObject(cheapestHourManager)
     }
 }

@@ -113,12 +113,6 @@ struct TimeRangeInputField: View {
 
     @State var inputDateRange: ClosedRange<Date> = Date() ... Date()
 
-    let totalTimeFormatter: TotalTimeFormatter
-
-    init() {
-        totalTimeFormatter = TotalTimeFormatter()
-    }
-
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
@@ -176,6 +170,8 @@ extension TimeRangeInputField {
 
     /// Get error string indicating minimum time range needed.
     func getMinRangeNeededString() -> String {
+        let totalTimeFormatter = TotalTimeFormatter()
+        
         let hours = Int(
             (Double(cheapestHourManager.timeOfUsage) / 3600)
                 .rounded(.down)
@@ -184,7 +180,9 @@ extension TimeRangeInputField {
             (Double(cheapestHourManager.timeOfUsage % 3600) / 60)
                 .rounded()
         )
-        let totalTimeString = totalTimeFormatter.localizedTotalTimeString(hour: hours, minute: minutes)
+        let totalTimeString = totalTimeFormatter.string(
+            hour: hours, minute: minutes
+        )
         var baseString = "cheapestPricePage.inputMode.withDuration.wrongTimeRangeError"
         if cheapestHourManager.inputMode == 1 {
             baseString = "cheapestPricePage.inputMode.withKwh.wrongTimeRangeError"

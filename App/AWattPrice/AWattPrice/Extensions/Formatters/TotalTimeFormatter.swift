@@ -8,7 +8,7 @@
 import Foundation
 
 class TotalTimeFormatter {
-    func localizedTotalTimeString(hour: Int, minute: Int) -> String {
+    func string(hour: Int, minute: Int) -> String {
         let numberFormatter = NumberFormatter()
         numberFormatter.numberStyle = .none
         let hourString = numberFormatter.string(for: hour) ?? ""

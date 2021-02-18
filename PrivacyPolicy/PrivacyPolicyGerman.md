@@ -41,11 +41,11 @@ Sie können bestimmte Rechte bezüglich Ihrer von uns verarbeiteten Daten ausüb
 
 ### Links zu anderen Ressourcen
 
-Die Mobile Anwendung und Dienste enthalten Links zu anderen Ressourcen, die nicht in unserem Besitz oder unter unserer Kontrolle sind. Bitte beachten Sie, dass wir für die Datenschutzpraktiken dieser anderen Ressourcen oder Dritter nicht verantwortlich sind.
+Die Mobile Anwendung und Dienste kann Links zu anderen Ressourcen enthalten, die nicht in unserem Besitz oder unter unserer Kontrolle sind. Bitte beachten Sie, dass wir für die Datenschutzpraktiken dieser anderen Ressourcen oder Dritter nicht verantwortlich sind.
 
 ### Informationssicherheit
 
-Die gesamte Kommunikation mit der Anwendung verwendet HTTPS als Sicherheitsmaßnahme.
+Die gesamte Kommunikation in der Anwendung verwendet HTTPS als Sicherheitsmaßnahme.
 
 Wir sichern Informationen, die Sie uns auf Computerservern hinterlassen, in einer kontrollierten sicheren Umgebung, in der unerlaubter Zugriff, Verwendung oder Veröffentlichung verhindert wird. Es kann jedoch keine Datenübertragung über das Internet oder ein drahtloses Netzwerk garantiert werden. Obwohl wir uns bemühen, Ihre persönlichen Daten zu schützen, erkennen Sie daher an, dass (i) es Sicherheits- und Datenschutzeinschränkungen des Internets gibt, die außerhalb von unserem Kontrollbereich liegen; und (ii) die Sicherheit, Integrität und Vertraulichkeit aller Informationen und Daten, die zwischen Ihnen und der mobilen Anwendung und den Diensten ausgetauscht werden, nicht garantiert werden kann.
 

@@ -6,11 +6,22 @@ This privacy policy ("Policy") describes how the personally identifiable informa
 
 When you use the Mobile Application, our servers automatically record information that your device sends. This data includes information such as your device's IP address, operating system type and version, access times and dates, information you search for in the Mobile Application and browser information.
 
-Information collected automatically is used only to establish statistical information regarding the usage of the Mobile Application and Services. This statistical information is not otherwise aggregated in such a way that would identify any particular user of the system.
+### Collection of information
+
+When sending an e-mail to any of our addresses we will collect any information provided in this message (also see section in "Collection of personal information").
+
+If you allow AWattPrice to send notifications we will need to collect certain information to provide you with this service:
+
+- An Apple Push Notification Service device token ("APNs token"). This APNs token doesn't allow us to identify a specific user, as it could change anytime (see https://developer.apple.com/documentation/usernotifications/registering_your_app_with_apns).
+- Settings specified by you from inside AWattPrice.
 
 ### Collection of personal information
 
 You can access and use the Mobile Application and Services without telling us who you are or revealing any personal information by which someone could identify you as a specific, identifiable individual. If, however, you wish to use some of the features in the Mobile Application, you may be asked to provide certain Personal Information (for example, your name and e-mail address). We receive and store any information you knowingly provide to us when you fill any online forms in the Mobile Application.
+
+Currently the collection of Personal Information includes:
+
+- Any personal information (i.e.: e-mail address, name, ...) provided when sending an e-mail to any of our addresses.
 
 ### Use and processing of collected information
 
@@ -41,11 +52,11 @@ You may exercise certain rights regarding your information processed by us. In p
 
 ### Links to other resources
 
-The Mobile Application and Services contain links to other resources that are not owned or controlled by us. Please be aware that we are not responsible for the privacy practices of such other resources or third parties.
+The Mobile Application and Services might contain links to other resources that are not owned or controlled by us. Please be aware that we are not responsible for the privacy practices of such other resources or third parties.
 
 ### Information security
 
-All communication with the app uses HTTPS as a security measure.
+All communication in the app uses HTTPS as a security measure.
 
 We secure information you provide on computer servers in a controlled, secure environment, protected from unauthorized access, use, or disclosure. However, no data transmission over the Internet or wireless network can be guaranteed. Therefore, while we strive to protect your Personal Information, you acknowledge that (i) there are security and privacy limitations of the Internet which are beyond our control; and (ii) the security, integrity, and privacy of any information and data exchanged between you and the Mobile Application and Services cannot be guaranteed.
 
@@ -61,7 +72,9 @@ You acknowledge that you have read this Policy and agree to all its terms and co
 
 If you would like to contact us to understand more about this Policy or wish to contact us concerning any matter relating to individual rights and your information, you may send an email to contact-awattprice@space8.me
 
-This document was last updated on December 2, 2020
+This document was last updated on February 18, 2021
 
 ### Changes to this policy:
 02.12.2020: First published
+
+18.02.2021: Added section for collection of data when enabling AWattPrice notifications.

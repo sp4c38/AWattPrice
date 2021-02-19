@@ -65,6 +65,34 @@ extension BackendCommunicator {
             }
         }
     }
+    
+    struct CachedData {
+        let data: Data
+        let didExpire: Bool
+    }
+    
+    internal func checkCachedData(for request: URLRequest) -> CachedData? {
+        guard let cachedResponse = URLCache.shared.cachedResponse(for: request) else { return nil }
+        guard let httpResponse = cachedResponse.response as? HTTPURLResponse else { return nil }
+        guard let originalRetrievalDate = httpResponse.allHeaderFields["Date"] as? String else { return nil }
+        guard let cacheControl = httpResponse.allHeaderFields["Cache-Control"] as? String else { return nil }
+        
+        guard let retrievalDate = convertHTTPTimeStringToDate(timeString: originalRetrievalDate) else { return nil }
+        guard let cacheMaxAge = getHTTPCacheControlMaxAgeSeconds(cacheControlString: cacheControl) else { return nil }
+        
+        var dataDidExpire = true
+        
+        let now = Date()
+        if (retrievalDate + cacheMaxAge) >= now {
+            dataDidExpire = false
+        }
+        
+        let responseData = cachedResponse.data
+        
+        let cachedData = CachedData(data: responseData, didExpire: dataDidExpire)
+        return cachedData
+    }
+    
     /**
      Downloads the newest aWATTar data.
      
@@ -84,28 +112,36 @@ extension BackendCommunicator {
             cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy
         )
         energyRequest.httpMethod = "GET"
-        
-        var dataDownloaded: Data? = nil
-        var dataFromCache = false
-        var downloadErrors: Error? = nil
 
-//        if let cachedResponse = URLCache.shared.cachedResponse(for: energyRequest) {
-//            dataDownloaded = cachedResponse.data
-//            dataFromCache = true
-//        } else {
-        let semaphore = DispatchSemaphore(value: 0)
+        let cachedData = checkCachedData(for: energyRequest)
+        var needToPollFromBackend = true
+        if cachedData != nil {
+            if cachedData!.didExpire == false {
+                needToPollFromBackend = false
+            }
+        }
         
-        URLSession.shared.dataTask(with: energyRequest) { data, _, error in
-            dataDownloaded = data
-            downloadErrors = error
+        if needToPollFromBackend {
+            logger.debug("Downloading energy data from backend server.")
+            var dataDownloaded: Data? = nil
+            var downloadErrors: Error? = nil
             
-            semaphore.signal()
-        }.resume()
-        
-        semaphore.wait()
-//        }
-        
-        return (dataDownloaded, dataFromCache, downloadErrors)
+            let semaphore = DispatchSemaphore(value: 0)
+            
+            URLSession.shared.dataTask(with: energyRequest) { data, _, error in
+                dataDownloaded = data
+                downloadErrors = error
+                
+                semaphore.signal()
+            }.resume()
+            
+            semaphore.wait()
+            
+            return (dataDownloaded, false, downloadErrors)
+        } else {
+            logger.debug("Using local CachedURLResponse, because it didn't expire yet.")
+            return (cachedData!.data, false, nil)
+        }
     }
 }
 

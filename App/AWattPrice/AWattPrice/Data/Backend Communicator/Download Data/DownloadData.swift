@@ -30,7 +30,7 @@ extension BackendCommunicator {
         runAsyncInQueueIf(isTrue: runAsync, in: DispatchQueue.main) {
             if parsed.data != nil {
                 if parsed.data!.prices.isEmpty {
-                    logger.notice("No prices can be displayed, either there are none or they are outdated.")
+                    logger.critical("No prices can be displayed, either there are none or they are outdated.")
                     withAnimation {
                         self.currentlyNoData = true
                     }
@@ -88,21 +88,22 @@ extension BackendCommunicator {
         var dataDownloaded: Data? = nil
         var dataFromCache = false
         var downloadErrors: Error? = nil
-        if let cachedResponse = URLCache.shared.cachedResponse(for: energyRequest) {
-            dataDownloaded = cachedResponse.data
-            dataFromCache = true
-        } else {
-            let semaphore = DispatchSemaphore(value: 0)
+
+//        if let cachedResponse = URLCache.shared.cachedResponse(for: energyRequest) {
+//            dataDownloaded = cachedResponse.data
+//            dataFromCache = true
+//        } else {
+        let semaphore = DispatchSemaphore(value: 0)
+        
+        URLSession.shared.dataTask(with: energyRequest) { data, _, error in
+            dataDownloaded = data
+            downloadErrors = error
             
-            URLSession.shared.dataTask(with: energyRequest) { data, _, error in
-                dataDownloaded = data
-                downloadErrors = error
-                
-                semaphore.signal()
-            }.resume()
-            
-            semaphore.wait()
-        }
+            semaphore.signal()
+        }.resume()
+        
+        semaphore.wait()
+//        }
         
         return (dataDownloaded, dataFromCache, downloadErrors)
     }

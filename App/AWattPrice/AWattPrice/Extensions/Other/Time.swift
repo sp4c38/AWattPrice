@@ -41,3 +41,37 @@ func getTimeBySetting(
     let newDate = Calendar.current.date(from: newComponents)
     return newDate
 }
+
+func convertHTTPTimeStringToDate(timeString: String) -> Date? {
+    let dateFormatter = DateFormatter()
+    dateFormatter.locale = Locale(identifier: "en_US_POSIX")
+    dateFormatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss z"
+    
+    guard let convertedTime = dateFormatter.date(from: timeString) else { return nil }
+    
+    return convertedTime
+}
+
+func getHTTPCacheControlMaxAgeSeconds(cacheControlString: String) -> Int? {
+    let cacheControlRegex = """
+    ^[^\\d]*(\\d*)$
+    """
+    let regex = NSRegularExpression(cacheControlRegex)
+    
+    guard let match = regex.firstMatch(in: cacheControlString, options: [], range: cacheControlString.completeNSRange),
+          match.numberOfRanges == 1
+    else {
+        return nil
+    }
+    
+    let nsMatchRange = match.range(at: 1)
+    guard let matchRange = Range(nsMatchRange, in: cacheControlString) else { return nil }
+    let matchedString = String(cacheControlString[matchRange])
+    
+    let numberFormatter = NumberFormatter()
+    numberFormatter.numberStyle = .ordinal
+    guard let maxAgeRaw = numberFormatter.number(from: matchedString) else { return nil }
+    
+    let maxAge = Int(truncating: maxAgeRaw)
+    return maxAge
+}

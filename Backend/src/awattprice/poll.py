@@ -192,7 +192,7 @@ async def get_data(config: Box, region: Optional[Region] = None, force: bool = F
 
 async def get_headers(config: Box, data: Box) -> Dict:
     data = Box(data)
-    headers = {"Cache-Control": "public, max-age={}"}
+    headers = {"Cache-Control": "private, max-age={}"}
     max_age = 0
 
     now = arrow.utcnow()

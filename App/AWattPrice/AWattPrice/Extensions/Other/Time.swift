@@ -52,7 +52,7 @@ func convertHTTPTimeStringToDate(timeString: String) -> Date? {
     return convertedTime
 }
 
-func getHTTPCacheControlMaxAgeSeconds(cacheControlString: String) -> Int? {
+func getHTTPCacheControlMaxAgeSeconds(cacheControlString: String) -> TimeInterval? {
     let cacheControlRegex = """
     ^[^\\d]*(\\d*)$
     """
@@ -72,6 +72,6 @@ func getHTTPCacheControlMaxAgeSeconds(cacheControlString: String) -> Int? {
     numberFormatter.numberStyle = .ordinal
     guard let maxAgeRaw = numberFormatter.number(from: matchedString) else { return nil }
     
-    let maxAge = Int(truncating: maxAgeRaw)
+    let maxAge = TimeInterval(truncating: maxAgeRaw)
     return maxAge
 }

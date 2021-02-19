@@ -88,22 +88,22 @@ extension BackendCommunicator {
                 pollFromServer = energyDataNeedsBackendUpdate(parsedLocally!)
             }
         }
-        
+        pollFromServer = true
         var parsedRemotely: EnergyData? = nil // Remotely parsed energy data
         if pollFromServer {
             (data, dataFromCache, error) = download(region)
             if data != nil {
                 parsedRemotely = parseResponseData(data!, region, includingAllPricePointsAfter: includeDate)
+                
+                if (parsedLocally == nil && parsedRemotely != nil) ||
+                   (parsedLocally != nil && parsedRemotely != nil && parsedLocally != parsedRemotely)
+                {
+                    logger.debug("Downloaded data contains new price points.")
+                    newDataPricePoints = true
+                } else {
+                    logger.debug("No new price points in downloaded data.")
+                }
             }
-        }
-
-        if (parsedLocally == nil && parsedRemotely != nil) ||
-           (parsedLocally != nil && parsedRemotely != nil && parsedLocally != parsedRemotely)
-        {
-            logger.debug("Downloaded data contains new price points.")
-            newDataPricePoints = true
-        } else {
-            logger.debug("No new price points in downloaded data.")
         }
         
         // Parsed data to actually use

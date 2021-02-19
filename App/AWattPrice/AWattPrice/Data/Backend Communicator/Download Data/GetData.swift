@@ -88,7 +88,7 @@ extension BackendCommunicator {
                 pollFromServer = energyDataNeedsBackendUpdate(parsedLocally!)
             }
         }
-        pollFromServer = true
+
         var parsedRemotely: EnergyData? = nil // Remotely parsed energy data
         if pollFromServer {
             (data, dataFromCache, error) = download(region)

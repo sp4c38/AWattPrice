@@ -69,6 +69,7 @@ extension BackendCommunicator {
     struct CachedData {
         let data: Data
         let didExpire: Bool
+        let expiresIn: TimeInterval
     }
     
     internal func checkCachedData(for request: URLRequest) -> CachedData? {
@@ -79,17 +80,20 @@ extension BackendCommunicator {
         
         guard let retrievalDate = convertHTTPTimeStringToDate(timeString: originalRetrievalDate) else { return nil }
         guard let cacheMaxAge = getHTTPCacheControlMaxAgeSeconds(cacheControlString: cacheControl) else { return nil }
+        let cacheExpireDate = retrievalDate + cacheMaxAge
         
         var dataDidExpire = true
+        var dataExpiresIn: TimeInterval = 0
         
         let now = Date()
-        if (retrievalDate + cacheMaxAge) >= now {
+        if cacheExpireDate >= now {
             dataDidExpire = false
+            dataExpiresIn = cacheExpireDate.timeIntervalSince(now)
         }
         
         let responseData = cachedResponse.data
         
-        let cachedData = CachedData(data: responseData, didExpire: dataDidExpire)
+        let cachedData = CachedData(data: responseData, didExpire: dataDidExpire, expiresIn: dataExpiresIn)
         return cachedData
     }
     
@@ -99,7 +103,6 @@ extension BackendCommunicator {
      Never run in DispatchQueue.main.
      */
     internal func download(_ region: Region) -> (Data?, Bool, Error?) {
-        logger.debug("Downloading energy data from backend server.")
         var downloadURL = ""
         if region == .DE {
             downloadURL = GlobalAppSettings.rootURLString + "/data/DE"
@@ -139,7 +142,7 @@ extension BackendCommunicator {
             
             return (dataDownloaded, false, downloadErrors)
         } else {
-            logger.debug("Using local CachedURLResponse, because it didn't expire yet.")
+            logger.debug("Local CachedURLResponse energy data didn't expire yet. Expires in \(cachedData!.expiresIn)s. ")
             return (cachedData!.data, false, nil)
         }
     }

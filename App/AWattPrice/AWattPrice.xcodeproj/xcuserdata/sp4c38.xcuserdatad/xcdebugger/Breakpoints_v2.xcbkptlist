@@ -3,23 +3,4 @@
    uuid = "3A97D2FB-7E19-4542-9B6D-DA7F1D08E2E8"
    type = "1"
    version = "2.0">
-   <Breakpoints>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "227BDB32-18B1-4CBC-9387-1D2F436EBFA3"
-            shouldBeEnabled = "Yes"
-            nameForDebugger = "test_item_can_be_added_to_the_list"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "AWattPriceAppUITests/AwattarAppUITests.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "31"
-            endingLineNumber = "31"
-            landmarkName = "testExample()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-   </Breakpoints>
 </Bucket>

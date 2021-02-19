@@ -59,7 +59,7 @@ func getHTTPCacheControlMaxAgeSeconds(cacheControlString: String) -> TimeInterva
     let regex = NSRegularExpression(cacheControlRegex)
     
     guard let match = regex.firstMatch(in: cacheControlString, options: [], range: cacheControlString.completeNSRange),
-          match.numberOfRanges == 1
+          match.numberOfRanges == 2
     else {
         return nil
     }
@@ -69,7 +69,7 @@ func getHTTPCacheControlMaxAgeSeconds(cacheControlString: String) -> TimeInterva
     let matchedString = String(cacheControlString[matchRange])
     
     let numberFormatter = NumberFormatter()
-    numberFormatter.numberStyle = .ordinal
+    numberFormatter.numberStyle = .none
     guard let maxAgeRaw = numberFormatter.number(from: matchedString) else { return nil }
     
     let maxAge = TimeInterval(truncating: maxAgeRaw)

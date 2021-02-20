@@ -1,5 +1,7 @@
 # Datenschutzrichtline für die AWattPrice App und die AWattPrice Website
 
+##### Last updated: 20.02.2021
+
 Diese Datenschutzrichtlinie ("Richtlinie") beschreibt, wie die persönlich identifizierbaren Informationen ("Persönliche Daten"), die Sie in der mobilen Anwendung "AWattPrice" und der Webseite ("mobile Anwendung" und "Dienste") erfasst, geschützt und verwendet werden. Diese Richtlinie ist eine rechtsverbindliche Vereinbarung zwischen Ihnen ("Benutzer", "Sie" oder "Ihr") und diesem Entwickler der Mobilanwendung ("Betreiber", "wir", "uns" oder "unser"). Durch den Zugriff auf die Mobilen Anwendungen und Dienste und deren Nutzung bestätigen Sie, dass Sie die Bedingungen dieser Vereinbarung gelesen und verstanden haben und damit einverstanden sind, an sie gebunden zu sein.
 
 ### Automatische Sammlung von Informationen
@@ -8,12 +10,12 @@ Wenn Sie die mobile Anwendung verwenden, zeichnen unsere Server automatisch Info
 
 ### Sammlung von Informationen
 
-Wenn Sie eine E-Mail an eine unserer Adressen senden, erheben wir die in dieser Nachricht angegebenen Informationen (siehe auch Abschnitt "Sammlung persönlicher Daten").
+Wenn Sie eine E-Mail an eine unserer Adressen senden, erheben wir die in dieser Nachricht angegebenen Informationen (sieh auch Abschnitt "Sammlung persönlicher Daten").
 
 Wenn Sie AWattPrice Benachrichtigungen erlauben müssen wir bestimmte Informationen sammeln, um Ihnen diesen Dienst zur Verfügung zu stellen:
 
-- Ein Apple Push Notification Service Geräte-Token ("APNs-Token"). Dieses APNs-Token erlaubt uns nicht, Sie als einen individuellen Nutzer zu identifizieren, da der Token sich jederzeit ändern kann (siehe https://developer.apple.com/documentation/usernotifications/registering_your_app_with_apns).
-- Von Ihnen festgelegte Einstellungen innerhalb von AWattPrice.
+- Ein Apple Push Notification Service Geräte-Token ("APNs-Token"). Dieses APNs-Token erlaubt uns nicht, Sie als einen individuellen Nutzer zu identifizieren, da der Token sich jederzeit ändern kann (https://developer.apple.com/documentation/usernotifications/registering_your_app_with_apns).
+- Von Ihnen festgelegte Einstellungen innerhalb AWattPrice.
 
 ### Sammlung persönlicher Informationen
 
@@ -77,4 +79,4 @@ Dieses Dokument wurde zuletzt am 19.Februar.2021 aktualisiert.
 ### Änderungen an dieser Richtlinie:
 02.12.2020: Erstveröffentlichung
 
-19.02.2021: Abschnitt der die Erfassung von Daten bei der Aktivierung von AWattPrice-Benachrichtigungen beschreibt.
+20.02.2021: Abschnitt hinzugefügt, der die Erfassung von Daten bei der Aktivierung von AWattPrice-Benachrichtigungen beschreibt.

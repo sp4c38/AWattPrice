@@ -1,5 +1,7 @@
 # Privacy Policy for the AWattPrice App and the AWattPrice Website
 
+##### Last updated: 02/20/2021
+
 This privacy policy ("Policy") describes how the personally identifiable information ("Personal Information") you may provide in the "AWattPrice" mobile application and website ("Mobile Application" and "Service") is collected, protected and used. This Policy is a legally binding agreement between you ("User", "you" or "your") and this Mobile Application developer ("Operator", "we", "us" or "our"). By accessing and using the Mobile Application and Services, you acknowledge that you have read, understood, and agree to be bound by the terms of this Agreement.
 
 ### Automatic collection of information
@@ -12,8 +14,8 @@ When sending an e-mail to any of our addresses we will collect any information p
 
 If you allow AWattPrice notifications we will need to collect certain information to provide you with this service:
 
-- An Apple Push Notification Service device token ("APNs token"). This APNs token doesn't allow us to identify you as a specific user, as it could change anytime (see https://developer.apple.com/documentation/usernotifications/registering_your_app_with_apns).
-- Settings specified by you from inside AWattPrice.
+- An Apple Push Notification Service device token ("APNs token"). This APNs token doesn't allow us to identify you as a specific user, as it could change anytime (https://developer.apple.com/documentation/usernotifications/registering_your_app_with_apns).
+- Settings specified by you inside AWattPrice.
 
 ### Collection of personal information
 
@@ -77,4 +79,4 @@ This document was last updated on February 19, 2021
 ### Changes to this policy:
 12/02/2020: First published
 
-02/18/2021: Section that describes the collection of data when AWattPrice notifications are enabled.
+02/20/2021: Added section that describes the collection of data when AWattPrice notifications are enabled.

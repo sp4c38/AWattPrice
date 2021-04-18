@@ -50,8 +50,7 @@ class DetailedPriceData:
 
         current_index = 0
         for price_point in self.data.prices:
-            timezone = tzstr("CET-1CEST,M3.5.0/2,M10.5.0/3").tzname(datetime.fromtimestamp(price_point.start_timestamp))
-            now_timezone = arrow.utcnow().to(timezone)
+            now_timezone = arrow.utcnow().to("Europe/Berlin")
 
             midnight = now_timezone.replace(hour=0, minute=0, second=0, microsecond=0)
             tomorrow_boundary_start = midnight.shift(days=+1)
@@ -192,8 +191,7 @@ async def price_drops_below_notification(
 
         log.debug('Sending "Price Drops Below" notification to a user.')
         # Get the current timezone (either CET or CEST)
-        timezone = tzstr("CET-1CEST,M3.5.0/2,M10.5.0/3").tzname(datetime.fromtimestamp(lowest_point.start_timestamp))
-        lowest_price_start = arrow.get(lowest_point.start_timestamp).to(timezone)
+        lowest_price_start = arrow.get(lowest_point.start_timestamp).to("Europe/Berlin")
 
         # Full cents, for example 4
         lowest_price_floored = floor(lowest_point.marketprice)

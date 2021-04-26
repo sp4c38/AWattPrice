@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "AWattPrice Backend"
+version = "0.1.0"
+description = "Backend for the AWattPrice iOS app."
+authors = ["Léon Becker <lb@alien8.de>", "Frank Becker <fb@alien8.de>"]
+homepage = "https://awattprice.space8.me"
+repository = "https://www.github.com/sp4c38/AWattPrice"
+# Add here all kinds of additional classifiers as defined under
+# https://pypi.python.org/pypi?%3Aaction=list_classifiers
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Other Audience",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python",
+]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

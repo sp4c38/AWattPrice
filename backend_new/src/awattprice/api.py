@@ -7,12 +7,12 @@ from starlette.responses import RedirectResponse
 
 from loguru import logger
 
-from awattprice.config import configure_loguru, make_config
+from awattprice import config as conf
 from awattprice.defaults import Region
 from awattprice.prices import get_prices
 
-make_config()
-configure_loguru()
+config = conf.get_config()
+conf.configure_loguru(config)
 app = FastAPI()
 
 
@@ -25,7 +25,6 @@ async def get_region_data(region: Region):
 @app.get("/data/")
 async def get_default_region_data():
     """Get current price data for a default region."""
-    logger.debug("Test")
     region = Region.DE
     return RedirectResponse(url=f"/data/{region.name}")
 

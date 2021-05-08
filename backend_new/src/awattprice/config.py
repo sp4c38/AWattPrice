@@ -3,11 +3,11 @@ import sys
 
 from pathlib import Path
 
-from box import Box
 from liteconfig import Config
 from loguru import logger
 
 from awattprice.defaults import DEFAULT_CONFIG
+
 
 def transform_config(config: Config):
     """Transform certain config fields to another data type and/or value after they were read.
@@ -25,7 +25,7 @@ def get_config():
     # First path in list will be used for creation if no config file exists yet.
     read_attempt_paths = [
         Path("~/.config/awattprice/config.ini").expanduser(),
-        Path("/etc/awattprice/config.ini")
+        Path("/etc/awattprice/config.ini"),
     ]
     config_path = None
     for possible_path in read_attempt_paths:
@@ -66,6 +66,6 @@ def configure_loguru(config: Config):
         log_path,
         colorize=None,
         backtrace=True,
-        diagnose=True if config.general.debug is True else False,
+        diagnose=config.general.debug,
         rotation="1 week",
     )

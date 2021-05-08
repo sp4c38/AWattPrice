@@ -24,6 +24,8 @@ loguru = "^0.5.3"
 liteconfig = "^1.0.0"
 httpx = "^0.18.1"
 arrow = "^1.1.0"
+filelock = "^3.0.12"
+aiofile = "^3.5.0"
 
 [tool.poetry.dev-dependencies]
 ipython = "^7.22.0"

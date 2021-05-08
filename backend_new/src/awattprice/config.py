@@ -9,12 +9,15 @@ from loguru import logger
 from awattprice.defaults import DEFAULT_CONFIG
 
 
-def transform_config(config: Config):
-    """Transform certain config fields to another data type and/or value after they were read.
+def transform_config(config: Config) -> Config:
+    """Transform certain config fields to another data type and/or value.
 
     Example: Transform path string into a pathlib Path instance.
     """
-    config.paths.log = Path(config.paths.log).expanduser()
+    config.paths.log_dir = Path(config.paths.log_dir).expanduser()
+    config.paths.data_dir = Path(config.paths.data_dir).expanduser()
+
+    return config
 
 
 def get_config():
@@ -44,13 +47,14 @@ def get_config():
             config_file.write(DEFAULT_CONFIG)
         config = Config(DEFAULT_CONFIG)
 
-    transform_config(config)
+    config = transform_config(config)
+
     return config
 
 
 def configure_loguru(config: Config):
     """Configure loguru's logger."""
-    log_dir_path = config.paths.log
+    log_dir_path = config.paths.log_dir
     if log_dir_path.exists():
         if not log_dir_path.is_dir():
             sys.stderr.write(

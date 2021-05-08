@@ -1,4 +1,18 @@
 [[package]]
+name = "aiofile"
+version = "3.5.0"
+description = "Asynchronous file operations."
+category = "main"
+optional = false
+python-versions = ">3.4.*, <4"
+
+[package.dependencies]
+caio = ">=0.8.0,<0.9.0"
+
+[package.extras]
+develop = ["aiomisc", "asynctest", "pytest", "pytest-cov"]
+
+[[package]]
 name = "appdirs"
 version = "1.4.4"
 description = "A small Python module for determining appropriate platform-specific dirs, e.g. a \"user data dir\"."
@@ -67,6 +81,17 @@ d = ["aiohttp (>=3.3.2)", "aiohttp-cors"]
 python2 = ["typed-ast (>=1.4.2)"]
 
 [[package]]
+name = "caio"
+version = "0.8.0"
+description = "Asynchronous file IO for Linux Posix and Windows."
+category = "main"
+optional = false
+python-versions = ">=3.5.*, <4"
+
+[package.extras]
+develop = ["aiomisc", "pytest", "pytest-cov"]
+
+[[package]]
 name = "certifi"
 version = "2020.12.5"
 description = "Python package for providing Mozilla's CA Bundle."
@@ -126,6 +151,14 @@ all = ["requests (>=2.24.0,<3.0.0)", "aiofiles (>=0.5.0,<0.6.0)", "jinja2 (>=2.1
 dev = ["python-jose[cryptography] (>=3.1.0,<4.0.0)", "passlib[bcrypt] (>=1.7.2,<2.0.0)", "autoflake (>=1.3.1,<2.0.0)", "flake8 (>=3.8.3,<4.0.0)", "uvicorn[standard] (>=0.12.0,<0.14.0)", "graphene (>=2.1.8,<3.0.0)"]
 doc = ["mkdocs (>=1.1.2,<2.0.0)", "mkdocs-material (>=6.1.4,<7.0.0)", "markdown-include (>=0.5.1,<0.6.0)", "mkdocs-markdownextradata-plugin (>=0.1.7,<0.2.0)", "typer-cli (>=0.0.9,<0.0.10)", "pyyaml (>=5.3.1,<6.0.0)"]
 test = ["pytest (==5.4.3)", "pytest-cov (==2.10.0)", "pytest-asyncio (>=0.14.0,<0.15.0)", "mypy (==0.790)", "flake8 (>=3.8.3,<4.0.0)", "black (==20.8b1)", "isort (>=5.0.6,<6.0.0)", "requests (>=2.24.0,<3.0.0)", "httpx (>=0.14.0,<0.15.0)", "email_validator (>=1.1.1,<2.0.0)", "sqlalchemy (>=1.3.18,<2.0.0)", "peewee (>=3.13.3,<4.0.0)", "databases[sqlite] (>=0.3.2,<0.4.0)", "orjson (>=3.2.1,<4.0.0)", "async_exit_stack (>=1.0.1,<2.0.0)", "async_generator (>=1.10,<2.0.0)", "python-multipart (>=0.0.5,<0.0.6)", "aiofiles (>=0.5.0,<0.6.0)", "flask (>=1.1.2,<2.0.0)"]
+
+[[package]]
+name = "filelock"
+version = "3.0.12"
+description = "A platform independent file lock."
+category = "main"
+optional = false
+python-versions = "*"
 
 [[package]]
 name = "flake8"
@@ -609,9 +642,13 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "4dd5029e336d7b65279b13b4992ec2836b4f27e47a29366bfab81ead3c5520dc"
+content-hash = "53064d3d07d9d9fa47a0b8af9913d63a4e39a696cd06214cc74dc5b7b87a030f"
 
 [metadata.files]
+aiofile = [
+    {file = "aiofile-3.5.0-py3-none-any.whl", hash = "sha256:5e7287a33b498bfa418aac1caa0be7b2ad32ec49680ec22f537335d95002de0a"},
+    {file = "aiofile-3.5.0.tar.gz", hash = "sha256:cc9fb394e8c0ad1d2b9014a9b4bdaa3535f098c5881bd3ba220350b198c12727"},
+]
 appdirs = [
     {file = "appdirs-1.4.4-py2.py3-none-any.whl", hash = "sha256:a841dacd6b99318a741b166adb07e19ee71a274450e68237b4650ca1055ab128"},
     {file = "appdirs-1.4.4.tar.gz", hash = "sha256:7d5d0167b2b1ba821647616af46a749d1c653740dd0d2415100fe26e27afdf41"},
@@ -635,6 +672,18 @@ backcall = [
 black = [
     {file = "black-21.5b0-py3-none-any.whl", hash = "sha256:0e80435b8a88f383c9149ae89d671eb2095b72344b0fe8a1d61d2ff5110ed173"},
     {file = "black-21.5b0.tar.gz", hash = "sha256:9dc2042018ca10735366d944c2c12d9cad6dec74a3d5f679d09384ea185d9943"},
+]
+caio = [
+    {file = "caio-0.8.0-cp35-cp35m-manylinux2010_x86_64.whl", hash = "sha256:12c9354954cced5c86eda101685d3d0b5656bbd50b9293604b68150ce32fb5db"},
+    {file = "caio-0.8.0-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:86dd1076008afa2665e30cf6be3fee3d53b88601abfd7e730b5954b4e64fac40"},
+    {file = "caio-0.8.0-cp36-cp36m-manylinux2010_x86_64.whl", hash = "sha256:d35b423f178daddff2481594b94d66b1e06afd9f26629eec034f3ae0c950b312"},
+    {file = "caio-0.8.0-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:1f1d2a41ad67fb6e9af4d89c40056df370b338f0cc6ca1b3d2f7a85675beaab7"},
+    {file = "caio-0.8.0-cp37-cp37m-manylinux2010_x86_64.whl", hash = "sha256:c302fe7c417ce2cc1c6c34ebb4b46220592068a14a1e324c8016f19d74b4d7ed"},
+    {file = "caio-0.8.0-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:d45361b84edc74868e46d5bf34a2879f69b1d278e60922f9b98ab2962a593f03"},
+    {file = "caio-0.8.0-cp38-cp38-manylinux2010_x86_64.whl", hash = "sha256:601b219fe167c2aeb74bf91f1ca7a4d0fc0ba63767cee79f9a1c14c679e11fdf"},
+    {file = "caio-0.8.0-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:b1b163d2603a7001ac39f00c2dfaf0e9fff56d3fa2553b708e9bb0fc39ac9432"},
+    {file = "caio-0.8.0-cp39-cp39-manylinux2010_x86_64.whl", hash = "sha256:ae54d0e409732882448ae9a730151acba9ac4cb536d03cbfd77114587cb858f7"},
+    {file = "caio-0.8.0.tar.gz", hash = "sha256:87655ee2510ef6f0e9bf0b5cd77fc04a79236ac0259a9739e75622fa2fd1b674"},
 ]
 certifi = [
     {file = "certifi-2020.12.5-py2.py3-none-any.whl", hash = "sha256:719a74fb9e33b9bd44cc7f3a8d94bc35e4049deebe19ba7d8e108280cfd59830"},
@@ -709,6 +758,10 @@ decorator = [
 fastapi = [
     {file = "fastapi-0.63.0-py3-none-any.whl", hash = "sha256:98d8ea9591d8512fdadf255d2a8fa56515cdd8624dca4af369da73727409508e"},
     {file = "fastapi-0.63.0.tar.gz", hash = "sha256:63c4592f5ef3edf30afa9a44fa7c6b7ccb20e0d3f68cd9eba07b44d552058dcb"},
+]
+filelock = [
+    {file = "filelock-3.0.12-py3-none-any.whl", hash = "sha256:929b7d63ec5b7d6b71b0fa5ac14e030b3f70b75747cef1b10da9b879fef15836"},
+    {file = "filelock-3.0.12.tar.gz", hash = "sha256:18d82244ee114f543149c66a6e0c14e9c4f8a1044b5cdaadd0f82159d6a6ff59"},
 ]
 flake8 = [
     {file = "flake8-3.9.1-py2.py3-none-any.whl", hash = "sha256:3b9f848952dddccf635be78098ca75010f073bfe14d2c6bda867154bea728d2a"},

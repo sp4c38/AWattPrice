@@ -13,7 +13,20 @@ from awattprice.defaults import AWATTAR_TIMEOUT, Region, TO_MICROSECONDS
 from awattprice.utils import lock_store
 
 
-async def poll_price_data(url: str, from_time: arrow.Arrow, to_time: arrow.Arrow) -> Optional[BoxList]:
+async def get_stored_data(region: Region, config: Config) -> Optional[BoxList]:
+    """Get locally stored price data."""
+    pass
+
+
+def is_data_up_to_date(data: BoxList) -> bool:
+    """Check if price data is up to date.
+
+    :returns: True if up to date, false if not.
+    """
+    pass
+
+
+async def download_data(url: str, from_time: arrow.Arrow, to_time: arrow.Arrow) -> Optional[BoxList]:
     """Download aWATTar price data.
 
     :throws: May throws errors like JSONDecodeError if any errors occurs during download and processing.
@@ -23,6 +36,7 @@ async def poll_price_data(url: str, from_time: arrow.Arrow, to_time: arrow.Arrow
         "end": to_time.int_timestamp * TO_MICROSECONDS,
     }
     async with httpx.AsyncClient() as client:
+        logger.debug(f"Downloading aWATTar price data from {url}.")
         response = await client.get(url, params=url_parameters, timeout=AWATTAR_TIMEOUT)
 
     all_data_json = response.json()
@@ -32,7 +46,7 @@ async def poll_price_data(url: str, from_time: arrow.Arrow, to_time: arrow.Arrow
     return data
 
 
-async def get_price_data(region: Region, config: Config) -> Optional[BoxList]:
+async def get_data(region: Region, config: Config) -> Optional[BoxList]:
     """Get aWATTar price data.
 
     This gets certain parameters for the download. It won't do the actual downloading.
@@ -50,34 +64,38 @@ async def get_price_data(region: Region, config: Config) -> Optional[BoxList]:
     day_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
     end = day_start.shift(days=+2)
 
-    data = await poll_price_data(url, start, end)
+    logger.info(f"Getting price data for region {region.name}.")
+    data = await download_data(url, start, end)
 
     return data
 
 
-async def store_price_data(data: BoxList, region: Region, config: Config):
-    """Store price data to its file."""
+async def store_data(data: BoxList, region: Region, config: Config):
     store_dir = config.paths.data_dir
     file_name = f"awattar-data-{region.name.lower()}.json"
     file_path = store_dir / file_name
-    data_json = data.to_json()
-    await lock_store(data_json, file_path)
+
+    logger.info(f"Storing aWATTar {region.name} price data to {file_path}.")
+    await lock_store(data.to_json(), file_path)
 
 
 async def get_prices(region: Region, config: Config) -> Optional[dict]:
     """Get the current aWATTar prices.
 
     This manages reading, writing, updating, polling, ... of price data.
-    Price data will only be polled if it isn't upto date - which mostly isn't the case.
+    Price data will only be polled if it isn't up to data.
     """
-    get_new_data = True
+    stored_data = get_stored_data(region, config)
+    get_new_data = is_data_up_to_date(stored_data)
+
     if get_new_data:
+        logger.info("Local energy prices aren't up to date anymore. Refreshing.")
         try:
-            price_data = await get_price_data(region, config)
+            price_data = await get_data(region, config)
         except Exception as exp:
             logger.error(f"Error when trying to get current aWATTar price data: {exp}.")
             raise HTTPException(500) from exp
 
-        await store_price_data(price_data, region, config)
+        store_data(price_data, region, config)
 
     return price_data

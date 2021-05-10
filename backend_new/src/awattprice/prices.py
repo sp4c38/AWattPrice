@@ -9,13 +9,21 @@ from fastapi import HTTPException
 from liteconfig import Config
 from loguru import logger
 
-from awattprice.defaults import AWATTAR_TIMEOUT, Region, TO_MICROSECONDS
-from awattprice.utils import lock_store
+from awattprice import defaults as dflts
+from awattprice.utils import lock_store_file, read_json_file
 
 
 async def get_stored_data(region: Region, config: Config) -> Optional[BoxList]:
     """Get locally stored price data."""
-    pass
+    file_dir = config.paths.data_dir
+    file_name = dflts.PRICE_DATA_FILE_NAME.format(region.name.lower())
+    file_path = file_dir / file_name
+
+    stored_data_raw = await read_json_file(file_path)
+    if stored_data_raw is None:
+        return None
+    stored_data = BoxList(stored_data_raw)
+    return stored_data
 
 
 def is_data_up_to_date(data: BoxList) -> bool:
@@ -32,12 +40,12 @@ async def download_data(url: str, from_time: arrow.Arrow, to_time: arrow.Arrow) 
     :throws: May throws errors like JSONDecodeError if any errors occurs during download and processing.
     """
     url_parameters = {
-        "start": from_time.int_timestamp * TO_MICROSECONDS,
-        "end": to_time.int_timestamp * TO_MICROSECONDS,
+        "start": from_time.int_timestamp * dflts.TO_MICROSECONDS,
+        "end": to_time.int_timestamp * dflts.TO_MICROSECONDS,
     }
     async with httpx.AsyncClient() as client:
         logger.debug(f"Downloading aWATTar price data from {url}.")
-        response = await client.get(url, params=url_parameters, timeout=AWATTAR_TIMEOUT)
+        response = await client.get(url, params=url_parameters, timeout=dflts.AWATTAR_TIMEOUT)
 
     all_data_json = response.json()
     data_json = all_data_json["data"]
@@ -72,11 +80,11 @@ async def get_data(region: Region, config: Config) -> Optional[BoxList]:
 
 async def store_data(data: BoxList, region: Region, config: Config):
     store_dir = config.paths.data_dir
-    file_name = f"awattar-data-{region.name.lower()}.json"
+    file_name = dflts.PRICE_DATA_FILE_NAME.format(region.name.lower())
     file_path = store_dir / file_name
 
     logger.info(f"Storing aWATTar {region.name} price data to {file_path}.")
-    await lock_store(data.to_json(), file_path)
+    await lock_store_file(data.to_json(), file_path)
 
 
 async def get_prices(region: Region, config: Config) -> Optional[dict]:

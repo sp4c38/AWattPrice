@@ -24,10 +24,12 @@ log_dir = ~/awattprice/logs/
 data_dir = ~/awattprice/data/
 """
 
-# Factor to convert seconds into microseconds.
-TO_MICROSECONDS = 1000
 # Timeout in seconds when requesting from aWATTar.
 AWATTAR_TIMEOUT = 10
-# File name for file storing aWATTar price data. 
+# The aWATTar API refresh interval. After polling the API wait x seconds before requesting again.
+AWATTAR_REFRESH_INTERVAL = 60
+# Factor to convert seconds into microseconds.
+TO_MICROSECONDS = 1000
+# File name for file storing aWATTar price data.
 # The string will be formatted with the lowercase region identifier.
 PRICE_DATA_FILE_NAME = "awattar-data-{}.json"

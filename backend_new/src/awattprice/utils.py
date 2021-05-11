@@ -4,8 +4,10 @@ import sys
 
 from json import JSONDecodeError
 from pathlib import Path
+from typing import Optional, Union
 
 from aiofile import async_open
+from box import Box, BoxList
 from filelock import FileLock
 from loguru import logger
 
@@ -30,6 +32,7 @@ async def lock_store_file(data, file_path: Path):
         await file.write(data)
     lock.release()
 
+
 async def read_file(file_path: Path) -> Optional[str]:
     """Asynchronous read file.
 
@@ -51,13 +54,14 @@ async def read_json_file(file_path: Path) -> Optional[Union[Box, BoxList]]:
     """
     data_raw = await read_file(file_path)
     try:
-        data = json.loads(data_raw)
+        data_json = json.loads(data_raw)
     except JSONDecodeError as err:
-        logger.error("Couldn't read json file as it is no valid json: {err}.")
+        logger.error(f"Couldn't read json file as it is no valid json: {err}.")
+        return None
 
-    if isinstance(data, dict):
-        data_boxed = Box(data_json)
-    elif isinstance(data, list):
-        data_boxed = BoxList(data_json)
+    if isinstance(data_json, dict):
+        data = Box(data_json)
+    elif isinstance(data_json, list):
+        data = BoxList(data_json)
 
-    return data_boxed
+    return data

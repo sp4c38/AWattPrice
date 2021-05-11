@@ -10,6 +10,7 @@ from liteconfig import Config
 from loguru import logger
 
 from awattprice import defaults as dflts
+from awattprice.defaults import Region
 from awattprice.utils import lock_store_file, read_json_file
 
 
@@ -26,12 +27,22 @@ async def get_stored_data(region: Region, config: Config) -> Optional[BoxList]:
     return stored_data
 
 
-def is_data_up_to_date(data: BoxList) -> bool:
+def check_data_needs_update(data: Box) -> bool:
     """Check if price data is up to date.
 
     :returns: True if up to date, false if not.
     """
-    pass
+    needs_update = True
+    now = arrow.now()
+    from_timestamp = data.meta.from_timestamp
+    if from_timestamp + dflts.AWATTAR_REFRESH_INTERVAL > now.int_timestamp:
+        return False
+
+    amount_future_points = len([p for p in data.prices if p.start_timestamp > now.timestamp])
+    if amount_future_points > 12:
+        needs_update = False
+
+    return needs_update
 
 
 async def download_data(url: str, from_time: arrow.Arrow, to_time: arrow.Arrow) -> Optional[BoxList]:
@@ -93,8 +104,8 @@ async def get_prices(region: Region, config: Config) -> Optional[dict]:
     This manages reading, writing, updating, polling, ... of price data.
     Price data will only be polled if it isn't up to data.
     """
-    stored_data = get_stored_data(region, config)
-    get_new_data = is_data_up_to_date(stored_data)
+    stored_data = await get_stored_data(region, config)
+    get_new_data = check_data_needs_update(stored_data)
 
     if get_new_data:
         logger.info("Local energy prices aren't up to date anymore. Refreshing.")

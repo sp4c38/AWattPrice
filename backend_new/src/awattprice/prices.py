@@ -1,10 +1,10 @@
 """Poll and process price data."""
-from typing import Optional
+from typing import Optional, Union
 
 import arrow
 import httpx
 
-from box import BoxList
+from box import Box, BoxList
 from fastapi import HTTPException
 from liteconfig import Config
 from loguru import logger
@@ -14,16 +14,14 @@ from awattprice.defaults import Region
 from awattprice.utils import lock_store_file, read_json_file
 
 
-async def get_stored_data(region: Region, config: Config) -> Optional[BoxList]:
+async def get_stored_data(region: Region, config: Config) -> Optional[Box]:
     """Get locally stored price data."""
     file_dir = config.paths.data_dir
     file_name = dflts.PRICE_DATA_FILE_NAME.format(region.name.lower())
     file_path = file_dir / file_name
 
-    stored_data_raw = await read_json_file(file_path)
-    if stored_data_raw is None:
-        return None
-    stored_data = BoxList(stored_data_raw)
+    stored_data = await read_json_file(file_path)
+
     return stored_data
 
 
@@ -32,17 +30,30 @@ def check_data_needs_update(data: Box) -> bool:
 
     :returns: True if up to date, false if not.
     """
-    needs_update = True
     now = arrow.now()
-    from_timestamp = data.meta.from_timestamp
-    if from_timestamp + dflts.AWATTAR_REFRESH_INTERVAL > now.int_timestamp:
+    next_refresh_time = data.meta.from_timestamp + dflts.AWATTAR_REFRESH_INTERVAL
+    if next_refresh_time <= now.int_timestamp:
+        pass
+    else:
+        time_remaining_refresh = next_refresh_time - now.int_timestamp
+        logger.debug(
+            f"Won't request aWATTar API again as there are still {time_remaining_refresh} second(s) until "
+            "refresh is allowed again."
+        )
         return False
 
-    amount_future_points = len([p for p in data.prices if p.start_timestamp > now.timestamp])
-    if amount_future_points > 12:
-        needs_update = False
+    # The current price point is also counted as future price point.
+    amount_future_points = len([p for p in data.prices if p.end_timestamp > now.int_timestamp])
+    future_points_update_amount = 24 - dflts.AWATTAR_UPDATE_HOUR
+    if amount_future_points <= future_points_update_amount:
+        pass
+    else:
+        logger.debug(
+            f"Won't update as there are more than {future_points_update_amount} future price points."
+        )
+        return False
 
-    return needs_update
+    return True
 
 
 async def download_data(url: str, from_time: arrow.Arrow, to_time: arrow.Arrow) -> Optional[BoxList]:
@@ -89,7 +100,8 @@ async def get_data(region: Region, config: Config) -> Optional[BoxList]:
     return data
 
 
-async def store_data(data: BoxList, region: Region, config: Config):
+async def store_data(data: Union[Box, BoxList], region: Region, config: Config):
+    """Store new price data to the filesystem."""
     store_dir = config.paths.data_dir
     file_name = dflts.PRICE_DATA_FILE_NAME.format(region.name.lower())
     file_path = store_dir / file_name
@@ -107,6 +119,7 @@ async def get_prices(region: Region, config: Config) -> Optional[dict]:
     stored_data = await get_stored_data(region, config)
     get_new_data = check_data_needs_update(stored_data)
 
+    price_data = None
     if get_new_data:
         logger.info("Local energy prices aren't up to date anymore. Refreshing.")
         try:
@@ -116,5 +129,7 @@ async def get_prices(region: Region, config: Config) -> Optional[dict]:
             raise HTTPException(500) from exp
 
         store_data(price_data, region, config)
+    else:
+        price_data = stored_data
 
     return price_data

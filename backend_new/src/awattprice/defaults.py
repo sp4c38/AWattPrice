@@ -28,6 +28,10 @@ data_dir = ~/awattprice/data/
 AWATTAR_TIMEOUT = 10
 # The aWATTar API refresh interval. After polling the API wait x seconds before requesting again.
 AWATTAR_REFRESH_INTERVAL = 60
+# Attempt to update aWATTar prices if its past this hour of the day.
+# The backend autmatically switches between summer and winter times.
+# So for example 13 o'clock will always stay 13 o'clock independent of summer or winter time.
+AWATTAR_UPDATE_HOUR = 13
 # Factor to convert seconds into microseconds.
 TO_MICROSECONDS = 1000
 # File name for file storing aWATTar price data.

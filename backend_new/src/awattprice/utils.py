@@ -27,10 +27,9 @@ async def lock_store_file(data, file_path: Path):
             sys.exit(1)
 
     lock = FileLock(lock_file_path)
-    lock.acquire()
-    async with async_open(file_path, "w") as file:
-        await file.write(data)
-    lock.release()
+    with lock:
+        async with async_open(file_path, "w") as file:
+            await file.write(data)
 
 
 async def read_file(file_path: Path) -> Optional[str]:

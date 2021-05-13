@@ -43,7 +43,12 @@ def check_data_needs_update(data: Box) -> bool:
         return False
 
     # The current price point is also counted as future price point.
-    amount_future_points = len([p for p in data.prices if p.end_timestamp > now.int_timestamp])
+    amount_future_points = 0
+    for point in data.prices:
+        end_timestamp = point.end_timestamp / dflts.TO_MICROSECONDS
+        if end_timestamp > now.int_timestamp:
+            amount_future_points += 1
+    # Update if the amount of future price points is smaller or equal to this amount.
     future_points_update_amount = 24 - dflts.AWATTAR_UPDATE_HOUR
     if amount_future_points <= future_points_update_amount:
         pass
@@ -107,7 +112,10 @@ async def store_data(data: Union[Box, BoxList], region: Region, config: Config):
     file_path = store_dir / file_name
 
     logger.info(f"Storing aWATTar {region.name} price data to {file_path}.")
-    await lock_store_file(data.to_json(), file_path)
+    try:
+        await lock_store_file(data.to_json(), file_path)
+    except:
+        pass
 
 
 async def get_prices(region: Region, config: Config) -> Optional[dict]:
@@ -128,7 +136,7 @@ async def get_prices(region: Region, config: Config) -> Optional[dict]:
             logger.error(f"Error when trying to get current aWATTar price data: {exp}.")
             raise HTTPException(500) from exp
 
-        store_data(price_data, region, config)
+        await store_data(price_data, region, config)
     else:
         price_data = stored_data
 

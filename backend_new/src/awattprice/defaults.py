@@ -37,3 +37,6 @@ TO_MICROSECONDS = 1000
 # File name for file storing aWATTar price data.
 # The string will be formatted with the lowercase region identifier.
 PRICE_DATA_FILE_NAME = "awattar-data-{}.json"
+# File name of lock file which will be acquired when aWATTar price data needs to be updated.
+# The string will be formatted with the lowercase region identifier.
+PRICE_DATA_UPDATE_LOCK = "awattar-data-{}-update.lck"

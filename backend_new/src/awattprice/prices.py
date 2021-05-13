@@ -6,12 +6,13 @@ import httpx
 
 from box import Box, BoxList
 from fastapi import HTTPException
+from filelock import FileLock
 from liteconfig import Config
 from loguru import logger
 
 from awattprice import defaults as dflts
 from awattprice.defaults import Region
-from awattprice.utils import lock_store_file, read_json_file
+from awattprice.utils import request_url, store_file, read_json_file
 
 
 async def get_stored_data(region: Region, config: Config) -> Optional[Box]:
@@ -23,6 +24,15 @@ async def get_stored_data(region: Region, config: Config) -> Optional[Box]:
     stored_data = await read_json_file(file_path)
 
     return stored_data
+
+
+def get_refresh_lock(region: Region, config: Config) -> FileLock:
+    """"""
+    lock_dir = config.paths.data_dir
+    lock_file_name = dflts.PRICE_DATA_UPDATE_LOCK.formate(region.name.lower())
+    lock_file_path = lock_dir / lock_file_name
+    lock = FileLock(lock_file_path)
+    return lock
 
 
 def check_data_needs_update(data: Box) -> bool:
@@ -61,33 +71,10 @@ def check_data_needs_update(data: Box) -> bool:
     return True
 
 
-async def download_data(url: str, from_time: arrow.Arrow, to_time: arrow.Arrow) -> Optional[BoxList]:
-    """Download aWATTar price data.
+async def get_data(region: Region, config: Config) -> Box:
+    """Download current aWATTar price data.
 
-    :throws: May throws errors like JSONDecodeError if any errors occurs during download and processing.
-    """
-    url_parameters = {
-        "start": from_time.int_timestamp * dflts.TO_MICROSECONDS,
-        "end": to_time.int_timestamp * dflts.TO_MICROSECONDS,
-    }
-    async with httpx.AsyncClient() as client:
-        logger.debug(f"Downloading aWATTar price data from {url}.")
-        response = await client.get(url, params=url_parameters, timeout=dflts.AWATTAR_TIMEOUT)
-
-    all_data_json = response.json()
-    data_json = all_data_json["data"]
-    data = BoxList(data_json)
-
-    return data
-
-
-async def get_data(region: Region, config: Config) -> Optional[BoxList]:
-    """Get aWATTar price data.
-
-    This gets certain parameters for the download. It won't do the actual downloading.
-
-    :returns: Price data if it could be downloaded successfully.
-    :throws: May throws any error if download and processing is unsuccessful.
+    :raises JSONDecodeError: Raised if data returned from server can't be decoded as json.
     """
     region_config_section = f"awattar.{region.name.lower()}"
     url = getattr(config, region_config_section).url
@@ -99,8 +86,21 @@ async def get_data(region: Region, config: Config) -> Optional[BoxList]:
     day_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
     end = day_start.shift(days=+2)
 
-    logger.info(f"Getting price data for region {region.name}.")
-    data = await download_data(url, start, end)
+    url_parameters = {
+        "start": start.int_timestamp * dflts.TO_MICROSECONDS,
+        "end": end.int_timestamp * dflts.TO_MICROSECONDS,
+    }
+    timeout = dflts.AWATTAR_TIMEOUT
+    logger.info(f"Getting {region.name.upper()} price data from {url}.")
+    response = await request_url("GET", url, timeout=timeout, params=url_parameters)
+
+    try:
+        data_json = response.json()
+    except JSONDecodeError:
+        # Explicit is better than implicit.
+        raise
+
+    data = Box(data_json)
 
     return data
 
@@ -112,10 +112,7 @@ async def store_data(data: Union[Box, BoxList], region: Region, config: Config):
     file_path = store_dir / file_name
 
     logger.info(f"Storing aWATTar {region.name} price data to {file_path}.")
-    try:
-        await lock_store_file(data.to_json(), file_path)
-    except:
-        pass
+    await store_file(data.to_json(), file_path)
 
 
 async def get_prices(region: Region, config: Config) -> Optional[dict]:
@@ -124,12 +121,15 @@ async def get_prices(region: Region, config: Config) -> Optional[dict]:
     This manages reading, writing, updating, polling, ... of price data.
     Price data will only be polled if it isn't up to data.
     """
+    refresh_lock = get_refresh_lock(config)
+    await wait_not_refreshing(refresh_lock)
     stored_data = await get_stored_data(region, config)
     get_new_data = check_data_needs_update(stored_data)
 
     price_data = None
     if get_new_data:
         logger.info("Local energy prices aren't up to date anymore. Refreshing.")
+        update_lock.acquire()
         try:
             price_data = await get_data(region, config)
         except Exception as exp:
@@ -137,6 +137,7 @@ async def get_prices(region: Region, config: Config) -> Optional[dict]:
             raise HTTPException(500) from exp
 
         await store_data(price_data, region, config)
+        update_lock.release()
     else:
         price_data = stored_data
 

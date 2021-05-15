@@ -68,7 +68,7 @@ def configure_loguru(config: Config):
     log_path = log_dir_path / "pizzaapp.log"
     logger.add(
         log_path,
-        enque=True, # This makes log calls non-blocking.
+        enque=True,  # This makes log calls non-blocking.
         colorize=None,
         backtrace=True,
         diagnose=config.general.debug,

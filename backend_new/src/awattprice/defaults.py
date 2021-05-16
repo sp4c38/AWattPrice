@@ -25,7 +25,7 @@ data_dir = ~/awattprice/data/
 """
 
 # Timeout in seconds when requesting from aWATTar.
-AWATTAR_TIMEOUT = 10
+AWATTAR_TIMEOUT = 10.0
 # The aWATTar API refresh interval. After polling the API wait x seconds before requesting again.
 AWATTAR_REFRESH_INTERVAL = 60
 # Attempt to update aWATTar prices if its past this hour of the day.
@@ -41,4 +41,4 @@ PRICE_DATA_FILE_NAME = "awattar-data-{}.json"
 # The string will be formatted with the lowercase region identifier.
 PRICE_DATA_REFRESH_LOCK = "awattar-data-{}-update.lck"
 # Timeout in seconds to wait when needing the refresh price data lock to be unlocked.
-PRICE_DATA_REFRESH_LOCK_TIMEOUT = AWATTAR_TIMEOUT + 2
+PRICE_DATA_REFRESH_LOCK_TIMEOUT = AWATTAR_TIMEOUT + 2.0

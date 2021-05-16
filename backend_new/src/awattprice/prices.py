@@ -19,73 +19,31 @@ from awattprice import utils
 from awattprice.defaults import Region
 
 
-def get_refresh_lock(region: Region, config: Config) -> FileLock:
-    """Get file lock used when refreshing price data."""
-    lock_dir = config.paths.data_dir
-    lock_file_name = dflts.PRICE_DATA_REFRESH_LOCK.formate(region.name.lower())
-    lock_file_path = lock_dir / lock_file_name
-    lock = FileLock(lock_file_path)
-    return lock
-
-
-async def immediate_refresh_lock_acquire(lock, keep_acquired=True) -> bool:
-    """Acquire a refresh lock either immediately or with waiting.
-
-    :param keep_acquired: Default is true. Set if the lock should be kept acquired when returning.
-        If set to false this function more acts as a checker if the lock could be acquired. Note that in
-        this case the lock could be immediately acquired after returning, making the return invalid/unsafe.
-        Using false this function should only be used when it is okay that the return may be invalid in the
-        very next moment.
-
-    :raises filelock.Timeout: if the refresh token lock acquiring timed out.
-    :returns: Returns as soon as the lock was acquired. Returns true if lock was acquired immediately
-        and false if function had to wait until lock could be acquired.
-    """
-    async_acquire = utils.async_wrap(lock.acquire)
-    async_release = utils.async_wrap(lock.release)
-    timeout = dflts.PRICE_DATA_REFRESH_LOCK_TIMEOUT
-
-    # Check for immediate acquirement.
-    try:
-        await async_acquire(timeout=0)
-    except filelock.Timeout:
-        # Means that lock couldn't be acquired immediately.
-        pass
-    else:
-        logger.debug("Lock acquired immediately.")
-        if not keep_acquired:
-            await async_release()
-        return True
-
-    try:
-        await async_acquire(timeout=timeout)
-    except filelock.Timeout as exp:
-        logger.info(f"Lock couldn't be acquired at all: {exp}.")
-        raise
-    else:
-        logger.debug("Lock acquired after waiting.")
-        if not keep_acquired:
-            await async_release()
-
-    return False
-
-
 async def get_stored_data(region: Region, config: Config) -> Optional[Box]:
     """Get locally stored price data."""
     file_dir = config.paths.data_dir
     file_name = dflts.PRICE_DATA_FILE_NAME.format(region.name.lower())
     file_path = file_dir / file_name
 
+    if not file_path.exists():
+        logger.info("No locally cached price data exists yet.")
+        return None
+    if not file_path.is_file():
+        logger.error(f"Stored price data path is a directory not a file: {file_path}.")
+
     stored_data = await utils.read_json_file(file_path)
 
     return stored_data
 
 
-def check_data_needs_update(data: Box) -> bool:
+def check_data_needs_update(data: Optional[Box]) -> bool:
     """Check if price data is up to date.
 
     :returns: True if up to date, false if not.
     """
+    if data is None:
+        return True
+
     now = arrow.now()
     next_refresh_time = data.meta.from_timestamp + dflts.AWATTAR_REFRESH_INTERVAL
     if next_refresh_time <= now.int_timestamp:
@@ -115,7 +73,47 @@ def check_data_needs_update(data: Box) -> bool:
     return True
 
 
-async def get_data(region: Region, config: Config) -> Box:
+def get_refresh_lock(region: Region, config: Config) -> FileLock:
+    """Get file lock used when refreshing price data."""
+    lock_dir = config.paths.data_dir
+    lock_file_name = dflts.PRICE_DATA_REFRESH_LOCK.format(region.name.lower())
+    lock_file_path = lock_dir / lock_file_name
+    lock = FileLock(lock_file_path)
+    return lock
+
+
+async def immediate_refresh_lock_acquire(lock, timeout: float = dflts.PRICE_DATA_REFRESH_LOCK_TIMEOUT) -> bool:
+    """Acquire a refresh lock either immediately or with waiting.
+
+    :raises filelock.Timeout: if the refresh token lock acquiring timed out.
+    :returns: Returns as soon as the lock was acquired. Returns true if lock was acquired immediately
+        and false if function had to wait until lock could be acquired.
+    """
+    async_acquire = utils.async_wrap(lock.acquire)
+    async_release = utils.async_wrap(lock.release)
+
+    # Check for immediate acquirement.
+    try:
+        await async_acquire(timeout=0)
+    except filelock.Timeout:
+        # Means that lock couldn't be acquired immediately.
+        pass
+    else:
+        logger.debug("Lock acquired immediately.")
+        return True
+
+    try:
+        await async_acquire(timeout=timeout)
+    except filelock.Timeout as exp:
+        logger.info(f"Lock couldn't be acquired at all: {exp}.")
+        raise
+    else:
+        logger.debug("Lock acquired after waiting.")
+
+    return False
+
+
+async def download_data(region: Region, config: Config) -> Box:
     """Download current aWATTar price data."""
     region_config_section = f"awattar.{region.name.lower()}"
     url = getattr(config, region_config_section).url
@@ -161,22 +159,6 @@ async def store_data(data: Union[Box, BoxList], region: Region, config: Config):
     await utils.store_file(data.to_json(), file_path)
 
 
-async def get_new_prices(refresh_lock: FileLock, region: Region, config: Config) -> Optional[Box]:
-    """Get new aWATTar price data."""
-    try:
-        immediate_acquire = await immediate_refresh_lock_acquire(refresh_lock)
-    except filelock.Timeout:
-        raise exc.RefreshLockAcquireError()
-
-    price_data = None
-    if not immediate_acquire:
-        price_data = await get_data(region, config)
-        await store_data(price_data, region, config)
-        refresh_lock.release()
-    else:
-        pass
-
-
 async def get_current_prices(region: Region, config: Config) -> Optional[dict]:
     """Get the current aWATTar prices.
 
@@ -188,19 +170,32 @@ async def get_current_prices(region: Region, config: Config) -> Optional[dict]:
 
     price_data = None
     if get_new_data:
-        refresh_lock = get_refresh_lock(config)
-        logger.info("Local energy prices aren't up to date anymore. Refreshing.")
+        refresh_lock = get_refresh_lock(region, config)
+        logger.info("Local energy prices aren't up to date or don't exist. Refreshing.")
+        acquire_error = False
         try:
-            price_data = await get_new_prices(refresh_lock, region, config)
-        except exc.RefreshLockAquireError:
+            immediate_acquire = await immediate_refresh_lock_acquire(refresh_lock)
+        except filelock.Timeout as exc:
+            logger.error(f"Couldn't acquire refresh lock: {exc}.")
+            acquire_error = True
+
+        if acquire_error:
             if not stored_data:
-                logger.error(
-                    "Refresh lock couldn't be acquired and no local data is available. Returning 500 error."
-                )
+                logger.warning("Acquire error: Responding with 500 code as no cached data exists.")
                 raise HTTPException(500)
 
-            logger.info("Using local stored data because refresh lock couldn't be acquired.")
+            logger.warning("Acquire error: Using cached local data as price data.")
             price_data = stored_data
+
+        if not acquire_error:
+            # See 'get_prices' doc for explanation why its important if lock was acquired immediately.
+            if immediate_acquire:
+                price_data = await download_data(region, config)
+                await store_data(price_data, region, config)
+                refresh_lock.release()
+            else:
+                refresh_lock.release()
+                price_data = await get_stored_data(region, config)
     else:
         logger.debug("Local price data still up to date.")
         price_data = stored_data

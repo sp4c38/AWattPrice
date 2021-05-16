@@ -45,7 +45,7 @@ def check_data_needs_update(data: Optional[Box]) -> bool:
         return True
 
     now = arrow.now()
-    next_refresh_time = data.meta.from_timestamp + dflts.AWATTAR_REFRESH_INTERVAL
+    next_refresh_time = data.meta.update_timestamp + dflts.AWATTAR_REFRESH_INTERVAL
     if next_refresh_time <= now.int_timestamp:
         pass
     else:
@@ -149,6 +149,19 @@ async def download_data(region: Region, config: Config) -> Box:
     return data
 
 
+def transform_price_data(price_data_raw: Box) -> Box:
+    """Transform the price data by adding, modifying or deleting data."""
+    new_data = Box()
+
+    new_data.prices = price_data_raw.data
+
+    new_data.meta = {}
+    now = arrow.now()
+    new_data.meta.update_timestamp = now.int_timestamp
+
+    return new_data
+
+
 async def store_data(data: Union[Box, BoxList], region: Region, config: Config):
     """Store new price data to the filesystem."""
     store_dir = config.paths.data_dir
@@ -190,7 +203,8 @@ async def get_current_prices(region: Region, config: Config) -> Optional[dict]:
         if not acquire_error:
             # See 'get_prices' doc for explanation why its important if lock was acquired immediately.
             if immediate_acquire:
-                price_data = await download_data(region, config)
+                price_data_raw = await download_data(region, config)
+                price_data = transform_price_data(price_data_raw)
                 await store_data(price_data, region, config)
                 refresh_lock.release()
             else:

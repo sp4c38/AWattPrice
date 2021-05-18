@@ -14,7 +14,6 @@ from liteconfig import Config
 from loguru import logger
 
 from awattprice import defaults as dflts
-from awattprice import exceptions as exc
 from awattprice import utils
 from awattprice.defaults import Region
 
@@ -90,7 +89,6 @@ async def immediate_refresh_lock_acquire(lock, timeout: float = dflts.PRICE_DATA
         and false if function had to wait until lock could be acquired.
     """
     async_acquire = utils.async_wrap(lock.acquire)
-    async_release = utils.async_wrap(lock.release)
 
     # Check for immediate acquirement.
     try:
@@ -142,7 +140,7 @@ async def download_data(region: Region, config: Config) -> Box:
         data_json = response.json()
     except json.JSONDecodeError as exp:
         logger.critical(f"Error decoding {url} response body {response.content} as json: {exp}.")
-        raise HTTPException(500)
+        raise HTTPException(500) from exp
 
     data = Box(data_json)
 

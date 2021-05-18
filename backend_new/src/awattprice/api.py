@@ -27,3 +27,19 @@ async def get_default_region_data():
     """
     region = Region.DE
     return RedirectResponse(url=f"/data/{region.name}")
+
+
+@app.post("/apns/add_token/")
+async def add_apns_token():
+    """Register an apple push notification service token."""
+    return "Hello"
+
+
+@app.post("/data/apns/send_token/")
+def add_apns_token_old():
+    """Old url to add the apns token to the database.
+
+    This sends a redirect response to make the client call the new url for this task.
+    This url is still supported for backwards compatibility reasons.
+    """
+    return RedirectResponse(url="/apns/add_token/")

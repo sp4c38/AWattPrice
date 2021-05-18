@@ -6,18 +6,43 @@ from pathlib import Path
 from liteconfig import Config
 from loguru import logger
 
-from awattprice.defaults import DEFAULT_CONFIG
+from awattprice import defaults as dflts
 
 
-def transform_config(config: Config) -> Config:
+def _transform_config(config: Config) -> Config:
     """Transform certain config fields to another data type and/or value.
 
     Example: Transform path string into a pathlib Path instance.
     """
     config.paths.log_dir = Path(config.paths.log_dir).expanduser()
     config.paths.data_dir = Path(config.paths.data_dir).expanduser()
+    config.paths.price_data_dir = config.paths.data_dir / dflts.PRICE_DATA_SUBDIR_NAME
 
     return config
+
+
+def _ensure_dir(path: Path):
+    """Ensure that the dir at a path is actually a directory and exists.
+
+    If the directory doesn't exist create it.
+
+    :raises NotADirectoryError: if the parsed path is anything but a directory.
+    :returns: Doesn't return anything. If this returns the directory can be found at the parsed path.
+    """
+    if not path.exists():
+        logger.info(f"Creating missing directory referred to in the config: {path}.")
+        path.mkdir(parents=True)
+
+    if not path.is_dir():
+        logger.critical(f"Directory referred to in the config is no directory: {path}.")
+        raise NotADirectoryError
+
+
+def _ensure_config_dirs(config: Config):
+    """Ensure certain directories referred to in the config exist."""
+    _ensure_dir(config.paths.log_dir)
+    _ensure_dir(config.paths.data_dir)
+    _ensure_dir(config.paths.price_data_dir)
 
 
 def get_config():
@@ -47,7 +72,8 @@ def get_config():
             config_file.write(DEFAULT_CONFIG)
         config = Config(DEFAULT_CONFIG)
 
-    config = transform_config(config)
+    config = _transform_config(config)
+    _ensure_config_dirs(config)
 
     return config
 

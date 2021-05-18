@@ -4,19 +4,18 @@ import json
 import sys
 
 from functools import partial
-from json import JSONDecodeError
 from pathlib import Path
 from typing import Callable, Optional, Union
 
 import httpx
 
-from aiofile import async_open
 from box import Box, BoxList
 from loguru import logger
 
 
 def async_wrap(func: Callable):
     """Wrap a synchronous running function to make it run asynchronous."""
+
     async def run(*args, loop=None, executor=None, **kwargs) -> Callable:
         """Run sync function async."""
         if loop is None:
@@ -41,45 +40,23 @@ async def request_url(method: str, url: str, **kwargs) -> httpx.Response:
     return response
 
 
-async def store_file(data, file_path: Path):
-    """Acquire a lock for the file and store data to it asynchronous."""
-    file_dir = file_path.parent
-    if not file_dir.exists():
-        file_dir.mkdir(parents=True)
-    else:
-        if file_dir.is_file():
-            logger.critical(f"File store path {file_dir} is a file, no directory.")
-            sys.exit(1)
+async def read_json_file(file_path: Path) -> Optional[Union[Box, BoxList]]:
+    """Read file asynchronous and convert content to json.
 
-    async with async_open(file_path, "w") as file:
-        await file.write(data)
-
-
-async def read_file(file_path: Path) -> Optional[str]:
-    """Asynchronous read file.
-
-    :returns: String of the data from the file. None if file is empty.
+    :raises JSONDecodeError: if file content couldn't be decoded as json.
+    :returns: Box (if content is dict) or BoxList (if content is list).
     """
     async with async_open(file_path, "r") as file:
-        file_data = await file.read()
+        data_raw = await file.read()
 
     if len(file_data) == 0:
-        return None
+        data_raw = None
 
-    return file_data
-
-
-async def read_json_file(file_path: Path) -> Optional[Union[Box, BoxList]]:
-    """Asynchronous read file and convert to json.
-
-    :returns: Box (if content is dict) or BoxList (if content is list). None if no valid json.
-    """
-    data_raw = await read_file(file_path)
     try:
         data_json = json.loads(data_raw)
-    except JSONDecodeError as err:
+    except json.JSONDecodeError as err:
         logger.error(f"Couldn't read json file as it is no valid json: {err}.")
-        return None
+        raise
 
     if isinstance(data_json, dict):
         data = Box(data_json)

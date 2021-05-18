@@ -7,30 +7,38 @@ import arrow
 import filelock
 import httpx
 
+from aiofile import async_open
 from box import Box, BoxList
 from fastapi import HTTPException
 from filelock import FileLock
 from liteconfig import Config
 from loguru import logger
 
-from awattprice import defaults as dflts
+from awattprice import defaults
 from awattprice import utils
 from awattprice.defaults import Region
 
 
 async def get_stored_data(region: Region, config: Config) -> Optional[Box]:
     """Get locally stored price data."""
-    file_dir = config.paths.data_dir
-    file_name = dflts.PRICE_DATA_FILE_NAME.format(region.name.lower())
+    file_dir = config.paths.price_data_dir
+    file_name = defaults.PRICE_DATA_FILE_NAME.format(region.name.lower())
     file_path = file_dir / file_name
 
     if not file_path.exists():
         logger.info("No locally cached price data exists yet.")
         return None
     if not file_path.is_file():
-        logger.error(f"Stored price data path is a directory not a file: {file_path}.")
+        logger.error(f"Stored price data path is a directory, not a file: {file_path}.")
+        raise HTTPException(500)
 
-    stored_data = await utils.read_json_file(file_path)
+    try:
+        stored_data = await utils.read_json_file(file_path)
+    except json.JSONDecodeError as exp:
+        logger.warning(
+            f"When reading cached price data {file_path} the content couldn't be decoded as json: {exp}."
+        )
+        return None
 
     return stored_data
 
@@ -44,7 +52,7 @@ def check_data_needs_update(data: Optional[Box]) -> bool:
         return True
 
     now = arrow.now()
-    next_refresh_time = data.meta.update_timestamp + dflts.AWATTAR_REFRESH_INTERVAL
+    next_refresh_time = data.meta.update_timestamp + defaults.AWATTAR_REFRESH_INTERVAL
     if next_refresh_time <= now.int_timestamp:
         pass
     else:
@@ -58,11 +66,11 @@ def check_data_needs_update(data: Optional[Box]) -> bool:
     # The current price point is also counted as future price point.
     amount_future_points = 0
     for point in data.prices:
-        end_timestamp = point.end_timestamp / dflts.TO_MICROSECONDS
+        end_timestamp = point.end_timestamp / defaults.TO_MICROSECONDS
         if end_timestamp > now.int_timestamp:
             amount_future_points += 1
     # Update if the amount of future price points is smaller or equal to this amount.
-    future_points_update_amount = 24 - dflts.AWATTAR_UPDATE_HOUR
+    future_points_update_amount = 24 - defaults.AWATTAR_UPDATE_HOUR
     if amount_future_points <= future_points_update_amount:
         pass
     else:
@@ -74,14 +82,14 @@ def check_data_needs_update(data: Optional[Box]) -> bool:
 
 def get_refresh_lock(region: Region, config: Config) -> FileLock:
     """Get file lock used when refreshing price data."""
-    lock_dir = config.paths.data_dir
-    lock_file_name = dflts.PRICE_DATA_REFRESH_LOCK.format(region.name.lower())
+    lock_dir = config.paths.price_data_dir
+    lock_file_name = defaults.PRICE_DATA_REFRESH_LOCK.format(region.name.lower())
     lock_file_path = lock_dir / lock_file_name
     lock = FileLock(lock_file_path)
     return lock
 
 
-async def immediate_refresh_lock_acquire(lock, timeout: float = dflts.PRICE_DATA_REFRESH_LOCK_TIMEOUT) -> bool:
+async def immediate_refresh_lock_acquire(lock, timeout: float = defaults.PRICE_DATA_REFRESH_LOCK_TIMEOUT) -> bool:
     """Acquire a refresh lock either immediately or with waiting.
 
     :raises filelock.Timeout: if the refresh token lock acquiring timed out.
@@ -124,10 +132,10 @@ async def download_data(region: Region, config: Config) -> Box:
     end = day_start.shift(days=+2)
 
     url_parameters = {
-        "start": start.int_timestamp * dflts.TO_MICROSECONDS,
-        "end": end.int_timestamp * dflts.TO_MICROSECONDS,
+        "start": start.int_timestamp * defaults.TO_MICROSECONDS,
+        "end": end.int_timestamp * defaults.TO_MICROSECONDS,
     }
-    timeout = dflts.AWATTAR_TIMEOUT
+    timeout = defaults.AWATTAR_TIMEOUT
 
     logger.info(f"Getting {region.name.upper()} price data from {url}.")
     try:
@@ -162,12 +170,13 @@ def transform_price_data(price_data_raw: Box) -> Box:
 
 async def store_data(data: Union[Box, BoxList], region: Region, config: Config):
     """Store new price data to the filesystem."""
-    store_dir = config.paths.data_dir
-    file_name = dflts.PRICE_DATA_FILE_NAME.format(region.name.lower())
+    store_dir = config.paths.price_data_dir
+    file_name = defaults.PRICE_DATA_FILE_NAME.format(region.name.lower())
     file_path = store_dir / file_name
 
     logger.info(f"Storing aWATTar {region.name} price data to {file_path}.")
-    await utils.store_file(data.to_json(), file_path)
+    async with async_open(file_path, "w") as file:
+        await file.write(data.to_json())
 
 
 async def get_current_prices(region: Region, config: Config) -> Optional[dict]:

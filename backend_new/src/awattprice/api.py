@@ -3,11 +3,14 @@ from fastapi import FastAPI
 from starlette.responses import RedirectResponse
 
 from awattprice import config as conf
+from awattprice.database import connect_database
 from awattprice.defaults import Region
 from awattprice.prices import get_current_prices
 
 config = conf.get_config()
 conf.configure_loguru(config)
+
+db_engine = connect_database(config)
 
 app = FastAPI()
 
@@ -32,14 +35,5 @@ async def get_default_region_data():
 @app.post("/apns/add_token/")
 async def add_apns_token():
     """Register an apple push notification service token."""
-    return "Hello"
 
-
-@app.post("/data/apns/send_token/")
-def add_apns_token_old():
-    """Old url to add the apns token to the database.
-
-    This sends a redirect response to make the client call the new url for this task.
-    This url is still supported for backwards compatibility reasons.
-    """
-    return RedirectResponse(url="/apns/add_token/")
+    return "Success"

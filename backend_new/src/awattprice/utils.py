@@ -9,6 +9,7 @@ from typing import Callable, Optional, Union
 
 import httpx
 
+from aiofile import async_open
 from box import Box, BoxList
 from loguru import logger
 
@@ -49,7 +50,7 @@ async def read_json_file(file_path: Path) -> Optional[Union[Box, BoxList]]:
     async with async_open(file_path, "r") as file:
         data_raw = await file.read()
 
-    if len(file_data) == 0:
+    if len(data_raw) == 0:
         data_raw = None
 
     try:

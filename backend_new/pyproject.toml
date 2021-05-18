@@ -26,6 +26,8 @@ httpx = "^0.18.1"
 arrow = "^1.1.0"
 filelock = "^3.0.12"
 aiofile = "^3.5.0"
+SQLAlchemy = "^1.4.15"
+aiosqlite = "^0.17.0"
 
 [tool.poetry.dev-dependencies]
 ipython = "^7.22.0"

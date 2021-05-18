@@ -11,14 +11,15 @@
 
 https://apps.apple.com/app/awattprice/id1536629626</a>
 
-🌍 <b>Supported regions:</b> Germany 🇩🇪 and Austria 🇦🇹
+🌍 <b>Supported aWATTar regions:</b> Germany 🇩🇪 and Austria 🇦🇹
+
+💰 <b> Cost:</b> 100% free of charge
 
 💬 <b>Supported languages:</b> German and English
 
-📱 <b>Supported devices:</b> iOS 14 and iPadOS 14 devices
+📱 <b>Supported devices:</b> iOS 14+ and iPadOS 14+ devices
 
 🗂 <b>App category:</b> Utilities
-
 
 ### Description
 
@@ -27,13 +28,16 @@ solar power generation. Hence, they vary over time. Let's say one wants to opera
 off to run it when prices are low. That reduces the electricity bill and helps the grid to balance out peaks. Further it strengthens
 the use of regenerative power.
 
-The 2 main features of this app are:
+Features:
 
-1) Show the hourly electricity prices in an interactive chart. They are sourced from the public aWATTar data feed. One can
-switch between prices for Austria and Germany. At about 2 pm the data is updated to show prices for the next day.
+1️⃣ <b>Show</b> hourly electricity prices in an interactive chart.
 
-2) Based on the price info AWattPrice can find the time frame with the lowest energy cost. Example: One wants to charge the car by
-23 kWh via an 11 kW outlet. The app will tell when to start to minimize the cost.
+2️⃣ <b>Find</b> the time frame with the lowest energy cost. Example: Charge the car by 23 kWh via an 11 kW outlet. The app will tell when to start for the minimal cost. You can also enter a time amount to find the cheapest prices for.
+
+3️⃣ <b>Get notified</b> when prices drop under a certain value.
+
+Prices are sourced from the public aWATTar data feed. You can
+switch between prices for Austria and Germany. At about 2 pm the data is updated to show prices for the following day.
 
 AWattPrice is a personal hobby project. Sharing is caring. The app is not related in any way to the company aWATTar GmbH.
 Feedback of all kind and patches are very welcome.

@@ -1,18 +1,18 @@
 """Handle url calls to this web app."""
 from fastapi import FastAPI
+from sqlalchemy import MetaData
 from starlette.responses import RedirectResponse
 
-from awattprice import config as conf
+from awattprice.config import configure_loguru, get_config
 from awattprice.database import get_app_database
 from awattprice.defaults import Region
 from awattprice.prices import get_current_prices
-from awattprice.tables import generate_table_classes
 
-config = conf.get_config()
-conf.configure_loguru(config)
+config = get_config()
+configure_loguru(config)
 
-database = get_app_database(config)
-generate_table_classes(database.registry)
+db_engine = get_app_database(config)
+orm.metadata.bind = db_engine
 
 app = FastAPI()
 

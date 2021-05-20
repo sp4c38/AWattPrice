@@ -1,25 +1,17 @@
 import sys
 
-from dataclasses import dataclass
 from typing import Optional
 
 from liteconfig import Config
 from loguru import logger
-from sqlalchemy import create_engine, MetaData
-from sqlalchemy.orm import registry as Registry
+from sqlalchemy import create_engine
+from sqlalchemy.engine import Engine
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 
 from awattprice import defaults
 
 
-@dataclass
-class Database:
-    engine: AsyncEngine
-    metadata: MetaData
-    registry: Registry
-
-
-def get_app_database(config: Config, async_engine=False, force_create=False) -> Database:
+def get_app_database(config: Config, async_engine=False, force_create=False) -> Engine:
     """Get the apps database connection with some other objects.
 
     :param async_engine: Defaults to false. If true this will create a sqlalchemy async engine. If false
@@ -33,9 +25,7 @@ def get_app_database(config: Config, async_engine=False, force_create=False) -> 
         logger.error(f"Apps database doesn't exist at {db_file}. Please create it.")
         sys.exit(1)
 
-    create_engine_kwargs = {
-        "future": True
-    }
+    create_engine_kwargs = {"future": True}
     if async_engine:
         db_url = f"sqlite+aiosqlite:///{db_file}"
         engine = create_async_engine(db_url, **create_engine_kwargs)
@@ -43,10 +33,4 @@ def get_app_database(config: Config, async_engine=False, force_create=False) -> 
         db_url = f"sqlite+pysqlite:///{db_file}"
         engine = create_engine(db_url, **create_engine_kwargs)
 
-    metadata = MetaData(engine)
-
-    registry = Registry(metadata)
-
-    database = Database(engine, metadata, registry)
-
-    return database
+    return engine

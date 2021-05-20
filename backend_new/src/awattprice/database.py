@@ -1,14 +1,15 @@
 import sys
 
 from dataclasses import dataclass
+from typing import Optional
 
 from liteconfig import Config
 from loguru import logger
-from sqlalchemy import MetaData
-from sqlalchemy.orm import DeclarativeMeta, registry as Registry
+from sqlalchemy import create_engine, MetaData
+from sqlalchemy.orm import registry as Registry
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 
-from awattprice import defaults as dflts
+from awattprice import defaults
 
 
 @dataclass
@@ -16,29 +17,36 @@ class Database:
     engine: AsyncEngine
     metadata: MetaData
     registry: Registry
-    BaseClass: DeclarativeMeta
 
 
-def get_app_database(config: Config) -> Database:
+def get_app_database(config: Config, async_engine=False, force_create=False) -> Database:
     """Get the apps database connection with some other objects.
 
+    :param async_engine: Defaults to false. If true this will create a sqlalchemy async engine. If false
+        the normal sync engine will be created.
+    :param force_create: Don't exit if no database file exists, but instead create the database file.
     :returns Database: Returns an instance of this class.
     """
     db_dir = config.paths.data_dir
-    db_file = db_dir / dflts.DATABASE_FILE_NAME
-    if not db_file.exists():
+    db_file = db_dir / defaults.DATABASE_FILE_NAME
+    if not force_create and not db_file.exists():
         logger.error(f"Apps database doesn't exist at {db_file}. Please create it.")
         sys.exit(1)
 
-    db_path = f"sqlite+aiosqlite:///{db_file}"
-    engine = create_async_engine(db_path, future=True)
+    create_engine_kwargs = {
+        "future": True
+    }
+    if async_engine:
+        db_url = f"sqlite+aiosqlite:///{db_file}"
+        engine = create_async_engine(db_url, **create_engine_kwargs)
+    else:
+        db_url = f"sqlite+pysqlite:///{db_file}"
+        engine = create_engine(db_url, **create_engine_kwargs)
 
     metadata = MetaData(engine)
 
     registry = Registry(metadata)
 
-    BaseClass = registry.generate_base()
-
-    database = Database(engine, metadata, registry, BaseClass)
+    database = Database(engine, metadata, registry)
 
     return database

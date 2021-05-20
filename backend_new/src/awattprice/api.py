@@ -6,11 +6,13 @@ from awattprice import config as conf
 from awattprice.database import get_app_database
 from awattprice.defaults import Region
 from awattprice.prices import get_current_prices
+from awattprice.tables import generate_table_classes
 
 config = conf.get_config()
 conf.configure_loguru(config)
 
 database = get_app_database(config)
+generate_table_classes(database.registry)
 
 app = FastAPI()
 

@@ -3,14 +3,14 @@ from fastapi import FastAPI
 from starlette.responses import RedirectResponse
 
 from awattprice import config as conf
-from awattprice.database import connect_database
+from awattprice.database import get_app_database
 from awattprice.defaults import Region
 from awattprice.prices import get_current_prices
 
 config = conf.get_config()
 conf.configure_loguru(config)
 
-db_engine = connect_database(config)
+database = get_app_database(config)
 
 app = FastAPI()
 
@@ -29,7 +29,7 @@ async def get_default_region_data():
     This will respond with an temporary redirect to the data price site of the default region.
     """
     region = Region.DE
-    return RedirectResponse(url=f"/data/{region.name}")
+    return RedirectResponse(url=f"/data/{region.value}")
 
 
 @app.post("/apns/add_token/")

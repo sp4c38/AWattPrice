@@ -1,7 +1,6 @@
 """Contains small helper functions which don't fit into a bigger category."""
 import asyncio
 import json
-import sys
 
 from functools import partial
 from pathlib import Path

@@ -22,7 +22,7 @@ from awattprice.defaults import Region
 async def get_stored_data(region: Region, config: Config) -> Optional[Box]:
     """Get locally stored price data."""
     file_dir = config.paths.price_data_dir
-    file_name = defaults.PRICE_DATA_FILE_NAME.format(region.name.lower())
+    file_name = defaults.PRICE_DATA_FILE_NAME.format(region.value.lower())
     file_path = file_dir / file_name
 
     if not file_path.exists():
@@ -83,7 +83,7 @@ def check_data_needs_update(data: Optional[Box]) -> bool:
 def get_refresh_lock(region: Region, config: Config) -> FileLock:
     """Get file lock used when refreshing price data."""
     lock_dir = config.paths.price_data_dir
-    lock_file_name = defaults.PRICE_DATA_REFRESH_LOCK.format(region.name.lower())
+    lock_file_name = defaults.PRICE_DATA_REFRESH_LOCK.format(region.value.lower())
     lock_file_path = lock_dir / lock_file_name
     lock = FileLock(lock_file_path)
     return lock
@@ -121,7 +121,7 @@ async def immediate_refresh_lock_acquire(lock, timeout: float = defaults.PRICE_D
 
 async def download_data(region: Region, config: Config) -> Box:
     """Download current aWATTar price data."""
-    region_config_section = f"awattar.{region.name.lower()}"
+    region_config_section = f"awattar.{region.value.lower()}"
     url = getattr(config, region_config_section).url
 
     now = arrow.utcnow()
@@ -137,7 +137,7 @@ async def download_data(region: Region, config: Config) -> Box:
     }
     timeout = defaults.AWATTAR_TIMEOUT
 
-    logger.info(f"Getting {region.name.upper()} price data from {url}.")
+    logger.info(f"Getting {region.value.upper()} price data from {url}.")
     try:
         response = await utils.request_url("GET", url, timeout=timeout, params=url_parameters)
     except httpx.ConnectTimeout as exp:
@@ -171,10 +171,10 @@ def transform_price_data(price_data_raw: Box) -> Box:
 async def store_data(data: Union[Box, BoxList], region: Region, config: Config):
     """Store new price data to the filesystem."""
     store_dir = config.paths.price_data_dir
-    file_name = defaults.PRICE_DATA_FILE_NAME.format(region.name.lower())
+    file_name = defaults.PRICE_DATA_FILE_NAME.format(region.value.lower())
     file_path = store_dir / file_name
 
-    logger.info(f"Storing aWATTar {region.name} price data to {file_path}.")
+    logger.info(f"Storing aWATTar {region.value} price data to {file_path}.")
     async with async_open(file_path, "w") as file:
         await file.write(data.to_json())
 

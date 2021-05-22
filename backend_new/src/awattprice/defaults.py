@@ -24,6 +24,31 @@ log_dir = ~/awattprice/logs/
 data_dir = ~/awattprice/data/
 """
 
+# Describes how a notification task payload should be structured like.
+NOTIFICATION_TASK_SCHEMA = {
+    "properties": {
+        "token": {"type": "string"},
+        "tasks": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "type": {
+                        "type": "string",
+                    },
+                    "payload": {
+                        "type": "object",
+                    },
+                },
+                "required": ["type", "payload"],
+            },
+            "minItems": 1,
+        },
+    },
+    "required": ["token", "tasks"],
+}
+
+
 # Factor to convert seconds into microseconds.
 TO_MICROSECONDS = 1000
 

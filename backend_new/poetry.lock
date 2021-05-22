@@ -63,6 +63,20 @@ lazy-object-proxy = ">=1.4.0"
 wrapt = ">=1.11,<1.13"
 
 [[package]]
+name = "attrs"
+version = "21.2.0"
+description = "Classes Without Boilerplate"
+category = "main"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+
+[package.extras]
+dev = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "six", "mypy", "pytest-mypy-plugins", "zope.interface", "furo", "sphinx", "sphinx-notfound-page", "pre-commit"]
+docs = ["furo", "sphinx", "zope.interface", "sphinx-notfound-page"]
+tests = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "six", "mypy", "pytest-mypy-plugins", "zope.interface"]
+tests_no_zope = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "six", "mypy", "pytest-mypy-plugins"]
+
+[[package]]
 name = "backcall"
 version = "0.2.0"
 description = "Specifications for callback functions passed in to an API"
@@ -93,7 +107,7 @@ python2 = ["typed-ast (>=1.4.2)"]
 
 [[package]]
 name = "caio"
-version = "0.8.0"
+version = "0.8.1"
 description = "Asynchronous file IO for Linux Posix and Windows."
 category = "main"
 optional = false
@@ -311,6 +325,23 @@ parso = ">=0.8.0,<0.9.0"
 [package.extras]
 qa = ["flake8 (==3.8.3)", "mypy (==0.782)"]
 testing = ["Django (<3.1)", "colorama", "docopt", "pytest (<6.0.0)"]
+
+[[package]]
+name = "jsonschema"
+version = "3.2.0"
+description = "An implementation of JSON Schema validation for Python"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+attrs = ">=17.4.0"
+pyrsistent = ">=0.14.0"
+six = ">=1.11.0"
+
+[package.extras]
+format = ["idna", "jsonpointer (>1.13)", "rfc3987", "strict-rfc3339", "webcolors"]
+format_nongpl = ["idna", "jsonpointer (>1.13)", "webcolors", "rfc3986-validator (>0.1.0)", "rfc3339-validator"]
 
 [[package]]
 name = "lazy-object-proxy"
@@ -553,6 +584,14 @@ mccabe = ">=0.6,<0.7"
 toml = ">=0.7.1"
 
 [[package]]
+name = "pyrsistent"
+version = "0.17.3"
+description = "Persistent/Functional/Immutable data structures"
+category = "main"
+optional = false
+python-versions = ">=3.5"
+
+[[package]]
 name = "python-box"
 version = "5.3.0"
 description = "Advanced Python dictionaries with dot notation access"
@@ -741,7 +780,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "32782b2cfffa6a0ba02846e3756fad8426740b4802d716cf8b4436d3209b8013"
+content-hash = "c0076fb9231362490a4cf77e6b7c0c30fdd5bc93a1907316ef94e3f24bed791d"
 
 [metadata.files]
 aiofile = [
@@ -768,6 +807,10 @@ astroid = [
     {file = "astroid-2.5.6-py3-none-any.whl", hash = "sha256:4db03ab5fc3340cf619dbc25e42c2cc3755154ce6009469766d7143d1fc2ee4e"},
     {file = "astroid-2.5.6.tar.gz", hash = "sha256:8a398dfce302c13f14bab13e2b14fe385d32b73f4e4853b9bdfb64598baa1975"},
 ]
+attrs = [
+    {file = "attrs-21.2.0-py2.py3-none-any.whl", hash = "sha256:149e90d6d8ac20db7a955ad60cf0e6881a3f20d37096140088356da6c716b0b1"},
+    {file = "attrs-21.2.0.tar.gz", hash = "sha256:ef6aaac3ca6cd92904cdd0d83f629a15f18053ec84e6432106f7a4d04ae4f5fb"},
+]
 backcall = [
     {file = "backcall-0.2.0-py2.py3-none-any.whl", hash = "sha256:fbbce6a29f263178a1f7915c1940bde0ec2b2a967566fe1c65c1dfb7422bd255"},
     {file = "backcall-0.2.0.tar.gz", hash = "sha256:5cbdbf27be5e7cfadb448baf0aa95508f91f2bbc6c6437cd9cd06e2a4c215e1e"},
@@ -777,16 +820,15 @@ black = [
     {file = "black-21.5b1.tar.gz", hash = "sha256:23695358dbcb3deafe7f0a3ad89feee5999a46be5fec21f4f1d108be0bcdb3b1"},
 ]
 caio = [
-    {file = "caio-0.8.0-cp35-cp35m-manylinux2010_x86_64.whl", hash = "sha256:12c9354954cced5c86eda101685d3d0b5656bbd50b9293604b68150ce32fb5db"},
-    {file = "caio-0.8.0-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:86dd1076008afa2665e30cf6be3fee3d53b88601abfd7e730b5954b4e64fac40"},
-    {file = "caio-0.8.0-cp36-cp36m-manylinux2010_x86_64.whl", hash = "sha256:d35b423f178daddff2481594b94d66b1e06afd9f26629eec034f3ae0c950b312"},
-    {file = "caio-0.8.0-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:1f1d2a41ad67fb6e9af4d89c40056df370b338f0cc6ca1b3d2f7a85675beaab7"},
-    {file = "caio-0.8.0-cp37-cp37m-manylinux2010_x86_64.whl", hash = "sha256:c302fe7c417ce2cc1c6c34ebb4b46220592068a14a1e324c8016f19d74b4d7ed"},
-    {file = "caio-0.8.0-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:d45361b84edc74868e46d5bf34a2879f69b1d278e60922f9b98ab2962a593f03"},
-    {file = "caio-0.8.0-cp38-cp38-manylinux2010_x86_64.whl", hash = "sha256:601b219fe167c2aeb74bf91f1ca7a4d0fc0ba63767cee79f9a1c14c679e11fdf"},
-    {file = "caio-0.8.0-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:b1b163d2603a7001ac39f00c2dfaf0e9fff56d3fa2553b708e9bb0fc39ac9432"},
-    {file = "caio-0.8.0-cp39-cp39-manylinux2010_x86_64.whl", hash = "sha256:ae54d0e409732882448ae9a730151acba9ac4cb536d03cbfd77114587cb858f7"},
-    {file = "caio-0.8.0.tar.gz", hash = "sha256:87655ee2510ef6f0e9bf0b5cd77fc04a79236ac0259a9739e75622fa2fd1b674"},
+    {file = "caio-0.8.1-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:7e5f4b87628958b9eb0085f1d901a50acb4df6d6fedafea5958264142abe17d1"},
+    {file = "caio-0.8.1-cp36-cp36m-manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:c1be93c132761af1925410046048586fc970d3fc5ebd81346cef6465d6146ad5"},
+    {file = "caio-0.8.1-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:ea06e3e9baff13cdfecb403b266f20693a51a9a0d7c27b33f2217d394d7be2e1"},
+    {file = "caio-0.8.1-cp37-cp37m-manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:ee6680ea68f0210735102ce3ab958af79286d50dfd2d84cb10a475e9a70990e7"},
+    {file = "caio-0.8.1-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:02bf84aaa2dee52486019d97c51e63b43bb4608d4a0f2b1d59cd15e1fc6a8afd"},
+    {file = "caio-0.8.1-cp38-cp38-manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:99c92f4bb16b7aebf80051f7e76ada3b954c287f4900eedf0cb23ef2590f7311"},
+    {file = "caio-0.8.1-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:bba1356cb1e5e5d33654691999b41f572e7bd573da4065d4c8053df482d0e1b2"},
+    {file = "caio-0.8.1-cp39-cp39-manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:408d55efab6fb5b391e9f5e4b34ad115ab30fbac0089bd116f83d77819ee8623"},
+    {file = "caio-0.8.1.tar.gz", hash = "sha256:05741338a0fd7e4bf3d20e969a0e4a5687bc60fa81cbebe6230034650520a6e2"},
 ]
 certifi = [
     {file = "certifi-2020.12.5-py2.py3-none-any.whl", hash = "sha256:719a74fb9e33b9bd44cc7f3a8d94bc35e4049deebe19ba7d8e108280cfd59830"},
@@ -952,6 +994,10 @@ isort = [
 jedi = [
     {file = "jedi-0.18.0-py2.py3-none-any.whl", hash = "sha256:18456d83f65f400ab0c2d3319e48520420ef43b23a086fdc05dff34132f0fb93"},
     {file = "jedi-0.18.0.tar.gz", hash = "sha256:92550a404bad8afed881a137ec9a461fed49eca661414be45059329614ed0707"},
+]
+jsonschema = [
+    {file = "jsonschema-3.2.0-py2.py3-none-any.whl", hash = "sha256:4e5b3cf8216f577bee9ce139cbe72eca3ea4f292ec60928ff24758ce626cd163"},
+    {file = "jsonschema-3.2.0.tar.gz", hash = "sha256:c8a85b28d377cc7737e46e2d9f2b4f44ee3c0e1deac6bf46ddefc7187d30797a"},
 ]
 lazy-object-proxy = [
     {file = "lazy-object-proxy-1.6.0.tar.gz", hash = "sha256:489000d368377571c6f982fba6497f2aa13c6d1facc40660963da62f5c379726"},
@@ -1134,6 +1180,9 @@ pygments = [
 pylint = [
     {file = "pylint-2.8.2-py3-none-any.whl", hash = "sha256:f7e2072654a6b6afdf5e2fb38147d3e2d2d43c89f648637baab63e026481279b"},
     {file = "pylint-2.8.2.tar.gz", hash = "sha256:586d8fa9b1891f4b725f587ef267abe2a1bad89d6b184520c7f07a253dd6e217"},
+]
+pyrsistent = [
+    {file = "pyrsistent-0.17.3.tar.gz", hash = "sha256:2e636185d9eb976a18a8a8e96efce62f2905fea90041958d8cc2a189756ebf3e"},
 ]
 python-box = [
     {file = "python-box-5.3.0.tar.gz", hash = "sha256:4ed4ef5d34de505a65c01e3f1911de8cdb29484fcae0c035141dce535c6c194a"},

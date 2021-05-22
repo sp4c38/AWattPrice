@@ -1,8 +1,11 @@
 """Handle url calls to this web app."""
-from fastapi import FastAPI
-from sqlalchemy import MetaData
+from json import JSONDecodeError
+
+from box import Box
+from fastapi import FastAPI, HTTPException, Request
 from starlette.responses import RedirectResponse
 
+from awattprice import orm
 from awattprice.config import configure_loguru, get_config
 from awattprice.database import get_app_database
 from awattprice.defaults import Region
@@ -34,8 +37,15 @@ async def get_default_region_data():
     return RedirectResponse(url=f"/data/{region.value}")
 
 
-@app.post("/apns/add_token/")
-async def add_apns_token():
+@app.post("/apns/")
+async def do_notifi_tasks(request: Request):
     """Register an apple push notification service token."""
+    try:
+        tasks_json = await request.json()
+    except JSONDecodeError as exp:
+        raise HTTPException(400) from exp
+
+    tasks = notifications.get_notifi_tasks(tasks_json)
+    notifications.run_notifi_tasks(tasks_json)
 
     return "Success"

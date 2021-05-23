@@ -34,9 +34,9 @@ async def get_stored_data(region: Region, config: Config) -> Optional[Box]:
 
     try:
         stored_data = await utils.read_json_file(file_path)
-    except json.JSONDecodeError as exp:
+    except json.JSONDecodeError as exc:
         logger.warning(
-            f"When reading cached price data {file_path} the content couldn't be decoded as json: {exp}."
+            f"When reading cached price data {file_path} the content couldn't be decoded as json: {exc}."
         )
         return None
 
@@ -110,8 +110,8 @@ async def immediate_refresh_lock_acquire(lock, timeout: float = defaults.PRICE_D
 
     try:
         await async_acquire(timeout=timeout)
-    except filelock.Timeout as exp:
-        logger.info(f"Lock couldn't be acquired at all: {exp}.")
+    except filelock.Timeout as exc:
+        logger.info(f"Lock couldn't be acquired at all: {exc}.")
         raise
     else:
         logger.debug("Lock acquired after waiting.")
@@ -140,15 +140,15 @@ async def download_data(region: Region, config: Config) -> Box:
     logger.info(f"Getting {region.value.upper()} price data from {url}.")
     try:
         response = await utils.request_url("GET", url, timeout=timeout, params=url_parameters)
-    except httpx.ConnectTimeout as exp:
-        logger.critical(f"Timed out after {timeout}s when trying to reach {url}: {exp}.")
-        raise HTTPException(503) from exp
+    except httpx.ConnectTimeout as exc:
+        logger.critical(f"Timed out after {timeout}s when trying to reach {url}: {exc}.")
+        raise HTTPException(503) from exc
 
     try:
         data_json = response.json()
-    except json.JSONDecodeError as exp:
-        logger.critical(f"Error decoding {url} response body {response.content} as json: {exp}.")
-        raise HTTPException(500) from exp
+    except json.JSONDecodeError as exc:
+        logger.critical(f"Error decoding {url} response body {response.content} as json: {exc}.")
+        raise HTTPException(500) from exc
 
     data = Box(data_json)
 

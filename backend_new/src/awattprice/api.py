@@ -38,16 +38,18 @@ async def get_default_region_data():
     return RedirectResponse(url=f"/data/{region.value}")
 
 
+@logger.catch
 @app.post("/notifications/do_tasks/")
 async def do_notification_tasks(request: Request):
     """Runs one or multiple notification setting update tasks for a token."""
     try:
-        body = Box(await request.json())
-    except JSONDecodeError as exp:
+        tasks_container_raw = Box(await request.json())
+    except JSONDecodeError as exc:
         body_raw = await request.body()
-        logger.info(f"Couldn't decode notification tasks {body_raw} as json: {exp}.")
-        raise HTTPException(400) from exp
+        logger.warning(f"Couldn't decode notification tasks {body_raw} as json: {exc}.")
+        raise HTTPException(400) from exc
 
-    tasks = notifications.get_body_tasks(body)
+    tasks_container = notifications.transform_tasks_body(tasks_container_raw)
+    await notifications.run_notification_tasks(tasks_container)
 
     return None

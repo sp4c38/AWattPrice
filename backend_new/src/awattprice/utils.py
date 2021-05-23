@@ -2,14 +2,17 @@
 import asyncio
 import json
 
+from enum import Enum
 from functools import partial
 from pathlib import Path
 from typing import Callable, Optional, Union
 
 import httpx
+import jsonschema
 
 from aiofile import async_open
 from box import Box, BoxList
+from fastapi import HTTPException
 from loguru import logger
 
 
@@ -64,3 +67,28 @@ async def read_json_file(file_path: Path) -> Optional[Union[Box, BoxList]]:
         data = BoxList(data_json)
 
     return data
+
+# Functions prefixed with http_exception run tasks and throw an http exception if they fail.
+def http_exc_validate_json_schema(body: Union[Box, dict, list], schema: dict):
+    """Validate a body against a schema.
+
+    :raises HTTPException: with status code 400 if the body doesn't match the schema. 
+    """
+    try:
+        jsonschema.validate(body, schema)
+    except jsonschema.ValidationError as exc:
+        logger.warning(f"Body doesn't match correct schema: {exc}.")
+        raise HTTPException(400) from exc
+
+def http_exc_get_enum_attr(enum_: Enum, attr_name: str):
+    """Get attr from enumeration.
+
+    :raises HTTPException: with status code 400 if there is no appropriate attr on the enumeration.
+    """
+    try:
+        attr = getattr(enum_, attr_name)
+    except AttributeError as exc:
+        logger.warning(f"Can't get attr named '{attr_name}' from enum {enum_.__name__}.")
+        raise HTTPException(400) from exc
+
+    return attr

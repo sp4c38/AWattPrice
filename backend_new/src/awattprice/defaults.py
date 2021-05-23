@@ -24,25 +24,6 @@ log_dir = ~/awattprice/logs/
 data_dir = ~/awattprice/data/
 """
 
-# Describes structure of the json body when the client sends tasks to update its notification settings.
-NOTIFICATION_TASKS_BODY_SCHEMA = {
-    "type": "object",
-    "properties": {
-        "token": {"type": "string"},
-        "tasks": {
-            "type": "array",
-            "items": {
-                "type": "object",
-                "properties": {"type": {"type": "string"}, "payload": {"type": "object"}},
-                "required": ["type", "payoad"],
-            },
-            "minItems": 1,
-        },
-    },
-    "required": ["token", "tasks"],
-}
-
-
 # Factor to convert seconds into microseconds.
 TO_MICROSECONDS = 1000
 
@@ -69,3 +50,33 @@ PRICE_DATA_SUBDIR_NAME = "price_data"
 PRICE_DATA_REFRESH_LOCK = "awattar-data-{}-update.lck"
 # Timeout in seconds to wait when needing the refresh price data lock to be unlocked.
 PRICE_DATA_REFRESH_LOCK_TIMEOUT = AWATTAR_TIMEOUT + 2.0
+
+# Describes structure of the json body when the client sends tasks to update its notification settings.
+NOTIFICATION_TASKS_BODY_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "token": {"type": "string", "minLength": 1},
+        "tasks": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "type": {"type": "string", "minLength": 1},
+                    "payload": {"type": "object"}
+                },
+                "required": ["type", "payload"],
+            },
+            "minItems": 1,
+        },
+    },
+    "required": ["token", "tasks"],
+}
+
+NOTIFICATION_TASK_ADD_TOKEN_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "region": {"type": "string", "minLength": 1},
+        "tax": {"type": "boolean"}
+    },
+    "required": ["region", "tax"]
+}

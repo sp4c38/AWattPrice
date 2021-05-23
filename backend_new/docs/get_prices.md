@@ -1,3 +1,5 @@
+This documentation shall describe how AWattPrice handles certain situations. The specifications should *not* be understood as some description how to access the web app or whatsoever. The backend should *only* be accessed by the actual iOS app. It's a documentation *for backend developers* to later understand certain concepts quicker.
+
 # **Get current aWATTar prices**
 
 Following is a description of the way the back-end attempts to get the latest aWATTar price data.

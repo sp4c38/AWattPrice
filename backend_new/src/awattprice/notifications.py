@@ -11,14 +11,21 @@ from awattprice import defaults, utils
 from awattprice.defaults import Region
 
 
+class NotificationTask(Enum):
+    add_token = auto()
+
+
+async def add_new_token(token)
+
+
 async def run_notification_tasks(tasks_container: Box):
     """Runs notification configuration tasks."""
     token = tasks_container.token
     tasks = tasks_container.tasks
 
+    if task == NotificationTask.add_token:
+        await add_new_token(token, task.payload)
 
-class NotificationTask(Enum):
-    add_token = auto()
 
 
 def transform_tasks_body(body: Box):
@@ -34,11 +41,14 @@ def transform_tasks_body(body: Box):
     utils.http_exc_validate_json_schema(new_body, schema)
 
     task_type_counter = Box({NotificationTask.add_token: 0})
-    for task in new_body.tasks:
+    for index, task in enumerate(new_body.tasks):
         new_type = utils.http_exc_get_enum_attr(NotificationTask, task.type)
         task.type = new_type
 
         if task.type == NotificationTask.add_token:
+            if index not 0:
+                logger.warning(f"Add token task is not the first in the task list: {index}.")
+                raise HTTPException(400)
             add_token_schema = defaults.NOTIFICATION_TASK_ADD_TOKEN_SCHEMA
             utils.http_exc_validate_json_schema(task.payload, add_token_schema)
             new_region = utils.http_exc_get_enum_attr(Region, task.payload.region)

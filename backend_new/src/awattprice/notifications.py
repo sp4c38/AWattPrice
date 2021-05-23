@@ -3,9 +3,11 @@ from enum import auto, Enum
 
 import jsonschema
 
-from fastapi import HTTPException
-from pydantic import BaseModel, ValidationError
+from box import Box
+from fastapi import HTTPException, Request
+from pydantic import BaseModel
 
+from awattprice import defaults
 from awattprice.defaults import Region
 
 
@@ -30,6 +32,13 @@ async def run_notifi_tasks(tasks: dict):
         if task_type == APNsTask.register_new_token:
             await add_new_token(task.payload)
 
+def get_body_tasks(body: Box):
+    """Get the tasks out of the json body of the request.
 
-def get_notifi_tasks(body_json: dict):
-    """Validate and get the notification tasks from the request json body."""
+    This also validates the json body to match the correct scheme.
+    """
+    schema = defaults.NOTIFICATION_TASKS_BODY_SCHEMA
+    try:
+        jsonschema.validate(body, schema)
+    except jsonschema.ValidationError as exp:
+        raise HTTPException(400, "Body doesn't match correct schema.") from exp

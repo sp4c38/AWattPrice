@@ -24,23 +24,17 @@ log_dir = ~/awattprice/logs/
 data_dir = ~/awattprice/data/
 """
 
-# Describes how a notification task payload should be structured like.
-NOTIFICATION_TASK_SCHEMA = {
+# Describes structure of the json body when the client sends tasks to update its notification settings.
+NOTIFICATION_TASKS_BODY_SCHEMA = {
+    "type": "object",
     "properties": {
         "token": {"type": "string"},
         "tasks": {
             "type": "array",
             "items": {
                 "type": "object",
-                "properties": {
-                    "type": {
-                        "type": "string",
-                    },
-                    "payload": {
-                        "type": "object",
-                    },
-                },
-                "required": ["type", "payload"],
+                "properties": {"type": {"type": "string"}, "payload": {"type": "object"}},
+                "required": ["type", "payoad"],
             },
             "minItems": 1,
         },

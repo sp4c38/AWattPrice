@@ -3,9 +3,10 @@ from json import JSONDecodeError
 
 from box import Box
 from fastapi import FastAPI, HTTPException, Request
+from loguru import logger
 from starlette.responses import RedirectResponse
 
-from awattprice import orm
+from awattprice import notifications, orm
 from awattprice.config import configure_loguru, get_config
 from awattprice.database import get_app_database
 from awattprice.defaults import Region
@@ -37,15 +38,16 @@ async def get_default_region_data():
     return RedirectResponse(url=f"/data/{region.value}")
 
 
-@app.post("/apns/")
-async def do_notifi_tasks(request: Request):
-    """Register an apple push notification service token."""
+@app.post("/notifications/do_tasks/")
+async def do_notification_tasks(request: Request):
+    """Runs one or multiple notification setting update tasks for a token."""
     try:
-        tasks_json = await request.json()
+        body = Box(await request.json())
     except JSONDecodeError as exp:
+        body_raw = await request.body()
+        logger.info(f"Couldn't decode notification tasks {body_raw} as json: {exp}.")
         raise HTTPException(400) from exp
 
-    tasks = notifications.get_notifi_tasks(tasks_json)
-    notifications.run_notifi_tasks(tasks_json)
+    tasks = notifications.get_body_tasks(body)
 
-    return "Success"
+    return None

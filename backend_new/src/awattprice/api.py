@@ -15,7 +15,7 @@ from awattprice.prices import get_current_prices
 config = get_config()
 configure_loguru(config)
 
-db_engine = get_app_database(config)
+db_engine = get_app_database(config, async_engine=True)
 orm.metadata.bind = db_engine
 
 app = FastAPI()

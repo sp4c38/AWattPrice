@@ -6,8 +6,11 @@ from box import Box
 from fastapi import HTTPException, Request
 from loguru import logger
 from pydantic import BaseModel
+from sqlalchemy import exc as sqlalchemy_exc
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from awattprice import defaults, utils
+from awattprice import defaults, orm, utils
+from awattprice.api import db_engine
 from awattprice.defaults import Region
 
 
@@ -15,7 +18,24 @@ class NotificationTask(Enum):
     add_token = auto()
 
 
-async def add_new_token(token)
+async def add_new_token(token, data):
+    """Add a new token to the database."""
+    new_token = orm.Token(
+        token=token,
+        region=data.region,
+        tax=data.tax,
+    )
+
+    async with AsyncSession(db_engine) as session:
+        session.add(new_token)
+        try:
+            await session.commit()
+        except sqlalchemy_exc.IntegrityError as exc:
+            logger.warning(f"Tried to add token altough it already existed: {exc}.")
+            await session.rollback()
+            # This gives information if or if not a token exists in the database which isn't ideal but
+            # can't really be avoided.
+            raise HTTPException(400)
 
 
 async def run_notification_tasks(tasks_container: Box):
@@ -23,9 +43,10 @@ async def run_notification_tasks(tasks_container: Box):
     token = tasks_container.token
     tasks = tasks_container.tasks
 
-    if task == NotificationTask.add_token:
-        await add_new_token(token, task.payload)
-
+    # If included add token tasks are always at the beginning.
+    first_task = tasks[0]
+    if first_task.type == NotificationTask.add_token:
+        await add_new_token(token, first_task.payload)
 
 
 def transform_tasks_body(body: Box):
@@ -46,7 +67,7 @@ def transform_tasks_body(body: Box):
         task.type = new_type
 
         if task.type == NotificationTask.add_token:
-            if index not 0:
+            if index != 0:
                 logger.warning(f"Add token task is not the first in the task list: {index}.")
                 raise HTTPException(400)
             add_token_schema = defaults.NOTIFICATION_TASK_ADD_TOKEN_SCHEMA

@@ -1,14 +1,16 @@
 """Poll and process price data."""
 import json
 
-from typing import Optional, Union
+from typing import Optional
+from typing import Union
 
 import arrow
 import filelock
 import httpx
 
 from aiofile import async_open
-from box import Box, BoxList
+from box import Box
+from box import BoxList
 from fastapi import HTTPException
 from filelock import FileLock
 from liteconfig import Config

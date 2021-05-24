@@ -5,13 +5,16 @@ import json
 from enum import Enum
 from functools import partial
 from pathlib import Path
-from typing import Callable, Optional, Union
+from typing import Callable
+from typing import Optional
+from typing import Union
 
 import httpx
 import jsonschema
 
 from aiofile import async_open
-from box import Box, BoxList
+from box import Box
+from box import BoxList
 from fastapi import HTTPException
 from loguru import logger
 

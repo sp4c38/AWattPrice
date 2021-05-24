@@ -1,16 +1,19 @@
 """Manage apple push notifications."""
-from enum import auto, Enum
+from enum import auto
+from enum import Enum
 from typing import Union
 
 from box import Box
-from fastapi import HTTPException, Request
+from fastapi import HTTPException
+from fastapi import Request
 from loguru import logger
 from pydantic import BaseModel
 from sqlalchemy import exc as sqlalchemy_exc
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from awattprice import defaults, orm, utils
+from awattprice import defaults
+from awattprice import utils
 from awattprice.api import db_engine
 from awattprice.defaults import Region
 from awattprice.orm import Token

@@ -2,12 +2,16 @@
 from json import JSONDecodeError
 
 from box import Box
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI
+from fastapi import HTTPException
+from fastapi import Request
 from loguru import logger
 from starlette.responses import RedirectResponse
 
-from awattprice import notifications, orm
-from awattprice.config import configure_loguru, get_config
+from awattprice import notifications
+from awattprice import orm
+from awattprice.config import configure_loguru
+from awattprice.config import get_config
 from awattprice.database import get_app_database
 from awattprice.defaults import Region
 from awattprice.prices import get_current_prices

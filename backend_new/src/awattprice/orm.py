@@ -1,6 +1,12 @@
 """Database tables represented as objects."""
 
-from sqlalchemy import Boolean, Column, Enum, ForeignKey, Integer, MetaData, String
+from sqlalchemy import Boolean
+from sqlalchemy import Colum
+from sqlalchemy import Enum
+from sqlalchemy import ForeignKey
+from sqlalchemy import Integer
+from sqlalchemy import MetaData
+from sqlalchemy import String
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm import registry as Registry
 

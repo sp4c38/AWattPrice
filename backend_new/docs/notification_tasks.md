@@ -7,6 +7,7 @@ Notification tasks are tasks to update the notification configuration of a token
 ### Tasks available
 
 - Add token to the database.
+- Subscribe/desubscribe to notification.
 
 ### Rules when sending tasks
 

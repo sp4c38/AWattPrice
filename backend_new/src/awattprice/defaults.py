@@ -80,3 +80,13 @@ NOTIFICATION_TASK_ADD_TOKEN_SCHEMA = {
     },
     "required": ["region", "tax"]
 }
+
+NOTIFICATION_TASK_PRICE_BELOW_SUB_DESUB_SCHEMA = {
+    "type": "object",
+    "properties": {
+        # Property 'notification_type' also was already checked and thus doesn't need to be
+        # checked again.
+        "below_value": {"type": "number"}
+    },
+    "required": ["below_value"]
+}

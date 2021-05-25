@@ -1,7 +1,7 @@
 """Database tables represented as objects."""
 
 from sqlalchemy import Boolean
-from sqlalchemy import Colum
+from sqlalchemy import Column
 from sqlalchemy import Enum
 from sqlalchemy import ForeignKey
 from sqlalchemy import Integer

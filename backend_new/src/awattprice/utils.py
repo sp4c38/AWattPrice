@@ -5,6 +5,7 @@ import json
 from enum import Enum
 from functools import partial
 from pathlib import Path
+from typing import Any
 from typing import Callable
 from typing import Optional
 from typing import Union
@@ -83,15 +84,15 @@ def http_exc_validate_json_schema(body: Union[Box, dict, list], schema: dict):
         logger.warning(f"Body doesn't match correct schema: {exc}.")
         raise HTTPException(400) from exc
 
-def http_exc_get_enum_attr(enum_: Enum, attr_name: str):
+def http_exc_get_attr(obj: Any, attr_name: str):
     """Get attr from enumeration.
 
     :raises HTTPException: with status code 400 if there is no appropriate attr on the enumeration.
     """
     try:
-        attr = getattr(enum_, attr_name)
+        attr = getattr(obj, attr_name)
     except AttributeError as exc:
-        logger.warning(f"Can't get attr named '{attr_name}' from enum {enum_.__name__}.")
+        logger.warning(f"Can't get attr named '{attr_name}' from object {obj.__name__}.")
         raise HTTPException(400) from exc
 
     return attr

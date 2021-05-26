@@ -1,6 +1,4 @@
 """Manage apple push notifications."""
-from enum import auto
-from enum import Enum
 from typing import Union
 
 from box import Box
@@ -18,16 +16,6 @@ from awattprice import utils
 from awattprice.api import db_engine
 from awattprice.defaults import Region
 from awattprice.orm import Token
-
-
-class TaskType(Enum):
-    """Different types of tasks which can be sent by the client to change their notification config."""
-    add_token = auto()
-    subscribe_desubscribe = auto()
-
-class NotificationType(Enum):
-    """Different notification types."""
-    price_below = auto()
 
 
 async def add_new_token(token_hex: str, data: dict) -> Token:
@@ -72,22 +60,24 @@ async def run_notification_tasks(tasks_container: Box):
     token = None
 
     first_task = tasks[0]
-    if first_task.type == TaskType.add_token:
+    if first_task.type == defaults.TaskType.add_token:
         token = await add_new_token(token_hex, first_task.payload)
         tasks.pop(0)
     else:
         token = await get_token(token_hex)
 
     for task in tasks:
+        if task.type == defaults.TaskType.subscribe_desubscribe:
+            pass
         logger.debug(task)
 
 
-def check_modify_task(task_type: TaskType, payload: Union[Box, BoxList]):
+def check_modify_task(task_type: defaults.TaskType, payload: Union[Box, BoxList]):
     """Check for correct task format and eventually modify the data in the task.
 
     Also change some values to use enums, ... instead of representing as strings or similar.
     """
-    if task_type == TaskType.add_token:
+    if task_type == defaults.TaskType.add_token:
         if index != 0:
             logger.warning(f"Add token task is not the first in the task list: {index}.")
             raise HTTPException(400)
@@ -95,16 +85,17 @@ def check_modify_task(task_type: TaskType, payload: Union[Box, BoxList]):
         utils.http_exc_validate_json_schema(task.payload, add_token_schema)
         new_region = utils.http_exc_get_attr(Region, task.payload.region)
         task.payload.region = new_region
-    elif task_type == TaskType.subscribe_desubscribe:
-        if not "notification_type" in payload:
-            logger.warning(
-                f"Want to sub/desub from notification but didn't provide any notification type: {payload}."
-            )
-            raise HTTPException(400)
-        notification_type = utils.http_exc_get_attr(NotificationType, payload.notification_type)
-        if notification_type == NotificationType.price_below:
-            sub_desub_schema = defaults.NOTIFICATION_TASK_PRICE_BELOW_SUB_DESUB_SCHEMA
+    elif task_type == defaults.TaskType.subscribe_desubscribe:
+        sub_desub_schema = defaults.NOTIFICATION_TASK_SUB_DESUB_SCHEMA
         utils.http_exc_validate_json_schema(payload, sub_desub_schema)
+
+        new_notification_type = defaults.NotificationType[payload.notification_type]
+        payload.notification_type = new_notification_type
+        new_sub_desub = defaults.SubscribeDesubscribe[payload.sub_desub]
+        payload.sub_desub = new_sub_desub
+        if payload.notification_type == defaults.NotificationType.price_below:
+            price_below_schema = defaults.NOTIFICATION_TASK_PRICE_BELOW_SUB_DESUB_SCHEMA
+            utils.http_exc_validate_json_schema(payload.notification_info, price_below_schema)
 
 
 def transform_tasks_body(body: Box):
@@ -119,9 +110,10 @@ def transform_tasks_body(body: Box):
     schema = defaults.NOTIFICATION_TASKS_BODY_SCHEMA
     utils.http_exc_validate_json_schema(new_body, schema)
 
-    task_type_counter = Box({TaskType.add_token: 0})
+    task_type_counter = Box({defaults.TaskType.add_token: 0})
     for index, task in enumerate(new_body.tasks):
-        new_type = utils.http_exc_get_attr(TaskType, task.type)
+        # Jsonschema validates that only task types in the enum come to this position.
+        new_type = defaults.TaskType[task.type]
         task.type = new_type
 
         check_modify_task(task.type, task.payload)
@@ -129,8 +121,8 @@ def transform_tasks_body(body: Box):
         if task.type in task_type_counter:
             task_type_counter[task.type] += 1
 
-    if TaskType.add_token in task_type_counter:
-        add_token_type_count = task_type_counter[TaskType.add_token]
+    if defaults.TaskType.add_token in task_type_counter:
+        add_token_type_count = task_type_counter[defaults.TaskType.add_token]
         if add_token_type_count > 1:
             logger.warning(f"Sent more than one add token notification task: {add_token_type_count}.")
             raise HTTPException(400)

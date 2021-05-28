@@ -103,13 +103,13 @@ NOTIFICATION_TASK_ADD_TOKEN_SCHEMA = {
 NOTIFICATION_TASK_SUB_DESUB_SCHEMA = {
     "type": "object",
     "properties": {
-        "sub_desub": {"enum": [element.name for element in SubscribeDesubscribe]},
         "notification_type": {
             "enum": [element.name for element in NotificationType]
         },
+        "sub_else_desub": {"enum": [element.name for element in SubscribeDesubscribe]},
         "notification_info": {"type": "object"}
     },
-    "required": ["sub_desub", "notification_type", "notification_info"]
+    "required": ["sub_else_desub", "notification_type", "notification_info"]
 }
 
 NOTIFICATION_TASK_PRICE_BELOW_SUB_DESUB_SCHEMA = {

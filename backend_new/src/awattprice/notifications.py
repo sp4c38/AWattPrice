@@ -52,13 +52,18 @@ async def get_token(token_hex: str) -> Token:
     return token
 
 
+async def sub_desub_price_below(token: Token, sub_else_desub: bool, data: Box):
+    """Subscribe or desubscribe a token to the price below value notification."""
+    pass
+
+
+
 async def run_notification_tasks(tasks_container: Box):
     """Runs notification configuration tasks."""
     token_hex = tasks_container.token
     tasks = tasks_container.tasks
 
     token = None
-
     first_task = tasks[0]
     if first_task.type == defaults.TaskType.add_token:
         token = await add_new_token(token_hex, first_task.payload)
@@ -68,7 +73,11 @@ async def run_notification_tasks(tasks_container: Box):
 
     for task in tasks:
         if task.type == defaults.TaskType.subscribe_desubscribe:
-            pass
+            notification_sub_else_desub = task.payload.sub_else_desub
+            notification_info = task.payload.notification_info
+            if task.payload.notification_type == defaults.NotificationType.price_below:
+                await sub_desub_price_below(token, notification_sub_else_desub, notification_info)
+
         logger.debug(task)
 
 
@@ -88,10 +97,9 @@ def check_modify_task(task_type: defaults.TaskType, payload: Union[Box, BoxList]
     elif task_type == defaults.TaskType.subscribe_desubscribe:
         sub_desub_schema = defaults.NOTIFICATION_TASK_SUB_DESUB_SCHEMA
         utils.http_exc_validate_json_schema(payload, sub_desub_schema)
-
         new_notification_type = defaults.NotificationType[payload.notification_type]
-        payload.notification_type = new_notification_type
         new_sub_desub = defaults.SubscribeDesubscribe[payload.sub_desub]
+        payload.notification_type = new_notification_type
         payload.sub_desub = new_sub_desub
         if payload.notification_type == defaults.NotificationType.price_below:
             price_below_schema = defaults.NOTIFICATION_TASK_PRICE_BELOW_SUB_DESUB_SCHEMA

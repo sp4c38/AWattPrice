@@ -10,7 +10,12 @@ from sqlalchemy import String
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm import registry as Registry
 
+from awattprice import defaults
 from awattprice.defaults import Region
+
+
+TABLE_NAMES = defaults.ORM_TABLE_NAMES
+
 
 metadata = MetaData()
 registry = Registry(metadata)
@@ -18,18 +23,20 @@ BaseClass = registry.generate_base()
 
 
 class PriceBelowNotification(BaseClass):
-    """Table to hold information about the price below value notification."""
+    """Hold info about the subscription of the price below notification of a token."""
 
-    __tablename__ = "price_below_notification"
-    price_below_id = Column(Integer, primary_key=True)
+    __tablename__ = TABLE_NAMES.price_below_table
+    token_id = Column(ForeignKey(f"{TABLE_NAMES.token_table}.token_id"), primary_key=True)
     active = Column(Boolean, nullable=False)
     below_value = Column(Integer, nullable=True)
 
+    token = relationship("Token", back_populates="price_below", uselist=False)
+
 
 class Token(BaseClass):
-    """Table to store apns notification tokens."""
+    """Store apns notification token information."""
 
-    __tablename__ = "token"
+    __tablename__ = TABLE_NAMES.token_table
     # Note: The token id *as well as* the token can be used to identify a single row.
     token_id = Column(Integer, primary_key=True)
     token = Column(String, unique=True, nullable=False)
@@ -39,4 +46,7 @@ class Token(BaseClass):
     # it would make the design unnecessarily more complicated. Yhe region and tax selection is
     # safe-checked in the program code.
     tax = Column(Boolean, default=False, nullable=False)
-    # price_below_notification = Column(ForeignKey())
+
+    price_below = relationship(
+        PriceBelowNotification, back_populates="token", cascade="all, delete-orphan", uselist=False
+    )

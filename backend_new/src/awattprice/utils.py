@@ -72,17 +72,19 @@ async def read_json_file(file_path: Path) -> Optional[Union[Box, BoxList]]:
 
     return data
 
+
 # Functions prefixed with http_exception run tasks and throw an http exception if they fail.
 def http_exc_validate_json_schema(body: Union[Box, dict, list], schema: dict):
     """Validate a body against a schema.
 
-    :raises HTTPException: with status code 400 if the body doesn't match the schema. 
+    :raises HTTPException: with status code 400 if the body doesn't match the schema.
     """
     try:
         jsonschema.validate(body, schema)
     except jsonschema.ValidationError as exc:
         logger.warning(f"Body doesn't match correct schema: {exc}.")
         raise HTTPException(400) from exc
+
 
 def http_exc_get_attr(obj: Any, attr_name: str):
     """Get attr from enumeration.

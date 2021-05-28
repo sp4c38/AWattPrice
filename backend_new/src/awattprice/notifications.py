@@ -1,13 +1,14 @@
 """Manage apple push notifications."""
 from typing import Union
 
+import sqlalchemy
+
 from box import Box
 from box import BoxList
 from fastapi import HTTPException
 from fastapi import Request
 from loguru import logger
 from pydantic import BaseModel
-from sqlalchemy import exc as sqlalchemy_exc
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
@@ -15,6 +16,7 @@ from awattprice import defaults
 from awattprice import utils
 from awattprice.api import db_engine
 from awattprice.defaults import Region
+from awattprice.orm import PriceBelowNotification
 from awattprice.orm import Token
 
 
@@ -30,7 +32,7 @@ async def add_new_token(token_hex: str, data: dict) -> Token:
         session.add(new_token)
         try:
             await session.commit()
-        except sqlalchemy_exc.IntegrityError as exc:
+        except sqlalchemy.exc.IntegrityError as exc:
             logger.warning(f"Tried to add token altough it already existed: {exc}.")
             await session.rollback()
             raise HTTPException(400)
@@ -44,8 +46,8 @@ async def get_token(token_hex: str) -> Token:
         try:
             token_raw = await session.execute(stmt)
             token = token_raw.scalar_one()
-        except sqlalchemy_exc.NoResultFound as exc:
-            logger.warning(f"No token found for hex '{token_hex}': {exc}.")
+        except sqlalchemy.exc.NoResultFound as exc:
+            logger.warning(f"No token found for a token: {exc}.")
             raise HTTPException(400)
         # The MultipleResultsFound exception will never be raised because the token has a unique constraint.
 
@@ -54,8 +56,29 @@ async def get_token(token_hex: str) -> Token:
 
 async def sub_desub_price_below(token: Token, sub_else_desub: bool, data: Box):
     """Subscribe or desubscribe a token to the price below value notification."""
-    pass
+    async with AsyncSession(db_engine, future=True) as session:
+        stmt = select(PriceBelowNotification).where(PriceBelowNotification.token_id == token.token_id)
+        notification_results = await session.execute(stmt)
+        notification = notification_results.scalar_one_or_none()
 
+        if notification is None:
+            if sub_else_desub is True:
+                logger.info("Creating new price below notification subscribtion.")
+                new_price_below_notification = PriceBelowNotification(
+                    token_id=token.token_id,
+                    active=True,
+                    below_value=data.below_value
+                )
+                session.add(new_price_below_notification)
+        else:
+            if sub_else_desub is True:
+                logger.debug("Resubscribing to price below notification.")
+                notification.active = True
+            else:
+                logger.debug("Desubscribing from price below notification.")
+                notification.active = False
+
+        await session.commit()
 
 
 async def run_notification_tasks(tasks_container: Box):
@@ -98,9 +121,7 @@ def check_modify_task(task_type: defaults.TaskType, payload: Union[Box, BoxList]
         sub_desub_schema = defaults.NOTIFICATION_TASK_SUB_DESUB_SCHEMA
         utils.http_exc_validate_json_schema(payload, sub_desub_schema)
         new_notification_type = defaults.NotificationType[payload.notification_type]
-        new_sub_desub = defaults.SubscribeDesubscribe[payload.sub_desub]
         payload.notification_type = new_notification_type
-        payload.sub_desub = new_sub_desub
         if payload.notification_type == defaults.NotificationType.price_below:
             price_below_schema = defaults.NOTIFICATION_TASK_PRICE_BELOW_SUB_DESUB_SCHEMA
             utils.http_exc_validate_json_schema(payload.notification_info, price_below_schema)

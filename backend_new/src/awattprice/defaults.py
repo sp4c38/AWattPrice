@@ -2,8 +2,10 @@
 from enum import auto
 from enum import Enum
 
+from box import Box
+
 from awattprice import defaults
-from awattprice import notifications
+
 
 class Region(str, Enum):
     """Identify a region (country)."""
@@ -26,6 +28,13 @@ url = https://api.awattar.at/v1/marketdata/
 log_dir = ~/awattprice/logs/
 data_dir = ~/awattprice/data/
 """
+
+ORM_TABLE_NAMES = Box(
+    {
+        "token_table": "token",
+        "price_below_table": "price_below_notification",
+    }
+)
 
 # Factor to convert seconds into microseconds.
 TO_MICROSECONDS = 1000
@@ -57,17 +66,14 @@ PRICE_DATA_REFRESH_LOCK_TIMEOUT = AWATTAR_TIMEOUT + 2.0
 # Describes structure of the json body when the client sends tasks to update its notification settings.
 class TaskType(Enum):
     """Different types of tasks which can be sent by the client to change their notification config."""
+
     add_token = auto()
     subscribe_desubscribe = auto()
 
 
-class SubscribeDesubscribe(Enum):
-    subscribe = auto()
-    desubscribe = auto()
-
-
 class NotificationType(Enum):
     """Different notification types."""
+
     price_below = auto()
 
 
@@ -81,9 +87,9 @@ NOTIFICATION_TASKS_BODY_SCHEMA = {
                 "type": "object",
                 "properties": {
                     "type": {"enum": [element.name for element in TaskType]},
-                    "payload": {"type": "object"}
+                    "payload": {"type": "object"},
                 },
-                "required": ["type", "payload"]
+                "required": ["type", "payload"],
             },
             "minItems": 1,
         },
@@ -93,29 +99,22 @@ NOTIFICATION_TASKS_BODY_SCHEMA = {
 
 NOTIFICATION_TASK_ADD_TOKEN_SCHEMA = {
     "type": "object",
-    "properties": {
-        "region": {"enum": [element.name for element in defaults.Region]},
-        "tax": {"type": "boolean"}
-    },
-    "required": ["region", "tax"]
+    "properties": {"region": {"enum": [element.name for element in defaults.Region]}, "tax": {"type": "boolean"}},
+    "required": ["region", "tax"],
 }
 
 NOTIFICATION_TASK_SUB_DESUB_SCHEMA = {
     "type": "object",
     "properties": {
-        "notification_type": {
-            "enum": [element.name for element in NotificationType]
-        },
-        "sub_else_desub": {"enum": [element.name for element in SubscribeDesubscribe]},
-        "notification_info": {"type": "object"}
+        "notification_type": {"enum": [element.name for element in NotificationType]},
+        "sub_else_desub": {"type": "boolean"},
+        "notification_info": {"type": "object"},
     },
-    "required": ["sub_else_desub", "notification_type", "notification_info"]
+    "required": ["sub_else_desub", "notification_type", "notification_info"],
 }
 
 NOTIFICATION_TASK_PRICE_BELOW_SUB_DESUB_SCHEMA = {
     "type": "object",
-    "properties": {
-        "below_value": {"type": "number"}
-    },
-    "required": ["below_value"]
+    "properties": {"below_value": {"type": "number"}},
+    "required": ["below_value"],
 }

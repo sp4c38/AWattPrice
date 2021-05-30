@@ -15,109 +15,111 @@ from sqlalchemy.future import select
 from awattprice import defaults
 from awattprice import utils
 from awattprice.api import db_engine
-from awattprice.defaults import Region
+from awattprice.defaults import Region, TaskType
 from awattprice.orm import PriceBelowNotification
 from awattprice.orm import Token
 
 
-async def add_new_token(token_hex: str, data: dict) -> Token:
-    """Add a new token to the database."""
+async def add_new_token(session: AsyncSession, token_hex: str, data: dict) -> Token:
+    """Construct a new token and add it to the database."""
     new_token = Token(
         token=token_hex,
         region=data.region,
         tax=data.tax,
     )
 
-    async with AsyncSession(db_engine, future=True) as session:
-        session.add(new_token)
-        try:
-            await session.commit()
-        except sqlalchemy.exc.IntegrityError as exc:
-            logger.warning(f"Tried to add token altough it already existed: {exc}.")
-            await session.rollback()
-            raise HTTPException(400)
+    session.add(new_token)
+    try:
+        await session.commit()
+    except sqlalchemy.exc.IntegrityError as exc:
+        logger.warning(f"Tried to add token altough it already existed: {exc}.")
+        await session.rollback()
+        raise HTTPException(400)
 
     return new_token
 
 
-async def get_token(token_hex: str) -> Token:
-    async with AsyncSession(db_engine, future=True) as session:
-        stmt = select(Token).where(Token.token == token_hex)
-        try:
-            token_raw = await session.execute(stmt)
-            token = token_raw.scalar_one()
-        except sqlalchemy.exc.NoResultFound as exc:
-            logger.warning(f"No token found for a token: {exc}.")
-            raise HTTPException(400)
-        # The MultipleResultsFound exception will never be raised because the token has a unique constraint.
+async def get_token(session: AsyncSession, token_hex: str) -> Token:
+    """Get a orm token object from the tokens hex identifier."""
+    stmt = select(Token).where(Token.token == token_hex)
+    try:
+        token_raw = await session.execute(stmt)
+        token = token_raw.scalar_one()
+    except sqlalchemy.exc.NoResultFound as exc:
+        logger.warning(f"No token found for a token: {exc}.")
+        raise HTTPException(400)
+    # The MultipleResultsFound exception will never be raised because the token has a unique constraint.
 
     return token
 
 
-async def sub_desub_price_below(token: Token, sub_else_desub: bool, data: Box):
+async def sub_desub_price_below(session: AsyncSession, token: Token, payload: Box):
     """Subscribe or desubscribe a token to the price below value notification."""
-    async with AsyncSession(db_engine, future=True) as session:
-        stmt = select(PriceBelowNotification).where(PriceBelowNotification.token_id == token.token_id)
-        notification_results = await session.execute(stmt)
-        notification = notification_results.scalar_one_or_none()
+    stmt = select(PriceBelowNotification)#.where(PriceBelowNotification.token_id == token.token_id)
+    notification_results = await session.execute(stmt)
+    notification = notification_results.scalar_one_or_none()
 
-        if notification is None:
-            if sub_else_desub is True:
-                logger.info("Creating new price below notification subscribtion.")
-                new_price_below_notification = PriceBelowNotification(
-                    token_id=token.token_id,
-                    active=True,
-                    below_value=data.below_value
-                )
-                session.add(new_price_below_notification)
+    sub_else_desub = payload.sub_else_desub
+    below_value = payload.notification_info.below_value
+    if notification is None:
+        if sub_else_desub is True:
+            logger.info("Subscribing to price below notification.")
+            new_price_below_notification = PriceBelowNotification(
+                token_id=token.token_id,
+                active=True,
+                below_value=below_value,
+            )
+            session.add(new_price_below_notification)
+    else:
+        if sub_else_desub is True:
+            logger.debug("Resubscribing to price below notification.")
+            notification.active = True
         else:
-            if sub_else_desub is True:
-                logger.debug("Resubscribing to price below notification.")
-                notification.active = True
-            else:
-                logger.debug("Desubscribing from price below notification.")
-                notification.active = False
+            logger.debug("Desubscribing from price below notification.")
+            notification.active = False
 
-        await session.commit()
+    await session.commit()
 
 
 async def run_notification_tasks(tasks_container: Box):
     """Runs notification configuration tasks."""
     token_hex = tasks_container.token
+    token = None
     tasks = tasks_container.tasks
 
-    token = None
+    session = AsyncSession(db_engine, expire_on_commit=False, future=True)
+
     first_task = tasks[0]
-    if first_task.type == defaults.TaskType.add_token:
-        token = await add_new_token(token_hex, first_task.payload)
+    if first_task.type == TaskType.add_token:
+        token = await add_new_token(session, token_hex, first_task.payload)
         tasks.pop(0)
     else:
-        token = await get_token(token_hex)
-
+        token = await get_token(session, token_hex)
     for task in tasks:
-        if task.type == defaults.TaskType.subscribe_desubscribe:
-            notification_sub_else_desub = task.payload.sub_else_desub
-            notification_info = task.payload.notification_info
-            if task.payload.notification_type == defaults.NotificationType.price_below:
-                await sub_desub_price_below(token, notification_sub_else_desub, notification_info)
-
         logger.debug(task)
+        if task.type == TaskType.subscribe_desubscribe:
+            if task.payload.notification_type == defaults.NotificationType.price_below:
+                await sub_desub_price_below(session, token, task.payload)
+
+    await session.close()
 
 
-def check_modify_task(task_type: defaults.TaskType, payload: Union[Box, BoxList]):
+def check_modify_task(task_index: int, task: Box):
     """Check for correct task format and eventually modify the data in the task.
 
     Also change some values to use enums, ... instead of representing as strings or similar.
     """
-    if task_type == defaults.TaskType.add_token:
-        if index != 0:
-            logger.warning(f"Add token task is not the first in the task list: {index}.")
+    task_type = task.type
+    payload = task.payload
+    if task_type == TaskType.add_token:
+        if task_index != 0:
+            logger.warning(f"Add token task is not the first in the task list: {task_index}.")
             raise HTTPException(400)
         add_token_schema = defaults.NOTIFICATION_TASK_ADD_TOKEN_SCHEMA
         utils.http_exc_validate_json_schema(task.payload, add_token_schema)
         new_region = utils.http_exc_get_attr(Region, task.payload.region)
         task.payload.region = new_region
-    elif task_type == defaults.TaskType.subscribe_desubscribe:
+    elif task_type == TaskType.subscribe_desubscribe:
         sub_desub_schema = defaults.NOTIFICATION_TASK_SUB_DESUB_SCHEMA
         utils.http_exc_validate_json_schema(payload, sub_desub_schema)
         new_notification_type = defaults.NotificationType[payload.notification_type]
@@ -125,6 +127,39 @@ def check_modify_task(task_type: defaults.TaskType, payload: Union[Box, BoxList]
         if payload.notification_type == defaults.NotificationType.price_below:
             price_below_schema = defaults.NOTIFICATION_TASK_PRICE_BELOW_SUB_DESUB_SCHEMA
             utils.http_exc_validate_json_schema(payload.notification_info, price_below_schema)
+
+
+def count_task_type(task: Box, type_counter: Box):
+    """Count a new task in a task type counter dict."""
+    if task.type == TaskType.subscribe_desubscribe:
+        notification_type = task.payload.notification_type
+        if task.type in type_counter:
+            type_counter[task.type][notification_type] += 1
+        else:
+            type_counter[task.type] = Box()
+            type_counter[task.type][notification_type] = 1
+    else:
+        if task.type in type_counter:
+            type_counter[task.type] += 1
+        else:
+            type_counter[task.type] = 1
+
+
+def check_task_type_counter(type_counter: Box):
+    """Verify that contraints on the amount of different task types are followed."""
+    if TaskType.add_token in type_counter:
+        if type_counter[TaskType.add_token] > 1:
+            logger.warning(f"Sent more than one add token notification task: {add_token_type_count}.")
+            raise HTTPException(400)
+
+    if TaskType.subscribe_desubscribe in type_counter:
+        for notification_type in type_counter[TaskType.subscribe_desubscribe]:
+            notification_type_count = type_counter[TaskType.subscribe_desubscribe][notification_type]
+            if notification_type_count > 1:
+                logger.warning(
+                    f"Sent more than one sub/desub task for notification type {notification_type.name}."
+                )
+                raise HTTPException(400)
 
 
 def transform_tasks_body(body: Box):
@@ -139,21 +174,16 @@ def transform_tasks_body(body: Box):
     schema = defaults.NOTIFICATION_TASKS_BODY_SCHEMA
     utils.http_exc_validate_json_schema(new_body, schema)
 
-    task_type_counter = Box({defaults.TaskType.add_token: 0})
+    type_counter = Box() # Counter to count different task types
     for index, task in enumerate(new_body.tasks):
         # Jsonschema validates that only task types in the enum come to this position.
-        new_type = defaults.TaskType[task.type]
+        new_type = TaskType[task.type]
         task.type = new_type
 
-        check_modify_task(task.type, task.payload)
+        check_modify_task(index, task)
 
-        if task.type in task_type_counter:
-            task_type_counter[task.type] += 1
+        count_task_type(task, type_counter)
 
-    if defaults.TaskType.add_token in task_type_counter:
-        add_token_type_count = task_type_counter[defaults.TaskType.add_token]
-        if add_token_type_count > 1:
-            logger.warning(f"Sent more than one add token notification task: {add_token_type_count}.")
-            raise HTTPException(400)
+    check_task_type_counter(type_counter)
 
     return new_body

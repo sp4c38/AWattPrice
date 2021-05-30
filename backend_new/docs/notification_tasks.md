@@ -14,3 +14,5 @@ Notification tasks are tasks to update the notification configuration of a token
 - Add token tasks:
   - May only exist once in one request.
   - If included must always be the first item in the task list.
+- Subscribe/desubscribe task:
+  - May only either subscribe or desubscribe to one certain notification type

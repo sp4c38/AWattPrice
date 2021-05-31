@@ -69,11 +69,24 @@ class TaskType(Enum):
 
     add_token = auto()
     subscribe_desubscribe = auto()
+    update = auto()
 
 
 class NotificationType(Enum):
     """Different notification types."""
 
+    price_below = auto()
+
+
+class UpdateSubject(Enum):
+    """Subjects on which updates can be performed.
+
+    Its the best to use a explicit approach as oppossed to using a general way when updating values.
+    Each subject has a own schema and function which knows how to apply updates on it. There is no and
+    should be no "general way" of updating values the same way on each subject.
+    """
+
+    general = auto()
     price_below = auto()
 
 
@@ -97,9 +110,11 @@ NOTIFICATION_TASKS_BODY_SCHEMA = {
     "required": ["token", "tasks"],
 }
 
+region_enum_names = [element.name for element in defaults.Region]
+
 NOTIFICATION_TASK_ADD_TOKEN_SCHEMA = {
     "type": "object",
-    "properties": {"region": {"enum": [element.name for element in defaults.Region]}, "tax": {"type": "boolean"}},
+    "properties": {"region": {"enum": region_enum_names}, "tax": {"type": "boolean"}},
     "required": ["region", "tax"],
 }
 
@@ -118,3 +133,24 @@ NOTIFICATION_TASK_PRICE_BELOW_SUB_DESUB_SCHEMA = {
     "properties": {"below_value": {"type": "number"}},
     "required": ["below_value"],
 }
+
+NOTIFICATION_TASK_UPDATE_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "subject": {"enum": [element.name for element in UpdateSubject]},
+        "updated_data": {"type": "object"},
+    },
+    "required": ["subject", "updated_data"],
+}
+
+NOTIFICATION_TASK_UPDATE_GENERAL_SCHEMA = {
+    "type": "object",
+    "properties": {
+        # Don't reuse same previouse properties from add token because they might need to change without the
+        # updater functions beeing capable of updating such new/updated values.
+        "region": {"enum": region_enum_names},
+        "tax": {"type": "boolean"},
+    },
+}
+
+NOTIFICATION_TASK_UPDATE_PRICE_BELOW_SCHEMA = {"type": "object", "properties": {"below_value": {"type": "number"}}}

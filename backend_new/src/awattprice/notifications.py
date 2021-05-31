@@ -15,7 +15,10 @@ from sqlalchemy.future import select
 from awattprice import defaults
 from awattprice import utils
 from awattprice.api import db_engine
-from awattprice.defaults import Region, TaskType
+from awattprice.defaults import NotificationType
+from awattprice.defaults import Region
+from awattprice.defaults import TaskType
+from awattprice.defaults import UpdateSubject
 from awattprice.orm import PriceBelowNotification
 from awattprice.orm import Token
 
@@ -55,7 +58,7 @@ async def get_token(session: AsyncSession, token_hex: str) -> Token:
 
 async def sub_desub_price_below(session: AsyncSession, token: Token, payload: Box):
     """Subscribe or desubscribe a token to the price below value notification."""
-    stmt = select(PriceBelowNotification)#.where(PriceBelowNotification.token_id == token.token_id)
+    stmt = select(PriceBelowNotification)  # .where(PriceBelowNotification.token_id == token.token_id)
     notification_results = await session.execute(stmt)
     notification = notification_results.scalar_one_or_none()
 
@@ -98,7 +101,7 @@ async def run_notification_tasks(tasks_container: Box):
     for task in tasks:
         logger.debug(task)
         if task.type == TaskType.subscribe_desubscribe:
-            if task.payload.notification_type == defaults.NotificationType.price_below:
+            if task.payload.notification_type == NotificationType.price_below:
                 await sub_desub_price_below(session, token, task.payload)
 
     await session.close()
@@ -109,24 +112,40 @@ def check_modify_task(task_index: int, task: Box):
 
     Also change some values to use enums, ... instead of representing as strings or similar.
     """
-    task_type = task.type
-    payload = task.payload
-    if task_type == TaskType.add_token:
+    if task.type == TaskType.add_token:
         if task_index != 0:
             logger.warning(f"Add token task is not the first in the task list: {task_index}.")
             raise HTTPException(400)
         add_token_schema = defaults.NOTIFICATION_TASK_ADD_TOKEN_SCHEMA
         utils.http_exc_validate_json_schema(task.payload, add_token_schema)
-        new_region = utils.http_exc_get_attr(Region, task.payload.region)
-        task.payload.region = new_region
-    elif task_type == TaskType.subscribe_desubscribe:
+        task.payload.region = Region[task.payload.region]
+
+    elif task.type == TaskType.subscribe_desubscribe:
         sub_desub_schema = defaults.NOTIFICATION_TASK_SUB_DESUB_SCHEMA
-        utils.http_exc_validate_json_schema(payload, sub_desub_schema)
-        new_notification_type = defaults.NotificationType[payload.notification_type]
-        payload.notification_type = new_notification_type
-        if payload.notification_type == defaults.NotificationType.price_below:
+        utils.http_exc_validate_json_schema(task.payload, sub_desub_schema)
+        task.payload.notification_type = NotificationType[task.payload.notification_type]
+
+        if task.payload.notification_type == NotificationType.price_below:
             price_below_schema = defaults.NOTIFICATION_TASK_PRICE_BELOW_SUB_DESUB_SCHEMA
-            utils.http_exc_validate_json_schema(payload.notification_info, price_below_schema)
+            utils.http_exc_validate_json_schema(task.payload.notification_info, price_below_schema)
+
+    elif task.type == TaskType.update:
+        update_schema = defaults.NOTIFICATION_TASK_UPDATE_SCHEMA
+        utils.http_exc_validate_json_schema(task.payload, update_schema)
+        task.payload.subject = UpdateSubject[task.payload.subject]
+
+        updated_data = task.payload.updated_data
+        if task.payload.subject == UpdateSubject.general:
+            general_schema = defaults.NOTIFICATION_TASK_UPDATE_GENERAL_SCHEMA
+            utils.http_exc_validate_json_schema(updated_data, general_schema)
+        elif task.payload.subject == UpdateSubject.price_below:
+            price_below_schema = defaults.NOTIFICATION_TASK_UPDATE_PRICE_BELOW_SCHEMA
+            utils.http_exc_validate_json_schema(updated_data, price_below_schema)
+        else:
+            logger.warning(
+                f"Requested update of '{task.payload.subject}', but schema checking isn't implemented for subject."
+            )
+            raise HTTPException(501)
 
 
 def count_task_type(task: Box, type_counter: Box):
@@ -174,7 +193,7 @@ def transform_tasks_body(body: Box):
     schema = defaults.NOTIFICATION_TASKS_BODY_SCHEMA
     utils.http_exc_validate_json_schema(new_body, schema)
 
-    type_counter = Box() # Counter to count different task types
+    type_counter = Box()  # Counter to count different task types
     for index, task in enumerate(new_body.tasks):
         # Jsonschema validates that only task types in the enum come to this position.
         new_type = TaskType[task.type]

@@ -85,7 +85,6 @@ class UpdateSubject(Enum):
     Each subject has a own schema and function which knows how to apply updates on it. There is no and
     should be no "general way" of updating values the same way on each subject.
     """
-
     general = auto()
     price_below = auto()
 
@@ -103,11 +102,13 @@ NOTIFICATION_TASKS_BODY_SCHEMA = {
                     "payload": {"type": "object"},
                 },
                 "required": ["type", "payload"],
+                "additionalProperties": False,
             },
             "minItems": 1,
         },
     },
     "required": ["token", "tasks"],
+    "additionalProperties": False,
 }
 
 region_enum_names = [element.name for element in defaults.Region]
@@ -116,6 +117,7 @@ NOTIFICATION_TASK_ADD_TOKEN_SCHEMA = {
     "type": "object",
     "properties": {"region": {"enum": region_enum_names}, "tax": {"type": "boolean"}},
     "required": ["region", "tax"],
+    "additionalProperties": False,
 }
 
 NOTIFICATION_TASK_SUB_DESUB_SCHEMA = {
@@ -126,12 +128,14 @@ NOTIFICATION_TASK_SUB_DESUB_SCHEMA = {
         "notification_info": {"type": "object"},
     },
     "required": ["sub_else_desub", "notification_type", "notification_info"],
+    "additionalProperties": False,
 }
 
 NOTIFICATION_TASK_PRICE_BELOW_SUB_DESUB_SCHEMA = {
     "type": "object",
     "properties": {"below_value": {"type": "number"}},
     "required": ["below_value"],
+    "additionalProperties": False,
 }
 
 NOTIFICATION_TASK_UPDATE_SCHEMA = {
@@ -141,6 +145,7 @@ NOTIFICATION_TASK_UPDATE_SCHEMA = {
         "updated_data": {"type": "object"},
     },
     "required": ["subject", "updated_data"],
+    "additionalProperties": False,
 }
 
 NOTIFICATION_TASK_UPDATE_GENERAL_SCHEMA = {
@@ -151,6 +156,15 @@ NOTIFICATION_TASK_UPDATE_GENERAL_SCHEMA = {
         "region": {"enum": region_enum_names},
         "tax": {"type": "boolean"},
     },
+    "minProperties": 1,
+    "additionalProperties": False,
 }
 
-NOTIFICATION_TASK_UPDATE_PRICE_BELOW_SCHEMA = {"type": "object", "properties": {"below_value": {"type": "number"}}}
+NOTIFICATION_TASK_UPDATE_PRICE_BELOW_SCHEMA = {
+    "type": "object", 
+    "properties": {
+        "below_value": {"type": "number"}
+    },
+    "minProperties": 1,
+    "additionalProperties": False,
+}

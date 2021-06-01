@@ -84,6 +84,19 @@ async def sub_desub_price_below(session: AsyncSession, token: Token, payload: Bo
     await session.commit()
 
 
+async def update_general_data(session: AsyncSession, token: Token, updated_data: Box):
+    keys_updated = updated_data.items()
+    for key, new_value in keys_updated:
+        if key == "region":
+            logger.debug(f"Updated region of token to {new_value}.")
+            token.region = new_value
+        elif key == "tax":
+            logger.debug(f"Updated tax of token to {new_value}.")
+            token.tax = new_value
+
+    await session.commit()
+
+
 async def run_notification_tasks(tasks_container: Box):
     """Runs notification configuration tasks."""
     token_hex = tasks_container.token
@@ -99,10 +112,13 @@ async def run_notification_tasks(tasks_container: Box):
     else:
         token = await get_token(session, token_hex)
     for task in tasks:
-        logger.debug(task)
         if task.type == TaskType.subscribe_desubscribe:
             if task.payload.notification_type == NotificationType.price_below:
                 await sub_desub_price_below(session, token, task.payload)
+        elif task.type == TaskType.update:
+            if task.payload.subject == UpdateSubject.general:
+                await update_general_data(session, token, task.payload.updated_data)
+            logger.debug(task)
 
     await session.close()
 
@@ -118,20 +134,21 @@ def check_modify_task(task_index: int, task: Box):
             raise HTTPException(400)
         add_token_schema = defaults.NOTIFICATION_TASK_ADD_TOKEN_SCHEMA
         utils.http_exc_validate_json_schema(task.payload, add_token_schema)
-        task.payload.region = Region[task.payload.region]
 
+        task.payload.region = Region[task.payload.region]
     elif task.type == TaskType.subscribe_desubscribe:
         sub_desub_schema = defaults.NOTIFICATION_TASK_SUB_DESUB_SCHEMA
         utils.http_exc_validate_json_schema(task.payload, sub_desub_schema)
+
         task.payload.notification_type = NotificationType[task.payload.notification_type]
 
         if task.payload.notification_type == NotificationType.price_below:
             price_below_schema = defaults.NOTIFICATION_TASK_PRICE_BELOW_SUB_DESUB_SCHEMA
             utils.http_exc_validate_json_schema(task.payload.notification_info, price_below_schema)
-
     elif task.type == TaskType.update:
         update_schema = defaults.NOTIFICATION_TASK_UPDATE_SCHEMA
         utils.http_exc_validate_json_schema(task.payload, update_schema)
+
         task.payload.subject = UpdateSubject[task.payload.subject]
 
         updated_data = task.payload.updated_data
@@ -143,7 +160,7 @@ def check_modify_task(task_index: int, task: Box):
             utils.http_exc_validate_json_schema(updated_data, price_below_schema)
         else:
             logger.warning(
-                f"Requested update of '{task.payload.subject}', but schema checking isn't implemented for subject."
+                f"Subject '{task.payload.subject}' update isn't implemented."
             )
             raise HTTPException(501)
 

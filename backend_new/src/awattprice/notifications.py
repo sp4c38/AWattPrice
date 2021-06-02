@@ -85,16 +85,31 @@ async def sub_desub_price_below(session: AsyncSession, token: Token, payload: Bo
 
 
 async def update_general_data(session: AsyncSession, token: Token, updated_data: Box):
-    keys_updated = updated_data.items()
-    for key, new_value in keys_updated:
+    for key, new_value in updated_data.items(): # .items() -> [(key, value), ...]
         if key == "region":
             logger.debug(f"Updated region of token to {new_value}.")
             token.region = new_value
         elif key == "tax":
             logger.debug(f"Updated tax of token to {new_value}.")
             token.tax = new_value
+        else:
+            logger.warning(f"Allowed data key {key}, but update process isn't implemented.")
+            await session.rollback()
+            raise HTTPException(501)
 
     await session.commit()
+
+
+async def update_price_below_data(session: AsyncSession, token: Token, updated_data: Box):
+    price_below = token.price_below
+
+    for key, new_value in updated_data.items():
+        if key == "below_value":
+            price_below.below_value = new_value
+        else:
+            logger.warning(f"Allowed data key {key}, but updated process isn't implemented.")
+            await session.rollback()
+            raise HTTPException(501)
 
 
 async def run_notification_tasks(tasks_container: Box):
@@ -111,14 +126,17 @@ async def run_notification_tasks(tasks_container: Box):
         tasks.pop(0)
     else:
         token = await get_token(session, token_hex)
+
     for task in tasks:
         if task.type == TaskType.subscribe_desubscribe:
             if task.payload.notification_type == NotificationType.price_below:
                 await sub_desub_price_below(session, token, task.payload)
+                print(token.price_below)
         elif task.type == TaskType.update:
             if task.payload.subject == UpdateSubject.general:
                 await update_general_data(session, token, task.payload.updated_data)
-            logger.debug(task)
+            elif task.payload.subject == UpdateSubject.price_below:
+                await update_price_below_data(session, token, task.payload)
 
     await session.close()
 

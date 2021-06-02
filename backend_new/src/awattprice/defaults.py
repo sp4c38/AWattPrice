@@ -148,11 +148,10 @@ NOTIFICATION_TASK_UPDATE_SCHEMA = {
     "additionalProperties": False,
 }
 
+# Make sure that the data updater function understands and is able to process all properties specified here.
 NOTIFICATION_TASK_UPDATE_GENERAL_SCHEMA = {
     "type": "object",
     "properties": {
-        # Don't reuse same previouse properties from add token because they might need to change without the
-        # updater functions beeing capable of updating such new/updated values.
         "region": {"enum": region_enum_names},
         "tax": {"type": "boolean"},
     },

@@ -85,6 +85,7 @@ class UpdateSubject(Enum):
     Each subject has a own schema and function which knows how to apply updates on it. There is no and
     should be no "general way" of updating values the same way on each subject.
     """
+
     general = auto()
     price_below = auto()
 
@@ -160,10 +161,8 @@ NOTIFICATION_TASK_UPDATE_GENERAL_SCHEMA = {
 }
 
 NOTIFICATION_TASK_UPDATE_PRICE_BELOW_SCHEMA = {
-    "type": "object", 
-    "properties": {
-        "below_value": {"type": "number"}
-    },
+    "type": "object",
+    "properties": {"below_value": {"type": "number"}},
     "minProperties": 1,
     "additionalProperties": False,
 }

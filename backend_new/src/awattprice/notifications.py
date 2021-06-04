@@ -39,7 +39,7 @@ async def add_new_token(session: AsyncSession, token_hex: str, data: dict) -> To
     try:
         await session.commit()
     except sqlalchemy.exc.IntegrityError as exc:
-        logger.warning(f"Tried to add token altough it already existed: {exc}.")
+        logger.warning(f"Tried to add token although it already existed: {exc}.")
         await session.rollback()
         raise HTTPException(400)
 
@@ -47,13 +47,14 @@ async def add_new_token(session: AsyncSession, token_hex: str, data: dict) -> To
 
 
 async def get_token(session: AsyncSession, token_hex: str) -> Token:
-    """Get a orm token object from the tokens hex identifier."""
+    """Get a orm token object from the token's hex identifier."""
     stmt = select(Token).where(Token.token == token_hex)
     try:
         token_raw = await session.execute(stmt)
         token = token_raw.scalar_one()
     except sqlalchemy.exc.NoResultFound as exc:
         logger.warning(f"No token record found for token '{tokex_hex}': {exc}.")
+        await session.rollback()
         raise HTTPException(400)
     # The MultipleResultsFound exception will never be raised because the token has a unique constraint.
 
@@ -78,64 +79,73 @@ async def sub_desub_price_below(session: AsyncSession, token: Token, payload: Bo
             )
             session.add(new_price_below_notification)
     else:
-        if sub_else_desub is True:
+        if sub_else_desub is True and notification.active is not True:
             logger.debug("Resubscribing to price below notification.")
             notification.active = True
-        else:
+        elif sub_else_desub is False and notification.active is not False:
             logger.debug("Desubscribing from price below notification.")
             notification.active = False
+        else:
+            logger.info(
+                f"Current 'sub-else-desub' state ({notification.active}) is "
+                f"already set to new state: {sub_else_desub}."
+            )
 
 
-async def update_general_data(session: AsyncSession, token: Token, updated_data: Box):
+async def update_general_settings(session: AsyncSession, token: Token, updated_data: Box):
+    """Update general notification settings for a certain token."""
+    logger.debug(f"Updating general notification settings for a token.")
     for key, new_value in updated_data.items():  # .items() -> [(key, value), ...]
         if key == "region":
-            logger.debug(f"Updated region of token to {new_value}.")
             token.region = new_value
+            logger.debug(f"Updated region to '{new_value}'.")
         elif key == "tax":
-            logger.debug(f"Updated tax of token to {new_value}.")
             token.tax = new_value
+            logger.debug(f"Updated tax to '{new_value}'.")
         else:
-            logger.warning(f"Allowed data key {key}, but update process isn't implemented.")
+            logger.critical(f"Don't know how to update '{key}' key.")
             await session.rollback()
             raise HTTPException(501)
 
 
-async def get_price_below(session: AsyncSession, token: Token) -> Optional[PriceBelowNotification]:
-    """Get and return the price below record associated to a token."""
-    logger.debug(f"Loading price below notification object for token {token.token}.")
-    stmt = select(PriceBelowNotification).where(PriceBelowNotification.token == token)
-    price_below_raw = await session.execute(stmt)
-    price_below = price_below_raw.scalar_one_or_none()
-    return price_below
-
-
-async def update_price_below_data(session: AsyncSession, token: Token, updated_data: Box):
+async def update_price_below_settings(session: AsyncSession, token: Token, updated_data: Box):
+    """Update price below notification settings for a certain token."""
+    logger.debug(f"Updating price below notification settings for a token.")
     price_below = None
-
     token_inspector = inspect(token)
     if "price_below" in token_inspector.unloaded:
-        price_below = await get_price_below(session, token)
+        stmt = select(PriceBelowNotification).where(PriceBelowNotification.token == token)
+        price_below_results = await session.execute(stmt)
+        price_below = price_below_results.scalar_one_or_none()
     else:
         price_below = token.price_below
 
-    print(price_below)
-    # for key, new_value in updated_data.items():
-    #     if key == "below_value":
-    #         price_below.below_value = new_value
-    #     else:
-    #         logger.warning(f"Allowed data key {key}, but updated process isn't implemented.")
-    #         await session.rollback()
-    #         raise HTTPException(501)
+    if price_below is None:
+        logger.warning("Can't update settings because no price below entry exists yet.")
+        await session.rollback()
+        raise HTTPException(409)
+    if price_below.active == False:
+        logger.warning("Can't update settings because price below notification is inactive.")
+        await session.rollback()
+        raise HTTPException(409)
+
+    for key, new_value in updated_data.items():
+        if key == "below_value":
+            price_below.below_value = new_value
+            logger.debug(f"Updated below value to '{new_value}'.")
+        else:
+            logger.critical(f"Don't know how to update '{key}' key.")
+            await session.rollback()
+            raise HTTPException(501)
 
 
 async def run_notification_tasks(tasks_container: Box):
     """Runs notification configuration tasks."""
-    with AsyncSession(db_engine, future=True) as session:
+    async with AsyncSession(db_engine, future=True) as session:
         tasks = tasks_container.tasks
 
         token = None
         token_hex = tasks_container.token
-
         first_task = tasks[0]
         if first_task.type == TaskType.add_token:
             token = await add_new_token(session, token_hex, first_task.payload)
@@ -149,9 +159,13 @@ async def run_notification_tasks(tasks_container: Box):
                     await sub_desub_price_below(session, token, task.payload)
             elif task.type == TaskType.update:
                 if task.payload.subject == UpdateSubject.general:
-                    await update_general_data(session, token, task.payload.updated_data)
+                    await update_general_settings(session, token, task.payload.updated_data)
                 elif task.payload.subject == UpdateSubject.price_below:
-                    await update_price_below_data(session, token, task.payload)
+                    await update_price_below_settings(session, token, task.payload.updated_data)
+            else:
+                logger.critical(f"Don't know how to process notification task type {task.type}.")
+                await session.rollback()
+                raise HTTPExcpetion(501)
 
         await session.commit()
 
@@ -233,13 +247,13 @@ def check_type_count(tasks: BoxList) -> bool:
     return True
 
 
-def transform_tasks_body(body_origi: Box) -> Box:
+def transform_tasks_body(body_original: Box) -> Box:
     """Transform the body with notification tasks to perform.
 
     First validates correct schema of body. Then transforms to make body more clearer to improve
     the beauty of the code. For example transform to enums instead of using raw strings.
     """
-    body = Box(body_origi)  # Box again to create new instance instead of reference.
+    body = Box(body_original)  # Box again to create new instance instead of reference.
 
     # Validate base schema of body.
     schema = defaults.NOTIFICATION_TASKS_BODY_SCHEMA
@@ -249,7 +263,7 @@ def transform_tasks_body(body_origi: Box) -> Box:
     for index, task in enumerate(body.tasks):
         task.type = TaskType[task.type]
 
-        check_modify_task(index, task)
+        transform_task(index, task)
 
     check_type_count(body.tasks)
 

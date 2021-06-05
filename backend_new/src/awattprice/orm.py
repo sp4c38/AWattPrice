@@ -1,5 +1,4 @@
 """Database tables represented as orms."""
-
 from sqlalchemy import Boolean
 from sqlalchemy import Column
 from sqlalchemy import Enum
@@ -19,14 +18,15 @@ TABLE_NAMES = defaults.ORM_TABLE_NAMES
 
 metadata = MetaData()
 registry = Registry(metadata)
-BaseClass = registry.generate_base()
+Base = registry.generate_base()
 
 
 # pylint: disable=too-few-public-methods
-class PriceBelowNotification(BaseClass):
+class PriceBelowNotification(Base):
     """Hold info about the subscription of the price below notification of a token."""
 
     __tablename__ = TABLE_NAMES.price_below_table
+
     token_id = Column(ForeignKey(f"{TABLE_NAMES.token_table}.token_id"), primary_key=True)
     active = Column(Boolean, nullable=False)
     below_value = Column(Integer, nullable=True)
@@ -38,10 +38,11 @@ class PriceBelowNotification(BaseClass):
 
 
 # pylint: disable=too-few-public-methods
-class Token(BaseClass):
+class Token(Base):
     """Store apns notification token information."""
 
     __tablename__ = TABLE_NAMES.token_table
+
     # Note: The token id *as well as* the token can be used to identify a single row.
     token_id = Column(Integer, primary_key=True)
     token = Column(String, unique=True, nullable=False)

@@ -12,14 +12,14 @@ from awattprice import notifications
 from awattprice import orm
 from awattprice.config import configure_loguru
 from awattprice.config import get_config
-from awattprice.database import get_app_database
+from awattprice.database import get_async_engine
 from awattprice.defaults import Region
 from awattprice.prices import get_current_prices
 
 config = get_config()
 configure_loguru(config)
 
-db_engine = get_app_database(config, async_engine=True)
+db_engine = get_async_engine(config)
 orm.metadata.bind = db_engine
 
 app = FastAPI()
@@ -50,7 +50,7 @@ async def do_notification_tasks(request: Request):
         tasks_container_raw = Box(await request.json())
     except JSONDecodeError as exc:
         body_raw = await request.body()
-        logger.warning(f"Couldn't decode notification tasks {body_raw} as json: {exc}.")
+        logger.warning(f"Couldn't decode notification tasks {repr(body_raw)} as json: {exc}.")
         raise HTTPException(400) from exc
 
     tasks_container = notifications.transform_tasks_body(tasks_container_raw)

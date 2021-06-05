@@ -91,7 +91,7 @@ def configure_loguru(config: Config):
         sys.stdout.write(f"Log directory missing. Creating at {log_dir_path}.\n")
         log_dir_path.mkdir(parents=True, exist_ok=True)
 
-    log_path = log_dir_path / "awattprice.log"
+    log_path = log_dir_path / defaults.LOG_FILE_NAME
     logger.add(
         log_path,
         enqueue=True,  # This makes log calls non-blocking.

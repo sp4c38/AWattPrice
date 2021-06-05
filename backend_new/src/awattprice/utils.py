@@ -71,7 +71,7 @@ async def read_json_file(file_path: Path) -> Optional[Union[Box, BoxList]]:
     return data
 
 
-def http_exc_validate_json_schema(body: Union[Box, dict, list], schema: dict, http_code: Exception):
+def http_exc_validate_json_schema(body: Union[Box, dict, list], schema: dict, http_code: int):
     """Validate a json body against a schema and throw exception if body doesn't match.
 
     :raises HTTPException: with the parsed error code if the body doesn't match the schema.

@@ -149,7 +149,7 @@ async def download_data(region: Region, config: Config) -> Box:
     try:
         data_json = response.json()
     except json.JSONDecodeError as exc:
-        logger.critical(f"Error decoding {url} response body {response.content} as json: {exc}.")
+        logger.critical(f"Error decoding {url} response body {repr(response.content)} as json: {exc}.")
         raise HTTPException(500) from exc
 
     data = Box(data_json)
@@ -157,17 +157,19 @@ async def download_data(region: Region, config: Config) -> Box:
     return data
 
 
-def transform_price_data(price_data_raw: Box) -> Box:
-    """Transform the price data by adding, modifying or deleting data."""
-    new_data = Box()
+def transform_data(price_data_raw: Box) -> Box:
+    """Validate price data schema and transform the data."""
+    utils.http_exc_validate_json_schema(price_data_raw, defaults.AWATTAR_PRICE_DATA_SCHEMA, http_code=503)
 
-    new_data.prices = price_data_raw.data
+    price_data = Box()
 
-    new_data.meta = {}
+    price_data.prices = price_data_raw.data
+
+    price_data.meta = Box()
     now = arrow.now()
-    new_data.meta.update_timestamp = now.int_timestamp
+    price_data.meta.update_timestamp = now.int_timestamp
 
-    return new_data
+    return price_data
 
 
 async def store_data(data: Union[Box, BoxList], region: Region, config: Config):
@@ -212,7 +214,7 @@ async def get_current_prices(region: Region, config: Config) -> Optional[dict]:
             # See 'get_prices' doc for explanation why its important if lock was acquired immediately.
             if immediate_acquire:
                 price_data_raw = await download_data(region, config)
-                price_data = transform_price_data(price_data_raw)
+                price_data = transform_data(price_data_raw)
                 await store_data(price_data, region, config)
                 refresh_lock.release()
             else:

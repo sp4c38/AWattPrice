@@ -63,31 +63,26 @@ PRICE_DATA_REFRESH_LOCK = "awattar-data-{}-update.lck"
 # Timeout in seconds to wait when needing the refresh price data lock to be unlocked.
 PRICE_DATA_REFRESH_LOCK_TIMEOUT = AWATTAR_TIMEOUT + 2.0
 
-# Describes structure of the json body when the client sends tasks to update its notification settings.
+
 class TaskType(Enum):
     """Different types of tasks which can be sent by the client to change their notification config."""
 
-    add_token = auto()
-    subscribe_desubscribe = auto()
-    update = auto()
+    ADD_TOKEN = auto()
+    SUBSCRIBE_DESUBSCRIBE = auto()
+    UPDATE = auto()
 
 
 class NotificationType(Enum):
     """Different notification types."""
 
-    price_below = auto()
+    PRICE_BELOW = auto()
 
 
 class UpdateSubject(Enum):
-    """Subjects on which updates can be performed.
+    """Subjects on which updates can be performed."""
 
-    Its the best to use a explicit approach as oppossed to using a general way when updating values.
-    Each subject has a own schema and function which knows how to apply updates on it. There is no and
-    should be no "general way" of updating values the same way on each subject.
-    """
-
-    general = auto()
-    price_below = auto()
+    GENERAL = auto()
+    PRICE_BELOW = auto()
 
 
 NOTIFICATION_TASKS_BODY_SCHEMA = {

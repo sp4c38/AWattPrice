@@ -1,4 +1,4 @@
-"""Handle the AWattPrice backend configurations."""
+"""Functions reading and storing this web app's configs."""
 import sys
 
 from pathlib import Path
@@ -6,7 +6,7 @@ from pathlib import Path
 from liteconfig import Config
 from loguru import logger
 
-from awattprice import defaults as dflts
+from awattprice import defaults
 
 
 def _transform_config(config: Config) -> Config:
@@ -16,7 +16,7 @@ def _transform_config(config: Config) -> Config:
     """
     config.paths.log_dir = Path(config.paths.log_dir).expanduser()
     config.paths.data_dir = Path(config.paths.data_dir).expanduser()
-    config.paths.price_data_dir = config.paths.data_dir / dflts.PRICE_DATA_SUBDIR_NAME
+    config.paths.price_data_dir = config.paths.data_dir / defaults.PRICE_DATA_SUBDIR_NAME
 
     return config
 
@@ -69,8 +69,8 @@ def get_config():
         config_path = read_attempt_paths[0]
         config_path.parent.mkdir(parents=True, exist_ok=True)
         with config_path.open("w") as config_file:
-            config_file.write(DEFAULT_CONFIG)
-        config = Config(DEFAULT_CONFIG)
+            config_file.write(defaults.DEFAULT_CONFIG)
+        config = Config(defaults.DEFAULT_CONFIG)
 
     config = _transform_config(config)
     _ensure_config_dirs(config)
@@ -91,7 +91,7 @@ def configure_loguru(config: Config):
         sys.stdout.write(f"Log directory missing. Creating at {log_dir_path}.\n")
         log_dir_path.mkdir(parents=True, exist_ok=True)
 
-    log_path = log_dir_path / "pizzaapp.log"
+    log_path = log_dir_path / "awattprice.log"
     logger.add(
         log_path,
         enqueue=True,  # This makes log calls non-blocking.

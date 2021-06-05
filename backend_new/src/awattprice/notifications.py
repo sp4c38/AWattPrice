@@ -1,20 +1,20 @@
-"""Manage apple push notifications."""
+"""Functions to read and save notification configs sent by users.
+
+Sending the actual notifications is handled by an extra service outside of this web app.
+"""
 from dataclasses import dataclass
 from typing import Any
 from typing import Optional
-from typing import Union
 
 import sqlalchemy
 
 from box import Box
 from box import BoxList
 from fastapi import HTTPException
-from fastapi import Request
 from loguru import logger
 from sqlalchemy import inspect
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from sqlalchemy.orm import sessionmaker
 
 from awattprice import defaults
 from awattprice import utils
@@ -41,21 +41,21 @@ async def add_new_token(session: AsyncSession, token_hex: str, data: dict) -> To
     except sqlalchemy.exc.IntegrityError as exc:
         logger.warning(f"Tried to add token although it already existed: {exc}.")
         await session.rollback()
-        raise HTTPException(400)
+        raise HTTPException(400) from exc
 
     return new_token
 
 
 async def get_token(session: AsyncSession, token_hex: str) -> Token:
-    """Get a orm token object from the token's hex identifier."""
+    """Get a orm token object using the token's hex identifier."""
     stmt = select(Token).where(Token.token == token_hex)
     try:
         token_raw = await session.execute(stmt)
         token = token_raw.scalar_one()
     except sqlalchemy.exc.NoResultFound as exc:
-        logger.warning(f"No token record found for token '{tokex_hex}': {exc}.")
+        logger.warning(f"No token record found for token '{token_hex}': {exc}.")
         await session.rollback()
-        raise HTTPException(400)
+        raise HTTPException(400) from exc
     # The MultipleResultsFound exception will never be raised because the token has a unique constraint.
 
     return token
@@ -94,7 +94,7 @@ async def sub_desub_price_below(session: AsyncSession, token: Token, payload: Bo
 
 async def update_general_settings(session: AsyncSession, token: Token, updated_data: Box):
     """Update general notification settings for a certain token."""
-    logger.debug(f"Updating general notification settings for a token.")
+    logger.debug("Updating general notification settings for a token.")
     for key, new_value in updated_data.items():  # .items() -> [(key, value), ...]
         if key == "region":
             token.region = new_value
@@ -110,7 +110,7 @@ async def update_general_settings(session: AsyncSession, token: Token, updated_d
 
 async def update_price_below_settings(session: AsyncSession, token: Token, updated_data: Box):
     """Update price below notification settings for a certain token."""
-    logger.debug(f"Updating price below notification settings for a token.")
+    logger.debug("Updating price below notification settings for a token.")
     price_below = None
     token_inspector = inspect(token)
     if "price_below" in token_inspector.unloaded:
@@ -124,7 +124,7 @@ async def update_price_below_settings(session: AsyncSession, token: Token, updat
         logger.warning("Can't update settings because no price below entry exists yet.")
         await session.rollback()
         raise HTTPException(409)
-    if price_below.active == False:
+    if price_below.active is False:
         logger.warning("Can't update settings because price below notification is inactive.")
         await session.rollback()
         raise HTTPException(409)
@@ -147,64 +147,75 @@ async def run_notification_tasks(tasks_container: Box):
         token = None
         token_hex = tasks_container.token
         first_task = tasks[0]
-        if first_task.type == TaskType.add_token:
+        if first_task.type == TaskType.ADD_TOKEN:
             token = await add_new_token(session, token_hex, first_task.payload)
             tasks.pop(0)
         else:
             token = await get_token(session, token_hex)
 
         for task in tasks:
-            if task.type == TaskType.subscribe_desubscribe:
-                if task.payload.notification_type == NotificationType.price_below:
+            if task.type == TaskType.SUBSCRIBE_DESUBSCRIBE:
+                if task.payload.notification_type == NotificationType.PRICE_BELOW:
                     await sub_desub_price_below(session, token, task.payload)
-            elif task.type == TaskType.update:
-                if task.payload.subject == UpdateSubject.general:
+            elif task.type == TaskType.UPDATE:
+                if task.payload.subject == UpdateSubject.GENERAL:
                     await update_general_settings(session, token, task.payload.updated_data)
-                elif task.payload.subject == UpdateSubject.price_below:
+                elif task.payload.subject == UpdateSubject.PRICE_BELOW:
                     await update_price_below_settings(session, token, task.payload.updated_data)
+                else:
+                    logger.critical(f"Don't know how to update subject {task.payload.subject}.")
+                    await session.rollback()
+                    raise HTTPException(501)
             else:
                 logger.critical(f"Don't know how to process notification task type {task.type}.")
                 await session.rollback()
-                raise HTTPExcpetion(501)
+                raise HTTPException(501)
 
         await session.commit()
 
 
-def transform_task(task_index: int, task: Box):
-    """ "Check for correct task schema and transform task."""
-    if task.type == TaskType.add_token:
-        if task_index != 0:
-            logger.warning(f"Add token task is not the first in the task list: {task_index}.")
-            raise HTTPException(400)
-        add_token_schema = defaults.NOTIFICATION_TASK_ADD_TOKEN_SCHEMA
-        utils.http_exc_validate_json_schema(task.payload, add_token_schema)
+def transform_add_token_task(task: Box, task_index: int):
+    """Check for correct 'add token' task schema and transform the task."""
+    if task_index != 0:
+        logger.warning(f"Add token task is not the first in the task list: {task_index}.")
+        raise HTTPException(400)
 
-        task.payload.region = Region[task.payload.region]
-    elif task.type == TaskType.subscribe_desubscribe:
-        sub_desub_schema = defaults.NOTIFICATION_TASK_SUB_DESUB_SCHEMA
-        utils.http_exc_validate_json_schema(task.payload, sub_desub_schema)
+    add_token_schema = defaults.NOTIFICATION_TASK_ADD_TOKEN_SCHEMA
+    utils.http_exc_validate_json_schema(task.payload, add_token_schema, http_code=400)
 
-        task.payload.notification_type = NotificationType[task.payload.notification_type]
+    task.payload.region = Region[task.payload.region]
 
-        if task.payload.notification_type == NotificationType.price_below:
-            price_below_schema = defaults.NOTIFICATION_TASK_PRICE_BELOW_SUB_DESUB_SCHEMA
-            utils.http_exc_validate_json_schema(task.payload.notification_info, price_below_schema)
-    elif task.type == TaskType.update:
-        update_schema = defaults.NOTIFICATION_TASK_UPDATE_SCHEMA
-        utils.http_exc_validate_json_schema(task.payload, update_schema)
 
-        task.payload.subject = UpdateSubject[task.payload.subject]
+def transform_subscribe_desubscribe_task(task: Box):
+    """Check for correct 'subscribe_desubscribe' task schema and transform the task."""
+    sub_desub_schema = defaults.NOTIFICATION_TASK_SUB_DESUB_SCHEMA
+    utils.http_exc_validate_json_schema(task.payload, sub_desub_schema, http_code=400)
 
-        updated_data = task.payload.updated_data
-        if task.payload.subject == UpdateSubject.general:
-            general_schema = defaults.NOTIFICATION_TASK_UPDATE_GENERAL_SCHEMA
-            utils.http_exc_validate_json_schema(updated_data, general_schema)
-        elif task.payload.subject == UpdateSubject.price_below:
-            price_below_schema = defaults.NOTIFICATION_TASK_UPDATE_PRICE_BELOW_SCHEMA
-            utils.http_exc_validate_json_schema(updated_data, price_below_schema)
-        else:
-            logger.warning(f"Subject '{task.payload.subject}' task validation isn't implemented.")
-            raise HTTPException(501)
+    task.payload.notification_type = NotificationType[task.payload.notification_type]
+
+    notification_info = task.payload.notification_info
+    if task.payload.notification_type == NotificationType.PRICE_BELOW:
+        price_below_schema = defaults.NOTIFICATION_TASK_PRICE_BELOW_SUB_DESUB_SCHEMA
+        utils.http_exc_validate_json_schema(notification_info, price_below_schema, http_code=400)
+
+
+def transform_update_task(task: Box):
+    """Check for correct 'update' task schema and transform the task."""
+    update_schema = defaults.NOTIFICATION_TASK_UPDATE_SCHEMA
+    utils.http_exc_validate_json_schema(task.payload, update_schema, http_code=400)
+
+    task.payload.subject = UpdateSubject[task.payload.subject]
+
+    updated_data = task.payload.updated_data
+    if task.payload.subject == UpdateSubject.GENERAL:
+        general_schema = defaults.NOTIFICATION_TASK_UPDATE_GENERAL_SCHEMA
+        utils.http_exc_validate_json_schema(updated_data, general_schema, http_code=400)
+    elif task.payload.subject == UpdateSubject.PRICE_BELOW:
+        price_below_schema = defaults.NOTIFICATION_TASK_UPDATE_PRICE_BELOW_SCHEMA
+        utils.http_exc_validate_json_schema(updated_data, price_below_schema, http_code=400)
+    else:
+        logger.critical(f"Subject '{task.payload.subject}' task validation isn't implemented.")
+        raise HTTPException(501)
 
 
 @dataclass(eq=True, frozen=True)
@@ -213,6 +224,7 @@ class StitchedTaskTypes:
 
     This class is immutable. Thus it can be used as keys in a dictionary.
     """
+
     task_type: TaskType
     sub_types: Optional[tuple[Any]] = None
 
@@ -221,9 +233,9 @@ def check_type_count(tasks: BoxList) -> bool:
     """Verify number of certain task types match allowed amount."""
     stitched_types_counted = Box()
     for task in tasks:
-        if task.type == TaskType.subscribe_desubscribe:
+        if task.type == TaskType.SUBSCRIBE_DESUBSCRIBE:
             count = StitchedTaskTypes(task.type, (task.payload.notification_type,))
-        elif task.type == TaskType.update:
+        elif task.type == TaskType.UPDATE:
             count = StitchedTaskTypes(task.type, (task.payload.subject,))
         else:
             count = StitchedTaskTypes(task.type)
@@ -233,13 +245,15 @@ def check_type_count(tasks: BoxList) -> bool:
         stitched_types_counted[count] = stitched_types_counted.get(count, 0) + 1
 
     for stitched_types, count in stitched_types_counted.items():
-        if any((
-            stitched_types.task_type == TaskType.add_token,
-            # Only allow one sub/desub task for each different notification type. So multiple sub/desubs
-            # are allowed, but only one per notification type.
-            stitched_types.task_type == TaskType.subscribe_desubscribe,
-            stitched_types.task_type == TaskType.update,
-        )):
+        if any(
+            (
+                stitched_types.task_type == TaskType.ADD_TOKEN,
+                # Only allow one sub/desub task for each different notification type. So multiple sub/desubs
+                # are allowed, but only one per notification type.
+                stitched_types.task_type == TaskType.SUBSCRIBE_DESUBSCRIBE,
+                stitched_types.task_type == TaskType.UPDATE,
+            )
+        ):
             if count > 1:
                 logger.warning(f"More than one stitched task: {stitched_types}.")
                 return False
@@ -257,13 +271,18 @@ def transform_tasks_body(body_original: Box) -> Box:
 
     # Validate base schema of body.
     schema = defaults.NOTIFICATION_TASKS_BODY_SCHEMA
-    utils.http_exc_validate_json_schema(body, schema)
+    utils.http_exc_validate_json_schema(body, schema, http_code=400)
 
     # Validate task-specific schemas.
     for index, task in enumerate(body.tasks):
         task.type = TaskType[task.type]
 
-        transform_task(index, task)
+        if task.type == TaskType.ADD_TOKEN:
+            transform_add_token_task(task, index)
+        elif task.type == TaskType.SUBSCRIBE_DESUBSCRIBE:
+            transform_subscribe_desubscribe_task(task)
+        elif task.type == TaskType.UPDATE:
+            transform_update_task(task)
 
     check_type_count(body.tasks)
 

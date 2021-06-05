@@ -1,12 +1,10 @@
+"""Functions to perform database managing tasks."""
 import sys
-
-from typing import Optional
 
 from liteconfig import Config
 from loguru import logger
 from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
-from sqlalchemy.ext.asyncio import AsyncEngine
 from sqlalchemy.ext.asyncio import create_async_engine
 
 from awattprice import defaults

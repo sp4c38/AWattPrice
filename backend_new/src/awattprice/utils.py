@@ -1,11 +1,9 @@
-"""Contains small helper functions which don't fit into a bigger category."""
+"""Helper functions which don't fit into a bigger category."""
 import asyncio
 import json
 
-from enum import Enum
 from functools import partial
 from pathlib import Path
-from typing import Any
 from typing import Callable
 from typing import Optional
 from typing import Union
@@ -73,28 +71,13 @@ async def read_json_file(file_path: Path) -> Optional[Union[Box, BoxList]]:
     return data
 
 
-# Functions prefixed with http_exception run tasks and throw an http exception if they fail.
-def http_exc_validate_json_schema(body: Union[Box, dict, list], schema: dict):
-    """Validate a body against a schema.
+def http_exc_validate_json_schema(body: Union[Box, dict, list], schema: dict, http_code: Exception):
+    """Validate a json body against a schema and throw exception if body doesn't match.
 
-    :raises HTTPException: with status code 400 if the body doesn't match the schema.
+    :raises HTTPException: with the parsed error code if the body doesn't match the schema.
     """
     try:
         jsonschema.validate(body, schema)
     except jsonschema.ValidationError as exc:
         logger.warning(f"Body doesn't match correct schema: {exc}.")
-        raise HTTPException(400) from exc
-
-
-def http_exc_get_attr(obj: Any, attr_name: str):
-    """Get attr from enumeration.
-
-    :raises HTTPException: with status code 400 if there is no appropriate attr on the enumeration.
-    """
-    try:
-        attr = getattr(obj, attr_name)
-    except AttributeError as exc:
-        logger.warning(f"Can't get attr named '{attr_name}' from object {obj.__name__}.")
-        raise HTTPException(400) from exc
-
-    return attr
+        raise HTTPException(http_code) from exc

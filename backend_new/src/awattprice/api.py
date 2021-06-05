@@ -1,4 +1,4 @@
-"""Handle url calls to this web app."""
+"""Api starting file which handles all url calls."""
 from json import JSONDecodeError
 
 from box import Box

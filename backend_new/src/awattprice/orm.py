@@ -1,4 +1,4 @@
-"""Database tables represented as objects."""
+"""Database tables represented as orms."""
 
 from sqlalchemy import Boolean
 from sqlalchemy import Column
@@ -22,6 +22,7 @@ registry = Registry(metadata)
 BaseClass = registry.generate_base()
 
 
+# pylint: disable=too-few-public-methods
 class PriceBelowNotification(BaseClass):
     """Hold info about the subscription of the price below notification of a token."""
 
@@ -33,6 +34,10 @@ class PriceBelowNotification(BaseClass):
     token = relationship("Token", back_populates="price_below", uselist=False)
 
 
+# pylint: enable=too-few-public-methods
+
+
+# pylint: disable=too-few-public-methods
 class Token(BaseClass):
     """Store apns notification token information."""
 
@@ -50,3 +55,6 @@ class Token(BaseClass):
     price_below = relationship(
         PriceBelowNotification, back_populates="token", cascade="all, delete-orphan", uselist=False
     )
+
+
+# pylint: enable=too-few-public-methods

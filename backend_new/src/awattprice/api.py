@@ -1,6 +1,8 @@
 """Api starting file which handles all url calls."""
 from json import JSONDecodeError
 
+import arrow
+
 from box import Box
 from fastapi import FastAPI
 from fastapi import HTTPException
@@ -23,7 +25,6 @@ db_engine = get_async_engine(config)
 orm.metadata.bind = db_engine
 
 app = FastAPI()
-
 
 @app.get("/data/{region}")
 async def get_region_data(region: Region):

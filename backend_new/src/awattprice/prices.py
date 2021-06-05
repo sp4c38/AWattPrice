@@ -28,10 +28,10 @@ async def get_stored_data(region: Region, config: Config) -> Optional[Box]:
     file_path = file_dir / file_name
 
     if not file_path.exists():
-        logger.info("No locally cached price data exists yet.")
+        logger.info(f"No locally cached {region.name} price data exists yet.")
         return None
     if not file_path.is_file():
-        logger.error(f"Stored price data path is a directory, not a file: {file_path}.")
+        logger.error(f"Path of stored price data is a directory, not a file: {file_path}.")
         raise HTTPException(500)
 
     try:
@@ -45,38 +45,47 @@ async def get_stored_data(region: Region, config: Config) -> Optional[Box]:
     return stored_data
 
 
-def check_data_needs_update(data: Optional[Box]) -> bool:
+def check_data_needs_update(region: Regiom, data: Optional[Box]) -> bool:
     """Check if price data is up to date.
 
+    :param region: Region of the price data.
     :returns: True if up to date, false if not.
     """
     if data is None:
         return True
 
-    now = arrow.now()
-    next_refresh_time = data.meta.update_timestamp + defaults.AWATTAR_REFRESH_INTERVAL
-    if next_refresh_time <= now.int_timestamp:
-        pass
-    else:
-        time_remaining_refresh = next_refresh_time - now.int_timestamp
-        logger.debug(
-            f"Won't request aWATTar API again as there are still {time_remaining_refresh} second(s) until "
-            "refresh is allowed again."
-        )
-        return False
+    last_update_dir = config.paths.price_data_dir
+    last_update_file = defaults.PRICE_DATA_UPDATE_TS_FILE_NAME.format(region.name.lower())
+    last_update_path = last_update_dir / last_update_file
+    if last_update_path.exists():
+        if not last_update_path.is_file():
+            logger.critical(f"Last update path is directory not file: {last_update_path}.")
 
-    # The current price point is also counted as future price point.
-    amount_future_points = 0
-    for point in data.prices:
-        end_timestamp = point.end_timestamp / defaults.TO_MICROSECONDS
-        if end_timestamp > now.int_timestamp:
-            amount_future_points += 1
-    # Update if the amount of future price points is smaller or equal to this amount.
-    future_points_update_amount = 24 - defaults.AWATTAR_UPDATE_HOUR
-    if amount_future_points <= future_points_update_amount:
-        pass
+        async with async_open(last_update_path, "r") as file:
+            last_update_ts = await file.read()
+        try:
+            last_update_ts = arrow.get(int(last_update_ts))
+        except ValueError as err:
+            logger.error(f"Last update timestamp from file is no valid integer: {last_update_ts}.")
     else:
-        logger.debug(f"Won't update as there are more than {future_points_update_amount} future price points.")
+        logger.info(f"Last update {region.name} time file doesn't exist. Assuming last update ts is none.")
+        last_update_ts = None
+
+    now = arrow.now()
+    if last_update_ts is not None:
+        next_refresh_time = data.meta.new_timestamp + defaults.AWATTAR_REFRESH_INTERVAL
+        if next_refresh_time <= now.int_timestamp:
+            pass
+        else:
+            time_remaining_refresh = next_refresh_time - now.int_timestamp
+            logger.debug(
+                f"Won't request aWATTar API again as there are still {time_remaining_refresh} second(s) until "
+                "refresh is allowed again."
+            )
+            return False
+
+    if now.hour < defaults.AWATTAR_UPDATE_HOUR:
+        logger.debug(f"Isn't past update hour ({defaults.AWATTAR_UPDATE_HOUR}), won't refresh price data.")
         return False
 
     return True
@@ -157,19 +166,54 @@ async def download_data(region: Region, config: Config) -> Box:
     return data
 
 
-def transform_data(price_data_raw: Box) -> Box:
-    """Validate price data schema and transform the data."""
+def general_transform_data(price_data_raw: Box) -> Box:
+    """Validate price data schema and do some general transformations on the data.
+
+    It may be required to perform extended transformations in specific cases.
+    """
     utils.http_exc_validate_json_schema(price_data_raw, defaults.AWATTAR_PRICE_DATA_SCHEMA, http_code=503)
 
     price_data = Box()
-
     price_data.prices = price_data_raw.data
+
+    return price_data
+
+
+def is_new_transform_data(price_data_raw: Box):
+    """Perform transformations if the data was verified to be new."""
+    price_data = Box(price_data_raw)
 
     price_data.meta = Box()
     now = arrow.now()
-    price_data.meta.update_timestamp = now.int_timestamp
+    price_data.meta.new_timestamp = now.int_timestamp
 
     return price_data
+
+
+def transform_to_respond_data(price_data: Box) -> Box:
+    """Transform price data to price data which can be sent as response from the web app.
+
+    Do this because not all data stored should also be sent in the response.
+    """
+    respond_price_data = Box()
+    respond_price_data.prices = price_data.prices
+
+    return respond_price_data
+
+
+def check_data_new(old_data: Optional[Box], new_data: Box) -> bool:
+    """Check if the new price data differentiates from the old price data."""
+    if old_data is None:
+        return True
+
+    max_end_compare_key = lambda point: point.end_timestamp
+    max_end_old = max(old_data.prices, key=max_end_compare_key)
+    max_end_new = max(new_data.prices, key=max_end_compare_key)
+
+    if max_end_new.end_timestamp > max_end_old.end_timestamp:
+        return True
+    else:
+        return False
 
 
 async def store_data(data: Union[Box, BoxList], region: Region, config: Config):
@@ -190,12 +234,12 @@ async def get_current_prices(region: Region, config: Config) -> Optional[dict]:
     Remote data will be fetched if local data isn't up to date.
     """
     stored_data = await get_stored_data(region, config)
-    get_new_data = check_data_needs_update(stored_data)
+    get_new_data = check_data_needs_update(region, stored_data)
 
     price_data = None
     if get_new_data:
         refresh_lock = get_refresh_lock(region, config)
-        logger.info("Local energy prices aren't up to date or don't exist. Refreshing.")
+        logger.info(f"Updating {region.name} price data.")
         acquire_error = False
         try:
             immediate_acquire = await immediate_refresh_lock_acquire(refresh_lock)
@@ -213,9 +257,15 @@ async def get_current_prices(region: Region, config: Config) -> Optional[dict]:
         else:
             # See 'get_prices' doc for explanation why its important if lock was acquired immediately.
             if immediate_acquire:
-                price_data_raw = await download_data(region, config)
-                price_data = transform_data(price_data_raw)
-                await store_data(price_data, region, config)
+                downloaded_price_data_raw = await download_data(region, config)
+                downloaded_price_data = general_transform_data(downloaded_price_data_raw)
+                data_new = check_data_new(stored_data, downloaded_price_data)
+                if data_new:
+                    price_data = downloaded_price_data
+                    price_data = is_new_transform_data(price_data)
+                    await store_data(price_data, region, config)
+                else:
+                    price_data = stored_data
                 refresh_lock.release()
             else:
                 refresh_lock.release()
@@ -224,4 +274,6 @@ async def get_current_prices(region: Region, config: Config) -> Optional[dict]:
         logger.debug(f"Local price data for region {region.name} is still up to date.")
         price_data = stored_data
 
-    return price_data
+    respond_price_data = transform_to_respond_data(price_data)
+
+    return respond_price_data

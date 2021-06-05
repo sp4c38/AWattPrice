@@ -74,9 +74,7 @@ AWATTAR_PRICE_DATA_SCHEMA = {
     },
     "required": ["data", "url"],
 }
-# File name for file storing aWATTar price data.
-# The string will be formatted with the lowercase region identifier.
-PRICE_DATA_FILE_NAME = "awattar-data-{}.json"
+PRICE_DATA_FILE_NAME = "awattar-data-{}.json"  # formatted with lowercase region name
 # Name of the subdir in which to store cached price data.
 # This subdir is relative to the data dir specified in the config file.
 PRICE_DATA_SUBDIR_NAME = "price_data"
@@ -85,6 +83,8 @@ PRICE_DATA_SUBDIR_NAME = "price_data"
 PRICE_DATA_REFRESH_LOCK = "awattar-data-{}-update.lck"
 # Timeout in seconds to wait when needing the refresh price data lock to be unlocked.
 PRICE_DATA_REFRESH_LOCK_TIMEOUT = AWATTAR_TIMEOUT + 2.0
+# Name of file which stores the timestamp when prices were updated last.
+PRICE_DATA_UPDATE_TS_FILE_NAME = "update-ts-{}.info"  # formatted with lowercase region name
 
 
 class TaskType(Enum):

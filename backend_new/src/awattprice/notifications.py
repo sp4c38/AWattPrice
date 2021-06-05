@@ -27,7 +27,7 @@ from awattprice.orm import PriceBelowNotification
 from awattprice.orm import Token
 
 
-async def add_new_token(session: AsyncSession, token_hex: str, data: dict) -> Token:
+async def add_new_token(session: AsyncSession, token_hex: str, data: Box) -> Token:
     """Construct a new token and add it to the database."""
     new_token = Token(
         token=token_hex,
@@ -234,15 +234,15 @@ def check_type_count(tasks: BoxList) -> bool:
     stitched_types_counted = Box()
     for task in tasks:
         if task.type == TaskType.SUBSCRIBE_DESUBSCRIBE:
-            count = StitchedTaskTypes(task.type, (task.payload.notification_type,))
+            stitched_types = StitchedTaskTypes(task.type, (task.payload.notification_type,))
         elif task.type == TaskType.UPDATE:
-            count = StitchedTaskTypes(task.type, (task.payload.subject,))
+            stitched_types = StitchedTaskTypes(task.type, (task.payload.subject,))
         else:
-            count = StitchedTaskTypes(task.type)
+            stitched_types = StitchedTaskTypes(task.type)
 
         # Sometimes when counting tasks, restrictions on the amount of the task is not depending only on the
         # task type but additionally also on some types inside of the task payload, thus using stitched types.
-        stitched_types_counted[count] = stitched_types_counted.get(count, 0) + 1
+        stitched_types_counted[stitched_types] = stitched_types_counted.get(stitched_types, 0) + 1
 
     for stitched_types, count in stitched_types_counted.items():
         if any(

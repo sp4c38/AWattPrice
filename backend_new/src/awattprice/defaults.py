@@ -43,14 +43,36 @@ TO_MICROSECONDS = 1000
 AWATTAR_TIMEOUT = 10.0
 # The aWATTar API refresh interval. After polling the API wait x seconds before requesting again.
 AWATTAR_REFRESH_INTERVAL = 60
-# Attempt to update aWATTar prices if its past this hour of the day.
-# The backend autmatically switches between summer and winter times.
-# So for example 13 o'clock will always stay 13 o'clock independent of summer or winter time.
+# Attempt to update aWATTar prices if its past this hour of the day. 
+# Always will update at x hour regardless of summer and winter times.
 AWATTAR_UPDATE_HOUR = 13
 
 # File name for the AWattPrice backend database ending.
 DATABASE_FILE_NAME = "database.sqlite3"  # End with '.sqlite3'
 
+
+AWATTAR_PRICE_DATA_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "object": {"type": "string", "pattern": "^list$"},
+        "data": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "start_timestamp": {"type": "integer"},
+                    "end_timestamp": {"type": "integer"},
+                    "marketprice": {"type": "number"},
+                    "unit": {"type": "string", "pattern": "^Eur/MWh$"}
+                },
+                "required": ["start_timestamp", "end_timestamp", "marketprice", "unit"],
+                "minItems": 1,
+            }
+        },
+        "url": {"type": "string", "pattern": "^/at/v1/marketdata/|/de/v1/marketdata/$"},
+    },
+    "required": ["data", "url"],
+}
 # File name for file storing aWATTar price data.
 # The string will be formatted with the lowercase region identifier.
 PRICE_DATA_FILE_NAME = "awattar-data-{}.json"

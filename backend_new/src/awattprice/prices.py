@@ -203,13 +203,12 @@ async def get_current_prices(region: Region, config: Config) -> Optional[dict]:
 
         if acquire_error:
             if not stored_data:
-                logger.warning("Acquire error: Responding with 500 code as no cached data exists.")
+                logger.warning("Acquire error: Responding with 500 code because no cached data exists.")
                 raise HTTPException(500)
 
             logger.warning("Acquire error: Using cached local data as price data.")
             price_data = stored_data
-
-        if not acquire_error:
+        else:
             # See 'get_prices' doc for explanation why its important if lock was acquired immediately.
             if immediate_acquire:
                 price_data_raw = await download_data(region, config)
@@ -220,7 +219,7 @@ async def get_current_prices(region: Region, config: Config) -> Optional[dict]:
                 refresh_lock.release()
                 price_data = await get_stored_data(region, config)
     else:
-        logger.debug("Local price data still up to date.")
+        logger.debug(f"Local price data for region {region.name} is still up to date.")
         price_data = stored_data
 
     return price_data

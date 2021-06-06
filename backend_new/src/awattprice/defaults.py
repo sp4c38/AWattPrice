@@ -45,7 +45,7 @@ AWATTAR_TIMEOUT = 10.0
 AWATTAR_REFRESH_INTERVAL = 60
 # Attempt to update aWATTar prices if its past this hour of the day.
 # Always will update at x hour regardless of summer and winter times.
-AWATTAR_UPDATE_HOUR = 13
+AWATTAR_UPDATE_HOUR = 12
 
 LOG_FILE_NAME = "awattprice.log"
 

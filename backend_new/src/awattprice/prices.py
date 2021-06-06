@@ -17,6 +17,7 @@ from liteconfig import Config
 from loguru import logger
 
 from awattprice import defaults
+from awattprice import exceptions
 from awattprice import utils
 from awattprice.defaults import Region
 
@@ -45,7 +46,7 @@ async def get_stored_data(region: Region, config: Config) -> Optional[Box]:
     return stored_data
 
 
-def check_data_needs_update(region: Regiom, data: Optional[Box]) -> bool:
+def check_data_needs_update(data: Optional[Box]) -> bool:
     """Check if price data is up to date.
 
     :param region: Region of the price data.
@@ -53,36 +54,18 @@ def check_data_needs_update(region: Regiom, data: Optional[Box]) -> bool:
     """
     if data is None:
         return True
-
-    last_update_dir = config.paths.price_data_dir
-    last_update_file = defaults.PRICE_DATA_UPDATE_TS_FILE_NAME.format(region.name.lower())
-    last_update_path = last_update_dir / last_update_file
-    if last_update_path.exists():
-        if not last_update_path.is_file():
-            logger.critical(f"Last update path is directory not file: {last_update_path}.")
-
-        async with async_open(last_update_path, "r") as file:
-            last_update_ts = await file.read()
-        try:
-            last_update_ts = arrow.get(int(last_update_ts))
-        except ValueError as err:
-            logger.error(f"Last update timestamp from file is no valid integer: {last_update_ts}.")
-    else:
-        logger.info(f"Last update {region.name} time file doesn't exist. Assuming last update ts is none.")
-        last_update_ts = None
-
+    
     now = arrow.now()
-    if last_update_ts is not None:
-        next_refresh_time = data.meta.new_timestamp + defaults.AWATTAR_REFRESH_INTERVAL
-        if next_refresh_time <= now.int_timestamp:
-            pass
-        else:
-            time_remaining_refresh = next_refresh_time - now.int_timestamp
-            logger.debug(
-                f"Won't request aWATTar API again as there are still {time_remaining_refresh} second(s) until "
-                "refresh is allowed again."
-            )
-            return False
+    next_refresh_time = data.meta.new_timestamp + defaults.AWATTAR_REFRESH_INTERVAL
+    if next_refresh_time <= now.int_timestamp:
+        pass
+    else:
+        time_remaining_refresh = next_refresh_time - now.int_timestamp
+        logger.debug(
+            f"Won't request aWATTar API again as there are still {time_remaining_refresh} second(s) until "
+            "refresh is allowed again."
+        )
+        return False
 
     if now.hour < defaults.AWATTAR_UPDATE_HOUR:
         logger.debug(f"Isn't past update hour ({defaults.AWATTAR_UPDATE_HOUR}), won't refresh price data.")
@@ -100,7 +83,9 @@ def get_refresh_lock(region: Region, config: Config) -> FileLock:
     return lock
 
 
-async def immediate_refresh_lock_acquire(lock, timeout: float = defaults.PRICE_DATA_REFRESH_LOCK_TIMEOUT) -> bool:
+async def immediate_refresh_lock_acquire(
+    lock: FileLock, timeout: float = defaults.PRICE_DATA_REFRESH_LOCK_TIMEOUT
+) -> bool:
     """Acquire a refresh lock either immediately or with waiting.
 
     :raises filelock.Timeout: if the refresh token lock acquiring timed out.
@@ -109,11 +94,10 @@ async def immediate_refresh_lock_acquire(lock, timeout: float = defaults.PRICE_D
     """
     async_acquire = utils.async_wrap(lock.acquire)
 
-    # Check for immediate acquirement.
     try:
         await async_acquire(timeout=0)
     except filelock.Timeout:
-        # Means that lock couldn't be acquired immediately.
+        # Lock couldn't be acquired immediately.
         pass
     else:
         logger.debug("Lock acquired immediately.")
@@ -227,6 +211,46 @@ async def store_data(data: Union[Box, BoxList], region: Region, config: Config):
         await file.write(data.to_json())
 
 
+async def update_data(stored_data: Box, region: Region, config: Config):
+    """Update price data when stored data was found to be outdated.
+
+    :param stored_data: Needs to be provided because in some cases the updated data could be the
+        stored data. Also, if there are no new future price points the stored data will be used instead
+        of the downloaded data.
+    """
+    logger.info(f"Updating {region.name} price data.")
+    refresh_lock = get_refresh_lock(region, config)
+    refresh_lock_acquire_error = False
+    try:
+        immediate_acquire = await immediate_refresh_lock_acquire(refresh_lock)
+    except filelock.Timeout as exc:
+        if not stored_data:
+            logger.warning("No local price data and refresh lock acquire error. Can't provide price data.")
+            raise HTTPException(500)
+
+        logger.warning("Using local price data but couldn't update because of refresh lock acquire error.")
+        price_data = stored_data
+        refresh_lock_acquire_error = True
+
+    if not refresh_lock_acquire_error:
+        # See 'get_prices' doc for explanation why its important if lock was acquired immediately.
+        if immediate_acquire:
+            downloaded_price_data_raw = await download_data(region, config)
+            downloaded_price_data = general_transform_data(downloaded_price_data_raw)
+            data_new = check_data_new(stored_data, downloaded_price_data)
+            if data_new:
+                price_data = downloaded_price_data
+                price_data = is_new_transform_data(price_data)
+                await store_data(price_data, region, config)
+            else:
+                price_data = stored_data
+            refresh_lock.release()
+        else:
+            refresh_lock.release()
+            price_data = await get_stored_data(region, config)    
+
+    return price_data
+
 async def get_current_prices(region: Region, config: Config) -> Optional[dict]:
     """Get the current aWATTar prices.
 
@@ -234,42 +258,10 @@ async def get_current_prices(region: Region, config: Config) -> Optional[dict]:
     Remote data will be fetched if local data isn't up to date.
     """
     stored_data = await get_stored_data(region, config)
-    get_new_data = check_data_needs_update(region, stored_data)
+    get_new_data = check_data_needs_update(stored_data)
 
-    price_data = None
     if get_new_data:
-        refresh_lock = get_refresh_lock(region, config)
-        logger.info(f"Updating {region.name} price data.")
-        acquire_error = False
-        try:
-            immediate_acquire = await immediate_refresh_lock_acquire(refresh_lock)
-        except filelock.Timeout as exc:
-            logger.error(f"Couldn't acquire refresh lock: {exc}.")
-            acquire_error = True
-
-        if acquire_error:
-            if not stored_data:
-                logger.warning("Acquire error: Responding with 500 code because no cached data exists.")
-                raise HTTPException(500)
-
-            logger.warning("Acquire error: Using cached local data as price data.")
-            price_data = stored_data
-        else:
-            # See 'get_prices' doc for explanation why its important if lock was acquired immediately.
-            if immediate_acquire:
-                downloaded_price_data_raw = await download_data(region, config)
-                downloaded_price_data = general_transform_data(downloaded_price_data_raw)
-                data_new = check_data_new(stored_data, downloaded_price_data)
-                if data_new:
-                    price_data = downloaded_price_data
-                    price_data = is_new_transform_data(price_data)
-                    await store_data(price_data, region, config)
-                else:
-                    price_data = stored_data
-                refresh_lock.release()
-            else:
-                refresh_lock.release()
-                price_data = await get_stored_data(region, config)
+        price_data = await update_data(stored_data, region, config)
     else:
         logger.debug(f"Local price data for region {region.name} is still up to date.")
         price_data = stored_data

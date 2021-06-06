@@ -41,11 +41,11 @@ TO_MICROSECONDS = 1000
 
 # Timeout in seconds when requesting from aWATTar.
 AWATTAR_TIMEOUT = 10.0
-# The aWATTar API refresh interval. After polling the API wait x seconds before requesting again.
-AWATTAR_REFRESH_INTERVAL = 60
+# After polling the API wait x seconds before requesting again.
+AWATTAR_COOLDOWN_INTERVAL = 60
 # Attempt to update aWATTar prices if its past this hour of the day.
 # Always will update at x hour regardless of summer and winter times.
-AWATTAR_UPDATE_HOUR = 12
+AWATTAR_UPDATE_HOUR = 13
 
 LOG_FILE_NAME = "awattprice.log"
 

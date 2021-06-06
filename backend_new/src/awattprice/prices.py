@@ -1,4 +1,5 @@
 """Poll and process price data."""
+import asyncio
 import json
 
 from typing import Optional
@@ -9,6 +10,7 @@ import filelock
 import httpx
 
 from aiofile import async_open
+from arrow import Arrow
 from box import Box
 from box import BoxList
 from fastapi import HTTPException
@@ -22,6 +24,7 @@ from awattprice import utils
 from awattprice.defaults import Region
 
 
+import time
 async def get_stored_data(region: Region, config: Config) -> Optional[Box]:
     """Get locally stored price data."""
     file_dir = config.paths.price_data_dir
@@ -46,30 +49,50 @@ async def get_stored_data(region: Region, config: Config) -> Optional[Box]:
     return stored_data
 
 
-def check_data_needs_update(data: Optional[Box]) -> bool:
-    """Check if price data is up to date.
+async def get_last_update_time(region: Region, config: Config) -> Optional[Arrow]:
+    """Get time the price data was updated last."""
+    file_dir = config.paths.price_data_dir
+    file_name = defaults.PRICE_DATA_UPDATE_TS_FILE_NAME.format(region.name.lower())
+    file_path = file_dir / file_name
+    if not file_path.exists():
+        logger.debug(f"Didn't find last update ts file, assuming no last update ts: {file_path}.")
+        return None
+    if not file_path.is_file():
+        logger.error(f"Last update timestamp file path is no file: {file_path}.")
+        raise HTTPException(500)
 
-    :param region: Region of the price data.
-    :returns: True if up to date, false if not.
+    async with async_open(file_path, "r") as file:
+        file_content = await file.read()
+
+    try:
+        last_update_ts = int(file_content)
+    except ValueError as exc:
+        logger.error(f"Couldn't read last update ts: {exc}.")
+        last_update_ts = None
+
+    last_update_time = arrow.get(last_update_ts)
+    return last_update_time
+
+
+def check_update_data(data: Optional[Box], last_update_time: Optional[Arrow]) -> bool:
+    """Check if the parsed price data is allowed to be updated.
+
+    :param last_update_ts: Timestamp the data was last polled from the awattar api.
+    :returns: True if data should be updated, false if it's not due.
     """
     if data is None:
         return True
-    
+
     now = arrow.now()
-    next_refresh_time = data.meta.new_timestamp + defaults.AWATTAR_REFRESH_INTERVAL
-    if next_refresh_time <= now.int_timestamp:
-        pass
-    else:
-        time_remaining_refresh = next_refresh_time - now.int_timestamp
-        logger.debug(
-            f"Won't request aWATTar API again as there are still {time_remaining_refresh} second(s) until "
-            "refresh is allowed again."
-        )
-        return False
 
     if now.hour < defaults.AWATTAR_UPDATE_HOUR:
         logger.debug(f"Isn't past update hour ({defaults.AWATTAR_UPDATE_HOUR}), won't refresh price data.")
         return False
+
+    if last_update_time:
+        next_update_time = last_update_time.shift(seconds=defaults.AWATTAR_COOLDOWN_INTERVAL)
+        if now < next_update_time:
+            return False
 
     return True
 
@@ -163,17 +186,6 @@ def general_transform_data(price_data_raw: Box) -> Box:
     return price_data
 
 
-def is_new_transform_data(price_data_raw: Box):
-    """Perform transformations if the data was verified to be new."""
-    price_data = Box(price_data_raw)
-
-    price_data.meta = Box()
-    now = arrow.now()
-    price_data.meta.new_timestamp = now.int_timestamp
-
-    return price_data
-
-
 def transform_to_respond_data(price_data: Box) -> Box:
     """Transform price data to price data which can be sent as response from the web app.
 
@@ -214,6 +226,8 @@ async def store_data(data: Union[Box, BoxList], region: Region, config: Config):
 async def update_data(stored_data: Box, region: Region, config: Config):
     """Update price data when stored data was found to be outdated.
 
+    Check the 'get_prices' docs for detailed information on the update process.
+
     :param stored_data: Needs to be provided because in some cases the updated data could be the
         stored data. Also, if there are no new future price points the stored data will be used instead
         of the downloaded data.
@@ -240,7 +254,6 @@ async def update_data(stored_data: Box, region: Region, config: Config):
             data_new = check_data_new(stored_data, downloaded_price_data)
             if data_new:
                 price_data = downloaded_price_data
-                price_data = is_new_transform_data(price_data)
                 await store_data(price_data, region, config)
             else:
                 price_data = stored_data
@@ -257,10 +270,13 @@ async def get_current_prices(region: Region, config: Config) -> Optional[dict]:
     Current aWATTar prices may either be local or remote data.
     Remote data will be fetched if local data isn't up to date.
     """
-    stored_data = await get_stored_data(region, config)
-    get_new_data = check_data_needs_update(stored_data)
+    stored_data, last_update_time = await asyncio.gather(
+        get_stored_data(region, config),
+        get_last_update_time(region, config)
+    )
+    update_data = check_update_data(stored_data, last_update_time)
 
-    if get_new_data:
+    if update_data:
         price_data = await update_data(stored_data, region, config)
     else:
         logger.debug(f"Local price data for region {region.name} is still up to date.")

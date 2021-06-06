@@ -24,7 +24,6 @@ from awattprice import utils
 from awattprice.defaults import Region
 
 
-import time
 async def get_stored_data(region: Region, config: Config) -> Optional[Box]:
     """Get locally stored price data."""
     file_dir = config.paths.price_data_dir
@@ -74,6 +73,21 @@ async def get_last_update_time(region: Region, config: Config) -> Optional[Arrow
     return last_update_time
 
 
+def check_awattar_cooldown_finished(last_update_time: Optional[Arrow]) -> bool:
+    """Check if the data awattar cooldown is finished relative to the last update time."""
+    if last_update_time is None:
+        return True
+
+    now = arrow.now()
+    next_update_time = last_update_time.shift(seconds=defaults.AWATTAR_COOLDOWN_INTERVAL)
+    if now >= next_update_time:
+        return True
+    else:
+        seconds_remaining = (next_update_time - now).total_seconds()
+        logger.debug(f"AWATTar cooldown not finished: {seconds_remaining} remaining.")
+        return False
+
+
 def check_update_data(data: Optional[Box], last_update_time: Optional[Arrow]) -> bool:
     """Check if the parsed price data is allowed to be updated.
 
@@ -83,16 +97,21 @@ def check_update_data(data: Optional[Box], last_update_time: Optional[Arrow]) ->
     if data is None:
         return True
 
-    now = arrow.now()
-
-    if now.hour < defaults.AWATTAR_UPDATE_HOUR:
+    now_berlin = arrow.now("Europe/Berlin")
+    if now_berlin.hour < defaults.AWATTAR_UPDATE_HOUR:
         logger.debug(f"Isn't past update hour ({defaults.AWATTAR_UPDATE_HOUR}), won't refresh price data.")
         return False
 
-    if last_update_time:
-        next_update_time = last_update_time.shift(seconds=defaults.AWATTAR_COOLDOWN_INTERVAL)
-        if now < next_update_time:
-            return False
+    cooldown_finished = check_awattar_cooldown_finished(last_update_time)
+    if not cooldown_finished:
+        return False
+
+    midnight_tomorrow_berlin = now_berlin.floor("day").shift(days=+1)
+    max_price = max(data.prices, key=lambda point: point.end_timestamp)
+    max_end_time = arrow.get(max_price.end_timestamp)
+    if max_end_time >= midnight_tomorrow_berlin:
+        logger.debug("Price points still available until tomorrows midnight.")
+        return False
 
     return True
 
@@ -150,8 +169,8 @@ async def download_data(region: Region, config: Config) -> Box:
     end = day_start.shift(days=+2)
 
     url_parameters = {
-        "start": start.int_timestamp * defaults.TO_MICROSECONDS,
-        "end": end.int_timestamp * defaults.TO_MICROSECONDS,
+        "start": start.int_timestamp * defaults.SEC_TO_MILLISEC,
+        "end": end.int_timestamp * defaults.SEC_TO_MILLISEC,
     }
     timeout = defaults.AWATTAR_TIMEOUT
 
@@ -181,20 +200,15 @@ def general_transform_data(price_data_raw: Box) -> Box:
     utils.http_exc_validate_json_schema(price_data_raw, defaults.AWATTAR_PRICE_DATA_SCHEMA, http_code=503)
 
     price_data = Box()
-    price_data.prices = price_data_raw.data
+    price_data.prices = BoxList()
+    for raw_price_point in price_data_raw.data:
+        price_point = Box()
+        price_point.start_timestamp = raw_price_point.start_timestamp / defaults.SEC_TO_MILLISEC
+        price_point.end_timestamp = raw_price_point.end_timestamp / defaults.SEC_TO_MILLISEC
+        price_point.marketprice = raw_price_point.marketprice
+        price_data.prices.append(price_point)
 
     return price_data
-
-
-def transform_to_respond_data(price_data: Box) -> Box:
-    """Transform price data to price data which can be sent as response from the web app.
-
-    Do this because not all data stored should also be sent in the response.
-    """
-    respond_price_data = Box()
-    respond_price_data.prices = price_data.prices
-
-    return respond_price_data
 
 
 def check_data_new(old_data: Optional[Box], new_data: Box) -> bool:
@@ -212,6 +226,17 @@ def check_data_new(old_data: Optional[Box], new_data: Box) -> bool:
         return False
 
 
+def transform_to_respond_data(price_data: Box) -> Box:
+    """Transform price data to price data which can be sent as response from the web app.
+
+    Do this because not all data stored should also be sent in the response.
+    """
+    respond_price_data = Box()
+    respond_price_data.prices = price_data.prices
+
+    return respond_price_data
+
+
 async def store_data(data: Union[Box, BoxList], region: Region, config: Config):
     """Store new price data to the filesystem."""
     store_dir = config.paths.price_data_dir
@@ -221,6 +246,18 @@ async def store_data(data: Union[Box, BoxList], region: Region, config: Config):
     logger.info(f"Storing aWATTar {region.value} price data to {file_path}.")
     async with async_open(file_path, "w") as file:
         await file.write(data.to_json())
+
+
+async def set_last_update_time_now(region: Region, config: Config):
+    """Set the time the price data was updated last to now."""
+    file_dir = config.paths.price_data_dir
+    file_name = defaults.PRICE_DATA_UPDATE_TS_FILE_NAME.format(region.name.lower())
+    file_path = file_dir / file_name
+
+    now = arrow.now()
+    now_string = str(now.int_timestamp)
+    async with async_open(file_path, "w") as file:
+        await file.write(now_string)
 
 
 async def update_data(stored_data: Box, region: Region, config: Config):
@@ -247,16 +284,25 @@ async def update_data(stored_data: Box, region: Region, config: Config):
         refresh_lock_acquire_error = True
 
     if not refresh_lock_acquire_error:
-        # See 'get_prices' doc for explanation why its important if lock was acquired immediately.
+        # See 'get_prices' doc for a better overview and explanation of the steps.
         if immediate_acquire:
-            downloaded_price_data_raw = await download_data(region, config)
-            downloaded_price_data = general_transform_data(downloaded_price_data_raw)
-            data_new = check_data_new(stored_data, downloaded_price_data)
-            if data_new:
-                price_data = downloaded_price_data
-                await store_data(price_data, region, config)
+            last_update_time = await get_last_update_time(region, config)
+            cooldown_finished = check_awattar_cooldown_finished(last_update_time)
+            if cooldown_finished:
+                downloaded_price_data_raw = await download_data(region, config)
+                downloaded_price_data = general_transform_data(downloaded_price_data_raw)
+                data_new = check_data_new(stored_data, downloaded_price_data)
+                if data_new:
+                    price_data = downloaded_price_data
+                    await store_data(price_data, region, config)
+                else:
+                    logger.debug("Downloaded data includes no new prices.")
+                    price_data = stored_data
+                await set_last_update_time_now(region, config)
             else:
+                logger.info("Cooldown didn't expire after rechecking it. Using stored price data.")
                 price_data = stored_data
+
             refresh_lock.release()
         else:
             refresh_lock.release()
@@ -274,12 +320,12 @@ async def get_current_prices(region: Region, config: Config) -> Optional[dict]:
         get_stored_data(region, config),
         get_last_update_time(region, config)
     )
-    update_data = check_update_data(stored_data, last_update_time)
+    do_update_data = check_update_data(stored_data, last_update_time)
 
-    if update_data:
+    if do_update_data:
         price_data = await update_data(stored_data, region, config)
     else:
-        logger.debug(f"Local price data for region {region.name} is still up to date.")
+        logger.debug(f"Local price {region.name} data is still up to date.")
         price_data = stored_data
 
     respond_price_data = transform_to_respond_data(price_data)

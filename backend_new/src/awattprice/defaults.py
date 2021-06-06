@@ -36,8 +36,7 @@ ORM_TABLE_NAMES = Box(
     }
 )
 
-# Factor to convert seconds into microseconds.
-TO_MICROSECONDS = 1000
+SEC_TO_MILLISEC = 1000  # to convert multiply by this factor
 
 # Timeout in seconds when requesting from aWATTar.
 AWATTAR_TIMEOUT = 10.0

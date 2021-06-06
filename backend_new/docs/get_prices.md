@@ -9,23 +9,25 @@ It is important that the aWATTar price API doesn't get overloaded. Thus price da
 
 #### Process of getting current prices
 
-1. Get last locally cached data.
+1. Concurrently get last locally cached price data and the last update timestamp.
 2. Check if local data needs to be updated.
-3. - No: Use locally cached data as price data. Continue at step 5.
-   - Yes: Continue at step 4.
-4. Get new price data. Therefor a refresh lock needs to be acquired which leads to one of the following paths:
-   - Lock can be acquired immediately without waiting: Poll the newest price data from aWATTar and check if it is new. If the polled data is new store it, release the lock and use it as the current prices. If it doesn't include any new price points use the stored price data as the current prices.
-   - Lock can be acquired after waiting: If we needed to wait for the refresh lock to get acquired we know that a other request which updated the data when we were waiting to acquire the lock came before us. It was still downloading and processing the data because of which at the first read we still had the old data. We thus know that now the locally cached price data is up to date because it was just now updated by another request. For that release the lock, read the cached data and use it as current price data.
-   - Lock couldn't be acquired (timed out when acquiring lock): This is a situation which should not occur. The steps taken here are more an emergency handling. If we could previously read local data, then use this as the current price data. If we don't have any local data cached, then return a 500 error response.
-5. Respond with the current price data.
-
-#### Content of returned and saved price data
+    - Check if it's past a certain hour.
+    - Check if we don't have prices until the next day midnight.
+    - Check if we already can update again relative to the last update timestamp.
+        - No -> Continue at step X
+        - Yes -> Continue at next step.
+3. Acquire a refresh lock. Using this lock technique to every time *only one* call will be able to update the price data. After acquiring one of the following ways is followed:
+   1. Lock could be acquired immediately without waiting. Continue at step 4 - the actual download process.
+   2. Lock could be acquired but needed to wait. We can infert that another call already polled new price data but didn't write it yet while we were reading. So read local data again and use it as the current price data (continue at step X).
+   3. Lock couldn't be acquired at all (timed out). Should never happen but is possible, for example if the aWATTar servers aren't responding in another call. If stored data exists this is the current price data (continue at step X), if it's missing throw a http 500 error.
+4. There is one big issue: Assume that after the data was loaded from cache it changed - so a other call updated it. Also assume that the 2nd way in the 3rd step didn't happen because of a certain timing. We would now still update the data altough we actually already have the updated version. To completely prevent this case we would need to read again. But as this is very cost-intensive and this case is very unlikely it will not be prevented. The web app will check the update timestamp which doesn't make it a necessarity that a actual update will occur.
+5. Read and check last update timestamp again. This is done again because due to having the lock acquired this time we can rely that the timestamp read is correct. This previously wasn't the case because it could have come to certain race conditions.
+6. Download the data.
+7. Check if new price points were added compared to the locally stored data.
+   - Yes -> Store new data and use it as current price data.
+   - No -> Don't store new data and use the stored data as current price data.
+8. Return a transformed version of whatever the current price data was found to be above.
 
 The returned data includes following:
 
 - Price data
-
-The data saved on the server includes following data *in addition to the data returned to the client which is specified above*:
-
-- Metadata:
-  - 'new_timestamp' value is the time when price data was last to be found **new**. So this doesn't mean that the last time the server retrieved data from aWATTar is this time, but instead that this time is the time the server actually last found **new** data.

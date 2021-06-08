@@ -101,13 +101,13 @@ class NotificationType(Enum):
 
 
 class UpdateSubject(Enum):
-    """Subjects on which updates can be performed."""
+    """Different subjects for which to perform updates."""
 
     GENERAL = auto()
     PRICE_BELOW = auto()
 
 
-NOTIFICATION_TASKS_BODY_SCHEMA = {
+NOTIFICATION_TASKS_BASE_SCHEMA = {
     "type": "object",
     "properties": {
         "token": {"type": "string", "minLength": 1},

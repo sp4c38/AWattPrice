@@ -139,13 +139,13 @@ async def update_price_below_settings(session: AsyncSession, token: Token, updat
             raise HTTPException(501)
 
 
-async def run_notification_tasks(tasks_container: Box):
-    """Runs notification configuration tasks."""
+async def run_notification_tasks(tasks_packed: Box):
+    """Run notification tasks."""
     async with AsyncSession(db_engine, future=True) as session:
-        tasks = tasks_container.tasks
+        token_hex = tasks_packed.token
+        tasks = tasks_packed.tasks
 
         token = None
-        token_hex = tasks_container.token
         first_task = tasks[0]
         if first_task.type == TaskType.ADD_TOKEN:
             token = await add_new_token(session, token_hex, first_task.payload)
@@ -162,14 +162,6 @@ async def run_notification_tasks(tasks_container: Box):
                     await update_general_settings(session, token, task.payload.updated_data)
                 elif task.payload.subject == UpdateSubject.PRICE_BELOW:
                     await update_price_below_settings(session, token, task.payload.updated_data)
-                else:
-                    logger.critical(f"Don't know how to update subject {task.payload.subject}.")
-                    await session.rollback()
-                    raise HTTPException(501)
-            else:
-                logger.critical(f"Don't know how to process notification task type {task.type}.")
-                await session.rollback()
-                raise HTTPException(501)
 
         await session.commit()
 
@@ -181,9 +173,9 @@ def transform_add_token_task(task: Box, task_index: int):
         raise HTTPException(400)
 
     add_token_schema = defaults.NOTIFICATION_TASK_ADD_TOKEN_SCHEMA
-    utils.http_exc_validate_json_schema(task.payload, add_token_schema, http_code=400)
+    utils.http_exc_validate_json_schema(new_task.payload, add_token_schema, http_code=400)
 
-    task.payload.region = Region[task.payload.region]
+    new_task.payload.region = Region[new_task.payload.region]
 
 
 def transform_subscribe_desubscribe_task(task: Box):
@@ -213,9 +205,6 @@ def transform_update_task(task: Box):
     elif task.payload.subject == UpdateSubject.PRICE_BELOW:
         price_below_schema = defaults.NOTIFICATION_TASK_UPDATE_PRICE_BELOW_SCHEMA
         utils.http_exc_validate_json_schema(updated_data, price_below_schema, http_code=400)
-    else:
-        logger.critical(f"Subject '{task.payload.subject}' task validation isn't implemented.")
-        raise HTTPException(501)
 
 
 @dataclass(eq=True, frozen=True)
@@ -261,22 +250,13 @@ def check_type_count(tasks: BoxList) -> bool:
     return True
 
 
-def transform_tasks_body(body_original: Box) -> Box:
-    """Transform the body with notification tasks to perform.
-
-    First validates correct schema of body. Then transforms to make body more clearer to improve
-    the beauty of the code. For example transform to enums instead of using raw strings.
-    """
-    body = Box(body_original)  # Box again to create new instance instead of reference.
-
-    # Validate base schema of body.
-    schema = defaults.NOTIFICATION_TASKS_BODY_SCHEMA
+def transform_tasks_body(body: Box) -> Box:
+    """First validates, then transforms the tasks for later internal use."""
+    schema = defaults.NOTIFICATION_TASKS_BASE_SCHEMA
     utils.http_exc_validate_json_schema(body, schema, http_code=400)
 
-    # Validate task-specific schemas.
-    for index, task in enumerate(body.tasks):
+    for index, task in enumerate(body_original.tasks):
         task.type = TaskType[task.type]
-
         if task.type == TaskType.ADD_TOKEN:
             transform_add_token_task(task, index)
         elif task.type == TaskType.SUBSCRIBE_DESUBSCRIBE:

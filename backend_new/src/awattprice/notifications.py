@@ -2,7 +2,6 @@
 
 Sending the actual notifications is handled by an extra service outside of this web app.
 """
-from dataclasses import dataclass
 from typing import Any
 from typing import Optional
 
@@ -207,50 +206,39 @@ def transform_update_task(task: Box):
         utils.http_exc_validate_json_schema(updated_data, price_below_schema, http_code=400)
 
 
-@dataclass(eq=True, frozen=True)
-class StitchedTaskTypes:
-    """Store notification task type and task sub-types together as a stitched version.
-
-    This class is immutable. Thus it can be used as keys in a dictionary.
-    """
-
-    task_type: TaskType
-    sub_types: Optional[tuple[Any]] = None
-
-
 def check_type_count(tasks: BoxList) -> bool:
     """Verify number of certain task types match allowed amount."""
-    stitched_types_counted = Box()
+    # A combination of the main task type and other types which are used to identify a single count.
+    CombinedTypes = namedtuple("CombinedTypes", ["task", "other"])
+    combined_types_counted = {}
     for task in tasks:
-        if task.type == TaskType.SUBSCRIBE_DESUBSCRIBE:
-            stitched_types = StitchedTaskTypes(task.type, (task.payload.notification_type,))
+        if task.type == TaskType.ADD_TOKEN:
+            combined_types = CombinedTypes(task.type, ())
+        elif task.type == TaskType.SUBSCRIBE_DESUBSCRIBE:
+            combined_types = CombinedTypes(task.type, (task.payload.notification_type,))
         elif task.type == TaskType.UPDATE:
-            stitched_types = StitchedTaskTypes(task.type, (task.payload.subject,))
-        else:
-            stitched_types = StitchedTaskTypes(task.type)
+            combined_types = CombinedTypes(task.type, (task.payload.subject,))
 
-        # Sometimes when counting tasks, restrictions on the amount of the task is not depending only on the
-        # task type but additionally also on some types inside of the task payload, thus using stitched types.
-        stitched_types_counted[stitched_types] = stitched_types_counted.get(stitched_types, 0) + 1
+        for combined_types in all_combined_types:
+            current_count = combined_types_counted.get(conbined_types, 0)
+            types_counted[conbined_types] = current_count + 1
 
-    for stitched_types, count in stitched_types_counted.items():
-        if any(
-            (
-                stitched_types.task_type == TaskType.ADD_TOKEN,
-                # Only allow one sub/desub task for each different notification type. So multiple sub/desubs
-                # are allowed, but only one per notification type.
-                stitched_types.task_type == TaskType.SUBSCRIBE_DESUBSCRIBE,
-                stitched_types.task_type == TaskType.UPDATE,
-            )
-        ):
-            if count > 1:
-                logger.warning(f"More than one stitched task: {stitched_types}.")
-                return False
+    for combined_types, count in combined_types.items():
+        task_type = combined_types.task_type
+        other_types = combined_types.other
+        # fmt: off
+        if any((
+            task_type == TaskType.ADD_TOKEN,
+            task_type == TaskType.SUBSCRIBE_DESUBSCRIBE,
+            task_type == TaskType.UPDATE,
+        )) and count > 1:
+            logger.warning(f"Task amount >1 with '{task_type.name}' task type and '{other_types}' other types.")
+            return False
+        # fmt: on
 
     return True
 
-
-def transform_tasks_body(body: Box) -> Box:
+def transform_tasks_body(body: Box):
     """First validates, then transforms the tasks for later internal use."""
     schema = defaults.NOTIFICATION_TASKS_BASE_SCHEMA
     utils.http_exc_validate_json_schema(body, schema, http_code=400)
@@ -264,6 +252,6 @@ def transform_tasks_body(body: Box) -> Box:
         elif task.type == TaskType.UPDATE:
             transform_update_task(task)
 
-    check_type_count(body.tasks)
-
-    return body
+    counts_ok = check_type_count(body.tasks)
+    if not counts_ok:
+        raise HTTPException(500)

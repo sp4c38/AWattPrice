@@ -306,9 +306,10 @@ async def update_data(stored_data: Box, region: Region, config: Config):
             refresh_lock.release()
         else:
             refresh_lock.release()
-            price_data = await get_stored_data(region, config)    
+            price_data = await get_stored_data(region, config)
 
     return price_data
+
 
 async def get_current_prices(region: Region, config: Config) -> Optional[dict]:
     """Get the current aWATTar prices.
@@ -317,8 +318,7 @@ async def get_current_prices(region: Region, config: Config) -> Optional[dict]:
     Remote data will be fetched if local data isn't up to date.
     """
     stored_data, last_update_time = await asyncio.gather(
-        get_stored_data(region, config),
-        get_last_update_time(region, config)
+        get_stored_data(region, config), get_last_update_time(region, config)
     )
     do_update_data = check_update_data(stored_data, last_update_time)
 

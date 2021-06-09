@@ -26,6 +26,7 @@ orm.metadata.bind = db_engine
 
 app = FastAPI()
 
+
 @app.get("/data/{region}")
 async def get_region_data(region: Region):
     """Get current price data for specified region."""

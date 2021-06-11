@@ -1,6 +1,6 @@
 aiofiles==0.6.0
 arrow==0.17.0
-certifi==2020.11.08
+certifi==2021.5.30
 configupdater
 cryptography==3.4.4
 fastapi==0.63.0

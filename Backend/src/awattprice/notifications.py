@@ -56,9 +56,11 @@ class DetailedPriceData:
             tomorrow_boundary_start = midnight.shift(days=+1)
             tomorrow_boundary_end = midnight.shift(days=+2)
 
-            marketprice_with_vat = price_point.marketprice
+            marketprice_with_vat = None
             if region_identifier == 0 and vat_selection == 1:
                 marketprice_with_vat = round(price_point.marketprice * CURRENT_VAT, 2)
+            else:
+                marketprice_with_vat = round(price_point.marketprice, 2)
 
             if (
                 price_point.start_timestamp >= tomorrow_boundary_start.timestamp
@@ -193,16 +195,27 @@ async def price_drops_below_notification(
         # Get the current timezone (either CET or CEST)
         lowest_price_start = arrow.get(lowest_point.start_timestamp).to("Europe/Berlin")
 
-        # Full cents, for example 4
-        lowest_price_floored = floor(lowest_point.marketprice)
-        # Decimal places of cent, for example 39
-        lowest_price_decimal = round((lowest_point.marketprice - lowest_price_floored) * 100)
-        # Together 4,39
-        formatted_lowest_price = f"{lowest_price_floored},{lowest_price_decimal}"
+        if isinstance(lowest_point.marketprice, float):
+            if lowest_point.marketprice.is_integer():
+                lowest_price_string = "{:.0f}".format(lowest_point.marketprice)
+            else:
+                lowest_price_string = "{:.2f}".format(round(lowest_point.marketprice, 2))
+        elif isinstance(lowest_point.marketprice, int):
+            lowest_price_string = "{:.0f}".format(lowest_point.marketprice)
+        else:
+            lowest_price_string = "{:.2f}".format(round(lowest_point.marketprice, 2))
+        formatted_lowest_price = lowest_price_string.replace(".", ",")
 
-        below_value_floored = floor(below_value)
-        below_value_decimal = round((below_value - below_value_floored) * 100)
-        formatted_below_value = f"{below_value_floored},{below_value_decimal}"
+        if isinstance(below_value, float):
+            if below_value.is_integer():
+                below_value_string = "{:.0f}".format(below_value)
+            else:
+                below_value_string = "{:.2f}".format(round(below_value, 2))
+        elif isinstance(below_value, int):
+            below_value_string = "{:.0f}".format(below_value)
+        else:
+            below_value_string = "{:.2f}".format(round(below_value, 2))
+        formatted_below_value = below_value_string.replace(".", ",")
 
         encryption_algorithm = notification_defaults.encryption_algorithm
 
@@ -235,7 +248,15 @@ async def price_drops_below_notification(
                     "loc-args": [
                         len(below_price_data),
                         formatted_below_value,
-                        lowest_price_start.format("H"),
+                        lowest_price_start.form        # Full cents, for example 4
+        lowest_price_floored = floor(lowest_point.marketprice)
+        # Decimal places of cent, for example 39
+        lowest_price_decimal = round((lowest_point.marketprice - lowest_price_floored) * 100)
+        # Together 4,39
+        formatted_lowest_price = f"{lowest_price_floored},{lowest_price_decimal}"
+        below_value_floored = floor(below_value)
+        below_value_decimal = round((below_value - below_value_floored) * 100)
+        formatted_below_value = f"{below_value_floored},{below_value_decimal}"at("H"),
                         formatted_lowest_price,
                     ],
                 },

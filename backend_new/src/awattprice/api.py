@@ -57,4 +57,7 @@ async def do_notification_tasks(request: Request):
 
     tasks_packed_raw = Box(body_json)
     tasks_packed = notifications.transform_tasks_body(tasks_raw)
-    await notifications.run_notification_tasks(tasks)
+
+    token_hex = tasks_packed.token
+    tasks = tasks_packed.tasks
+    await notifications.run_notification_tasks(token_hex, tasks)

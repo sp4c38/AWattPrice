@@ -45,32 +45,6 @@ async def request_url(method: str, url: str, **kwargs) -> httpx.Response:
     return response
 
 
-async def read_json_file(file_path: Path) -> Optional[Union[Box, BoxList]]:
-    """Read file asynchronous and convert content to json.
-
-    :raises JSONDecodeError: if file content couldn't be decoded as json.
-    :returns: Box (if content is dict) or BoxList (if content is list).
-    """
-    async with async_open(file_path, "r") as file:
-        data_raw = await file.read()
-
-    if len(data_raw) == 0:
-        data_raw = None
-
-    try:
-        data_json = json.loads(data_raw)
-    except json.JSONDecodeError as err:
-        logger.error(f"Couldn't read json file as it is no valid json: {err}.")
-        raise
-
-    if isinstance(data_json, dict):
-        data = Box(data_json)
-    elif isinstance(data_json, list):
-        data = BoxList(data_json)
-
-    return data
-
-
 def http_exc_validate_json_schema(body: Union[Box, dict, list], schema: dict, http_code: int):
     """Validate a json body against a schema and throw exception if body doesn't match.
 

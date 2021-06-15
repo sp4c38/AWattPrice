@@ -26,15 +26,18 @@ from awattprice.orm import PriceBelowNotification
 from awattprice.orm import Token
 
 
-async def add_new_token(session: AsyncSession, token_hex: str, data: Box) -> Token:
-    """Construct a new token and add it to the database."""
-    new_token = Token(
-        token=token_hex,
-        region=data.region,
-        tax=data.tax,
-    )
+async def add_new_token(session: AsyncSession, token_hex: str, extra_values: Box) -> Token:
+    """Save a new token to the database and return the new orm object.
 
+    :param extra_values: Extra values for the new token. These include region and tax selection.
+    """
+    token = Token(
+        token=token_hex,
+        region=configuration.region,
+        tax=configuration.tax,
+    )
     session.add(new_token)
+
     try:
         await session.commit()
     except sqlalchemy.exc.IntegrityError as exc:
@@ -138,13 +141,9 @@ async def update_price_below_settings(session: AsyncSession, token: Token, updat
             raise HTTPException(501)
 
 
-async def run_notification_tasks(tasks_packed: Box):
-    """Run notification tasks."""
+async def run_notification_tasks(token_hex: str, tasks: BoxList):
+    """Run multiple notification tasks."""
     async with AsyncSession(db_engine, future=True) as session:
-        token_hex = tasks_packed.token
-        tasks = tasks_packed.tasks
-
-        token = None
         first_task = tasks[0]
         if first_task.type == TaskType.ADD_TOKEN:
             token = await add_new_token(session, token_hex, first_task.payload)
@@ -254,4 +253,5 @@ def transform_tasks_body(body: Box):
 
     counts_ok = check_type_count(body.tasks)
     if not counts_ok:
-        raise HTTPException(500)
+        logger.warning("Wrong notification task counts.")
+        raise HTTPException(400)

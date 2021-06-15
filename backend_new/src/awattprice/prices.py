@@ -25,7 +25,7 @@ from awattprice.defaults import Region
 
 
 async def get_stored_data(region: Region, config: Config) -> Optional[Box]:
-    """Get locally stored price data."""
+    """Get locally cached price data."""
     file_dir = config.paths.price_data_dir
     file_name = defaults.PRICE_DATA_FILE_NAME.format(region.value.lower())
     file_path = file_dir / file_name
@@ -33,19 +33,20 @@ async def get_stored_data(region: Region, config: Config) -> Optional[Box]:
     if not file_path.exists():
         logger.info(f"No locally cached {region.name} price data exists yet.")
         return None
-    if not file_path.is_file():
-        logger.error(f"Path of stored price data is a directory, not a file: {file_path}.")
-        raise HTTPException(500)
 
     try:
-        stored_data = await utils.read_json_file(file_path)
-    except json.JSONDecodeError as exc:
-        logger.warning(
-            f"When reading cached price data {file_path} the content couldn't be decoded as json: {exc}."
-        )
+        async with async_open(file_path, "r") as file:
+            data_raw = await file.read()
+    except FileNotFoundError:
         return None
 
-    return stored_data
+    try:
+        data = json.loads(data_raw)
+    except json.JSONDecodeError as exc:
+        logger.error(f"Stored price data no valid json: {file_path}.")
+        raise
+
+    return data
 
 
 async def get_last_update_time(region: Region, config: Config) -> Optional[Arrow]:
@@ -53,39 +54,21 @@ async def get_last_update_time(region: Region, config: Config) -> Optional[Arrow
     file_dir = config.paths.price_data_dir
     file_name = defaults.PRICE_DATA_UPDATE_TS_FILE_NAME.format(region.name.lower())
     file_path = file_dir / file_name
-    if not file_path.exists():
-        logger.debug(f"Didn't find last update ts file, assuming no last update ts: {file_path}.")
-        return None
-    if not file_path.is_file():
-        logger.error(f"Last update timestamp file path is no file: {file_path}.")
-        raise HTTPException(500)
-
-    async with async_open(file_path, "r") as file:
-        file_content = await file.read()
 
     try:
-        last_update_ts = int(file_content)
+        async with async_open(file_path, "r") as file:
+            file_content = await file.read()
+    except FileNotFoundError:
+        return None
+
+    try:
+        timestamp = int(file_content)
     except ValueError as exc:
-        logger.error(f"Couldn't read last update ts: {exc}.")
-        last_update_ts = None
+        logger.error(f"Last update timestamp is no valid integer: {file_content}.")
+        raise
+    time = arrow.get(timestamp)
 
-    last_update_time = arrow.get(last_update_ts)
-    return last_update_time
-
-
-def check_awattar_cooldown_finished(last_update_time: Optional[Arrow]) -> bool:
-    """Check if the data awattar cooldown is finished relative to the last update time."""
-    if last_update_time is None:
-        return True
-
-    now = arrow.now()
-    next_update_time = last_update_time.shift(seconds=defaults.AWATTAR_COOLDOWN_INTERVAL)
-    if now >= next_update_time:
-        return True
-    else:
-        seconds_remaining = (next_update_time - now).total_seconds()
-        logger.debug(f"AWATTar cooldown not finished: {seconds_remaining} remaining.")
-        return False
+    return time
 
 
 def check_update_data(data: Optional[Box], last_update_time: Optional[Arrow]) -> bool:
@@ -99,12 +82,16 @@ def check_update_data(data: Optional[Box], last_update_time: Optional[Arrow]) ->
 
     now_berlin = arrow.now("Europe/Berlin")
     if now_berlin.hour < defaults.AWATTAR_UPDATE_HOUR:
-        logger.debug(f"Isn't past update hour ({defaults.AWATTAR_UPDATE_HOUR}), won't refresh price data.")
+        logger.debug(f"Not past update hour ({defaults.AWATTAR_UPDATE_HOUR}).")
         return False
 
-    cooldown_finished = check_awattar_cooldown_finished(last_update_time)
-    if not cooldown_finished:
-        return False
+    if last_update_time is not None:
+        now = arrow.now()
+        next_update_time = last_update_time.shift(seconds=defaults.AWATTAR_COOLDOWN_INTERVAL)
+        if now < next_update_time:
+            seconds_remaining = (next_update_time - now).total_seconds()
+            logger.debug(f"AWATTar cooldown not finished. {seconds_remaining}s remaining.")
+            return False
 
     midnight_tomorrow_berlin = now_berlin.floor("day").shift(days=+1)
     max_price = max(data.prices, key=lambda point: point.end_timestamp)
@@ -317,9 +304,17 @@ async def get_current_prices(region: Region, config: Config) -> Optional[dict]:
     Current aWATTar prices may either be local or remote data.
     Remote data will be fetched if local data isn't up to date.
     """
-    stored_data, last_update_time = await asyncio.gather(
-        get_stored_data(region, config), get_last_update_time(region, config)
-    )
+    try:
+        stored_data, last_update_time = await asyncio.gather(
+            get_stored_data(region, config), get_last_update_time(region, config)
+        )
+    except JSONDecodeError as exc:
+        logger.exception(exc)
+        raise HTTPException(500)
+    except ValueError as exc:
+        logger.exception(exc)
+        raise HTTPException(500)
+            
     do_update_data = check_update_data(stored_data, last_update_time)
 
     if do_update_data:

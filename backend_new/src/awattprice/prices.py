@@ -25,14 +25,13 @@ from awattprice.defaults import Region
 
 
 async def get_stored_data(region: Region, config: Config) -> Optional[Box]:
-    """Get locally cached price data."""
+    """Get locally cached price data.
+
+    :returns: Price data wrapped as a Box. If file not found returns None.
+    """
     file_dir = config.paths.price_data_dir
     file_name = defaults.PRICE_DATA_FILE_NAME.format(region.value.lower())
     file_path = file_dir / file_name
-
-    if not file_path.exists():
-        logger.info(f"No locally cached {region.name} price data exists yet.")
-        return None
 
     try:
         async with async_open(file_path, "r") as file:
@@ -41,16 +40,21 @@ async def get_stored_data(region: Region, config: Config) -> Optional[Box]:
         return None
 
     try:
-        data = json.loads(data_raw)
+        data_json = json.loads(data_raw)
     except json.JSONDecodeError as exc:
-        logger.error(f"Stored price data no valid json: {file_path}.")
+        logger.exception(f"Stored price data no valid json: {file_path}.")
         raise
+
+    data = Box(data_json)
 
     return data
 
 
 async def get_last_update_time(region: Region, config: Config) -> Optional[Arrow]:
-    """Get time the price data was updated last."""
+    """Get time the price data was updated last.
+
+    :returns: Last update time as arrow instance. If file not found returns None.
+    """
     file_dir = config.paths.price_data_dir
     file_name = defaults.PRICE_DATA_UPDATE_TS_FILE_NAME.format(region.name.lower())
     file_path = file_dir / file_name
@@ -64,8 +68,10 @@ async def get_last_update_time(region: Region, config: Config) -> Optional[Arrow
     try:
         timestamp = int(file_content)
     except ValueError as exc:
-        logger.error(f"Last update timestamp is no valid integer: {file_content}.")
+        logger.exception(f"Last update timestamp in file {file_path} is no valid integer: {file_content}.")
         raise
+
+    # Accepts negative values for pre-unix times, thus won't raise.
     time = arrow.get(timestamp)
 
     return time
@@ -304,17 +310,18 @@ async def get_current_prices(region: Region, config: Config) -> Optional[dict]:
     Current aWATTar prices may either be local or remote data.
     Remote data will be fetched if local data isn't up to date.
     """
-    try:
-        stored_data, last_update_time = await asyncio.gather(
-            get_stored_data(region, config), get_last_update_time(region, config)
-        )
-    except JSONDecodeError as exc:
-        logger.exception(exc)
-        raise HTTPException(500)
-    except ValueError as exc:
-        logger.exception(exc)
-        raise HTTPException(500)
-            
+    stored_data, last_update_time = await asyncio.gather(
+        get_stored_data(region, config), get_last_update_time(region, config),
+        return_exceptions=True
+    )
+    # Need special exception handling due to concurrent execution of multiple tasks.
+    if isinstance(stored_data, Exception):
+        if isinstance(stored_data, JSONDecodeError):
+            raise HTTPException(500)
+    if isinstance(last_update_time, Exception):
+        if isinstance(last_update_time, ValueError):
+            raise HTTPException(500)
+
     do_update_data = check_update_data(stored_data, last_update_time)
 
     if do_update_data:

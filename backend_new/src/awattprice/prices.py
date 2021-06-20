@@ -44,7 +44,6 @@ async def get_stored_data(region: Region, config: Config) -> Optional[Box]:
     except json.JSONDecodeError as exc:
         logger.exception(f"Stored price data no valid json: {file_path}.")
         raise
-
     data = Box(data_json)
 
     return data
@@ -144,61 +143,48 @@ async def acquire_refresh_lock_immediate(
 
 async def download_data(region: Region, config: Config) -> Box:
     """Download price data from the aWATTar API."""
-    region_config_section = f"awattar.{region.value.lower()}"
-    url = getattr(config, region_config_section).url
+    region_config_identifier = f"awattar.{region.value.lower()}"
+    url = getattr(config, region_config_identifier).url
 
     now = arrow.utcnow()
-    # Only get prices of the current hour or later.
-    start = now.replace(minute=0, second=0, microsecond=0)
-    # Only get price up to the end of the following day (midnight following day).
     day_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    start = now.replace(minute=0, second=0, microsecond=0)
     end = day_start.shift(days=+2)
 
     url_parameters = {
         "start": start.int_timestamp * defaults.SEC_TO_MILLISEC,
         "end": end.int_timestamp * defaults.SEC_TO_MILLISEC,
     }
-    timeout = defaults.AWATTAR_TIMEOUT
+    logger.info(f"Polling {region.value.upper()} price data from {url}.")
+    with httpx.AsyncClient() as client:
+        client.get(url, params=url_parameters, timeout=defaults.AWATTAR_TIMEOUT)
 
-    logger.info(f"Getting {region.value.upper()} price data from {url}.")
-    try:
-        response = await utils.request_url("GET", url, timeout=timeout, params=url_parameters)
-    except httpx.ConnectTimeout as exc:
-        logger.critical(f"Timed out after {timeout}s when trying to reach {url}: {exc}.")
-        raise HTTPException(503) from exc
-
-    try:
-        data_json = response.json()
-    except json.JSONDecodeError as exc:
-        logger.critical(f"Error decoding {url} response body {repr(response.content)} as json: {exc}.")
-        raise HTTPException(500) from exc
-
-    data = Box(data_json)
+    data_raw = response.json()
+    data = Box(data_raw)
 
     return data
 
 
-def general_transform_data(price_data_raw: Box) -> Box:
-    """Validate price data schema and do some general transformations on the data.
+def transform_downloaded_data(downloaded_data: Box) -> Box:
+    """Transform downloaded price data into app internal format.
 
     It may be required to perform extended transformations in specific cases.
     """
-    utils.http_exc_validate_json_schema(price_data_raw, defaults.AWATTAR_PRICE_DATA_SCHEMA, http_code=503)
+    formatted_data = Box()
 
-    price_data = Box()
-    price_data.prices = BoxList()
-    for raw_price_point in price_data_raw.data:
-        price_point = Box()
-        price_point.start_timestamp = raw_price_point.start_timestamp / defaults.SEC_TO_MILLISEC
-        price_point.end_timestamp = raw_price_point.end_timestamp / defaults.SEC_TO_MILLISEC
-        price_point.marketprice = raw_price_point.marketprice
-        price_data.prices.append(price_point)
+    formatted_data.prices = BoxList()
+    for price_point in downloaded_data.data:
+        formatted_price_point = Box()
+        formatted_price_point.start_timestamp = price_point.start_timestamp / defaults.SEC_TO_MILLISEC
+        formatted_price_point.end_timestamp = price_point.end_timestamp / defaults.SEC_TO_MILLISEC
+        formatted_price_point.marketprice = price_point.marketprice
+        formatted_data.prices.append(formatted_price_point)
 
-    return price_data
+    return formatted_data
 
 
 def check_data_new(old_data: Optional[Box], new_data: Box) -> bool:
-    """Check if the new price data differentiates from the old price data."""
+    """Check if new price points were added relative to the max price point of the old price data."""
     if old_data is None:
         return True
 
@@ -223,8 +209,8 @@ async def store_data(data: Union[Box, BoxList], region: Region, config: Config):
         await file.write(data.to_json())
 
 
-async def set_last_update_time_now(region: Region, config: Config):
-    """Set the time the price data was updated last to now."""
+async def update_last_update_time(region: Region, config: Config):
+    """Set the time the price data was updated last to the current time."""
     file_dir = config.paths.price_data_dir
     file_name = defaults.PRICE_DATA_UPDATE_TS_FILE_NAME.format(region.name.lower())
     file_path = file_dir / file_name
@@ -235,34 +221,44 @@ async def set_last_update_time_now(region: Region, config: Config):
         await file.write(now_string)
 
 
-async def update_data(region: Region, config: Config):
-    """Handle entire process of updating price data.
+async def get_latest_prices(stored_data: None, region: Region, config: Config) -> Box:
+    """Manage the process of getting the lastest price data.
 
-    Check the 'get_prices' docs for detailed information on the update process.
+    :returns price data: If everything went well. May be remote prices, may be local prices - depends.
+    :returns None: If no latest data. For example latest data is stored data but stored data is already None.
     """
-    logger.info(f"Updating {region.name} price data.")
     refresh_lock = get_data_refresh_lock(region, config)
     did_immediate_acquire = await acquire_refresh_lock_immediate(refresh_lock)
-
-    # See 'get_prices' doc for a better overview and explanation of the steps.
+    # See 'get_prices' doc for an explanation of these update steps.
     if immediate_acquire:
-        downloaded_data_raw = await download_data(region, config)
-        downloaded_data = general_transform_data(downloaded_price_data_raw)
-        data_new = check_data_new(stored_data, downloaded_price_data)
-        if data_new:
-            price_data = downloaded_price_data
+        try:
+            new_data_raw = await download_data(region, config)
+        except JSONDecodeError as exc:
+            logger.exception(f"Couldn't decode data as json after downloading: {exc}.")
+            return stored_data
+        except httpx.Timeout as exc:
+            logger.exception(f"Timed out while downloading price data: {exc}.")
+            return stored_data
+        update_last_update_time(region, config)
+        try:
+            jsonschema.validate(body, schema)
+        except jsonschema.ValidationError as exc:
+            logger.exception(f"Polled aWATTar data doesn't conform to the required schema: {exc}.")
+            return stored_data
+        new_data = transform_downloaded_data(new_data_raw)
+        data_is_new = check_data_new(stored_data, downloaded_price_data)
+        if data_is_new:
+            latest_prices = new_data
             await store_data(price_data, region, config)
         else:
             logger.debug("Downloaded data includes no new prices.")
-            price_data = stored_data
-        await set_last_update_time_now(region, config)
-
+            latest_prices = stored_data
         refresh_lock.release()
     else:
         refresh_lock.release()
-        price_data = await get_stored_data(region, config)
+        latest_prices = await get_stored_data(region, config)
 
-    return price_data
+    return latest_prices
 
 
 def transform_to_respond_data(price_data: Box) -> Box:
@@ -281,8 +277,7 @@ async def get_current_prices(region: Region, config: Config) -> Optional[dict]:
     Remote data will be fetched if local data isn't up to date.
     """
     stored_data, last_update_time = await asyncio.gather(
-        get_stored_data(region, config), get_last_update_time(region, config),
-        return_exceptions=True
+        get_stored_data(region, config), get_last_update_time(region, config), return_exceptions=True
     )
     # Special exception handling due to concurrent execution of multiple tasks.
     if isinstance(stored_data, Exception):
@@ -297,7 +292,9 @@ async def get_current_prices(region: Region, config: Config) -> Optional[dict]:
         try:
             price_data = await update_data(stored_data, region, config)
         except Exception as exc:
-            logger.exception(exc)
+            logger.exception(f"Couldn't update price data: {exc}.")
+        if price_data is None:
+            return HTTPException(503)
     else:
         logger.debug(f"Local {region.name} prices still up to date.")
         price_data = stored_data

@@ -237,6 +237,7 @@ def check_type_count(tasks: BoxList) -> bool:
 
     return True
 
+
 def transform_tasks_body(body: Box):
     """First validates, then transforms the tasks for later internal use."""
     schema = defaults.NOTIFICATION_TASKS_BASE_SCHEMA

@@ -79,7 +79,7 @@ PRICE_DATA_FILE_NAME = "awattar-data-{}.json"  # formatted with lowercase region
 PRICE_DATA_SUBDIR_NAME = "price_data"
 # File name of lock file which will be acquired when aWATTar price data needs to be updated.
 # The string will be formatted with the lowercase region identifier.
-PRICE_DATA_REFRESH_LOCK = "awattar-data-{}-update.lck"
+PRICE_DATA_REFRESH_LOCK_NAME = "awattar-data-{}-update.lck"
 # Timeout in seconds to wait when needing the refresh price data lock to be unlocked.
 PRICE_DATA_REFRESH_LOCK_TIMEOUT = AWATTAR_TIMEOUT + 2.0
 # Name of file which stores the timestamp when prices were updated last.

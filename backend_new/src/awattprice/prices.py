@@ -8,6 +8,7 @@ from typing import Union
 import arrow
 import filelock
 import httpx
+import jsonschema
 
 from aiofile import async_open
 from arrow import Arrow
@@ -105,7 +106,7 @@ def check_update_data(data: Optional[Box], last_update_time: Optional[Arrow]) ->
 def get_data_refresh_lock(region: Region, config: Config) -> FileLock:
     """Get file lock used when refreshing price data."""
     lock_dir = config.paths.price_data_dir
-    lock_file_name = defaults.PRICE_DATA_REFRESH_LOCK.format(region.value.lower())
+    lock_file_name = defaults.PRICE_DATA_FILE_NAME.format(region.value.lower())
     lock_file_path = lock_dir / lock_file_name
     lock = FileLock(lock_file_path)
     return lock
@@ -156,13 +157,25 @@ async def download_data(region: Region, config: Config) -> Box:
         "end": end.int_timestamp * defaults.SEC_TO_MILLISEC,
     }
     logger.info(f"Polling {region.value.upper()} price data from {url}.")
-    with httpx.AsyncClient() as client:
-        client.get(url, params=url_parameters, timeout=defaults.AWATTAR_TIMEOUT)
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url, params=url_parameters, timeout=defaults.AWATTAR_TIMEOUT)
 
     data_raw = response.json()
     data = Box(data_raw)
 
     return data
+
+
+async def update_last_update_time(region: Region, config: Config):
+    """Set the time the price data was updated last to the current time."""
+    file_dir = config.paths.price_data_dir
+    file_name = defaults.PRICE_DATA_UPDATE_TS_FILE_NAME.format(region.name.lower())
+    file_path = file_dir / file_name
+
+    now = arrow.now()
+    now_string = str(now.int_timestamp)
+    async with async_open(file_path, "w") as file:
+        await file.write(now_string)
 
 
 def transform_downloaded_data(downloaded_data: Box) -> Box:
@@ -209,18 +222,6 @@ async def store_data(data: Union[Box, BoxList], region: Region, config: Config):
         await file.write(data.to_json())
 
 
-async def update_last_update_time(region: Region, config: Config):
-    """Set the time the price data was updated last to the current time."""
-    file_dir = config.paths.price_data_dir
-    file_name = defaults.PRICE_DATA_UPDATE_TS_FILE_NAME.format(region.name.lower())
-    file_path = file_dir / file_name
-
-    now = arrow.now()
-    now_string = str(now.int_timestamp)
-    async with async_open(file_path, "w") as file:
-        await file.write(now_string)
-
-
 async def get_latest_prices(stored_data: None, region: Region, config: Config) -> Box:
     """Manage the process of getting the lastest price data.
 
@@ -228,28 +229,25 @@ async def get_latest_prices(stored_data: None, region: Region, config: Config) -
     :returns None: If no latest data. For example latest data is stored data but stored data is already None.
     """
     refresh_lock = get_data_refresh_lock(region, config)
-    did_immediate_acquire = await acquire_refresh_lock_immediate(refresh_lock)
+    could_acquire_immediately = await acquire_refresh_lock_immediate(refresh_lock)
     # See 'get_prices' doc for an explanation of these update steps.
-    if immediate_acquire:
+    if could_acquire_immediately:
         try:
             new_data_raw = await download_data(region, config)
-        except JSONDecodeError as exc:
-            logger.exception(f"Couldn't decode data as json after downloading: {exc}.")
+        except Exception as exc:
+            logger.exception(f"Couldn't download data from awattar: {exc}.")
             return stored_data
-        except httpx.Timeout as exc:
-            logger.exception(f"Timed out while downloading price data: {exc}.")
-            return stored_data
-        update_last_update_time(region, config)
+        await update_last_update_time(region, config)
         try:
-            jsonschema.validate(body, schema)
+            jsonschema.validate(new_data_raw, defaults.AWATTAR_API_PRICE_DATA_SCHEMA)
         except jsonschema.ValidationError as exc:
             logger.exception(f"Polled aWATTar data doesn't conform to the required schema: {exc}.")
             return stored_data
         new_data = transform_downloaded_data(new_data_raw)
-        data_is_new = check_data_new(stored_data, downloaded_price_data)
+        data_is_new = check_data_new(stored_data, new_data)
         if data_is_new:
+            await store_data(new_data, region, config)
             latest_prices = new_data
-            await store_data(price_data, region, config)
         else:
             logger.debug("Downloaded data includes no new prices.")
             latest_prices = stored_data
@@ -267,7 +265,7 @@ def transform_to_respond_data(price_data: Box) -> Box:
     response_data = Box()
     response_data.prices = price_data.prices
 
-    return respond_price_data
+    return response_data
 
 
 async def get_current_prices(region: Region, config: Config) -> Optional[dict]:
@@ -290,15 +288,17 @@ async def get_current_prices(region: Region, config: Config) -> Optional[dict]:
     do_update_data = check_update_data(stored_data, last_update_time)
     if do_update_data:
         try:
-            price_data = await update_data(stored_data, region, config)
+            price_data = await get_latest_prices(stored_data, region, config)
         except Exception as exc:
             logger.exception(f"Couldn't update price data: {exc}.")
-        if price_data is None:
-            return HTTPException(503)
+            price_data = stored_data
     else:
         logger.debug(f"Local {region.name} prices still up to date.")
         price_data = stored_data
 
+    if price_data is None:
+        return HTTPException(503)
+
     response_price_data = transform_to_respond_data(price_data)
 
-    return respond_price_data
+    return response_price_data

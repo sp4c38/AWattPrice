@@ -27,6 +27,7 @@ orm.metadata.bind = db_engine
 app = FastAPI()
 
 
+@logger.catch
 @app.get("/data/{region}")
 async def get_region_data(region: Region):
     """Get current price data for specified region."""
@@ -34,6 +35,7 @@ async def get_region_data(region: Region):
     return price_data
 
 
+@logger.catch
 @app.get("/data/")
 async def get_default_region_data():
     """Get current price data for default region.
@@ -61,3 +63,6 @@ async def do_notification_tasks(request: Request):
     token_hex = tasks_packed.token
     tasks = tasks_packed.tasks
     await notifications.run_notification_tasks(token_hex, tasks)
+
+
+# Old /data/apns/send_token/ url should be supported by the old backend for backwards-compatibility reasons.

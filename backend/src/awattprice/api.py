@@ -1,4 +1,4 @@
-"""Api starting file which handles all url calls."""
+"""Define the urls and their tasks handled by the API."""
 from json import JSONDecodeError
 
 import arrow

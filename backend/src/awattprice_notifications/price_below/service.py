@@ -1,10 +1,13 @@
-"""Send price below notifications to the users.
+"""Send price below notifications to users.
 
-See ''
+See 'notifications.price_below.service.md' doc for description of this 
 """
-from awattprice.prices
+from loguru import logger
+
+
 
 def main():
+
 
 
 if __name__ == "__main__":

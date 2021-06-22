@@ -78,8 +78,11 @@ def get_config():
     return config
 
 
-def configure_loguru(config: Config):
-    """Configure loguru's logger."""
+def configure_loguru(service_name: str, config: Config):
+    """Configure loguru's logger.
+
+    :param service_name: Name of the service which will do the logging.
+    """
     log_dir_path = config.paths.log_dir
     if log_dir_path.exists():
         if not log_dir_path.is_dir():
@@ -91,7 +94,8 @@ def configure_loguru(config: Config):
         sys.stdout.write(f"Log directory missing. Creating at {log_dir_path}.\n")
         log_dir_path.mkdir(parents=True, exist_ok=True)
 
-    log_path = log_dir_path / defaults.LOG_FILE_NAME
+    log_name = service_name + ".log"
+    log_path = log_dir_path / (service_name + ".log")
     logger.add(
         log_path,
         enqueue=True,  # This makes log calls non-blocking.

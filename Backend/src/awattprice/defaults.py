@@ -46,7 +46,8 @@ AWATTAR_COOLDOWN_INTERVAL = 60
 # Always will update at x hour regardless of summer and winter times.
 AWATTAR_UPDATE_HOUR = 13
 
-LOG_FILE_NAME = "awattprice.log"
+# Name of the service for which the backend will store log files.
+LOG_SERVICE_NAME = "awattprice"
 
 DATABASE_FILE_NAME = "database.sqlite3"  # End with '.sqlite3'
 

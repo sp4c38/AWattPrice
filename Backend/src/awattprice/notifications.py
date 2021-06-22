@@ -239,7 +239,11 @@ def check_type_count(tasks: BoxList) -> bool:
 
 
 def transform_tasks_body(body: Box):
-    """First validates, then transforms the tasks for later internal use."""
+    """First validates, then transforms the tasks for later internal use.
+
+    See the 'notifications.client_receive.tasks' doc for description of the different tasks
+    and their valdiation requirements.
+    """
     schema = defaults.NOTIFICATION_TASKS_BASE_SCHEMA
     utils.http_exc_validate_json_schema(body, schema, http_code=400)
 

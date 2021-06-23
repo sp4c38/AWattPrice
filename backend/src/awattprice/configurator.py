@@ -22,12 +22,12 @@ def _transform_config(config: Config) -> Config:
 
 
 def _ensure_dir(path: Path):
-    """Ensure that the dir at a path is actually a directory and exists.
+    """Ensure that the dir at the parsed path is a directory and exists.
 
     If the directory doesn't exist create it.
 
     :raises NotADirectoryError: if the parsed path is anything but a directory.
-    :returns: Doesn't return anything. If this returns the directory can be found at the parsed path.
+    :returns: If this returns the path is a directory and it exists.
     """
     if not path.exists():
         logger.info(f"Creating missing directory referred to in the config: {path}.")
@@ -81,13 +81,13 @@ def get_config():
 def configure_loguru(service_name: str, config: Config):
     """Configure loguru's logger.
 
-    :param service_name: Name of the service which will do the logging.
+    :param service_name: Name of the service for which logging should be registered.
     """
     log_dir_path = config.paths.log_dir
     if log_dir_path.exists():
         if not log_dir_path.is_dir():
             sys.stderr.write(
-                f"Directory used to store logs {log_dir_path.as_posix()} is a file, not a directory.\n"
+                f"Directory used to store logs {log_dir_path.as_posix()} is not a directory.\n"
             )
             sys.exit(1)
     else:

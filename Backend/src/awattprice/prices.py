@@ -40,12 +40,18 @@ async def get_stored_data(region: Region, config: Config) -> Optional[Box]:
     except FileNotFoundError:
         return None
 
+    if len(data_raw) == 0:
+        return None
+
     try:
         data_json = json.loads(data_raw)
     except json.JSONDecodeError as exc:
         logger.exception(f"Stored price data no valid json: {file_path}.")
         raise
     data = Box(data_json)
+
+    # If the data is valid json assume that it is no empty dictionary or similar.
+    # Validating the schema additionaly would mostly slow down the response time unnecessarily.
 
     return data
 
@@ -222,8 +228,8 @@ async def store_data(data: Union[Box, BoxList], region: Region, config: Config):
         await file.write(data.to_json())
 
 
-async def get_latest_prices(stored_data: None, region: Region, config: Config) -> Box:
-    """Manage the process of getting the lastest price data.
+async def get_latest_new_prices(stored_data: None, region: Region, config: Config) -> Box:
+    """Get the latest price data if the local data was found to be out-of-date.
 
     :returns price data: If everything went well. May be remote prices, may be local prices - depends.
     :returns None: If no latest data. For example latest data is stored data but stored data is already None.
@@ -232,21 +238,22 @@ async def get_latest_prices(stored_data: None, region: Region, config: Config) -
     could_acquire_immediately = await acquire_refresh_lock_immediate(refresh_lock)
     # See 'energy_prices.get' doc for an explanation of these update steps.
     if could_acquire_immediately:
-        try:
-            new_data_raw = await download_data(region, config)
-        except Exception as exc:
-            logger.exception(f"Couldn't download data from awattar: {exc}.")
-            return stored_data
+        new_data_raw = await download_data(region, config)
         await update_last_update_time(region, config)
         try:
             jsonschema.validate(new_data_raw, defaults.AWATTAR_API_PRICE_DATA_SCHEMA)
         except jsonschema.ValidationError as exc:
             logger.exception(f"Polled aWATTar data doesn't conform to the required schema: {exc}.")
+            refresh_lock.release()
             return stored_data
         new_data = transform_downloaded_data(new_data_raw)
         data_is_new = check_data_new(stored_data, new_data)
         if data_is_new:
-            await store_data(new_data, region, config)
+            try:
+                await store_data(new_data, region, config)
+            except Exception as exc:
+                refresh_lock.release()
+                raise
             latest_prices = new_data
         else:
             logger.debug("Downloaded data includes no new prices.")
@@ -259,7 +266,7 @@ async def get_latest_prices(stored_data: None, region: Region, config: Config) -
     return latest_prices
 
 
-def transform_to_respond_data(price_data: Box) -> Box:
+def transform_to_response_data(price_data: Box) -> Box:
     """Transform internally used price data to price data for responses."""
     # Using this approach data included in response is opt-in and not the worser opt-out.
     response_data = Box()
@@ -275,30 +282,19 @@ async def get_current_prices(region: Region, config: Config) -> Optional[dict]:
     Remote data will be fetched if local data isn't up to date.
     """
     stored_data, last_update_time = await asyncio.gather(
-        get_stored_data(region, config), get_last_update_time(region, config), return_exceptions=True
+        get_stored_data(region, config), get_last_update_time(region, config)
     )
-    # Special exception handling due to concurrent execution of multiple tasks.
-    if isinstance(stored_data, Exception):
-        logger.exception(f"Couldn't get stored data: {stored_data}.")
-        raise HTTPException(500)
-    if isinstance(last_update_time, Exception):
-        logger.exception(f"Couldn't get last update time: {last_update_time}.")
-        raise HTTPException(500)
 
     do_update_data = check_update_data(stored_data, last_update_time)
+    price_data = None
     if do_update_data:
         try:
-            price_data = await get_latest_prices(stored_data, region, config)
+            price_data = await get_latest_new_prices(stored_data, region, config)
         except Exception as exc:
-            logger.exception(f"Couldn't update price data: {exc}.")
+            logger.exception(f"Couldn't get the latest new prices: {exc}.")
             price_data = stored_data
     else:
         logger.debug(f"Local {region.name} prices still up to date.")
         price_data = stored_data
-
-    if price_data is None:
-        return HTTPException(503)
-
-    response_price_data = transform_to_respond_data(price_data)
 
     return response_price_data

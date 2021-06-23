@@ -10,16 +10,16 @@ from fastapi import Request
 from loguru import logger
 from starlette.responses import RedirectResponse
 
+from awattprice import configurator
+from awattprice import defaults
 from awattprice import notifications
 from awattprice import orm
-from awattprice.config import configure_loguru
-from awattprice.config import get_config
+from awattprice import prices
 from awattprice.database import get_async_engine
 from awattprice.defaults import Region
-from awattprice.prices import get_current_prices
 
-config = get_config()
-configure_loguru(config)
+config = configurator.get_config()
+configurator.configure_loguru(defaults.AWATTPRICE_SERVICE_NAME, config)
 
 db_engine = get_async_engine(config)
 orm.metadata.bind = db_engine
@@ -31,7 +31,19 @@ app = FastAPI()
 @app.get("/data/{region}")
 async def get_region_data(region: Region):
     """Get current price data for specified region."""
-    price_data = await get_current_prices(region, config)
+    try:
+        price_data = await prices.get_current_prices(region, config)
+    except Exception as exc:
+        logger.exception(f"Couldn't get current price data: {exc}.")
+        raise HTTPException(500)
+
+    if price_data is None:
+        logger.warning("Didn't find any way of getting current price data.")
+        raise HTTPException(503)
+
+
+    response_price_data = prices.transform_to_response_data(price_data)
+
     return price_data
 
 

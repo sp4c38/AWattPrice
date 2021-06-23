@@ -14,6 +14,9 @@ class Region(str, Enum):
     AT = "AT"
 
 
+# Name to identify the web app service.
+AWATTPRICE_SERVICE_NAME = "awattprice"
+
 DEFAULT_CONFIG = """\
 [general]
 debug = off
@@ -45,9 +48,6 @@ AWATTAR_COOLDOWN_INTERVAL = 60
 # Attempt to update aWATTar prices if its past this hour of the day.
 # Always will update at x hour regardless of summer and winter times.
 AWATTAR_UPDATE_HOUR = 13
-
-# Name of the service for which the backend will store log files.
-LOG_SERVICE_NAME = "awattprice"
 
 DATABASE_FILE_NAME = "database.sqlite3"  # End with '.sqlite3'
 

@@ -37,7 +37,8 @@ async def get_stored_data(region: Region, config: Config) -> Optional[Box]:
     try:
         async with async_open(file_path, "r") as file:
             data_raw = await file.read()
-    except FileNotFoundError:
+    except FileNotFoundError as exc:
+        logger.debug(f"No stored price data found: {exc}.")
         return None
 
     if len(data_raw) == 0:
@@ -46,12 +47,12 @@ async def get_stored_data(region: Region, config: Config) -> Optional[Box]:
     try:
         data_json = json.loads(data_raw)
     except json.JSONDecodeError as exc:
-        logger.exception(f"Stored price data no valid json: {file_path}.")
+        logger.exception(f"Stored price data at {file_path} no valid json: {exc}.")
         raise
     data = Box(data_json)
 
     # If the data is valid json assume that it is no empty dictionary or similar.
-    # Validating the schema additionaly would mostly slow down the response time unnecessarily.
+    # Validating the schema additionaly would slow down the response time unnecessarily.
 
     return data
 
@@ -104,7 +105,7 @@ def check_update_data(data: Optional[Box], last_update_time: Optional[Arrow]) ->
     max_price = max(data.prices, key=lambda point: point.end_timestamp)
     max_end_time = arrow.get(max_price.end_timestamp)
     if max_end_time >= midnight_tomorrow_berlin:
-        logger.debug("Price points still available until tomorrows midnight.")
+        logger.debug("Price points still available until tomorrow midnight.")
         return False
 
     return True
@@ -122,7 +123,7 @@ def get_data_refresh_lock(region: Region, config: Config) -> FileLock:
 async def acquire_refresh_lock_immediate(
     lock: FileLock, timeout: float = defaults.PRICE_DATA_REFRESH_LOCK_TIMEOUT
 ) -> bool:
-    """Acquire a refresh lock either immediately or with waiting.
+    """Acquire the refresh lock either immediately or with waiting.
 
     :returns: As soon as lock was acquired.
     :returns True: Acquired lock immediately.
@@ -142,15 +143,20 @@ async def acquire_refresh_lock_immediate(
     try:
         await async_acquire(timeout=timeout)
     except filelock.Timeout as exc:
-        logger.info(f"Lock couldn't be acquired at all: {exc}.")
+        logger.exception(f"Lock couldn't be acquired at all: {exc}.")
         raise
     else:
         logger.debug("Lock acquired after waiting.")
         return False
 
 
-async def download_data(region: Region, config: Config) -> Box:
-    """Download price data from the aWATTar API."""
+async def download_data(region: Region, config: Config) -> Optional[Box]:
+    """Download price data from the aWATTar API and extract the json.
+
+    :returns price data: As a box object.
+    :returns None: If price data couldn't be downloaded or is invalid json.
+    :raises json.JSONDecodeError: If response couldn't be decoded as 
+    """
     region_config_identifier = f"awattar.{region.value.lower()}"
     url = getattr(config, region_config_identifier).url
 
@@ -165,9 +171,17 @@ async def download_data(region: Region, config: Config) -> Box:
     }
     logger.info(f"Polling {region.value.upper()} price data from {url}.")
     async with httpx.AsyncClient() as client:
-        response = await client.get(url, params=url_parameters, timeout=defaults.AWATTAR_TIMEOUT)
+        try:
+            response = await client.get(url, params=url_parameters, timeout=defaults.AWATTAR_TIMEOUT)
+        except httpx.RequestError as exc:
+            logger.exception(f"Couldn't download price data: {exc}.")
+            return None
 
-    data_raw = response.json()
+    try:
+        data_raw = response.json()
+    except json.JSONDecodeError as exc:
+        logger.exception(f"Couldn't decode downloaded price data as json: {exc}.")
+        return None
     data = Box(data_raw)
 
     return data
@@ -186,10 +200,7 @@ async def update_last_update_time(region: Region, config: Config):
 
 
 def transform_downloaded_data(downloaded_data: Box) -> Box:
-    """Transform downloaded price data into app internal format.
-
-    It may be required to perform extended transformations in specific cases.
-    """
+    """Transform downloaded price data into the app internal format."""
     formatted_data = Box()
 
     formatted_data.prices = BoxList()
@@ -229,36 +240,48 @@ async def store_data(data: Union[Box, BoxList], region: Region, config: Config):
         await file.write(data.to_json())
 
 
-async def get_latest_new_prices(stored_data: None, region: Region, config: Config) -> Box:
-    """Get the latest price data if the local data was found to be out-of-date.
+async def get_latest_new_prices(stored_data: None, region: Region, config: Config) -> Optional[Box]:
+    """Get the latest new price data if the local data was found to be out-of-date.
 
-    :returns price data: If everything went well. May be remote prices, may be local prices - depends.
-    :returns None: If no latest data. For example latest data is stored data but stored data is already None.
+    :returns downloaded price data: If evaluated that latest prices need to be downloaded.
+    :returns stored price data: If evaluated that stored prices are the latest prices.
+    :returns None: If latest prices couldn't be retrieved or isn't new. 
+        For example returned json has the wrong schema.
     """
     refresh_lock = get_data_refresh_lock(region, config)
-    could_acquire_immediately = await acquire_refresh_lock_immediate(refresh_lock)
+    try:
+        could_acquire_immediately = await acquire_refresh_lock_immediate(refresh_lock)
+    except filelock.Timeout as exc:
+        logger.exception("Can't get latest prices because refresh lock couldn't be acquired: {exc}.")
+        return None
     # See 'energy_prices.get' doc for an explanation of these update steps.
     if could_acquire_immediately:
-        new_data_raw = await download_data(region, config)
-        await update_last_update_time(region, config)
-        try:
-            jsonschema.validate(new_data_raw, defaults.AWATTAR_API_PRICE_DATA_SCHEMA)
-        except jsonschema.ValidationError as exc:
-            logger.exception(f"Polled aWATTar data doesn't conform to the required schema: {exc}.")
+        new_raw_data = await download_data(region, config)
+        if new_raw_data is None:
             refresh_lock.release()
-            return stored_data
-        new_data = transform_downloaded_data(new_data_raw)
+            return None
+        try:
+            await update_last_update_time(region, config)
+        except Exception as exc:
+            logger.exception(f"Couldn't write last update time: {exc}.")
+            # Not ideal, but don't handle as it is not critical enough to justify service unavailability.
+        try:
+            jsonschema.validate(new_raw_data, defaults.AWATTAR_API_PRICE_DATA_SCHEMA)
+        except jsonschema.ValidationError as exc:
+            refresh_lock.release()
+            return None
+        new_data = transform_downloaded_data(new_raw_data)
         data_is_new = check_data_new(stored_data, new_data)
-        if data_is_new:
-            try:
-                await store_data(new_data, region, config)
-            except Exception as exc:
-                refresh_lock.release()
-                raise
-            latest_prices = new_data
-        else:
+        if not data_is_new:
             logger.debug("Downloaded data includes no new prices.")
-            latest_prices = stored_data
+            refresh_lock.release()
+            return None
+        try:
+            await store_data(new_data, region, config)
+        except Exception as exc:
+            # Not ideal, but still okay as this is an extra step, thus not required to get the latest new prices.
+            logger.exception(f"Downloaded latest price data but couldn't store it: {exc}.")
+        latest_prices = new_data
         refresh_lock.release()
     else:
         refresh_lock.release()
@@ -283,13 +306,22 @@ async def get_current_prices(region: Region, config: Config) -> Optional[dict]:
     Remote data will be fetched if local data isn't up to date.
     """
     stored_data, last_update_time = await asyncio.gather(
-        get_stored_data(region, config), get_last_update_time(region, config)
+        get_stored_data(region, config), get_last_update_time(region, config),
+        return_exceptions=True,
     )
+    if isinstance(stored_data, Exception):
+        return None
+    if isinstance(last_update_time, Exception):
+        logger.exception(f"Coudln't get the last update time and thus will assume it is none: {last_update_time}.")
+        last_update_time = None
 
     do_update_data = check_update_data(stored_data, last_update_time)
     price_data = None
     if do_update_data:
         price_data = await get_latest_new_prices(stored_data, region, config)
+        if price_data is None:
+            logger.debug("Local data marked as out-of-date but couldn't get new latest price data yet.")
+            price_data = stored_data
     else:
         logger.debug(f"Local {region.name} prices still up to date.")
         price_data = stored_data

@@ -12,12 +12,12 @@ from box import BoxList
 from fastapi import HTTPException
 from loguru import logger
 from sqlalchemy import inspect
+from sqlalchemy.ext.asyncio import AsyncEngine
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from awattprice import defaults
 from awattprice import utils
-from awattprice.api import db_engine
 from awattprice.defaults import NotificationType
 from awattprice.defaults import Region
 from awattprice.defaults import TaskType
@@ -141,7 +141,7 @@ async def update_price_below_settings(session: AsyncSession, token: Token, updat
             raise HTTPException(501)
 
 
-async def run_notification_tasks(token_hex: str, tasks: BoxList):
+async def run_notification_tasks(db_engine: AsyncEngine, token_hex: str, tasks: BoxList):
     """Run multiple notification tasks."""
     async with AsyncSession(db_engine, future=True) as session:
         first_task = tasks[0]

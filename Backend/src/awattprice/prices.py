@@ -59,7 +59,8 @@ async def get_stored_data(region: Region, config: Config) -> Optional[Box]:
 async def get_last_update_time(region: Region, config: Config) -> Optional[Arrow]:
     """Get time the price data was updated last.
 
-    :returns: Last update time as arrow instance. If file not found returns None.
+    :returns None: If file not found.
+    :returns arrow.Arrow: Last update time. 
     """
     file_dir = config.paths.price_data_dir
     file_name = defaults.PRICE_DATA_UPDATE_TS_FILE_NAME.format(region.name.lower())
@@ -288,11 +289,7 @@ async def get_current_prices(region: Region, config: Config) -> Optional[dict]:
     do_update_data = check_update_data(stored_data, last_update_time)
     price_data = None
     if do_update_data:
-        try:
-            price_data = await get_latest_new_prices(stored_data, region, config)
-        except Exception as exc:
-            logger.exception(f"Couldn't get the latest new prices: {exc}.")
-            price_data = stored_data
+        price_data = await get_latest_new_prices(stored_data, region, config)
     else:
         logger.debug(f"Local {region.name} prices still up to date.")
         price_data = stored_data

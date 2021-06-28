@@ -11,11 +11,7 @@ async def collect_multiple_region_prices(regions: list[Region], config: Config) 
     """Get the current prices for multiple regions."""
     regions_data = Box()
     for region in regions:
-        try:
-            price_data = await prices.get_current_prices(region, config)
-        except Exception as exc:
-            logger.exception(f"Couldn't get current prices for region {region.name}: {exc}.")
-            continue
+        price_data = await prices.get_current_prices(region, config)
 
         if price_data is None:
             logger.warning(f"No current price data for region {region.name}.")

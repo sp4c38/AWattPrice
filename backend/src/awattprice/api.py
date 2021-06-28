@@ -31,11 +31,7 @@ app = FastAPI()
 @app.get("/data/{region}")
 async def get_region_data(region: Region):
     """Get current price data for specified region."""
-    try:
-        price_data = await prices.get_current_prices(region, config)
-    except Exception as exc:
-        logger.exception(f"Couldn't get current price data for region {region.name}: {exc}.")
-        raise HTTPException(500)
+    price_data = await prices.get_current_prices(region, config)
 
     if price_data is None:
         logger.warning(f"Didn't find any way of getting current price data for region {region.name}.")
@@ -73,7 +69,7 @@ async def do_notification_tasks(request: Request):
 
     token_hex = tasks_packed.token
     tasks = tasks_packed.tasks
-    await notifications.run_notification_tasks(token_hex, tasks)
+    await notifications.run_notification_tasks(db_engine, token_hex, tasks)
 
 
 # Old /data/apns/send_token/ url should be supported by the old backend for backwards-compatibility reasons.

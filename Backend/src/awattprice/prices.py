@@ -297,4 +297,4 @@ async def get_current_prices(region: Region, config: Config) -> Optional[dict]:
         logger.debug(f"Local {region.name} prices still up to date.")
         price_data = stored_data
 
-    return response_price_data
+    return price_data

@@ -1,4 +1,4 @@
-"""Functions reading and storing this web app's configs."""
+"""Read, store and set configurations.."""
 import sys
 
 from pathlib import Path
@@ -86,9 +86,7 @@ def configure_loguru(service_name: str, config: Config):
     log_dir_path = config.paths.log_dir
     if log_dir_path.exists():
         if not log_dir_path.is_dir():
-            sys.stderr.write(
-                f"Directory used to store logs {log_dir_path.as_posix()} is not a directory.\n"
-            )
+            sys.stderr.write(f"Directory used to store logs {log_dir_path.as_posix()} is not a directory.\n")
             sys.exit(1)
     else:
         sys.stdout.write(f"Log directory missing. Creating at {log_dir_path}.\n")

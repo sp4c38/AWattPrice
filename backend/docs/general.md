@@ -11,7 +11,7 @@ src
     └── ...
 ```
 
-- awattprice: Package of the FastAPI web application. This is the main package.
+- awattprice: Package with the FastAPI web application. This is the main package.
 - awattprice_notifications: Package containing the different notification type services. These different notification type services are subpackages of this root package. For example the 'price_below' directory inside of this main directory is a subpackage of it describing the service to send price below notifications.
 
 <span style="color:orange;">Dependency note:</span> There is no extra package for unified cross-package code. Code in one package also used by another package should be placed in the package where it fits in best. If it's hard to differentiate where to fit the code best try to place it in the `src/awattprice/` directory because this is the main package.

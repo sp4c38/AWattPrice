@@ -1,6 +1,11 @@
 # **General**
 This documentation shall describe how AWattPrice handles certain situations etc. The specifications should *not* be understood as some description how to access the web app. The backend should *only* be accessed by the actual iOS app. It's a documentation *for backend developers* to understand certain concepts quicker.
 
+### **All tasks of the backend**
+- Provide price data to clients.
+- Receive notification configuration of the clients.
+- Send 'price below' notifications.
+
 ### **Base structure of the src directory and the different packages**
 
 ```

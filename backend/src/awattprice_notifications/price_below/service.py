@@ -19,7 +19,14 @@ async def main():
     awattprice.configurator.configure_loguru(price_below_service_name, config)
 
     regions_data = await prices.collect_multiple_region_prices(defaults.REGIONS_TO_SEND, config)
-    print(regions_data)
+    # IMPLEMENT: Get the regions where price data updated relative to the last run.
+    # regions_updated = get_regions_updated(regions_data, config)
+    regions_updated = [awattprice.defaults.Region.DE]  # Only includes regions which are also included in regions_data.
+
+    for region in regions_updated:
+        region_data = regions_data[region]
+        print(f"Prices for region {region.name}: {region_data}")
+
 
 
 if __name__ == "__main__":

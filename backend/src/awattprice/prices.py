@@ -241,12 +241,11 @@ async def store_data(data: Union[Box, BoxList], region: Region, config: Config):
 
 
 async def get_latest_new_prices(stored_data: None, region: Region, config: Config) -> Optional[Box]:
-    """Get the latest new price data if the local data was found to be out-of-date.
+    """Download the latest new prices.
 
-    :returns downloaded price data: If evaluated that latest prices need to be downloaded.
-    :returns stored price data: If evaluated that stored prices are the latest prices.
-    :returns None: If latest prices couldn't be retrieved or isn't new. 
-        For example returned json has the wrong schema.
+    :returns downloaded price data: If all went well.
+    :returns None: If downloaded price data isn't new or if some error occurred while getting the
+        downloaded price data. 
     """
     refresh_lock = get_data_refresh_lock(region, config)
     try:
@@ -300,10 +299,14 @@ def transform_to_response_data(price_data: Box) -> Box:
 
 
 async def get_current_prices(region: Region, config: Config) -> Optional[dict]:
-    """Get the current aWATTar prices.
+    """Get the currently up to date price data.
 
-    Current aWATTar prices may either be local or remote data.
-    Remote data will be fetched if local data isn't up to date.
+    This doesn't mean that this function necessarily will download the data. It could also be that stored data
+    is evaluated to be the current data.
+    
+    :returns price data: When current price data could be retrieved. If local price data exists and an error
+        occurred while performing other steps the function will fall back to the local price data in certain cases.
+    :returns None: If there was no way to get the current price data and couldn't fall back to local data.
     """
     stored_data, last_update_time = await asyncio.gather(
         get_stored_data(region, config), get_last_update_time(region, config),

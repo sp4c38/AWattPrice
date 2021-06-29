@@ -34,7 +34,7 @@ async def get_region_data(region: Region):
     price_data = await prices.get_current_prices(region, config)
 
     if price_data is None:
-        logger.warning(f"Didn't find any way of getting current price data for region {region.name}.")
+        logger.warning(f"Couldn't get current price data for region {region.name}.")
         raise HTTPException(503)
 
     response_price_data = prices.transform_to_response_data(price_data)

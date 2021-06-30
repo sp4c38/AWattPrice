@@ -19,7 +19,7 @@ AWATTPRICE_SERVICE_NAME = "awattprice"
 
 DEFAULT_CONFIG = """\
 [general]
-debug = off
+debug = on
 
 [awattar.de]
 url = https://api.awattar.de/v1/marketdata/
@@ -30,6 +30,8 @@ url = https://api.awattar.at/v1/marketdata/
 [paths]
 log_dir = ~/awattprice/logs/
 data_dir = ~/awattprice/data/
+# If the path is given the legacy backends user notification config will be used additionally if possible.
+legacy_backend =
 """
 
 ORM_TABLE_NAMES = Box(

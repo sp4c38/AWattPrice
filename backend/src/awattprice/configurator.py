@@ -17,6 +17,10 @@ def _transform_config(config: Config) -> Config:
     config.paths.log_dir = Path(config.paths.log_dir).expanduser()
     config.paths.data_dir = Path(config.paths.data_dir).expanduser()
     config.paths.price_data_dir = config.paths.data_dir / defaults.PRICE_DATA_SUBDIR_NAME
+    if len(config.paths.legacy_backend) == 0:
+        config.paths.legacy_backend = None
+    else:
+        config.paths.legacy_backend = Path(config.paths.legacy_backend).expanduser()
 
     return config
 

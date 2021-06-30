@@ -23,10 +23,11 @@ async def main():
     # regions_updated = get_regions_updated(regions_data, config)
     regions_updated = [awattprice.defaults.Region.DE]  # Only includes regions which are also included in regions_data.
 
-    for region in regions_updated:
-        region_data = regions_data[region]
-        print(f"Prices for region {region.name}: {region_data}")
-
+    database_engine = awattprice.database.get_async_engine(config)
+    # old_database_engine = 
+    # for region in regions_updated:
+        # region_data = regions_data[region]
+        # print(f"Prices for region {region.name}: {region_data}")
 
 
 if __name__ == "__main__":

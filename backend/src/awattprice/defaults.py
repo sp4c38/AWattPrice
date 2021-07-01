@@ -116,7 +116,7 @@ NOTIFICATION_TASKS_BASE_SCHEMA = {
             "items": {
                 "type": "object",
                 "properties": {
-                    "type": {"enum": [element.name for element in TaskType]},
+                    "type": {"enum": [element.name.lower() for element in TaskType]},
                     "payload": {"type": "object"},
                 },
                 "required": ["type", "payload"],
@@ -141,7 +141,7 @@ NOTIFICATION_TASK_ADD_TOKEN_SCHEMA = {
 NOTIFICATION_TASK_SUB_DESUB_SCHEMA = {
     "type": "object",
     "properties": {
-        "notification_type": {"enum": [element.name for element in NotificationType]},
+        "notification_type": {"enum": [element.name.lower() for element in NotificationType]},
         "sub_else_desub": {"type": "boolean"},
         "notification_info": {"type": "object"},
     },
@@ -159,7 +159,7 @@ NOTIFICATION_TASK_PRICE_BELOW_SUB_DESUB_SCHEMA = {
 NOTIFICATION_TASK_UPDATE_SCHEMA = {
     "type": "object",
     "properties": {
-        "subject": {"enum": [element.name for element in UpdateSubject]},
+        "subject": {"enum": [element.name.lower() for element in UpdateSubject]},
         "updated_data": {"type": "object"},
     },
     "required": ["subject", "updated_data"],

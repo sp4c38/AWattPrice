@@ -64,8 +64,8 @@ async def do_notification_tasks(request: Request):
         logger.warning(f"Couldn't decode notification tasks {repr(body_raw)} as json: {exc}.")
         raise HTTPException(400) from exc
 
-    tasks_packed_raw = Box(body_json)
-    tasks_packed = notifications.transform_tasks_body(tasks_raw)
+    tasks_packed = Box(body_json)
+    notifications.transform_tasks_body(tasks_packed)
 
     token_hex = tasks_packed.token
     tasks = tasks_packed.tasks

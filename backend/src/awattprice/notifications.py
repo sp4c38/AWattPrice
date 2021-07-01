@@ -2,6 +2,7 @@
 
 Sending the actual notifications is handled by an extra service outside of this web app.
 """
+from collections import namedtuple
 from typing import Any
 from typing import Optional
 
@@ -26,7 +27,7 @@ from awattprice.orm import PriceBelowNotification
 from awattprice.orm import Token
 
 
-async def add_new_token(session: AsyncSession, token_hex: str, extra_values: Box) -> Token:
+async def add_new_token(session: AsyncSession, token_hex: str, configuration: Box) -> Token:
     """Save a new token to the database and return the new orm object.
 
     :param extra_values: Extra values for the new token. These include region and tax selection.
@@ -36,7 +37,7 @@ async def add_new_token(session: AsyncSession, token_hex: str, extra_values: Box
         region=configuration.region,
         tax=configuration.tax,
     )
-    session.add(new_token)
+    session.add(token)
 
     try:
         await session.commit()
@@ -171,9 +172,9 @@ def transform_add_token_task(task: Box, task_index: int):
         raise HTTPException(400)
 
     add_token_schema = defaults.NOTIFICATION_TASK_ADD_TOKEN_SCHEMA
-    utils.http_exc_validate_json_schema(new_task.payload, add_token_schema, http_code=400)
+    utils.http_exc_validate_json_schema(task.payload, add_token_schema, http_code=400)
 
-    new_task.payload.region = Region[new_task.payload.region]
+    task.payload.region = Region[task.payload.region]
 
 
 def transform_subscribe_desubscribe_task(task: Box):
@@ -247,8 +248,8 @@ def transform_tasks_body(body: Box):
     schema = defaults.NOTIFICATION_TASKS_BASE_SCHEMA
     utils.http_exc_validate_json_schema(body, schema, http_code=400)
 
-    for index, task in enumerate(body_original.tasks):
-        task.type = TaskType[task.type]
+    for index, task in enumerate(body.tasks):
+        task.type = TaskType[task.type.upper()]
         if task.type == TaskType.ADD_TOKEN:
             transform_add_token_task(task, index)
         elif task.type == TaskType.SUBSCRIBE_DESUBSCRIBE:
@@ -256,7 +257,7 @@ def transform_tasks_body(body: Box):
         elif task.type == TaskType.UPDATE:
             transform_update_task(task)
 
-    counts_ok = check_type_count(body.tasks)
-    if not counts_ok:
-        logger.warning("Wrong notification task counts.")
-        raise HTTPException(400)
+    # counts_ok = check_type_count(body.tasks)
+    # if not counts_ok:
+    #     logger.warning("Wrong notification task counts.")
+    #     raise HTTPException(400)

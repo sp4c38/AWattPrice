@@ -46,7 +46,7 @@ async def add_new_token(session: AsyncSession, token_hex: str, configuration: Bo
         await session.rollback()
         raise HTTPException(400) from exc
 
-    return new_token
+    return token
 
 
 async def get_token(session: AsyncSession, token_hex: str) -> Token:
@@ -182,7 +182,7 @@ def transform_subscribe_desubscribe_task(task: Box):
     sub_desub_schema = defaults.NOTIFICATION_TASK_SUB_DESUB_SCHEMA
     utils.http_exc_validate_json_schema(task.payload, sub_desub_schema, http_code=400)
 
-    task.payload.notification_type = NotificationType[task.payload.notification_type]
+    task.payload.notification_type = NotificationType[task.payload.notification_type.upper()]
 
     notification_info = task.payload.notification_info
     if task.payload.notification_type == NotificationType.PRICE_BELOW:

@@ -2,27 +2,39 @@
 import sys
 
 from pathlib import Path
+from typing import Optional
+from typing import TypeVar
 
 from liteconfig import Config
 from loguru import logger
 
 from awattprice import defaults
 
+ConfigValue = TypeVar("ConfigValue")
 
-def _transform_config(config: Config) -> Config:
-    """Transform certain config fields to another data type and/or value.
 
-    Example: Transform path string into a pathlib Path instance.
+def _fallthrough_check_config_none(config_value: ConfigValue) -> Optional[ConfigValue]:
+    """Check if the value of the config attribute is empty and thus can be represented as pythons none object.
+
+    :param configuration: The value of a single configuration attribute.
+    :returns: If value isn't empty return config value. If value is empty return none to represent
+        that the config of the value isn't set.
     """
+    if isinstance(config_value, str):
+        no_spaces_config = config_value.replace(" ", "")
+        if len(no_spaces_config) == 0:
+            return None
+    return config_value
+
+
+def _transform_config(config: Config):
+    """Transform certain config fields to another data type and/or value."""
     config.paths.log_dir = Path(config.paths.log_dir).expanduser()
     config.paths.data_dir = Path(config.paths.data_dir).expanduser()
     config.paths.price_data_dir = config.paths.data_dir / defaults.PRICE_DATA_SUBDIR_NAME
-    if len(config.paths.legacy_backend) == 0:
-        config.paths.legacy_backend = None
-    else:
-        config.paths.legacy_backend = Path(config.paths.legacy_backend).expanduser()
-
-    return config
+    config.paths.legacy_database = _fallthrough_check_config_none(config.paths.legacy_database)
+    if config.paths.legacy_database is not None:
+        config.paths.legacy_database = Path(config.paths.legacy_database).expanduser()
 
 
 def _ensure_dir(path: Path):
@@ -49,11 +61,8 @@ def _ensure_config_dirs(config: Config):
     _ensure_dir(config.paths.price_data_dir)
 
 
-def get_config():
-    """Read the config and setup localconfig's global config variable.
-
-    To use the config import the global config variable from localconfig.
-    """
+def get_config() -> Config:
+    """Read and transform config and check some requirements."""
     # First path in list will be used for creation if no config file exists yet.
     read_attempt_paths = [
         Path("~/.config/awattprice/config.ini").expanduser(),
@@ -76,7 +85,7 @@ def get_config():
             config_file.write(defaults.DEFAULT_CONFIG)
         config = Config(defaults.DEFAULT_CONFIG)
 
-    config = _transform_config(config)
+    _transform_config(config)
     _ensure_config_dirs(config)
 
     return config

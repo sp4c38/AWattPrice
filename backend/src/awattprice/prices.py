@@ -61,7 +61,7 @@ async def get_last_update_time(region: Region, config: Config) -> Optional[Arrow
     """Get time the price data was updated last.
 
     :returns None: If file not found.
-    :returns arrow.Arrow: Last update time. 
+    :returns arrow.Arrow: Last update time.
     """
     file_dir = config.paths.price_data_dir
     file_name = defaults.PRICE_DATA_UPDATE_TS_FILE_NAME.format(region.name.lower())
@@ -155,7 +155,7 @@ async def download_data(region: Region, config: Config) -> Optional[Box]:
 
     :returns price data: As a box object.
     :returns None: If price data couldn't be downloaded or is invalid json.
-    :raises json.JSONDecodeError: If response couldn't be decoded as 
+    :raises json.JSONDecodeError: If response couldn't be decoded as
     """
     region_config_identifier = f"awattar.{region.value.lower()}"
     url = getattr(config, region_config_identifier).url
@@ -245,7 +245,7 @@ async def get_latest_new_prices(stored_data: None, region: Region, config: Confi
 
     :returns downloaded price data: If all went well.
     :returns None: If downloaded price data isn't new or if some error occurred while getting the
-        downloaded price data. 
+        downloaded price data.
     """
     refresh_lock = get_data_refresh_lock(region, config)
     try:
@@ -303,13 +303,14 @@ async def get_current_prices(region: Region, config: Config) -> Optional[dict]:
 
     This doesn't mean that this function necessarily will download the data. It could also be that stored data
     is evaluated to be the current data.
-    
+
     :returns price data: When current price data could be retrieved. If local price data exists and an error
         occurred while performing other steps the function will fall back to the local price data in certain cases.
     :returns None: If there was no way to get the current price data and couldn't fall back to local data.
     """
     stored_data, last_update_time = await asyncio.gather(
-        get_stored_data(region, config), get_last_update_time(region, config),
+        get_stored_data(region, config),
+        get_last_update_time(region, config),
         return_exceptions=True,
     )
     if isinstance(stored_data, Exception):

@@ -1,22 +1,25 @@
 """Manage and handle price data fron the main awattprice package."""
+import asyncio
+
+import awattprice
+
+from awattprice.defaults import Region
 from box import Box
 from liteconfig import Config
 from loguru import logger
 
-from awattprice import prices
-from awattprice.defaults import Region
 
-
-async def collect_multiple_region_prices(regions: list[Region], config: Config) -> Box:
+async def collect_regions_data(config: Config, regions: list[Region]) -> Box:
     """Get the current prices for multiple regions."""
-    regions_data = Box()
-    for region in regions:
-        price_data = await prices.get_current_prices(region, config)
+    prices_tasks = [awattprice.prices.get_current_prices(region, config) for region in regions]
+    all_prices = await asyncio.gather(*prices_tasks)
+    all_prices = dict(zip(regions, all_prices))
 
-        if price_data is None:
-            logger.warning(f"No current price data for region {region.name}.")
+    valid_prices = {}
+    for region, prices in all_prices:
+        if prices is None:
+            logger.warning(f"No current price data for region {region.name}")
             continue
+        valid_prices[region] = prices
 
-        regions_data[region] = price_data
-
-    return regions_data
+    return valid_prices

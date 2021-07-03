@@ -17,8 +17,8 @@ def _fallthrough_check_config_none(config_value: ConfigValue) -> Optional[Config
     """Check if the value of the config attribute is empty and thus can be represented as pythons none object.
 
     :param configuration: The value of a single configuration attribute.
-    :returns: If value isn't empty return config value. If value is empty return none to represent
-        that the config of the value isn't set.
+    :returns: If value isn't empty return config value. If value is empty return none to represent that
+        the value isn't set.
     """
     if isinstance(config_value, str):
         no_spaces_config = config_value.replace(" ", "")
@@ -46,19 +46,22 @@ def _ensure_dir(path: Path):
     :returns: If this returns the path is a directory and it exists.
     """
     if not path.exists():
-        logger.info(f"Creating missing directory referred to in the config: {path}.")
+        sys.stdout.write(f"INFO: Creating missing directory referred to in the config: {path}.\n")
         path.mkdir(parents=True)
 
     if not path.is_dir():
-        logger.critical(f"Directory referred to in the config is no directory: {path}.")
-        raise NotADirectoryError
+        raise NotADirectoryError(path)
 
 
 def _ensure_config_dirs(config: Config):
     """Ensure certain directories referred to in the config exist."""
-    _ensure_dir(config.paths.log_dir)
-    _ensure_dir(config.paths.data_dir)
-    _ensure_dir(config.paths.price_data_dir)
+    try:
+        _ensure_dir(config.paths.log_dir)
+        _ensure_dir(config.paths.data_dir)
+        _ensure_dir(config.paths.price_data_dir)
+    except NotADirectoryError as exc:
+        sys.stderr.write(f"ERROR: Path isn't a directory: {exc}.\n")
+        sys.exit(1)
 
 
 def get_config() -> Config:
@@ -78,7 +81,7 @@ def get_config() -> Config:
     if config_path:
         config = Config(config_path.as_posix())
     else:
-        sys.stdout.write(f"No config file found. Creating at {config_path}...")
+        sys.stdout.write(f"INFO: No config file found. Creating at {config_path}.\n")
         config_path = read_attempt_paths[0]
         config_path.parent.mkdir(parents=True, exist_ok=True)
         with config_path.open("w") as config_file:

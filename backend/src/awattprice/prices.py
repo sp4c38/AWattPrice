@@ -316,7 +316,7 @@ async def get_current_prices(region: Region, config: Config) -> Optional[dict]:
     if isinstance(stored_data, Exception):
         return None
     if isinstance(last_update_time, Exception):
-        logger.exception(f"Coudln't get the last update time and thus will assume it is none: {last_update_time}.")
+        logger.exception(f"Couldn't get the last update time and thus will assume it is none: {last_update_time}.")
         last_update_time = None
 
     do_update_data = check_update_data(stored_data, last_update_time)

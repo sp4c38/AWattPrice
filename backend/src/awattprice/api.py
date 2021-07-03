@@ -1,4 +1,6 @@
 """Define the urls and their tasks handled by the API."""
+import sys
+
 from json import JSONDecodeError
 
 import arrow
@@ -11,18 +13,22 @@ from loguru import logger
 from starlette.responses import RedirectResponse
 
 from awattprice import configurator
+from awattprice import database
 from awattprice import defaults
 from awattprice import notifications
 from awattprice import orm
 from awattprice import prices
-from awattprice.database import get_async_engine
 from awattprice.defaults import Region
 
 config = configurator.get_config()
 configurator.configure_loguru(defaults.AWATTPRICE_SERVICE_NAME, config)
 
-db_engine = get_async_engine(config)
-orm.metadata.bind = db_engine
+try:
+    database_engine = database.get_engine(config, async_=True)
+except FileNotFoundError as exc:
+    logger.exception(exc)
+    sys.exit(1)
+orm.metadata.bind = database_engine
 
 app = FastAPI()
 
@@ -69,7 +75,7 @@ async def do_notification_tasks(request: Request):
 
     token_hex = tasks_packed.token
     tasks = tasks_packed.tasks
-    await notifications.run_notification_tasks(db_engine, token_hex, tasks)
+    await notifications.run_notification_tasks(database_engine, token_hex, tasks)
 
 
 # Old /data/apns/send_token/ url should be supported by the old backend for backwards-compatibility reasons.

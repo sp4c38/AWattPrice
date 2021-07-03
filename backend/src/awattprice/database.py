@@ -1,43 +1,34 @@
 """Functions to perform database managing tasks."""
+from typing import Optional
+from typing import Union
+
+from awattprice import defaults
 from liteconfig import Config
 from loguru import logger
 from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
-from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
-
-from awattprice import defaults
+from sqlalchemy.ext.asyncio import AsyncEngine
+from sqlalchemy.ext.asyncio import create_async_engine
 
 
 CREATE_ENGINE_KWARGS = {"future": True}
 
 
-def get_database_url(config: Config, async_: bool = False) -> str:
-    """Get the apps database connection with some other objects.
+def get_engine(config: Config, async_=False) -> Optional[Union[Engine, AsyncEngine]]:
+    """Get either a sync or an async sqlalchemy engine for the app's database.
 
-    :param async_: If true use aiosqlite async dbapi, if false use pysqlite sync dbapi.
+    :raises FileNotFoundError: If the backends database couldn't be found.
     """
-    db_dir = config.paths.data_dir
-    db_file = db_dir / defaults.DATABASE_FILE_NAME
+    database_dir = config.paths.data_dir
+    database_file = database_dir / defaults.DATABASE_FILE_NAME
+    if not database_file.exists():
+        raise FileNotFoundError(database_file)
 
-    logger.info(f"Database file is {db_file}.")
-
-    if async_ is True:
-        db_url = f"sqlite+aiosqlite:///{db_file}"
+    if async_:
+        database_url = f"sqlite+aiosqlite:///{database_file}"
+        engine = create_async_engine(database_url)
     else:
-        db_url = f"sqlite+pysqlite:///{db_file}"
+        database_url = f"sqlite+pysqlite:///{database_file}"
+        engine = create_engine(database_url)
 
-    return db_url
-
-
-def get_async_engine(config: Config) -> AsyncEngine:
-    """Get an async sqlalchemy engine for the app's database."""
-    db_url = get_database_url(config, async_=True)
-    engine = create_async_engine(db_url, **CREATE_ENGINE_KWARGS)
-    return engine
-
-
-def get_engine(config: Config) -> Engine:
-    """Get sqlalchemy engine for the app's database."""
-    db_url = get_database_url(config)
-    engine = create_engine(db_url, **CREATE_ENGINE_KWARGS)
     return engine

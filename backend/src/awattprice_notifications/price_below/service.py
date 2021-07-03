@@ -23,13 +23,6 @@ async def main():
     price_below_service_name = awattprice_notifications.defaults.PRICE_BELOW_SERVICE_NAME
     awattprice.configurator.configure_loguru(price_below_service_name, config)
 
-    regions_data = await prices.collect_regions_data(config, defaults.REGIONS_TO_SEND)
-    # IMPLEMENT: Get the regions where price data updated relative to the last run.
-    # regions_updated = get_regions_updated(regions_data, config)
-    regions_updated = [
-        awattprice.defaults.Region.DE
-    ]  # Only includes regions which are also included in regions_data.
-
     try:
         database_engine = awattprice.database.get_engine(config, async_=True)
     except FileNotFoundError as exc:
@@ -42,6 +35,16 @@ async def main():
         except FileNotFoundError as exc:
             logger.exception(exc)
             sys.exit(1)
+
+    regions_data = await prices.collect_regions_data(config, defaults.REGIONS_TO_SEND)
+    # IMPLEMENT: Get the regions where price data updated relative to the last run.
+    # regions_updated = get_regions_updated(regions_data, config)
+    updated_regions = [awattprice.defaults.Region.DE]
+    updated_regions_data = {region: regions_data[region] for region in updated_regions}
+
+    for detailed_prices in updated_regions_data.values():
+        detailed_prices.set_lowest_price()
+        print(detailed_prices.lowest_price)
 
     # Tokens which apply to receive a price below notification.
     applying_tokens = await tokens.collect_applying_tokens()

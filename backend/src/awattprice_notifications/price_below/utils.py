@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import create_async_engine
 def get_async_legacy_engine(config: Config) -> Optional[AsyncEngine]:
     """Get the async engine for the database of the legacy backend.
 
-	:raises FileNotFoundError: If the backends database couldn't be found.
+    :raises FileNotFoundError: If the backends database couldn't be found.
     """
     database_file = config.paths.legacy_database
     if not database_file.exists():

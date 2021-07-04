@@ -44,10 +44,9 @@ async def main():
 
     for detailed_prices in updated_regions_data.values():
         detailed_prices.set_lowest_price()
-        print(detailed_prices.lowest_price)
 
     # Tokens which apply to receive a price below notification.
-    applying_tokens = await tokens.collect_applying_tokens()
+    applying_tokens = await tokens.collect_applying_tokens(database_engine, updated_regions_data)
 
 
 if __name__ == "__main__":

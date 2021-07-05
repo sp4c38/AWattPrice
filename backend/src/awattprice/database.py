@@ -11,7 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncEngine
 from sqlalchemy.ext.asyncio import create_async_engine
 
 
-CREATE_ENGINE_KWARGS = {"future": True}
+CREATE_ENGINE_KWARGS = {"future": True, "echo": True}
 
 
 def get_engine(config: Config, async_=False) -> Optional[Union[Engine, AsyncEngine]]:
@@ -26,9 +26,9 @@ def get_engine(config: Config, async_=False) -> Optional[Union[Engine, AsyncEngi
 
     if async_:
         database_url = f"sqlite+aiosqlite:///{database_file}"
-        engine = create_async_engine(database_url)
+        engine = create_async_engine(database_url, **CREATE_ENGINE_KWARGS)
     else:
         database_url = f"sqlite+pysqlite:///{database_file}"
-        engine = create_engine(database_url)
+        engine = create_engine(database_url, **CREATE_ENGINE_KWARGS)
 
     return engine

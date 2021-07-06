@@ -1,6 +1,7 @@
 """Contains default values and models."""
 from enum import auto
 from enum import Enum
+from typing import Optional
 
 from box import Box
 
@@ -13,6 +14,17 @@ class Region(str, Enum):
     DE = "DE"
     AT = "AT"
 
+    @property
+    def tax(self) -> Optional[float]:
+        tax = REGION_TAXES[self]
+        return tax
+
+
+# Multipliers to get the taxed price.
+REGION_TAXES = {
+    Region.DE: 1.19,
+    Region.AT: None
+}
 
 # Name to identify the web app service.
 AWATTPRICE_SERVICE_NAME = "awattprice"
@@ -42,6 +54,7 @@ ORM_TABLE_NAMES = Box(
 )
 
 SEC_TO_MILLISEC = 1000  # to convert multiply by this factor
+MWH_TO_KWH = 0.001
 
 # Timeout in seconds when requesting from aWATTar.
 AWATTAR_TIMEOUT = 10.0

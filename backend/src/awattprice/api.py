@@ -43,7 +43,7 @@ async def get_region_data(region: Region):
         logger.warning(f"Couldn't get current price data for region {region.name}.")
         raise HTTPException(503)
 
-    response_price_data = prices.transform_to_response_data(price_data)
+    response_price_data = prices.parse_to_response_data(price_data)
 
     return response_price_data
 

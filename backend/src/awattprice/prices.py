@@ -2,6 +2,7 @@
 import asyncio
 import json
 
+from decimal import Decimal
 from typing import Optional
 from typing import Union
 
@@ -23,6 +24,22 @@ from awattprice import defaults
 from awattprice import exceptions
 from awattprice import utils
 from awattprice.defaults import Region
+
+
+def transform_from_stored_data(data: Box):
+    """Transform from stored data to the app internal format."""
+    for price_point in data.prices:
+        price_point.marketprice = Decimal(price_point.marketprice)
+
+
+def parse_to_storable_json(data: Box) -> str:
+    """Parse the app interal price format to a storable json string."""
+    storable_data = Box(data)
+    for price_point in storable_data.prices:
+        price_point.marketprice = str(price_point.marketprice)
+
+    storable_json = storable_data.to_json()
+    return storable_json
 
 
 async def get_stored_data(region: Region, config: Config) -> Optional[Box]:
@@ -50,9 +67,9 @@ async def get_stored_data(region: Region, config: Config) -> Optional[Box]:
         logger.exception(f"Stored price data at {file_path} no valid json: {exc}.")
         raise
     data = Box(data_json)
-
     # If the data is valid json assume that it is no empty dictionary or similar.
     # Validating the schema additionaly would slow down the response time unnecessarily.
+    transform_from_stored_data(data)
 
     return data
 
@@ -199,19 +216,19 @@ async def update_last_update_time(region: Region, config: Config):
         await file.write(now_string)
 
 
-def transform_downloaded_data(downloaded_data: Box) -> Box:
-    """Transform downloaded price data into the app internal format."""
-    formatted_data = Box()
+def parse_downloaded_data(downloaded_data: Box) -> Box:
+    """Parse the downloaded price data into the app internal format."""
+    parsed_data = Box()
 
-    formatted_data.prices = BoxList()
+    parsed_data.prices = BoxList()
     for price_point in downloaded_data.data:
         formatted_price_point = Box()
         formatted_price_point.start_timestamp = price_point.start_timestamp / defaults.SEC_TO_MILLISEC
         formatted_price_point.end_timestamp = price_point.end_timestamp / defaults.SEC_TO_MILLISEC
-        formatted_price_point.marketprice = price_point.marketprice
-        formatted_data.prices.append(formatted_price_point)
+        formatted_price_point.marketprice = Decimal(str(price_point.marketprice))
+        parsed_data.prices.append(formatted_price_point)
 
-    return formatted_data
+    return parsed_data
 
 
 def check_data_new(old_data: Optional[Box], new_data: Box) -> bool:
@@ -229,15 +246,17 @@ def check_data_new(old_data: Optional[Box], new_data: Box) -> bool:
         return False
 
 
-async def store_data(data: Union[Box, BoxList], region: Region, config: Config):
+async def store_data(data: Box, region: Region, config: Config):
     """Store new price data to the filesystem."""
     store_dir = config.paths.price_data_dir
     file_name = defaults.PRICE_DATA_FILE_NAME.format(region.value.lower())
     file_path = store_dir / file_name
 
+    storable_json = parse_to_storable_json(data)
+
     logger.info(f"Storing aWATTar {region.value} price data to {file_path}.")
     async with async_open(file_path, "w") as file:
-        await file.write(data.to_json())
+        await file.write(storable_json)
 
 
 async def get_latest_new_prices(stored_data: None, region: Region, config: Config) -> Optional[Box]:
@@ -269,7 +288,7 @@ async def get_latest_new_prices(stored_data: None, region: Region, config: Confi
         except jsonschema.ValidationError as exc:
             refresh_lock.release()
             return None
-        new_data = transform_downloaded_data(new_raw_data)
+        new_data = parse_downloaded_data(new_raw_data)
         data_is_new = check_data_new(stored_data, new_data)
         if not data_is_new:
             logger.debug("Downloaded data includes no new prices.")
@@ -289,15 +308,6 @@ async def get_latest_new_prices(stored_data: None, region: Region, config: Confi
     return latest_prices
 
 
-def transform_to_response_data(price_data: Box) -> Box:
-    """Transform internally used price data to price data for responses."""
-    # Using this approach data included in response is opt-in and not the worser opt-out.
-    response_data = Box()
-    response_data.prices = price_data.prices
-
-    return response_data
-
-
 async def get_current_prices(region: Region, config: Config) -> Optional[dict]:
     """Get the currently up to date price data.
 
@@ -314,6 +324,7 @@ async def get_current_prices(region: Region, config: Config) -> Optional[dict]:
         return_exceptions=True,
     )
     if isinstance(stored_data, Exception):
+        logger.exception(f"Couldn't get stored data: {stored_data}.")
         return None
     if isinstance(last_update_time, Exception):
         logger.exception(f"Couldn't get the last update time and thus will assume it is none: {last_update_time}.")
@@ -331,3 +342,14 @@ async def get_current_prices(region: Region, config: Config) -> Optional[dict]:
         price_data = stored_data
 
     return price_data
+
+
+def parse_to_response_data(price_data: Box) -> Box:
+    """Transform app interal format to the response format."""
+    # Don't create copy to need to explicitly make data included in response opt-in.
+    response_data = Box()
+    response_data.prices = price_data.prices
+    for price_point in response_data.prices:
+        price_point.marketprice = float(price_point.marketprice)
+
+    return response_data

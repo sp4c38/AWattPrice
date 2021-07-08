@@ -115,10 +115,10 @@ def check_update_data(data: Optional[Box], last_update_time: Optional[Arrow]) ->
         next_update_time = last_update_time.shift(seconds=defaults.AWATTAR_COOLDOWN_INTERVAL)
         if now < next_update_time:
             seconds_remaining = (next_update_time - now).total_seconds()
-            logger.debug(f"AWATTar cooldown not finished. {seconds_remaining}s remaining.")
+            logger.debug(f"AWATTar cooldown has {seconds_remaining}s remaining.")
             return False
 
-    midnight_tomorrow_berlin = now_berlin.floor("day").shift(days=+1)
+    midnight_tomorrow_berlin = now_berlin.floor("day").shift(days=+2)
     max_price = max(data.prices, key=lambda point: point.end_timestamp)
     max_end_time = arrow.get(max_price.end_timestamp)
     if max_end_time >= midnight_tomorrow_berlin:

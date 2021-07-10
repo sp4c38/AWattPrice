@@ -90,7 +90,7 @@ AWATTAR_API_PRICE_DATA_SCHEMA = {
     },
     "required": ["data", "url"],
 }
-PRICE_DATA_FILE_NAME = "awattar-data-{}.json"  # formatted with lowercase region name
+PRICE_DATA_FILE_NAME = "awattar-data-{}.pickle"  # formatted with lowercase region name
 # Name of the subdir in which to store cached price data.
 # This subdir is relative to the data dir specified in the config file.
 PRICE_DATA_SUBDIR_NAME = "price_data"

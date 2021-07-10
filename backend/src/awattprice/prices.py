@@ -1,6 +1,7 @@
 """Poll and process price data."""
 import asyncio
 import json
+import pickle
 
 from copy import deepcopy
 from decimal import Decimal
@@ -27,22 +28,6 @@ from awattprice import utils
 from awattprice.defaults import Region
 
 
-def transform_from_stored_data(data: Box):
-    """Transform from stored data to the app internal format."""
-    for price_point in data.prices:
-        price_point.marketprice = Decimal(price_point.marketprice)
-
-
-def parse_to_storable_json(data: Box) -> str:
-    """Parse the app interal price format to a storable json string."""
-    storable_data = deepcopy(data)
-    for price_point in storable_data.prices:
-        price_point.marketprice = str(price_point.marketprice)
-
-    storable_json = storable_data.to_json()
-    return storable_json
-
-
 async def get_stored_data(region: Region, config: Config) -> Optional[Box]:
     """Get locally cached price data.
 
@@ -53,24 +38,20 @@ async def get_stored_data(region: Region, config: Config) -> Optional[Box]:
     file_path = file_dir / file_name
 
     try:
-        async with async_open(file_path, "r") as file:
-            data_raw = await file.read()
+        async with async_open(file_path, "rb") as file:
+            unpickled_data = await file.read()
     except FileNotFoundError as exc:
         logger.debug(f"No stored price data found: {exc}.")
         return None
 
-    if len(data_raw) == 0:
+    if len(unpickled_data) == 0:
         return None
 
     try:
-        data_json = json.loads(data_raw)
-    except json.JSONDecodeError as exc:
-        logger.exception(f"Stored price data at {file_path} no valid json: {exc}.")
+        data = pickle.loads(unpickled_data)
+        # Don't validate the schema as this would slow down the process - mostly unnecessarily.
+    except pickle.UnpicklingError as exc:
         raise
-    data = Box(data_json)
-    # If the data is valid json assume that it is no empty dictionary or similar.
-    # Validating the schema additionaly would slow down the response time unnecessarily.
-    transform_from_stored_data(data)
 
     return data
 
@@ -252,11 +233,11 @@ async def store_data(data: Box, region: Region, config: Config):
     file_name = defaults.PRICE_DATA_FILE_NAME.format(region.value.lower())
     file_path = store_dir / file_name
 
-    storable_json = parse_to_storable_json(data)
+    pickled_data = pickle.dumps(data)
 
     logger.info(f"Storing aWATTar {region.value} price data to {file_path}.")
-    async with async_open(file_path, "w") as file:
-        await file.write(storable_json)
+    async with async_open(file_path, "wb") as file:
+        await file.write(pickled_data)
 
 
 async def get_latest_new_prices(stored_data: None, region: Region, config: Config) -> Optional[Box]:

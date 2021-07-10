@@ -28,15 +28,9 @@ async def main():
     except FileNotFoundError as exc:
         logger.exception(exc)
         sys.exit(1)
-    legacy_database_engine = None
-    if config.paths.legacy_database is not None:
-        try:
-            legacy_database_engine = utils.get_async_legacy_engine(config)
-        except FileNotFoundError as exc:
-            logger.exception(exc)
-            sys.exit(1)
 
     regions_data = await prices.collect_regions_data(config, defaults.REGIONS_TO_SEND)
+
     # IMPLEMENT: Get the regions where price data updated relative to the last run.
     # regions_updated = get_regions_updated(regions_data, config)
     updated_regions = [awattprice.defaults.Region.DE]

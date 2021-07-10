@@ -39,13 +39,12 @@ async def main():
     regions_data = await prices.collect_regions_data(config, defaults.REGIONS_TO_SEND)
     # IMPLEMENT: Get the regions where price data updated relative to the last run.
     # regions_updated = get_regions_updated(regions_data, config)
-    updated_regions = [awattprice.defaults.Region.DE, awattprice.defaults.Region.AT]
+    updated_regions = [awattprice.defaults.Region.DE]
     updated_regions_data = {region: regions_data[region] for region in updated_regions}
 
     for detailed_prices in updated_regions_data.values():
         detailed_prices.set_lowest_price()
 
-    # Tokens which apply to receive a price below notification.
     applying_tokens = await tokens.collect_applying_tokens(database_engine, updated_regions_data)
 
 

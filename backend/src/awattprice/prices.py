@@ -2,6 +2,7 @@
 import asyncio
 import json
 
+from copy import deepcopy
 from decimal import Decimal
 from typing import Optional
 from typing import Union
@@ -34,7 +35,7 @@ def transform_from_stored_data(data: Box):
 
 def parse_to_storable_json(data: Box) -> str:
     """Parse the app interal price format to a storable json string."""
-    storable_data = Box(data)
+    storable_data = deepcopy(data)
     for price_point in storable_data.prices:
         price_point.marketprice = str(price_point.marketprice)
 
@@ -216,19 +217,18 @@ async def update_last_update_time(region: Region, config: Config):
         await file.write(now_string)
 
 
-def parse_downloaded_data(downloaded_data: Box) -> Box:
-    """Parse the downloaded price data into the app internal format."""
-    parsed_data = Box()
+def parse_downloaded_data(data: Box) -> Box:
+    """Transform the downloaded price data into the app internal format."""
+    new_data = Box()
+    new_data.prices = BoxList()
+    for point in data.data:
+        new_point = Box()
+        new_point.start_timestamp = point.start_timestamp / defaults.SEC_TO_MILLISEC
+        new_point.end_timestamp = point.end_timestamp / defaults.SEC_TO_MILLISEC
+        new_point.marketprice = Decimal(str(point.marketprice))
+        new_data.prices.append(new_point)
 
-    parsed_data.prices = BoxList()
-    for price_point in downloaded_data.data:
-        formatted_price_point = Box()
-        formatted_price_point.start_timestamp = price_point.start_timestamp / defaults.SEC_TO_MILLISEC
-        formatted_price_point.end_timestamp = price_point.end_timestamp / defaults.SEC_TO_MILLISEC
-        formatted_price_point.marketprice = Decimal(str(price_point.marketprice))
-        parsed_data.prices.append(formatted_price_point)
-
-    return parsed_data
+    return new_data
 
 
 def check_data_new(old_data: Optional[Box], new_data: Box) -> bool:
@@ -274,8 +274,8 @@ async def get_latest_new_prices(stored_data: None, region: Region, config: Confi
         return None
     # See 'energy_prices.get' doc for an explanation of these update steps.
     if could_acquire_immediately:
-        new_raw_data = await download_data(region, config)
-        if new_raw_data is None:
+        new_data = await download_data(region, config)
+        if new_data is None:
             refresh_lock.release()
             return None
         try:
@@ -284,11 +284,11 @@ async def get_latest_new_prices(stored_data: None, region: Region, config: Confi
             logger.exception(f"Couldn't write last update time: {exc}.")
             # Not ideal, but don't handle as it is not critical enough to justify service unavailability.
         try:
-            jsonschema.validate(new_raw_data, defaults.AWATTAR_API_PRICE_DATA_SCHEMA)
+            jsonschema.validate(new_data, defaults.AWATTAR_API_PRICE_DATA_SCHEMA)
         except jsonschema.ValidationError as exc:
             refresh_lock.release()
             return None
-        new_data = parse_downloaded_data(new_raw_data)
+        new_data = parse_downloaded_data(new_data)
         data_is_new = check_data_new(stored_data, new_data)
         if not data_is_new:
             logger.debug("Downloaded data includes no new prices.")
@@ -345,7 +345,7 @@ async def get_current_prices(region: Region, config: Config) -> Optional[dict]:
 
 
 def parse_to_response_data(price_data: Box) -> Box:
-    """Transform app interal format to the response format."""
+    """Parse app interal format to the response format."""
     # Don't create copy to need to explicitly make data included in response opt-in.
     response_data = Box()
     response_data.prices = price_data.prices

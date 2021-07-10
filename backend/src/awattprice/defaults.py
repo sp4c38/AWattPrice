@@ -1,4 +1,5 @@
 """Contains default values and models."""
+from decimal import Decimal
 from enum import auto
 from enum import Enum
 from typing import Optional
@@ -15,14 +16,14 @@ class Region(str, Enum):
     AT = "AT"
 
     @property
-    def tax(self) -> Optional[float]:
+    def tax(self) -> Optional[Decimal]:
         tax = REGION_TAXES[self]
         return tax
 
 
 # Multipliers to get the taxed price.
 REGION_TAXES = {
-    Region.DE: 1.19,
+    Region.DE: Decimal("1.19"),
     Region.AT: None
 }
 
@@ -54,7 +55,7 @@ ORM_TABLE_NAMES = Box(
 )
 
 SEC_TO_MILLISEC = 1000  # to convert multiply by this factor
-MWH_TO_KWH = 0.001
+EURMWH_TO_CENTWKWH = Decimal("0.001") * Decimal("100")
 
 # Timeout in seconds when requesting from aWATTar.
 AWATTAR_TIMEOUT = 10.0

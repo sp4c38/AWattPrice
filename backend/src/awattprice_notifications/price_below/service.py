@@ -9,18 +9,17 @@ import awattprice
 
 from loguru import logger
 
-import awattprice_notifications
-
+from awattprice_notifications import defaults as notifications_defaults
 from awattprice_notifications.price_below import defaults
+from awattprice_notifications.price_below import notifications
 from awattprice_notifications.price_below import prices
 from awattprice_notifications.price_below import tokens
-from awattprice_notifications.price_below import utils
 
 
 async def main():
     """Run steps to send price below notifications to users."""
     config = awattprice.configurator.get_config()
-    price_below_service_name = awattprice_notifications.defaults.PRICE_BELOW_SERVICE_NAME
+    price_below_service_name = notifications_defaults.PRICE_BELOW_SERVICE_NAME
     awattprice.configurator.configure_loguru(price_below_service_name, config)
 
     try:
@@ -32,7 +31,7 @@ async def main():
     regions_data = await prices.collect_regions_data(config, defaults.REGIONS_TO_SEND)
 
     # IMPLEMENT: Get the regions where price data updated relative to the last run.
-    # regions_updated = get_regions_updated(regions_data, config)
+    # regions_updated = select_regions_updated(regions_data, config)
     updated_regions = [awattprice.defaults.Region.DE]
     updated_regions_data = {region: regions_data[region] for region in updated_regions}
 
@@ -40,6 +39,8 @@ async def main():
         detailed_prices.set_lowest_price()
 
     applying_tokens = await tokens.collect_applying_tokens(database_engine, updated_regions_data)
+
+    await notifications.send_price_below_notifications(applying_tokens, updated_regions_data)
 
 
 if __name__ == "__main__":

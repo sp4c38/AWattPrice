@@ -1,6 +1,9 @@
 """Perform operations on tokens and their configurations."""
+from collections import defaultdict
+
 import awattprice
 
+from awattprice.defaults import Region
 from awattprice.orm import PriceBelowNotification
 from awattprice.orm import Token
 from sqlalchemy import and_
@@ -9,18 +12,18 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncEngine
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import contains_eager
+from sqlalchemy.sql.elements import BinaryExpression
 
-from awattprice_notifications.price_below.defaults import DetailedPriceData
+from awattprice_notifications.price_below.prices import DetailedPriceData
 
 
-async def collect_applying_tokens(engine: AsyncEngine, updated_regions_data: DetailedPriceData) -> [Token]:
-    """Collect all tokens from the database which apply to get a price below notification.
+def get_below_value_checks(regions_data: dict[Region, DetailedPriceData]) -> list[BinaryExpression]:
+    """Get sqlalchemy and_ clauses which check if the price data drops below or on the users below value.
 
-    The price below row of each token is included on the tokens of the output.
+    These checks respect the tax option of the user by adding or leaving away the tax on the price data.
     """
-    # For each region check if the lowest price value is equal or lower than the below value of the user.
     below_value_checks = []
-    for region, price_data in updated_regions_data.items():
+    for region, price_data in regions_data.items():
         lowest_price = price_data.data.prices[price_data.lowest_price_index]
         lowest_marketprice_kwh = lowest_price.marketprice * awattprice.defaults.EURMWH_TO_CENTWKWH
         if region.tax is None:
@@ -43,7 +46,20 @@ async def collect_applying_tokens(engine: AsyncEngine, updated_regions_data: Det
                     ),
                 )
             )
+    return below_value_checks
 
+
+async def collect_applying_tokens(
+    engine: AsyncEngine, updated_regions_data: dict[Region, DetailedPriceData]
+) -> dict[Region, list[Token]]:
+    """Collect all tokens from the database for the specified regions which apply to get a price below notification.
+
+    The price below attributes on the returned tokens are filled.
+
+    :returns: Dictionary with region as key and list of tokens as the value. Updated regions which
+        don't have any tokens associated aren't included in the returned dictionary.
+    """
+    below_value_checks = get_below_value_checks(updated_regions_data)
     async with AsyncSession(engine) as session:
         applying_notifications_stmt = (
             select(Token)
@@ -52,7 +68,11 @@ async def collect_applying_tokens(engine: AsyncEngine, updated_regions_data: Det
             .where(and_(PriceBelowNotification.active is True, or_(*below_value_checks)))
         )
 
-        tokens = await session.execute(applying_notifications_stmt)
-        tokens = tokens.scalars().all()
+        ungrouped_tokens = await session.execute(applying_notifications_stmt)
+        ungrouped_tokens = ungrouped_tokens.scalars().all()
+
+    tokens = defaultdict(list)
+    for token in ungrouped_tokens:
+        tokens[token.region].append(token)
 
     return tokens

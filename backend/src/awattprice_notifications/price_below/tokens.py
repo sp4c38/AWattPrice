@@ -6,6 +6,7 @@ import awattprice
 from awattprice.defaults import Region
 from awattprice.orm import PriceBelowNotification
 from awattprice.orm import Token
+from box import Box
 from sqlalchemy import and_
 from sqlalchemy import or_
 from sqlalchemy import select
@@ -52,7 +53,7 @@ def get_below_value_checks(regions_data: dict[Region, DetailedPriceData]) -> lis
 
 async def collect_applying_tokens(
     engine: AsyncEngine, updated_regions_data: dict[Region, DetailedPriceData]
-) -> dict[Region, list[Token]]:
+) -> Box[Region, list[Token]]:
     """Collect all tokens from the database for the specified regions which apply to get a price below notification.
 
     The price below attributes on the returned tokens are filled.
@@ -75,5 +76,6 @@ async def collect_applying_tokens(
     tokens = defaultdict(list)
     for token in ungrouped_tokens:
         tokens[token.region].append(token)
+    tokens = Box(tokens)
 
     return tokens

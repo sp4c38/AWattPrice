@@ -40,7 +40,7 @@ async def main():
 
     applying_tokens = await tokens.collect_applying_tokens(database_engine, updated_regions_data)
 
-    await notifications.send_price_below_notifications(applying_tokens, updated_regions_data)
+    await notifications.send_notifications(applying_tokens, updated_regions_data)
 
 
 if __name__ == "__main__":

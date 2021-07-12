@@ -32,9 +32,7 @@ def _transform_config(config: Config):
     config.paths.log_dir = Path(config.paths.log_dir).expanduser()
     config.paths.data_dir = Path(config.paths.data_dir).expanduser()
     config.paths.price_data_dir = config.paths.data_dir / defaults.PRICE_DATA_SUBDIR_NAME
-    config.paths.legacy_database = _fallthrough_check_config_none(config.paths.legacy_database)
-    if config.paths.legacy_database is not None:
-        config.paths.legacy_database = Path(config.paths.legacy_database).expanduser()
+    config.paths.apns_dir = Path(config.paths.apns_dir).expanduser()
 
 
 def _ensure_dir(path: Path):
@@ -55,13 +53,10 @@ def _ensure_dir(path: Path):
 
 def _ensure_config_dirs(config: Config):
     """Ensure certain directories referred to in the config exist."""
-    try:
-        _ensure_dir(config.paths.log_dir)
-        _ensure_dir(config.paths.data_dir)
-        _ensure_dir(config.paths.price_data_dir)
-    except NotADirectoryError as exc:
-        sys.stderr.write(f"ERROR: Path isn't a directory: {exc}.\n")
-        sys.exit(1)
+    _ensure_dir(config.paths.log_dir)
+    _ensure_dir(config.paths.data_dir)
+    _ensure_dir(config.paths.price_data_dir)
+    _ensure_dir(config.paths.apns_dir)
 
 
 def get_config() -> Config:

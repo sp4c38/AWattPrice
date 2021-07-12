@@ -98,6 +98,8 @@ PRICE_DATA_SUBDIR_NAME = "price_data"
 PRICE_DATA_REFRESH_LOCK_TIMEOUT = AWATTAR_TIMEOUT + 2.0
 # Name of file which stores the timestamp when prices were updated last.
 PRICE_DATA_UPDATE_TS_FILE_NAME = "update-ts-{}.info"  # formatted with lowercase region name
+# Decimal places to round cent/kwh prices to.
+PRICE_CENTKWH_ROUNDING_PLACES = 2
 
 
 class TaskType(Enum):

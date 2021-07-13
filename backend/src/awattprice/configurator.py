@@ -74,7 +74,7 @@ def get_config() -> Config:
 
     config = None
     if config_path:
-        config = Config(config_path.as_posix())
+        config = Config(str(config_path))
     else:
         sys.stdout.write(f"INFO: No config file found. Creating at {config_path}.\n")
         config_path = read_attempt_paths[0]
@@ -94,17 +94,8 @@ def configure_loguru(service_name: str, config: Config):
 
     :param service_name: Name of the service for which logging should be registered.
     """
-    log_dir_path = config.paths.log_dir
-    if log_dir_path.exists():
-        if not log_dir_path.is_dir():
-            sys.stderr.write(f"Directory used to store logs {log_dir_path.as_posix()} is not a directory.\n")
-            sys.exit(1)
-    else:
-        sys.stdout.write(f"Log directory missing. Creating at {log_dir_path}.\n")
-        log_dir_path.mkdir(parents=True, exist_ok=True)
-
     log_name = service_name + ".log"
-    log_path = log_dir_path / (service_name + ".log")
+    log_path = config.paths.log_dir / (service_name + ".log")
     logger.add(
         log_path,
         enqueue=True,  # This makes log calls non-blocking.

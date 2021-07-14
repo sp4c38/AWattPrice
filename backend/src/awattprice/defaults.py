@@ -27,8 +27,8 @@ REGION_TAXES = {
     Region.AT: None
 }
 
-# Name to identify the web app service.
 AWATTPRICE_SERVICE_NAME = "awattprice"
+APP_BUNDLE_ID = "me.space8.AWAttPrice"
 
 DEFAULT_CONFIG = """\
 [general]

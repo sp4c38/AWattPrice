@@ -39,9 +39,9 @@ async def main():
     for detailed_prices in updated_regions_data.values():
         detailed_prices.set_lowest_price()
 
-    applying_tokens = await tokens.collect_applying_tokens(database_engine, updated_regions_data)
+    applying_regions_tokens = await tokens.collect_applying_tokens(database_engine, updated_regions_data)
 
-    await notifications.send_notifications(config, applying_tokens, updated_regions_data)
+    await notifications.send_notifications(config, applying_regions_tokens, updated_regions_data)
 
 
 if __name__ == "__main__":

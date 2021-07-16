@@ -73,9 +73,9 @@ async def collect_applying_tokens(
         ungrouped_tokens = await session.execute(applying_notifications_stmt)
         ungrouped_tokens = ungrouped_tokens.scalars().all()
 
-    tokens = defaultdict(list)
+    region_tokens = defaultdict(list)
     for token in ungrouped_tokens:
-        tokens[token.region].append(token)
-    tokens = Box(tokens)
+        region_tokens[token.region].append(token)
+    region_tokens = Box(region_tokens)
 
-    return tokens
+    return region_tokens

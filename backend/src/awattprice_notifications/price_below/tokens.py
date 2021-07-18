@@ -25,8 +25,7 @@ def get_below_value_checks(regions_data: dict[Region, DetailedPriceData]) -> lis
     """
     below_value_checks = []
     for region, price_data in regions_data.items():
-        lowest_price = price_data.data.prices[price_data.lowest_price_index]
-        lowest_marketprice_kwh = lowest_price.marketprice * awattprice.defaults.EURMWH_TO_CENTWKWH
+        lowest_marketprice_kwh = price_data.lowest_price.marketprice * awattprice.defaults.EURMWH_TO_CENTWKWH
         lowest_marketprice_kwh = round(lowest_marketprice_kwh, awattprice.defaults.PRICE_CENTKWH_ROUNDING_PLACES)
         if region.tax is None:
             below_value_checks.append(

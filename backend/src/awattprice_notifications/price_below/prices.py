@@ -18,14 +18,29 @@ class DetailedPriceData:
     """Store extra information in addition to the region price data to describe it in more detail."""
 
     data: Box
-    lowest_price_index: Optional[int] = None  # Index to the lowest price point in the price data.
+    lowest_price: Optional[Box] = None
 
     def set_lowest_price(self):
-        """Find the lowest price and set the objects attribute to this price points index."""
+        """Find the lowest price and set the objects attribute to this price point."""
         prices = self.data.prices
-        lowest_price = min(enumerate(prices), key=lambda price_point: price_point[1].marketprice)
-        lowest_price_index = lowest_price[0]
-        self.lowest_price_index = lowest_price_index
+        lowest_price = min(prices, key=lambda price_point: price_point.marketprice)
+        self.lowest_price = lowest_price
+
+    def get_prices_below_value(self, below_value: Decimal, tax: Optional[Decimal]) -> list[int]:
+        """Get prices which are on or below a given value.
+
+        :param tax: Optional tax calculated onto the prices before checking. Below value stays unchanged.
+        """
+        below_value_prices = []
+        for price_point in self.data:
+            marketprice = price_point.marketprice
+            if tax is not None:
+                marketprice *= tax
+            if marketprice <= below_value:
+                below_value_prices.append(price_point)
+
+        return below_value_prices
+
 
 
 async def collect_regions_data(config: Config, regions: list[Region]) -> Box:

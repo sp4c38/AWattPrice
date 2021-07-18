@@ -12,16 +12,18 @@ from awattprice_notifications.price_below import defaults
 from awattprice_notifications.price_below.prices import DetailedPriceData
 
 
-async def get_general_send_request_headers(config: Config) -> Box:
-    """Get the headers for requests sending price below notifications."""
-    apns_authorization = await awattprice_notifications.apns.get_apns_request_authorization(config)
-
+def get_notification_headers(
+    apns_authorization: str, below_value_prices: list[Box]
+) -> Box:
+    """Get headers needed to send a certain price below notification."""
     request_headers = Box()
     request_headers.authorization = f"bearer {apns_authorization}"
+    request_headers["apns-collapse-id"] = defaults.NOTIFICATION.COLLAPSE_ID
+    latest_below_value_price = max(below_value_prices, key=lambda price_point: price_point.start_timestamp)
+    request_headers["apns-expiration"] = latest_below_value_price.start_timestamp
+    request_headers["apns-priority"] = defaults.NOTIFICATION.PRIORITY
     request_headers["apns-push-type"] = defaults.NOTIFICATION.PUSH_TYPE
     request_headers["apns-topic"] = awattprice.defaults.APP_BUNDLE_ID
-    request_headers["apns-priority"] = defaults.NOTIFICATION.PRIORITY
-    request_headers["apns-collapse-id"] = defaults.NOTIFICATION.COLLAPSE_ID
 
     return request_headers
 
@@ -49,10 +51,23 @@ async def send_notifications(
     :param tokens, price_data: Each region which has applying tokens *must* also be present in the price data.
     """
 
-    request_headers = await get_general_send_request_headers(config)
+    apns_authorization = await awattprice_notifications.apns.get_apns_authorization(config)
 
     for region, tokens in regions_tokens.items():
+        if tokens is None:
+            continue
+
+        region_prices = price_data[region]
+
         for token in tokens:
+            price_below = token.price_below
+
+            price_tax = None
+            if token.tax is True:
+                price_tax = region.tax
+            below_value_prices = region_prices.get_prices_below_value(price_below.below_value, price_tax)
+
+            headers = get_notification_headers(apns_authorization, below_value_prices)
             notification = construct_token_notification(token)
+            print(headers)
             print(notification)
-            # request_headers["apns-expiration"] set per user basis

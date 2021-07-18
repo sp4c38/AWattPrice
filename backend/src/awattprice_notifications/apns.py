@@ -8,7 +8,7 @@ from liteconfig import Config
 from awattprice_notifications import defaults
 
 
-async def get_apns_request_authorization(config: Config) -> str:
+async def get_apns_authorization(config: Config) -> str:
     """Get the jwt to authenticate for an apns request."""
     auth_jwt_headers = Box()
     auth_jwt_headers.kid = config.apns.key_id

@@ -32,8 +32,10 @@ class DetailedPriceData:
         :param tax: Optional tax calculated onto the prices before checking. Below value stays unchanged.
         """
         below_value_prices = []
-        for price_point in self.data:
+        for price_point in self.data.prices:
             marketprice = price_point.marketprice
+            marketprice *= awattprice.defaults.EURMWH_TO_CENTWKWH
+            marketprice = round(marketprice, awattprice.defaults.PRICE_CENTKWH_ROUNDING_PLACES)
             if tax is not None:
                 marketprice *= tax
             if marketprice <= below_value:

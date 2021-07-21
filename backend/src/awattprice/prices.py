@@ -28,6 +28,32 @@ from awattprice.defaults import Region
 from awattprice.utils import ExtendedFileLock
 
 
+class MarketPrice:
+    """Provide extra helper functions next to storing the marketprice."""
+    region: Region
+    value: Decimal
+
+    def __init__(self, region: Region, price: Decimal):
+        """Constructor for a new marketprice instance.
+
+        :param region: The belonging region of the price.
+        :param price: Price as Euro per MWh.
+        """
+        self.region = region
+        self.value = price
+
+    @property
+    def taxed(self) -> Decimal:
+        """Get the taxed price."""
+        taxed_price = self.region.tax * self.value
+        return taxed_price
+
+    @property
+    def ct_per_kwh(self):
+        """Get the converted cent per kwh price from the euro per mwh price."""
+
+
+
 async def get_stored_data(region: Region, config: Config) -> Optional[Box]:
     """Get locally cached price data.
 
@@ -199,7 +225,7 @@ async def update_last_update_time(region: Region, config: Config):
         await file.write(now_string)
 
 
-def parse_downloaded_data(data: Box) -> Box:
+def parse_downloaded_data(region: Region, data: Box) -> Box:
     """Transform the downloaded price data into the app internal format."""
     new_data = Box()
     new_data.prices = BoxList()
@@ -209,7 +235,8 @@ def parse_downloaded_data(data: Box) -> Box:
         new_point.start_timestamp = arrow.get(start_timestamp)
         end_timestamp = point.end_timestamp / defaults.SEC_TO_MILLISEC
         new_point.end_timestamp = arrow.get(end_timestamp)
-        new_point.marketprice = Decimal(str(point.marketprice))
+        marketprice = Decimal(str(point.marketprice))
+        new_point.marketprice = MarketPrice(region, marketprice)
         new_data.prices.append(new_point)
 
     return new_data
@@ -264,7 +291,7 @@ async def get_latest_new_prices(stored_data: None, region: Region, config: Confi
                 logger.exception(f"Couldn't write last update time: {exc}.")
                 # Not ideal, but also not essential to provide the latest new prices.
             jsonschema.validate(new_data, defaults.AWATTAR_API_PRICE_DATA_SCHEMA)
-            new_data = parse_downloaded_data(new_data)
+            new_data = parse_downloaded_data(region, new_data)
             data_is_new = check_data_new(stored_data, new_data)
             if not data_is_new:
                 logger.debug("Downloaded data includes no new prices.")
@@ -329,7 +356,7 @@ def parse_to_response_data(price_data: Box) -> Box:
         response_point = Box()
         response_point.start_timestamp = price_point.start_timestamp.int_timestamp
         response_point.end_timestamp = price_point.end_timestamp.int_timestamp
-        response_point.marketprice = float(price_point.marketprice)
+        response_point.marketprice = float(price_point.marketprice.value)
         response_data.prices.append(response_point)
 
     return response_data

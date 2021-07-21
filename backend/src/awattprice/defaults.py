@@ -20,7 +20,6 @@ class Region(str, Enum):
         tax = REGION_TAXES[self]
         return tax
 
-
 # Multipliers to get the taxed price.
 REGION_TAXES = {Region.DE: Decimal("1.19"), Region.AT: None}
 

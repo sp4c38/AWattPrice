@@ -99,8 +99,7 @@ def check_update_data(data: Optional[Box], last_update_time: Optional[Arrow]) ->
 
     midnight_tomorrow_berlin = now_berlin.floor("day").shift(days=+2)
     max_price = max(data.prices, key=lambda point: point.end_timestamp)
-    max_end_time = arrow.get(max_price.end_timestamp)
-    if max_end_time >= midnight_tomorrow_berlin:
+    if max_price.end_timestamp >= midnight_tomorrow_berlin:
         logger.debug("Price points still available until tomorrow midnight.")
         return False
     else:
@@ -325,8 +324,12 @@ def parse_to_response_data(price_data: Box) -> Box:
     """Parse app interal format to the response format."""
     # Don't create copy to need to explicitly make data included in response opt-in.
     response_data = Box()
-    response_data.prices = price_data.prices
-    for price_point in response_data.prices:
-        price_point.marketprice = float(price_point.marketprice)
+    response_data.prices = []
+    for price_point in price_data.prices:
+        response_point = Box()
+        response_point.start_timestamp = price_point.start_timestamp.int_timestamp
+        response_point.end_timestamp = price_point.end_timestamp.int_timestamp
+        response_point.marketprice = float(price_point.marketprice)
+        response_data.prices.append(response_point)
 
     return response_data

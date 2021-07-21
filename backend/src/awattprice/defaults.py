@@ -22,10 +22,7 @@ class Region(str, Enum):
 
 
 # Multipliers to get the taxed price.
-REGION_TAXES = {
-    Region.DE: Decimal("1.19"),
-    Region.AT: None
-}
+REGION_TAXES = {Region.DE: Decimal("1.19"), Region.AT: None}
 
 AWATTPRICE_SERVICE_NAME = "awattprice"
 APP_BUNDLE_ID = "me.space8.AWAttPrice"

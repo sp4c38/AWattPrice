@@ -1,6 +1,8 @@
 """Helper functions which don't fit into a bigger category."""
 import asyncio
 
+from contextlib import contextmanager
+from filelock import FileLock
 from functools import partial
 from typing import Callable
 from typing import Union
@@ -10,6 +12,19 @@ import jsonschema
 from box import Box
 from fastapi import HTTPException
 from loguru import logger
+
+
+class ExtendedFileLock(FileLock):
+    @contextmanager
+    def context(self, acquire=True):
+        """Bettern context manager.
+
+        :param acquire: If true the lock will be acquired on context enter, else won't be acquired.
+        """
+        if acquire:
+            self.acquire()
+        yield
+        self.release()
 
 
 def async_wrap(func: Callable):

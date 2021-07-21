@@ -18,7 +18,6 @@ from arrow import Arrow
 from box import Box
 from box import BoxList
 from fastapi import HTTPException
-from filelock import FileLock
 from liteconfig import Config
 from loguru import logger
 
@@ -26,6 +25,7 @@ from awattprice import defaults
 from awattprice import exceptions
 from awattprice import utils
 from awattprice.defaults import Region
+from awattprice.utils import ExtendedFileLock
 
 
 async def get_stored_data(region: Region, config: Config) -> Optional[Box]:
@@ -87,13 +87,10 @@ def check_update_data(data: Optional[Box], last_update_time: Optional[Arrow]) ->
     if data is None:
         return True
 
+    now = arrow.now()
     now_berlin = arrow.now("Europe/Berlin")
-    if now_berlin.hour < defaults.AWATTAR_UPDATE_HOUR:
-        logger.debug(f"Not past update hour ({defaults.AWATTAR_UPDATE_HOUR}).")
-        return False
 
     if last_update_time is not None:
-        now = arrow.now()
         next_update_time = last_update_time.shift(seconds=defaults.AWATTAR_COOLDOWN_INTERVAL)
         if now < next_update_time:
             seconds_remaining = (next_update_time - now).total_seconds()
@@ -106,21 +103,27 @@ def check_update_data(data: Optional[Box], last_update_time: Optional[Arrow]) ->
     if max_end_time >= midnight_tomorrow_berlin:
         logger.debug("Price points still available until tomorrow midnight.")
         return False
+    else:
+        return True
 
-    return True
+    if now_berlin.hour < defaults.AWATTAR_UPDATE_HOUR:
+        logger.debug(f"Not past update hour ({defaults.AWATTAR_UPDATE_HOUR}).")
+        return False
+    else:
+        return True
 
 
-def get_data_refresh_lock(region: Region, config: Config) -> FileLock:
+def get_data_refresh_lock(region: Region, config: Config) -> ExtendedFileLock:
     """Get file lock used when refreshing price data."""
     lock_dir = config.paths.price_data_dir
     lock_file_name = defaults.PRICE_DATA_FILE_NAME.format(region.value.lower())
     lock_file_path = lock_dir / lock_file_name
-    lock = FileLock(lock_file_path)
+    lock = ExtendedFileLock(lock_file_path)
     return lock
 
 
 async def acquire_refresh_lock_immediate(
-    lock: FileLock, timeout: float = defaults.PRICE_DATA_REFRESH_LOCK_TIMEOUT
+    lock: ExtendedFileLock, timeout: float = defaults.PRICE_DATA_REFRESH_LOCK_TIMEOUT
 ) -> bool:
     """Acquire the refresh lock either immediately or with waiting.
 
@@ -153,8 +156,7 @@ async def download_data(region: Region, config: Config) -> Optional[Box]:
     """Download price data from the aWATTar API and extract the json.
 
     :returns price data: As a box object.
-    :returns None: If price data couldn't be downloaded or is invalid json.
-    :raises json.JSONDecodeError: If response couldn't be decoded as
+    :returns None: If price data couldn't be downloaded or is no valid json.
     """
     region_config_identifier = f"awattar.{region.value.lower()}"
     url = getattr(config, region_config_identifier).url
@@ -204,8 +206,10 @@ def parse_downloaded_data(data: Box) -> Box:
     new_data.prices = BoxList()
     for point in data.data:
         new_point = Box()
-        new_point.start_timestamp = point.start_timestamp / defaults.SEC_TO_MILLISEC
-        new_point.end_timestamp = point.end_timestamp / defaults.SEC_TO_MILLISEC
+        start_timestamp = point.start_timestamp / defaults.SEC_TO_MILLISEC
+        new_point.start_timestamp = arrow.get(start_timestamp)
+        end_timestamp = point.end_timestamp / defaults.SEC_TO_MILLISEC
+        new_point.end_timestamp = arrow.get(end_timestamp)
         new_point.marketprice = Decimal(str(point.marketprice))
         new_data.prices.append(new_point)
 
@@ -244,44 +248,30 @@ async def get_latest_new_prices(stored_data: None, region: Region, config: Confi
     """Download the latest new prices.
 
     :returns downloaded price data: If all went well.
-    :returns None: If downloaded price data isn't new or if some error occurred while getting the
-        downloaded price data.
+    :returns None: There are no latest new prices.
     """
     refresh_lock = get_data_refresh_lock(region, config)
-    try:
-        could_acquire_immediately = await acquire_refresh_lock_immediate(refresh_lock)
-    except filelock.Timeout as exc:
-        logger.exception("Can't get latest prices because refresh lock couldn't be acquired: {exc}.")
-        return None
+    could_acquire_immediately = await acquire_refresh_lock_immediate(refresh_lock)
+
     # See 'energy_prices.get' doc for an explanation of these update steps.
     if could_acquire_immediately:
-        new_data = await download_data(region, config)
-        if new_data is None:
-            refresh_lock.release()
-            return None
-        try:
-            await update_last_update_time(region, config)
-        except Exception as exc:
-            logger.exception(f"Couldn't write last update time: {exc}.")
-            # Not ideal, but don't handle as it is not critical enough to justify service unavailability.
-        try:
+        with refresh_lock.context(acquire=False):
+            new_data = await download_data(region, config)
+            if new_data is None:
+                return None
+            try:
+                await update_last_update_time(region, config)
+            except Exception as exc:
+                logger.exception(f"Couldn't write last update time: {exc}.")
+                # Not ideal, but also not essential to provide the latest new prices.
             jsonschema.validate(new_data, defaults.AWATTAR_API_PRICE_DATA_SCHEMA)
-        except jsonschema.ValidationError as exc:
-            refresh_lock.release()
-            return None
-        new_data = parse_downloaded_data(new_data)
-        data_is_new = check_data_new(stored_data, new_data)
-        if not data_is_new:
-            logger.debug("Downloaded data includes no new prices.")
-            refresh_lock.release()
-            return None
-        try:
+            new_data = parse_downloaded_data(new_data)
+            data_is_new = check_data_new(stored_data, new_data)
+            if not data_is_new:
+                logger.debug("Downloaded data includes no new prices.")
+                return None
             await store_data(new_data, region, config)
-        except Exception as exc:
-            # Not ideal, but still okay as this is an extra step, thus not required to get the latest new prices.
-            logger.exception(f"Downloaded latest price data but couldn't store it: {exc}.")
-        latest_prices = new_data
-        refresh_lock.release()
+            latest_prices = new_data
     else:
         refresh_lock.release()
         latest_prices = await get_stored_data(region, config)
@@ -305,18 +295,24 @@ async def get_current_prices(region: Region, config: Config) -> Optional[dict]:
         return_exceptions=True,
     )
     if isinstance(stored_data, Exception):
-        logger.exception(f"Couldn't get stored data: {stored_data}.")
+        logger.exception(f"Couldn't get stored {region.name} data: {stored_data}.")
         return None
     if isinstance(last_update_time, Exception):
-        logger.exception(f"Couldn't get the last update time and thus will assume it is none: {last_update_time}.")
+        logger.exception(
+            f"Couldn't get the {region.name} last update time and thus will assume it is none: {last_update_time}."
+        )
         last_update_time = None
 
     do_update_data = check_update_data(stored_data, last_update_time)
     price_data = None
     if do_update_data:
-        price_data = await get_latest_new_prices(stored_data, region, config)
+        try:
+            price_data = await get_latest_new_prices(stored_data, region, config)
+        except Exception as exc:
+            logger.exception(f"Couldn't get latest new {region.name} prices: {exc}.")
+            price_data = stored_data
         if price_data is None:
-            logger.debug("Local data marked as out-of-date but couldn't get new latest price data yet.")
+            logger.warning(f"No latest new {region.name} prices.")
             price_data = stored_data
     else:
         logger.debug(f"Local {region.name} prices still up to date.")

@@ -20,6 +20,7 @@ class Region(str, Enum):
         tax = REGION_TAXES[self]
         return tax
 
+
 # Multipliers to get the taxed price.
 REGION_TAXES = {Region.DE: Decimal("1.19"), Region.AT: None}
 
@@ -53,8 +54,12 @@ ORM_TABLE_NAMES = Box(
     }
 )
 
-SEC_TO_MILLISEC = 1000  # to convert multiply by this factor
-EURMWH_TO_CENTWKWH = Decimal("0.001") * Decimal("100")
+# Factors to convert between sizes.
+SEC_TO_MILLISEC = 1000
+EURMWH_TO_CENTWKWH = Decimal("100") * Decimal("0.001")
+
+# Number of places to round a cent per kwh price.
+CENT_KWH_ROUNDING_PLACES = 2
 
 # Timeout in seconds when requesting from aWATTar.
 AWATTAR_TIMEOUT = 10.0
@@ -97,8 +102,6 @@ PRICE_DATA_SUBDIR_NAME = "price_data"
 PRICE_DATA_REFRESH_LOCK_TIMEOUT = AWATTAR_TIMEOUT + 2.0
 # Name of file which stores the timestamp when prices were updated last.
 PRICE_DATA_UPDATE_TS_FILE_NAME = "update-ts-{}.info"  # formatted with lowercase region name
-# Decimal places to round cent/kwh prices to.
-PRICE_CENTKWH_ROUNDING_PLACES = 2
 
 
 class TaskType(Enum):

@@ -30,28 +30,41 @@ from awattprice.utils import ExtendedFileLock
 
 class MarketPrice:
     """Provide extra helper functions next to storing the marketprice."""
-    region: Region
+
+    tax: Decimal
     value: Decimal
 
-    def __init__(self, region: Region, price: Decimal):
+    def __init__(self, tax: Decimal, price: Decimal):
         """Constructor for a new marketprice instance.
 
-        :param region: The belonging region of the price.
-        :param price: Price as Euro per MWh.
+        :param tax: Multiplier to get the taxed price.
+        :param price: Price as euro per MWh.
         """
-        self.region = region
+        self.tax = tax
         self.value = price
 
     @property
     def taxed(self) -> Decimal:
         """Get the taxed price."""
-        taxed_price = self.region.tax * self.value
+        taxed_price = self.tax * self.value
         return taxed_price
 
-    @property
-    def ct_per_kwh(self):
-        """Get the converted cent per kwh price from the euro per mwh price."""
+    def ct_kwh(self, taxed: bool = False, round_: bool = False) -> Decimal:
+        """Convert the price to cent per kWh.
 
+        :param taxed: If set convert the taxed price.
+        :param round: If set round the price naturally before returning.
+        """
+        if taxed:
+            price = self.taxed
+        else:
+            price = self.value
+        ct_kwh_price = price * defaults.EURMWH_TO_CENTWKWH
+
+        if round_ is True:
+            ct_kwh_price = round(ct_kwh_price, defaults.CENT_KWH_ROUNDING_PLACES)
+
+        return ct_kwh_price
 
 
 async def get_stored_data(region: Region, config: Config) -> Optional[Box]:
@@ -236,7 +249,7 @@ def parse_downloaded_data(region: Region, data: Box) -> Box:
         end_timestamp = point.end_timestamp / defaults.SEC_TO_MILLISEC
         new_point.end_timestamp = arrow.get(end_timestamp)
         marketprice = Decimal(str(point.marketprice))
-        new_point.marketprice = MarketPrice(region, marketprice)
+        new_point.marketprice = MarketPrice(region.tax, marketprice)
         new_data.prices.append(new_point)
 
     return new_data

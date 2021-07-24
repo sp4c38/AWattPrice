@@ -9,9 +9,11 @@ from awattprice.orm import Token
 from box import Box
 from liteconfig import Config
 from loguru import logger
+from tenacity import AsyncRetrying, stop_after_attempt, stop_after_delay, wait_exponential, wait_fixed
 
 import awattprice_notifications
 
+from awattprice_notifications import defaults as notification_defaults
 from awattprice_notifications.price_below import defaults
 from awattprice_notifications.price_below.prices import DetailedPriceData
 
@@ -72,18 +74,37 @@ async def send_notification(
 ) -> httpx.Response:
     """Send a single notification."""
     if use_sandbox is True:
-        origin = awattprice_notifications.defaults.APNS_SERVICE_URL.origin.sandbox
+        origin = notification_defaults.APNS__URL.origin.sandbox
     else:
-        origin = awattprice_notifications.defaults.APNS_SERVICE_URL.origin.production
-    path = awattprice_notifications.defaults.APNS_SERVICE_URL.path
+        origin = notification_defaults.APNS_URL.origin.production
+    path = notification_defaults.APNS_URL.path
     path = path.format(token.token)
 
     url = origin + path
 
-    try:
-        response = await client.post(url, json=notification.to_dict(), headers=headers.to_dict(), timeout)
-    except httpx.RequestError as exc:
-        logger.exception("")
+    timeout = notification_defaults.APNS_TIMEOUT
+    attempts = notification_defaults.APNS_ATTEMPTS
+    stop_delay = notification_defaults.APNS_STOP_DELAY
+    async for attempt in AsyncRetrying(
+        before=awattprice.utils.log_attempts(logger.debug),
+        stop=(stop_after_attempt(attempts) | stop_after_delay(stop_delay)),
+        wait=wait_exponential(multiplier=1.5, min=4, max=10)
+    ):
+        with attempt:
+            try:
+                response = await client.post(
+                    url, json=notification.to_dict(), headers=headers.to_dict(), timeout=timeout
+                )
+            except httpx.TimeoutException as exc:
+                logger.exception(f"Timed out when sending notification: {exc}.")
+                raise
+            except httpx.NetworkError as exc:
+                logger.exception(f"Network error when sending notification: {exc}.")
+                raise
+            except Exception as exc:
+                logger.exception(f"Unexpected exception when sending notification: {exc}.")
+                raise
+
     return response
 
 
@@ -116,4 +137,8 @@ async def deliver_notifications(
                 send_tasks.append(send_notification(client, token, headers, notification, config.use_sandbox))
 
         logger.info(f"Sending {len(send_tasks)} notification(s).")
-        responses = await asyncio.gather(*send_tasks)
+        responses = await asyncio.gather(*send_tasks, return_exceptions=True)
+        for response in responses:
+            if isinstance(response, Exception) is True:
+                continue
+            print(response)

@@ -257,7 +257,7 @@ def transform_tasks_body(body: Box):
         elif task.type == TaskType.UPDATE:
             transform_update_task(task)
 
-    # counts_ok = check_type_count(body.tasks)
-    # if not counts_ok:
-    #     logger.warning("Wrong notification task counts.")
-    #     raise HTTPException(400)
+    counts_ok = check_type_count(body.tasks)
+    if not counts_ok:
+        logger.warning("Wrong notification task counts.")
+        raise HTTPException(400)

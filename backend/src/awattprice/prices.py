@@ -31,17 +31,17 @@ from awattprice.utils import ExtendedFileLock
 class MarketPrice:
     """Provide extra helper functions next to storing the marketprice."""
 
-    tax: Decimal
     value: Decimal
+    tax: Optional[Decimal]
 
-    def __init__(self, tax: Decimal, price: Decimal):
+    def __init__(self, price: Decimal, tax: Optional[Decimal]):
         """Constructor for a new marketprice instance.
 
+        :param value: Price as euro per MWh.
         :param tax: Multiplier to get the taxed price.
-        :param price: Price as euro per MWh.
         """
-        self.tax = tax
         self.value = price
+        self.tax = tax
 
     @property
     def taxed(self) -> Decimal:
@@ -248,7 +248,7 @@ def parse_downloaded_data(region: Region, data: Box) -> Box:
         end_timestamp = point.end_timestamp / defaults.SEC_TO_MILLISEC
         new_point.end_timestamp = arrow.get(end_timestamp).to(defaults.EUROPE_BERLIN_TIMEZONE)
         marketprice = Decimal(str(point.marketprice))
-        new_point.marketprice = MarketPrice(region.tax, marketprice)
+        new_point.marketprice = MarketPrice(marketprice, region.tax)
         new_data.prices.append(new_point)
 
     return new_data

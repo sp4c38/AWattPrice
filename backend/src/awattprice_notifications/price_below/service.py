@@ -36,12 +36,9 @@ async def main():
     updated_regions = [awattprice.defaults.Region.DE]
     updated_regions_data = {region: regions_data[region] for region in updated_regions}
 
-    for detailed_prices in updated_regions_data.values():
-        detailed_prices.set_lowest_price()
-
     applying_regions_tokens = await tokens.collect_applying_tokens(database_engine, updated_regions_data)
 
-    await notifications.send_notifications(config, applying_regions_tokens, updated_regions_data)
+    await notifications.deliver_notifications(config, applying_regions_tokens, updated_regions_data)
 
 
 if __name__ == "__main__":

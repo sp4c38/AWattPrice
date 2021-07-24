@@ -16,20 +16,17 @@ class DetailedPriceData:
     """Store extra information in addition to the region price data to describe it in more detail."""
 
     data: Box
-    lowest_price: Optional[Box] = None
+    lowest_price: Box
 
     def __init__(self, data: Box):
         """Initialize a detailed price data container."""
         self.data = data
 
-    def set_lowest_price(self):
-        """Find the lowest price and set the 'lowest_price' attribute."""
-        prices = self.data.prices
-        lowest_price = min(prices, key=lambda price_point: price_point.marketprice.value)
+        lowest_price = min(data.prices, key=lambda price_point: price_point.marketprice.value)
         self.lowest_price = lowest_price
 
     def get_prices_below_value(self, below_value: Decimal, taxed: bool) -> list[int]:
-        """Get prices which are on or below a given value.
+        """Get prices which are on or below the given value.
 
         :param taxed: If set prices are taxed before comparing to the below value. This doesn't affect the
             below value.

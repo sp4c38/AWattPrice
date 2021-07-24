@@ -126,13 +126,12 @@ def check_update_data(data: Optional[Box], last_update_time: Optional[Arrow]) ->
     if data is None:
         return True
 
-    now = arrow.now()
     now_berlin = arrow.now("Europe/Berlin")
 
     if last_update_time is not None:
         next_update_time = last_update_time.shift(seconds=defaults.AWATTAR_COOLDOWN_INTERVAL)
-        if now < next_update_time:
-            seconds_remaining = (next_update_time - now).total_seconds()
+        if now_berlin < next_update_time:
+            seconds_remaining = (next_update_time - now_berlin).total_seconds()
             logger.debug(f"AWATTar cooldown has {seconds_remaining}s remaining.")
             return False
 
@@ -245,9 +244,9 @@ def parse_downloaded_data(region: Region, data: Box) -> Box:
     for point in data.data:
         new_point = Box()
         start_timestamp = point.start_timestamp / defaults.SEC_TO_MILLISEC
-        new_point.start_timestamp = arrow.get(start_timestamp)
+        new_point.start_timestamp = arrow.get(start_timestamp).to(defaults.EUROPE_BERLIN_TIMEZONE)
         end_timestamp = point.end_timestamp / defaults.SEC_TO_MILLISEC
-        new_point.end_timestamp = arrow.get(end_timestamp)
+        new_point.end_timestamp = arrow.get(end_timestamp).to(defaults.EUROPE_BERLIN_TIMEZONE)
         marketprice = Decimal(str(point.marketprice))
         new_point.marketprice = MarketPrice(region.tax, marketprice)
         new_data.prices.append(new_point)

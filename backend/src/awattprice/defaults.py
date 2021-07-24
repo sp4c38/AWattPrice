@@ -69,6 +69,8 @@ AWATTAR_COOLDOWN_INTERVAL = 60
 # Always will update at x hour regardless of summer and winter times.
 AWATTAR_UPDATE_HOUR = 13
 
+EUROPE_BERLIN_TIMEZONE = "Europe/Berlin"
+
 DATABASE_FILE_NAME = "database.sqlite3"  # End with '.sqlite3'
 
 

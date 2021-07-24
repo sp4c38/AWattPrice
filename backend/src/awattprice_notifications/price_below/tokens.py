@@ -7,6 +7,7 @@ from awattprice.defaults import Region
 from awattprice.orm import PriceBelowNotification
 from awattprice.orm import Token
 from box import Box
+from loguru import logger
 from sqlalchemy import and_
 from sqlalchemy import or_
 from sqlalchemy import select
@@ -70,6 +71,7 @@ async def collect_applying_tokens(
             .where(and_(PriceBelowNotification.active == True, or_(*below_value_checks)))
         )
 
+        logger.info("Collecting applying tokens from the database.")
         ungrouped_tokens = await session.execute(applying_notifications_stmt)
         ungrouped_tokens = ungrouped_tokens.scalars().all()
 

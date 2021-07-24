@@ -1,10 +1,14 @@
 """Send price below notifications."""
+import asyncio
+
 import awattprice
+import httpx
 
 from awattprice.defaults import Region
 from awattprice.orm import Token
 from box import Box
 from liteconfig import Config
+from loguru import logger
 
 import awattprice_notifications
 
@@ -19,10 +23,10 @@ def construct_notification_headers(apns_authorization: str, prices_below: list[B
     headers = Box()
     headers["authorization"] = f"bearer {apns_authorization}"
     headers["apns-push-type"] = defaults.NOTIFICATION.push_type
-    headers["apns-priority"] = defaults.NOTIFICATION.priority
+    headers["apns-priority"] = str(defaults.NOTIFICATION.priority)
     headers["apns-collapse-id"] = defaults.NOTIFICATION.collapse_id
     headers["apns-topic"] = awattprice.defaults.APP_BUNDLE_ID
-    headers["apns-expiration"] = latest_price_below.start_timestamp.int_timestamp
+    headers["apns-expiration"] = str(latest_price_below.start_timestamp.int_timestamp)
 
     return headers
 
@@ -60,13 +64,27 @@ def construct_notification(token: Token, detailed_prices: DetailedPriceData, pri
         lowest_price_marketprice_str,
     ]
 
-
     return notification
 
 
-async def send_notification():
+async def send_notification(
+    client: httpx.AsyncClient, token: Token, headers: Box, notification: Box, use_sandbox=False
+) -> httpx.Response:
     """Send a single notification."""
+    if use_sandbox is True:
+        origin = awattprice_notifications.defaults.APNS_SERVICE_URL.origin.sandbox
+    else:
+        origin = awattprice_notifications.defaults.APNS_SERVICE_URL.origin.production
+    path = awattprice_notifications.defaults.APNS_SERVICE_URL.path
+    path = path.format(token.token)
 
+    url = origin + path
+
+    try:
+        response = await client.post(url, json=notification.to_dict(), headers=headers.to_dict(), timeout)
+    except httpx.RequestError as exc:
+        logger.exception("")
+    return response
 
 
 async def deliver_notifications(
@@ -79,19 +97,23 @@ async def deliver_notifications(
 
     apns_authorization = await awattprice_notifications.apns.get_apns_authorization(config)
 
-    send_tasks = []
-    for region, tokens in regions_tokens.items():
-        if tokens is None:
-            continue
+    async with httpx.AsyncClient(http2=True) as client:
+        send_tasks = []
+        for region, tokens in regions_tokens.items():
+            if tokens is None:
+                continue
 
-        region_prices = price_data[region]
+            region_prices = price_data[region]
 
-        for token in tokens:
-            prices_below = region_prices.get_prices_below_value(token.price_below.below_value, token.tax)
+            for token in tokens:
+                prices_below = region_prices.get_prices_below_value(token.price_below.below_value, token.tax)
 
-            min_price = min(prices_below, key=lambda point: point.marketprice.value)
+                min_price = min(prices_below, key=lambda point: point.marketprice.value)
 
-            headers = construct_notification_headers(apns_authorization, prices_below)
-            notification = construct_notification(token, region_prices, prices_below)
+                headers = construct_notification_headers(apns_authorization, prices_below)
+                notification = construct_notification(token, region_prices, prices_below)
 
-            send_tasks.append()
+                send_tasks.append(send_notification(client, token, headers, notification, config.use_sandbox))
+
+        logger.info(f"Sending {len(send_tasks)} notification(s).")
+        responses = await asyncio.gather(*send_tasks)

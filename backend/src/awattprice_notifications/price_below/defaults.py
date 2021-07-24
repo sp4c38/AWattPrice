@@ -13,7 +13,7 @@ NOTIFICATION = Box(
         "title_loc_key": "general.priceGuard",
         "loc_keys": {
             "single_price": "notifications.price_drops_below.body.sing",
-            "multiple_prices": "notifications.price_drops_below.body.mult"
+            "multiple_prices": "notifications.price_drops_below.body.mult",
         },
         "sound": "default",
     }

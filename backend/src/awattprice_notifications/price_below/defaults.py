@@ -7,11 +7,14 @@ REGIONS_TO_SEND = [Region.DE, Region.AT]
 
 NOTIFICATION = Box(
     {
-        "PUSH_TYPE": "alert",
-        "PRIORITY": 5,
-        "COLLAPSE_ID": "price-below-notification",
-        "TITLE_LOC_KEY": "general.priceGuard",
-        "LOC_KEY": "notifications.price_drops_below.body.sing",
-        "SOUND": "default",
+        "push_type": "alert",
+        "priority": 5,
+        "collapse_id": "price-below-notification",
+        "title_loc_key": "general.priceGuard",
+        "loc_keys": {
+            "single_price": "notifications.price_drops_below.body.sing",
+            "multiple_prices": "notifications.price_drops_below.body.mult"
+        },
+        "sound": "default",
     }
 )

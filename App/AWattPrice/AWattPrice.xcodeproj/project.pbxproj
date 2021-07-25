@@ -58,7 +58,6 @@
 		61658DB125B5AF890083D25A /* EasyIntervalPickerRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61658DB025B5AF890083D25A /* EasyIntervalPickerRepresentable.swift */; };
 		6166E7FB25C570A600281830 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6166E7FA25C570A600281830 /* WidgetKit.framework */; };
 		6166E7FD25C570A600281830 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6166E7FC25C570A600281830 /* SwiftUI.framework */; };
-		6166E80625C570A800281830 /* AWattPriceWidgetExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 6166E7F825C570A600281830 /* AWattPriceWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		6166E89725C5737400281830 /* PriceWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6166E7FF25C570A600281830 /* PriceWidget.swift */; };
 		6166E8AE25C5740900281830 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 6166E88D25C5729500281830 /* Localizable.strings */; };
 		6166E8CF25C57B7600281830 /* WidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6166E8B925C57ABB00281830 /* WidgetBundle.swift */; };
@@ -132,13 +131,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		6166E80425C570A800281830 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 617D85A625052C35009E18FB /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 6166E7F725C570A600281830;
-			remoteInfo = AWattPriceWidgetExtension;
-		};
 		617D85C025052C37009E18FB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 617D85A625052C35009E18FB /* Project object */;
@@ -162,7 +154,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				6166E80625C570A800281830 /* AWattPriceWidgetExtension.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -812,7 +803,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				6166E80525C570A800281830 /* PBXTargetDependency */,
 			);
 			name = AWattPrice;
 			productName = AwattarApp;
@@ -1084,11 +1074,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		6166E80525C570A800281830 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 6166E7F725C570A600281830 /* AWattPriceWidgetExtension */;
-			targetProxy = 6166E80425C570A800281830 /* PBXContainerItemProxy */;
-		};
 		617D85C125052C37009E18FB /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 617D85AD25052C35009E18FB /* AWattPrice */;

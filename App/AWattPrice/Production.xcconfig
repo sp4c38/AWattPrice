@@ -12,7 +12,7 @@
 VAT_AMOUNT = 1.19
 
 // Server accessing config
- ROOT_URL = https:/$()/awattprice.space8.me // Without trailing /
+ROOT_URL = https:/$()/awattprice.space8.me // Without trailing /
 
 // General App settings
 APP_NAME = AWattPrice

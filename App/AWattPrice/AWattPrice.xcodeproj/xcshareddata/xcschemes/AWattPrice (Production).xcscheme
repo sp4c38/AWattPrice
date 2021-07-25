@@ -4,7 +4,7 @@
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
-      buildImplicitDependencies = "YES">
+      buildImplicitDependencies = "NO">
       <BuildActionEntries>
          <BuildActionEntry
             buildForTesting = "YES"
@@ -35,16 +35,6 @@
                BlueprintIdentifier = "617D85BE25052C37009E18FB"
                BuildableName = "AwattarAppTests.xctest"
                BlueprintName = "AwattarAppTests"
-               ReferencedContainer = "container:AWattPrice.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "61EF1C3B25C9D944008E9724"
-               BuildableName = "AWattPriceUITests.xctest"
-               BlueprintName = "AWattPriceUITests"
                ReferencedContainer = "container:AWattPrice.xcodeproj">
             </BuildableReference>
          </TestableReference>

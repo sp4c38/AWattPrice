@@ -40,6 +40,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
         let apnsDeviceTokenString = deviceToken.map {
             String(format: "%02.2hhx", $0)
         }.joined()
+        logger.info("Got apns device token: \(apnsDeviceTokenString).")
 
         if crtNotifiSetting != nil, currentSetting != nil, backendComm != nil {
             crtNotifiSetting!.currentlySendingToServer.lock()

@@ -4,7 +4,6 @@
 </div>
 
 <img src="https://img.shields.io/github/last-commit/sp4c38/AWattPrice?label=last%20modified" />
-<img src="https://img.shields.io/tokei/lines/github/sp4c38/AWattPrice?label=total%20lines%20of%20code" />
 
 ### App Store Download
 <a href="https://apps.apple.com/app/awattprice/id1536629626"><img src="https://raw.githubusercontent.com/sp4c38/AWattPrice/master/readme_assets/download_button.png" width=190 height=63></img></a>  <a style="color:blue;" href="https://apps.apple.com/app/awattprice/id1536629626" target="_blank">

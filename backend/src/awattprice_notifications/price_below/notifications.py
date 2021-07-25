@@ -21,7 +21,7 @@ from awattprice_notifications.price_below import defaults
 from awattprice_notifications.price_below.prices import DetailedPriceData
 
 
-def construct_notification_headers(apns_authorization: str, prices_below: list[Box]) -> Box:
+def construct_notification_headers(prices_below: list[Box], apns_authorization: str, use_sandbox: bool) -> Box:
     """Construct the headers for a token when sending a price below notification."""
     latest_price_below = max(prices_below, key=lambda price_point: price_point.start_timestamp)
 
@@ -30,7 +30,10 @@ def construct_notification_headers(apns_authorization: str, prices_below: list[B
     headers["apns-push-type"] = defaults.NOTIFICATION.push_type
     headers["apns-priority"] = str(defaults.NOTIFICATION.priority)
     headers["apns-collapse-id"] = defaults.NOTIFICATION.collapse_id
-    headers["apns-topic"] = awattprice.defaults.APP_BUNDLE_ID
+    if use_sandbox is False:
+        headers["apns-topic"] = awattprice.defaults.APP_BUNDLE_ID.production
+    else:
+        headers["apns-topic"] = awattprice.defaults.APP_BUNDLE_ID.sandbox
     headers["apns-expiration"] = str(latest_price_below.start_timestamp.int_timestamp)
 
     return headers
@@ -74,6 +77,8 @@ def construct_notification(token: Token, detailed_prices: DetailedPriceData, pri
 
 async def handle_apns_response(session: AsyncSession, token: Token, response: httpx.Response):
     """Handle an apns response for a price below notification."""
+    print(token.token)
+    print(response.content)
     try:
         status = Box(response.json())
     except json.JSONDecodeError as exc:
@@ -89,6 +94,7 @@ async def handle_apns_response(session: AsyncSession, token: Token, response: ht
             session.delete(token)
     else:
         logger.error(f"Error sending notification to apns: {status_code} - {status}.")
+        return
 
 
 async def deliver_notifications(
@@ -114,19 +120,17 @@ async def deliver_notifications(
         for token in tokens:
             prices_below = region_prices.get_prices_below_value(token.price_below.below_value, token.tax)
 
-            headers = construct_notification_headers(apns_authorization, prices_below)
+            headers = construct_notification_headers(prices_below, apns_authorization, config.use_sandbox)
             notification = construct_notification(token, region_prices, prices_below)
 
-            notification_info = Box(
-                token=token, headers=headers, notification=notification, use_sandbox=config.use_sandbox
-            )
+            notification_info = Box(token=token, headers=headers, notification=notification)
             notifications_infos.append(notification_info)
 
     async with httpx.AsyncClient(http2=True) as client:
         send_tasks = []
         for info in notifications_infos:
             send_tasks.append(
-                send_notification(client, info.token, info.headers, info.notification, info.use_sandbox)
+                send_notification(client, info.token, info.headers, info.notification, config.apns.use_sandbox)
             )
         logger.info(f"Sending {len(send_tasks)} notification(s).")
         responses = await asyncio.gather(*send_tasks, return_exceptions=True)

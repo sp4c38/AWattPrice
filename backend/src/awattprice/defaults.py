@@ -25,7 +25,9 @@ class Region(str, Enum):
 REGION_TAXES = {Region.DE: Decimal("1.19"), Region.AT: None}
 
 AWATTPRICE_SERVICE_NAME = "awattprice"
-APP_BUNDLE_ID = "me.space8.AWAttPrice"
+APP_BUNDLE_ID = Box()
+APP_BUNDLE_ID.production = "me.space8.AWattPrice"
+APP_BUNDLE_ID.sandbox = "me.space8.AWattPrice.dev"
 
 DEFAULT_CONFIG = """\
 [general]

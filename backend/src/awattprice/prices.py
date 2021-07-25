@@ -59,10 +59,10 @@ class MarketPrice:
             price = self.taxed
         else:
             price = self.value
-        ct_kwh_price = price * defaults.EURMWH_TO_CENTWKWH
+        ct_kwh_price = utils.euromwh_to_ctkwh(price)
 
         if round_ is True:
-            ct_kwh_price = round(ct_kwh_price, defaults.CENT_KWH_ROUNDING_PLACES)
+            ct_kwh_price = utils.round_ctkwh(ct_kwh_price)
 
         return ct_kwh_price
 

@@ -2,7 +2,7 @@
 import asyncio
 
 from contextlib import contextmanager
-from filelock import FileLock
+from decimal import Decimal
 from functools import partial
 from typing import Callable
 from typing import Union
@@ -11,8 +11,11 @@ import jsonschema
 
 from box import Box
 from fastapi import HTTPException
+from filelock import FileLock
 from loguru import logger
 from loguru._logger import Logger
+
+from awattprice import defaults
 
 
 class ExtendedFileLock(FileLock):
@@ -60,3 +63,15 @@ def log_attempts(logger: Callable):
             logger(f"Performing attempt number {attempt}.")
 
     return log_single_attempt
+
+
+def euromwh_to_ctkwh(value: Decimal) -> Decimal:
+    """Convert euro per mwh to cent per kwh."""
+    converted_value = value * defaults.EURMWH_TO_CENTWKWH
+    return converted_value
+
+
+def round_ctkwh(value: Union[float, Decimal]) -> Union[float, Decimal]:
+    """Round ct per kwh to the natual decimal places."""
+    rounded_value = round(value, defaults.CENT_KWH_ROUNDING_PLACES)
+    return rounded_value

@@ -7,7 +7,9 @@ import httpx
 
 from awattprice.defaults import Region
 from awattprice.orm import Token
+from awattprice.utils import round_ctkwh
 from box import Box
+from decimal import Decimal
 from http import HTTPStatus
 from liteconfig import Config
 from loguru import logger
@@ -45,14 +47,22 @@ def construct_notification(token: Token, detailed_prices: DetailedPriceData, pri
     :param prices_below: List of prices considered below the value. They must all are present in the detailed prices.
         This list is not allowed to be empty.
     """
-    if len(prices_below) == 0:
+    prices_below_length = len(prices_below)
+    if prices_below_length == 0:
         raise ValueError("Prices below the value must contain at least one price point.")
 
-    len_prices_below_str = str(len(prices_below))
-    below_value_str = str(token.price_below.below_value)
+    prices_below_length_str = str(prices_below_length)
+
+    below_value = Decimal(str(token.price_below.below_value))
+    below_value = round_ctkwh(below_value)
+    below_value_str = str(below_value)
+    below_value_str = below_value_str.replace(".", ",")
+
     lowest_price = detailed_prices.lowest_price
     lowest_price_start_str = lowest_price.start_timestamp.format("HH")
-    lowest_price_marketprice_str = str(lowest_price.marketprice.ct_kwh())
+    lowest_marketprice = lowest_price.marketprice.ct_kwh(taxed=token.tax, round_=True) 
+    lowest_marketprice_str = str(lowest_marketprice)
+    lowest_marketprice_str = lowest_marketprice_str.replace(".", ",")
 
     notification = Box()
     notification.aps = {}
@@ -66,35 +76,42 @@ def construct_notification(token: Token, detailed_prices: DetailedPriceData, pri
     else:
         notification.aps["alert"]["loc-key"] = defaults.NOTIFICATION.loc_keys.multiple_prices
     notification.aps["alert"]["loc-args"] = [
-        len_prices_below_str,
+        prices_below_length_str,
         below_value_str,
         lowest_price_start_str,
-        lowest_price_marketprice_str,
+        lowest_marketprice_str,
     ]
+    print(notification)
 
     return notification
 
 
 async def handle_apns_response(session: AsyncSession, token: Token, response: httpx.Response):
     """Handle an apns response for a price below notification."""
-    print(token.token)
-    print(response.content)
-    try:
-        status = Box(response.json())
-    except json.JSONDecodeError as exc:
-        logger.exception("Couldn't load apns response json: {exc}.")
-        return
+    if len(response.content) != 0:
+        try:
+            status = Box(response.json())
+        except json.JSONDecodeError as exc:
+            logger.exception("Couldn't load apns response json: {exc}.")
+            return
+    else:
+        status = None
     status_code = response.status_code
 
     if status_code == HTTPStatus.OK:
-        logger.debug("Notification to token {token.token} sent successfully.")
-    elif status_code == HTTPStatus.GONE:
+        logger.debug(f"Notification to token {token.token} sent successfully.")
+        return
+
+    if status is None:
+        logger.error(f"Unsuccessful apns request but no reason set: {status_code}.")
+        return
+
+    if status_code == HTTPStatus.GONE:
         if status.reason == "Unregistered":
             logger.debug(f"Deleting token {token.token} as it isn't valid anymore.")
             session.delete(token)
     else:
         logger.error(f"Error sending notification to apns: {status_code} - {status}.")
-        return
 
 
 async def deliver_notifications(

@@ -56,6 +56,7 @@ def log_attempts(logger: Callable):
     """Before strategy for tenacity to log attempts."""
     def log_single_attempt(retry_state):
         attempt = retry_state.attempt_number
-        logger(f"Performing attempt number {attempt}.")
+        if attempt != 1:
+            logger(f"Performing attempt number {attempt}.")
 
     return log_single_attempt

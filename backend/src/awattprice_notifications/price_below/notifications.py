@@ -1,5 +1,6 @@
 """Send price below notifications."""
 import asyncio
+import json
 
 import awattprice
 import httpx
@@ -7,13 +8,15 @@ import httpx
 from awattprice.defaults import Region
 from awattprice.orm import Token
 from box import Box
+from http import HTTPStatus
 from liteconfig import Config
 from loguru import logger
-from tenacity import AsyncRetrying, stop_after_attempt, stop_after_delay, wait_exponential, wait_fixed
-
-import awattprice_notifications
+from sqlalchemy.ext.asyncio import AsyncEngine
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from awattprice_notifications import defaults as notification_defaults
+from awattprice_notifications.apns import get_apns_authorization
+from awattprice_notifications.notifications import send_notification
 from awattprice_notifications.price_below import defaults
 from awattprice_notifications.price_below.prices import DetailedPriceData
 
@@ -69,76 +72,71 @@ def construct_notification(token: Token, detailed_prices: DetailedPriceData, pri
     return notification
 
 
-async def send_notification(
-    client: httpx.AsyncClient, token: Token, headers: Box, notification: Box, use_sandbox=False
-) -> httpx.Response:
-    """Send a single notification."""
-    if use_sandbox is True:
-        origin = notification_defaults.APNS__URL.origin.sandbox
+async def handle_apns_response(session: AsyncSession, token: Token, response: httpx.Response):
+    """Handle an apns response for a price below notification."""
+    try:
+        status = Box(response.json())
+    except json.JSONDecodeError as exc:
+        logger.exception("Couldn't load apns response json: {exc}.")
+        return
+    status_code = response.status_code
+
+    if status_code == HTTPStatus.OK:
+        logger.debug("Notification to token {token.token} sent successfully.")
+    elif status_code == HTTPStatus.GONE:
+        if status.reason == "Unregistered":
+            logger.debug(f"Deleting token {token.token} as it isn't valid anymore.")
+            session.delete(token)
     else:
-        origin = notification_defaults.APNS_URL.origin.production
-    path = notification_defaults.APNS_URL.path
-    path = path.format(token.token)
-
-    url = origin + path
-
-    timeout = notification_defaults.APNS_TIMEOUT
-    attempts = notification_defaults.APNS_ATTEMPTS
-    stop_delay = notification_defaults.APNS_STOP_DELAY
-    async for attempt in AsyncRetrying(
-        before=awattprice.utils.log_attempts(logger.debug),
-        stop=(stop_after_attempt(attempts) | stop_after_delay(stop_delay)),
-        wait=wait_exponential(multiplier=1.5, min=4, max=10)
-    ):
-        with attempt:
-            try:
-                response = await client.post(
-                    url, json=notification.to_dict(), headers=headers.to_dict(), timeout=timeout
-                )
-            except httpx.TimeoutException as exc:
-                logger.exception(f"Timed out when sending notification: {exc}.")
-                raise
-            except httpx.NetworkError as exc:
-                logger.exception(f"Network error when sending notification: {exc}.")
-                raise
-            except Exception as exc:
-                logger.exception(f"Unexpected exception when sending notification: {exc}.")
-                raise
-
-    return response
+        logger.error(f"Error sending notification to apns: {status_code} - {status}.")
 
 
 async def deliver_notifications(
-    config: Config, regions_tokens: dict[Region, list[Token]], price_data: dict[Region, DetailedPriceData]
+    engine: AsyncEngine,
+    config: Config,
+    regions_tokens: dict[Region, list[Token]],
+    price_data: dict[Region, DetailedPriceData],
 ):
     """Send price below notifications for certain tokens.
 
     :param tokens, price_data: Each region which has applying tokens *must* also be present in the price data.
     """
 
-    apns_authorization = await awattprice_notifications.apns.get_apns_authorization(config)
+    apns_authorization = await get_apns_authorization(config)
+
+    notifications_infos = []
+    for region, tokens in regions_tokens.items():
+        if tokens is None:
+            continue
+
+        region_prices = price_data[region]
+
+        for token in tokens:
+            prices_below = region_prices.get_prices_below_value(token.price_below.below_value, token.tax)
+
+            headers = construct_notification_headers(apns_authorization, prices_below)
+            notification = construct_notification(token, region_prices, prices_below)
+
+            notification_info = Box(
+                token=token, headers=headers, notification=notification, use_sandbox=config.use_sandbox
+            )
+            notifications_infos.append(notification_info)
 
     async with httpx.AsyncClient(http2=True) as client:
         send_tasks = []
-        for region, tokens in regions_tokens.items():
-            if tokens is None:
-                continue
-
-            region_prices = price_data[region]
-
-            for token in tokens:
-                prices_below = region_prices.get_prices_below_value(token.price_below.below_value, token.tax)
-
-                min_price = min(prices_below, key=lambda point: point.marketprice.value)
-
-                headers = construct_notification_headers(apns_authorization, prices_below)
-                notification = construct_notification(token, region_prices, prices_below)
-
-                send_tasks.append(send_notification(client, token, headers, notification, config.use_sandbox))
-
+        for info in notifications_infos:
+            send_tasks.append(
+                send_notification(client, info.token, info.headers, info.notification, info.use_sandbox)
+            )
         logger.info(f"Sending {len(send_tasks)} notification(s).")
         responses = await asyncio.gather(*send_tasks, return_exceptions=True)
-        for response in responses:
+
+    async with AsyncSession(engine) as session:
+        handle_response_tasks = []
+        for info, response in zip(notifications_infos, responses):
             if isinstance(response, Exception) is True:
+                logger.warning(f"Couldn't send notification: {response}.")
                 continue
-            print(response)
+            handle_response_tasks.append(handle_apns_response(session, info.token, response))
+        await asyncio.gather(*handle_response_tasks)
+        await session.commit()

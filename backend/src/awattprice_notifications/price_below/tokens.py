@@ -28,7 +28,7 @@ def get_below_value_checks(regions_data: dict[Region, DetailedPriceData]) -> lis
     for region, price_data in regions_data.items():
         lowest_marketprice = price_data.lowest_price.marketprice
         lowest_marketprice_untaxed = lowest_marketprice.ct_kwh(taxed=False, round_=True)
-        if lowest_marketprice.tax is None:
+        if region.tax is None:
             below_value_checks.append(
                 and_(Token.region == region, lowest_marketprice_untaxed <= PriceBelowNotification.below_value)
             )
@@ -53,7 +53,7 @@ def get_below_value_checks(regions_data: dict[Region, DetailedPriceData]) -> lis
 
 
 async def collect_applying_tokens(
-    engine: AsyncEngine, updated_regions_data: dict[Region, DetailedPriceData]
+    engine: AsyncEngine, regions_data: dict[Region, DetailedPriceData]
 ) -> Box[Region, list[Token]]:
     """Collect all tokens from the database for the specified regions which apply to get a price below notification.
 
@@ -62,7 +62,7 @@ async def collect_applying_tokens(
     :returns: Dictionary with region as key and list of tokens as the value. Updated regions which
         don't have any tokens associated aren't included in the returned dictionary.
     """
-    below_value_checks = get_below_value_checks(updated_regions_data)
+    below_value_checks = get_below_value_checks(regions_data)
     async with AsyncSession(engine) as session:
         applying_notifications_stmt = (
             select(Token)

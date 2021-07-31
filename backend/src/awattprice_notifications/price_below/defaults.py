@@ -1,4 +1,7 @@
 """Default values and models for the price below notification service."""
+import arrow
+import awattprice
+
 from awattprice.defaults import Region
 from box import Box
 
@@ -18,3 +21,21 @@ NOTIFICATION = Box(
         "sound": "default",
     }
 )
+
+
+def get_notifiable_prices(price_data: Box) -> Box:
+    """Get the prices about which users should be notified."""
+    selected_prices = []
+
+    now_berlin = arrow.now(awattprice.defaults.EUROPE_BERLIN_TIMEZONE)
+    berlin_tomorrow_start = now_berlin.shift(days=+1).floor("day")
+    berlin_tomorrow_end = berlin_tomorrow_start.shift(days=+1)
+
+    for price_point in price_data:
+        if (
+            price_point.start_timestamp >= berlin_tomorrow_start
+            and price_point.end_timestamp <= berlin_tomorrow_end
+        ):
+            selected_prices.append(price_point)
+
+    return selected_prices

@@ -21,7 +21,7 @@ async def get_apns_authorization(config: Config) -> str:
     encryption_key_path = config.paths.apns_dir / defaults.APNS_ENCRYPTION_KEY_FILE_NAME
     async with async_open(encryption_key_path, "r") as afp:
         encryption_key = await afp.read()
-    
+
     authorization = jwt.encode(
         auth_jwt_body,
         encryption_key,

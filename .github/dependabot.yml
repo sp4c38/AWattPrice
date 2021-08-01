@@ -5,9 +5,11 @@
 
 version: 2
 updates:
-  - package-ecosystem: "pip" # See documentation for possible values
-    directory: "/" # Location of package manifests
+  - package-ecosystem: "pip"
+    directory: "/backend"
     schedule:
       interval: "weekly"
     allow:
       - dependency-type: "all"
+    assignees:
+      - "sp4c38"

@@ -8,6 +8,8 @@ from box import Box
 # Regions for which to send price below notifications.
 REGIONS_TO_SEND = [Region.DE, Region.AT]
 
+LAST_UPDATED_ENDTIME_FILE_NAME = "last-updated-{}-endtime.pickle"
+
 NOTIFICATION = Box(
     {
         "push_type": "alert",
@@ -28,6 +30,7 @@ def get_notifiable_prices(price_data: Box) -> Box:
     selected_prices = []
 
     now_berlin = arrow.now(awattprice.defaults.EUROPE_BERLIN_TIMEZONE)
+    # Note: Time range must not exceed 24 hours.
     berlin_tomorrow_start = now_berlin.shift(days=+1).floor("day")
     berlin_tomorrow_end = berlin_tomorrow_start.shift(days=+1)
 

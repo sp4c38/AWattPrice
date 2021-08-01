@@ -34,23 +34,24 @@ async def main():
     if len(regions_prices) == 0:
         logger.warning("No current price data for all checked regions.")
         sys.exit(0)
-    notifiable_regions_prices = prices.get_notifiable_regions_prices(regions_prices)
-    if len(notifiable_regions_prices) == 0:
-        logger.debug("No notifiable prices for all checked regions.")
-        sys.exit(0)
-    for notifiable_prices in notifiable_regions_prices.values():
-        notifiable_prices.find_lowest_price()
 
-    # IMPLEMENT: Get the regions where price data updated relative to the last run.
-    # regions_updated = select_regions_updated(regions_data, config)
-    updated_regions = [Region.DE]
-    updated_notifiable_regions_prices = {region: notifiable_regions_prices[region] for region in updated_regions}
+    updated_regions = await prices.get_updated_regions(config, regions_prices)
+    print(updated_regions)
 
-    applying_regions_tokens = await tokens.collect_applying_tokens(engine, updated_notifiable_regions_prices)
+    # notifiable_regions_prices = prices.get_notifiable_regions_prices(regions_prices)
+    # if len(notifiable_regions_prices) == 0:
+    #     logger.debug("No notifiable prices for all checked regions.")
+    #     sys.exit(0)
+    # for notifiable_prices in notifiable_regions_prices.values():
+    #     notifiable_prices.find_lowest_price()
 
-    await notifications.deliver_notifications(
-        engine, config, applying_regions_tokens, updated_notifiable_regions_prices
-    )
+    # updated_notifiable_regions_prices = {region: notifiable_regions_prices[region] for region in updated_regions}
+
+    # applying_regions_tokens = await tokens.collect_applying_tokens(engine, updated_notifiable_regions_prices)
+
+    # await notifications.deliver_notifications(
+    #     engine, config, applying_regions_tokens, updated_notifiable_regions_prices
+    # )
 
 
 if __name__ == "__main__":

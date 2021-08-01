@@ -1,17 +1,21 @@
 """Manage and handle price data fron the main awattprice package."""
 import asyncio
+import pickle
+import sys
 
 from decimal import Decimal
 from typing import Optional
 
 import awattprice
 
+from aiofile import async_open
 from arrow import Arrow
 from awattprice.defaults import Region
 from box import Box
 from liteconfig import Config
 from loguru import logger
 
+from awattprice_notifications.price_below import defaults
 from awattprice_notifications.price_below.defaults import get_notifiable_prices
 
 
@@ -66,6 +70,52 @@ async def collect_regions_prices(config: Config, regions: list[Region]) -> Box:
         existing_regions_prices[region] = prices
 
     return existing_regions_prices
+
+
+async def read_last_updated_endtime(config: Config, region: Region) -> Optional[Arrow]:
+    """Get the end time of the latest price point when the price data was updated last for the certain region."""
+    file_name = defaults.LAST_UPDATED_ENDTIME_FILE_NAME.format(region.name.lower())
+    file_path = config.paths.price_data_dir / file_name
+    try:
+        async with async_open(file_path, "rb") as file:
+            pickled_time = await file.read()
+    except FileNotFoundError as exc:
+        logger.debug(f"No last updated endtime for region {region} exists yet: {exc}.")
+        return None
+
+    time = pickle.loads(pickled_time)
+    return time
+
+
+def get_current_endtime(prices: Box) -> Arrow:
+    latest_price_point = max(prices.prices, key=lambda price_point: price_point.end_timestamp)
+    current_endtime = latest_price_point.end_timestamp
+    return current_endtime
+
+
+async def get_updated_regions(config: Config, regions_prices: Box[Region, Box]) -> list:
+    """Get the regions of which their prices updated relative to the last time they updated."""
+    regions = regions_prices.keys()
+    prices = regions_prices.values()
+
+    endtimes_tasks = [read_last_updated_endtime(config, region) for region in regions]
+    endtimes = await asyncio.gather(*endtimes_tasks, return_exceptions=True)
+
+    updated_regions = []
+    regions_prices_endtimes = list(zip(regions, prices, endtimes))
+    for region, prices, endtime in regions_prices_endtimes:
+        if isinstance(endtime, Exception):
+            logger.exception(f"Couldn't read last updated endtime for region {region}: {exc}.")
+            continue
+        if endtime is None:
+            logger.debug(f"No existing endtime for region {region} yet.")
+            updated_regions.append(region)
+            continue
+
+        current_endtime = get_current_endtime(prices)
+        if current_endtime > endtime:
+            updated_regions.append(region)
+    return updated_regions
 
 
 def get_notifiable_regions_prices(regions_prices: Box) -> Box:

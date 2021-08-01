@@ -71,7 +71,7 @@ async def collect_applying_tokens(
             .where(and_(PriceBelowNotification.active == True, or_(*below_value_checks)))
         )
 
-        logger.info("Collecting applying tokens from the database.")
+        logger.debug("Collecting applying tokens from the database.")
         ungrouped_tokens = await session.execute(applying_notifications_stmt)
         ungrouped_tokens = ungrouped_tokens.scalars().all()
 

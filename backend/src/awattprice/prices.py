@@ -317,15 +317,11 @@ async def get_latest_new_prices(stored_data: None, region: Region, config: Confi
     return latest_prices
 
 
-async def get_current_prices(region: Region, config: Config) -> Optional[dict]:
+async def get_current_prices(region: Region, config: Config, fall_back=False) -> Optional[dict]:
     """Get the currently up to date price data.
 
-    This doesn't mean that this function necessarily will download the data. It could also be that stored data
-    is evaluated to be the current data.
-
-    :returns price data: When current price data could be retrieved. If local price data exists and an error
-        occurred while performing other steps the function will fall back to the local price data in certain cases.
-    :returns None: If there was no way to get the current price data and couldn't fall back to local data.
+    :param fall_back: If true function will fall back to the stored data in certain situations when an
+        error retrieving the actual current prices occurrs. If false none will be returned in such cases.
     """
     stored_data, last_update_time = await asyncio.gather(
         get_stored_data(region, config),
@@ -348,10 +344,13 @@ async def get_current_prices(region: Region, config: Config) -> Optional[dict]:
             price_data = await get_latest_new_prices(stored_data, region, config)
         except Exception as exc:
             logger.exception(f"Couldn't get latest new {region.name} prices: {exc}.")
+            if not fall_back: return None
             price_data = stored_data
-        if price_data is None:
-            logger.warning(f"No latest new {region.name} prices.")
-            price_data = stored_data
+        else:
+            if price_data is None:
+                logger.warning(f"No latest new {region.name} prices.")
+                if not fall_back: return None
+                price_data = stored_data
     else:
         logger.debug(f"Local {region.name} prices still up to date.")
         price_data = stored_data

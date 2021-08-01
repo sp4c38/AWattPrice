@@ -31,7 +31,13 @@ async def main():
         sys.exit(1)
 
     regions_prices = await prices.collect_regions_prices(config, defaults.REGIONS_TO_SEND)
+    if len(regions_prices) == 0:
+        logger.warning("No current price data for all checked regions.")
+        sys.exit(0)
     notifiable_regions_prices = prices.get_notifiable_regions_prices(regions_prices)
+    if len(notifiable_regions_prices) == 0:
+        logger.debug("No notifiable prices for all checked regions.")
+        sys.exit(0)
     for notifiable_prices in notifiable_regions_prices.values():
         notifiable_prices.find_lowest_price()
 

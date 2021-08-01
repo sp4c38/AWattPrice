@@ -37,7 +37,7 @@ app = FastAPI()
 @app.get("/data/{region}")
 async def get_region_data(region: Region):
     """Get current price data for specified region."""
-    price_data = await prices.get_current_prices(region, config)
+    price_data = await prices.get_current_prices(region, config, fall_back=True)
 
     if price_data is None:
         logger.warning(f"Couldn't get current price data for region {region.name}.")

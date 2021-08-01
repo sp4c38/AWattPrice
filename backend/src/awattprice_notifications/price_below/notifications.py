@@ -25,7 +25,7 @@ from awattprice_notifications.price_below import defaults
 from awattprice_notifications.price_below.prices import NotifiableDetailedPriceData
 
 
-def construct_notification_headers(prices_below: list[Box], apns_authorization: str, use_sandbox: bool) -> Box:
+def construct_notification_headers(apns_authorization: str, prices_below: list[Box], use_sandbox: bool) -> Box:
     """Construct the headers for a token when sending a price below notification."""
     latest_price_below = max(prices_below, key=lambda price_point: price_point.start_timestamp)
 
@@ -97,7 +97,7 @@ async def handle_apns_response(session: AsyncSession, token: Token, response: ht
         try:
             status = Box(response.json())
         except json.JSONDecodeError as exc:
-            logger.exception("Couldn't load apns response json: {exc}.")
+            logger.exception(f"Couldn't load apns {status_code} response json: {exc}.")
             return
     else:
         status = None
@@ -143,7 +143,7 @@ async def deliver_notifications(
             below_value = token.price_below.below_value
             prices_below = notifiable_prices.get_prices_below_value(below_value, token.tax)
 
-            headers = construct_notification_headers(prices_below, apns_authorization, config.apns.use_sandbox)
+            headers = construct_notification_headers(apns_authorization, prices_below, config.apns.use_sandbox)
             notification = construct_notification(token, prices_below, notifiable_prices)
 
             notification_info = Box(token=token, headers=headers, notification=notification)

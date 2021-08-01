@@ -46,25 +46,39 @@ class DetailedPriceData:
 
 
 class NotifiableDetailedPriceData(DetailedPriceData):
-    """Describes price data about which users should be notified."""
+    """Holds price data about which users should be notified for."""
 
-    def __init__(self, data: Box):
-        data.prices = get_notifiable_prices(data.prices)
-        self.data = data
+    def __init__(self, notifiable_data: Box):
+        self.data = notifiable_data
 
 
 async def collect_regions_prices(config: Config, regions: list[Region]) -> Box:
     """Get the current prices for multiple regions."""
-    prices_tasks = [awattprice.prices.get_current_prices(region, config) for region in regions]
+    prices_tasks = [awattprice.prices.get_current_prices(region, config, fall_back=False) for region in regions]
     regions_prices = await asyncio.gather(*prices_tasks)
     regions_prices = dict(zip(regions, regions_prices))
-    regions_prices = {region: prices for region, prices in regions_prices.items() if prices is not None}
-    return regions_prices
+
+    existing_regions_prices = {}
+    for region, prices in regions_prices.items():
+        if prices is None:
+            logger.warning(f"Couldn't get current price data for region {region}.")
+            continue
+        existing_regions_prices[region] = prices
+
+    return existing_regions_prices
 
 
-def get_notifiable_regions_prices(regions_prices: Box):
+def get_notifiable_regions_prices(regions_prices: Box) -> Box:
     """Get the prices for which users should be notified for."""
-    notifiable_regions_prices = {
-        region: NotifiableDetailedPriceData(prices) for region, prices in regions_prices.items()
-    }
+    notifiable_regions_prices = Box()
+    for region, prices_data in regions_prices.items():
+        notifiable_prices_data = prices_data
+        notifiable_prices = get_notifiable_prices(prices_data.prices)
+        if len(notifiable_prices) == 0:
+            logger.debug(f"No notifiable prices for region {region}.")
+            continue
+        notifiable_prices_data.prices = notifiable_prices
+        notifiable_detailed_prices = NotifiableDetailedPriceData(notifiable_prices_data)
+        notifiable_regions_prices[region] = notifiable_detailed_prices
+
     return notifiable_regions_prices

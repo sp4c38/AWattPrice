@@ -6,29 +6,34 @@ from typing import Optional
 
 import awattprice
 
+from arrow import Arrow
 from awattprice.defaults import Region
 from box import Box
 from liteconfig import Config
 from loguru import logger
 
+from awattprice_notifications.price_below.defaults import get_notifiable_prices
+
 
 class DetailedPriceData:
-    """Store extra information in addition to the region price data to describe it in more detail."""
+    """Describes price data in a detailed manner."""
 
     data: Box
-    lowest_price: Box
+
+    lowest_price: Optional[Box] = None
 
     def __init__(self, data: Box):
-        """Initialize a detailed price data container."""
         self.data = data
 
-        lowest_price = min(data.prices, key=lambda price_point: price_point.marketprice.value)
+    def find_lowest_price(self):
+        """Find the lowest price."""
+        lowest_price = min(self.data.prices, key=lambda price_point: price_point.marketprice.value)
         self.lowest_price = lowest_price
 
     def get_prices_below_value(self, below_value: Decimal, taxed: bool) -> list[int]:
         """Get prices which are on or below the given value.
 
-        :param taxed: If set prices are taxed before comparing to the below value. This doesn't affect the
+        :param taxed: If true prices are taxed before comparing to the below value. This doesn't affect the
             below value.
         """
         below_value_prices = []
@@ -40,21 +45,26 @@ class DetailedPriceData:
         return below_value_prices
 
 
-async def collect_regions_data(config: Config, regions: list[Region]) -> Box:
+class NotifiableDetailedPriceData(DetailedPriceData):
+    """Describes price data about which users should be notified."""
+
+    def __init__(self, data: Box):
+        data.prices = get_notifiable_prices(data.prices)
+        self.data = data
+
+
+async def collect_regions_prices(config: Config, regions: list[Region]) -> Box:
     """Get the current prices for multiple regions."""
     prices_tasks = [awattprice.prices.get_current_prices(region, config) for region in regions]
     regions_prices = await asyncio.gather(*prices_tasks)
     regions_prices = dict(zip(regions, regions_prices))
+    regions_prices = {region: prices for region, prices in regions_prices.items() if prices is not None}
+    return regions_prices
 
-    valid_regions_prices = {}
-    for region, prices in regions_prices.items():
-        if prices is None:
-            logger.warning(f"No current price data for region {region.name}. Skipping it.")
-            continue
-        valid_regions_prices[region] = prices
 
-    detailed_regions_prices = {
-        region: DetailedPriceData(data=prices) for region, prices in valid_regions_prices.items()
+def get_notifiable_regions_prices(regions_prices: Box):
+    """Get the prices for which users should be notified for."""
+    notifiable_regions_prices = {
+        region: NotifiableDetailedPriceData(prices) for region, prices in regions_prices.items()
     }
-
-    return detailed_regions_prices
+    return notifiable_regions_prices

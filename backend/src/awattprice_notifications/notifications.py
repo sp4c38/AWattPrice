@@ -6,9 +6,17 @@ from awattprice.orm import Token
 from box import Box
 from loguru import logger
 
-from tenacity import AsyncRetrying, retry_if_exception_type, stop_after_attempt, stop_after_delay, wait_exponential, wait_fixed
+from tenacity import (
+    AsyncRetrying,
+    retry_if_exception_type,
+    stop_after_attempt,
+    stop_after_delay,
+    wait_exponential,
+    wait_fixed,
+)
 
 from awattprice_notifications import defaults
+
 
 async def send_notification(
     client: httpx.AsyncClient, token: Token, headers: Box, notification: Box, use_sandbox=False
@@ -28,7 +36,12 @@ async def send_notification(
     stop_delay = defaults.APNS_STOP_DELAY
     async for attempt in AsyncRetrying(
         before=awattprice.utils.log_attempts(logger.debug),
-        retry=retry_if_exception_type((httpx.TimeoutException, httpx.NetworkError,)),
+        retry=retry_if_exception_type(
+            (
+                httpx.TimeoutException,
+                httpx.NetworkError,
+            )
+        ),
         wait=wait_exponential(multiplier=1.5, min=4, max=10),
         stop=(stop_after_attempt(attempts) | stop_after_delay(stop_delay)),
         reraise=True,

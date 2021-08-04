@@ -16,11 +16,13 @@ from loguru import logger
 from sqlalchemy.ext.asyncio import AsyncEngine
 from sqlalchemy.ext.asyncio import AsyncSession
 
+import awattprice_notifications
+
 from awattprice_notifications import defaults as notification_defaults
 from awattprice_notifications.apns import get_apns_authorization
 from awattprice_notifications.notifications import send_notification
 from awattprice_notifications.price_below import defaults
-from awattprice_notifications.price_below.prices import DetailedPriceData
+from awattprice_notifications.price_below.prices import NotifiableDetailedPriceData
 
 
 def construct_notification_headers(prices_below: list[Box], apns_authorization: str, use_sandbox: bool) -> Box:
@@ -41,7 +43,9 @@ def construct_notification_headers(prices_below: list[Box], apns_authorization: 
     return headers
 
 
-def construct_notification(token: Token, detailed_prices: DetailedPriceData, prices_below: list[Box]) -> Box:
+def construct_notification(
+    token: Token, prices_below: list[Box], notifiable_prices: NotifiableDetailedPriceData
+) -> Box:
     """Construct the notification for a token.
 
     :param prices_below: List of prices considered below the value. They must all are present in the detailed prices.
@@ -58,11 +62,13 @@ def construct_notification(token: Token, detailed_prices: DetailedPriceData, pri
     below_value_str = str(below_value)
     below_value_str = below_value_str.replace(".", ",")
 
-    lowest_price = detailed_prices.lowest_price
+    lowest_price = notifiable_prices.lowest_price
     lowest_price_start_str = lowest_price.start_timestamp.format("HH")
-    lowest_marketprice = lowest_price.marketprice.ct_kwh(taxed=token.tax, round_=True) 
-    lowest_marketprice_str = str(lowest_marketprice)
-    lowest_marketprice_str = lowest_marketprice_str.replace(".", ",")
+    lowest_marketprice = lowest_price.marketprice
+    lowest_marketprice_value = lowest_price.marketprice.ct_kwh(taxed=token.tax, round_=True)
+    lowest_marketprice_value_str = awattprice_notifications.utils.stringify_price(
+        lowest_marketprice_value, lowest_marketprice.region
+    )
 
     notification = Box()
     notification.aps = {}
@@ -79,9 +85,8 @@ def construct_notification(token: Token, detailed_prices: DetailedPriceData, pri
         prices_below_length_str,
         below_value_str,
         lowest_price_start_str,
-        lowest_marketprice_str,
+        lowest_marketprice_value_str,
     ]
-    print(notification)
 
     return notification
 
@@ -103,7 +108,7 @@ async def handle_apns_response(session: AsyncSession, token: Token, response: ht
         return
 
     if status is None:
-        logger.error(f"Unsuccessful apns request but no reason set: {status_code}.")
+        logger.error(f"Unsuccessful apns request but no reason returned: {status_code}.")
         return
 
     if status_code == HTTPStatus.GONE:
@@ -118,11 +123,11 @@ async def deliver_notifications(
     engine: AsyncEngine,
     config: Config,
     regions_tokens: dict[Region, list[Token]],
-    price_data: dict[Region, DetailedPriceData],
+    notifiable_regions_prices: dict[Region, NotifiableDetailedPriceData],
 ):
     """Send price below notifications for certain tokens.
 
-    :param tokens, price_data: Each region which has applying tokens *must* also be present in the price data.
+    :param regions_tokens, notifiable_regions_prices: Each region with tokens *must* also be present in the price data.
     """
 
     apns_authorization = await get_apns_authorization(config)
@@ -132,13 +137,14 @@ async def deliver_notifications(
         if tokens is None:
             continue
 
-        region_prices = price_data[region]
+        notifiable_prices = notifiable_regions_prices[region]
 
         for token in tokens:
-            prices_below = region_prices.get_prices_below_value(token.price_below.below_value, token.tax)
+            below_value = token.price_below.below_value
+            prices_below = notifiable_prices.get_prices_below_value(below_value, token.tax)
 
-            headers = construct_notification_headers(prices_below, apns_authorization, config.use_sandbox)
-            notification = construct_notification(token, region_prices, prices_below)
+            headers = construct_notification_headers(prices_below, apns_authorization, config.apns.use_sandbox)
+            notification = construct_notification(token, prices_below, notifiable_prices)
 
             notification_info = Box(token=token, headers=headers, notification=notification)
             notifications_infos.append(notification_info)

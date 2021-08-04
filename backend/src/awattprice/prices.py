@@ -32,21 +32,21 @@ class MarketPrice:
     """Provide extra helper functions next to storing the marketprice."""
 
     value: Decimal
-    tax: Optional[Decimal]
+    region: Region
 
-    def __init__(self, price: Decimal, tax: Optional[Decimal]):
+    def __init__(self, price: Decimal, region: Region):
         """Constructor for a new marketprice instance.
 
         :param value: Price as euro per MWh.
         :param tax: Multiplier to get the taxed price.
         """
         self.value = price
-        self.tax = tax
+        self.region = region
 
     @property
     def taxed(self) -> Decimal:
         """Get the taxed price."""
-        taxed_price = self.tax * self.value
+        taxed_price = self.value * self.region.tax
         return taxed_price
 
     def ct_kwh(self, taxed: bool = False, round_: bool = False) -> Decimal:
@@ -126,7 +126,7 @@ def check_update_data(data: Optional[Box], last_update_time: Optional[Arrow]) ->
     if data is None:
         return True
 
-    now_berlin = arrow.now("Europe/Berlin")
+    now_berlin = arrow.now(defaults.EUROPE_BERLIN_TIMEZONE)
 
     if last_update_time is not None:
         next_update_time = last_update_time.shift(seconds=defaults.AWATTAR_COOLDOWN_INTERVAL)
@@ -248,7 +248,7 @@ def parse_downloaded_data(region: Region, data: Box) -> Box:
         end_timestamp = point.end_timestamp / defaults.SEC_TO_MILLISEC
         new_point.end_timestamp = arrow.get(end_timestamp).to(defaults.EUROPE_BERLIN_TIMEZONE)
         marketprice = Decimal(str(point.marketprice))
-        new_point.marketprice = MarketPrice(marketprice, region.tax)
+        new_point.marketprice = MarketPrice(marketprice, region)
         new_data.prices.append(new_point)
 
     return new_data

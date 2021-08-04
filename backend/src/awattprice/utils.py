@@ -57,6 +57,7 @@ def http_exc_validate_json_schema(body: Union[Box, dict, list], schema: dict, ht
 
 def log_attempts(logger: Callable):
     """Before strategy for tenacity to log attempts."""
+
     def log_single_attempt(retry_state):
         attempt = retry_state.attempt_number
         if attempt != 1:

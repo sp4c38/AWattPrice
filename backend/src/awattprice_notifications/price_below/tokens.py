@@ -57,12 +57,14 @@ async def collect_applying_tokens(
 ) -> Box[Region, list[Token]]:
     """Collect all tokens from the database for the specified regions which apply to get a price below notification.
 
-    The price below attributes on the returned tokens are filled.
+    The price below rows on the returned tokens are loaded.
 
     :returns: Dictionary with region as key and list of tokens as the value. Updated regions which
         don't have any tokens associated aren't included in the returned dictionary.
     """
     below_value_checks = get_below_value_checks(regions_data)
+    if not below_value_checks:
+        return Box()
     async with AsyncSession(engine) as session:
         applying_notifications_stmt = (
             select(Token)
@@ -71,7 +73,6 @@ async def collect_applying_tokens(
             .where(and_(PriceBelowNotification.active == True, or_(*below_value_checks)))
         )
 
-        logger.debug("Collecting applying tokens from the database.")
         ungrouped_tokens = await session.execute(applying_notifications_stmt)
         ungrouped_tokens = ungrouped_tokens.scalars().all()
 

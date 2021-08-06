@@ -11,7 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncEngine
 from sqlalchemy.ext.asyncio import create_async_engine
 
 
-CREATE_ENGINE_KWARGS = {"future": True, "echo": True}
+CREATE_ENGINE_KWARGS = {"future": True, "echo": False}
 
 
 def get_engine(config: Config, async_=False) -> Optional[Union[Engine, AsyncEngine]]:

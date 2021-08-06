@@ -2,6 +2,7 @@
 import arrow
 import awattprice
 
+from arrow import Arrow
 from awattprice.defaults import Region
 from box import Box
 
@@ -25,7 +26,7 @@ NOTIFICATION = Box(
 )
 
 
-def get_notifiable_prices(price_data: Box) -> Box:
+def get_notifiable_prices(price_data: Box) -> Optional[list[Box]]:
     """Get the prices about which users should be notified."""
     selected_prices = []
 
@@ -41,4 +42,22 @@ def get_notifiable_prices(price_data: Box) -> Box:
         ):
             selected_prices.append(price_point)
 
+    if not len(selected_prices) == 24:
+        return None
+
     return selected_prices
+
+
+def check_region_updated(stored_endtime: Arrow, new_endtime: Arrow) -> bool:
+    """Check if a region can be marked as updated to previouse runs based on the endtimes."""
+    berlin_now = arrow.now().to(awattprice.defaults.EUROPE_BERLIN_TIMEZONE)
+    berlin_tomorrow_midnight = berlin_now.shift(days=+2).ceil("day")
+    new_endtime_berlin = new_endtime.to(awattprice.defaults.EUROPE_BERLIN_TIMEZONE)
+    if not new_endtime_berlin == berlin_tomorrow_midnight:
+        return False
+
+    timedelta = new_endtime - stored_endtime
+    if not timedelta.total_seconds() >= 86400:  # Equals one day
+        return False
+
+    return True

@@ -122,8 +122,8 @@ async def handle_apns_response(session: AsyncSession, token: Token, response: ht
 async def deliver_notifications(
     engine: AsyncEngine,
     config: Config,
-    regions_tokens: dict[Region, list[Token]],
-    notifiable_regions_prices: dict[Region, NotifiableDetailedPriceData],
+    regions_tokens: Box[Region, list[Token]],
+    notifiable_regions_prices: Box[Region, NotifiableDetailedPriceData],
 ):
     """Send price below notifications for certain tokens.
 

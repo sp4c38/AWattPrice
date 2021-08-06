@@ -16,7 +16,7 @@ from liteconfig import Config
 from loguru import logger
 
 from awattprice_notifications.price_below import defaults
-from awattprice_notifications.price_below.defaults import get_notifiable_prices
+from awattprice_notifications.price_below.defaults import check_region_updated, get_notifiable_prices
 
 
 class DetailedPriceData:
@@ -103,28 +103,55 @@ async def get_updated_regions(config: Config, regions_prices: Box[Region, Box]) 
 
     updated_regions = []
     regions_prices_endtimes = list(zip(regions, prices, endtimes))
-    for region, prices, endtime in regions_prices_endtimes:
-        if isinstance(endtime, Exception):
+    for region, prices, stored_endtime in regions_prices_endtimes:
+        if isinstance(stored_endtime, Exception):
             logger.exception(f"Couldn't read last updated endtime for region {region}: {exc}.")
             continue
-        if endtime is None:
+        if stored_endtime is None:
             logger.debug(f"No existing endtime for region {region} yet.")
             updated_regions.append(region)
             continue
 
         current_endtime = get_current_endtime(prices)
-        if current_endtime > endtime:
+        regions_did_update = check_region_updated(stored_endtime, current_endtime)
+        if regions_did_update:
+            logger.debug(f"Region {region} did update.")
             updated_regions.append(region)
+        else:
+            logger.debug(f"Region {region} did not update.")
+
     return updated_regions
 
 
-def get_notifiable_regions_prices(regions_prices: Box) -> Box:
+async def write_updated_regions_endtimes(
+    config: Config, regions_prices: Box[Region, Box], updated_regions: [Region]
+):
+    """Write the endtimes for the regions which got updated.
+
+    :param regions_prices, updated_regions: All updated regions must be present in the regions prices.
+    """
+    for region in updated_regions:
+        prices = regions_prices[region]
+        endtime = get_current_endtime(prices)
+        pickled_endtime = pickle.dumps(endtime)
+
+        file_name = defaults.LAST_UPDATED_ENDTIME_FILE_NAME.format(region.name.lower())
+        file_path = config.paths.price_data_dir / file_name
+        try:
+            async with async_open(file_path, "wb") as file:
+                await file.write(pickled_endtime)
+            logger.debug(f"Wrote new endtime for region {region}.")
+        except Exception as exc:
+            logger.exception(f"Couldn't write endtime for region {region.name.lower()}: {exc}.")
+
+
+def get_notifiable_regions_prices(regions_prices: Box) -> Box[Region, NotifiableDetailedPriceData]:
     """Get the prices for which users should be notified for."""
     notifiable_regions_prices = Box()
     for region, prices_data in regions_prices.items():
         notifiable_prices_data = prices_data
         notifiable_prices = get_notifiable_prices(prices_data.prices)
-        if len(notifiable_prices) == 0:
+        if notifiable_prices is None:
             logger.debug(f"No notifiable prices for region {region}.")
             continue
         notifiable_prices_data.prices = notifiable_prices

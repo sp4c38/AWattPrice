@@ -1,0 +1,43 @@
+name: AWattPrice
+options:
+  postGenCommand: |
+    bundle install
+  defaultConfig:
+    DebugStaging
+
+configs:
+  DebugStaging: debug
+  DebugProduction: debug
+  ReleaseStaging: release
+  ReleaseProduction: release
+
+settings:
+  base:
+    DEVELOPMENT_TEAM: RC32A2AMHF
+
+targets:
+  AWattPrice:
+    type: application
+    platform: iOS
+    sources:
+      - path: AWattPrice
+    settings:
+      base:
+        INFOPLIST_FILE: AWattPrice/Configs/Info.plist
+      configs:
+        debug:
+          CODE_SIGN_IDENTITY: "Apple Development"
+        release:
+          CODE_SIGN_IDENTITY: "Apple Distribution"
+        staging:
+          PRODUCT_BUNDLE_IDENTIFIER: me.space8.AWattPrice.staging
+        production:
+          PRODUCT_BUNDLE_IDENTIFIER: me.space8.AWattPrice
+        DebugStaging:
+          PROVISIONING_PROFILE_SPECIFIER: match Development me.space8.AWattPrice.staging
+        DebugProduction:
+          PROVISIONING_PROFILE_SPECIFIER: match Development me.space8.AWattPrice
+        ReleaseStaging:
+          PROVISIONING_PROFILE_SPECIFIER: match AppStore me.space8.AWattPrice.staging
+        ReleaseProduction:
+          PROVISIONING_PROFILE_SPECIFIER: match AppStore me.space8.AWattPrice

@@ -15,6 +15,6 @@ VAT_AMOUNT = 1.19
 ROOT_URL = https:/$()/test-awp.space8.me // Without trailing /
 
 // General App settings
-APP_NAME = AWattPrice (dev)
-APP_BUNDLEID = me.space8.AWattPrice.dev
+APP_NAME = AWattPrice
+APP_BUNDLEID = me.space8.AWattPrice.staging
 AWATTPRICE_GROUPID = group.me.space8.AWattPrice.dev

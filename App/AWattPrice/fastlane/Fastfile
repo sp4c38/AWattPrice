@@ -1,0 +1,50 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+update_fastlane
+
+default_platform(:ios)
+
+private_lane :prompt_increment_marketing_number do |values|
+  marketing_version = get_version_number_from_plist(scheme: values[:scheme])
+  new_version = UI.input("What new marketing version? <enter to keep it at #{marketing_version}>")
+  unless new_version.strip == ""
+    increment_version_number_in_plist(version_number: new_version, scheme: values[:scheme])
+    UI.message("Version number set to #{new_version}.")
+    marketing_version = new_version
+  end
+end
+
+private_lane :prompt_increment_build_number do |values|
+  build_number = get_build_number_from_plist(scheme: values[:scheme])
+  new_build_number = UI.input("What new build number? <enter to keep it at #{build_number}>")
+  unless new_build_number.strip == ""
+    increment_build_number_in_plist(build_number: new_build_number, scheme: values[:scheme])
+    UI.message("Build number set to #{new_build_number}.")
+    build_number = new_build_number
+  end
+end
+
+lane :adhoc do |options|
+  match
+  xcodegen
+  configuration = options[:staging] ? "Distribution AdHoc Staging" : "Distribution AdHoc Production"
+  gym(export_method: "ad-hoc", configuration: configuration)
+end
+
+lane :testflight do
+  match
+  prompt_increment_marketing_number(scheme: staging_scheme_name)
+  prompt_increment_build_number(scheme: staging_scheme_name)
+  xcodegen
+  gym(export_method: "app-store", configuration: "Distribution AppStore Production")
+end

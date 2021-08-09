@@ -26,6 +26,22 @@ DerivedData/
 # Gcc Patch
 /*.gcno
 
+# Xcodegen ignores
+*.xcodeproj
+*.xcworkspace
+
+# fastlane specific
+**/fastlane/report.xml
+
+# fastlane deliver temporary files
+**/fastlane/Preview.html
+
+# fastlane snapshot generated screenshots
+**/fastlane/screenshots
+
+# fastlane scan temporary files
+**/fastlane/test_output
+
 # _________ MACOS IGNORES _________
 # General
 .DS_Store
@@ -194,4 +210,3 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
-

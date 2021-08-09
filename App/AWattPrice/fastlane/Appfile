@@ -1,0 +1,12 @@
+app_identifier [
+  "me.space8.AWattPrice",
+  "me.space8.AWattPrice.staging"
+]
+
+apple_id("dev@space8.me") # Your Apple email address
+
+itc_team_id("122249847") # App Store Connect Team ID
+team_id("RC32A2AMHF") # Developer Portal Team ID
+
+# For more information about the Appfile, see:
+#     https://docs.fastlane.tools/advanced/#appfile

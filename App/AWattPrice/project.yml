@@ -33,7 +33,8 @@ targets:
           Distribution AppStore Production: AWattprice/Production.xcconfig
     settings:
       base:
-        INFOPLIST_FILE: AWattPrice/Configs/Info.plist
+        INFOPLIST_FILE: AWattPrice/Info.plist
+        CODE_SIGN_ENTITLEMENTS: AWattPrice/AWattPrice.entitlements
       configs:
         development:
           CODE_SIGN_IDENTITY: "Apple Development"

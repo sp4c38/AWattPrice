@@ -9,25 +9,26 @@ import SwiftUI
 
 enum AppGroups {
     static let awattpriceGroup: String = {
-        return GlobalAppSettings.awattpriceGroupID
+//        return GlobalAppSettings.awattpriceGroupID
+        return ""
     }()
 }
 
 class AppGroupManager {
     var groupID: String
     var containerURL: URL
-    
+
     init?(withID groupID: String) {
         self.groupID = groupID
         self.containerURL = URL(fileURLWithPath: "")
-        
+
         guard let newContainerURL = getContainerURL(groupID) else {
             logger.error("A group container with the supplied ID \(groupID) doesn't exist.")
             return nil
         }
         containerURL = newContainerURL
     }
-    
+
     private func getContainerURL(_ containerID: String) -> URL? {
         let newContainerURL = FileManager.default.containerURL(
             forSecurityApplicationGroupIdentifier: containerID
@@ -35,35 +36,35 @@ class AppGroupManager {
         guard let containerURL = newContainerURL else { return nil }
         return containerURL
     }
-    
+
     internal func regionToFileName(_ region: Region) -> String {
         let rootNamePrefix = "EnergyData_"
         var regionName = ""
         let rootNameSuffix = ".json"
-        
+
         if region == .DE {
             regionName = "DE"
         } else if region == .AT {
             regionName = "AT"
         }
-        
+
         return rootNamePrefix + regionName + rootNameSuffix
     }
-    
+
     enum ReadWriteError: Error {
         case readFromFileError
         case writeEncodingError
         case writeToFileError
     }
-    
+
     public func writeEnergyDataToGroup(_ energyData: EnergyData) throws {
         guard let encodedData = quickJSONEncode(energyData, setEncoder: { jsonEncoder in
             jsonEncoder.dateEncodingStrategy = .secondsSince1970
         }) else { throw ReadWriteError.writeEncodingError }
-        
+
         let region = energyData.region
         let storeURL = containerURL.appendingPathComponent(regionToFileName(region))
-        
+
         do {
             try encodedData.write(to: storeURL)
             logger.debug("Wrote energy data to group container.")
@@ -73,10 +74,10 @@ class AppGroupManager {
         }
         return
     }
-    
+
     public func getEnergyDataStored(for region: Region) -> (Data?, Error?) {
         let storeURL = containerURL.appendingPathComponent(regionToFileName(region))
-        
+
         var data = Data()
         do {
             data = try Data(contentsOf: storeURL)

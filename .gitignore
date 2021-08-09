@@ -26,6 +26,10 @@ DerivedData/
 # Gcc Patch
 /*.gcno
 
+# Xcodegen ignores
+*.xcodeproj
+*.xcworkspace
+
 # _________ MACOS IGNORES _________
 # General
 .DS_Store
@@ -194,4 +198,3 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
-

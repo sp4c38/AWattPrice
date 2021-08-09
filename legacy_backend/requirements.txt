@@ -10,6 +10,6 @@ httpx[http2]==0.16.1
 loguru==0.5.3
 PyJWT==2.0.1
 python-box==5.2.0
-tenacity==6.3.1
+tenacity==8.0.1
 uvicorn==0.13.3
 validators==0.18.2

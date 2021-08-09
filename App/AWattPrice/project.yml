@@ -3,17 +3,20 @@ options:
   postGenCommand: |
     bundle install
   defaultConfig:
-    DebugStaging
+    Development Test Staging
 
 configs:
-  DebugStaging: debug
-  DebugProduction: debug
-  ReleaseStaging: release
-  ReleaseProduction: release
+  Development Test Staging: debug
+  Development Test Production: release
+  Distribution AdHoc Staging: debug
+  Distribution AdHoc Production: release
+  Distribution AppStore Staging: debug
+  Distribution AppStore Production: release
 
 settings:
   base:
     DEVELOPMENT_TEAM: RC32A2AMHF
+    CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED: YES
 
 targets:
   AWattPrice:
@@ -21,23 +24,34 @@ targets:
     platform: iOS
     sources:
       - path: AWattPrice
+        configFiles:
+          Development Test Staging: AWattPrice/Staging.xcconfig
+          Development Test Production: AWattprice/Production.xcconfig
+          Distribution AdHoc Staging: AWattPrice/Staging.xcconfig
+          Distribution AdHoc Production: AWattPrice/Production.xcconfig
+          Distribution AppStore Staging: AWattPrice/Staging.xcconfig
+          Distribution AppStore Production: AWattprice/Production.xcconfig
     settings:
       base:
         INFOPLIST_FILE: AWattPrice/Configs/Info.plist
       configs:
-        debug:
+        development:
           CODE_SIGN_IDENTITY: "Apple Development"
-        release:
+        distribution:
           CODE_SIGN_IDENTITY: "Apple Distribution"
         staging:
           PRODUCT_BUNDLE_IDENTIFIER: me.space8.AWattPrice.staging
         production:
           PRODUCT_BUNDLE_IDENTIFIER: me.space8.AWattPrice
-        DebugStaging:
+        Development Test Staging:
           PROVISIONING_PROFILE_SPECIFIER: match Development me.space8.AWattPrice.staging
-        DebugProduction:
+        Development Test Production:
           PROVISIONING_PROFILE_SPECIFIER: match Development me.space8.AWattPrice
-        ReleaseStaging:
+        Distribution AdHoc Staging:
+          PROVISIONING_PROFILE_SPECIFIER: match AdHoc me.space8.AWattPrice.staging
+        Distribution AdHoc Production:
+          PROVISIONING_PROFILE_SPECIFIER: match AdHoc me.space8.AWattPrice
+        Distribution AppStore Staging:
           PROVISIONING_PROFILE_SPECIFIER: match AppStore me.space8.AWattPrice.staging
-        ReleaseProduction:
+        Distribution AppStore Production:
           PROVISIONING_PROFILE_SPECIFIER: match AppStore me.space8.AWattPrice

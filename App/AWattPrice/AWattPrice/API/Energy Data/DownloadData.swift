@@ -103,15 +103,14 @@ extension BackendCommunicator {
      Never run in DispatchQueue.main.
      */
     internal func download(_ region: Region) -> (Data?, Bool, Error?) {
-        var downloadURL = ""
-        if region == .DE {
-            downloadURL = GlobalAppSettings.rootURLString + "/data/DE"
-        } else if region == .AT {
-            downloadURL = GlobalAppSettings.rootURLString + "/data/AT"
+        let apiURL = AppContext.shared.config.apiURL
+        var downloadURL = apiURL.appendingPathComponent("/data/DE")
+        if region == .AT {
+            downloadURL = apiURL.appendingPathComponent("/data/AT")
         }
         
         var energyRequest = URLRequest(
-            url: URL(string: downloadURL)!,
+            url: downloadURL,
             cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy
         )
         energyRequest.httpMethod = "GET"

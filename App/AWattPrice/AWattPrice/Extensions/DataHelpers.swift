@@ -18,7 +18,7 @@ func quickJSONEncode<T: Encodable>(_ value: T, setEncoder: ((JSONEncoder) -> ())
         let encodedData = try encoder.encode(value)
         return encodedData
     } catch {
-        logger.error("Couldn't encode value: \(error.localizedDescription).")
+        print("Couldn't encode value: \(error).")
         return nil
     }
 }
@@ -33,7 +33,7 @@ func quickJSONDecode<T: Decodable>(_ data: Data, asType: T.Type, setDecoder: ((J
         let data = try decoder.decode(asType, from: data)
         return data
     } catch {
-        logger.error("Couldn't decode encoded data: \(error.localizedDescription)")
+        print("Couldn't decode encoded data: \(error).")
         return nil
     }
 }

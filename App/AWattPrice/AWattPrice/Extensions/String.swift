@@ -1,36 +1,12 @@
 //
-//  General.swift
-//  AwattarApp
+//  String.swift
+//  AWattPrice
 //
-//  Created by Léon Becker on 25.10.20.
+//  Created by Léon Becker on 09.08.21.
 //
 
-// General extensions
+import Foundation
 
-import SwiftUI
-
-extension View {
-    /// Applies modifiers only than to the content if a conditional evaluates to true
-    @ViewBuilder func ifTrue<Content: View>(_ conditional: Bool, content: (Self) -> Content) -> some View {
-        if conditional {
-            content(self)
-        } else {
-            self
-        }
-    }
-}
-
-// AnyTransition extensions
-extension AnyTransition {
-    /// A transition used for presenting a view with extra information to the screen.
-    static var extraInformationTransition: AnyTransition {
-        let insertion = AnyTransition.opacity // AnyTransition.scale(scale: 2).combined(with: .opacity)
-        let removal = AnyTransition.opacity // AnyTransition.scale(scale: 2).combined(with: .opacity)
-        return .asymmetric(insertion: insertion, removal: removal)
-    }
-}
-
-// Basic types extensions
 extension String {
     /// The double value of a string. This supports , and . as seperator. This attribute is nil if the string can't be converted to a double and a double if conversion was successful.
     var doubleValue: Double? {
@@ -62,7 +38,9 @@ extension String {
 
         return nil
     }
+}
 
+extension String {
     var integerValue: Int? {
         let numberFormatter = NumberFormatter()
 
@@ -72,7 +50,9 @@ extension String {
 
         return nil
     }
+}
 
+extension String {
     func removeOutOfString(atIndex index: Int) -> String {
         var before = ""
         if index - 1 >= 0 {
@@ -82,7 +62,9 @@ extension String {
         let newString = before + after
         return newString
     }
+}
 
+extension String {
     func addAtIndex(atIndex index: Int, add addString: String) -> String {
         var before = ""
         if index - 1 >= 0 {
@@ -110,58 +92,11 @@ extension String {
         let range = start..<end
         return String(self[range])
     }
-     
+}
+    
+extension String {
     var completeNSRange: NSRange {
         let range = NSRange(location: 0, length: self.utf16.count)
         return range
-    }
-}
-
-
-extension Double {
-    var priceString: String? {
-        let numberFormatter = NumberFormatter()
-        numberFormatter.numberStyle = .decimal
-        numberFormatter.maximumFractionDigits = 2
-        numberFormatter.minimumFractionDigits = 2
-
-        let currentSelfDouble = (self * 100).rounded() / 100
-
-        if ((currentSelfDouble * 100).rounded() / 100) == 0 {
-            return ""
-        } else if let result = numberFormatter.string(from: NSNumber(value: currentSelfDouble)) {
-            return result
-        } else {
-            return nil
-        }
-    }
-}
-
-extension Int {
-    var priceString: String? {
-        let numberFormatter = NumberFormatter()
-        numberFormatter.numberStyle = .none
-
-        if let result = numberFormatter.string(from: NSNumber(value: self)) {
-            return result
-        } else {
-            return nil
-        }
-    }
-}
-
-extension NSRegularExpression {
-    convenience init(_ pattern: String) {
-        do {
-            try self.init(pattern: pattern)
-        } catch {
-            preconditionFailure("Illegal regular expression: \(pattern).")
-        }
-    }
-    
-    func matches(_ string: String) -> Bool {
-        let range = NSRange(location: 0, length: string.utf16.count)
-        let matches = firstMatch(in: string, options: [], range: range) != nil
-        return matches
     }
 }

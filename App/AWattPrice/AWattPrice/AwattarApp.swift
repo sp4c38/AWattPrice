@@ -9,7 +9,7 @@ import CoreData
 import os
 import SwiftUI
 
-public let logger = Logger(subsystem: AppGroups.awattpriceGroup, category: "general")
+public let logger = Logger()
 
 
 /// Represents if AWattPrice has the permissions to send notifications.

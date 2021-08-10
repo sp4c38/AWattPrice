@@ -1,5 +1,4 @@
 # _________ OTHER IGNORES _________
-deploy.sh
 .venv_activate
 
 # _________ XCODE IGNORES _________

@@ -127,7 +127,7 @@ extension BackendCommunicator {
         _ networkManager: NetworkManager,
         runAsync: Bool = true
     ) {
-        guard let region = Region(rawValue: Int(regionIdentifier)) else {
+        guard let region = Region(rawValue: regionIdentifier) else {
             logger.error("Invalid region parsed when getting energy data.")
             return
         }

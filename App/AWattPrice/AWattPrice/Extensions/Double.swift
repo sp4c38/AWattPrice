@@ -24,4 +24,6 @@ extension Double {
             return nil
         }
     }
+    
+    var euroMWhToCentkWh: Double { self / 1000 * 100 }
 }

@@ -7,8 +7,9 @@
 
 import Foundation
 
-enum Region {
-    case DE, AT
+enum Region: Int16 {
+    case DE = 0
+    case AT = 1
     
     var apiName: String {
         switch self {

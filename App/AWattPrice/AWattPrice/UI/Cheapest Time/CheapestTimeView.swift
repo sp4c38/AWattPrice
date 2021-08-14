@@ -116,14 +116,6 @@ struct CheapestTimeView: View {
 
     @State var redirectToComparisonResults: Int? = 0
 
-    var energyDataTimeRange: ClosedRange<Date> {
-        // Add one or subtract one to not overlap to the next or previouse day
-        let min = energyDataController.energyData!.prices.first!.startTime.addingTimeInterval(1)
-        let max = energyDataController.energyData!.prices.last!.endTime.addingTimeInterval(-1)
-
-        return min ... max
-    }
-
     var body: some View {
         NavigationView {
             VStack {

@@ -82,7 +82,7 @@ struct EnergyPriceGraph: View {
 
     func updateBarHeights(localHeaderSize: CGSize) {
         if graphHourPointData.count > 0 {
-            singleHeight = (sizeRect.height - headerSize.height) / CGFloat(energyDataController.energyData!.prices.count)
+            singleHeight = (sizeRect.height - headerSize.height) / CGFloat(energyDataController.energyData!.currentPrices.count)
             var currentHeight: CGFloat = localHeaderSize.height
 
             for hourPointIndex in 0 ... (graphHourPointData.count - 1) {
@@ -102,15 +102,15 @@ struct EnergyPriceGraph: View {
             }
             let maxPrice = energyData.maxCostPricePoint?.marketprice ?? 0
             singleBarSettings = SingleBarSettings(minPrice: minPrice, maxPrice: maxPrice)
-            singleHeight = (localSizeRect.height - localHeaderSize.height) / CGFloat(energyData.prices.count)
+            singleHeight = (localSizeRect.height - localHeaderSize.height) / CGFloat(energyData.currentPrices.count)
 
             if singleHeight != 0 {
                 graphHourPointData = []
                 dateMarkPointIndex = nil
 
-                let firstItemDate = energyData.prices.first!.startTime
+                let firstItemDate = energyData.currentPrices.first!.startTime
                 var currentHeight: CGFloat = localHeaderSize.height
-                for hourPointEntry in energyData.prices {
+                for hourPointEntry in energyData.currentPrices {
                     graphHourPointData.append((hourPointEntry, currentHeight))
                     let currentItemDate = hourPointEntry.startTime
 

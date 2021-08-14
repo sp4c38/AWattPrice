@@ -94,7 +94,7 @@ extension CheapestHourManager {
         } else {
             possibleStartDate = Calendar.current.date(bySettingHour: 20, minute: 0, second: 0, of: Date())!
         }
-        var firstPossibleStartDate = energyData.prices.first!.startTime
+        var firstPossibleStartDate = energyData.currentPrices.first!.startTime
 
         let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: Date())!
         var possibleEndDate = Date()
@@ -103,7 +103,7 @@ extension CheapestHourManager {
         } else {
             possibleEndDate = Calendar.current.date(bySettingHour: 7, minute: 0, second: 0, of: tomorrow)!
         }
-        let lastPossibleEndDate = energyData.prices.last!.endTime
+        let lastPossibleEndDate = energyData.currentPrices.last!.endTime
 
         if possibleStartDate >= firstPossibleStartDate, possibleStartDate <= lastPossibleEndDate {
             startDate = possibleStartDate
@@ -123,7 +123,7 @@ extension CheapestHourManager {
     func setTimeInterval(forHours hourAmount: Int, with energyData: EnergyData) {
         startDate = Date()
         let possibleEndDate = Calendar.current.date(byAdding: .hour, value: hourAmount, to: Date())!
-        let lastPossibleEndDate = energyData.prices.last!.endTime
+        let lastPossibleEndDate = energyData.currentPrices.last!.endTime
 
         if possibleEndDate > lastPossibleEndDate {
             endDate = lastPossibleEndDate
@@ -134,7 +134,7 @@ extension CheapestHourManager {
 
     func setMaxTimeInterval(with energyData: EnergyData) {
         startDate = Date()
-        endDate = energyData.prices.last!.endTime
+        endDate = energyData.currentPrices.last!.endTime
         let calendar = Calendar.current
 
         if calendar.component(.hour, from: endDate) == 0, startDate > endDate {
@@ -200,17 +200,17 @@ extension CheapestHourManager {
     func createHourPairs(forHours timeRangeNumber: Int, fromStartTime startTime: Date, toEndTime endTime: Date, with energyData: EnergyData) -> [HourPair] {
         // Create all HourPair's for later comparison
         var allPairs = [HourPair]()
-        for hourIndex in 0 ..< energyData.prices.count {
-            if hourIndex + (timeRangeNumber - 1) <= energyData.prices.count - 1 {
-                let hourStartDate = energyData.prices[hourIndex].startTime
+        for hourIndex in 0 ..< energyData.currentPrices.count {
+            if hourIndex + (timeRangeNumber - 1) <= energyData.currentPrices.count - 1 {
+                let hourStartDate = energyData.currentPrices[hourIndex].startTime
 
-                let maxHourThisPairEndDate = energyData.prices[hourIndex + timeRangeNumber - 1].endTime
+                let maxHourThisPairEndDate = energyData.currentPrices[hourIndex + timeRangeNumber - 1].endTime
 
                 if hourStartDate >= startTime, maxHourThisPairEndDate <= endTime {
-                    let newPairNode = HourPair(associatedPricePoints: [energyData.prices[hourIndex]])
+                    let newPairNode = HourPair(associatedPricePoints: [energyData.currentPrices[hourIndex]])
 
                     for nextHourIndex in 1 ..< timeRangeNumber {
-                        newPairNode.associatedPricePoints.append(energyData.prices[hourIndex + nextHourIndex])
+                        newPairNode.associatedPricePoints.append(energyData.currentPrices[hourIndex + nextHourIndex])
                     }
 
                     newPairNode.calculateAveragePrice()
@@ -304,7 +304,7 @@ extension CheapestHourManager {
 
                         func searchAndAddFollowingItem(timestamp: Int) {
                             // Find next following energy price point
-                            for item in energyData.prices {
+                            for item in energyData.currentPrices {
                                 if Int(item.startTime.timeIntervalSince1970) == timestamp {
                                     cheapestPair.associatedPricePoints.append(item)
                                     // logger.debug("Found the missing energy price point with start timestamp \(item.startTimestamp).")
@@ -331,7 +331,7 @@ extension CheapestHourManager {
 
                         func searchAndAddPreFollowingItem(timestamp: Int) {
                             // Find the pre-following price point
-                            for item in energyData.prices {
+                            for item in energyData.currentPrices {
                                 if Int(item.endTime.timeIntervalSince1970) == timestamp {
                                     // logger.debug("Found the missing energy price point with end timestamp \(item.endTimestamp).")
                                     cheapestPair.associatedPricePoints.insert(item, at: 0)

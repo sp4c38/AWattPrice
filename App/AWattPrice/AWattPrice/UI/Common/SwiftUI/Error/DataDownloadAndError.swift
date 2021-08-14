@@ -136,7 +136,7 @@ struct DataDownloadAndError: View {
                 DataRetrievalLoadingView()
             } else if case .failed = energyDataController.downloadState {
                 DataRetrievalError()
-            } else if let energyData = energyDataController.energyData, energyData.prices.isEmpty == true {
+            } else if let energyData = energyDataController.energyData, energyData.currentPrices.isEmpty == true {
                 CurrentlyNoData()
                     .transition(.opacity)
             } else if crtNotifiSetting.entity == nil || currentSetting.entity == nil {

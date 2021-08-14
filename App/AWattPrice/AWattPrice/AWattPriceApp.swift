@@ -1,6 +1,6 @@
 //
-//  AwattarAppApp.swift
-//  AwattarApp
+//  AWattPriceApp.swift
+//  AWattPriceApp
 //
 //  Created by Léon Becker on 06.09.20.
 //
@@ -17,29 +17,30 @@ class NotificationAccess: ObservableObject {
     @Published var access = false
 }
 
-/// Entry point of the app
 @main
-struct AwattarApp: App {
+struct AWattPriceApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
-    let backendComm: BackendCommunicator
+    let energyDataController = EnergyDataController()
     let crtNotifiSetting: CurrentNotificationSetting
     let currentSetting: CurrentSetting
     let notificationAccess: NotificationAccess
     let persistence = PersistenceManager()
 
     init() {
-        backendComm = BackendCommunicator()
-        crtNotifiSetting = CurrentNotificationSetting(
-            backendComm: backendComm,
-            managedObjectContext: persistence.persistentContainer.viewContext
-        )
+        crtNotifiSetting = CurrentNotificationSetting(managedObjectContext: persistence.persistentContainer.viewContext)
         currentSetting = CurrentSetting(
             managedObjectContext: persistence.persistentContainer.viewContext
         )
+        
+        if let entity = currentSetting.entity,
+           let selectedRegion = Region(rawValue: entity.regionIdentifier)
+        {
+            energyDataController.download(region: selectedRegion)
+        }
+        
         notificationAccess = NotificationAccess()
 
-        appDelegate.backendComm = backendComm
         appDelegate.crtNotifiSetting = crtNotifiSetting
         appDelegate.currentSetting = currentSetting
         appDelegate.notificationAccess = notificationAccess
@@ -50,7 +51,7 @@ struct AwattarApp: App {
             // The managedObjectContext from PersistenceManager mustn't be parsed to the views directly as environment value because views will only access it indirectly through CurrentSetting.
 
             ContentView()
-                .environmentObject(backendComm)
+                .environmentObject(energyDataController)
                 .environmentObject(currentSetting)
                 .environmentObject(crtNotifiSetting)
                 .environmentObject(CheapestHourManager())

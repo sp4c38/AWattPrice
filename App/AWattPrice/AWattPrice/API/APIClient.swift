@@ -8,11 +8,18 @@
 import Combine
 import Foundation
 
-class APIClient<ResponseType: Decodable> {
-    func request<ResponseDataType, DecoderType>(to apiRequest: APIRequest<ResponseDataType, DecoderType>) -> AnyPublisher<ResponseDataType, Error> {
+class APIClient {
+    func request<ResponseDataType, DecoderType>(to apiRequest: ResponseAPIRequest<ResponseDataType, DecoderType>) -> AnyPublisher<ResponseDataType, Error> {
         self.request(request: apiRequest.request)
             .map(\.data)
             .decode(type: ResponseDataType.self, decoder: apiRequest.decoder)
+            .eraseToAnyPublisher()
+    }
+    
+    func request(to apiRequest: PlainAPIRequest) -> AnyPublisher<Never, Error> {
+        self.request(request: apiRequest.request)
+            .ignoreOutput()
+            .mapError { $0 as Error }
             .eraseToAnyPublisher()
     }
     

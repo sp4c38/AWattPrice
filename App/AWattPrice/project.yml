@@ -34,6 +34,8 @@ targets:
     settings:
       base:
         INFOPLIST_FILE: AWattPrice/Info.plist
+        DEVELOPMENT_ASSET_PATHS:
+          - AWattPrice/Resources/Preview\ Content
         CODE_SIGN_ENTITLEMENTS: AWattPrice/AWattPrice.entitlements
       configs:
         development:

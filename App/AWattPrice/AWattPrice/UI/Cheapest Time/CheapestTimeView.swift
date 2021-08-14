@@ -178,30 +178,16 @@ struct CheapestTimeView: View {
 }
 
 struct CheapestTimeView_Previews: PreviewProvider {
-    static var previews: some View {
-        let backendComm = BackendCommunicator()
-        let networkManager = NetworkManager()
+    static let energyDataController = EnergyDataController()
 
-        return VStack(spacing: 0.0) {
-            CheapestTimeView()
-                .environmentObject(backendComm)
-                .environmentObject(
-                    CurrentNotificationSetting(
-                        backendComm: BackendCommunicator(),
-                        managedObjectContext: PersistenceManager().persistentContainer.viewContext
-                    )
-                )
-                .environmentObject(CheapestHourManager())
-                .environmentObject(CurrentSetting(managedObjectContext: PersistenceManager().persistentContainer.viewContext))
-                .preferredColorScheme(.light)
-                .onAppear {
-                    backendComm.getEnergyData(0, networkManager)
-                }
-            Spacer(minLength: 0)
-            TabBar()
-                .environmentObject(TBItems())
-        }
-        .preferredColorScheme(.light)
-        .environment(\.locale, Locale(identifier: "de_DE"))
+    static var previews: some View {
+        CheapestTimeView()
+            .environmentObject(energyDataController)
+            .environmentObject(
+                CurrentNotificationSetting(managedObjectContext: PersistenceManager().persistentContainer.viewContext)
+            )
+            .environmentObject(CheapestHourManager())
+            .environmentObject(CurrentSetting(managedObjectContext: PersistenceManager().persistentContainer.viewContext))
+            .onAppear { energyDataController.download(region: Region.DE) }
     }
 }

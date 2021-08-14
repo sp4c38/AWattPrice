@@ -1,0 +1,179 @@
+{
+  "prices": [
+    {
+      "start_timestamp": 1628852400,
+      "end_timestamp": 1628856000,
+      "marketprice": 74.05
+    },
+    {
+      "start_timestamp": 1628856000,
+      "end_timestamp": 1628859600,
+      "marketprice": 72.04
+    },
+    {
+      "start_timestamp": 1628859600,
+      "end_timestamp": 1628863200,
+      "marketprice": 71.86
+    },
+    {
+      "start_timestamp": 1628863200,
+      "end_timestamp": 1628866800,
+      "marketprice": 72.58
+    },
+    {
+      "start_timestamp": 1628866800,
+      "end_timestamp": 1628870400,
+      "marketprice": 86.13
+    },
+    {
+      "start_timestamp": 1628870400,
+      "end_timestamp": 1628874000,
+      "marketprice": 104.91
+    },
+    {
+      "start_timestamp": 1628874000,
+      "end_timestamp": 1628877600,
+      "marketprice": 117.48
+    },
+    {
+      "start_timestamp": 1628877600,
+      "end_timestamp": 1628881200,
+      "marketprice": 115.68
+    },
+    {
+      "start_timestamp": 1628881200,
+      "end_timestamp": 1628884800,
+      "marketprice": 115.77
+    },
+    {
+      "start_timestamp": 1628884800,
+      "end_timestamp": 1628888400,
+      "marketprice": 106.91
+    },
+    {
+      "start_timestamp": 1628888400,
+      "end_timestamp": 1628892000,
+      "marketprice": 92.19
+    },
+    {
+      "start_timestamp": 1628892000,
+      "end_timestamp": 1628895600,
+      "marketprice": 78.02
+    },
+    {
+      "start_timestamp": 1628895600,
+      "end_timestamp": 1628899200,
+      "marketprice": 75.66
+    },
+    {
+      "start_timestamp": 1628899200,
+      "end_timestamp": 1628902800,
+      "marketprice": 71.55
+    },
+    {
+      "start_timestamp": 1628902800,
+      "end_timestamp": 1628906400,
+      "marketprice": 69.45
+    },
+    {
+      "start_timestamp": 1628906400,
+      "end_timestamp": 1628910000,
+      "marketprice": 69.06
+    },
+    {
+      "start_timestamp": 1628910000,
+      "end_timestamp": 1628913600,
+      "marketprice": 69.2
+    },
+    {
+      "start_timestamp": 1628913600,
+      "end_timestamp": 1628917200,
+      "marketprice": 69.7
+    },
+    {
+      "start_timestamp": 1628917200,
+      "end_timestamp": 1628920800,
+      "marketprice": 73.51
+    },
+    {
+      "start_timestamp": 1628920800,
+      "end_timestamp": 1628924400,
+      "marketprice": 75.02
+    },
+    {
+      "start_timestamp": 1628924400,
+      "end_timestamp": 1628928000,
+      "marketprice": 73.86
+    },
+    {
+      "start_timestamp": 1628928000,
+      "end_timestamp": 1628931600,
+      "marketprice": 63.26
+    },
+    {
+      "start_timestamp": 1628931600,
+      "end_timestamp": 1628935200,
+      "marketprice": 58.08
+    },
+    {
+      "start_timestamp": 1628935200,
+      "end_timestamp": 1628938800,
+      "marketprice": 50.44
+    },
+    {
+      "start_timestamp": 1628938800,
+      "end_timestamp": 1628942400,
+      "marketprice": 1.48
+    },
+    {
+      "start_timestamp": 1628942400,
+      "end_timestamp": 1628946000,
+      "marketprice": 0
+    },
+    {
+      "start_timestamp": 1628946000,
+      "end_timestamp": 1628949600,
+      "marketprice": 9.89
+    },
+    {
+      "start_timestamp": 1628949600,
+      "end_timestamp": 1628953200,
+      "marketprice": 50.35
+    },
+    {
+      "start_timestamp": 1628953200,
+      "end_timestamp": 1628956800,
+      "marketprice": 58.85
+    },
+    {
+      "start_timestamp": 1628956800,
+      "end_timestamp": 1628960400,
+      "marketprice": 76.96
+    },
+    {
+      "start_timestamp": 1628960400,
+      "end_timestamp": 1628964000,
+      "marketprice": 86.94
+    },
+    {
+      "start_timestamp": 1628964000,
+      "end_timestamp": 1628967600,
+      "marketprice": 88.56
+    },
+    {
+      "start_timestamp": 1628967600,
+      "end_timestamp": 1628971200,
+      "marketprice": 87.9
+    },
+    {
+      "start_timestamp": 1628971200,
+      "end_timestamp": 1628974800,
+      "marketprice": 85.03
+    },
+    {
+      "start_timestamp": 1628974800,
+      "end_timestamp": 1628978400,
+      "marketprice": 78.08
+    }
+  ]
+}

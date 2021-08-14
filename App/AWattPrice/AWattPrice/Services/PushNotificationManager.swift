@@ -77,8 +77,8 @@ class PushNotificationUpdateManager {
         }
         group.wait()
 
-        if let token = crtNotifiSetting.entity!.lastApnsToken {
-            let newConfig = UploadPushNotificationConfigRepresentable(token, regionIdentifier, vatSelection, crtNotifiSetting.entity!)
+//        if let token = crtNotifiSetting.entity!.lastApnsToken {
+//            let newConfig = UploadPushNotificationConfigRepresentable(token, regionIdentifier, vatSelection, crtNotifiSetting.entity!)
 //            let requestSuccessful = backendComm.uploadPushNotificationSettings(configuration: newConfig)
 
 //            if !requestSuccessful {
@@ -86,9 +86,9 @@ class PushNotificationUpdateManager {
 //                    crtNotifiSetting.changeChangesButErrorUploading(to: true)
 //                }
 //            }
-        } else {
-            logger.info("No token is set yet. Will perform upload in background task later.")
-        }
+//        } else {
+//            logger.info("No token is set yet. Will perform upload in background task later.")
+//        }
 
         self.crtNotifiSetting!.currentlySendingToServer.unlock()
     }

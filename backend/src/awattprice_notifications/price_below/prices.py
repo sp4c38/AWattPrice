@@ -107,10 +107,6 @@ async def get_updated_regions(config: Config, regions_prices: Box[Region, Box]) 
         if isinstance(stored_endtime, Exception):
             logger.exception(f"Couldn't read last updated endtime for region {region}: {exc}.")
             continue
-        if stored_endtime is None:
-            logger.debug(f"No existing endtime for region {region} yet.")
-            updated_regions.append(region)
-            continue
 
         current_endtime = get_current_endtime(prices)
         regions_did_update = check_region_updated(stored_endtime, current_endtime)

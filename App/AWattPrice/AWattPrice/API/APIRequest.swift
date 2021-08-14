@@ -27,7 +27,9 @@ enum APIRequestFactory {
     static let apiURL = AppContext.shared.config.apiURL
 
     static func energyDataRequest(region: Region) -> ResponseAPIRequest<EnergyData, JSONDecoder> {
-        let requestURL = apiURL.appendingPathComponent(region.apiName)
+        let requestURL = apiURL
+            .appendingPathComponent("data")
+            .appendingPathComponent(region.apiName)
         let urlRequest = URLRequest(
             url: requestURL,
             cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,

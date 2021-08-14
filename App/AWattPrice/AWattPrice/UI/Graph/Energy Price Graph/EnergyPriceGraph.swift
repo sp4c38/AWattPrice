@@ -66,7 +66,7 @@ class SingleBarSettings: ObservableObject {
 struct EnergyPriceGraph: View {
     @Environment(\.scenePhase) var scenePhase
 
-    @EnvironmentObject var backendComm: BackendCommunicator
+    @EnvironmentObject var energyDataController: EnergyDataController
     @EnvironmentObject var currentSetting: CurrentSetting
 
     @State var graphHourPointData = [(EnergyPricePoint, CGFloat)]()
@@ -82,7 +82,7 @@ struct EnergyPriceGraph: View {
 
     func updateBarHeights(localHeaderSize: CGSize) {
         if graphHourPointData.count > 0 {
-            singleHeight = (sizeRect.height - headerSize.height) / CGFloat(backendComm.energyData!.prices.count)
+            singleHeight = (sizeRect.height - headerSize.height) / CGFloat(energyDataController.energyData!.prices.count)
             var currentHeight: CGFloat = localHeaderSize.height
 
             for hourPointIndex in 0 ... (graphHourPointData.count - 1) {
@@ -96,18 +96,23 @@ struct EnergyPriceGraph: View {
 
     func setGraphValues(energyData: EnergyData, localSizeRect: CGRect, localHeaderSize: CGSize) {
         if !(localSizeRect.width == 0 || localSizeRect.height == 0) {
-            singleBarSettings = SingleBarSettings(minPrice: energyData.minPrice, maxPrice: energyData.maxPrice)
+            var minPrice = energyData.minCostPricePoint?.marketprice ?? 0
+            if minPrice > 0 {
+                minPrice = 0
+            }
+            let maxPrice = energyData.maxCostPricePoint?.marketprice ?? 0
+            singleBarSettings = SingleBarSettings(minPrice: minPrice, maxPrice: maxPrice)
             singleHeight = (localSizeRect.height - localHeaderSize.height) / CGFloat(energyData.prices.count)
 
             if singleHeight != 0 {
                 graphHourPointData = []
                 dateMarkPointIndex = nil
 
-                let firstItemDate = energyData.prices.first!.startTimestamp
+                let firstItemDate = energyData.prices.first!.startTime
                 var currentHeight: CGFloat = localHeaderSize.height
                 for hourPointEntry in energyData.prices {
                     graphHourPointData.append((hourPointEntry, currentHeight))
-                    let currentItemDate = hourPointEntry.startTimestamp
+                    let currentItemDate = hourPointEntry.startTime
 
                     if !(Calendar.current.compare(firstItemDate, to: currentItemDate, toGranularity: .day) == .orderedSame), dateMarkPointIndex == nil {
                         var hourPointEntryIndex = (currentHeight - localHeaderSize.height) / singleHeight
@@ -233,15 +238,15 @@ struct EnergyPriceGraph: View {
             .onChange(of: scenePhase) { newScenePhase in
                 if newScenePhase == .active {
                     initCHEngine()
-                    setGraphValues(energyData: backendComm.energyData!, localSizeRect: sizeRect, localHeaderSize: headerSize)
+                    setGraphValues(energyData: energyDataController.energyData!, localSizeRect: sizeRect, localHeaderSize: headerSize)
                 }
             }
-            .onReceive(backendComm.$energyData) { newEnergyData in
+            .onReceive(energyDataController.$energyData) { newEnergyData in
                 guard let energyData = newEnergyData else { return }
                 setGraphValues(energyData: energyData, localSizeRect: sizeRect, localHeaderSize: headerSize)
             }
             .onChange(of: sizeRect) { newSizeRect in
-                setGraphValues(energyData: backendComm.energyData!, localSizeRect: newSizeRect, localHeaderSize: headerSize)
+                setGraphValues(energyData: energyDataController.energyData!, localSizeRect: newSizeRect, localHeaderSize: headerSize)
             }
             .onChange(of: headerSize) { newHeaderSize in
                 updateBarHeights(localHeaderSize: newHeaderSize)

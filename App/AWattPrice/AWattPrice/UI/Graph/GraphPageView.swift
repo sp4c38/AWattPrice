@@ -29,7 +29,7 @@ struct HomeView: View {
     @Environment(\.networkManager) var networkManager
     @Environment(\.scenePhase) var scenePhase
 
-    @EnvironmentObject var backendComm: BackendCommunicator
+    @EnvironmentObject var energyDataController: EnergyDataController
     @EnvironmentObject var crtNotifiSetting: CurrentNotificationSetting
     @EnvironmentObject var currentSetting: CurrentSetting
     @EnvironmentObject var notificationAccess: NotificationAccess
@@ -48,7 +48,7 @@ struct HomeView: View {
     var body: some View {
         NavigationView {
             VStack {
-                if backendComm.energyData != nil, currentSetting.entity != nil, backendComm.currentlyNoData == false {
+                if energyDataController.energyData != nil, currentSetting.entity != nil {
                     ZStack {
                         VStack {
                             VStack(spacing: 5) {
@@ -83,7 +83,6 @@ struct HomeView: View {
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .onAppear {
-            loadEnergyData()
             showWhatsNewPage = currentSetting.entity!.showWhatsNew
             initialAppearFinished = nil
         }
@@ -116,8 +115,9 @@ struct HomeView: View {
     }
     
     func loadEnergyData() {
-        let regionIdentifier = currentSetting.entity!.regionIdentifier
-        backendComm.getEnergyData(regionIdentifier, networkManager)
+        if let region = Region(rawValue: currentSetting.entity!.regionIdentifier) {
+            energyDataController.download(region: region)
+        }
     }
 }
 
@@ -125,7 +125,6 @@ struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
         HomeView()
             .environment(\.managedObjectContext, PersistenceManager().persistentContainer.viewContext)
-            .environmentObject(BackendCommunicator())
             .environmentObject(
                 CurrentSetting(
                     managedObjectContext: PersistenceManager().persistentContainer.viewContext

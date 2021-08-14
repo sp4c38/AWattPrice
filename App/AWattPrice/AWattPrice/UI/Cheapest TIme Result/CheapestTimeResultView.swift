@@ -81,9 +81,9 @@ extension CheapestTimeResultTimeRange {
         var useDate: Date? = nil
         switch dateType {
         case .start:
-            useDate = pricePoints.first!.startTimestamp
+            useDate = pricePoints.first!.startTime
         case .end:
-            useDate = pricePoints.last!.endTimestamp
+            useDate = pricePoints.last!.endTime
         }
         
         return useDate!
@@ -170,7 +170,7 @@ struct CheapestTimeResultViewClock: View {
 /// A view which presents the results calculated by the CheapestHourManager of when the cheapest hours for the usage of energy are.
 struct CheapestTimeResultView: View {
     @Environment(\.colorScheme) var colorScheme
-    @EnvironmentObject var backendComm: BackendCommunicator
+    @EnvironmentObject var energyDataController: EnergyDataController
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
     @EnvironmentObject var currentSetting: CurrentSetting
 
@@ -183,8 +183,8 @@ struct CheapestTimeResultView: View {
     }
 
     func getTotalTime() -> String {
-        let firstItemStart = cheapestHourManager.cheapestHoursForUsage!.associatedPricePoints[0].startTimestamp
-        let lastItemEnd = cheapestHourManager.cheapestHoursForUsage!.associatedPricePoints.last!.endTimestamp
+        let firstItemStart = cheapestHourManager.cheapestHoursForUsage!.associatedPricePoints[0].startTime
+        let lastItemEnd = cheapestHourManager.cheapestHoursForUsage!.associatedPricePoints.last!.endTime
         let interval = Int(lastItemEnd.timeIntervalSince(firstItemStart))
         let hours = Int(
             (Double(interval) / 3600)
@@ -231,24 +231,23 @@ struct CheapestTimeResultView: View {
         .padding([.leading, .trailing], 16)
         .navigationTitle("general.result")
         .onAppear {
-            cheapestHourManager.calculateCheapestHours(energyData: backendComm.energyData!, currentSetting: currentSetting)
+            cheapestHourManager.calculateCheapestHours(energyData: energyDataController.energyData!, currentSetting: currentSetting)
         }
     }
 }
 
 struct CheapestTimeResultView_Previews: PreviewProvider {
+    static var associatedPricePoints: [EnergyPricePoint] = {
+        let prices = EnergyData.previewContent().prices
+        return [prices[0]]
+    }()
+    
     static var previews: some View {
         
         let cheapestHourManager: CheapestHourManager = {
             let cheapestHourManager = CheapestHourManager()
             cheapestHourManager.cheapestHoursForUsage = HourPair(
-                associatedPricePoints: [
-                    EnergyPricePoint(
-                        startTimestamp: Date(timeIntervalSince1970: 1613602800),
-                        endTimestamp: Date(timeIntervalSince1970: 1613606400),
-                        marketprice: 10
-                    )
-                ]
+                associatedPricePoints: associatedPricePoints
             )
             return cheapestHourManager
         }()

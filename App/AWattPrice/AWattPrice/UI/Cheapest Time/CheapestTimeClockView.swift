@@ -25,11 +25,11 @@ struct CheapestTimeClockView: View {
 
     init(_ cheapestHourPair: HourPair) {
         if cheapestHourPair.associatedPricePoints.count >= 1 {
-            let startTimeFirstItem = cheapestHourPair.associatedPricePoints.first!.startTimestamp
+            let startTimeFirstItem = cheapestHourPair.associatedPricePoints.first!.startTime
             let startHour = Float(calendar.component(.hour, from: startTimeFirstItem))
             let startMinuteFraction = Float(calendar.component(.minute, from: startTimeFirstItem)) / 60
 
-            let endTimeLastItem = cheapestHourPair.associatedPricePoints.last!.endTimestamp
+            let endTimeLastItem = cheapestHourPair.associatedPricePoints.last!.endTime
             let endHour = Float(calendar.component(.hour, from: endTimeLastItem))
             let endMinuteFraction = Float(calendar.component(.minute, from: endTimeLastItem)) / 60
 
@@ -287,15 +287,14 @@ struct CheapestTimeClockView: View {
 }
 
 struct ConsumptionClockView_Previews: PreviewProvider {
+    static var associatedPricePoints: [EnergyPricePoint] = {
+        let prices = EnergyData.previewContent().prices
+        return [prices[0]]
+    }()
+    
     static var previews: some View {
         CheapestTimeClockView(
-            HourPair(
-                associatedPricePoints: [EnergyPricePoint(
-                    startTimestamp: Date(timeIntervalSince1970: TimeInterval(1_603_184_400)),
-                    endTimestamp: Date(timeIntervalSince1970: TimeInterval(1_603_189_800)),
-                    marketprice: 3
-                )]
-            )
+            HourPair(associatedPricePoints: associatedPricePoints)
         )
         .preferredColorScheme(.dark)
         .padding(20)

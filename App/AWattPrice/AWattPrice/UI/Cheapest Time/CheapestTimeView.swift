@@ -21,16 +21,13 @@ struct ViewSizePreferenceKey: PreferenceKey {
 }
 
 struct CheapestTimeViewBodyPicker: View {
-    @EnvironmentObject var backendComm: BackendCommunicator
+    @EnvironmentObject var energyDataController: EnergyDataController
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
 
     @State var maxTimeInterval = TimeInterval(3600)
 
     func setMaxTimeInterval() {
-        let minMaxRange = backendComm.minMaxTimeRange
-        if minMaxRange == nil {
-            return
-        }
+        guard let minMaxTimeRange = energyDataController.energyData?.minMaxTimeRange else { return }
         let nowHourStart = Calendar.current.date(
             bySettingHour: Calendar.current.component(.hour, from: Date()),
             minute: 0,
@@ -39,14 +36,14 @@ struct CheapestTimeViewBodyPicker: View {
         )!
         let nowHourEnd = nowHourStart.addingTimeInterval(3600)
         var differenceTimeInterval: Double = TimeInterval()
-        if minMaxRange!.lowerBound >= nowHourStart, minMaxRange!.lowerBound <= nowHourEnd {
+        if minMaxTimeRange.lowerBound >= nowHourStart, minMaxTimeRange.lowerBound <= nowHourEnd {
             differenceTimeInterval = TimeInterval(
                 nowHourStart.timeIntervalSince(
                     Date()
                 ).rounded(.up)
             )
         }
-        maxTimeInterval = (minMaxRange!.upperBound.timeIntervalSince(minMaxRange!.lowerBound)) + differenceTimeInterval
+        maxTimeInterval = (minMaxTimeRange.upperBound.timeIntervalSince(minMaxTimeRange.lowerBound)) + differenceTimeInterval
     }
 
     var body: some View {
@@ -60,7 +57,7 @@ struct CheapestTimeViewBodyPicker: View {
             .onAppear {
                 setMaxTimeInterval()
             }
-            .onReceive(backendComm.$energyData) { _ in
+            .onReceive(energyDataController.$energyData) { _ in
                 setMaxTimeInterval()
             }
         }
@@ -113,7 +110,7 @@ struct CheapestTimeViewBody: View {
 struct CheapestTimeView: View {
     @Environment(\.colorScheme) var colorScheme
 
-    @EnvironmentObject var backendComm: BackendCommunicator
+    @EnvironmentObject var energyDataController: EnergyDataController
     @EnvironmentObject var currentSetting: CurrentSetting
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
 
@@ -121,8 +118,8 @@ struct CheapestTimeView: View {
 
     var energyDataTimeRange: ClosedRange<Date> {
         // Add one or subtract one to not overlap to the next or previouse day
-        let min = backendComm.energyData!.prices.first!.startTimestamp.addingTimeInterval(1)
-        let max = backendComm.energyData!.prices.last!.endTimestamp.addingTimeInterval(-1)
+        let min = energyDataController.energyData!.prices.first!.startTime.addingTimeInterval(1)
+        let max = energyDataController.energyData!.prices.last!.endTime.addingTimeInterval(-1)
 
         return min ... max
     }
@@ -130,7 +127,7 @@ struct CheapestTimeView: View {
     var body: some View {
         NavigationView {
             VStack {
-                if backendComm.energyData != nil && currentSetting.entity != nil {
+                if energyDataController.energyData != nil && currentSetting.entity != nil {
                     ScrollView {
                         VStack(spacing: 0) {
                             CheapestTimeViewBody()

@@ -10,7 +10,7 @@ import SwiftUI
 struct UpdatedDataView: View {
     @Environment(\.networkManager) var networkManager
 
-    @EnvironmentObject var backendComm: BackendCommunicator
+    @EnvironmentObject var energyDataController: EnergyDataController
     @EnvironmentObject var currentSetting: CurrentSetting
 
     @State var firstAppear = true
@@ -22,42 +22,33 @@ struct UpdatedDataView: View {
     init() {
         dateFormatter = UpdatedDataTimeFormatter()
     }
-}
-
-extension UpdatedDataView {
-    func updateLocalizedTimeIntervalString() {
-        if backendComm.dateDataLastUpdated != nil {
-            localizedTimeIntervalString = dateFormatter.localizedTimeString(for: Date(), relativeTo: backendComm.dateDataLastUpdated!)
-        }
+    
+    func updateLocalizedTimeIntervalString(lastDownloadFinishedTime: Date) {
+        localizedTimeIntervalString = dateFormatter.localizedTimeString(for: Date(), relativeTo: lastDownloadFinishedTime)
     }
 
     var body: some View {
         HStack(spacing: 10) {
-            if backendComm.currentlyUpdatingData {
+            switch energyDataController.downloadState {
+            case .downloading:
                 Text("general.loading")
                     .foregroundColor(Color.blue)
                     .transition(.opacity)
-
+                
                 ProgressView()
                     .foregroundColor(Color.blue)
                     .transition(.opacity)
                     .frame(width: 13, height: 13)
                     .scaleEffect(0.7, anchor: .center)
                     .progressViewStyle(CircularProgressViewStyle(tint: Color.blue))
-            } else {
-                VStack(alignment: .leading, spacing: 4) {
-                    if backendComm.dataRetrievalError == true {
-                        Text("updateDataTimeFormatter.updateNewDataFailed")
-                            .foregroundColor(Color.red)
-                    } else {
-                        if backendComm.dateDataLastUpdated != nil {
-                            Text(localizedTimeIntervalString)
-                                .foregroundColor(Color.gray)
-                                .transition(.opacity)
-                                .animation(nil)
-                        }
-                    }
-                }
+            case .failed:
+                Text("updateDataTimeFormatter.updateNewDataFailed")
+                    .foregroundColor(Color.red)
+            case .idle, .finished:
+                Text(localizedTimeIntervalString)
+                    .foregroundColor(Color.gray)
+                    .transition(.opacity)
+                    .animation(nil)
             }
 
             Spacer()
@@ -65,20 +56,25 @@ extension UpdatedDataView {
         .font(.fCaption)
         .animation(.easeInOut)
         .onAppear {
-            updateLocalizedTimeIntervalString()
+            if case .finished(let time) = energyDataController.downloadState {
+                updateLocalizedTimeIntervalString(lastDownloadFinishedTime: time)
+            }
         }
         .onReceive(timer) { _ in
-            updateLocalizedTimeIntervalString()
+            if case .finished(let time) = energyDataController.downloadState {
+                updateLocalizedTimeIntervalString(lastDownloadFinishedTime: time)
+            }
         }
-        .onChange(of: backendComm.currentlyUpdatingData) { newValue in
-            if newValue == false {
-                updateLocalizedTimeIntervalString()
+        .onReceive(energyDataController.$downloadState) { state in
+            if case .finished(let time) = state {
+                updateLocalizedTimeIntervalString(lastDownloadFinishedTime: time)
             }
         }
         .contentShape(Rectangle())
         .onTapGesture {
-            let regionIdentifier = currentSetting.entity!.regionIdentifier
-            backendComm.getEnergyData(regionIdentifier, networkManager)
+            if let region = Region(rawValue: currentSetting.entity!.regionIdentifier) {
+                energyDataController.download(region: region)
+            }
         }
     }
 }
@@ -86,6 +82,5 @@ extension UpdatedDataView {
 struct UpdatedDataView_Previews: PreviewProvider {
     static var previews: some View {
         UpdatedDataView()
-            .environmentObject(BackendCommunicator())
     }
 }

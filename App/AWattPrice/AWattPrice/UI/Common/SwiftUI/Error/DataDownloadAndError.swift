@@ -21,13 +21,10 @@ struct DataRetrievalLoadingView: View {
 
 struct DataRetrievalError: View {
     @Environment(\.colorScheme) var colorScheme
-    @Environment(\.networkManager) var networkManager
 
-    @EnvironmentObject var backendComm: BackendCommunicator
+    @EnvironmentObject var energyDataController: EnergyDataController
     @EnvironmentObject var currentSetting: CurrentSetting
-}
 
-extension DataRetrievalError {
     var body: some View {
         VStack(alignment: .center) {
             Spacer()
@@ -42,8 +39,9 @@ extension DataRetrievalError {
                     .multilineTextAlignment(.center)
 
                 Button(action: {
-                    let regionIdentifier = currentSetting.entity!.regionIdentifier
-                    backendComm.getEnergyData(regionIdentifier, networkManager)
+                    if let region = Region.init(rawValue: currentSetting.entity!.regionIdentifier) {
+                        energyDataController.download(region: region)
+                    }
                 }) {
                     Text("general.retry")
                 }.buttonStyle(RetryButtonStyle())
@@ -63,11 +61,9 @@ struct CurrentlyNoData: View {
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.networkManager) var networkManager
 
-    @EnvironmentObject var backendComm: BackendCommunicator
+    @EnvironmentObject var energyDataController: EnergyDataController
     @EnvironmentObject var currentSetting: CurrentSetting
-}
 
-extension CurrentlyNoData {
     var body: some View {
         VStack(alignment: .center) {
             Spacer()
@@ -82,8 +78,9 @@ extension CurrentlyNoData {
                     .multilineTextAlignment(.center)
 
                 Button(action: {
-                    let regionIdentifier = currentSetting.entity!.regionIdentifier
-                    backendComm.getEnergyData(regionIdentifier, networkManager)
+                    if let region = Region(rawValue: currentSetting.entity!.regionIdentifier) {
+                        energyDataController.download(region: region)
+                    }
                 }) {
                     Text("general.retry")
                 }.buttonStyle(RetryButtonStyle())
@@ -129,22 +126,21 @@ struct SettingLoadingError: View {
 
 /// Classify network errors
 struct DataDownloadAndError: View {
-    @EnvironmentObject var backendComm: BackendCommunicator
+    @EnvironmentObject var energyDataController: EnergyDataController
     @EnvironmentObject var crtNotifiSetting: CurrentNotificationSetting
     @EnvironmentObject var currentSetting: CurrentSetting
 
     var body: some View {
         VStack {
-            if crtNotifiSetting.entity == nil || currentSetting.entity == nil {
-                SettingLoadingError()
-            } else if backendComm.dataRetrievalError == true {
+            if case .downloading = energyDataController.downloadState {
+                DataRetrievalLoadingView()
+            } else if case .failed = energyDataController.downloadState {
                 DataRetrievalError()
-                    .transition(.opacity)
-            } else if backendComm.currentlyNoData == true {
+            } else if let energyData = energyDataController.energyData, energyData.prices.isEmpty == true {
                 CurrentlyNoData()
                     .transition(.opacity)
-            } else if backendComm.currentlyUpdatingData == true {
-                DataRetrievalLoadingView()
+            } else if crtNotifiSetting.entity == nil || currentSetting.entity == nil {
+                SettingLoadingError()
             }
         }
         .padding()

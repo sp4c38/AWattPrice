@@ -11,7 +11,7 @@ import UIKit
 import UserNotifications
 
 class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
-    var backendComm: BackendCommunicator?
+//    var backendComm: BackendCommunicator?
     var crtNotifiSetting: CurrentNotificationSetting?
     var currentSetting: CurrentSetting?
     var notificationAccess: NotificationAccess?
@@ -34,73 +34,73 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
         }
     }
 
-    func application(_: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        logger.debug("Registration from APNs for push notifications was granted.")
+//    func application(_: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+//        logger.debug("Registration from APNs for push notifications was granted.")
+//
+//        let apnsDeviceTokenString = deviceToken.map {
+//            String(format: "%02.2hhx", $0)
+//        }.joined()
+//        logger.info("Got apns device token: \(apnsDeviceTokenString).")
+//
+//        if crtNotifiSetting != nil, currentSetting != nil, backendComm != nil {
+//            crtNotifiSetting!.currentlySendingToServer.lock()
+//
+//            if crtNotifiSetting!.entity != nil, currentSetting!.entity != nil {
+//                let notificationConfigRepresentable = UploadPushNotificationConfigRepresentable(
+//                    apnsDeviceTokenString,
+//                    Int(currentSetting!.entity!.regionIdentifier),
+//                    currentSetting!.entity!.pricesWithVAT ? 1 : 0,
+//                    crtNotifiSetting!.entity!
+//                )
+//
+//                if notificationConfigRepresentable.checkUserWantsNotifications() == true ||
+//                    crtNotifiSetting!.entity!.changesButErrorUploading == true
+//                {
+//                    if crtNotifiSetting!.entity!.lastApnsToken != apnsDeviceTokenString ||
+//                        crtNotifiSetting!.entity!.changesButErrorUploading == true
+//                    {
+//                        DispatchQueue.global(qos: .background).async {
+//                            logger.info("""
+//                                Need to update stored APNs configuration. Stored APNs token and current
+//                                APNs token mismatch OR previously notification configuration couldn't be
+//                                uploaded because of some issue.
+//                            """)
+//                            let group = DispatchGroup()
+//                            group.enter()
+//                            DispatchQueue.main.async {
+//                                self.crtNotifiSetting!.changeChangesButErrorUploading(to: false)
+//                                group.leave()
+//                            }
+//                            group.wait()
+//                            let requestSuccessful = self.backendComm!.uploadPushNotificationSettings(
+//                                configuration: notificationConfigRepresentable
+//                            )
+//                            if !requestSuccessful {
+//                                DispatchQueue.main.async {
+//                                    self.crtNotifiSetting!.changeChangesButErrorUploading(to: true)
+//                                }
+//                            }
+//                        }
+//                    } else {
+//                        logger.debug("""
+//                            No need to update stored APNs configuration. Stored token matches current APNs
+//                            token and no errors previously occurred when uploading changes.
+//                        """)
+//                    }
+//                }
+//                crtNotifiSetting!.changeLastApnsToken(to: apnsDeviceTokenString)
+//            }
+//            crtNotifiSetting!.currentlySendingToServer.unlock()
+//        } else {
+//            logger.error("Settings could not be found. Therefor can't store last APNs token.")
+//        }
+//    }
 
-        let apnsDeviceTokenString = deviceToken.map {
-            String(format: "%02.2hhx", $0)
-        }.joined()
-        logger.info("Got apns device token: \(apnsDeviceTokenString).")
-
-        if crtNotifiSetting != nil, currentSetting != nil, backendComm != nil {
-            crtNotifiSetting!.currentlySendingToServer.lock()
-
-            if crtNotifiSetting!.entity != nil, currentSetting!.entity != nil {
-                let notificationConfigRepresentable = UploadPushNotificationConfigRepresentable(
-                    apnsDeviceTokenString,
-                    Int(currentSetting!.entity!.regionIdentifier),
-                    currentSetting!.entity!.pricesWithVAT ? 1 : 0,
-                    crtNotifiSetting!.entity!
-                )
-
-                if notificationConfigRepresentable.checkUserWantsNotifications() == true ||
-                    crtNotifiSetting!.entity!.changesButErrorUploading == true
-                {
-                    if crtNotifiSetting!.entity!.lastApnsToken != apnsDeviceTokenString ||
-                        crtNotifiSetting!.entity!.changesButErrorUploading == true
-                    {
-                        DispatchQueue.global(qos: .background).async {
-                            logger.info("""
-                                Need to update stored APNs configuration. Stored APNs token and current
-                                APNs token mismatch OR previously notification configuration couldn't be
-                                uploaded because of some issue.
-                            """)
-                            let group = DispatchGroup()
-                            group.enter()
-                            DispatchQueue.main.async {
-                                self.crtNotifiSetting!.changeChangesButErrorUploading(to: false)
-                                group.leave()
-                            }
-                            group.wait()
-                            let requestSuccessful = self.backendComm!.uploadPushNotificationSettings(
-                                configuration: notificationConfigRepresentable
-                            )
-                            if !requestSuccessful {
-                                DispatchQueue.main.async {
-                                    self.crtNotifiSetting!.changeChangesButErrorUploading(to: true)
-                                }
-                            }
-                        }
-                    } else {
-                        logger.debug("""
-                            No need to update stored APNs configuration. Stored token matches current APNs
-                            token and no errors previously occurred when uploading changes.
-                        """)
-                    }
-                }
-                crtNotifiSetting!.changeLastApnsToken(to: apnsDeviceTokenString)
-            }
-            crtNotifiSetting!.currentlySendingToServer.unlock()
-        } else {
-            logger.error("Settings could not be found. Therefor can't store last APNs token.")
-        }
-    }
-
-    func application(_: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
-        logger.debug("Registration to APNs for push notifications was NOT granted: \(error.localizedDescription).")
-        if notificationAccess != nil {
-            // App is allowed to send notification but failed to register for remote notifications.
-            notificationAccess!.access = false
-        }
-    }
+//    func application(_: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+//        logger.debug("Registration to APNs for push notifications was NOT granted: \(error.localizedDescription).")
+//        if notificationAccess != nil {
+//            // App is allowed to send notification but failed to register for remote notifications.
+//            notificationAccess!.access = false
+//        }
+//    }
 }

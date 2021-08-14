@@ -12,7 +12,7 @@ struct ContentView: View {
     @Environment(\.networkManager) var networkManager
     @Environment(\.scenePhase) var scenePhase
 
-    @EnvironmentObject var backendComm: BackendCommunicator
+//    @EnvironmentObject var backendComm: BackendCommunicator
     @EnvironmentObject var crtNotifiSetting: CurrentNotificationSetting
     @EnvironmentObject var currentSetting: CurrentSetting
     @EnvironmentObject var notificationAccess: NotificationAccess
@@ -69,16 +69,16 @@ struct ContentView: View {
                         currentSetting.changeShowWhatsNew(to: false)
                     }
                 }
-                .onChange(of: crtNotifiSetting.entity!.changesButErrorUploading) { errorOccurred in
-                    if errorOccurred == true {
-                        backendComm.tryNotificationUploadAfterFailed(
-                            Int(currentSetting.entity!.regionIdentifier),
-                            currentSetting.entity!.pricesWithVAT ? 1 : 0,
-                            crtNotifiSetting,
-                            networkManager
-                        )
-                    }
-                }
+//                .onChange(of: crtNotifiSetting.entity!.changesButErrorUploading) { errorOccurred in
+//                    if errorOccurred == true {
+//                        backendComm.tryNotificationUploadAfterFailed(
+//                            Int(currentSetting.entity!.regionIdentifier),
+//                            currentSetting.entity!.pricesWithVAT ? 1 : 0,
+//                            crtNotifiSetting,
+//                            networkManager
+//                        )
+//                    }
+//                }
             }
         }
         .ignoresSafeArea(.keyboard)

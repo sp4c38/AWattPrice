@@ -58,12 +58,10 @@ class PushNotificationUpdateManager {
     let updateInterval = 5 // In seconds
     var updateScheduled = false
 
-    var backendComm: BackendCommunicator
     var crtNotifiSetting: CurrentNotificationSetting?
     var currentSetting: CurrentSetting?
 
-    init(_ backendComm: BackendCommunicator) {
-        self.backendComm = backendComm
+    init() {
         let backgroundQueueName = "PushNotificationUpdateQueue"
         backgroundQueue = DispatchQueue(label: backgroundQueueName)
     }
@@ -81,13 +79,13 @@ class PushNotificationUpdateManager {
 
         if let token = crtNotifiSetting.entity!.lastApnsToken {
             let newConfig = UploadPushNotificationConfigRepresentable(token, regionIdentifier, vatSelection, crtNotifiSetting.entity!)
-            let requestSuccessful = backendComm.uploadPushNotificationSettings(configuration: newConfig)
+//            let requestSuccessful = backendComm.uploadPushNotificationSettings(configuration: newConfig)
 
-            if !requestSuccessful {
-                DispatchQueue.main.async {
-                    crtNotifiSetting.changeChangesButErrorUploading(to: true)
-                }
-            }
+//            if !requestSuccessful {
+//                DispatchQueue.main.async {
+//                    crtNotifiSetting.changeChangesButErrorUploading(to: true)
+//                }
+//            }
         } else {
             logger.info("No token is set yet. Will perform upload in background task later.")
         }

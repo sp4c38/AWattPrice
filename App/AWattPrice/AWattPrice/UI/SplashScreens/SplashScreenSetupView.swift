@@ -23,9 +23,9 @@ struct SplashScreenSetupView: View {
                 CustomInsetGroupedList {
                     RegionAndVatSelection()
 
-                    if notificationAccess.access == true {
-                        PriceDropsBelowValueNotificationView(showHeader: true)
-                    }
+//                    if notificationAccess.access == true {
+//                        PriceDropsBelowValueNotificationView(showHeader: true)
+//                    }
 //                    AwattarTariffSelectionSetting()
                 }
 

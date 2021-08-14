@@ -42,7 +42,7 @@ struct RegionAndVatSelection: View {
                             if newRegionSelection == 1 {
                                 currentSetting.changeTaxSelection(to: false)
                             }
-                            crtNotifiSetting.pushNotificationUpdateManager.backgroundNotificationUpdate(currentSetting, crtNotifiSetting)
+//                            crtNotifiSetting.pushNotificationUpdateManager.backgroundNotificationUpdate(currentSetting, crtNotifiSetting)
                         }
                 }
 
@@ -64,7 +64,7 @@ struct RegionAndVatSelection: View {
                                 content
                                     .onChange(of: pricesWithTaxIncluded) { newValue in
                                         currentSetting.changeTaxSelection(to: newValue)
-                                        crtNotifiSetting.pushNotificationUpdateManager.backgroundNotificationUpdate(currentSetting, crtNotifiSetting)
+//                                        crtNotifiSetting.pushNotificationUpdateManager.backgroundNotificationUpdate(currentSetting, crtNotifiSetting)
                                     }
                             }
                     }

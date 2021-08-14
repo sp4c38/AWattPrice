@@ -223,9 +223,11 @@ struct SplashScreenFeaturesAndConsentView: View {
                 if privacyPolicyIsChecked == true, termsOfUseIsChecked == true {
                     showTermsOfUseNotChecked = false
                     showPrivacyPolicyNotChecked = false
-                    managePushNotificationsOnAppAppear(notificationAccessRepresentable: notificationAccess, registerForRemoteNotifications: true) {
-                        redirectToNextSplashScreen = 1
-                    }
+//                    managePushNotificationsOnAppAppear(notificationAccessRepresentable: notificationAccess, registerForRemoteNotifications: true) {
+//                        redirectToNextSplashScreen = 1
+//                    }
+                    /// DELETE NEXT LINE WHEN REENABLING
+                    redirectToNextSplashScreen = 1
                 } else {
                     if termsOfUseIsChecked == false {
                         showTermsOfUseNotChecked = true

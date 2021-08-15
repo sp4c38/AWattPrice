@@ -6,6 +6,7 @@ from collections import namedtuple
 from typing import Any
 from typing import Optional
 
+import jsonschema
 import sqlalchemy
 
 from box import Box
@@ -165,16 +166,22 @@ async def run_notification_tasks(db_engine: AsyncEngine, token_hex: str, tasks: 
         await session.commit()
 
 
-def transform_add_token_task(task: Box, task_index: int):
-    """Check for correct 'add token' task schema and transform the task."""
+def parse_add_token_payload(old_task: Box, task_index: int) -> Optional[Box]:
+    """Validates and parses an add token payload into interal format."""
     if task_index != 0:
-        logger.warning(f"Add token task is not the first in the task list: {task_index}.")
-        raise HTTPException(400)
+        logger.debug(f"Add token task is not the first in the task list: {task_index}.")
+        return None
 
     add_token_schema = defaults.NOTIFICATION_TASK_ADD_TOKEN_SCHEMA
-    utils.http_exc_validate_json_schema(task.payload, add_token_schema, http_code=400)
+    try:
+        jsonschema.validate(old_task.payload, add_token_schema)
+    except jsonschema.ValidationError as exc:
+        logger.debug(f"Add token task doesn't follow schema: {exc}.")
+        return None
 
+    task = old_task
     task.payload.region = Region[task.payload.region]
+    return task
 
 
 def transform_subscribe_desubscribe_task(task: Box):
@@ -206,11 +213,13 @@ def transform_update_task(task: Box):
         utils.http_exc_validate_json_schema(updated_data, price_below_schema, http_code=400)
 
 
-def check_type_count(tasks: BoxList) -> bool:
-    """Verify number of certain task types match allowed amount."""
+def check_task_counts_valid(tasks: BoxList) -> bool:
+    """Verify that the number of certain task types matches the allowed amount."""
+    if len(tasks) == 0:
+        return False
     # A combination of the main task type and other types which are used to identify a single count.
-    CombinedTypes = namedtuple("CombinedTypes", ["task", "other"])
-    combined_types_counted = {}
+    CombinedTypes = namedtuple("CombinedTypes", ["task_type", "other"])
+    combined_types_counts = {}
     for task in tasks:
         if task.type == TaskType.ADD_TOKEN:
             combined_types = CombinedTypes(task.type, ())
@@ -219,11 +228,10 @@ def check_type_count(tasks: BoxList) -> bool:
         elif task.type == TaskType.UPDATE:
             combined_types = CombinedTypes(task.type, (task.payload.subject,))
 
-        for combined_types in all_combined_types:
-            current_count = combined_types_counted.get(conbined_types, 0)
-            types_counted[conbined_types] = current_count + 1
+        current_count = combined_types_counts.get(combined_types, 0)
+        combined_types_counts[combined_types] = current_count + 1
 
-    for combined_types, count in combined_types.items():
+    for combined_types, count in combined_types_counts.items():
         task_type = combined_types.task_type
         other_types = combined_types.other
         # fmt: off
@@ -239,25 +247,45 @@ def check_type_count(tasks: BoxList) -> bool:
     return True
 
 
-def transform_tasks_body(body: Box):
-    """First validates, then transforms the tasks for later internal use.
+def parse_tasks_body(old_packed_tasks: Box) -> Optional[Box]:
+    """Validates and parses the tasks into an internal format.
 
     See the 'notifications.client_receive.tasks' doc for description of the different tasks
     and their valdiation requirements.
+
+    :returns: None if tasks couldn't be parsed, otherwise return the packed tasks in internal format.
     """
     schema = defaults.NOTIFICATION_TASKS_BASE_SCHEMA
-    utils.http_exc_validate_json_schema(body, schema, http_code=400)
+    try:
+        jsonschema.validate(old_packed_tasks, schema)
+    except jsonschema.ValidationError as exc:
+        logger.debug(f"Clients tasks json is not valid: {exc}.")
+        return None
 
-    for index, task in enumerate(body.tasks):
-        task.type = TaskType[task.type.upper()]
+    packed_tasks = Box()
+    packed_tasks.token = old_packed_tasks.token
+    packed_tasks.tasks = []
+    for index, old_task in enumerate(old_packed_tasks.tasks):
+        task = Box()
+        task.type = TaskType[old_task.type.upper()]
+        new_payload = None
         if task.type == TaskType.ADD_TOKEN:
-            transform_add_token_task(task, index)
+            new_payload = parse_add_token_task(old_task, index)
         elif task.type == TaskType.SUBSCRIBE_DESUBSCRIBE:
-            transform_subscribe_desubscribe_task(task)
+            transform_subscribe_desubscribe_task(old_task)
         elif task.type == TaskType.UPDATE:
-            transform_update_task(task)
+            transform_update_task(old_task)
 
-    counts_ok = check_type_count(body.tasks)
-    if not counts_ok:
-        logger.warning("Wrong notification task counts.")
-        raise HTTPException(400)
+        if new_payload is None:
+            logger.debug(f"Couldn't parse {task.type} task.")
+            return None
+        task.payload = new_payload
+
+        if task.get("payload") is not None:
+            packed_tasks.tasks.append(task)
+
+    counts_valid = check_task_counts_valid(packed_tasks.tasks)
+    if not counts_valid:
+        return None
+
+    return packed_tasks

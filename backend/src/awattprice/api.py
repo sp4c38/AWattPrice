@@ -68,14 +68,14 @@ async def do_notification_tasks(request: Request):
     except JSONDecodeError as exc:
         body_raw = await request.body()
         logger.warning(f"Couldn't decode notification tasks {repr(body_raw)} as json: {exc}.")
-        raise HTTPException(400) from exc
+        raise HTTPException(400)
 
-    tasks_packed = Box(body_json)
-    notifications.transform_tasks_body(tasks_packed)
+    raw_packed_tasks = Box(body_json)
 
-    token_hex = tasks_packed.token
-    tasks = tasks_packed.tasks
+    packed_tasks = notifications.parse_tasks_body(raw_packed_tasks)
+    if packed_tasks is None:
+        raise HTTPException(400)
+
+    token_hex = packed_tasks.token
+    tasks = packed_tasks.tasks
     await notifications.run_notification_tasks(database_engine, token_hex, tasks)
-
-
-# Old /data/apns/send_token/ url should be supported by the old backend for backwards-compatibility reasons.

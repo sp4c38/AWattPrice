@@ -238,7 +238,7 @@ async def update_last_update_time(region: Region, config: Config):
 
 
 def parse_downloaded_data(region: Region, data: Box) -> Box:
-    """Transform the downloaded price data into the app internal format."""
+    """Parse the downloaded price data into the app internal format."""
     new_data = Box()
     new_data.prices = BoxList()
     for point in data.data:

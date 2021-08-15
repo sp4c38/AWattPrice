@@ -166,22 +166,22 @@ async def run_notification_tasks(db_engine: AsyncEngine, token_hex: str, tasks: 
         await session.commit()
 
 
-def parse_add_token_payload(old_task: Box, task_index: int) -> Optional[Box]:
+def parse_add_token_payload(old_payload: Box, task_index: int) -> Optional[Box]:
     """Validates and parses an add token payload into interal format."""
     if task_index != 0:
-        logger.debug(f"Add token task is not the first in the task list: {task_index}.")
+        logger.warning(f"Add token task is not the first in the task list: {task_index}.")
         return None
 
-    add_token_schema = defaults.NOTIFICATION_TASK_ADD_TOKEN_SCHEMA
+    add_token_schema = defaults.NOTIFICATION_TASK_PAYLOAD_ADD_TOKEN_SCHEMA
     try:
-        jsonschema.validate(old_task.payload, add_token_schema)
+        jsonschema.validate(old_payload, add_token_schema)
     except jsonschema.ValidationError as exc:
-        logger.debug(f"Add token task doesn't follow schema: {exc}.")
+        logger.exception(f"Add token task doesn't follow schema: {exc}.")
         return None
 
-    task = old_task
-    task.payload.region = Region[task.payload.region]
-    return task
+    payload = old_payload
+    payload.region = Region[payload.region]
+    return payload
 
 
 def transform_subscribe_desubscribe_task(task: Box):
@@ -259,7 +259,7 @@ def parse_tasks_body(old_packed_tasks: Box) -> Optional[Box]:
     try:
         jsonschema.validate(old_packed_tasks, schema)
     except jsonschema.ValidationError as exc:
-        logger.debug(f"Clients tasks json is not valid: {exc}.")
+        logger.warning(f"Clients tasks json is not valid: {exc}.")
         return None
 
     packed_tasks = Box()
@@ -268,18 +268,18 @@ def parse_tasks_body(old_packed_tasks: Box) -> Optional[Box]:
     for index, old_task in enumerate(old_packed_tasks.tasks):
         task = Box()
         task.type = TaskType[old_task.type.upper()]
-        new_payload = None
+        payload = None
         if task.type == TaskType.ADD_TOKEN:
-            new_payload = parse_add_token_task(old_task, index)
+            payload = parse_add_token_payload(old_task.payload, index)
         elif task.type == TaskType.SUBSCRIBE_DESUBSCRIBE:
             transform_subscribe_desubscribe_task(old_task)
         elif task.type == TaskType.UPDATE:
             transform_update_task(old_task)
 
-        if new_payload is None:
-            logger.debug(f"Couldn't parse {task.type} task.")
+        if payload is None:
+            logger.warning(f"Couldn't parse {task.type} task.")
             return None
-        task.payload = new_payload
+        task.payload = payload
 
         if task.get("payload") is not None:
             packed_tasks.tasks.append(task)

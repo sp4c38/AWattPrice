@@ -153,7 +153,7 @@ NOTIFICATION_TASKS_BASE_SCHEMA = {
 
 region_enum_names = [element.name for element in defaults.Region]
 
-NOTIFICATION_TASK_ADD_TOKEN_SCHEMA = {
+NOTIFICATION_TASK_PAYLOAD_ADD_TOKEN_SCHEMA = {
     "type": "object",
     "properties": {"region": {"enum": region_enum_names}, "tax": {"type": "boolean"}},
     "required": ["region", "tax"],

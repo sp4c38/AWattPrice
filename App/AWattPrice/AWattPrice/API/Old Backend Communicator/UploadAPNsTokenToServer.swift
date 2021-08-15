@@ -41,12 +41,10 @@ class UploadPushNotificationConfigRepresentable: Encodable {
         notificationConfig = NotificationConfig(active: notifiSetting.priceDropsBelowValueNotification, priceBelowValue: notifiSetting.priceBelowValue)
     }
 
-    func checkUserWantsNotifications() -> Bool {
-        // Check if the user would like to receive notification at all
+    func checkAtLeastOneNotificationActive() -> Bool {
         if notificationConfig.priceBelowValueNotification.active == true {
             return true
         }
-
         return false
     }
 }

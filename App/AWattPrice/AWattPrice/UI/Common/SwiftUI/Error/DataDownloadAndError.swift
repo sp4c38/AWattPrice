@@ -132,9 +132,9 @@ struct DataDownloadAndError: View {
 
     var body: some View {
         VStack {
-            if case .downloading = energyDataController.downloadState {
+            if energyDataController.downloadState == .downloading  {
                 DataRetrievalLoadingView()
-            } else if case .failed = energyDataController.downloadState {
+            } else if energyDataController.downloadState == .failed {
                 DataRetrievalError()
             } else if let energyData = energyDataController.energyData, energyData.currentPrices.isEmpty == true {
                 CurrentlyNoData()

@@ -50,7 +50,7 @@ class APINotificationInterface {
         addTokenTasks.append(addTokenTask)
     }
     
-    func getPackedTasks() throws -> PackedNotificationTasks? {
+    func getPackedTasks() -> PackedNotificationTasks? {
         var tasks = [AnyEncodable]()
         tasks.append(contentsOf: addTokenTasks.map { AnyEncodable($0) })
         

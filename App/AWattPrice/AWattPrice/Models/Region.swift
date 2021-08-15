@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum Region: Int16 {
+enum Region: Int16, Encodable {
     case DE = 0
     case AT = 1
     
@@ -18,5 +18,10 @@ enum Region: Int16 {
         case .AT:
             return "AT"
         }
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(apiName)
     }
 }

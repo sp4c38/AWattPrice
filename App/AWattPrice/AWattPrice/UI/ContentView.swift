@@ -15,7 +15,7 @@ struct ContentView: View {
 //    @EnvironmentObject var backendComm: BackendCommunicator
     @EnvironmentObject var crtNotifiSetting: CurrentNotificationSetting
     @EnvironmentObject var currentSetting: CurrentSetting
-    @EnvironmentObject var notificationAccess: NotificationAccess
+//    @EnvironmentObject var notificationAccess: NotificationAccess
 
     @ObservedObject var tabBarItems = TBItems()
 

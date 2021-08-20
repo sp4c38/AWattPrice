@@ -7,39 +7,17 @@
 
 import SwiftUI
 import UIKit
-
 import UserNotifications
 
 class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
-    var notificationService: NotificationService
-    var currentSetting: CurrentSetting
-    var crtNotifiSetting: CurrentNotificationSetting
-    
-    init(notificationService: NotificationService, currentSetting: CurrentSetting, crtNotifiSetting: CurrentNotificationSetting) {
-        self.notificationService = notificationService
-        self.currentSetting = currentSetting
-        self.crtNotifiSetting = crtNotifiSetting
-    }
-
-    func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
-        let center = UNUserNotificationCenter.current()
-        center.delegate = self
-        return true
-    }
-
-    func applicationWillTerminate(_: UIApplication) {
-        if let entity = crtNotifiSetting.entity,
-           crtNotifiSetting.changesAndStaged == true,
-           entity.changesButErrorUploading == false
-        {
-            crtNotifiSetting.changeChangesButErrorUploading(to: true)
-        }
-    }
+    var notificationService: NotificationService!
 
     func application(_: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        notificationService.registeredForRemoteNotifications(encodedToken: deviceToken)
+        print("Notification serviced: \(notificationService)")
+        notificationService.registeredForRemoteNotifications(rawNewToken: deviceToken)
     }
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        print("Notification service: \(notificationService)")
         notificationService.failedRegisteredForRemoteNotifications(error: error)
     }
 }

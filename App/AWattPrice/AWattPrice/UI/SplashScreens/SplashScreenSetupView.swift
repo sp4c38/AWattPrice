@@ -12,7 +12,6 @@ struct SplashScreenSetupView: View {
     @Environment(\.colorScheme) var colorScheme
 
     @EnvironmentObject var currentSetting: CurrentSetting
-    @EnvironmentObject var notificationAccess: NotificationAccess
 
     @State var redirectToNextSplashScreen: Int? = 0
     @State var basicCharge: String = ""
@@ -23,9 +22,7 @@ struct SplashScreenSetupView: View {
                 CustomInsetGroupedList {
                     RegionAndVatSelection()
 
-//                    if notificationAccess.access == true {
-//                        PriceDropsBelowValueNotificationView(showHeader: true)
-//                    }
+                    PriceDropsBelowValueNotificationView(showHeader: true)
 //                    AwattarTariffSelectionSetting()
                 }
 

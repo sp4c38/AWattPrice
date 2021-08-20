@@ -19,113 +19,90 @@ class NotificationService: ObservableObject {
     
     enum PushNotificationState {
         case unknown
-        case uploadInProgress
-        case uploadCompleted
-        case uploadFailed
+        case apnsRegistrationGranted
         case apnsRegistrationFailed
     }
     
-    @Published var accessState: AccessState = .unknown
-    @Published var pushNotificationState: PushNotificationState = .unknown
+    enum APINotificationUploadState {
+        case notUploading
+        case uploadInProgress
+        case uploadCompleted
+        case uploadFailed
+    }
     
     var token: String? = nil
-    
-    let notificationCenter = UNUserNotificationCenter.current()
     let appSettings: CurrentSetting
     let notificationSettings: CurrentNotificationSetting
-    var cancellables = [AnyCancellable]()
+    
+    @Published var accessState: AccessState = .unknown
+    @Published var pushNotificationState: PushNotificationState = .unknown
+    @Published var apiNotificationUploadState: APINotificationUploadState = .notUploading
+    
+    let notificationCenter = UNUserNotificationCenter.current()
+    private var cancellables = [AnyCancellable]()
     
     init(appSettings: CurrentSetting, notificationSettings: CurrentNotificationSetting) {
         self.appSettings = appSettings
         self.notificationSettings = notificationSettings
-        refreshAccessState()
     }
     
-    func sendNotificationAPIRequest(notificationRequest: PlainAPIRequest) {
+    func performNotificationAPIRequest(request: PlainAPIRequest) -> AnyPublisher<Never, Error> {
+        self.apiNotificationUploadState = .uploadInProgress
         let apiClient = APIClient()
-        apiClient.request(to: notificationRequest)
+        let response = apiClient.request(to: request)
+        
+        response
+            .receive(on: DispatchQueue.main)
             .sink { completion in
                 switch completion {
                 case .finished:
-                    self.pushNotificationState = .uploadCompleted
+                    print("Successfully sent notification tasks.")
+                    self.apiNotificationUploadState = .uploadCompleted
                 case .failure(let error):
-                    print("Couldn't send notification tasks: \(error).")
-                    self.pushNotificationState = .uploadFailed
+                    print("Couldn't sent notification tasks: \(error).")
+                    self.apiNotificationUploadState = .uploadFailed
                 }
-            } receiveValue: { _ in
-            }
+            } receiveValue: { _ in }
             .store(in: &cancellables)
+        
+        return response
     }
     
-    func registerForRemoteNotifications() {
-        UIApplication.shared.registerForRemoteNotifications()
-    }
-    
-    func registeredForRemoteNotifications(rawToken: Data) {
+    func registeredForRemoteNotifications(rawNewToken: Data) {
         logger.debug("Remote notifications granted with device token.")
 
-        let token = rawToken.map {
-            String(format: "%02.2hhx", $0)
-        }.joined()
-        self.token = token
-
         if let appSettingsEntity = appSettings.entity,
-           let notificationSettingEntity = notificationSettings.entity,
+           let notificationSettingsEntity = notificationSettings.entity,
            let region = Region(rawValue: appSettingsEntity.regionIdentifier)
         {
-            let interface = APINotificationInterface(token: token)
-            interface.addAddTokenTask(payload: AddTokenPayload(region: region, tax: appSettingsEntity.pricesWithVAT))
-            if let packedTasks = interface.getPackedTasks(),
-               let notificationRequest = APIRequestFactory.notificationRequest(tasks: packedTasks)
-            {
-                sendNotificationAPIRequest(notificationRequest: notificationRequest)
+            pushNotificationState = .apnsRegistrationGranted
+            
+            let newToken = rawNewToken.map {
+                String(format: "%02.2hhx", $0)
+            }.joined()
+            self.token = newToken
+            
+            let isNewToken = notificationSettingsEntity.lastApnsToken != newToken
+            
+            if isNewToken {
+                let tasks = APINotificationInterface(token: newToken)
+                    .addAddTokenTask(payload: AddTokenPayload(region: region, tax: appSettingsEntity.pricesWithVAT))
+        
+                if notificationSettingsEntity.lastApnsToken != nil {
+                    // Upload all settings, add here
+                }
+                
+                if let packedTasks = tasks.getPackedTasks(),
+                   let request = APIRequestFactory.notificationRequest(packedTasks: packedTasks)
+                {
+                    performNotificationAPIRequest(request: request)
+                        .sink { completion in
+                            if case .finished = completion { self.notificationSettings.changeLastApnsToken(to: newToken) }
+                        } receiveValue: { _ in }
+                        .store(in: &cancellables)
+                }
             }
         }
-        
-//            crtNotifiSetting!.currentlySendingToServer.lock()
-
-
-//                if notificationConfigRepresentable.checkUserWantsNotifications() == true ||
-//                    crtNotifiSetting!.entity!.changesButErrorUploading == true
-//                {
-//                    if crtNotifiSetting!.entity!.lastApnsToken != apnsDeviceTokenString ||
-//                        crtNotifiSetting!.entity!.changesButErrorUploading == true
-//                    {
-//                        DispatchQueue.global(qos: .background).async {
-//                            logger.info("""
-//                                Need to update stored APNs configuration. Stored APNs token and current
-//                                APNs token mismatch OR previously notification configuration couldn't be
-//                                uploaded because of some issue.
-//                            """)
-//                            let group = DispatchGroup()
-//                            group.enter()
-//                            DispatchQueue.main.async {
-//                                self.crtNotifiSetting!.changeChangesButErrorUploading(to: false)
-//                                group.leave()
-//                            }
-//                            group.wait()
-//                            let requestSuccessful = self.backendComm!.uploadPushNotificationSettings(
-//                                configuration: notificationConfigRepresentable
-//                            )
-//                            if !requestSuccessful {
-//                                DispatchQueue.main.async {
-//                                    self.crtNotifiSetting!.changeChangesButErrorUploading(to: true)
-//                                }
-//                            }
-//                        }
-//                    } else {
-//                        logger.debug("""
-//                            No need to update stored APNs configuration. Stored token matches current APNs
-//                            token and no errors previously occurred when uploading changes.
-//                        """)
-//                    }
-//                }
-//                crtNotifiSetting!.changeLastApnsToken(to: apnsDeviceTokenString)
-//            }
-//            crtNotifiSetting!.currentlySendingToServer.unlock()
-//        } else {
-//            logger.error("Settings could not be found. Therefor can't store last APNs token.")
-//        }
     }
     
     func failedRegisteredForRemoteNotifications(error: Error) {
@@ -133,15 +110,22 @@ class NotificationService: ObservableObject {
         pushNotificationState = .apnsRegistrationFailed
     }
     
-    func refreshAccessState() {
+    func registerForRemoteNotifications() {
+        UIApplication.shared.registerForRemoteNotifications()
+    }
+    
+    func refreshAccessStates() {
         notificationCenter.getNotificationSettings { settings in
             switch settings.authorizationStatus {
             case .authorized, .provisional:
+                print("Notification access granted.")
                 self.accessState = .granted
                 self.registerForRemoteNotifications()
             case .notDetermined:
+                print("Notification access wasn't asked for yet.")
                 self.accessState = .notAsked
             default:
+                print("Notification access not allowed: \(settings.authorizationStatus).")
                 self.accessState = .rejected
             }
         }
@@ -153,12 +137,7 @@ class NotificationService: ObservableObject {
                 print("Notification access failed with error: \(error).")
                 return
             }
-            if authorizationGranted {
-                self.accessState = .granted
-                self.registerForRemoteNotifications()
-            } else {
-                self.accessState = .rejected
-            }
+            self.refreshAccessStates()
         }
     }
 }

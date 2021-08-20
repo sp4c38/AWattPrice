@@ -39,15 +39,20 @@ enum APIRequestFactory {
         return ResponseAPIRequest(request: urlRequest, decoder: decoder)
     }
     
-    static func notificationRequest(tasks: PackedNotificationTasks) -> PlainAPIRequest? {
+    static func notificationRequest(packedTasks: PackedNotificationTasks) -> PlainAPIRequest? {
+        if packedTasks.tasks.isEmpty == true {
+            return nil
+        }
+        
         let encoder = JSONEncoder()
         let encodedTasks: Data
         do {
-            encodedTasks = try encoder.encode(tasks)
+            encodedTasks = try encoder.encode(packedTasks)
         } catch {
             print("Couldn't encode notification tasks: \(error).")
             return nil
         }
+        
         let requestURL = apiURL
             .appendingPathComponent("notifications")
             .appendingPathComponent("run_tasks")
@@ -55,6 +60,7 @@ enum APIRequestFactory {
         urlRequest.httpMethod = "POST"
         urlRequest.httpBody = encodedTasks
         urlRequest.cachePolicy = .reloadIgnoringLocalAndRemoteCacheData
+        
         return PlainAPIRequest(request: urlRequest)
     }
 }

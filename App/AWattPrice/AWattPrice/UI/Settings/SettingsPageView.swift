@@ -22,9 +22,9 @@ struct SettingsPageView: View {
 
 //                        AwattarTariffSelectionSetting()
 
-//                        if crtNotifiSetting.entity != nil {
-//                            GoToNotificationSettingView()
-//                        }
+                        if crtNotifiSetting.entity != nil {
+                            GoToNotificationSettingView()
+                        }
 
                         GetHelpView()
 

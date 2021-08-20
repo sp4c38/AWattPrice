@@ -45,9 +45,10 @@ class APINotificationInterface {
         self.token = token
     }
     
-    func addAddTokenTask(payload: AddTokenPayload) {
+    func addAddTokenTask(payload: AddTokenPayload) -> APINotificationInterface {
         let addTokenTask = NotificationTask(type: .addToken, payload: payload)
         addTokenTasks.append(addTokenTask)
+        return self
     }
     
     func getPackedTasks() -> PackedNotificationTasks? {

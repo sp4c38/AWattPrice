@@ -16,7 +16,7 @@ struct AWattPriceApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
     let energyDataController = EnergyDataController()
-    let notificationService = NotificationService()
+    let notificationService: NotificationService
     let crtNotifiSetting: CurrentNotificationSetting
     let currentSetting: CurrentSetting
     let persistence = PersistenceManager()
@@ -28,14 +28,16 @@ struct AWattPriceApp: App {
             managedObjectContext: persistence.persistentContainer.viewContext
         )
         
+        self.notificationService = NotificationService(appSettings: currentSetting, notificationSettings: crtNotifiSetting)
+        notificationService.refreshAccessStates()
+        
         if let entity = currentSetting.entity,
            let selectedRegion = Region(rawValue: entity.regionIdentifier)
         {
             energyDataController.download(region: selectedRegion)
         }
 
-        appDelegate.crtNotifiSetting = crtNotifiSetting
-        appDelegate.currentSetting = currentSetting
+        appDelegate.notificationService = notificationService
     }
 
     var body: some Scene {

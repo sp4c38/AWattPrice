@@ -162,7 +162,6 @@ struct AgreementConsentView: View {
  */
 struct SplashScreenFeaturesAndConsentView: View {
     @EnvironmentObject var currentSetting: CurrentSetting
-    @EnvironmentObject var notificationAccess: NotificationAccess
 
     @State var privacyPolicyIsChecked: Bool = false
     @State var redirectToNextSplashScreen: Int? = 0
@@ -223,10 +222,6 @@ struct SplashScreenFeaturesAndConsentView: View {
                 if privacyPolicyIsChecked == true, termsOfUseIsChecked == true {
                     showTermsOfUseNotChecked = false
                     showPrivacyPolicyNotChecked = false
-//                    managePushNotificationsOnAppAppear(notificationAccessRepresentable: notificationAccess, registerForRemoteNotifications: true) {
-//                        redirectToNextSplashScreen = 1
-//                    }
-                    /// DELETE NEXT LINE WHEN REENABLING
                     redirectToNextSplashScreen = 1
                 } else {
                     if termsOfUseIsChecked == false {

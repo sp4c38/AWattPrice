@@ -32,7 +32,6 @@ struct HomeView: View {
     @EnvironmentObject var energyDataController: EnergyDataController
     @EnvironmentObject var crtNotifiSetting: CurrentNotificationSetting
     @EnvironmentObject var currentSetting: CurrentSetting
-    @EnvironmentObject var notificationAccess: NotificationAccess
 
     @State var headerSize = CGSize(width: 0, height: 0)
     @State var initialAppearFinished: Bool? = false
@@ -104,13 +103,7 @@ struct HomeView: View {
             WhatsNewPage()
         }
         .onChange(of: showWhatsNewPage) { newValue in
-            if newValue == false {
-                currentSetting.changeShowWhatsNew(to: false)
-//                managePushNotificationsOnAppAppear(
-//                    notificationAccessRepresentable: notificationAccess,
-//                    registerForRemoteNotifications: true
-//                ) {}
-            }
+            if newValue == false { currentSetting.changeShowWhatsNew(to: false) }
         }
     }
     

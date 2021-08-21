@@ -5,6 +5,7 @@
 //  Created by Léon Becker on 16.10.20.
 //
 
+import Resolver
 import SwiftUI
 
 /// Opens the apps privacy policy in the browser in the correct language depending on the device language.
@@ -161,8 +162,6 @@ struct AgreementConsentView: View {
  briefly and displays a check box for the user to consent to the apps privacy policy.
  */
 struct SplashScreenFeaturesAndConsentView: View {
-    @EnvironmentObject var currentSetting: CurrentSetting
-
     @State var privacyPolicyIsChecked: Bool = false
     @State var redirectToNextSplashScreen: Int? = 0
     @State var showPrivacyPolicyNotChecked: Bool = false

@@ -5,12 +5,13 @@
 //  Created by Léon Becker on 21.11.20.
 //
 
+import Resolver
 import SwiftUI
 
 struct RegionAndVatSelection: View {
     @Environment(\.colorScheme) var colorScheme
-    @EnvironmentObject var crtNotifiSetting: CurrentNotificationSetting
-    @EnvironmentObject var currentSetting: CurrentSetting
+    
+    @Injected var currentSetting: CurrentSetting
 
     @State var selectedRegion: Int = 0
     @State var pricesWithTaxIncluded = true

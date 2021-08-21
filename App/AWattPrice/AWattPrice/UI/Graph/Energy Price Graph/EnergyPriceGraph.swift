@@ -6,6 +6,7 @@
 //
 
 import CoreHaptics
+import Resolver
 import SwiftUI
 
 struct GraphHeader: View {
@@ -66,8 +67,7 @@ class SingleBarSettings: ObservableObject {
 struct EnergyPriceGraph: View {
     @Environment(\.scenePhase) var scenePhase
 
-    @EnvironmentObject var energyDataController: EnergyDataController
-    @EnvironmentObject var currentSetting: CurrentSetting
+    @ObservedObject var energyDataController: EnergyDataController = Resolver.resolve()
 
     @State var graphHourPointData = [(EnergyPricePoint, CGFloat)]()
     @State var hapticEngine: CHHapticEngine?

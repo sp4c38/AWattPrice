@@ -5,6 +5,7 @@
 //  Created by Léon Becker on 16.10.20.
 //
 
+import Resolver
 import SwiftUI
 
 struct SplashScreenStartViewTitle: View {
@@ -34,7 +35,6 @@ struct SplashScreenStartViewTitle: View {
  Start of all splash screens. Presents and describes the main functionalities of the app briefly.
  */
 struct SplashScreenStartView: View {
-    @EnvironmentObject var currentSetting: CurrentSetting
     @State var redirectToNextSplashScreen: Int? = 0
 
     var body: some View {

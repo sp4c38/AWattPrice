@@ -5,6 +5,7 @@
 //  Created by Léon Becker on 21.09.20.
 //
 
+import Resolver
 import SwiftUI
 
 struct CheapestTimeResultTimeRange: View {
@@ -170,9 +171,9 @@ struct CheapestTimeResultViewClock: View {
 /// A view which presents the results calculated by the CheapestHourManager of when the cheapest hours for the usage of energy are.
 struct CheapestTimeResultView: View {
     @Environment(\.colorScheme) var colorScheme
-    @EnvironmentObject var energyDataController: EnergyDataController
+    @Injected var energyDataController: EnergyDataController
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
-    @EnvironmentObject var currentSetting: CurrentSetting
+    @Injected var currentSetting: CurrentSetting
 
     var todayDateFormatter: DateFormatter
 

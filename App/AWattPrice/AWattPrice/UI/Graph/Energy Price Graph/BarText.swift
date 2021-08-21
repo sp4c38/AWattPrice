@@ -5,11 +5,12 @@
 //  Created by Léon Becker on 27.12.20.
 //
 
+import Resolver
 import SwiftUI
 
 struct HourOfDayText: View {
     @Environment(\.colorScheme) var colorScheme
-    @EnvironmentObject var currentSetting: CurrentSetting
+    @ObservedObject var currentSetting: CurrentSetting = Resolver.resolve()
 
     static func getPriceString(marketprice: Double, currentSetting: CurrentSetting) -> String {
         let centFormatter = NumberFormatter()

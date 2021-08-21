@@ -5,11 +5,12 @@
 //  Created by Léon Becker on 22.01.21.
 //
 
+import Resolver
 import SwiftUI
 
 struct APNSUploadError: View {
-    @EnvironmentObject var crtNotifiSetting: CurrentNotificationSetting
-    @EnvironmentObject var currentSetting: CurrentSetting
+    @Injected var crtNotifiSetting: CurrentNotificationSetting
+    @Injected var currentSetting: CurrentSetting
 
     var body: some View {
         VStack(alignment: .center, spacing: 10) {

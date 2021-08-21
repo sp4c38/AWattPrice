@@ -5,6 +5,7 @@
 //  Created by Léon Becker on 12.12.20.
 //
 
+import Resolver
 import SwiftUI
 
 struct TBBarShape: Shape {

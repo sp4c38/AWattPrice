@@ -5,6 +5,7 @@
 //  Created by Léon Becker on 30.10.20.
 //
 
+import Resolver
 import SwiftUI
 
 struct TimeRangeInputFieldSelectionPartModifier: ViewModifier {
@@ -65,7 +66,7 @@ struct TimeRangeInputFieldSelectionPart: View {
 }
 
 struct TimeRangeInputFieldQuickSelectButtons: View {
-    @EnvironmentObject var energyDataController: EnergyDataController
+    @Injected var energyDataController: EnergyDataController
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
 
     @State var buttonSize = CGSize(width: 0, height: 0)
@@ -108,7 +109,7 @@ struct TimeRangeInputFieldQuickSelectButtons: View {
 struct TimeRangeInputField: View {
     @Environment(\.colorScheme) var colorScheme
 
-    @EnvironmentObject var energyDataController: EnergyDataController
+    @ObservedObject var energyDataController: EnergyDataController = Resolver.resolve()
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
 
     @State var inputDateRange: ClosedRange<Date> = Date() ... Date()

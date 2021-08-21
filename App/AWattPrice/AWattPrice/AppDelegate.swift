@@ -13,11 +13,9 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
     var notificationService: NotificationService!
 
     func application(_: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        print("Notification serviced: \(notificationService)")
-        notificationService.registeredForRemoteNotifications(rawNewToken: deviceToken)
+        notificationService.registeredForRemoteNotifications(rawCurrentToken: deviceToken)
     }
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
-        print("Notification service: \(notificationService)")
         notificationService.failedRegisteredForRemoteNotifications(error: error)
     }
 }

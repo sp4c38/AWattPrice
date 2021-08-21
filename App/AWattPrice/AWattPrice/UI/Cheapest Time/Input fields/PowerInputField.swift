@@ -5,12 +5,13 @@
 //  Created by Léon Becker on 30.10.20.
 //
 
+import Resolver
 import SwiftUI
 
 /// Input field for the power output of the consumer
 struct PowerOutputInputField: View {
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
-    @EnvironmentObject var currentSetting: CurrentSetting
+    @Injected var currentSetting: CurrentSetting
 
     @State var firstAppear = true
 

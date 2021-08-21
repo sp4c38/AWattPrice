@@ -5,13 +5,14 @@
 //  Created by Léon Becker on 14.11.20.
 //
 
+import Resolver
 import SwiftUI
 
 struct UpdatedDataView: View {
     @Environment(\.networkManager) var networkManager
 
-    @EnvironmentObject var energyDataController: EnergyDataController
-    @EnvironmentObject var currentSetting: CurrentSetting
+    @ObservedObject var energyDataController: EnergyDataController = Resolver.resolve()
+    @Injected var currentSetting: CurrentSetting
 
     @State var firstAppear = true
     @State var localizedTimeIntervalString: String = ""

@@ -5,6 +5,7 @@
 //  Created by Léon Becker on 16.12.20.
 //
 
+import Resolver
 import SwiftUI
 
 /// A  checkmark which animates in
@@ -108,7 +109,7 @@ struct AnimatingCheckmark: View {
 
 /// Final splash screen which tells that the setup process was completed.
 struct SplashScreenFinishView: View {
-    @EnvironmentObject var currentSetting: CurrentSetting
+    @Injected var currentSetting: CurrentSetting
 
     var body: some View {
         VStack {

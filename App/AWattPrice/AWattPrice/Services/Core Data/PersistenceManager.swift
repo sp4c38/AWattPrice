@@ -6,6 +6,7 @@
 //
 
 import CoreData
+import Resolver
 
 /// An object which holds and loads a NSPersistentContainer to allow access to persistent stored data from Core Data.
 class PersistenceManager {

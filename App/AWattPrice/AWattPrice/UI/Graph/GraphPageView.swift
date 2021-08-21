@@ -5,6 +5,7 @@
 //  Created by Léon Becker on 06.09.20.
 //
 
+import Resolver
 import SwiftUI
 
 struct HeaderSizePreferenceKey: PreferenceKey {
@@ -29,9 +30,8 @@ struct HomeView: View {
     @Environment(\.networkManager) var networkManager
     @Environment(\.scenePhase) var scenePhase
 
-    @EnvironmentObject var energyDataController: EnergyDataController
-    @EnvironmentObject var crtNotifiSetting: CurrentNotificationSetting
-    @EnvironmentObject var currentSetting: CurrentSetting
+    @ObservedObject var energyDataController: EnergyDataController = Resolver.resolve()
+    @ObservedObject var currentSetting: CurrentSetting = Resolver.resolve()
 
     @State var headerSize = CGSize(width: 0, height: 0)
     @State var initialAppearFinished: Bool? = false

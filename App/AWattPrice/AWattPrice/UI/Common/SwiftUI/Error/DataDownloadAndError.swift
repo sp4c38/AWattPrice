@@ -5,6 +5,7 @@
 //  Created by Léon Becker on 17.10.20.
 //
 
+import Resolver
 import SwiftUI
 
 struct DataRetrievalLoadingView: View {
@@ -22,8 +23,8 @@ struct DataRetrievalLoadingView: View {
 struct DataRetrievalError: View {
     @Environment(\.colorScheme) var colorScheme
 
-    @EnvironmentObject var energyDataController: EnergyDataController
-    @EnvironmentObject var currentSetting: CurrentSetting
+    @Injected var energyDataController: EnergyDataController
+    @Injected var currentSetting: CurrentSetting
 
     var body: some View {
         VStack(alignment: .center) {
@@ -61,8 +62,8 @@ struct CurrentlyNoData: View {
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.networkManager) var networkManager
 
-    @EnvironmentObject var energyDataController: EnergyDataController
-    @EnvironmentObject var currentSetting: CurrentSetting
+    @Injected var energyDataController: EnergyDataController
+    @Injected var currentSetting: CurrentSetting
 
     var body: some View {
         VStack(alignment: .center) {
@@ -126,9 +127,9 @@ struct SettingLoadingError: View {
 
 /// Classify network errors
 struct DataDownloadAndError: View {
-    @EnvironmentObject var energyDataController: EnergyDataController
-    @EnvironmentObject var crtNotifiSetting: CurrentNotificationSetting
-    @EnvironmentObject var currentSetting: CurrentSetting
+    @ObservedObject var energyDataController: EnergyDataController = Resolver.resolve()
+    @ObservedObject var crtNotifiSetting: CurrentNotificationSetting = Resolver.resolve()
+    @ObservedObject var currentSetting: CurrentSetting = Resolver.resolve()
 
     var body: some View {
         VStack {

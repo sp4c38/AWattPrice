@@ -6,6 +6,7 @@
 //
 
 import Combine
+import Resolver
 import SwiftUI
 
 extension AnyTransition {
@@ -15,61 +16,33 @@ extension AnyTransition {
     }
 }
 
-extension NotificationSettingView {
-    class ViewModel {
-        let notificationService: NotificationService
-        
-        init(notificationService: NotificationService) {
-            self.notificationService = notificationService
-        }
-        
-        var notificationConfigDisabled: Bool {
-            switch notificationService.accessState {
-            case .rejected, .notAsked, .unknown:
-                return true
-            case .granted:
-                return false
-            }
-        }
-    }
-}
-
 struct NotificationSettingView: View {
     @Environment(\.scenePhase) var scenePhase
-
-    let viewModel: ViewModel
-    
-    init(notificationService: NotificationService) {
-        viewModel = ViewModel(notificationService: notificationService)
-    }
 
     var body: some View {
         ZStack(alignment: Alignment(horizontal: .center, vertical: .bottom)) {
             CustomInsetGroupedList {
                 VStack(spacing: 20) {
-                    if viewModel.notificationService.accessState == .rejected {
-                        NoNotificationAccessView()
-                            .padding(.top, 10)
-                            .transition(.opacity)
-                    }
+//                    if notificationService.accessState == .rejected {
+//                        NoNotificationAccessView()
+//                            .padding(.top, 10)
+//                            .transition(.opacity)
+//                    }
 
-                    VStack {
-                        PriceDropsBelowValueNotificationView()
-                    }
-                    .opacity(viewModel.notificationConfigDisabled ? 0.5 : 1)
-                    .disabled(viewModel.notificationConfigDisabled)
+//                    PriceDropsBelowValueNotificationView()
+
                 }
                 .animation(.easeInOut)
             }
 
-            VStack {
-                if viewModel.notificationService.apiNotificationUploadState == .uploadFailed {
-                    APNSUploadError()
-                        .padding(.bottom, 15)
-                        .transition(.belowScale)
-                }
-            }
-            .animation(.easeInOut)
+//            VStack {
+//                if notificationService.apiNotificationUploadState == .uploadFailed {
+//                    APNSUploadError()
+//                        .padding(.bottom, 15)
+//                        .transition(.belowScale)
+//                }
+//            }
+//            .animation(.easeInOut)
         }
         .navigationTitle("general.priceGuard")
     }
@@ -77,8 +50,6 @@ struct NotificationSettingView: View {
 
 struct GoToNotificationSettingView: View {
     @Environment(\.colorScheme) var colorScheme
-
-    @EnvironmentObject var notificationService: NotificationService
     
     @State var redirectToNotificationPage: Int? = 0
 
@@ -86,7 +57,7 @@ struct GoToNotificationSettingView: View {
         CustomInsetGroupedListItem(
         ) {
             NavigationLink(
-                destination: NotificationSettingView(notificationService: notificationService),
+                destination: NotificationSettingView(),
                 tag: 1,
                 selection: $redirectToNotificationPage
             ) {}
@@ -136,7 +107,7 @@ struct NotificationSettingView_Previews: PreviewProvider {
         return Group {
             GoToNotificationSettingView()
 
-            NotificationSettingView(notificationService: notificationService)
+            NotificationSettingView()
                 .environmentObject(notificationSettings)
         }
     }

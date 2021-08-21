@@ -5,13 +5,12 @@
 //  Created by Léon Becker on 31.12.20.
 //
 
+import Resolver
 import SwiftUI
 
 struct WhatsNewPage: View {
     @Environment(\.deviceType) var deviceType
     @Environment(\.presentationMode) var presentationMode
-
-    @EnvironmentObject var currentSetting: CurrentSetting
 
     var body: some View {
         NavigationView {
@@ -52,11 +51,6 @@ struct WhatsNewPage: View {
 struct WhatsNewPage_Previews: PreviewProvider {
     static var previews: some View {
         WhatsNewPage()
-            .environmentObject(
-                CurrentSetting(
-                    managedObjectContext: PersistenceManager().persistentContainer.viewContext
-                )
-            )
             .environment(\.locale, Locale(identifier: "de"))
     }
 }

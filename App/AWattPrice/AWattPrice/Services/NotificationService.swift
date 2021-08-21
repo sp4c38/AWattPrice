@@ -117,7 +117,7 @@ class NotificationService: ObservableObject {
     }
     
     func failedRegisteredForRemoteNotifications(error: Error) {
-        print("Push notification registration not granted: \(error).")
+        print("Notification: Push notification registration not granted: \(error).")
         pushNotificationState = .apnsRegistrationFailed
     }
     
@@ -129,14 +129,14 @@ class NotificationService: ObservableObject {
         notificationCenter.getNotificationSettings { settings in
             switch settings.authorizationStatus {
             case .authorized, .provisional:
-                print("Notification access granted.")
+                print("Notification: Notification access granted.")
                 self.accessState = .granted
                 self.registerForRemoteNotifications()
             case .notDetermined:
-                print("Notification access wasn't asked for yet.")
+                print("Notification: Notification access wasn't asked for yet.")
                 self.accessState = .notAsked
             default:
-                print("Notification access not allowed: \(settings.authorizationStatus).")
+                print("Notification: Notification access not allowed: \(settings.authorizationStatus).")
                 self.accessState = .rejected
             }
         }
@@ -145,7 +145,7 @@ class NotificationService: ObservableObject {
     func requestAccess() {
         notificationCenter.requestAuthorization(options: [.alert, .badge, .sound]) { authorizationGranted, error in
             if let error = error {
-                print("Notification access failed with error: \(error).")
+                print("Notification: Notification access failed with error: \(error).")
                 return
             }
             self.refreshAccessStates()

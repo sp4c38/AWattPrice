@@ -5,13 +5,14 @@
 //  Created by Léon Becker on 11.09.20.
 //
 
+import Resolver
 import SceneKit
 import SwiftUI
 
 /// A place for the user to modify certain settings.
 struct SettingsPageView: View {
-    @EnvironmentObject var crtNotifiSetting: CurrentNotificationSetting
-    @EnvironmentObject var currentSetting: CurrentSetting
+    @ObservedObject var crtNotifiSetting: CurrentNotificationSetting = Resolver.resolve()
+    @ObservedObject var currentSetting: CurrentSetting = Resolver.resolve()
 
     var body: some View {
         NavigationView {

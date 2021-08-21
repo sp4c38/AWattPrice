@@ -6,6 +6,7 @@
 //
 
 import Combine
+import Resolver
 import SwiftUI
 
 struct PriceDropsBelowValueNotificationInfoView: View {
@@ -39,113 +40,129 @@ struct PriceDropsBelowValueNotificationInfoView: View {
     }
 }
 
-struct PriceDropsBelowValueNotificationSubView: View {
-    @Environment(\.colorScheme) var colorScheme
-    @Environment(\.keyboardObserver) var keyboardObserver
-
-    @EnvironmentObject var currentSetting: CurrentSetting
-    @EnvironmentObject var notificationService: NotificationService
-
-    @ObservedObject var crtNotifiSetting: CurrentNotificationSetting
-
-    @State var initialAppearFinished: Bool? = false
-    @State var keyboardCurrentlyClosed = false
-    @State var priceDropsBelowValueNotificationSelection = false
-    @State var priceBelowValue: String = ""
-
-    let showHeader: Bool
-
-    init(crtNotifiSetting: CurrentNotificationSetting, showHeader showHeaderValue: Bool = false) {
-        showHeader = showHeaderValue
-
-        _crtNotifiSetting = ObservedObject(initialValue: crtNotifiSetting)
-        _priceDropsBelowValueNotificationSelection = State(initialValue: self.crtNotifiSetting.entity!.priceDropsBelowValueNotification)
-        _priceBelowValue = State(initialValue: self.crtNotifiSetting.entity!.priceBelowValue.priceString ?? "")
-    }
-
-    var body: some View {
-        VStack {
-            CustomInsetGroupedListItem(
-                header: showHeader ? Text("general.notifications") : nil,
-                footer: nil
-            ) {
-                VStack(alignment: .leading, spacing: 20) {
-                    toggleView
-
-                    if priceDropsBelowValueNotificationSelection {
-                        wishPriceInputField
-                    }
-
-                    if priceDropsBelowValueNotificationSelection {
-                        PriceDropsBelowValueNotificationInfoView()
-                    }
-                }
-            }
-        }
-    }
-
-    var toggleView: some View {
-        HStack {
-            Text("notificationPage.notification.priceDropsBelowValue")
-                .fixedSize(horizontal: false, vertical: true)
-                .padding(.top, 2)
-
-            Spacer()
-
-            Toggle("", isOn: $priceDropsBelowValueNotificationSelection.animation())
-                .labelsHidden()
-                .onChange(of: priceDropsBelowValueNotificationSelection) { newValue in
-                    // IMPLEMENT
-//                    crtNotifiSetting.changePriceDropsBelowValueNotifications(to: newValue)
-//                    crtNotifiSetting.changesAndStaged = true
-//                    crtNotifiSetting.pushNotificationUpdateManager.backgroundNotificationUpdate(
-//                        currentSetting,
-//                        crtNotifiSetting
-//                    )
-                }
-        }
-    }
-    
-    var wishPriceInputField: some View {
-        VStack(alignment: .leading) {
-            Text("notificationPage.notification.priceDropsBelowValue.wishPrice")
-                .textCase(.uppercase)
-                .foregroundColor(.gray)
-                .font(.caption)
-
-            HStack {
-                NumberField(text: $priceBelowValue, placeholder: "general.cent.long".localized(), plusMinusButton: true, withDecimalSeperator: false)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .onChange(of: priceBelowValue) { newValue in
-//                        var newIntegerValue: Int = 0
-//                        if let newConvertedIntegerValue = newValue.integerValue {
-//                            newIntegerValue = newConvertedIntegerValue
-//                        }
-//                        crtNotifiSetting.changePriceBelowValue(to: newIntegerValue)
-//                        priceBelowValue = newIntegerValue.priceString ?? ""
+extension PriceBelowNotificationContentView {
+//    class ViewModel {
+//        let notificationService: NotificationService
+//        let currentSetting: CurrentSetting
+//        let crtNotifiSetting: CurrentNotificationSetting
 //
-//                        if keyboardCurrentlyClosed {
-//                            crtNotifiSetting.pushNotificationUpdateManager.backgroundNotificationUpdate(currentSetting, crtNotifiSetting)
-//                        }
-                    }
-
-                Text("general.centPerKwh")
-                    .transition(.opacity)
-            }
-            .onReceive(keyboardObserver.keyboardHeight) { newKeyboardHeight in
-                if newKeyboardHeight == 0 {
-                    self.keyboardCurrentlyClosed = true
-                } else {
-                    self.keyboardCurrentlyClosed = false
-                }
-            }
-            .modifier(GeneralInputView(markedRed: false))
-        }
-    }
+//        let showHeader: Bool
+//
+//        @State var initialAppearFinished: Bool? = false
+//        @State var keyboardCurrentlyClosed = false
+//        @State var priceDropsBelowValueNotificationSelection = false
+//        @State var priceBelowValue: String
+//
+//        init(notificationService: NotificationService) {
+//            self.notificationService = notificationService
+//        }
+//    }
 }
 
-struct PriceDropsBelowValueNotificationView: View {
-    @EnvironmentObject var crtNotifiSetting: CurrentNotificationSetting
+struct PriceBelowNotificationContentView: View {
+//    @Environment(\.colorScheme) var colorScheme
+//    @Environment(\.keyboardObserver) var keyboardObserver
+//
+//    @EnvironmentObject var currentSetting: CurrentSetting
+//    @EnvironmentObject var notificationService: NotificationService
+//
+//    @ObservedObject var crtNotifiSetting: CurrentNotificationSetting
+//
+//    let showHeader: Bool
+
+//    let viewModel: ViewModel
+    
+    @Injected var notificationService: NotificationService
+    
+    init(crtNotifiSetting: CurrentNotificationSetting, showHeader showHeaderValue: Bool = false) {
+        print(notificationService)
+//        self.viewModel = ViewModel(notificationService: notificationService)
+//        showHeader = showHeaderValue
+//        _crtNotifiSetting = ObservedObject(initialValue: crtNotifiSetting)
+//        _priceDropsBelowValueNotificationSelection = State(initialValue: self.crtNotifiSetting.entity!.priceDropsBelowValueNotification)
+//        _priceBelowValue = State(initialValue: self.crtNotifiSetting.entity!.priceBelowValue.priceString ?? "")
+    }
+
+//    var uploadInProgress: Bool {
+//        notificationService.apiNotificationUploadState == .uploadInProgress
+//    }
+    
+    var body: some View {
+        VStack {
+//            CustomInsetGroupedListItem(
+//                header: showHeader ? Text("general.notifications") : nil,
+//                footer: nil
+//            ) {
+//                VStack(alignment: .leading, spacing: 20) {
+//                    toggleView
+//
+//                    if priceDropsBelowValueNotificationSelection {
+//                        wishPriceInputField
+//                    }
+//
+//                    if priceDropsBelowValueNotificationSelection {
+//                        PriceDropsBelowValueNotificationInfoView()
+//                    }
+//                }
+//            }
+        }
+    }
+
+//    var toggleView: some View {
+//        HStack {
+//            Text("notificationPage.notification.priceDropsBelowValue")
+//                .fixedSize(horizontal: false, vertical: true)
+//                .padding(.top, 2)
+//
+//            Spacer()
+//
+//            Toggle("", isOn: $priceDropsBelowValueNotificationSelection.animation())
+//                .labelsHidden()
+//                .onChange(of: priceDropsBelowValueNotificationSelection) {  }
+//                .disabled(uploadInProgress)
+//        }
+//    }
+//
+//    var wishPriceInputField: some View {
+//        VStack(alignment: .leading) {
+//            Text("notificationPage.notification.priceDropsBelowValue.wishPrice")
+//                .textCase(.uppercase)
+//                .foregroundColor(.gray)
+//                .font(.caption)
+//
+//            HStack {
+//                NumberField(text: $priceBelowValue, placeholder: "general.cent.long".localized(), plusMinusButton: true, withDecimalSeperator: false)
+//                    .fixedSize(horizontal: false, vertical: true)
+//                    .onChange(of: priceBelowValue) { newValue in
+////                        var newIntegerValue: Int = 0
+////                        if let newConvertedIntegerValue = newValue.integerValue {
+////                            newIntegerValue = newConvertedIntegerValue
+////                        }
+////                        crtNotifiSetting.changePriceBelowValue(to: newIntegerValue)
+////                        priceBelowValue = newIntegerValue.priceString ?? ""
+////
+////                        if keyboardCurrentlyClosed {
+////                            crtNotifiSetting.pushNotificationUpdateManager.backgroundNotificationUpdate(currentSetting, crtNotifiSetting)
+////                        }
+//                    }
+//
+//                Text("general.centPerKwh")
+//                    .transition(.opacity)
+//            }
+//            .onReceive(keyboardObserver.keyboardHeight) { newKeyboardHeight in
+//                if newKeyboardHeight == 0 {
+//                    self.keyboardCurrentlyClosed = true
+//                } else {
+//                    self.keyboardCurrentlyClosed = false
+//                }
+//            }
+//            .modifier(GeneralInputView(markedRed: false))
+//        }
+//    }
+}
+
+struct PriceBelowNotificationView: View {
+    @Injected var crtNotifiSetting: CurrentNotificationSetting
 
     let showHeader: Bool
 
@@ -154,7 +171,7 @@ struct PriceDropsBelowValueNotificationView: View {
     }
 
     var body: some View {
-        PriceDropsBelowValueNotificationSubView(crtNotifiSetting: crtNotifiSetting, showHeader: showHeader)
+        PriceBelowNotificationContentView(crtNotifiSetting: crtNotifiSetting, showHeader: showHeader)
     }
 }
 

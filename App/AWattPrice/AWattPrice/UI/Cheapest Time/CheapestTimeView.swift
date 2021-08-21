@@ -5,6 +5,7 @@
 //  Created by Léon Becker on 19.09.20.
 //
 
+import Resolver
 import SwiftUI
 
 struct ViewSizePreferenceKey: PreferenceKey {
@@ -21,7 +22,7 @@ struct ViewSizePreferenceKey: PreferenceKey {
 }
 
 struct CheapestTimeViewBodyPicker: View {
-    @EnvironmentObject var energyDataController: EnergyDataController
+    @ObservedObject var energyDataController: EnergyDataController = Resolver.resolve()
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
 
     @State var maxTimeInterval = TimeInterval(3600)
@@ -110,8 +111,8 @@ struct CheapestTimeViewBody: View {
 struct CheapestTimeView: View {
     @Environment(\.colorScheme) var colorScheme
 
-    @EnvironmentObject var energyDataController: EnergyDataController
-    @EnvironmentObject var currentSetting: CurrentSetting
+    @ObservedObject var energyDataController: EnergyDataController = Resolver.resolve()
+    @ObservedObject var currentSetting: CurrentSetting = Resolver.resolve()
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
 
     @State var redirectToComparisonResults: Int? = 0

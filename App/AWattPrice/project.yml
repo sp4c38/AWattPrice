@@ -18,6 +18,11 @@ settings:
     DEVELOPMENT_TEAM: RC32A2AMHF
     CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED: YES
 
+packages:
+  Resolver:
+    url: git@github.com:hmlongco/Resolver.git
+    majorVersion: 1.4.3
+
 targets:
   AWattPrice:
     type: application
@@ -58,3 +63,5 @@ targets:
           PROVISIONING_PROFILE_SPECIFIER: match AppStore me.space8.AWattPrice.staging
         Distribution AppStore Production:
           PROVISIONING_PROFILE_SPECIFIER: match AppStore me.space8.AWattPrice
+    dependencies:
+      - package: Resolver

@@ -9,7 +9,7 @@ import Combine
 import UIKit
 import UserNotifications
 
-class NotificationService: ObservableObject {
+extension NotificationService {
     enum AccessState {
         case unknown
         case granted
@@ -19,7 +19,7 @@ class NotificationService: ObservableObject {
     
     enum PushNotificationState {
         case unknown
-        case apnsRegistrationGranted
+        case apnsRegistrationSuccessful
         case apnsRegistrationFailed
     }
     
@@ -30,7 +30,21 @@ class NotificationService: ObservableObject {
         case uploadFailed
     }
     
-    var token: String? = nil
+    struct TokenContainer {
+        /// Stores what to do when making the next notification request.
+        enum NextUploadState {
+            case doNothing
+            case addTokenTask
+            case uploadAllNotificationConfig
+        }
+        
+        let token: String
+        var nextUploadState: NextUploadState
+    }
+}
+
+class NotificationService: ObservableObject {
+    var tokenContainer: TokenContainer? = nil
     let appSettings: CurrentSetting
     let notificationSettings: CurrentNotificationSetting
     
@@ -68,40 +82,37 @@ class NotificationService: ObservableObject {
         return response
     }
     
-    func registeredForRemoteNotifications(rawNewToken: Data) {
+    func registeredForRemoteNotifications(rawCurrentToken: Data) {
         logger.debug("Remote notifications granted with device token.")
 
         if let appSettingsEntity = appSettings.entity,
            let notificationSettingsEntity = notificationSettings.entity,
            let region = Region(rawValue: appSettingsEntity.regionIdentifier)
         {
-            pushNotificationState = .apnsRegistrationGranted
-            
-            let newToken = rawNewToken.map {
+            let currentToken = rawCurrentToken.map {
                 String(format: "%02.2hhx", $0)
             }.joined()
-            self.token = newToken
             
-            let isNewToken = notificationSettingsEntity.lastApnsToken != newToken
+            let isNewToken = notificationSettingsEntity.lastApnsToken != currentToken
             
-            if isNewToken {
-                let tasks = APINotificationInterface(token: newToken)
-                    .addAddTokenTask(payload: AddTokenPayload(region: region, tax: appSettingsEntity.pricesWithVAT))
-        
-                if notificationSettingsEntity.lastApnsToken != nil {
-                    // Upload all settings, add here
-                }
-                
-                if let packedTasks = tasks.getPackedTasks(),
-                   let request = APIRequestFactory.notificationRequest(packedTasks: packedTasks)
-                {
-                    performNotificationAPIRequest(request: request)
-                        .sink { completion in
-                            if case .finished = completion { self.notificationSettings.changeLastApnsToken(to: newToken) }
-                        } receiveValue: { _ in }
-                        .store(in: &cancellables)
+            if !isNewToken {
+                print("Notification: Token isn't new, won't upload.")
+                tokenContainer = TokenContainer(token: currentToken, nextUploadState: .doNothing)
+            } else if isNewToken, notificationSettingsEntity.lastApnsToken == nil {
+                print("Notification: New token and no old token, will parse new token on next notification request.")
+                tokenContainer = TokenContainer(token: currentToken, nextUploadState: .addTokenTask)
+            } else if isNewToken, notificationSettingsEntity.lastApnsToken != nil {
+                if wantToReceiveAnyNotification(notificationSettingEntity: notificationSettingsEntity) {
+                    print("Notification: New token, old token exists and want to receive at least one notification, uploading all config now.")
+                    tokenContainer = TokenContainer(token: currentToken, nextUploadState: .doNothing)
+                    // UPLOAD EVERYTHING HERE
+                } else {
+                    print("Notification: New token, old token exists but don't want to receive any notification, uploading all config on next notification request.")
+                    tokenContainer = TokenContainer(token: currentToken, nextUploadState: .uploadAllNotificationConfig)
                 }
             }
+            
+            pushNotificationState = .apnsRegistrationSuccessful
         }
     }
     
@@ -138,6 +149,14 @@ class NotificationService: ObservableObject {
                 return
             }
             self.refreshAccessStates()
+        }
+    }
+    
+    func wantToReceiveAnyNotification(notificationSettingEntity: NotificationSetting) -> Bool {
+        if notificationSettingEntity.priceDropsBelowValueNotification == true {
+            return true
+        } else {
+            return false
         }
     }
 }

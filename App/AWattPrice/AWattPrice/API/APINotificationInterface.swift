@@ -38,19 +38,18 @@ struct PackedNotificationTasks: Encodable {
 
 
 class APINotificationInterface {
-    var token: String
-    var addTokenTasks = [NotificationTask<AddTokenPayload>]()
+    private var token: String
+    private var addTokenTasks = [NotificationTask<AddTokenPayload>]()
     
     init(token: String) {
         self.token = token
     }
     
-    func addAddTokenTask(payload: AddTokenPayload) -> APINotificationInterface {
+    func addAddTokenTask(payload: AddTokenPayload) {
         let addTokenTask = NotificationTask(type: .addToken, payload: payload)
         addTokenTasks.append(addTokenTask)
-        return self
     }
-    
+
     func getPackedTasks() -> PackedNotificationTasks? {
         var tasks = [AnyEncodable]()
         tasks.append(contentsOf: addTokenTasks.map { AnyEncodable($0) })

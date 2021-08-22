@@ -6,6 +6,7 @@
 //
 
 import Combine
+import Resolver
 import UIKit
 import UserNotifications
 
@@ -19,6 +20,7 @@ extension NotificationService {
     
     enum PushNotificationState {
         case unknown
+        case asked
         case apnsRegistrationSuccessful
         case apnsRegistrationFailed
     }
@@ -45,22 +47,35 @@ extension NotificationService {
 
 class NotificationService: ObservableObject {
     var tokenContainer: TokenContainer? = nil
-    let appSettings: CurrentSetting
-    let notificationSettings: CurrentNotificationSetting
+    @Injected var appSettings: CurrentSetting
+    @Injected var notificationSettings: CurrentNotificationSetting
     
     @Published var accessState: AccessState = .unknown
     @Published var pushNotificationState: PushNotificationState = .unknown
     @Published var apiNotificationUploadState: APINotificationUploadState = .notUploading
     
     let notificationCenter = UNUserNotificationCenter.current()
+    private var notificationRequestCancellable: AnyCancellable? = nil
     private var cancellables = [AnyCancellable]()
     
-    init(appSettings: CurrentSetting, notificationSettings: CurrentNotificationSetting) {
-        self.appSettings = appSettings
-        self.notificationSettings = notificationSettings
+    func getBaseNotificationInterface() -> APINotificationInterface? {
+        guard let tokenContainer = self.tokenContainer else { return nil }
+        let interface = APINotificationInterface(token: tokenContainer.token)
+        
+        if tokenContainer.nextUploadState == .addTokenTask,
+           let appSettingEntity = appSettings.entity,
+           let region = Region(rawValue: appSettingEntity.regionIdentifier)
+        {
+            let payload = AddTokenPayload(region: region, tax: appSettingEntity.pricesWithVAT)
+            interface.addAddTokenTask(payload: payload)
+        } else if tokenContainer.nextUploadState == .uploadAllNotificationConfig {
+            // IMPLEMENT: UPLOAD ALL
+        }
+        
+        return interface
     }
     
-    func performNotificationAPIRequest(request: PlainAPIRequest) -> AnyPublisher<Never, Error> {
+    private func sendNotificationRequest(request: PlainAPIRequest) -> AnyPublisher<Never, Error> {
         self.apiNotificationUploadState = .uploadInProgress
         let apiClient = APIClient()
         let response = apiClient.request(to: request)
@@ -80,6 +95,34 @@ class NotificationService: ObservableObject {
             .store(in: &cancellables)
         
         return response
+    }
+    
+    /// Try to receive the required notification access permissions and send the notification request.
+    func runNotificationRequest(apiRequest: PlainAPIRequest, onRequestSend: @escaping (AnyPublisher<Never, Error>) -> ()) {
+        let performAfterAccessAsked = {
+            if self.accessState == .granted {
+                self.notificationRequestCancellable = self.$pushNotificationState
+                    .sink { pushNotificationState in
+                        if pushNotificationState == .apnsRegistrationSuccessful {
+                            print("Notification: Sending request as all required permissions are granted.")
+                            let request = self.sendNotificationRequest(request: apiRequest)
+                            onRequestSend(request)
+                        } else if pushNotificationState == .apnsRegistrationFailed {
+                            print("Notification: Can't send notification request as apns registration failed.")
+                        }
+                        if pushNotificationState != .asked {
+                            print("Notification: Push notification state was answered, cancelling notification request.")
+                            self.notificationRequestCancellable?.cancel()
+                        }
+                    }
+            }
+        }
+        
+        if accessState == .notAsked {
+            self.requestAccess { performAfterAccessAsked() }
+        } else {
+            performAfterAccessAsked()
+        }
     }
     
     func registeredForRemoteNotifications(rawCurrentToken: Data) {
@@ -122,10 +165,13 @@ class NotificationService: ObservableObject {
     }
     
     func registerForRemoteNotifications() {
-        UIApplication.shared.registerForRemoteNotifications()
+        if !(pushNotificationState == .asked) {
+            pushNotificationState = .asked
+            UIApplication.shared.registerForRemoteNotifications()
+        }
     }
     
-    func refreshAccessStates() {
+    func refreshAccessStates(onCompletion: (() -> ())? = nil) {
         notificationCenter.getNotificationSettings { settings in
             switch settings.authorizationStatus {
             case .authorized, .provisional:
@@ -139,16 +185,19 @@ class NotificationService: ObservableObject {
                 print("Notification: Notification access not allowed: \(settings.authorizationStatus).")
                 self.accessState = .rejected
             }
+            if let onCompletion = onCompletion {
+                onCompletion()
+            }
         }
     }
     
-    func requestAccess() {
+    func requestAccess(onCompletion: (() -> ())? = nil) {
         notificationCenter.requestAuthorization(options: [.alert, .badge, .sound]) { authorizationGranted, error in
             if let error = error {
                 print("Notification: Notification access failed with error: \(error).")
                 return
             }
-            self.refreshAccessStates()
+            self.refreshAccessStates(onCompletion: onCompletion)
         }
     }
     

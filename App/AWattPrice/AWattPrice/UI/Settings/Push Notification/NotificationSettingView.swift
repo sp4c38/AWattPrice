@@ -29,7 +29,7 @@ struct NotificationSettingView: View {
 //                            .transition(.opacity)
 //                    }
 
-//                    PriceDropsBelowValueNotificationView()
+                    PriceBelowNotificationView()
 
                 }
                 .animation(.easeInOut)
@@ -100,7 +100,7 @@ struct GoToNotificationSettingView: View {
 struct NotificationSettingView_Previews: PreviewProvider {
     static var appSettings = CurrentSetting(managedObjectContext: PersistenceManager().persistentContainer.viewContext)
     static var notificationSettings = CurrentNotificationSetting(managedObjectContext: PersistenceManager().persistentContainer.viewContext)
-    static var notificationService = NotificationService(appSettings: appSettings, notificationSettings: notificationSettings)
+    static var notificationService = NotificationService()
     
     static var previews: some View {
         

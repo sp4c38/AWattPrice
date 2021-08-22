@@ -23,7 +23,7 @@ extension Resolver {
     }
     
     public static func registerNotificationService() {
-        register { NotificationService(appSettings: resolve(), notificationSettings: resolve()) }
+        register { NotificationService() }
             .scope(.application)
     }
 }

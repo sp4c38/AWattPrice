@@ -52,8 +52,17 @@ extension PriceBelowNotificationView {
             self.showHeader = showHeader
         }
         
-        var uploadInProgress: Bool {
-            notificationService.apiNotificationUploadState == .uploadInProgress
+        var requestInProgress: Bool { notificationService.apiNotificationRequestState == .requestInProgress }
+        
+        func priceBelowNotificationToggled(to newSelection: Bool) {
+            if let interface = notificationService.getBaseNotificationInterface(), 
+               let tokenContainer = notificationService.tokenContainer,
+               !(tokenContainer.nextUploadState) ==
+            {
+                if (tokenContainer.nextUploadState == .uploadAllNotificationConfig) {
+                    
+                }
+            }
         }
     }
 }
@@ -68,6 +77,8 @@ struct PriceBelowNotificationView: View {
     @State var keyboardCurrentlyClosed = false
     @State var priceDropsBelowValueNotificationSelection = false
     @State var priceBelowValue: String = ""
+    
+    @ObservedObject var notificationService: NotificationService = Resolver.resolve()
     
     init(showHeader showHeaderValue: Bool = false) {
         self.viewModel = ViewModel(showHeader: showHeaderValue)
@@ -106,10 +117,8 @@ struct PriceBelowNotificationView: View {
 
             Toggle("", isOn: $priceDropsBelowValueNotificationSelection.animation())
                 .labelsHidden()
-                .onChange(of: priceDropsBelowValueNotificationSelection) { newSelection in
-                    
-                }
-                .disabled(viewModel.uploadInProgress)
+                .onChange(of: priceDropsBelowValueNotificationSelection) { viewModel.priceBelowNotificationToggled(to: $0) }
+                .disabled(viewModel.requestInProgress)
         }
     }
 

@@ -84,6 +84,7 @@ async def get_stored_data(region: Region, config: Config) -> Optional[Box]:
         return None
 
     if len(unpickled_data) == 0:
+        logger.debug("Stored price data found, but is empty.")
         return None
 
     try:
@@ -140,20 +141,17 @@ def check_update_data(data: Optional[Box], last_update_time: Optional[Arrow]) ->
     if max_price.end_timestamp >= midnight_tomorrow_berlin:
         logger.debug("Price points still available until tomorrow midnight.")
         return False
-    else:
-        return True
 
     if now_berlin.hour < defaults.AWATTAR_UPDATE_HOUR:
         logger.debug(f"Not past update hour ({defaults.AWATTAR_UPDATE_HOUR}).")
         return False
-    else:
-        return True
 
+    return True
 
 def get_data_refresh_lock(region: Region, config: Config) -> ExtendedFileLock:
     """Get file lock used when refreshing price data."""
     lock_dir = config.paths.price_data_dir
-    lock_file_name = defaults.PRICE_DATA_FILE_NAME.format(region.value.lower())
+    lock_file_name = defaults.PRICE_DATA_FILE_NAME.format(region.value.lower()) + ".lock"
     lock_file_path = lock_dir / lock_file_name
     lock = ExtendedFileLock(lock_file_path)
     return lock

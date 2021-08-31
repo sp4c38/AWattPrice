@@ -17,7 +17,7 @@ class NotificationService: ObservableObject {
         case rejected
     }
     
-    enum PushNotificationState {
+    enum PushState {
         case unknown
         case asked
         case apnsRegistrationSuccessful
@@ -40,9 +40,11 @@ class NotificationService: ObservableObject {
     
     let makingNotificationRequest = NSLock()
     @Published var accessState: AccessState = .unknown
-    @Published var pushNotificationState: PushNotificationState = .unknown
+    @Published var pushState: PushState = .unknown
     
     internal let notificationCenter = UNUserNotificationCenter.current()
     internal var notificationRequestCancellable: AnyCancellable? = nil
+    
     internal var cancellables = [AnyCancellable]()
+    internal var ensureAccessPushStateCancellable: AnyCancellable? = nil
 }

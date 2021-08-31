@@ -29,33 +29,25 @@ extension NotificationService {
         return response
     }
     
-    internal func performNotificationRequest(_ apiRequest: PlainAPIRequest) {
-        if pushNotificationState == .apnsRegistrationSuccessful {
-            print("Notification: Sending request as all required permissions are granted.")
-            sendNotificationRequest(request: apiRequest)
-        } else if pushNotificationState == .apnsRegistrationFailed {
-            print("Notification: Can't send notification request as apns registration failed.")
-            return
-        }
-    }
-    
     /// Try to receive the required notification access permissions and send the notification request.
-    func runNotificationRequest(apiRequest: PlainAPIRequest) {
-        if self.accessState == .notAsked {
-            requestAccess { self.performNotificationRequest(apiRequest) }
-        } else {
-            performNotificationRequest(apiRequest)
-        }
+    func runNotificationRequest(interface: APINotificationInterface, appSetting: CurrentSetting) {
+        guard accessState == .granted, pushState == .apnsRegistrationSuccessful,
+              let extendedInterface = extendNotificationInterface(interface, appSetting: appSetting)
+        else { return }
+        let packedTasks = extendedInterface.getPackedTasks()
+        guard let apiRequest = APIRequestFactory.notificationRequest(packedTasks: packedTasks) else { return }
+        
+        sendNotificationRequest(request: apiRequest)
     }
     
-    func getBaseNotificationInterface(appSetting: CurrentSetting) -> APINotificationInterface? {
+    /// Extends the notification interface by adding missing tasks which are required to be sent with this notification request.
+    func extendNotificationInterface(_ interface: APINotificationInterface, appSetting: CurrentSetting) -> APINotificationInterface? {
         guard let tokenContainer = self.tokenContainer,
               let appSettingEntity = appSetting.entity
         else { return nil }
-        let interface = APINotificationInterface(token: tokenContainer.token)
         
         if tokenContainer.nextUploadState == .addTokenTask, let region = Region(rawValue: appSettingEntity.regionIdentifier) {
-            interface.addAddTokenTask(AddTokenPayload(region: region, tax: appSettingEntity.pricesWithVAT))
+            interface.addAddTokenTask(AddTokenPayload(region: region, tax: appSettingEntity.pricesWithVAT), overwrite: false)
         } else if tokenContainer.nextUploadState == .uploadAllNotificationConfig {
             // IMPLEMENT: UPLOAD ALL
         }

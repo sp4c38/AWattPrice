@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 extension NotificationService {
     func wantToReceiveAnyNotification(notificationSettingEntity: NotificationSetting) -> Bool {
@@ -42,14 +43,23 @@ extension NotificationService {
                     tokenContainer = TokenContainer(token: currentToken, nextUploadState: .uploadAllNotificationConfig)
                 }
             }
-            pushNotificationState = .apnsRegistrationSuccessful
+            pushState = .apnsRegistrationSuccessful
         } else {
-            pushNotificationState = .apnsRegistrationFailed
+            pushState = .apnsRegistrationFailed
         }
     }
     
     func failedRegisteredForRemoteNotifications(error: Error) {
         print("Notification: Push notification registration not granted: \(error).")
-        pushNotificationState = .apnsRegistrationFailed
+        pushState = .apnsRegistrationFailed
+    }
+    
+    func registerForRemoteNotifications() {
+        if pushState == .unknown {
+            DispatchQueue.main.async {
+                self.pushState = .asked
+                UIApplication.shared.registerForRemoteNotifications()
+            }
+        }
     }
 }

@@ -41,26 +41,33 @@ struct PriceDropsBelowValueNotificationInfoView: View {
 }
 
 extension PriceBelowNotificationView {
-    class ViewModel {
+    class ViewModel: ObservableObject {
         @ObservedObject var notificationService: NotificationService = Resolver.resolve()
         @Injected var currentSetting: CurrentSetting
         @ObservedObject var crtNotifiSetting: CurrentNotificationSetting = Resolver.resolve()
 
+        @Published var notificationIsEnabled: Bool = false
+        
         let showHeader: Bool
 
         init(showHeader: Bool) {
             self.showHeader = showHeader
+            
+            notificationIsEnabled = crtNotifiSetting.entity!.priceDropsBelowValueNotification
         }
         
-        var requestInProgress: Bool { notificationService.apiNotificationRequestState == .requestInProgress }
-        
         func priceBelowNotificationToggled(to newSelection: Bool) {
-            if let interface = notificationService.getBaseNotificationInterface(), 
-               let tokenContainer = notificationService.tokenContainer,
-               !(tokenContainer.nextUploadState) ==
-            {
-                if (tokenContainer.nextUploadState == .uploadAllNotificationConfig) {
+            notificationService.ensureAccess { access in
+                if access == true,
+                   let tokenContainer = self.notificationService.tokenContainer,
+                   let notificationSettingEntity = self.crtNotifiSetting.entity
+                {
+                    let apiInterface = APINotificationInterface(token: tokenContainer.token)
+                    let notificationInfo = SubDesubPriceBelowNotificationInfo(belowValue: notificationSettingEntity.priceBelowValue)
+                    let subDesubPayload = SubDesubPayload(notificationType: .priceBelow, subElseDesub: newSelection, notificationInfo: notificationInfo )
+                    apiInterface.addPriceBelowSubDesubTask(subDesubPayload)
                     
+                    self.notificationService.runNotificationRequest(interface: apiInterface, appSetting: self.currentSetting)
                 }
             }
         }
@@ -71,11 +78,10 @@ struct PriceBelowNotificationView: View {
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.keyboardObserver) var keyboardObserver
     
-    let viewModel: ViewModel
+    @ObservedObject var viewModel: ViewModel
     
     @State var initialAppearFinished: Bool? = false
     @State var keyboardCurrentlyClosed = false
-    @State var priceDropsBelowValueNotificationSelection = false
     @State var priceBelowValue: String = ""
     
     @ObservedObject var notificationService: NotificationService = Resolver.resolve()
@@ -83,7 +89,6 @@ struct PriceBelowNotificationView: View {
     init(showHeader showHeaderValue: Bool = false) {
         self.viewModel = ViewModel(showHeader: showHeaderValue)
         priceBelowValue = viewModel.crtNotifiSetting.entity!.priceBelowValue.priceString ?? ""
-        priceDropsBelowValueNotificationSelection = viewModel.crtNotifiSetting.entity!.priceDropsBelowValueNotification
     }
     
     var body: some View {
@@ -95,11 +100,9 @@ struct PriceBelowNotificationView: View {
                 VStack(alignment: .leading, spacing: 20) {
                     toggleView
 
-                    if priceDropsBelowValueNotificationSelection {
+                    if viewModel.notificationIsEnabled {
                         wishPriceInputField
-                    }
 
-                    if priceDropsBelowValueNotificationSelection {
                         PriceDropsBelowValueNotificationInfoView()
                     }
                 }
@@ -115,10 +118,9 @@ struct PriceBelowNotificationView: View {
 
             Spacer()
 
-            Toggle("", isOn: $priceDropsBelowValueNotificationSelection.animation())
+            Toggle("", isOn: $viewModel.notificationIsEnabled.animation())
                 .labelsHidden()
-                .onChange(of: priceDropsBelowValueNotificationSelection) { viewModel.priceBelowNotificationToggled(to: $0) }
-                .disabled(viewModel.requestInProgress)
+                .onChange(of: viewModel.notificationIsEnabled) { viewModel.priceBelowNotificationToggled(to: $0) }
         }
     }
 

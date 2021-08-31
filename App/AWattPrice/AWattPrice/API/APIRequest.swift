@@ -28,7 +28,7 @@ enum APIRequestFactory {
 
     static func energyDataRequest(region: Region) -> ResponseAPIRequest<EnergyData, JSONDecoder> {
         let requestURL = apiURL
-            .appendingPathComponent("data")
+            .appendingPathComponent("data", isDirectory: true)
             .appendingPathComponent(region.apiName)
         let urlRequest = URLRequest(
             url: requestURL,
@@ -40,9 +40,7 @@ enum APIRequestFactory {
     }
     
     static func notificationRequest(packedTasks: PackedNotificationTasks) -> PlainAPIRequest? {
-        if packedTasks.tasks.isEmpty == true {
-            return nil
-        }
+        guard packedTasks.tasks.isEmpty == false else { return nil }
         
         let encoder = JSONEncoder()
         let encodedTasks: Data
@@ -54,8 +52,8 @@ enum APIRequestFactory {
         }
         
         let requestURL = apiURL
-            .appendingPathComponent("notifications")
-            .appendingPathComponent("run_tasks")
+            .appendingPathComponent("notifications", isDirectory: true)
+            .appendingPathComponent("run_tasks", isDirectory: true)
         var urlRequest = URLRequest(url: requestURL)
         urlRequest.httpMethod = "POST"
         urlRequest.httpBody = encodedTasks

@@ -66,7 +66,20 @@ extension PriceBelowNotificationView {
                     let notificationInfo = SubDesubPriceBelowNotificationInfo(belowValue: notificationSettingEntity.priceBelowValue)
                     let subDesubPayload = SubDesubPayload(notificationType: .priceBelow, active: newSelection, notificationInfo: notificationInfo )
                     apiInterface.addPriceBelowSubDesubTask(subDesubPayload)
-                    
+                    self.notificationService.runNotificationRequest(interface: apiInterface, appSetting: self.currentSetting)
+                }
+            }
+        }
+        
+        func updateWishPrice(to newWishPrice: Int) {
+            notificationService.ensureAccess { access in
+                if access == true,
+                   let tokenContainer = self.notificationService.tokenContainer
+                {
+                    let apiInterface = APINotificationInterface(token: tokenContainer.token)
+                    let updatedData = UpdatedPriceBelowNotificationData(belowValue: newWishPrice)
+                    let updatePayload = UpdatePayload(subject: .priceBelow, updatedData: updatedData)
+                    apiInterface.addPriceBelowUpdateTask(updatePayload)
                     self.notificationService.runNotificationRequest(interface: apiInterface, appSetting: self.currentSetting)
                 }
             }
@@ -135,16 +148,15 @@ struct PriceBelowNotificationView: View {
                 NumberField(text: $priceBelowValue, placeholder: "general.cent.long".localized(), plusMinusButton: true, withDecimalSeperator: false)
                     .fixedSize(horizontal: false, vertical: true)
                     .onChange(of: priceBelowValue) { newValue in
-//                        var newIntegerValue: Int = 0
-//                        if let newConvertedIntegerValue = newValue.integerValue {
-//                            newIntegerValue = newConvertedIntegerValue
-//                        }
-//                        crtNotifiSetting.changePriceBelowValue(to: newIntegerValue)
-//                        priceBelowValue = newIntegerValue.priceString ?? ""
-//
-//                        if keyboardCurrentlyClosed {
-//                            crtNotifiSetting.pushNotificationUpdateManager.backgroundNotificationUpdate(currentSetting, crtNotifiSetting)
-//                        }
+                        var newIntegerValue: Int = 0
+                        if let newConvertedIntegerValue = newValue.integerValue {
+                            newIntegerValue = newConvertedIntegerValue
+                        }
+                        priceBelowValue = newIntegerValue.priceString ?? ""
+
+                        if keyboardCurrentlyClosed {
+                            viewModel.updateWishPrice(to: newIntegerValue)
+                        }
                     }
 
                 Text("general.centPerKwh")
@@ -161,24 +173,3 @@ struct PriceBelowNotificationView: View {
         }
     }
 }
-
-//struct NewPricesNotificationView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        PriceDropsBelowValueNotificationInfoView()
-//            .padding(.leading, 17)
-//            .padding(.trailing, 14)
-//            .padding([.top, .bottom], 7)
-//
-//        NavigationView {
-//            PriceDropsBelowValueNotificationView()
-//                .environmentObject(
-//                    CurrentNotificationSetting(
-//                        backendComm: BackendCommunicator(),
-//                        managedObjectContext: PersistenceManager().persistentContainer.viewContext
-//                    )
-//                )
-//                .preferredColorScheme(.light)
-//                .environment(\.locale, Locale(identifier: "de"))
-//        }
-//    }
-//}

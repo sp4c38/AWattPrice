@@ -209,20 +209,29 @@ def parse_subscribe_desubscribe_payload(payload: Box) -> Optional[Box]:
     return payload
 
 
-def transform_update_task(task: Box):
-    """Check for correct 'update' task schema and transform the task."""
+def parse_update_payload(payload: Box) -> Optional[Box]:
+    """Validates and parses an update payload into internal format."""
     update_schema = defaults.NOTIFICATION_TASK_UPDATE_SCHEMA
-    utils.http_exc_validate_json_schema(task.payload, update_schema, http_code=400)
+    try:
+        jsonschema.validate(payload, update_schema)
+    except jsonschema.ValidationError as exc:
+        logger.exception(f"Update payload doesn't follow schema: {exc}.")
+        return None
 
-    task.payload.subject = UpdateSubject[task.payload.subject]
+    payload.subject = UpdateSubject[payload.subject.upper()]
 
-    updated_data = task.payload.updated_data
-    if task.payload.subject == UpdateSubject.GENERAL:
-        general_schema = defaults.NOTIFICATION_TASK_UPDATE_GENERAL_SCHEMA
-        utils.http_exc_validate_json_schema(updated_data, general_schema, http_code=400)
-    elif task.payload.subject == UpdateSubject.PRICE_BELOW:
-        price_below_schema = defaults.NOTIFICATION_TASK_UPDATE_PRICE_BELOW_SCHEMA
-        utils.http_exc_validate_json_schema(updated_data, price_below_schema, http_code=400)
+    try:
+        if payload.subject == UpdateSubject.GENERAL:
+            general_schema = defaults.NOTIFICATION_TASK_UPDATE_GENERAL_SCHEMA
+            jsonschema.validate(payload.updated_data, general_schema)
+        elif payload.subject == UpdateSubject.PRICE_BELOW:
+            price_below_schema = defaults.NOTIFICATION_TASK_UPDATE_PRICE_BELOW_SCHEMA
+            jsonschema.validate(payload.updated_data, price_below_schema)
+    except jsonschema.ValidationError as exc:
+        logger.exception(f"Updated data doesn't follow schema: {exc}.")
+        return None
+
+    return payload
 
 
 def check_task_counts_valid(tasks: BoxList) -> bool:
@@ -286,7 +295,7 @@ def parse_tasks_body(old_packed_tasks: Box) -> Optional[Box]:
         elif task.type == TaskType.SUBSCRIBE_DESUBSCRIBE:
             payload = parse_subscribe_desubscribe_payload(old_task.payload)
         elif task.type == TaskType.UPDATE:
-            transform_update_task(old_task)
+            payload = parse_update_payload(old_task.payload)
 
         if payload is None:
             logger.warning(f"Couldn't parse {task.type} task.")

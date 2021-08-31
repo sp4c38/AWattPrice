@@ -164,10 +164,10 @@ NOTIFICATION_TASK_SUB_DESUB_SCHEMA = {
     "type": "object",
     "properties": {
         "notification_type": {"enum": [element.name.lower() for element in NotificationType]},
-        "sub_else_desub": {"type": "boolean"},
+        "active": {"type": "boolean"},
         "notification_info": {"type": "object"},
     },
-    "required": ["sub_else_desub", "notification_type", "notification_info"],
+    "required": ["active", "notification_type", "notification_info"],
     "additionalProperties": False,
 }
 

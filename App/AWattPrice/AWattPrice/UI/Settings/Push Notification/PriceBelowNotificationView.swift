@@ -64,7 +64,7 @@ extension PriceBelowNotificationView {
                 {
                     let apiInterface = APINotificationInterface(token: tokenContainer.token)
                     let notificationInfo = SubDesubPriceBelowNotificationInfo(belowValue: notificationSettingEntity.priceBelowValue)
-                    let subDesubPayload = SubDesubPayload(notificationType: .priceBelow, subElseDesub: newSelection, notificationInfo: notificationInfo )
+                    let subDesubPayload = SubDesubPayload(notificationType: .priceBelow, active: newSelection, notificationInfo: notificationInfo )
                     apiInterface.addPriceBelowSubDesubTask(subDesubPayload)
                     
                     self.notificationService.runNotificationRequest(interface: apiInterface, appSetting: self.currentSetting)

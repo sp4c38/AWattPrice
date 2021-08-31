@@ -54,12 +54,12 @@ enum NotificationType: String, Encodable {
 
 struct SubDesubPayload<InfoType: SubDesubNotificationInfo>: NotificationTaskPayload {
     var notificationType: NotificationType
-    var subElseDesub: Bool
+    var active: Bool
     var notificationInfo: InfoType
     
     enum CodingKeys: String, CodingKey {
+        case active
         case notificationType = "notification_type"
-        case subElseDesub = "sub_else_desub"
         case notificationInfo = "notification_info"
     }
 }

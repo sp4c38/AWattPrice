@@ -28,28 +28,6 @@ from awattprice.orm import PriceBelowNotification
 from awattprice.orm import Token
 
 
-async def add_new_token(session: AsyncSession, token_hex: str, configuration: Box) -> Token:
-    """Save a new token to the database and return the new orm object.
-
-    :param extra_values: Extra values for the new token. These include region and tax selection.
-    """
-    token = Token(
-        token=token_hex,
-        region=configuration.region,
-        tax=configuration.tax,
-    )
-    session.add(token)
-
-    try:
-        await session.commit()
-    except sqlalchemy.exc.IntegrityError as exc:
-        logger.warning(f"Tried to add token although it already existed: {exc}.")
-        await session.rollback()
-        raise HTTPException(400) from exc
-
-    return token
-
-
 async def get_token(session: AsyncSession, token_hex: str) -> Token:
     """Get a orm token object using the token's hex identifier."""
     stmt = select(Token).where(Token.token == token_hex)
@@ -65,34 +43,58 @@ async def get_token(session: AsyncSession, token_hex: str) -> Token:
     return token
 
 
+async def add_new_token(session: AsyncSession, token_hex: str, configuration: Box) -> Token:
+    """Save a new token to the database and return the new orm object.
+
+    :param extra_values: Extra values for the new token. These include region and tax selection.
+    """
+    token = Token(
+        token=token_hex,
+        region=configuration.region,
+        tax=configuration.tax,
+    )
+    session.add(token)
+
+    try:
+        await session.commit()
+    except sqlalchemy.exc.IntegrityError as exc:
+        await session.rollback()
+        logger.warning(f"Tried to add token although it already existed: {exc}.")
+        token = await get_token(session, token_hex)
+        token.region = configuration.region
+        token.tax = configuration.tax
+
+    return token
+
+
 async def sub_desub_price_below(session: AsyncSession, token: Token, payload: Box):
     """Subscribe or desubscribe a token to the price below value notification."""
-    stmt = select(PriceBelowNotification)  # .where(PriceBelowNotification.token_id == token.token_id)
+    stmt = select(PriceBelowNotification).where(PriceBelowNotification.token_id == token.token_id)
     notification_results = await session.execute(stmt)
     notification = notification_results.scalar_one_or_none()
 
-    sub_else_desub = payload.sub_else_desub
-    below_value = payload.notification_info.below_value
+    notification_active = payload.active
+    notification_info = payload.notification_info
     if notification is None:
-        if sub_else_desub is True:
+        if notification_active is True:
             logger.info("Subscribing to price below notification.")
             new_price_below_notification = PriceBelowNotification(
                 token_id=token.token_id,
                 active=True,
-                below_value=below_value,
+                below_value=notification_info.below_value,
             )
             session.add(new_price_below_notification)
     else:
-        if sub_else_desub is True and notification.active is not True:
+        if notification_active is True and notification.active is False:
             logger.debug("Resubscribing to price below notification.")
             notification.active = True
-        elif sub_else_desub is False and notification.active is not False:
+        elif notification_active is False and notification.active is True:
             logger.debug("Desubscribing from price below notification.")
             notification.active = False
         else:
             logger.info(
-                f"Current 'sub-else-desub' state ({notification.active}) is "
-                f"already set to new state: {sub_else_desub}."
+                f"Current notification active state ({notification.active}) is "
+                f"already set to new state: {notification_active}."
             )
 
 
@@ -166,7 +168,7 @@ async def run_notification_tasks(db_engine: AsyncEngine, token_hex: str, tasks: 
         await session.commit()
 
 
-def parse_add_token_payload(old_payload: Box, task_index: int) -> Optional[Box]:
+def parse_add_token_payload(payload: Box, task_index: int) -> Optional[Box]:
     """Validates and parses an add token payload into interal format."""
     if task_index != 0:
         logger.warning(f"Add token task is not the first in the task list: {task_index}.")
@@ -174,27 +176,37 @@ def parse_add_token_payload(old_payload: Box, task_index: int) -> Optional[Box]:
 
     add_token_schema = defaults.NOTIFICATION_TASK_PAYLOAD_ADD_TOKEN_SCHEMA
     try:
-        jsonschema.validate(old_payload, add_token_schema)
+        jsonschema.validate(payload, add_token_schema)
     except jsonschema.ValidationError as exc:
-        logger.exception(f"Add token task doesn't follow schema: {exc}.")
+        logger.exception(f"Add token payload doesn't follow schema: {exc}.")
         return None
 
-    payload = old_payload
     payload.region = Region[payload.region]
     return payload
 
 
-def transform_subscribe_desubscribe_task(task: Box):
-    """Check for correct 'subscribe_desubscribe' task schema and transform the task."""
+def parse_subscribe_desubscribe_payload(payload: Box) -> Optional[Box]:
+    """Validates and parses a subscribe desubscribe payload into internal format."""
     sub_desub_schema = defaults.NOTIFICATION_TASK_SUB_DESUB_SCHEMA
-    utils.http_exc_validate_json_schema(task.payload, sub_desub_schema, http_code=400)
+    try:
+        jsonschema.validate(payload, sub_desub_schema)
+    except jsonschema.ValidationError as exc:
+        logger.exception(f"Subscribe desubscribe payload doesn't follow schema: {exc}.")
+        return None
 
-    task.payload.notification_type = NotificationType[task.payload.notification_type.upper()]
+    payload.notification_type = NotificationType[payload.notification_type.upper()]
 
-    notification_info = task.payload.notification_info
-    if task.payload.notification_type == NotificationType.PRICE_BELOW:
+    if payload.notification_type == NotificationType.PRICE_BELOW:
         price_below_schema = defaults.NOTIFICATION_TASK_PRICE_BELOW_SUB_DESUB_SCHEMA
-        utils.http_exc_validate_json_schema(notification_info, price_below_schema, http_code=400)
+        try:
+            utils.http_exc_validate_json_schema(payload.notification_info, price_below_schema, http_code=400)
+        except jsonschema.ValidationError as exc:
+            logger.exception(f"Subscribe desubscribe price below notification info doesn't follow schema: {exc}.")
+            return None
+    else:
+        return None
+
+    return payload
 
 
 def transform_update_task(task: Box):
@@ -272,7 +284,7 @@ def parse_tasks_body(old_packed_tasks: Box) -> Optional[Box]:
         if task.type == TaskType.ADD_TOKEN:
             payload = parse_add_token_payload(old_task.payload, index)
         elif task.type == TaskType.SUBSCRIBE_DESUBSCRIBE:
-            transform_subscribe_desubscribe_task(old_task)
+            payload = parse_subscribe_desubscribe_payload(old_task.payload)
         elif task.type == TaskType.UPDATE:
             transform_update_task(old_task)
 

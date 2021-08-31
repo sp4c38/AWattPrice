@@ -5,15 +5,16 @@
 //  Created by Léon Becker on 17.12.20.
 //
 
+import Resolver
 import SwiftUI
-import UIKit
 import UserNotifications
 
 class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
-    var notificationService: NotificationService!
+    @Injected var notificationService: NotificationService
+    @Injected var notificationSetting: CurrentNotificationSetting
 
     func application(_: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        notificationService.successfulRegisteredForRemoteNotifications(rawCurrentToken: deviceToken)
+        notificationService.successfulRegisteredForRemoteNotifications(rawCurrentToken: deviceToken, notificationSetting: notificationSetting)
     }
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
         notificationService.failedRegisteredForRemoteNotifications(error: error)

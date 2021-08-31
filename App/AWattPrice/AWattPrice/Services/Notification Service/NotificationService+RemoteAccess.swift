@@ -8,13 +8,18 @@
 import Foundation
 
 extension NotificationService {
-    func successfulRegisteredForRemoteNotifications(rawCurrentToken: Data) {
+    func wantToReceiveAnyNotification(notificationSettingEntity: NotificationSetting) -> Bool {
+        if notificationSettingEntity.priceDropsBelowValueNotification == true {
+            return true
+        } else {
+            return false
+        }
+    }
+    
+    func successfulRegisteredForRemoteNotifications(rawCurrentToken: Data, notificationSetting: CurrentNotificationSetting) {
         logger.debug("Remote notifications granted with device token.")
 
-        if let appSettingsEntity = appSettings.entity,
-           let notificationSettingsEntity = notificationSettings.entity,
-           let region = Region(rawValue: appSettingsEntity.regionIdentifier)
-        {
+        if let notificationSettingsEntity = notificationSetting.entity {
             let currentToken = rawCurrentToken.map {
                 String(format: "%02.2hhx", $0)
             }.joined()
@@ -25,7 +30,7 @@ extension NotificationService {
                 print("Notification: Token isn't new, won't upload.")
                 tokenContainer = TokenContainer(token: currentToken, nextUploadState: .doNothing)
             } else if isNewToken, notificationSettingsEntity.lastApnsToken == nil {
-                print("Notification: New token and no old token, will parse new token on next notification request.")
+                print("Notification: New token but no old token, will parse new token on next notification request.")
                 tokenContainer = TokenContainer(token: currentToken, nextUploadState: .addTokenTask)
             } else if isNewToken, notificationSettingsEntity.lastApnsToken != nil {
                 if wantToReceiveAnyNotification(notificationSettingEntity: notificationSettingsEntity) {
@@ -37,8 +42,9 @@ extension NotificationService {
                     tokenContainer = TokenContainer(token: currentToken, nextUploadState: .uploadAllNotificationConfig)
                 }
             }
-            
             pushNotificationState = .apnsRegistrationSuccessful
+        } else {
+            pushNotificationState = .apnsRegistrationFailed
         }
     }
     

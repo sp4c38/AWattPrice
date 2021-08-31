@@ -9,7 +9,6 @@ import UIKit
 import UserNotifications
 
 extension NotificationService {
-    
     func registerForRemoteNotifications() {
         if !(pushNotificationState == .asked) {
             pushNotificationState = .asked
@@ -31,9 +30,7 @@ extension NotificationService {
                 print("Notification: Notification access not allowed: \(settings.authorizationStatus).")
                 self.accessState = .rejected
             }
-            if let onCompletion = onCompletion {
-                onCompletion()
-            }
+            onCompletion?()
         }
     }
     

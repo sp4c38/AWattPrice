@@ -22,12 +22,12 @@ extension Resolver: ResolverRegistering {
 
 @main
 struct AWattPriceApp: App {
-    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-
     @Injected var currentSetting: CurrentSetting
     @Injected var energyDataController: EnergyDataController
     @Injected var notificationService: NotificationService
     let cheapestHourManager = CheapestHourManager()
+    
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
     init() {
         appDelegate.notificationService = notificationService

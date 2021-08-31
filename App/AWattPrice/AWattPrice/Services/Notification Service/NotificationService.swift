@@ -9,11 +9,11 @@ import Combine
 import Resolver
 import UserNotifications
 
-extension NotificationService {
+class NotificationService: ObservableObject {
     enum AccessState {
         case unknown
-        case granted
         case notAsked
+        case granted
         case rejected
     }
     
@@ -22,13 +22,6 @@ extension NotificationService {
         case asked
         case apnsRegistrationSuccessful
         case apnsRegistrationFailed
-    }
-    
-    enum APINotificationRequestState {
-        case noRequest
-        case requestInProgress
-        case requestCompleted
-        case requestFailed
     }
     
     struct TokenContainer {
@@ -42,18 +35,14 @@ extension NotificationService {
         let token: String
         var nextUploadState: NextUploadState
     }
-}
-
-class NotificationService: ObservableObject {
-    var tokenContainer: TokenContainer? = nil
-    @Injected var appSettings: CurrentSetting
-    @Injected var notificationSettings: CurrentNotificationSetting
     
+    var tokenContainer: TokenContainer? = nil
+    
+    let makingNotificationRequest = NSLock()
     @Published var accessState: AccessState = .unknown
     @Published var pushNotificationState: PushNotificationState = .unknown
-    @Published var apiNotificationRequestState: APINotificationRequestState = .noRequest
     
-    let notificationCenter = UNUserNotificationCenter.current()
+    internal let notificationCenter = UNUserNotificationCenter.current()
     internal var notificationRequestCancellable: AnyCancellable? = nil
     internal var cancellables = [AnyCancellable]()
 }

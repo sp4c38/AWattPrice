@@ -45,7 +45,7 @@ class APINotificationInterface {
         self.token = token
     }
     
-    func addAddTokenTask(payload: AddTokenPayload) {
+    func addAddTokenTask(_ payload: AddTokenPayload) {
         let addTokenTask = NotificationTask(type: .addToken, payload: payload)
         addTokenTasks.append(addTokenTask)
     }

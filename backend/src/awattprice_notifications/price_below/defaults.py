@@ -53,10 +53,9 @@ def get_notifiable_prices(price_data: Box) -> Optional[list[Box]]:
 def check_region_updated(stored_endtime: Optional[Arrow], new_endtime: Arrow) -> bool:
     """Check if a region can be marked as updated to previouse runs based on the endtimes."""
     berlin_now = arrow.now().to(awattprice.defaults.EUROPE_BERLIN_TIMEZONE)
-    berlin_tomorrow_midnight = berlin_now.shift(days=+2).ceil("day")
-    new_endtime_berlin = new_endtime.to(awattprice.defaults.EUROPE_BERLIN_TIMEZONE)
+    berlin_tomorrow_midnight = berlin_now.floor("day").shift(days=+2)
 
-    if not new_endtime_berlin == berlin_tomorrow_midnight:
+    if not new_endtime== berlin_tomorrow_midnight:
         return False
 
     if stored_endtime is None:

@@ -25,29 +25,41 @@ extension RegionAndVatSelection {
         }
         
         func regionSwitched(to newRegion: Region) {
-            notificationService.ensureAccess { access in
-                if access == true,
-                   let tokenContainer = self.notificationService.tokenContainer
-                {
-                    let interface = APINotificationInterface(token: tokenContainer.token)
-                    let updatedData = UpdatedGeneralData(region: newRegion)
-                    let updatePayload = UpdatePayload(subject: .general, updatedData: updatedData)
-                    interface.addGeneralUpdateTask(updatePayload)
-                    self.notificationService.runNotificationRequest(interface: interface, appSetting: self.currentSetting, notificationSetting: self.notificationSetting)
+            if let notificationSettingEntity = self.notificationSetting.entity {
+                if notificationService.wantToReceiveAnyNotification(notificationSettingEntity: notificationSettingEntity) {
+                    notificationService.ensureAccess { access in
+                        if access == true,
+                           let tokenContainer = self.notificationService.tokenContainer
+                        {
+                            let interface = APINotificationInterface(token: tokenContainer.token)
+                            let updatedData = UpdatedGeneralData(region: newRegion)
+                            let updatePayload = UpdatePayload(subject: .general, updatedData: updatedData)
+                            interface.addGeneralUpdateTask(updatePayload)
+                            self.notificationService.runNotificationRequest(interface: interface, appSetting: self.currentSetting, notificationSetting: self.notificationSetting)
+                        }
+                    }
+                } else {
+                    self.currentSetting.changeRegionIdentifier(to: newRegion.rawValue)
                 }
             }
         }
         
         func taxToggled(to newTaxSelection: Bool) {
-            notificationService.ensureAccess { access in
-                if access == true,
-                   let tokenContainer = self.notificationService.tokenContainer
-                {
-                    let interface = APINotificationInterface(token: tokenContainer.token)
-                    let updatedData = UpdatedGeneralData(tax: newTaxSelection)
-                    let updatePayload = UpdatePayload(subject: .general, updatedData: updatedData)
-                    interface.addGeneralUpdateTask(updatePayload)
-                    self.notificationService.runNotificationRequest(interface: interface, appSetting: self.currentSetting, notificationSetting: self.notificationSetting)
+            if let notificationSettingEntity = self.notificationSetting.entity {
+                if notificationService.wantToReceiveAnyNotification(notificationSettingEntity: notificationSettingEntity) {
+                    notificationService.ensureAccess { access in
+                        if access == true,
+                           let tokenContainer = self.notificationService.tokenContainer
+                        {
+                            let interface = APINotificationInterface(token: tokenContainer.token)
+                            let updatedData = UpdatedGeneralData(tax: newTaxSelection)
+                            let updatePayload = UpdatePayload(subject: .general, updatedData: updatedData)
+                            interface.addGeneralUpdateTask(updatePayload)
+                            self.notificationService.runNotificationRequest(interface: interface, appSetting: self.currentSetting, notificationSetting: self.notificationSetting)
+                        }
+                    }
+                } else {
+                    self.currentSetting.changeTaxSelection(to: newTaxSelection)
                 }
             }
         }

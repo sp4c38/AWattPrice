@@ -68,7 +68,10 @@ extension PriceBelowNotificationView {
                     let notificationInfo = SubDesubPriceBelowNotificationInfo(belowValue: notificationSettingEntity.priceBelowValue)
                     let subDesubPayload = SubDesubPayload(notificationType: .priceBelow, active: newSelection, notificationInfo: notificationInfo )
                     apiInterface.addPriceBelowSubDesubTask(subDesubPayload)
-                    self.notificationService.runNotificationRequest(interface: apiInterface, appSetting: self.currentSetting, notificationSetting: self.crtNotifiSetting)
+                    self.notificationService.runNotificationRequest(interface: apiInterface, appSetting: self.currentSetting, notificationSetting: self.crtNotifiSetting) {
+                        DispatchQueue.main.async { self.notificationIsEnabled = newSelection }
+                    }
+                    print("Out")
                 }
             }
         }
@@ -88,6 +91,18 @@ extension PriceBelowNotificationView {
         }
     }
 }
+
+extension Binding {
+    func willSet(execute: @escaping (Value) -> Void) -> Binding {
+        return Binding(
+            get: { self.wrappedValue },
+            set: { newValue in
+                execute(newValue)
+            }
+        )
+    }
+}
+
 
 struct PriceBelowNotificationView: View {
     @Environment(\.colorScheme) var colorScheme
@@ -130,10 +145,14 @@ struct PriceBelowNotificationView: View {
                 .padding(.top, 2)
 
             Spacer()
-
-            Toggle("", isOn: $viewModel.notificationIsEnabled.animation())
-                .labelsHidden()
-                .onChange(of: viewModel.notificationIsEnabled) { viewModel.priceBelowNotificationToggled(to: $0) }
+            Text(String(viewModel.notificationService.isUploading.isLocked))
+            if !viewModel.notificationService.isUploading.isLocked {
+                Toggle("", isOn: $viewModel.notificationIsEnabled.willSet { viewModel.priceBelowNotificationToggled(to: $0) }.animation())
+                    .labelsHidden()
+            } else {
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle())
+            }
         }
     }
 

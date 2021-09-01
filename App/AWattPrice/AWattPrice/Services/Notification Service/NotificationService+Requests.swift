@@ -10,13 +10,13 @@ import Foundation
 
 extension NotificationService {
     private func sendNotificationRequest(request: PlainAPIRequest) -> AnyPublisher<Never, Error>? {
-        guard makingNotificationRequest.try() == true else { return nil }
-        let response = APIClient().request(to: request)
+        guard isUploading.tryLock() == false else { return nil } // Must be already locked, otherwise fail.
+        let response = APIClient().request(to: request)å
         
         response
             .receive(on: DispatchQueue.main)
             .sink { completion in
-                self.makingNotificationRequest.unlock()
+                self.isUploading.releaseLock()
                 switch completion {
                 case .finished:
                     print("Successfully sent notification tasks.")
@@ -30,17 +30,20 @@ extension NotificationService {
     }
     
     /// Try to receive the required notification access permissions and send the notification request.
-    func runNotificationRequest(interface: APINotificationInterface, appSetting: CurrentSetting, notificationSetting: CurrentNotificationSetting) {
-        guard accessState == .granted, pushState == .apnsRegistrationSuccessful,
+    func runNotificationRequest(interface: APINotificationInterface, appSetting: CurrentSetting, notificationSetting: CurrentNotificationSetting, onSuccess: (() -> ())? = nil) {
+        guard accessState == .granted, pushState == .apnsRegistrationSuccessful, isUploading.tryLock() == true,
               let extendedInterface = extendNotificationInterface(interface, appSetting: appSetting)
         else { return }
         let packedTasks = extendedInterface.getPackedTasks()
-        guard let apiRequest = APIRequestFactory.notificationRequest(packedTasks: packedTasks) else { return }
         
+        guard let apiRequest = APIRequestFactory.notificationRequest(packedTasks: packedTasks) else { return }
         if let request = sendNotificationRequest(request: apiRequest) {
             request
                 .sink { completion in
-                    if case .finished = completion { extendedInterface.copyToSettings(appSetting: appSetting, notificationSetting: notificationSetting) }
+                    if case .finished = completion {
+                        extendedInterface.copyToSettings(appSetting: appSetting, notificationSetting: notificationSetting)
+                        onSuccess?()
+                    }
                 } receiveValue: { _ in }
                 .store(in: &cancellables)
         }

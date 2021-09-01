@@ -16,7 +16,7 @@ func changeSetting<O: NSManagedObject, T: AutoUpdatingSingleEntity<O>>(
         do {
             try setting.managedObjectContext.save()
         } catch {
-            logger.fault("Couldn't save changes to the managedObjectContext: \(error.localizedDescription).")
+            print("Couldn't save changes to the managedObjectContext: \(error).")
         }
     }
 }

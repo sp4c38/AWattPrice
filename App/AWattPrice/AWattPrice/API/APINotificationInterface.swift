@@ -49,14 +49,6 @@ struct AddTokenPayload: NotificationTaskPayload {
 
 // Subscribe and desubscribe task
 
-struct SubDesubPriceBelowNotificationInfo: SubDesubNotificationInfo {
-    var belowValue: Int
-    
-    enum CodingKeys: String, CodingKey {
-        case belowValue = "below_value"
-    }
-}
-
 struct SubDesubPayload<InfoType: SubDesubNotificationInfo>: NotificationTaskPayload {
     var notificationType: NotificationType
     var active: Bool
@@ -66,6 +58,14 @@ struct SubDesubPayload<InfoType: SubDesubNotificationInfo>: NotificationTaskPayl
         case active
         case notificationType = "notification_type"
         case notificationInfo = "notification_info"
+    }
+}
+
+struct SubDesubPriceBelowNotificationInfo: SubDesubNotificationInfo {
+    var belowValue: Int
+    
+    enum CodingKeys: String, CodingKey {
+        case belowValue = "below_value"
     }
 }
 
@@ -86,6 +86,15 @@ struct UpdatePayload<UpdatedDataType: UpdatedNotificationData>: NotificationTask
     }
 }
 
+struct UpdatedGeneralData: UpdatedNotificationData {
+    var region: Region?
+    var tax: Bool?
+    
+    func anyDataUpdated() -> Bool {
+        return (region != nil || tax != nil) ? true : false
+    }
+}
+
 struct UpdatedPriceBelowNotificationData: UpdatedNotificationData {
     var belowValue: Int?
     
@@ -94,11 +103,7 @@ struct UpdatedPriceBelowNotificationData: UpdatedNotificationData {
     }
     
     func anyDataUpdated() -> Bool {
-        if belowValue != nil {
-            return true
-        } else {
-            return false
-        }
+        return (belowValue != nil) ? true : false
     }
 }
 
@@ -114,6 +119,7 @@ class APINotificationInterface {
     private var token: String
     private var addTokenTask: NotificationTask<AddTokenPayload>?
     private var priceBelowSubDesubTask: NotificationTask<SubDesubPayload<SubDesubPriceBelowNotificationInfo>>?
+    private var generalUpdateTask: NotificationTask<UpdatePayload<UpdatedGeneralData>>?
     private var priceBelowUpdateTask: NotificationTask<UpdatePayload<UpdatedPriceBelowNotificationData>>?
     
     init(token: String) {
@@ -129,6 +135,10 @@ class APINotificationInterface {
         priceBelowSubDesubTask = NotificationTask(type: .subscribeDesubscribe, payload: payload)
     }
     
+    func addGeneralUpdateTask(_ payload: UpdatePayload<UpdatedGeneralData>) {
+        generalUpdateTask = NotificationTask(type: .update, payload: payload)
+    }
+    
     func addPriceBelowUpdateTask(_ payload: UpdatePayload<UpdatedPriceBelowNotificationData>) {
         priceBelowUpdateTask = NotificationTask(type: .update, payload: payload)
     }
@@ -137,9 +147,29 @@ class APINotificationInterface {
         var tasks = [AnyEncodable]()
         addTokenTask.map { tasks.append(AnyEncodable($0)) }
         priceBelowSubDesubTask.map { tasks.append(AnyEncodable($0)) }
+        generalUpdateTask.map { tasks.append(AnyEncodable($0)) }
         priceBelowUpdateTask.map { tasks.append(AnyEncodable($0)) }
         
         let packedTasks = PackedNotificationTasks(token: token, tasks: tasks)
         return packedTasks
+    }
+    
+    func copyToSettings(appSetting: CurrentSetting, notificationSetting: CurrentNotificationSetting) {
+        if let addTokenTask = addTokenTask {
+            notificationSetting.changeLastApnsToken(to: token)
+            appSetting.changeRegionIdentifier(to: addTokenTask.payload.region.rawValue)
+            appSetting.changeTaxSelection(to: addTokenTask.payload.tax)
+        }
+        if let priceBelowSubDesubTask = priceBelowSubDesubTask {
+            notificationSetting.changePriceDropsBelowValueNotifications(to: priceBelowSubDesubTask.payload.active)
+            notificationSetting.changePriceBelowValue(to: priceBelowSubDesubTask.payload.notificationInfo.belowValue)
+        }
+        if let generalUpdateTask = generalUpdateTask {
+            if let region = generalUpdateTask.payload.updatedData.region { appSetting.changeRegionIdentifier(to: region.rawValue) }
+            if let tax = generalUpdateTask.payload.updatedData.tax { appSetting.changeTaxSelection(to: tax) }
+        }
+        if let priceBelowUpdateTask = priceBelowUpdateTask {
+            if let updatedDataBelowValue = priceBelowUpdateTask.payload.updatedData.belowValue { notificationSetting.changePriceBelowValue(to: updatedDataBelowValue) }
+        }
     }
 }

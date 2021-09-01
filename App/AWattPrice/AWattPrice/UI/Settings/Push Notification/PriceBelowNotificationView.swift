@@ -47,6 +47,7 @@ extension PriceBelowNotificationView {
         @ObservedObject var crtNotifiSetting: CurrentNotificationSetting = Resolver.resolve()
 
         @Published var notificationIsEnabled: Bool = false
+        @Published var priceBelowValue: String = ""
         
         let showHeader: Bool
 
@@ -54,6 +55,7 @@ extension PriceBelowNotificationView {
             self.showHeader = showHeader
             
             notificationIsEnabled = crtNotifiSetting.entity!.priceDropsBelowValueNotification
+            priceBelowValue = crtNotifiSetting.entity!.priceBelowValue.priceString ?? ""
         }
         
         func priceBelowNotificationToggled(to newSelection: Bool) {
@@ -66,7 +68,7 @@ extension PriceBelowNotificationView {
                     let notificationInfo = SubDesubPriceBelowNotificationInfo(belowValue: notificationSettingEntity.priceBelowValue)
                     let subDesubPayload = SubDesubPayload(notificationType: .priceBelow, active: newSelection, notificationInfo: notificationInfo )
                     apiInterface.addPriceBelowSubDesubTask(subDesubPayload)
-                    self.notificationService.runNotificationRequest(interface: apiInterface, appSetting: self.currentSetting)
+                    self.notificationService.runNotificationRequest(interface: apiInterface, appSetting: self.currentSetting, notificationSetting: self.crtNotifiSetting)
                 }
             }
         }
@@ -80,7 +82,7 @@ extension PriceBelowNotificationView {
                     let updatedData = UpdatedPriceBelowNotificationData(belowValue: newWishPrice)
                     let updatePayload = UpdatePayload(subject: .priceBelow, updatedData: updatedData)
                     apiInterface.addPriceBelowUpdateTask(updatePayload)
-                    self.notificationService.runNotificationRequest(interface: apiInterface, appSetting: self.currentSetting)
+                    self.notificationService.runNotificationRequest(interface: apiInterface, appSetting: self.currentSetting, notificationSetting: self.crtNotifiSetting)
                 }
             }
         }
@@ -95,13 +97,11 @@ struct PriceBelowNotificationView: View {
     
     @State var initialAppearFinished: Bool? = false
     @State var keyboardCurrentlyClosed = false
-    @State var priceBelowValue: String = ""
     
     @ObservedObject var notificationService: NotificationService = Resolver.resolve()
     
     init(showHeader showHeaderValue: Bool = false) {
         self.viewModel = ViewModel(showHeader: showHeaderValue)
-        priceBelowValue = viewModel.crtNotifiSetting.entity!.priceBelowValue.priceString ?? ""
     }
     
     var body: some View {
@@ -145,14 +145,14 @@ struct PriceBelowNotificationView: View {
                 .font(.caption)
 
             HStack {
-                NumberField(text: $priceBelowValue, placeholder: "general.cent.long".localized(), plusMinusButton: true, withDecimalSeperator: false)
+                NumberField(text: $viewModel.priceBelowValue, placeholder: "general.cent.long".localized(), plusMinusButton: true, withDecimalSeperator: false)
                     .fixedSize(horizontal: false, vertical: true)
-                    .onChange(of: priceBelowValue) { newValue in
+                    .onChange(of: viewModel.priceBelowValue) { newValue in
                         var newIntegerValue: Int = 0
                         if let newConvertedIntegerValue = newValue.integerValue {
                             newIntegerValue = newConvertedIntegerValue
                         }
-                        priceBelowValue = newIntegerValue.priceString ?? ""
+                        viewModel.priceBelowValue = newIntegerValue.priceString ?? ""
 
                         if keyboardCurrentlyClosed {
                             viewModel.updateWishPrice(to: newIntegerValue)

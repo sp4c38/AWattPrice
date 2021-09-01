@@ -8,46 +8,84 @@
 import Resolver
 import SwiftUI
 
+extension RegionAndVatSelection {
+    class ViewModel: ObservableObject {
+        @Injected var currentSetting: CurrentSetting
+        @Injected var notificationSetting: CurrentNotificationSetting
+        @Injected var notificationService: NotificationService
+        
+        @Published var selectedRegion: Region = .DE
+        @Published var pricesWithTaxIncluded: Bool = false
+        
+        init() {
+            if let region = Region(rawValue: currentSetting.entity!.regionIdentifier) {
+                selectedRegion = region
+            }
+            pricesWithTaxIncluded = currentSetting.entity!.pricesWithVAT
+        }
+        
+        func regionSwitched(to newRegion: Region) {
+            notificationService.ensureAccess { access in
+                if access == true,
+                   let tokenContainer = self.notificationService.tokenContainer
+                {
+                    let interface = APINotificationInterface(token: tokenContainer.token)
+                    let updatedData = UpdatedGeneralData(region: newRegion)
+                    let updatePayload = UpdatePayload(subject: .general, updatedData: updatedData)
+                    interface.addGeneralUpdateTask(updatePayload)
+                    self.notificationService.runNotificationRequest(interface: interface, appSetting: self.currentSetting, notificationSetting: self.notificationSetting)
+                }
+            }
+        }
+        
+        func taxToggled(to newTaxSelection: Bool) {
+            notificationService.ensureAccess { access in
+                if access == true,
+                   let tokenContainer = self.notificationService.tokenContainer
+                {
+                    let interface = APINotificationInterface(token: tokenContainer.token)
+                    let updatedData = UpdatedGeneralData(tax: newTaxSelection)
+                    let updatePayload = UpdatePayload(subject: .general, updatedData: updatedData)
+                    interface.addGeneralUpdateTask(updatePayload)
+                    self.notificationService.runNotificationRequest(interface: interface, appSetting: self.currentSetting, notificationSetting: self.notificationSetting)
+                }
+            }
+        }
+    }
+}
+
 struct RegionAndVatSelection: View {
     @Environment(\.colorScheme) var colorScheme
-    
-    @Injected var currentSetting: CurrentSetting
 
-    @State var selectedRegion: Int = 0
-    @State var pricesWithTaxIncluded = true
+    @ObservedObject var viewModel: ViewModel
 
     @State var firstAppear = true
 
+    init() {
+        self.viewModel = ViewModel()
+    }
+    
     var body: some View {
         CustomInsetGroupedListItem(
             header: Text("settingsPage.region"),
             footer: Text("settingsPage.regionToGetPrices")
         ) {
             VStack(alignment: .leading, spacing: 20) {
-                Picker(selection: $selectedRegion.animation(), label: Text("")) {
+                Picker(selection: $viewModel.selectedRegion.animation(), label: Text("")) {
                     Text("settingsPage.region.germany")
-                        .tag(0)
+                        .tag(Region.DE)
                     Text("settingsPage.region.austria")
-                        .tag(1)
+                        .tag(Region.AT)
                 }
                 .pickerStyle(SegmentedPickerStyle())
-                .onAppear {
-                    selectedRegion = Int(currentSetting.entity!.regionIdentifier)
-                    firstAppear = false
-                }
-                .ifTrue(firstAppear == false) { content in
-                    content
-                        .onChange(of: selectedRegion) { newRegionSelection in
-                            currentSetting.changeRegionIdentifier(to: Int16(newRegionSelection))
-
-                            if newRegionSelection == 1 {
-                                currentSetting.changeTaxSelection(to: false)
-                            }
-//                            crtNotifiSetting.pushNotificationUpdateManager.backgroundNotificationUpdate(currentSetting, crtNotifiSetting)
-                        }
+                .onChange(of: viewModel.selectedRegion) { newRegion in
+                    if newRegion == .AT {
+                        viewModel.currentSetting.changeTaxSelection(to: false)
+                    }
+                    viewModel.regionSwitched(to: newRegion)
                 }
 
-                if selectedRegion == 0 {
+                if viewModel.selectedRegion == .DE {
                     HStack(spacing: 10) {
                         Text("settingsPage.priceWithVat")
                             .font(.subheadline)
@@ -55,18 +93,10 @@ struct RegionAndVatSelection: View {
 
                         Spacer()
 
-                        Toggle(isOn: $pricesWithTaxIncluded) {}
+                        Toggle(isOn: $viewModel.pricesWithTaxIncluded) {}
                             .labelsHidden()
-                            .onAppear {
-                                pricesWithTaxIncluded = currentSetting.entity!.pricesWithVAT
-                                firstAppear = false
-                            }
-                            .ifTrue(firstAppear == false) { content in
-                                content
-                                    .onChange(of: pricesWithTaxIncluded) { newValue in
-                                        currentSetting.changeTaxSelection(to: newValue)
-//                                        crtNotifiSetting.pushNotificationUpdateManager.backgroundNotificationUpdate(currentSetting, crtNotifiSetting)
-                                    }
+                            .onChange(of: viewModel.pricesWithTaxIncluded) { newTaxSelection in
+                                viewModel.taxToggled(to: newTaxSelection)
                             }
                     }
                 }

@@ -30,14 +30,20 @@ extension NotificationService {
     }
     
     /// Try to receive the required notification access permissions and send the notification request.
-    func runNotificationRequest(interface: APINotificationInterface, appSetting: CurrentSetting) {
+    func runNotificationRequest(interface: APINotificationInterface, appSetting: CurrentSetting, notificationSetting: CurrentNotificationSetting) {
         guard accessState == .granted, pushState == .apnsRegistrationSuccessful,
               let extendedInterface = extendNotificationInterface(interface, appSetting: appSetting)
         else { return }
         let packedTasks = extendedInterface.getPackedTasks()
         guard let apiRequest = APIRequestFactory.notificationRequest(packedTasks: packedTasks) else { return }
         
-        sendNotificationRequest(request: apiRequest)
+        if let request = sendNotificationRequest(request: apiRequest) {
+            request
+                .sink { completion in
+                    if case .finished = completion { extendedInterface.copyToSettings(appSetting: appSetting, notificationSetting: notificationSetting) }
+                } receiveValue: { _ in }
+                .store(in: &cancellables)
+        }
     }
     
     /// Extends the notification interface by adding missing tasks which are required to be sent with this notification request.

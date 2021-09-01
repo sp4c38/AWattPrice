@@ -155,21 +155,23 @@ class APINotificationInterface {
     }
     
     func copyToSettings(appSetting: CurrentSetting, notificationSetting: CurrentNotificationSetting) {
-        if let addTokenTask = addTokenTask {
-            notificationSetting.changeLastApnsToken(to: token)
-            appSetting.changeRegionIdentifier(to: addTokenTask.payload.region.rawValue)
-            appSetting.changeTaxSelection(to: addTokenTask.payload.tax)
-        }
-        if let priceBelowSubDesubTask = priceBelowSubDesubTask {
-            notificationSetting.changePriceDropsBelowValueNotifications(to: priceBelowSubDesubTask.payload.active)
-            notificationSetting.changePriceBelowValue(to: priceBelowSubDesubTask.payload.notificationInfo.belowValue)
-        }
-        if let generalUpdateTask = generalUpdateTask {
-            if let region = generalUpdateTask.payload.updatedData.region { appSetting.changeRegionIdentifier(to: region.rawValue) }
-            if let tax = generalUpdateTask.payload.updatedData.tax { appSetting.changeTaxSelection(to: tax) }
-        }
-        if let priceBelowUpdateTask = priceBelowUpdateTask {
-            if let updatedDataBelowValue = priceBelowUpdateTask.payload.updatedData.belowValue { notificationSetting.changePriceBelowValue(to: updatedDataBelowValue) }
+        DispatchQueue.main.async {
+            if let addTokenTask = self.addTokenTask {
+                notificationSetting.changeLastApnsToken(to: self.token)
+                appSetting.changeRegionIdentifier(to: addTokenTask.payload.region.rawValue)
+                appSetting.changeTaxSelection(to: addTokenTask.payload.tax)
+            }
+            if let priceBelowSubDesubTask = self.priceBelowSubDesubTask {
+                notificationSetting.changePriceDropsBelowValueNotifications(to: priceBelowSubDesubTask.payload.active)
+                notificationSetting.changePriceBelowValue(to: priceBelowSubDesubTask.payload.notificationInfo.belowValue)
+            }
+            if let generalUpdateTask = self.generalUpdateTask {
+                if let region = generalUpdateTask.payload.updatedData.region { appSetting.changeRegionIdentifier(to: region.rawValue) }
+                if let tax = generalUpdateTask.payload.updatedData.tax { appSetting.changeTaxSelection(to: tax) }
+            }
+            if let priceBelowUpdateTask = self.priceBelowUpdateTask {
+                if let updatedDataBelowValue = priceBelowUpdateTask.payload.updatedData.belowValue { notificationSetting.changePriceBelowValue(to: updatedDataBelowValue) }
+            }
         }
     }
 }

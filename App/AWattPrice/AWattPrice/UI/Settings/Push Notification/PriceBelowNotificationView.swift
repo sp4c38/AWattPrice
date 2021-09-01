@@ -61,13 +61,9 @@ extension PriceBelowNotificationView {
             notificationIsEnabled = crtNotifiSetting.entity!.priceDropsBelowValueNotification
             priceBelowValue = crtNotifiSetting.entity!.priceBelowValue.priceString ?? ""
             
-            notificationService.isUploading.$isLocked
-                .sink { newIsUploadingLocked in
-                    DispatchQueue.main.async {
-                        self.areChangeable = !newIsUploadingLocked
-                    }
-                }
-                .store(in: &cancellables)
+            notificationService.isUploading.$isLocked.sink { newIsUploading in
+                    DispatchQueue.main.async { self.areChangeable = !newIsUploading }
+                }.store(in: &cancellables)
         }
         
         func priceBelowNotificationToggled(to newSelection: Bool) {
@@ -102,18 +98,6 @@ extension PriceBelowNotificationView {
         }
     }
 }
-
-extension Binding {
-    func willSet(execute: @escaping (Value) -> Void) -> Binding {
-        return Binding(
-            get: { self.wrappedValue },
-            set: { newValue in
-                execute(newValue)
-            }
-        )
-    }
-}
-
 
 struct PriceBelowNotificationView: View {
     @Environment(\.colorScheme) var colorScheme
@@ -158,7 +142,7 @@ struct PriceBelowNotificationView: View {
             Spacer()
 
             if viewModel.areChangeable {
-                Toggle("", isOn: $viewModel.notificationIsEnabled.willSet { viewModel.priceBelowNotificationToggled(to: $0) }.animation())
+                Toggle("", isOn: $viewModel.notificationIsEnabled.setNewValue { viewModel.priceBelowNotificationToggled(to: $0) }.animation())
                     .labelsHidden()
             } else {
                 ProgressView()

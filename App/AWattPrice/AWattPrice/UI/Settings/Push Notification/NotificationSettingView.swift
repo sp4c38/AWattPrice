@@ -19,18 +19,19 @@ extension AnyTransition {
 struct NotificationSettingView: View {
     @Environment(\.scenePhase) var scenePhase
 
+    @Injected var notificationService: NotificationService
+    
     var body: some View {
         ZStack(alignment: Alignment(horizontal: .center, vertical: .bottom)) {
             CustomInsetGroupedList {
                 VStack(spacing: 20) {
-//                    if notificationService.accessState == .rejected {
-//                        NoNotificationAccessView()
-//                            .padding(.top, 10)
-//                            .transition(.opacity)
-//                    }
-
-                    PriceBelowNotificationView()
-
+                    if notificationService.accessState == .rejected {
+                        NoNotificationAccessView()
+                            .padding(.top, 10)
+                            .transition(.opacity)
+                    } else {
+                        PriceBelowNotificationView()
+                    }
                 }
                 .animation(.easeInOut)
             }

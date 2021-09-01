@@ -16,18 +16,18 @@ class PublishedNSLock: ObservableObject {
     
     func acquireLock() {
         self.lock.lock()
-        if isLocked != true { print("Changed true"); isLocked = true }
+        if isLocked != true { isLocked = true }
     }
     
     func releaseLock() {
         self.lock.unlock()
-        if isLocked != false { print("Changed false"); isLocked = false }
+        if isLocked != false { isLocked = false }
     }
     
     func tryLock() -> Bool {
         let trySuccessful = self.lock.try()
-        let currentIsLocked = !trySuccessful ? true : false
-        if isLocked != currentIsLocked { print("Changed \(currentIsLocked)"); isLocked = currentIsLocked }
+        let currentIsLocked = trySuccessful
+        if isLocked != currentIsLocked { isLocked = currentIsLocked }
         return trySuccessful
     }
 }

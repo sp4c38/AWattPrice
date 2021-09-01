@@ -46,16 +46,28 @@ extension PriceBelowNotificationView {
         @Injected var currentSetting: CurrentSetting
         @ObservedObject var crtNotifiSetting: CurrentNotificationSetting = Resolver.resolve()
 
+        @Published var areChangeable: Bool = false
+        
         @Published var notificationIsEnabled: Bool = false
         @Published var priceBelowValue: String = ""
         
         let showHeader: Bool
+        
+        var cancellables = [AnyCancellable]()
 
         init(showHeader: Bool) {
             self.showHeader = showHeader
             
             notificationIsEnabled = crtNotifiSetting.entity!.priceDropsBelowValueNotification
             priceBelowValue = crtNotifiSetting.entity!.priceBelowValue.priceString ?? ""
+            
+            notificationService.isUploading.$isLocked
+                .sink { newIsUploadingLocked in
+                    DispatchQueue.main.async {
+                        self.areChangeable = !newIsUploadingLocked
+                    }
+                }
+                .store(in: &cancellables)
         }
         
         func priceBelowNotificationToggled(to newSelection: Bool) {
@@ -71,7 +83,6 @@ extension PriceBelowNotificationView {
                     self.notificationService.runNotificationRequest(interface: apiInterface, appSetting: self.currentSetting, notificationSetting: self.crtNotifiSetting) {
                         DispatchQueue.main.async { self.notificationIsEnabled = newSelection }
                     }
-                    print("Out")
                 }
             }
         }
@@ -145,13 +156,14 @@ struct PriceBelowNotificationView: View {
                 .padding(.top, 2)
 
             Spacer()
-            Text(String(viewModel.notificationService.isUploading.isLocked))
-            if !viewModel.notificationService.isUploading.isLocked {
+
+            if viewModel.areChangeable {
                 Toggle("", isOn: $viewModel.notificationIsEnabled.willSet { viewModel.priceBelowNotificationToggled(to: $0) }.animation())
                     .labelsHidden()
             } else {
                 ProgressView()
                     .progressViewStyle(CircularProgressViewStyle())
+                    .frame(height: 30)
             }
         }
     }
@@ -177,6 +189,8 @@ struct PriceBelowNotificationView: View {
                             viewModel.updateWishPrice(to: newIntegerValue)
                         }
                     }
+                    .disabled(!viewModel.areChangeable)
+                    .opacity(viewModel.areChangeable ? 1.0 : 0.7)
 
                 Text("general.centPerKwh")
                     .transition(.opacity)

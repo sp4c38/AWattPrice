@@ -9,18 +9,13 @@ import Combine
 import Foundation
 
 extension NotificationService {
-    private func sendNotificationRequest(request: PlainAPIRequest) -> AnyPublisher<Never, Error>? {
-        guard isUploading.tryLock() == false else { return nil } // Must be already locked, otherwise fail.
-        let response = APIClient().request(to: request)å
+    private func sendNotificationRequest(request: PlainAPIRequest) -> AnyPublisher<Never, Error> {
+        let response = APIClient().request(to: request)
         
         response
             .receive(on: DispatchQueue.main)
             .sink { completion in
-                self.isUploading.releaseLock()
-                switch completion {
-                case .finished:
-                    print("Successfully sent notification tasks.")
-                case .failure(let error):
+                if case .failure(let error) = completion {
                     print("Couldn't sent notification tasks: \(error).")
                 }
             } receiveValue: { _ in }
@@ -37,16 +32,16 @@ extension NotificationService {
         let packedTasks = extendedInterface.getPackedTasks()
         
         guard let apiRequest = APIRequestFactory.notificationRequest(packedTasks: packedTasks) else { return }
-        if let request = sendNotificationRequest(request: apiRequest) {
-            request
-                .sink { completion in
-                    if case .finished = completion {
-                        extendedInterface.copyToSettings(appSetting: appSetting, notificationSetting: notificationSetting)
-                        onSuccess?()
-                    }
-                } receiveValue: { _ in }
-                .store(in: &cancellables)
-        }
+        let request = sendNotificationRequest(request: apiRequest)
+        request
+            .sink { completion in
+                if case .finished = completion {
+                    extendedInterface.copyToSettings(appSetting: appSetting, notificationSetting: notificationSetting)
+                    onSuccess?()
+                }
+                self.isUploading.releaseLock()
+            } receiveValue: { _ in }
+            .store(in: &cancellables)
     }
     
     /// Extends the notification interface by adding missing tasks which are required to be sent with this notification request.

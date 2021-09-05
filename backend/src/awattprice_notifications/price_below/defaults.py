@@ -7,6 +7,7 @@ import awattprice
 from arrow import Arrow
 from awattprice.defaults import Region
 from box import Box
+from loguru import logger
 
 # Regions for which to send price below notifications.
 REGIONS_TO_SEND = [Region.DE, Region.AT]
@@ -34,7 +35,7 @@ def get_notifiable_prices(price_data: Box) -> Optional[list[Box]]:
 
     now_berlin = arrow.now(awattprice.defaults.EUROPE_BERLIN_TIMEZONE)
     # Note: Time range must not exceed 24 hours.
-    berlin_tomorrow_start = now_berlin.shift(days=+1).floor("day")
+    berlin_tomorrow_start = now_berlin.floor("day").shift(days=+1)
     berlin_tomorrow_end = berlin_tomorrow_start.shift(days=+1)
 
     for price_point in price_data:
@@ -45,6 +46,7 @@ def get_notifiable_prices(price_data: Box) -> Optional[list[Box]]:
             selected_prices.append(price_point)
 
     if not len(selected_prices) == 24:
+        logger.debug(f"Length of selected prices isn't equal to 24: {len(selected_prices)}.")
         return None
 
     return selected_prices
@@ -52,10 +54,9 @@ def get_notifiable_prices(price_data: Box) -> Optional[list[Box]]:
 
 def check_region_updated(stored_endtime: Optional[Arrow], new_endtime: Arrow) -> bool:
     """Check if a region can be marked as updated to previouse runs based on the endtimes."""
-    berlin_now = arrow.now().to(awattprice.defaults.EUROPE_BERLIN_TIMEZONE)
-    berlin_tomorrow_midnight = berlin_now.floor("day").shift(days=+2)
-
-    if not new_endtime== berlin_tomorrow_midnight:
+    now = arrow.now().to(awattprice.defaults.EUROPE_BERLIN_TIMEZONE)
+    tomorrow_midnight = now.floor("day").shift(days=+2)
+    if not new_endtime == tomorrow_midnight:
         return False
 
     if stored_endtime is None:

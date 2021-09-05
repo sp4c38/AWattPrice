@@ -37,7 +37,7 @@ def construct_notification_headers(apns_authorization: str, prices_below: list[B
     if use_sandbox is False:
         headers["apns-topic"] = awattprice.defaults.APP_BUNDLE_ID.production
     else:
-        headers["apns-topic"] = awattprice.defaults.APP_BUNDLE_ID.sandbox
+        headers["apns-topic"] = awattprice.defaults.APP_BUNDLE_ID.staging
     headers["apns-expiration"] = str(latest_price_below.start_timestamp.int_timestamp)
 
     return headers
@@ -143,7 +143,7 @@ async def deliver_notifications(
             below_value = token.price_below.below_value
             prices_below = notifiable_prices.get_prices_below_value(below_value, token.tax)
 
-            headers = construct_notification_headers(apns_authorization, prices_below, config.apns.use_sandbox)
+            headers = construct_notification_headers(apns_authorization, prices_below, config.general.staging)
             notification = construct_notification(token, prices_below, notifiable_prices)
 
             notification_info = Box(token=token, headers=headers, notification=notification)
@@ -153,7 +153,7 @@ async def deliver_notifications(
         send_tasks = []
         for info in notifications_infos:
             send_tasks.append(
-                send_notification(client, info.token, info.headers, info.notification, config.apns.use_sandbox)
+                send_notification(client, info.token, info.headers, info.notification, config.general.staging)
             )
         logger.info(f"Sending {len(send_tasks)} notification(s).")
         responses = await asyncio.gather(*send_tasks, return_exceptions=True)

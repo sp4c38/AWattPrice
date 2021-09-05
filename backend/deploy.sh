@@ -22,7 +22,17 @@ if [[ $environment == $STAGING_ENVIRONMENT ]]; then
 else
 	remote_username="remote_awattprice"
 fi
-echo "Using remote username $remote_username."
+echo "Using remote username $remote_username.$NEWLINE"
+
+read -p "Restart the backend service after installing? (y / n) " restart_service_string
+if [[ "$restart_service_string" == "y" ]]; then
+	restart_service=1
+elif [[ $restart_service_string == "n" ]]; then
+	restart_service=0
+else
+	echo "Your selection '$restart_service_string' is not valid."
+	exit 1
+fi
 
 echo " $NEWLINE---- Building project ----"
 echo "Checking if pyproject.toml is valid..."
@@ -45,6 +55,6 @@ REMOTE_WHEEL_PATH="/home/$remote_username/$WHEEL_FILE_NAME"
 REMOTE_DEPLOY_SCRIPT_PATH="/usr/local/bin/deploy_awattprice.sh"
 REMOTE="$remote_username@$SERVER_HOST"
 scp $WHEEL_PATH "$REMOTE:$REMOTE_WHEEL_PATH"
-ssh $REMOTE "/usr/bin/bash $REMOTE_DEPLOY_SCRIPT_PATH $environment $remote_username $REMOTE_WHEEL_PATH" || { exit 1; }
+ssh $REMOTE "/usr/bin/bash $REMOTE_DEPLOY_SCRIPT_PATH $environment $remote_username $REMOTE_WHEEL_PATH $restart_service" || { exit 1; }
 
 echo "${NEWLINE}Deployment successful."

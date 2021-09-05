@@ -27,11 +27,11 @@ REGION_TAXES = {Region.DE: Decimal("1.19"), Region.AT: None}
 AWATTPRICE_SERVICE_NAME = "awattprice"
 APP_BUNDLE_ID = Box()
 APP_BUNDLE_ID.production = "me.space8.AWattPrice"
-APP_BUNDLE_ID.sandbox = "me.space8.AWattPrice.dev"
+APP_BUNDLE_ID.staging = "me.space8.AWattPrice.staging"
 
 DEFAULT_CONFIG = """\
 [general]
-debug = on
+staging = true
 
 [awattar.de]
 url = https://api.awattar.de/v1/marketdata/
@@ -45,8 +45,8 @@ data_dir = ~/awattprice/data/
 apns_dir = ~/awattprice/apns/
 
 [apns]
-team_id =
-key_id =
+team_id = 
+key_id = 
 """
 
 ORM_TABLE_NAMES = Box(

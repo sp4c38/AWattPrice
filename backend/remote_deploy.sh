@@ -4,6 +4,7 @@ PRODUCTION_ENVIRONMENT="production_environment"
 environment=$1
 username=$2
 wheel_path=$3
+restart_service=$4
 
 VIRTUALENV_DIR="/home/$username/.virtualenvs/awattprice"
 VIRTUALENV_PYTHON="$VIRTUALENV_DIR/bin/python -m"
@@ -21,6 +22,8 @@ eval "$VIRTUALENV_PYTHON pip install -q --upgrade pip"
 eval "$VIRTUALENV_PYTHON pip install -q --force-reinstall $wheel_path" || { echo "Couldn't install wheel."; exit 1; }
 rm $wheel_path
 echo "Installed AWattPrice backend successfully."
-echo "Restarting AWattPrice backend service."
-systemctl --user restart $service_name
-echo "New AWattPrice backend is now up and running."
+if $restart_service; then
+    echo "Restarting AWattPrice backend service."
+    systemctl --user restart $service_name
+fi
+echo "Finished new AWattPrice backend deployment."

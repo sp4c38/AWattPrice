@@ -137,10 +137,16 @@ def check_update_data(data: Optional[Box], last_update_time: Optional[Arrow]) ->
             return False
 
     midnight_tomorrow_berlin = now_berlin.floor("day").shift(days=+2)
-    max_price = max(data.prices, key=lambda point: point.end_timestamp)
-    if max_price.end_timestamp >= midnight_tomorrow_berlin:
+    latest_price_berlin = max(data.prices, key=lambda point: point.end_timestamp)
+    if latest_price_berlin.end_timestamp >= midnight_tomorrow_berlin:
         logger.debug("Price points still available until tomorrow midnight.")
         return False
+
+    midnight_today_berlin = now_berlin.floor("day").shift(days=+1)
+    latest_price_end_berlin = latest_price_berlin.end_timestamp.to(defaults.EUROPE_BERLIN_TIMEZONE)
+    midnight_today_latest_price_end_diff = midnight_today_berlin - latest_price_end_berlin
+    if midnight_today_latest_price_end_diff.total_seconds() > 3600:
+        return True
 
     if now_berlin.hour < defaults.AWATTAR_UPDATE_HOUR:
         logger.debug(f"Not past update hour ({defaults.AWATTAR_UPDATE_HOUR}).")

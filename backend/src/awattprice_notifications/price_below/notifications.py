@@ -63,7 +63,7 @@ def construct_notification(
     below_value_str = below_value_str.replace(".", ",")
 
     lowest_price = notifiable_prices.lowest_price
-    lowest_price_start_str = lowest_price.start_timestamp.format("HH")
+    lowest_price_start_str = lowest_price.start_timestamp.format("H")
     lowest_marketprice = lowest_price.marketprice
     lowest_marketprice_value = lowest_price.marketprice.ct_kwh(taxed=token.tax, round_=True)
     lowest_marketprice_value_str = awattprice_notifications.utils.stringify_price(

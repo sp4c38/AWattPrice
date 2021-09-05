@@ -9,4 +9,6 @@ def stringify_price(price: Decimal, region: Region) -> str:
     price_string = str(price)
 
     if region in [Region.DE, Region.AT]:
-        price_string.replace(".", ",")
+        price_string = price_string.replace(".", ",")
+
+    return price_string

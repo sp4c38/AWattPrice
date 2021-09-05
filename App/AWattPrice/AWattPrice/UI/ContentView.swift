@@ -13,10 +13,8 @@ struct ContentView: View {
     @Environment(\.networkManager) var networkManager
     @Environment(\.scenePhase) var scenePhase
 
-//    @EnvironmentObject var backendComm: BackendCommunicator
     @Injected var crtNotifiSetting: CurrentNotificationSetting
     @ObservedObject var currentSetting: CurrentSetting = Resolver.resolve()
-//    @EnvironmentObject var notificationAccess: NotificationAccess
 
     @ObservedObject var tabBarItems = TBItems()
 

@@ -27,4 +27,6 @@ public extension NotificationSetting {
     /// If activated and configured by the user it will make sure that the user becomes
     /// a notification if there are prices below a certain value.
     @NSManaged var priceDropsBelowValueNotification: Bool
+    /// Force upload notifications.
+    @NSManaged var forceUploadNotificationsOne: Bool
 }

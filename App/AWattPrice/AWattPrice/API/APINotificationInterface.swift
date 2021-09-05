@@ -174,4 +174,20 @@ class APINotificationInterface {
             }
         }
     }
+    
+    /// Add all notification config.
+    func extendToAllNotificationConfig(appSetting: CurrentSetting, notificationSetting: CurrentNotificationSetting) -> APINotificationInterface? {
+        guard let appSettingEntity = appSetting.entity, let notificationSettingEntity = notificationSetting.entity else { return nil }
+        if addTokenTask == nil {
+            guard let region = Region(rawValue: appSettingEntity.regionIdentifier) else { return nil }
+            let addTokenPayload = AddTokenPayload(region: region, tax: appSettingEntity.pricesWithVAT)
+            addTokenTask = NotificationTask(type: .addToken, payload: addTokenPayload)
+        }
+        if priceBelowSubDesubTask == nil {
+            let priceBelowNotificationInfo = SubDesubPriceBelowNotificationInfo(belowValue: notificationSettingEntity.priceBelowValue)
+            let priceBelowSubDesubPayload = SubDesubPayload(notificationType: .priceBelow, active: notificationSettingEntity.priceDropsBelowValueNotification, notificationInfo: priceBelowNotificationInfo)
+            priceBelowSubDesubTask = NotificationTask(type: .subscribeDesubscribe, payload: priceBelowSubDesubPayload)
+        }
+        return self
+    }
 }

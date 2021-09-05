@@ -17,33 +17,44 @@ extension NotificationService {
         }
     }
     
-    func successfulRegisteredForRemoteNotifications(rawCurrentToken: Data, notificationSetting: CurrentNotificationSetting) {
+    func successfulRegisteredForRemoteNotifications(rawCurrentToken: Data, appSetting: CurrentSetting, notificationSetting: CurrentNotificationSetting) {
         logger.debug("Remote notifications granted with device token.")
 
         if let notificationSettingsEntity = notificationSetting.entity {
             let currentToken = rawCurrentToken.map {
                 String(format: "%02.2hhx", $0)
             }.joined()
+ 
+            let isNewToken = notificationSettingsEntity.forceUploadNotificationsOne || (notificationSettingsEntity.lastApnsToken != currentToken)
             
-            let isNewToken = notificationSettingsEntity.lastApnsToken != currentToken
+            if notificationSettingsEntity.forceUploadNotificationsOne {
+                print("Notification: Force uploading notification config.")
+            }
             
             if !isNewToken {
                 print("Notification: Token isn't new, won't upload.")
                 tokenContainer = TokenContainer(token: currentToken, nextUploadState: .doNothing)
+                pushState = .apnsRegistrationSuccessful
             } else if isNewToken, notificationSettingsEntity.lastApnsToken == nil {
                 print("Notification: New token but no old token, will parse new token on next notification request.")
                 tokenContainer = TokenContainer(token: currentToken, nextUploadState: .addTokenTask)
+                pushState = .apnsRegistrationSuccessful
             } else if isNewToken, notificationSettingsEntity.lastApnsToken != nil {
                 if wantToReceiveAnyNotification(notificationSettingEntity: notificationSettingsEntity) {
-                    print("Notification: New token, old token exists and want to receive at least one notification, uploading all config now.")
+                    print("Notification: New token, old token exists and want to receive at least one notification, uploading all notification config.")
                     tokenContainer = TokenContainer(token: currentToken, nextUploadState: .doNothing)
-                    // UPLOAD EVERYTHING HERE
+                    let interface = APINotificationInterface(token: currentToken)
+                    guard interface.extendToAllNotificationConfig(appSetting: appSetting, notificationSetting: notificationSetting) != nil else { pushState = .apnsRegistrationFailed; return }
+                    uploadAllNotificationConfig(appSetting: appSetting, notificationSetting: notificationSetting, onSuccess: {self.pushState = .apnsRegistrationSuccessful }, onFailure: { self.pushState = .apnsRegistrationFailed })
                 } else {
                     print("Notification: New token, old token exists but don't want to receive any notification, uploading all config on next notification request.")
                     tokenContainer = TokenContainer(token: currentToken, nextUploadState: .uploadAllNotificationConfig)
+                    pushState = .apnsRegistrationSuccessful
                 }
             }
-            pushState = .apnsRegistrationSuccessful
+            if notificationSettingsEntity.forceUploadNotificationsOne {
+                notificationSetting.changeForceUploadNotificationsOne(to: false)
+            }
         } else {
             pushState = .apnsRegistrationFailed
         }

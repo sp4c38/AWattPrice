@@ -25,19 +25,23 @@ extension NotificationService {
     }
     
     /// Try to receive the required notification access permissions and send the notification request.
-    func runNotificationRequest(interface: APINotificationInterface, appSetting: CurrentSetting, notificationSetting: CurrentNotificationSetting, onSuccess: (() -> ())? = nil) {
-        guard accessState == .granted, pushState == .apnsRegistrationSuccessful, isUploading.tryLock() == true,
+    func runNotificationRequest(interface: APINotificationInterface, appSetting: CurrentSetting, notificationSetting: CurrentNotificationSetting, ignorePushState: Bool = false, onSuccess: (() -> ())? = nil, onFailure: (() -> ())? = nil) {
+        guard accessState == .granted, isUploading.tryLock() == true,
               let extendedInterface = extendNotificationInterface(interface, appSetting: appSetting, notificationSetting: notificationSetting)
         else { return }
+        guard ignorePushState == true || pushState == .apnsRegistrationSuccessful else { return }
         let packedTasks = extendedInterface.getPackedTasks()
         
         guard let apiRequest = APIRequestFactory.notificationRequest(packedTasks: packedTasks) else { return }
         let request = sendNotificationRequest(request: apiRequest)
         request
             .sink { completion in
-                if case .finished = completion {
+                switch completion {
+                case .finished:
                     extendedInterface.copyToSettings(appSetting: appSetting, notificationSetting: notificationSetting)
                     onSuccess?()
+                case .failure(_):
+                    onFailure?()
                 }
                 self.isUploading.releaseLock()
             } receiveValue: { _ in }
@@ -61,10 +65,9 @@ extension NotificationService {
         guard let token = tokenContainer?.token else { return }
         let interface = APINotificationInterface(token: token)
         guard interface.extendToAllNotificationConfig(appSetting: appSetting, notificationSetting: notificationSetting) != nil else {
-            onSuccess?(); return
+            onFailure?()
+            return
         }
-        runNotificationRequest(interface: interface, appSetting: appSetting, notificationSetting: notificationSetting) {
-            onFailure?(); return
-        }
+        runNotificationRequest(interface: interface, appSetting: appSetting, notificationSetting: notificationSetting, ignorePushState: true, onSuccess: onSuccess, onFailure: onFailure)
     }
 }

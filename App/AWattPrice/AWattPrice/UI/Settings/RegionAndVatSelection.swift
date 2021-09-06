@@ -42,9 +42,9 @@ extension RegionAndVatSelection {
                     let updatedData = UpdatedGeneralData(region: newRegion)
                     let updatePayload = UpdatePayload(subject: .general, updatedData: updatedData)
                     interface.addGeneralUpdateTask(updatePayload)
-                    self.notificationService.runNotificationRequest(interface: interface, appSetting: self.currentSetting, notificationSetting: self.notificationSetting) {
+                    self.notificationService.runNotificationRequest(interface: interface, appSetting: self.currentSetting, notificationSetting: self.notificationSetting, onSuccess: {
                         DispatchQueue.main.async { self.selectedRegion = newRegion }
-                    }
+                    })
                 }
             }
         }
@@ -58,9 +58,9 @@ extension RegionAndVatSelection {
                     let updatedData = UpdatedGeneralData(tax: newTaxSelection)
                     let updatePayload = UpdatePayload(subject: .general, updatedData: updatedData)
                     interface.addGeneralUpdateTask(updatePayload)
-                    self.notificationService.runNotificationRequest(interface: interface, appSetting: self.currentSetting, notificationSetting: self.notificationSetting) {
+                    self.notificationService.runNotificationRequest(interface: interface, appSetting: self.currentSetting, notificationSetting: self.notificationSetting, onSuccess: {
                         DispatchQueue.main.async { self.pricesWithTaxIncluded = newTaxSelection }
-                    }
+                    })
                 }
             }
         }

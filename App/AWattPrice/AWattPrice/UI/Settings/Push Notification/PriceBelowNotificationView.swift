@@ -103,15 +103,13 @@ struct PriceBelowNotificationView: View {
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.keyboardObserver) var keyboardObserver
     
-    @ObservedObject var viewModel: ViewModel
+    @StateObject var viewModel: ViewModel
     
-    @State var initialAppearFinished: Bool? = false
     @State var keyboardCurrentlyClosed = false
     
-    @ObservedObject var notificationService: NotificationService = Resolver.resolve()
-    
     init(showHeader showHeaderValue: Bool = false) {
-        self.viewModel = ViewModel(showHeader: showHeaderValue)
+        let viewModel = ViewModel(showHeader: showHeaderValue)
+        self._viewModel = StateObject(wrappedValue: viewModel)
     }
     
     var body: some View {
@@ -168,7 +166,7 @@ struct PriceBelowNotificationView: View {
                             newIntegerValue = newConvertedIntegerValue
                         }
                         viewModel.priceBelowValue = newIntegerValue.priceString ?? ""
-
+                        print("Changed to \(newIntegerValue) and \(keyboardCurrentlyClosed)")
                         if keyboardCurrentlyClosed {
                             viewModel.updateWishPrice(to: newIntegerValue)
                         }

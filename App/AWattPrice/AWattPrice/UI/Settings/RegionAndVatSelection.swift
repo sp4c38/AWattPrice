@@ -70,12 +70,12 @@ extension RegionAndVatSelection {
 struct RegionAndVatSelection: View {
     @Environment(\.colorScheme) var colorScheme
 
-    @ObservedObject var viewModel: ViewModel
+    @StateObject var viewModel: ViewModel
 
     @State var firstAppear = true
 
     init() {
-        self.viewModel = ViewModel()
+        self._viewModel = StateObject(wrappedValue: ViewModel())
     }
     
     var body: some View {

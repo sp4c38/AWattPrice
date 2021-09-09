@@ -43,6 +43,7 @@ url = https://api.awattar.at/v1/marketdata/
 log_dir = ~/awattprice/logs/
 data_dir = ~/awattprice/data/
 apns_dir = ~/awattprice/apns/
+old_database =
 
 [apns]
 team_id = 

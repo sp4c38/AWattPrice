@@ -1,4 +1,5 @@
 """Functions to perform database managing tasks."""
+from pathlib import Path
 from typing import Optional
 from typing import Union
 
@@ -14,13 +15,11 @@ from sqlalchemy.ext.asyncio import create_async_engine
 CREATE_ENGINE_KWARGS = {"future": True, "echo": False}
 
 
-def get_engine(config: Config, async_=False) -> Optional[Union[Engine, AsyncEngine]]:
+def get_engine(database_file: Path, async_=False) -> Optional[Union[Engine, AsyncEngine]]:
     """Get either a sync or an async sqlalchemy engine for the app's database.
 
     :raises FileNotFoundError: If the backends database couldn't be found.
     """
-    database_dir = config.paths.data_dir
-    database_file = database_dir / defaults.DATABASE_FILE_NAME
     if not database_file.exists():
         raise FileNotFoundError(database_file)
 
@@ -32,3 +31,9 @@ def get_engine(config: Config, async_=False) -> Optional[Union[Engine, AsyncEngi
         engine = create_engine(database_url, **CREATE_ENGINE_KWARGS)
 
     return engine
+
+
+def get_awattprice_engine(config: Config, async_=False) -> Optional[Union[Engine, AsyncEngine]]:
+    database_dir = config.paths.data_dir
+    database_file = database_dir / defaults.DATABASE_FILE_NAME
+    return get_engine(database_file, async_)

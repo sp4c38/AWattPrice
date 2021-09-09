@@ -13,10 +13,10 @@ from awattprice import defaults
 ConfigValue = TypeVar("ConfigValue")
 
 
-def _fallthrough_check_config_none(config_value: ConfigValue) -> Optional[ConfigValue]:
+def _check_config_none(config_value: ConfigValue) -> Optional[ConfigValue]:
     """Check if the value of the config attribute is empty and thus can be represented as pythons none object.
 
-    :param configuration: The value of a single configuration attribute.
+    :param config_value: The value of a single configuration attribute.
     :returns: If value isn't empty return config value. If value is empty return none to represent that
         the value isn't set.
     """
@@ -33,6 +33,12 @@ def _transform_config(config: Config):
     config.paths.data_dir = Path(config.paths.data_dir).expanduser()
     config.paths.price_data_dir = config.paths.data_dir / defaults.PRICE_DATA_SUBDIR_NAME
     config.paths.apns_dir = Path(config.paths.apns_dir).expanduser()
+
+    none_checked_old_database = _check_config_none(config.paths.old_database)
+    if none_checked_old_database is not None:
+        config.paths.old_database = Path(none_checked_old_database)
+    else:
+        none_checked_old_database = None
 
 
 def _ensure_dir(path: Path):

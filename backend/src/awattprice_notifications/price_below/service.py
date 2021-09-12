@@ -25,7 +25,7 @@ async def main():
     configurator.configure_loguru(price_below_service_name, config)
 
     try:
-        engine = database.get_engine(config, async_=True)
+        engine = database.get_awattprice_engine(config, async_=True)
     except FileNotFoundError as exc:
         logger.exception(exc)
         sys.exit(1)

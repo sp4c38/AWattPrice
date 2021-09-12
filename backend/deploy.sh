@@ -11,17 +11,15 @@ read -p "Assuming that your current directory $WORKING_DIR is the base directory
 read -p "Deploy to (s)taging or (p)roduction environment? " environment_selection_string
 if [[ "$environment_selection_string" == "s" ]]; then
 	environment=$STAGING_ENVIRONMENT
+	remote_username="staging_awattprice"
 elif [[ $environment_selection_string == "p" ]]; then
 	environment=$PRODUCTION_ENVIRONMENT
+	remote_username="awattprice_v2"
 else
 	echo "Your selection '$environment_selection_string' is not valid."
 	exit 1
 fi
-if [[ $environment == $STAGING_ENVIRONMENT ]]; then
-	remote_username="staging_awattprice"
-else
-	remote_username="remote_awattprice"
-fi
+
 echo "Using remote username $remote_username.$NEWLINE"
 
 read -p "Restart the backend service after installing? (y / n) " restart_service_string
@@ -51,10 +49,10 @@ echo "Assuming that the wheel file name is $WHEEL_FILE_NAME and that it is at $W
 
 echo "$NEWLINE---- Deploying project ----"
 echo "Sending wheel to server."
-REMOTE_WHEEL_PATH="/home/$remote_username/$WHEEL_FILE_NAME"
+REMOTE_WHEEL_PATH="/home/awattprice_service/$remote_username/$WHEEL_FILE_NAME"
 REMOTE_DEPLOY_SCRIPT_PATH="/usr/local/bin/deploy_awattprice.sh"
 REMOTE="$remote_username@$SERVER_HOST"
 scp $WHEEL_PATH "$REMOTE:$REMOTE_WHEEL_PATH"
-ssh $REMOTE "/usr/bin/bash $REMOTE_DEPLOY_SCRIPT_PATH $environment $remote_username $REMOTE_WHEEL_PATH $restart_service" || { exit 1; }
+ssh $REMOTE "/usr/bin/bash $REMOTE_DEPLOY_SCRIPT_PATH $environment $REMOTE_WHEEL_PATH $restart_service" || { exit 1; }
 
 echo "${NEWLINE}Deployment successful."

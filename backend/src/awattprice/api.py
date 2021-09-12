@@ -24,7 +24,7 @@ config = configurator.get_config()
 configurator.configure_loguru(defaults.AWATTPRICE_SERVICE_NAME, config)
 
 try:
-    database_engine = database.get_engine(config, async_=True)
+    database_engine = database.get_awattprice_engine(config, async_=True)
 except FileNotFoundError as exc:
     logger.exception(exc)
     sys.exit(1)

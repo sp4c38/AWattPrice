@@ -5,32 +5,71 @@
 //  Created by Léon Becker on 14.11.20.
 //
 
+import Combine
 import Resolver
 import SwiftUI
 
+extension UpdatedDataView {
+    class ViewModel: ObservableObject {
+        @ObservedObject var energyDataController: EnergyDataController = Resolver.resolve()
+        @Injected var currentSetting: CurrentSetting
+        
+        @Published var viewDownloadState = EnergyDataController.DownloadState.idle
+        var startedDownloadingTime: Date? = nil
+        
+        @Published var firstAppear = true
+        @Published var localizedTimeIntervalString: String = ""
+
+        let dateFormatter = UpdatedDataTimeFormatter()
+        let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+        
+        var downloadStateCancellable: AnyCancellable? = nil
+        
+        init() {
+            downloadStateCancellable = energyDataController.$downloadState.sink(receiveValue: updateDownloadState)
+        }
+        
+        func updateDownloadState(newDownloadState: EnergyDataController.DownloadState) {
+            switch newDownloadState {
+            case .idle:
+                viewDownloadState = .idle
+            case .downloading:
+                viewDownloadState = .downloading
+                startedDownloadingTime = Date()
+            case .finished(let downloadFinishedTime):
+                if let startedDownloadingTime = startedDownloadingTime {
+                    let startedFinishedDifference = downloadFinishedTime.timeIntervalSince(startedDownloadingTime)
+                    let minimalDownloadingStateTime: TimeInterval = 0.7
+                    if startedFinishedDifference > 0, startedFinishedDifference < minimalDownloadingStateTime {
+                        let changeStateNowDifference = minimalDownloadingStateTime - startedFinishedDifference
+                        print(changeStateNowDifference)
+                        DispatchQueue.main.asyncAfter(deadline: .now() + changeStateNowDifference) {
+                            self.updateLocalizedTimeIntervalString(lastDownloadFinishedTime: downloadFinishedTime)
+                            self.viewDownloadState = .finished(time: downloadFinishedTime)
+                        }
+                        return
+                    }
+                }
+                print("wow")
+                updateLocalizedTimeIntervalString(lastDownloadFinishedTime: downloadFinishedTime)
+                viewDownloadState = .finished(time: downloadFinishedTime)
+            case .failed(let error):
+                viewDownloadState = .failed(error: error)
+            }
+        }
+        
+        func updateLocalizedTimeIntervalString(lastDownloadFinishedTime: Date) {
+            localizedTimeIntervalString = dateFormatter.localizedTimeString(for: Date(), relativeTo: lastDownloadFinishedTime)
+        }
+    }
+}
+
 struct UpdatedDataView: View {
-    @Environment(\.networkManager) var networkManager
-
-    @ObservedObject var energyDataController: EnergyDataController = Resolver.resolve()
-    @Injected var currentSetting: CurrentSetting
-
-    @State var firstAppear = true
-    @State var localizedTimeIntervalString: String = ""
-
-    let dateFormatter: UpdatedDataTimeFormatter
-    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-
-    init() {
-        dateFormatter = UpdatedDataTimeFormatter()
-    }
+    @StateObject var viewModel = ViewModel()
     
-    func updateLocalizedTimeIntervalString(lastDownloadFinishedTime: Date) {
-        localizedTimeIntervalString = dateFormatter.localizedTimeString(for: Date(), relativeTo: lastDownloadFinishedTime)
-    }
-
     var body: some View {
         HStack(spacing: 10) {
-            switch energyDataController.downloadState {
+            switch viewModel.viewDownloadState {
             case .downloading:
                 Text("general.loading")
                     .foregroundColor(Color.blue)
@@ -46,7 +85,7 @@ struct UpdatedDataView: View {
                 Text("updateDataTimeFormatter.updateNewDataFailed")
                     .foregroundColor(Color.red)
             case .idle, .finished:
-                Text(localizedTimeIntervalString)
+                Text(viewModel.localizedTimeIntervalString)
                     .foregroundColor(Color.gray)
                     .transition(.opacity)
                     .animation(nil)
@@ -57,24 +96,19 @@ struct UpdatedDataView: View {
         .font(.fCaption)
         .animation(.easeInOut)
         .onAppear {
-            if case .finished(let time) = energyDataController.downloadState {
-                updateLocalizedTimeIntervalString(lastDownloadFinishedTime: time)
+            if case .finished(let time) = viewModel.viewDownloadState {
+                viewModel.updateLocalizedTimeIntervalString(lastDownloadFinishedTime: time)
             }
         }
-        .onReceive(timer) { _ in
-            if case .finished(let time) = energyDataController.downloadState {
-                updateLocalizedTimeIntervalString(lastDownloadFinishedTime: time)
-            }
-        }
-        .onReceive(energyDataController.$downloadState) { state in
-            if case .finished(let time) = state {
-                updateLocalizedTimeIntervalString(lastDownloadFinishedTime: time)
+        .onReceive(viewModel.timer) { _ in
+            if case .finished(let time) = viewModel.viewDownloadState {
+                viewModel.updateLocalizedTimeIntervalString(lastDownloadFinishedTime: time)
             }
         }
         .contentShape(Rectangle())
         .onTapGesture {
-            if let region = Region(rawValue: currentSetting.entity!.regionIdentifier) {
-                energyDataController.download(region: region)
+            if let region = Region(rawValue: viewModel.currentSetting.entity!.regionIdentifier) {
+                viewModel.energyDataController.download(region: region)
             }
         }
     }

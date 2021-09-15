@@ -37,14 +37,14 @@ private_lane :prompt_increment_build_number do
   end
 end
 
-lane :adhoc do |options|
+lane :push_to_adhoc do |options|
   match
   xcodegen
   configuration = options[:staging] ? "Distribution AdHoc Staging" : "Distribution AdHoc Production"
   build_app(export_method: "ad-hoc", configuration: configuration)
 end
 
-lane :testflight do
+lane :push_to_testflight do
   configuration = "Distribution AppStore Production"
   match
   prompt_increment_marketing_number

@@ -15,14 +15,14 @@ Install _fastlane_ using
 or alternatively using `brew install fastlane`
 
 # Available Actions
-### adhoc
+### push_to_adhoc
 ```
-fastlane adhoc
+fastlane push_to_adhoc
 ```
 
-### testflight
+### push_to_testflight
 ```
-fastlane testflight
+fastlane push_to_testflight
 ```
 
 

@@ -18,6 +18,6 @@ class StagingAppConfiguration: AppConfiguration {
 }
 
 class ProductionAppConfiguration: AppConfiguration {
-    var apiURL = URL(string: "https://test-awp.space8.me")!
+    var apiURL = URL(string: "https://awattprice.space8.me/api/v2/")!
     var vatAmount = 1.19
 }

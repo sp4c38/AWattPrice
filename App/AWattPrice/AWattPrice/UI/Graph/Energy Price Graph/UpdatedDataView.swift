@@ -50,7 +50,6 @@ extension UpdatedDataView {
                         return
                     }
                 }
-                print("wow")
                 updateLocalizedTimeIntervalString(lastDownloadFinishedTime: downloadFinishedTime)
                 viewDownloadState = .finished(time: downloadFinishedTime)
             case .failed(let error):

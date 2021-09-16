@@ -10,17 +10,20 @@ import Foundation
 
 protocol APIRequest {
     var urlRequest: URLRequest { get }
+    var expectedResponseCode: Int? { get }
 }
 
 /// APIRequest which expects a decodable response.
 struct ResponseAPIRequest<ResponseType: Decodable, DecoderType: TopLevelDecoder>: APIRequest where DecoderType.Input == Data {
     var urlRequest: URLRequest
+    var expectedResponseCode: Int? = nil
     let decoder: DecoderType
 }
 
 /// APIRequest which doesn't expect any response.
 struct PlainAPIRequest: APIRequest {
     let urlRequest: URLRequest
+    var expectedResponseCode: Int? = nil
 }
 
 enum APIRequestFactory {
@@ -36,7 +39,7 @@ enum APIRequestFactory {
             timeoutInterval: 30
         )
         let decoder = EnergyData.jsonDecoder()
-        return ResponseAPIRequest(urlRequest: urlRequest, decoder: decoder)
+        return ResponseAPIRequest(urlRequest: urlRequest, expectedResponseCode: 200, decoder: decoder)
     }
     
     static func notificationRequest(packedTasks: PackedNotificationTasks) -> PlainAPIRequest? {
@@ -59,6 +62,6 @@ enum APIRequestFactory {
         urlRequest.httpBody = encodedTasks
         urlRequest.cachePolicy = .reloadIgnoringLocalAndRemoteCacheData
         
-        return PlainAPIRequest(urlRequest: urlRequest)
+        return PlainAPIRequest(urlRequest: urlRequest, expectedResponseCode: 200)
     }
 }

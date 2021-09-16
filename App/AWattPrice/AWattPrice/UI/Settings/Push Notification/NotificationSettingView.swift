@@ -19,7 +19,7 @@ extension AnyTransition {
 struct NotificationSettingView: View {
     @Environment(\.scenePhase) var scenePhase
 
-    @Injected var notificationService: NotificationService
+    @ObservedObject var notificationService: NotificationService = Resolver.resolve()
     
     var body: some View {
         ZStack(alignment: Alignment(horizontal: .center, vertical: .bottom)) {
@@ -36,14 +36,13 @@ struct NotificationSettingView: View {
                 .animation(.easeInOut)
             }
 
-//            VStack {
-//                if notificationService.apiNotificationUploadState == .uploadFailed {
-//                    APNSUploadError()
-//                        .padding(.bottom, 15)
-//                        .transition(.belowScale)
-//                }
-//            }
-//            .animation(.easeInOut)
+            VStack {
+                if case .failure(_) = notificationService.stateLastUpload {
+                    SettingsUploadErrorView()
+                        .padding(.bottom, 15)
+                }
+            }
+            .animation(.easeInOut)
         }
         .navigationTitle("general.priceGuard")
     }

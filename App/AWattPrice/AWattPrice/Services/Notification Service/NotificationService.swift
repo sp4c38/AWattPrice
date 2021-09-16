@@ -58,12 +58,20 @@ class NotificationService: ObservableObject {
         case apnsRegistrationSuccessful
         case apnsRegistrationFailed
     }
-
+    
+    enum StateLastUpload {
+        case none
+        case success
+        case failure(error: Error)
+    }
+    
     var tokenContainer: TokenContainer? = nil
     
     @Published var accessState: AccessState = .unknown
     @Published var pushState: PushState = .unknown
+    
     @ObservedObject var isUploading = PublishedNSLock()
+    @Published var stateLastUpload: StateLastUpload = .none
     
     internal let notificationCenter = UNUserNotificationCenter.current()
     internal var notificationRequestCancellable: AnyCancellable? = nil

@@ -97,7 +97,7 @@
 "dataError.download.tryAgainLater" = "Please try again later";
 "dataError.download.noDataAvailable" = "No data available\nPlease try again later";
 "dataError.settings.settingsLoadingError" = "Settings couldn't be loaded\nPlease try again later";
-"dataError.apns.errorUploading" = "Error uploading notification settings.";
+"dataError.apns.errorUploading" = "Error uploading settings.";
 
 // General localizations
 "general.loading" = "Loading";

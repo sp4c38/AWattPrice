@@ -96,7 +96,7 @@
 "dataError.download.tryAgainLater" = "Bitte versuchen Sie es\nspäter noch einmal.";
 "dataError.download.noDataAvailable" = "Keine Daten verfügbar.\nBitte versuchen Sie es später erneut.";
 "dataError.settings.settingsLoadingError" = "Einstellungen konnten nicht\ngeladen werden.\nBitte versuchen Sie es\nspäter erneut.";
-"dataError.apns.errorUploading" = "Fehler beim Hochladen der Benachrichtigungseinstellungen.";
+"dataError.apns.errorUploading" = "Fehler beim Hochladen der Einstellungen.";
 
 // General localizations
 "general.loading" = "Lädt";

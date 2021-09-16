@@ -15,8 +15,13 @@ extension NotificationService {
         response
             .receive(on: DispatchQueue.main)
             .sink { completion in
-                if case .failure(let error) = completion {
+                switch completion {
+                case .finished:
+                    print("Successfully sent notification task.")
+                    self.stateLastUpload = .success
+                case .failure(let error):
                     print("Couldn't sent notification tasks: \(error).")
+                    self.stateLastUpload = .failure(error: error)
                 }
             } receiveValue: { _ in }
             .store(in: &cancellables)

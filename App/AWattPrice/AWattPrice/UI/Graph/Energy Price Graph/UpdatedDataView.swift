@@ -42,7 +42,6 @@ extension UpdatedDataView {
                     let minimalDownloadingStateTime: TimeInterval = 0.7
                     if startedFinishedDifference > 0, startedFinishedDifference < minimalDownloadingStateTime {
                         let changeStateNowDifference = minimalDownloadingStateTime - startedFinishedDifference
-                        print(changeStateNowDifference)
                         DispatchQueue.main.asyncAfter(deadline: .now() + changeStateNowDifference) {
                             self.updateLocalizedTimeIntervalString(lastDownloadFinishedTime: downloadFinishedTime)
                             self.viewDownloadState = .finished(time: downloadFinishedTime)

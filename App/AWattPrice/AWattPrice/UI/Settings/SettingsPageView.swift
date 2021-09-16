@@ -13,40 +13,51 @@ import SwiftUI
 struct SettingsPageView: View {
     @ObservedObject var crtNotifiSetting: CurrentNotificationSetting = Resolver.resolve()
     @ObservedObject var currentSetting: CurrentSetting = Resolver.resolve()
-
+    @ObservedObject var notificationService: NotificationService = Resolver.resolve()
+    
     var body: some View {
         NavigationView {
             VStack {
                 if currentSetting.entity != nil {
-                    CustomInsetGroupedList {
-                        RegionAndVatSelection()
+                    ZStack(alignment: Alignment(horizontal: .center, vertical: .bottom)) {
+                        CustomInsetGroupedList {
+                            RegionAndVatSelection()
 
-//                        AwattarTariffSelectionSetting()
+    //                        AwattarTariffSelectionSetting()
 
-                        if crtNotifiSetting.entity != nil {
-                            GoToNotificationSettingView()
+                            if crtNotifiSetting.entity != nil {
+                                GoToNotificationSettingView()
+                            }
+
+                            GetHelpView()
+
+                            AgreementSettingView(agreementIconName: "doc.text",
+                                                 agreementName: "general.termsOfUse",
+                                                 agreementLinks: ("https://awattprice.space8.me/terms_of_use/german.html",
+                                                                  "https://awattprice.space8.me/terms_of_use/english.html"))
+
+                            AgreementSettingView(agreementIconName: "hand.raised",
+                                                 agreementName: "general.privacyPolicy",
+                                                 agreementLinks:
+                                                 ("https://awattprice.space8.me/privacy_policy/german.html",
+                                                  "https://awattprice.space8.me/privacy_policy/english.html"))
+
+                            VStack(spacing: 20) {
+                                NotAffiliatedView(showGrayedOut: true)
+                                    .padding([.leading, .trailing], 16)
+
+                                AppVersionView()
+                            }
+                            .padding(.bottom, 15)
                         }
-
-                        GetHelpView()
-
-                        AgreementSettingView(agreementIconName: "doc.text",
-                                             agreementName: "general.termsOfUse",
-                                             agreementLinks: ("https://awattprice.space8.me/terms_of_use/german.html",
-                                                              "https://awattprice.space8.me/terms_of_use/english.html"))
-
-                        AgreementSettingView(agreementIconName: "hand.raised",
-                                             agreementName: "general.privacyPolicy",
-                                             agreementLinks:
-                                             ("https://awattprice.space8.me/privacy_policy/german.html",
-                                              "https://awattprice.space8.me/privacy_policy/english.html"))
-
-                        VStack(spacing: 20) {
-                            NotAffiliatedView(showGrayedOut: true)
-                                .padding([.leading, .trailing], 16)
-
-                            AppVersionView()
+                        
+                        VStack {
+                            if case .failure(_) = notificationService.stateLastUpload {
+                                SettingsUploadErrorView()
+                                    .padding(.bottom, 15)
+                            }
                         }
-                        .padding(.bottom, 15)
+                        .animation(.easeInOut)
                     }
                 } else {
                     Text("settingsPage.notLoadedSettings")

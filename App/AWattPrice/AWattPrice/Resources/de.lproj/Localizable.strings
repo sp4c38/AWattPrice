@@ -85,8 +85,8 @@
 "notificationPage.notification.priceDropsBelowValue.wishPrice" = "Wunschpreis";
 "notificationPage.notification.priceDropsBelowValue.description" = "Erhalten Sie eine Benachrichtigung, sobald Preise unter einen Wunschpreis fallen.";
 "notificationPage.notification.priceDropsBelowValue.description.firstLine.pt1" = "Sobald neue Preise verfügbar sind, erhalten Sie eine Benachrichtigung, falls ein Strompreis des";
-"notificationPage.notification.priceDropsBelowValue.description.firstLine.pt2" = " Folgetages ";
-"notificationPage.notification.priceDropsBelowValue.description.firstLine.pt3" = "";
+"notificationPage.notification.priceDropsBelowValue.description.firstLine.pt2" = " Folgetages";
+"notificationPage.notification.priceDropsBelowValue.description.firstLine.pt3" = " ";
 "notificationPage.notification.priceDropsBelowValue.description.firstLine.pt4" = " auf ";
 "notificationPage.notification.priceDropsBelowValue.description.firstLine.pt5" = "oder";
 "notificationPage.notification.priceDropsBelowValue.description.firstLine.pt6" = " unter ";

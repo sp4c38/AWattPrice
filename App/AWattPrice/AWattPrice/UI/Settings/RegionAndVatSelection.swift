@@ -34,6 +34,12 @@ extension RegionAndVatSelection {
         }
         
         func regionSwitched(to newRegion: Region) {
+            let changeViewSelectedRegion = {
+                DispatchQueue.main.async {
+                    self.selectedRegion = newRegion
+                }
+            }
+            
             notificationService.ensureAccess { access in
                 if access == true,
                    let tokenContainer = self.notificationService.tokenContainer
@@ -43,13 +49,22 @@ extension RegionAndVatSelection {
                     let updatePayload = UpdatePayload(subject: .general, updatedData: updatedData)
                     interface.addGeneralUpdateTask(updatePayload)
                     self.notificationService.runNotificationRequest(interface: interface, appSetting: self.currentSetting, notificationSetting: self.notificationSetting, onSuccess: {
-                        DispatchQueue.main.async { self.selectedRegion = newRegion }
+                        changeViewSelectedRegion()
                     })
+                } else if access == false {
+                    self.currentSetting.changeRegionIdentifier(to: newRegion.rawValue)
+                    changeViewSelectedRegion()
                 }
             }
         }
         
         func taxToggled(to newTaxSelection: Bool) {
+            let changeViewTaxSelection = {
+                DispatchQueue.main.async {
+                    self.pricesWithTaxIncluded = newTaxSelection
+                }
+            }
+            
             notificationService.ensureAccess { access in
                 if access == true,
                    let tokenContainer = self.notificationService.tokenContainer
@@ -59,8 +74,11 @@ extension RegionAndVatSelection {
                     let updatePayload = UpdatePayload(subject: .general, updatedData: updatedData)
                     interface.addGeneralUpdateTask(updatePayload)
                     self.notificationService.runNotificationRequest(interface: interface, appSetting: self.currentSetting, notificationSetting: self.notificationSetting, onSuccess: {
-                        DispatchQueue.main.async { self.pricesWithTaxIncluded = newTaxSelection }
+                        changeViewTaxSelection()
                     })
+                } else if access == false {
+                    self.currentSetting.changeTaxSelection(to: newTaxSelection)
+                    changeViewTaxSelection()
                 }
             }
         }

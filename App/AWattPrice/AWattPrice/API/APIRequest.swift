@@ -57,10 +57,13 @@ enum APIRequestFactory {
         let requestURL = apiURL
             .appendingPathComponent("notifications", isDirectory: true)
             .appendingPathComponent("run_tasks", isDirectory: true)
-        var urlRequest = URLRequest(url: requestURL)
+        var urlRequest = URLRequest(
+            url: requestURL,
+            cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,
+            timeoutInterval: 30
+        )
         urlRequest.httpMethod = "POST"
         urlRequest.httpBody = encodedTasks
-        urlRequest.cachePolicy = .reloadIgnoringLocalAndRemoteCacheData
         
         return PlainAPIRequest(urlRequest: urlRequest, expectedResponseCode: 200)
     }

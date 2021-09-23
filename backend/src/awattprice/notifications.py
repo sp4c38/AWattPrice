@@ -77,7 +77,7 @@ async def sub_desub_price_below(session: AsyncSession, token: Token, payload: Bo
     notification_info = payload.notification_info
     if notification is None:
         if notification_active is True:
-            logger.info("Subscribing to price below notification.")
+            logger.debug("Subscribing to price below notification.")
             new_price_below_notification = PriceBelowNotification(
                 token_id=token.token_id,
                 active=True,

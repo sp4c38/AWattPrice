@@ -29,6 +29,8 @@ def _check_config_none(config_value: ConfigValue) -> Optional[ConfigValue]:
 
 def _transform_config(config: Config):
     """Transform certain config fields to another data type and/or value."""
+    config.general.log_level = config.general.log_level.upper()
+
     config.paths.log_dir = Path(config.paths.log_dir).expanduser()
     config.paths.data_dir = Path(config.paths.data_dir).expanduser()
     config.paths.price_data_dir = config.paths.data_dir / defaults.PRICE_DATA_SUBDIR_NAME
@@ -102,8 +104,9 @@ def configure_loguru(service_name: str, config: Config):
     log_path = config.paths.log_dir / (service_name + ".log")
     logger.add(
         log_path,
+        level=config.general.log_level,
         enqueue=True,  # This makes log calls non-blocking.
-        colorize=None,
+        colorize=True,
         backtrace=True,
         diagnose=config.general.staging,
         rotation="1 week",

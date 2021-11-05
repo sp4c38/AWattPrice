@@ -32,6 +32,8 @@ APP_BUNDLE_ID.staging = "me.space8.AWattPrice.staging"
 DEFAULT_CONFIG = """\
 [general]
 staging = true
+# Log level name (Severity): TRACE (5), DEBUG (10), INFO (20), SUCCESS (25), WARNING (30), ERROR (40), CRITICAL (50)
+log_level = DEBUG
 
 [awattar.de]
 url = https://api.awattar.de/v1/marketdata/

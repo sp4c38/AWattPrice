@@ -116,7 +116,7 @@ async def handle_apns_response(session: AsyncSession, token: Token, response: ht
             logger.debug(f"Deleting token {token.token} as it isn't valid anymore.")
             session.delete(token)
     else:
-        logger.error(f"Error sending notification to apns: {status_code} - {status}.")
+        logger.error(f"Error sending notification with token {token.token} to apns: {status_code} - {status}. Doing nothing with this token.")
 
 
 async def deliver_notifications(

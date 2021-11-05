@@ -65,7 +65,6 @@ async def collect_regions_prices(config: Config, regions: list[Region]) -> Box:
     existing_regions_prices = {}
     for region, prices in regions_prices.items():
         if prices is None:
-            logger.warning(f"Couldn't get current price data for region {region}.")
             continue
         existing_regions_prices[region] = prices
 

@@ -310,8 +310,10 @@ async def get_latest_new_prices(stored_data: None, region: Region, config: Confi
             new_data = parse_downloaded_data(region, new_data)
             data_is_new = check_data_new(stored_data, new_data)
             if not data_is_new:
-                logger.debug("Downloaded data includes no new prices.")
+                logger.debug(f"Downloaded data for region {region.name} includes no new prices.")
                 return None
+            else:
+                logger.debug(f"Got fresh new data for region {region.name}.")
             await store_data(new_data, region, config)
             latest_prices = new_data
     else:
@@ -352,7 +354,7 @@ async def get_current_prices(region: Region, config: Config, fall_back=False) ->
             price_data = stored_data
         else:
             if price_data is None:
-                logger.warning(f"No latest new {region.name} prices.")
+                logger.warning(f"No latest new price data for region {region.name} prices.")
                 if not fall_back: return None
                 price_data = stored_data
     else:

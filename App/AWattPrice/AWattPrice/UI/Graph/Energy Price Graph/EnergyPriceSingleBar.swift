@@ -114,7 +114,7 @@ struct EnergyPriceSingleBar: View {
             startWidthPadding = 8 // Set padding to the left side
             self.width = width - 16 // Set padding to the right side
         } else {
-            startWidthPadding = 3
+            startWidthPadding = 0
             self.width = width - 19
         }
 

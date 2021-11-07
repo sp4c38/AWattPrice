@@ -26,7 +26,9 @@ struct CheapestTimeViewBodyPicker: View {
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
 
     @State var maxTimeInterval = TimeInterval(3600)
-
+    
+    @State var timeOfUsageInterval = TimeInterval(0)
+    
     func setMaxTimeInterval() {
         guard let minMaxTimeRange = energyDataController.energyData?.minMaxTimeRange else { return }
         let nowHourStart = Calendar.current.date(
@@ -50,7 +52,7 @@ struct CheapestTimeViewBodyPicker: View {
     var body: some View {
         VStack {
             EasyIntervalPickerRepresentable(
-                $cheapestHourManager.timeOfUsageInterval,
+                $timeOfUsageInterval,
                 maxTimeInterval: maxTimeInterval,
                 selectionInterval: 5
             )
@@ -60,6 +62,9 @@ struct CheapestTimeViewBodyPicker: View {
             }
             .onReceive(energyDataController.$energyData) { _ in
                 setMaxTimeInterval()
+            }
+            .onChange(of: timeOfUsageInterval) { newValue in
+                cheapestHourManager.timeOfUsageInterval = timeOfUsageInterval
             }
         }
     }

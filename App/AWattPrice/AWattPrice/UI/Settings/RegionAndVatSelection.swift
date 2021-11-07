@@ -34,53 +34,53 @@ extension RegionAndVatSelection {
         }
         
         func regionSwitched(to newRegion: Region) {
-            let changeViewSelectedRegion = {
+            guard let notificationSettingEntity = notificationSetting.entity else { return }
+            
+            let changeSelectedRegionInView = {
                 DispatchQueue.main.async {
                     self.selectedRegion = newRegion
                 }
             }
             
-            notificationService.ensureAccess { access in
-                if access == true,
-                   let tokenContainer = self.notificationService.tokenContainer
-                {
+            notificationService.changeUploadableAttribute(notificationSettingEntity, upload: {
+                if let tokenContainer = self.notificationService.tokenContainer {
                     let interface = APINotificationInterface(token: tokenContainer.token)
                     let updatedData = UpdatedGeneralData(region: newRegion)
                     let updatePayload = UpdatePayload(subject: .general, updatedData: updatedData)
                     interface.addGeneralUpdateTask(updatePayload)
                     self.notificationService.runNotificationRequest(interface: interface, appSetting: self.currentSetting, notificationSetting: self.notificationSetting, onSuccess: {
-                        changeViewSelectedRegion()
+                        changeSelectedRegionInView()
                     })
-                } else if access == false {
-                    self.currentSetting.changeRegionIdentifier(to: newRegion.rawValue)
-                    changeViewSelectedRegion()
                 }
-            }
+            }, noUpload: {
+                self.currentSetting.changeRegionIdentifier(to: newRegion.rawValue)
+                changeSelectedRegionInView()
+            })
         }
         
         func taxToggled(to newTaxSelection: Bool) {
-            let changeViewTaxSelection = {
+            guard let notificationSettingEntity = notificationSetting.entity else { return }
+            
+            let changeTaxSelectionInView = {
                 DispatchQueue.main.async {
                     self.pricesWithTaxIncluded = newTaxSelection
                 }
             }
             
-            notificationService.ensureAccess { access in
-                if access == true,
-                   let tokenContainer = self.notificationService.tokenContainer
-                {
+            notificationService.changeUploadableAttribute(notificationSettingEntity, upload: {
+                if let tokenContainer = self.notificationService.tokenContainer {
                     let interface = APINotificationInterface(token: tokenContainer.token)
                     let updatedData = UpdatedGeneralData(tax: newTaxSelection)
                     let updatePayload = UpdatePayload(subject: .general, updatedData: updatedData)
                     interface.addGeneralUpdateTask(updatePayload)
                     self.notificationService.runNotificationRequest(interface: interface, appSetting: self.currentSetting, notificationSetting: self.notificationSetting, onSuccess: {
-                        changeViewTaxSelection()
+                        changeTaxSelectionInView()
                     })
-                } else if access == false {
-                    self.currentSetting.changeTaxSelection(to: newTaxSelection)
-                    changeViewTaxSelection()
                 }
-            }
+            }, noUpload: {
+                self.currentSetting.changeTaxSelection(to: newTaxSelection)
+                changeTaxSelectionInView()
+            })
         }
     }
 }

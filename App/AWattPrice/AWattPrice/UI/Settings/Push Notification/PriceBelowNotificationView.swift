@@ -67,7 +67,9 @@ extension PriceBelowNotificationView {
         }
         
         func priceBelowNotificationToggled(to newSelection: Bool) {
+            
             notificationService.ensureAccess { access in
+                
                 if access == true,
                    let tokenContainer = self.notificationService.tokenContainer,
                    let notificationSettingEntity = self.crtNotifiSetting.entity

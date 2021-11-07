@@ -8,15 +8,7 @@
 import Foundation
 import UIKit
 
-extension NotificationService {
-    func wantToReceiveAnyNotification(notificationSettingEntity: NotificationSetting) -> Bool {
-        if notificationSettingEntity.priceDropsBelowValueNotification == true {
-            return true
-        } else {
-            return false
-        }
-    }
-    
+extension NotificationService {    
     func successfulRegisteredForRemoteNotifications(rawCurrentToken: Data, appSetting: CurrentSetting, notificationSetting: CurrentNotificationSetting) {
         logger.debug("Notification: Remote notifications granted with device token.")
 
@@ -78,6 +70,33 @@ extension NotificationService {
                 self.pushState = .asked
                 UIApplication.shared.registerForRemoteNotifications()
             }
+        }
+    }
+    
+    func wantToReceiveAnyNotification(notificationSettingEntity: NotificationSetting) -> Bool {
+        if notificationSettingEntity.priceDropsBelowValueNotification == true {
+            return true
+        } else {
+            return false
+        }
+    }
+    
+    /// An attribute may not need to be uploaded to the server, for instance if no notifications are active. This function checks such cases.
+    /// It is called when changing an notification related attribute that is tracked on the server.
+    /// - Parameters:
+    ///   - upload: Function called if the attribute needs to be uploaded.
+    ///   - noUpload: Function called if the attribute doesn't need to be uploaded.
+    func changeUploadableAttribute(_ notificationSettingEntity: NotificationSetting, upload: @escaping () -> (), noUpload: @escaping () -> ()) {
+        if wantToReceiveAnyNotification(notificationSettingEntity: notificationSettingEntity) {
+            ensureAccess { access in
+                if access {
+                    upload()
+                } else {
+                    noUpload()
+                }
+            }
+        } else {
+            noUpload()
         }
     }
 }

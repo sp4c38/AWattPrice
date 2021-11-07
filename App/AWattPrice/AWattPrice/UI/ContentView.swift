@@ -46,11 +46,6 @@ struct ContentView: View {
                 }
                 .onAppear {
                     // Check Notification access
-//                    if currentSetting.entity!.showWhatsNew == false && currentSetting.entity!.splashScreensFinished == true {
-//                        managePushNotificationsOnAppAppear(
-//                            notificationAccessRepresentable: notificationAccess, registerForRemoteNotifications: true
-//                        ) {}
-//                    }
                     initialAppearFinished = nil
                 }
                 .onChange(of: scenePhase) { newScenePhase in
@@ -58,9 +53,6 @@ struct ContentView: View {
                         initialAppearFinished = true
                         return
                     }
-//                    if newScenePhase == .active, initialAppearFinished == true, currentSetting.entity!.showWhatsNew == false, currentSetting.entity!.splashScreensFinished == true {
-//                        managePushNotificationsOnAppAppear(notificationAccessRepresentable: self.notificationAccess, registerForRemoteNotifications: false) {}
-//                    }
                 }
                 .onAppear {
                     // Check Show Whats New
@@ -68,16 +60,6 @@ struct ContentView: View {
                         currentSetting.changeShowWhatsNew(to: false)
                     }
                 }
-//                .onChange(of: crtNotifiSetting.entity!.changesButErrorUploading) { errorOccurred in
-//                    if errorOccurred == true {
-//                        backendComm.tryNotificationUploadAfterFailed(
-//                            Int(currentSetting.entity!.regionIdentifier),
-//                            currentSetting.entity!.pricesWithVAT ? 1 : 0,
-//                            crtNotifiSetting,
-//                            networkManager
-//                        )
-//                    }
-//                }
             }
         }
         .ignoresSafeArea(.keyboard)

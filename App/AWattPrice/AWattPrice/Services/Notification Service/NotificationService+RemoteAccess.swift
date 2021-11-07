@@ -66,8 +66,8 @@ extension NotificationService {
     
     func registerForRemoteNotifications() {
         if pushState == .unknown {
+            self.pushState = .asked
             DispatchQueue.main.async {
-                self.pushState = .asked
                 UIApplication.shared.registerForRemoteNotifications()
             }
         }

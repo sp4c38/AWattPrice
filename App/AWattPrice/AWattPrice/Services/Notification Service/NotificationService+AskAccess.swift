@@ -5,6 +5,7 @@
 //  Created by Léon Becker on 30.08.21.
 //
 
+import Combine
 import UserNotifications
 
 extension NotificationService {
@@ -45,13 +46,17 @@ extension NotificationService {
                     if newAccess == .granted {
                         if self.pushState == .apnsRegistrationSuccessful { onCompletion(true)
                         } else if self.pushState == .apnsRegistrationFailed { onCompletion(false)
-                        } else if self.pushState == .unknown, self.pushState == .asked {
-                            self.ensureAccessPushStateCancellable = self.$pushState.dropFirst().sink { newPushNotificationState in
-                                if newPushNotificationState == .apnsRegistrationSuccessful {
-                                    onCompletion(true)
-                                } else {
-                                    self.ensureAccessPushStateCancellable?.cancel()
-                                    onCompletion(false)
+                        } else if self.pushState == .asked {
+                            var pushStateCancellable: AnyCancellable? = nil
+                            pushStateCancellable = self.$pushState.dropFirst().sink { newPushState in
+                                if newPushState != .asked {
+                                    if newPushState == .apnsRegistrationSuccessful {
+                                        onCompletion(true)
+                                        pushStateCancellable?.cancel()
+                                    } else {
+                                        onCompletion(false)
+                                        pushStateCancellable?.cancel()
+                                    }
                                 }
                             }
                         }

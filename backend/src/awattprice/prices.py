@@ -203,13 +203,13 @@ async def download_data(region: Region, config: Config) -> Optional[Box]:
     url = getattr(config, region_config_identifier).url
 
     now = arrow.utcnow()
-    day_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
-    start = now.replace(minute=0, second=0, microsecond=0)
-    end = day_start.shift(days=+2)
+    now_berlin = now.to(defaults.EUROPE_BERLIN_TIMEZONE)
+    today_start = now_berlin.floor(frame="day")
+    tomorrow_end = today_start.shift(days=+2)
 
     url_parameters = {
-        "start": start.int_timestamp * defaults.SEC_TO_MILLISEC,
-        "end": end.int_timestamp * defaults.SEC_TO_MILLISEC,
+        "start": today_start.int_timestamp * defaults.SEC_TO_MILLISEC,
+        "end": tomorrow_end.int_timestamp * defaults.SEC_TO_MILLISEC,
     }
     logger.info(f"Polling {region.value.upper()} price data from {url}.")
     async with httpx.AsyncClient() as client:

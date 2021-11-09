@@ -51,11 +51,11 @@ extension NotificationService {
                             pushStateCancellable = self.$pushState.dropFirst().sink { newPushState in
                                 if newPushState != .asked {
                                     if newPushState == .apnsRegistrationSuccessful {
+                                        pushStateCancellable?.cancel()
                                         onCompletion(true)
-                                        pushStateCancellable?.cancel()
                                     } else {
-                                        onCompletion(false)
                                         pushStateCancellable?.cancel()
+                                        onCompletion(false)
                                     }
                                 }
                             }

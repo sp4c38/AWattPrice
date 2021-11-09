@@ -20,7 +20,7 @@ extension NotificationService {
             var isNewToken = notificationSettingsEntity.forceUploadNotificationsOne || (notificationSettingsEntity.lastApnsToken != currentToken)
             
             if notificationSettingsEntity.forceUploadNotificationsOne {
-                print("Notification: Force uploading notification config.")
+                print("Notification: Force enabling uploading of notification config.")
                 isNewToken = true
             }
             
@@ -82,7 +82,7 @@ extension NotificationService {
     }
     
     /// An attribute may not need to be uploaded to the server, for instance if no notifications are active. This function checks such cases.
-    /// It is called when changing an notification related attribute that is tracked on the server.
+    /// It is called when changing an notification related attribute that is tracked on the server. Only call it on attributes which won't trigger notifications to be enabled or disabled.
     /// - Parameters:
     ///   - upload: Function called if the attribute needs to be uploaded.
     ///   - noUpload: Function called if the attribute doesn't need to be uploaded.

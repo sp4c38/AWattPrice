@@ -67,9 +67,7 @@ extension PriceBelowNotificationView {
         }
         
         func priceBelowNotificationToggled(to newSelection: Bool) {
-            
             notificationService.ensureAccess { access in
-                
                 if access == true,
                    let tokenContainer = self.notificationService.tokenContainer,
                    let notificationSettingEntity = self.crtNotifiSetting.entity
@@ -78,7 +76,8 @@ extension PriceBelowNotificationView {
                     let notificationInfo = SubDesubPriceBelowNotificationInfo(belowValue: notificationSettingEntity.priceBelowValue)
                     let subDesubPayload = SubDesubPayload(notificationType: .priceBelow, active: newSelection, notificationInfo: notificationInfo )
                     apiInterface.addPriceBelowSubDesubTask(subDesubPayload)
-                    self.notificationService.runNotificationRequest(interface: apiInterface, appSetting: self.currentSetting, notificationSetting: self.crtNotifiSetting, onSuccess: {
+                    // The push state can be ignored because in ensureAccess it was verified that the push state was registered successfully. This code is run in a sink block and values are getting set after sink blocks. So the new change isn't reflected in the variable anyways yet.
+                    self.notificationService.runNotificationRequest(interface: apiInterface, appSetting: self.currentSetting, notificationSetting: self.crtNotifiSetting, ignorePushState: true, onSuccess: {
                         DispatchQueue.main.async { self.notificationIsEnabled = newSelection }
                     })
                 }

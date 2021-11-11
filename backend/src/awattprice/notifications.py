@@ -63,6 +63,9 @@ async def add_new_token(session: AsyncSession, token_hex: str, configuration: Bo
         token = await get_token(session, token_hex)
         token.region = configuration.region
         token.tax = configuration.tax
+        return token
+
+    await session.refresh(token, attribute_names=["token_id"])
 
     return token
 

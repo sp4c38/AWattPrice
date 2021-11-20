@@ -17,12 +17,10 @@ from box import Box
 from loguru import logger
 from sqlalchemy import Column
 from sqlalchemy import Boolean
-from sqlalchemy import Enum
 from sqlalchemy import Integer
 from sqlalchemy import MetaData
 from sqlalchemy import select
 from sqlalchemy import String
-from sqlalchemy import Table
 from sqlalchemy.ext.asyncio import AsyncEngine
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import registry as Registry
@@ -44,7 +42,7 @@ class JSONField(TypeDecorator):
         try:
             decoded_json = json.loads(value)
             return Box(decoded_json)
-        except json.JSONDecodeError as exc:
+        except json.JSONDecodeError:
             return None
 
 

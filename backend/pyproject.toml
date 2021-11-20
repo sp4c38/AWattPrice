@@ -42,14 +42,12 @@ uvicorn = {extras = ["standard"], version = "^0.14.0"}
 
 [tool.poetry.dev-dependencies]
 ipython = "^7.22.0"
-flake8 = "^3.9.1"
-pylint = "^2.8.2"
 mypy = "^0.812"
-coverage = "^5.5"
 black = "^21.4b2"
 nest-asyncio = "^1.5.1"
 pdoc3 = "^0.9.2"
 SQLAlchemy = {extras = ["mypy"], version = "^1.4.17"}
+pyflakes = "^2.4.0"
 
 [tool.black]
 line-length = 115

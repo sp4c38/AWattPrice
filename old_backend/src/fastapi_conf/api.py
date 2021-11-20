@@ -56,7 +56,7 @@ async def send_token(request: Request, background_tasks: BackgroundTasks):
     request_body = await request.body()
     request_data: APNSToken = apns.validate_token(request_body)
     if request_data is not None:
-        background_tasks.add_task(apns.write_token, request_data, db_manager)
+        background_tasks.add_task(apns.write_token, request_data)
         return JSONResponse({"tokenWasPassedSuccessfully": True}, status_code=status.HTTP_200_OK)
     else:
         return JSONResponse(
@@ -70,13 +70,3 @@ def startup_event():
     global config
     config = read_config()
     start_logging(config)
-    global db_manager
-
-    db_manager = TokenDatabaseManager()
-    db_manager.connect(config)
-    db_manager.check_table_exists()
-
-
-@api.on_event("shutdown")
-def shutdown_backend():
-    db_manager.disconnect()

@@ -27,7 +27,7 @@ from .utils import verify_file_permissions
 def bootstrap_config(path: Optional[Path] = None) -> ConfigUpdater:
     """Create the Config file and populate it."""
     if path is None:
-        path = Path(os.path.expanduser("~")) / ".config" / "awattprice" / "config.ini"
+        path = Path(os.path.expanduser("~")) / ".config" / "awattprice" / "v1_config.ini"
     if not path.parent.is_dir():
         os.makedirs(path.parent.as_posix())
     config_updater = ConfigUpdater()
@@ -118,8 +118,8 @@ def read_config(path: Optional[Path] = None) -> Box:
         config_path_locations: Tuple[Path, ...] = (path,)
     else:
         config_path_locations = (
-            Path(Path("/etc") / "awattprice" / "config.ini"),
-            Path(os.path.expanduser("~")) / ".config" / "awattprice" / "config.ini",
+            Path(Path("/etc") / "awattprice" / "v1_config.ini"),
+            Path(os.path.expanduser("~")) / ".config" / "awattprice" / "v1_config.ini",
         )
     found_config_file = False
     for path in config_path_locations:
@@ -128,7 +128,7 @@ def read_config(path: Optional[Path] = None) -> Box:
             break
     else:
         log.info(f"No config file found in {path.parent}. Creating one...")
-        path = Path(os.path.expanduser("~")) / ".config" / "awattprice" / "config.ini"
+        path = Path(os.path.expanduser("~")) / ".config" / "awattprice" / "v1_config.ini"
         config_updater = bootstrap_config(path)
     if path.parent.exists() and not path.parent.is_dir():
         log.error(f"Expected the config directory {path.parent} to be a directory.")

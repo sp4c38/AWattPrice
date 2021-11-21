@@ -14,10 +14,9 @@ __license__ = "mit"
 from fastapi import BackgroundTasks, FastAPI, Request, status
 from fastapi.responses import JSONResponse
 
-from awattprice import apns, notifications, poll
+from awattprice import apns, poll
 from awattprice.config import read_config
 from awattprice.defaults import Region
-from awattprice.token_manager import TokenDatabaseManager
 from awattprice.types import APNSToken
 from awattprice.utils import start_logging
 

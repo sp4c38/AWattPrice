@@ -18,7 +18,7 @@ from loguru import logger as log
 from multiprocessing import Lock
 from pathlib import Path
 
-from awattprice.types import APNSToken
+from v1_awattprice.types import APNSToken
 
 class APNsTokenManager:
     def __init__(self, token_data: APNSToken, database_manager):

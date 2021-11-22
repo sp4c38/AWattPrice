@@ -15,8 +15,8 @@ from typing import Optional
 
 from loguru import logger as log
 
-from awattprice.token_manager import APNsTokenManager
-from awattprice.types import APNSToken
+from v1_awattprice.token_manager import APNsTokenManager
+from v1_awattprice.types import APNSToken
 
 
 async def write_token(request_data: APNSToken):

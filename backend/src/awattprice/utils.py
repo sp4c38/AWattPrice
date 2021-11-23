@@ -55,13 +55,13 @@ def http_exc_validate_json_schema(body: Union[Box, dict, list], schema: dict, ht
         raise HTTPException(http_code) from exc
 
 
-def log_attempts(logger: Callable):
+def log_attempts(logger: Callable, service_name: str):
     """Before strategy for tenacity to log attempts."""
 
     def log_single_attempt(retry_state):
         attempt = retry_state.attempt_number
         if attempt != 1:
-            logger(f"Performing attempt number {attempt}.")
+            logger(f"Performing attempt number {attempt} for \'{service_name}\'.")
 
     return log_single_attempt
 

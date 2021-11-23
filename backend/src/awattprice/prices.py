@@ -20,12 +20,21 @@ from box import BoxList
 from fastapi import HTTPException
 from liteconfig import Config
 from loguru import logger
+from tenacity import (
+    AsyncRetrying,
+    retry_if_exception_type,
+    stop_after_attempt,
+    stop_after_delay,
+    wait_exponential,
+    wait_fixed,
+)
 
 from awattprice import defaults
 from awattprice import exceptions
 from awattprice import utils
 from awattprice.defaults import Region
 from awattprice.utils import ExtendedFileLock
+from awattprice.utils import log_attempts
 
 
 class MarketPrice:
@@ -154,6 +163,7 @@ def check_update_data(data: Optional[Box], last_update_time: Optional[Arrow]) ->
 
     return True
 
+
 def get_data_refresh_lock(region: Region, config: Config) -> ExtendedFileLock:
     """Get file lock used when refreshing price data."""
     lock_dir = config.paths.price_data_dir
@@ -212,11 +222,22 @@ async def download_data(region: Region, config: Config) -> Optional[Box]:
         "end": tomorrow_end.int_timestamp * defaults.SEC_TO_MILLISEC,
     }
     logger.info(f"Polling {region.value.upper()} price data from {url}.")
+
+
     async with httpx.AsyncClient() as client:
         try:
-            response = await client.get(url, params=url_parameters, timeout=defaults.AWATTAR_TIMEOUT)
-        except httpx.RequestError as exc:
-            logger.exception(f"Couldn't download price data: {exc}.")
+            async for attempt in AsyncRetrying(
+                before=log_attempts(logger.debug, "download awattar price data"),
+                stop=(
+                    stop_after_attempt(defaults.AWATTAR_RETRY_MAX_ATTEMPTS)
+                    | stop_after_delay(defaults.AWATTAR_RETRY_STOP_DELAY)
+                ),
+                wait=wait_exponential(multiplier=1.5, min=0, max=4)
+            ):
+                with attempt:
+                    response = await client.get(url, params=url_parameters, timeout=defaults.AWATTAR_TIMEOUT)
+        except Exception as exc:
+            logger.exception(f"Requests - also after retrying -  failed when downloading price data: {exc}.")
             return None
 
     try:
@@ -344,18 +365,21 @@ async def get_current_prices(region: Region, config: Config, fall_back=False) ->
         last_update_time = None
 
     do_update_data = check_update_data(stored_data, last_update_time)
+    do_update_data = True  # CHANGE
     price_data = None
     if do_update_data:
         try:
             price_data = await get_latest_new_prices(stored_data, region, config)
         except Exception as exc:
             logger.exception(f"Couldn't get latest new {region.name} prices: {exc}.")
-            if not fall_back: return None
+            if not fall_back:
+                return None
             price_data = stored_data
         else:
             if price_data is None:
-                logger.warning(f"No latest new price data for region {region.name} prices.")
-                if not fall_back: return None
+                logger.debug(f"No latest new price data for region {region.name} prices.")
+                if not fall_back:
+                    return None
                 price_data = stored_data
     else:
         logger.debug(f"Local {region.name} prices still up to date.")

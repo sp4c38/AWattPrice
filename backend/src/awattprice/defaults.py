@@ -66,9 +66,11 @@ EURMWH_TO_CENTWKWH = Decimal("100") * Decimal("0.001")
 # Number of places to round a cent per kwh price.
 CENT_KWH_ROUNDING_PLACES = 2
 
-# Timeout in seconds when requesting from aWATTar.
-AWATTAR_TIMEOUT = 10.0
-# After polling the API wait x seconds before requesting again.
+AWATTAR_TIMEOUT = 10.0 # Timeout in seconds when requesting from aWATTar.
+AWATTAR_RETRY_MAX_ATTEMPTS = 4
+AWATTAR_RETRY_STOP_DELAY = 7 # Delay after which to stop retrying.
+# After polling the API wait x seconds before requesting again. When a download attempt failed it won't count
+# and following attempts won't need to wait for this cooldown.
 AWATTAR_COOLDOWN_INTERVAL = 60
 # Attempt to update aWATTar prices if its past this hour of the day.
 # Always will update at x hour regardless of summer and winter times.

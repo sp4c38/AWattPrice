@@ -13,6 +13,7 @@ from awattprice.database import get_engine
 from awattprice.defaults import Region
 from awattprice.orm import Token
 from awattprice.orm import PriceBelowNotification
+from v1_awattprice.defaults import Region as V1_Region
 from box import Box
 from loguru import logger
 from sqlalchemy import Column
@@ -46,14 +47,14 @@ class JSONField(TypeDecorator):
             return None
 
 
-region_mapping = {0: Region.DE, 1: Region.AT}
-
-
 class IntegerRegionIdentifierField(TypeDecorator):
     impl = Integer
 
     def process_result_value(self, value, dialect):
-        return region_mapping.get(value, None)
+        try:
+            return V1_Region(value).to_v2_region()
+        except ValueError:
+            return None
 
 
 class OldDatabase_TokenStorage(Base):

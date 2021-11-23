@@ -13,9 +13,8 @@ from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 from sqlalchemy.orm import Session
 
-from v1_awattprice.defaults import Region
-from v1_awattprice.defaults import v1_to_v2_region_mappings
-from v1_awattprice.types import APNSToken
+from .defaults import Region
+from .types import APNSToken
 
 v2_config = v2_configurator.get_config()
 try:
@@ -35,15 +34,14 @@ def handle_new_apns_data(request_data: APNSToken):
 		)
 		matching_token = raw_data.scalars().one_or_none()
 
-		request_data_v1_region = Region(request_data.region_identifier)
-		request_data_v2_region = v1_to_v2_region_mappings[request_data_v1_region]
+		request_data_region = Region(request_data.region_identifier).to_v2_region()
 		request_data_vat = bool(request_data.vat_selection)
 		price_below_notification_active = request_data.config["price_below_value_notification"]["active"]
 		price_below_notification_below_value = request_data.config["price_below_value_notification"]["below_value"]
 
 		if matching_token:
 			log.debug("Updating token config in v2 database.")
-			matching_token.region = request_data_v2_region
+			matching_token.region = request_data_region
 			matching_token.tax = request_data_vat
 
 			if matching_token.price_below:
@@ -52,7 +50,7 @@ def handle_new_apns_data(request_data: APNSToken):
 				matching_token.price_below.below_value = price_below_notification_below_value
 		else:
 			log.debug("Creating new token entry in v2 database.")
-			new_token = Token(token=request_data.token, region=request_data_v2_region, tax=request_data_vat)
+			new_token = Token(token=request_data.token, region=request_data_region, tax=request_data_vat)
 			session.add(new_token)
 
 		if not matching_token or not matching_token.price_below:

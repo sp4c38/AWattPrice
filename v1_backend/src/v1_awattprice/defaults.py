@@ -60,10 +60,16 @@ class Region(Enum):
     DE = 0
     AT = 1
 
+    def to_v2_region(self):
+        if self == Region.DE:
+            return V2_Region.DE
+        elif self == Region.AT:
+            return V2_Region.AT
+        else:
+            return None
+
 
 CURRENT_VAT = 1.19
 
 CONVERT_MWH_KWH = 100 * 0.001
 TIME_CORRECT = 1000  # Correct milli seconds used by aWATTar to seconds
-
-v1_to_v2_region_mappings = {Region.DE: V2_Region.DE, Region.AT: V2_Region.AT}

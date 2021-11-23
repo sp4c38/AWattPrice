@@ -9,6 +9,7 @@ __author__ = "Frank Becker <fb@alien8.de>"
 __copyright__ = "Frank Becker"
 __license__ = "mit"
 
+from awattprice.defaults import Region as V2_Region
 from enum import Enum
 
 DEFAULT_CONFIG = """
@@ -64,3 +65,5 @@ CURRENT_VAT = 1.19
 
 CONVERT_MWH_KWH = 100 * 0.001
 TIME_CORRECT = 1000  # Correct milli seconds used by aWATTar to seconds
+
+v1_to_v2_region_mappings = {Region.DE: V2_Region.DE, Region.AT: V2_Region.AT}

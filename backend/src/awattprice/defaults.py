@@ -66,7 +66,7 @@ EURMWH_TO_CENTWKWH = Decimal("100") * Decimal("0.001")
 # Number of places to round a cent per kwh price.
 CENT_KWH_ROUNDING_PLACES = 2
 
-AWATTAR_TIMEOUT = 10.0 # Timeout in seconds when requesting from aWATTar.
+AWATTAR_TIMEOUT = 7 # Timeout in seconds when requesting from aWATTar.
 AWATTAR_RETRY_MAX_ATTEMPTS = 4
 AWATTAR_RETRY_STOP_DELAY = 7 # Delay after which to stop retrying.
 # After polling the API wait x seconds before requesting again. When a download attempt failed it won't count
@@ -108,7 +108,7 @@ PRICE_DATA_FILE_NAME = "awattar-data-{}.pickle"  # formatted with lowercase regi
 # This subdir is relative to the data dir specified in the config file.
 PRICE_DATA_SUBDIR_NAME = "price_data"
 # Timeout in seconds to wait when needing the refresh price data lock to be unlocked.
-PRICE_DATA_REFRESH_LOCK_TIMEOUT = AWATTAR_TIMEOUT + 2.0
+PRICE_DATA_REFRESH_LOCK_TIMEOUT = 10
 # Name of file which stores the timestamp when prices were updated last.
 PRICE_DATA_UPDATE_TS_FILE_NAME = "update-ts-{}.info"  # formatted with lowercase region name
 

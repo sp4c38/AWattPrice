@@ -60,8 +60,8 @@ async def get_default_region_data():
 
 
 @logger.catch
-@app.post("/notifications/receive_configuration/")
-async def do_notification_tasks(request: Request):
+@app.post("/notifications/save_configuration/")
+async def handle_notification_configuration(request: Request):
     """Runs one or multiple notification setting update tasks for a token."""
     try:
         body_json = await request.json()
@@ -76,4 +76,4 @@ async def do_notification_tasks(request: Request):
     if configuration is None:
         raise HTTPException(400)
 
-    await notifications.run_notification_tasks(database_engine, configuration)
+    await notifications.save_notification_configuration(database_engine, configuration)

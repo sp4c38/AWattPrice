@@ -60,7 +60,7 @@ async def get_default_region_data():
 
 
 @logger.catch
-@app.post("/notifications/run_tasks/")
+@app.post("/notifications/receive_configuration/")
 async def do_notification_tasks(request: Request):
     """Runs one or multiple notification setting update tasks for a token."""
     try:
@@ -70,10 +70,10 @@ async def do_notification_tasks(request: Request):
         logger.warning(f"Couldn't decode notification tasks {repr(body_raw)} as json: {exc}.")
         raise HTTPException(400)
 
-    raw_packed_tasks = Box(body_json)
+    raw_configuration = Box(body_json)
 
-    packed_tasks = notifications.parse_tasks_body(raw_packed_tasks)
-    if packed_tasks is None:
+    configuration = notifications.parse_notification_configuration_body(raw_configuration)
+    if configuration is None:
         raise HTTPException(400)
 
     token_hex = packed_tasks.token

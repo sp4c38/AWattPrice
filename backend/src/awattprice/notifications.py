@@ -171,145 +171,18 @@ async def run_notification_tasks(db_engine: AsyncEngine, token_hex: str, tasks: 
         await session.commit()
 
 
-def parse_add_token_payload(payload: Box, task_index: int) -> Optional[Box]:
-    """Validates and parses an add token payload into interal format."""
-    if task_index != 0:
-        logger.warning(f"Add token task is not the first in the task list: {task_index}.")
-        return None
+def parse_notification_configuration_body(configuration: Box) -> Optional[Box]:
+    """Validates and parses the notification configuration into an internal format.
 
-    add_token_schema = defaults.NOTIFICATION_TASK_PAYLOAD_ADD_TOKEN_SCHEMA
-    try:
-        jsonschema.validate(payload, add_token_schema)
-    except jsonschema.ValidationError as exc:
-        logger.exception(f"Add token payload doesn't follow schema: {exc}.")
-        return None
-
-    payload.region = Region[payload.region]
-    return payload
-
-
-def parse_subscribe_desubscribe_payload(payload: Box) -> Optional[Box]:
-    """Validates and parses a subscribe desubscribe payload into internal format."""
-    sub_desub_schema = defaults.NOTIFICATION_TASK_SUB_DESUB_SCHEMA
-    try:
-        jsonschema.validate(payload, sub_desub_schema)
-    except jsonschema.ValidationError as exc:
-        logger.exception(f"Subscribe desubscribe payload doesn't follow schema: {exc}.")
-        return None
-
-    payload.notification_type = NotificationType[payload.notification_type.upper()]
-
-    if payload.notification_type == NotificationType.PRICE_BELOW:
-        price_below_schema = defaults.NOTIFICATION_TASK_PRICE_BELOW_SUB_DESUB_SCHEMA
-        try:
-            utils.http_exc_validate_json_schema(payload.notification_info, price_below_schema, http_code=400)
-        except jsonschema.ValidationError as exc:
-            logger.exception(f"Subscribe desubscribe price below notification info doesn't follow schema: {exc}.")
-            return None
-    else:
-        return None
-
-    return payload
-
-
-def parse_update_payload(payload: Box) -> Optional[Box]:
-    """Validates and parses an update payload into internal format."""
-    update_schema = defaults.NOTIFICATION_TASK_UPDATE_SCHEMA
-    try:
-        jsonschema.validate(payload, update_schema)
-    except jsonschema.ValidationError as exc:
-        logger.exception(f"Update payload doesn't follow schema: {exc}.")
-        return None
-
-    payload.subject = UpdateSubject[payload.subject.upper()]
-
-    try:
-        if payload.subject == UpdateSubject.GENERAL:
-            general_schema = defaults.NOTIFICATION_TASK_UPDATE_GENERAL_SCHEMA
-            jsonschema.validate(payload.updated_data, general_schema)
-        elif payload.subject == UpdateSubject.PRICE_BELOW:
-            price_below_schema = defaults.NOTIFICATION_TASK_UPDATE_PRICE_BELOW_SCHEMA
-            jsonschema.validate(payload.updated_data, price_below_schema)
-    except jsonschema.ValidationError as exc:
-        logger.exception(f"Updated data doesn't follow schema: {exc}.")
-        return None
-
-    return payload
-
-
-def check_task_counts_valid(tasks: BoxList) -> bool:
-    """Verify that the number of certain task types matches the allowed amount."""
-    if len(tasks) == 0:
-        return False
-    # A combination of the main task type and other types which are used to identify a single count.
-    CombinedTypes = namedtuple("CombinedTypes", ["task_type", "other"])
-    combined_types_counts = {}
-    for task in tasks:
-        if task.type == TaskType.ADD_TOKEN:
-            combined_types = CombinedTypes(task.type, ())
-        elif task.type == TaskType.SUBSCRIBE_DESUBSCRIBE:
-            combined_types = CombinedTypes(task.type, (task.payload.notification_type,))
-        elif task.type == TaskType.UPDATE:
-            combined_types = CombinedTypes(task.type, (task.payload.subject,))
-
-        current_count = combined_types_counts.get(combined_types, 0)
-        combined_types_counts[combined_types] = current_count + 1
-
-    for combined_types, count in combined_types_counts.items():
-        task_type = combined_types.task_type
-        other_types = combined_types.other
-        # fmt: off
-        if any((
-            task_type == TaskType.ADD_TOKEN,
-            task_type == TaskType.SUBSCRIBE_DESUBSCRIBE,
-            task_type == TaskType.UPDATE,
-        )) and count > 1:
-            logger.warning(f"Task amount >1 with '{task_type.name}' task type and '{other_types}' other types.")
-            return False
-        # fmt: on
-
-    return True
-
-
-def parse_tasks_body(old_packed_tasks: Box) -> Optional[Box]:
-    """Validates and parses the tasks into an internal format.
-
-    See the 'notifications.client_receive.tasks' doc for description of the different tasks
-    and their valdiation requirements.
-
-    :returns: None if tasks couldn't be parsed, otherwise return the packed tasks in internal format.
+    :returns: None if configuration couldn't be parsed, otherwise return the configuration in internal format.
     """
-    schema = defaults.NOTIFICATION_TASKS_BASE_SCHEMA
+    schema = defaults.NOTIFICATION_CONFIGURATION_SCHEMA
     try:
-        jsonschema.validate(old_packed_tasks, schema)
+        jsonschema.validate(configuration, schema)
     except jsonschema.ValidationError as exc:
         logger.warning(f"Clients tasks json is not valid: {exc}.")
         return None
 
-    packed_tasks = Box()
-    packed_tasks.token = old_packed_tasks.token
-    packed_tasks.tasks = []
-    for index, old_task in enumerate(old_packed_tasks.tasks):
-        task = Box()
-        task.type = TaskType[old_task.type.upper()]
-        payload = None
-        if task.type == TaskType.ADD_TOKEN:
-            payload = parse_add_token_payload(old_task.payload, index)
-        elif task.type == TaskType.SUBSCRIBE_DESUBSCRIBE:
-            payload = parse_subscribe_desubscribe_payload(old_task.payload)
-        elif task.type == TaskType.UPDATE:
-            payload = parse_update_payload(old_task.payload)
+    configuration.general.region = Region[configuration.general.region]
 
-        if payload is None:
-            logger.warning(f"Couldn't parse {task.type} task.")
-            return None
-        task.payload = payload
-
-        if task.get("payload") is not None:
-            packed_tasks.tasks.append(task)
-
-    counts_valid = check_task_counts_valid(packed_tasks.tasks)
-    if not counts_valid:
-        return None
-
-    return packed_tasks
+    return configuration

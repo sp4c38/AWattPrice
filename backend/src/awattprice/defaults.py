@@ -112,101 +112,40 @@ PRICE_DATA_REFRESH_LOCK_TIMEOUT = 10
 # Name of file which stores the timestamp when prices were updated last.
 PRICE_DATA_UPDATE_TS_FILE_NAME = "update-ts-{}.info"  # formatted with lowercase region name
 
+region_enum_names = [element.name for element in defaults.Region]
 
-class TaskType(Enum):
-    """Different types of tasks which can be sent by the client to change their notification config."""
-
-    ADD_TOKEN = auto()
-    SUBSCRIBE_DESUBSCRIBE = auto()
-    UPDATE = auto()
-
-
-class NotificationType(Enum):
-    """Different notification types."""
-
-    PRICE_BELOW = auto()
-
-
-class UpdateSubject(Enum):
-    """Different subjects for which to perform updates."""
-
-    GENERAL = auto()
-    PRICE_BELOW = auto()
-
-
-NOTIFICATION_TASKS_BASE_SCHEMA = {
+NOTIFICATION_CONFIGURATION_SCHEMA = {
     "type": "object",
     "properties": {
         "token": {"type": "string", "minLength": 1},
-        "tasks": {
-            "type": "array",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "type": {"enum": [element.name.lower() for element in TaskType]},
-                    "payload": {"type": "object"},
-                },
-                "required": ["type", "payload"],
-                "additionalProperties": False,
+
+        "general": {
+            "type": "object",
+            "properties": {
+                "region": {"enum": region_enum_names},
+                "tax": {"type": "boolean"}
             },
-            "minItems": 1,
+            "required": ["region", "tax"],
+            "additionalProperties": False
         },
+
+        "notifications": {
+            "type": "object",
+            "properties": {
+                "price_below": {
+                    "type": "object",
+                    "properties": {
+                        "active": {"type": "boolean"},
+                        "below_value": {"type": "number"}
+                    },
+                    "required": ["active", "below_value"],
+                    "additionalProperties": False
+                }
+            },
+            "required": ["price_below"],
+            "additionalProperties": False
+        }
     },
-    "required": ["token", "tasks"],
-    "additionalProperties": False,
-}
-
-region_enum_names = [element.name for element in defaults.Region]
-
-NOTIFICATION_TASK_PAYLOAD_ADD_TOKEN_SCHEMA = {
-    "type": "object",
-    "properties": {"region": {"enum": region_enum_names}, "tax": {"type": "boolean"}},
-    "required": ["region", "tax"],
-    "additionalProperties": False,
-}
-
-NOTIFICATION_TASK_SUB_DESUB_SCHEMA = {
-    "type": "object",
-    "properties": {
-        "notification_type": {"enum": [element.name.lower() for element in NotificationType]},
-        "active": {"type": "boolean"},
-        "notification_info": {"type": "object"},
-    },
-    "required": ["active", "notification_type", "notification_info"],
-    "additionalProperties": False,
-}
-
-NOTIFICATION_TASK_PRICE_BELOW_SUB_DESUB_SCHEMA = {
-    "type": "object",
-    "properties": {"below_value": {"type": "number"}},
-    "required": ["below_value"],
-    "additionalProperties": False,
-}
-
-NOTIFICATION_TASK_UPDATE_SCHEMA = {
-    "type": "object",
-    "properties": {
-        "subject": {"enum": [element.name.lower() for element in UpdateSubject]},
-        "updated_data": {"type": "object"},
-    },
-    "required": ["subject", "updated_data"],
-    "additionalProperties": False,
-}
-
-# Make sure that the data updater function understands and is able to process all properties specified here.
-NOTIFICATION_TASK_UPDATE_GENERAL_SCHEMA = {
-    "type": "object",
-    "properties": {
-        "region": {"enum": region_enum_names},
-        "tax": {"type": "boolean"},
-    },
-    "minProperties": 1,
-    "additionalProperties": False,
-}
-
-NOTIFICATION_TASK_UPDATE_PRICE_BELOW_SCHEMA = {
-    "type": "object",
-    "properties": {"below_value": {"type": "number"}},
-    "minProperties": 1,
-    "additionalProperties": False,
+    "required": ["token", "general", "notifications"],
+    "additionalProperties": False
 }

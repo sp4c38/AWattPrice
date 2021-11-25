@@ -76,6 +76,4 @@ async def do_notification_tasks(request: Request):
     if configuration is None:
         raise HTTPException(400)
 
-    token_hex = packed_tasks.token
-    tasks = packed_tasks.tasks
-    await notifications.run_notification_tasks(database_engine, token_hex, tasks)
+    await notifications.run_notification_tasks(database_engine, configuration)

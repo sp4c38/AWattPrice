@@ -1,10 +1,3 @@
-//
-//  RegionAndVatSelection.swift
-//  AWattPrice
-//
-//  Created by Léon Becker on 21.11.20.
-//
-
 import Combine
 import Resolver
 import SwiftUI
@@ -14,34 +7,34 @@ extension RegionAndVatSelection {
         @Injected var currentSetting: CurrentSetting
         @Injected var notificationSetting: CurrentNotificationSetting
         @Injected var notificationService: NotificationService
-        
+
         @Published var areChangeable: Bool = false
-        
+
         @Published var selectedRegion: Region = .DE
         @Published var pricesWithTaxIncluded: Bool = false
-        
+
         var cancellables = [AnyCancellable]()
-        
+
         init() {
             if let region = Region(rawValue: currentSetting.entity!.regionIdentifier) {
                 selectedRegion = region
             }
             pricesWithTaxIncluded = currentSetting.entity!.pricesWithVAT
-            
+
             notificationService.isUploading.$isLocked.sink { newIsUploading in
                 DispatchQueue.main.async { self.areChangeable = !newIsUploading }
             }.store(in: &cancellables)
         }
-        
+
         func regionSwitched(to newRegion: Region) {
             guard let notificationSettingEntity = notificationSetting.entity else { return }
-            
+
             let changeSelectedRegionInView = {
                 DispatchQueue.main.async {
                     self.selectedRegion = newRegion
                 }
             }
-            
+
             notificationService.changeUploadableAttribute(notificationSettingEntity, upload: {
                 if let tokenContainer = self.notificationService.tokenContainer {
                     let interface = APINotificationInterface(token: tokenContainer.token)
@@ -57,16 +50,16 @@ extension RegionAndVatSelection {
                 changeSelectedRegionInView()
             })
         }
-        
+
         func taxToggled(to newTaxSelection: Bool) {
             guard let notificationSettingEntity = notificationSetting.entity else { return }
-            
+
             let changeTaxSelectionInView = {
                 DispatchQueue.main.async {
                     self.pricesWithTaxIncluded = newTaxSelection
                 }
             }
-            
+
             notificationService.changeUploadableAttribute(notificationSettingEntity, upload: {
                 if let tokenContainer = self.notificationService.tokenContainer {
                     let interface = APINotificationInterface(token: tokenContainer.token)
@@ -95,7 +88,7 @@ struct RegionAndVatSelection: View {
     init() {
         self._viewModel = StateObject(wrappedValue: ViewModel())
     }
-    
+
     var body: some View {
         CustomInsetGroupedListItem(
             header: Text("settingsPage.region"),
@@ -107,7 +100,7 @@ struct RegionAndVatSelection: View {
                         .progressViewStyle(CircularProgressViewStyle())
                         .transition(.opacity)
                 }
-                
+
                 VStack(alignment: .leading, spacing: 20) {
                     Picker(selection: $viewModel.selectedRegion.setNewValue { viewModel.regionSwitched(to: $0) }.animation(), label: Text("")) {
                         Text("settingsPage.region.germany")
@@ -138,9 +131,8 @@ struct RegionAndVatSelection: View {
     }
 }
 
-struct RegionSelection_Previews: PreviewProvider {
+struct RegionTaxSelection_Previews: PreviewProvider {
     static var previews: some View {
         RegionAndVatSelection()
-            .environmentObject(CurrentSetting(managedObjectContext: PersistenceManager().persistentContainer.viewContext))
     }
 }

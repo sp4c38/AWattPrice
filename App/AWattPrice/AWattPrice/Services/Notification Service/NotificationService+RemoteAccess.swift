@@ -91,8 +91,6 @@ extension NotificationService {
             ensureAccess { access in
                 if access {
                     upload()
-                } else {
-                    noUpload()
                 }
             }
         } else {

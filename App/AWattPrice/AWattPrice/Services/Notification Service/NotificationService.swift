@@ -33,18 +33,6 @@ class PublishedNSLock: ObservableObject {
 }
 
 class NotificationService: ObservableObject {
-    struct TokenContainer {
-        /// Stores what to do when making the next notification request.
-        enum NextUploadState {
-            case doNothing
-            case addTokenTask
-            case uploadAllNotificationConfig
-        }
-        
-        let token: String
-        var nextUploadState: NextUploadState
-    }
-    
     enum AccessState {
         case unknown
         case notAsked
@@ -65,7 +53,7 @@ class NotificationService: ObservableObject {
         case failure(error: Error)
     }
     
-    var tokenContainer: TokenContainer? = nil
+    let token: String
     
     @Published var accessState: AccessState = .unknown
     @Published var pushState: PushState = .unknown
@@ -74,8 +62,6 @@ class NotificationService: ObservableObject {
     @Published var stateLastUpload: StateLastUpload = .none
     
     internal let notificationCenter = UNUserNotificationCenter.current()
-    internal var notificationRequestCancellable: AnyCancellable? = nil
     
     internal var cancellables = [AnyCancellable]()
-    internal var ensureAccessPushStateCancellable: AnyCancellable? = nil
 }

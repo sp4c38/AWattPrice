@@ -131,6 +131,58 @@ struct RegionAndVatSelection: View {
     }
 }
 
+class RegionTaxSelectionViewModel: ObservableObject {
+    var currentSetting: CurrentSetting = Resolver.resolve()
+    
+    @Published var selectedRegion: Region
+    @Published var pricesWithTax: Bool
+    @Published var isLoading: Bool
+    
+    var cancellables = [AnyCancellable]()
+    var showTaxSelection: Bool { selectedRegion == Region.DE }
+    
+    init() {
+        selectedRegion = Region(rawValue: currentSetting.entity!.regionIdentifier)!
+        pricesWithTax = currentSetting.entity!.pricesWithVAT
+        
+        $selectedRegion.sink(receiveValue: regionChanges).store(in: &cancellables)
+    }
+    
+    func regionChanges(newRegion: Region) {
+        isLoading = true
+        isLoading = false
+    }
+}
+
+struct RegionTaxSelectionView: View {
+    @ObservedObject var viewModel: RegionTaxSelectionViewModel
+    
+    var body: some View {
+        VStack {
+            regionPicker
+            
+            if viewModel.showTaxSelection {
+                taxSelection
+            }
+        }
+        .opacity(viewModel.isLoading ? 0.6 : 1)
+        .disabled(viewModel.isLoading)
+    }
+    
+    var regionPicker: some View {
+        Picker("", selection: $viewModel.selectedRegion) {
+            Text("settingsPage.region.germany")
+                .tag(Region.DE)
+            Text("settingsPage.region.austria")
+                .tag(Region.AT)
+        }
+    }
+    
+    var taxSelection: some View {
+        Toggle(isOn: $viewModel.pricesWithTax) {  }
+    }
+}
+
 struct RegionTaxSelection_Previews: PreviewProvider {
     static var previews: some View {
         RegionAndVatSelection()

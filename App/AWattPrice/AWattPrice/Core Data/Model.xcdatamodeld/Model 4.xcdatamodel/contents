@@ -2,8 +2,8 @@
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="19461" systemVersion="21C5039b" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="NotificationSetting" representedClassName="NotificationSetting" syncable="YES">
         <attribute name="changesButErrorUploading" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="forceUpload" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="lastApnsToken" optional="YES" attributeType="String"/>
-        <attribute name="notifiPreviouslyAllowed" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="priceBelowValue" optional="YES" attributeType="Integer 64" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="priceDropsBelowValueNotification" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
     </entity>

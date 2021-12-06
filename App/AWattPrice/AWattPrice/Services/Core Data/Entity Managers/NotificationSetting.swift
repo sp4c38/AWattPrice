@@ -53,10 +53,10 @@ class CurrentNotificationSetting: AutoUpdatingSingleEntity<NotificationSetting> 
     func changePriceDropsBelowValueNotifications(to newValue: Bool) {
         changeSetting(self, isNew: { $0.priceDropsBelowValueNotification != newValue },
                       bySetting: { $0.priceDropsBelowValueNotification = newValue })
-        }
+    }
     
-    func changeForceUploadNotificationsOne(to newValue: Bool) {
-        changeSetting(self, isNew: { $0.forceUploadNotificationsOne != newValue },
-                      bySetting: { $0.forceUploadNotificationsOne = newValue })
+    func changeForceUpload(to newValue: Bool) {
+        changeSetting(self, isNew: { $0.forceUpload != newValue },
+                      bySetting: { $0.forceUpload = newValue })
     }
 }

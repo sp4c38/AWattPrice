@@ -40,63 +40,43 @@ struct PriceDropsBelowValueNotificationInfoView: View {
     }
 }
 
-extension PriceBelowNotificationView {
-    class ViewModel: ObservableObject {
-        @ObservedObject var notificationService: NotificationService = Resolver.resolve()
-        @Injected var currentSetting: CurrentSetting
-        @ObservedObject var crtNotifiSetting: CurrentNotificationSetting = Resolver.resolve()
+class PriceBelowNotificationViewModel: ObservableObject {
+    @Injected var currentSetting: CurrentSetting
+    @ObservedObject var notificationSetting: CurrentNotificationSetting = Resolver.resolve()
+    @ObservedObject var notificationService: NotificationService = Resolver.resolve()
 
-        @Published var areChangeable: Bool = false
-        
-        @Published var notificationIsEnabled: Bool = false
-        @Published var priceBelowValue: String = ""
-        
-        let showHeader: Bool
-        
-        var cancellables = [AnyCancellable]()
+    @Published var notificationIsEnabled: Bool = false
+    @Published var priceBelowValue: String = ""
+    
+    var cancellables = [AnyCancellable]()
 
-        init(showHeader: Bool) {
-            self.showHeader = showHeader
-            
-            notificationIsEnabled = crtNotifiSetting.entity!.priceDropsBelowValueNotification
-            priceBelowValue = crtNotifiSetting.entity!.priceBelowValue.priceString ?? ""
-            
-            notificationService.isUploading.$isLocked.sink { newIsUploading in
-                    DispatchQueue.main.async { self.areChangeable = !newIsUploading }
-                }.store(in: &cancellables)
-        }
+    init() {
+        notificationIsEnabled = notificationSetting.entity!.priceDropsBelowValueNotification
+        priceBelowValue = notificationSetting.entity!.priceBelowValue.priceString ?? ""
         
-        func priceBelowNotificationToggled(to newSelection: Bool) {
-            notificationService.ensureAccess { access in
-                if access == true,
-                   let tokenContainer = self.notificationService.tokenContainer,
-                   let notificationSettingEntity = self.crtNotifiSetting.entity
-                {
-                    let apiInterface = APINotificationInterface(token: tokenContainer.token)
-                    let notificationInfo = SubDesubPriceBelowNotificationInfo(belowValue: notificationSettingEntity.priceBelowValue)
-                    let subDesubPayload = SubDesubPayload(notificationType: .priceBelow, active: newSelection, notificationInfo: notificationInfo )
-                    apiInterface.addPriceBelowSubDesubTask(subDesubPayload)
-                    // The push state can be ignored because in ensureAccess it was verified that the push state was registered successfully. This code is run in a sink block and values are getting set after sink blocks. So the new change isn't reflected in the variable anyways yet.
-                    self.notificationService.runNotificationRequest(interface: apiInterface, appSetting: self.currentSetting, notificationSetting: self.crtNotifiSetting, ignorePushState: true, onSuccess: {
-                        DispatchQueue.main.async { self.notificationIsEnabled = newSelection }
-                    })
-                }
-            }
-        }
+        $notificationIsEnabled.dropFirst().sink(receiveValue: priceBelowNotificationToggled).store(in: &cancellables)
+        $priceBelowValue.dropFirst().sink(receiveValue: updateWishPrice).store(in: &cancellables)
+    }
+    
+    func priceBelowNotificationToggled(to newSelection: Bool) {
+        guard newSelection != self.notificationSetting.entity!.priceDropsBelowValueNotification else { return }
         
-        func updateWishPrice(to newWishPrice: Int) {
-            notificationService.ensureAccess { access in
-                if access == true,
-                   let tokenContainer = self.notificationService.tokenContainer
-                {
-                    let apiInterface = APINotificationInterface(token: tokenContainer.token)
-                    let updatedData = UpdatedPriceBelowNotificationData(belowValue: newWishPrice)
-                    let updatePayload = UpdatePayload(subject: .priceBelow, updatedData: updatedData)
-                    apiInterface.addPriceBelowUpdateTask(updatePayload)
-                    self.notificationService.runNotificationRequest(interface: apiInterface, appSetting: self.currentSetting, notificationSetting: self.crtNotifiSetting)
-                }
-            }
-        }
+        var notificationConfiguration = NotificationConfiguration.create(nil, currentSetting, notificationSetting)
+        notificationConfiguration.notifications.priceBelow.active = newSelection
+        notificationService.changeNotificationConfiguration(notificationConfiguration, notificationSetting, skipWantNotificationCheck: true, uploadFinished: {
+            self.notificationSetting.changePriceDropsBelowValueNotifications(to: newSelection)
+        }, uploadError: { DispatchQueue.main.async { self.notificationIsEnabled = self.notificationSetting.entity!.priceDropsBelowValueNotification } })
+    }
+    
+    func updateWishPrice(to newWishPriceString: String) {
+        guard let newWishPrice = newWishPriceString.integerValue else { priceBelowValue = ""; return }
+        guard newWishPrice != self.notificationSetting.entity!.priceBelowValue else { return }
+        
+        var notificationConfiguration = NotificationConfiguration.create(nil, currentSetting, notificationSetting)
+        notificationConfiguration.notifications.priceBelow.belowValue = newWishPrice
+        notificationService.changeNotificationConfiguration(notificationConfiguration, notificationSetting, skipWantNotificationCheck: true, uploadFinished: {
+            self.notificationSetting.changePriceBelowValue(to: newWishPrice)
+        }, uploadError: { DispatchQueue.main.async { self.priceBelowValue = self.notificationSetting.entity!.priceBelowValue.priceString ?? "" } })
     }
 }
 
@@ -104,19 +84,19 @@ struct PriceBelowNotificationView: View {
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.keyboardObserver) var keyboardObserver
     
-    @StateObject var viewModel: ViewModel
-    
+    @StateObject var viewModel = PriceBelowNotificationViewModel()
     @State var keyboardCurrentlyClosed = false
     
-    init(showHeader showHeaderValue: Bool = false) {
-        let viewModel = ViewModel(showHeader: showHeaderValue)
-        self._viewModel = StateObject(wrappedValue: viewModel)
+    let showHeader: Bool
+    
+    init(showHeader: Bool = false) {
+        self.showHeader = showHeader
     }
     
     var body: some View {
         VStack {
             CustomInsetGroupedListItem(
-                header: viewModel.showHeader ? Text("general.notifications") : nil,
+                header: showHeader ? Text("general.notifications") : nil,
                 footer: nil
             ) {
                 VStack(alignment: .leading, spacing: 20) {
@@ -133,22 +113,7 @@ struct PriceBelowNotificationView: View {
     }
 
     var toggleView: some View {
-        HStack {
-            Text("notificationPage.notification.priceDropsBelowValue")
-                .fixedSize(horizontal: false, vertical: true)
-                .padding(.top, 2)
-
-            Spacer()
-
-            if viewModel.areChangeable {
-                Toggle("", isOn: $viewModel.notificationIsEnabled.setNewValue { viewModel.priceBelowNotificationToggled(to: $0) }.animation())
-                    .labelsHidden()
-            } else {
-                ProgressView()
-                    .progressViewStyle(CircularProgressViewStyle())
-                    .frame(height: 30)
-            }
-        }
+        Toggle("notificationPage.notification.priceDropsBelowValue", isOn: $viewModel.notificationIsEnabled)
     }
 
     var wishPriceInputField: some View {
@@ -161,19 +126,8 @@ struct PriceBelowNotificationView: View {
             HStack {
                 NumberField(text: $viewModel.priceBelowValue, placeholder: "general.cent.long".localized(), plusMinusButton: true, withDecimalSeperator: false)
                     .fixedSize(horizontal: false, vertical: true)
-                    .onChange(of: viewModel.priceBelowValue) { newValue in
-                        var newIntegerValue: Int = 0
-                        if let newConvertedIntegerValue = newValue.integerValue {
-                            newIntegerValue = newConvertedIntegerValue
-                        }
-                        viewModel.priceBelowValue = newIntegerValue.priceString ?? ""
-                        print("Changed to \(newIntegerValue) and \(keyboardCurrentlyClosed)")
-                        if keyboardCurrentlyClosed {
-                            viewModel.updateWishPrice(to: newIntegerValue)
-                        }
-                    }
-                    .disabled(!viewModel.areChangeable)
-                    .opacity(viewModel.areChangeable ? 1.0 : 0.7)
+//                    .disabled(!viewModel.areChangeable)
+//                    .opacity(viewModel.areChangeable ? 1.0 : 0.7)
 
                 Text("general.centPerKwh")
                     .transition(.opacity)

@@ -8,23 +8,48 @@
 import Resolver
 import SwiftUI
 
-/// Start of the application.
+class ContentViewModel: ObservableObject {
+    var currentSetting: CurrentSetting = Resolver.resolve()
+    var notificationSetting: CurrentNotificationSetting = Resolver.resolve()
+    var notificationService: NotificationService = Resolver.resolve()
+    
+    var checkAccessStates = false
+    
+    func onAppear() {
+        // Check Show Whats New
+        if currentSetting.entity!.splashScreensFinished == false && currentSetting.entity!.showWhatsNew == true {
+            currentSetting.changeShowWhatsNew(to: false)
+        }
+    }
+    
+    func scenePhaseChanged(to scenePhase: ScenePhase) {
+        if scenePhase == .active {
+            UIApplication.shared.applicationIconBadgeNumber = 0
+            
+            if checkAccessStates {
+                notificationService.refreshAccessStates()
+            } else { checkAccessStates = true }
+    
+            if notificationSetting.entity!.forceUpload {
+                let notificationConfiguration = NotificationConfiguration.create(nil, currentSetting, notificationSetting)
+                notificationService.changeNotificationConfiguration(notificationConfiguration, notificationSetting, uploadFinished: { self.notificationSetting.changeForceUpload(to: false) })
+            }
+        }
+    }
+}
+
 struct ContentView: View {
     @Environment(\.networkManager) var networkManager
     @Environment(\.scenePhase) var scenePhase
 
-    @Injected var crtNotifiSetting: CurrentNotificationSetting
-    @ObservedObject var currentSetting: CurrentSetting = Resolver.resolve()
-
+    @StateObject var viewModel = ContentViewModel()
     @ObservedObject var tabBarItems = TBItems()
-
-    @State var initialAppearFinished: Bool? = false
 
     var body: some View {
         VStack {
-            if currentSetting.entity != nil {
+            if viewModel.currentSetting.entity != nil {
                 VStack(spacing: 0) {
-                    if currentSetting.entity!.splashScreensFinished == true {
+                    if viewModel.currentSetting.entity!.splashScreensFinished {
                         ZStack {
                             SettingsPageView()
                                 .opacity(tabBarItems.selectedItemIndex == 0 ? 1 : 0)
@@ -44,29 +69,10 @@ struct ContentView: View {
                         SplashScreenStartView()
                     }
                 }
-                .onAppear {
-                    // Check Notification access
-                    initialAppearFinished = nil
-                }
-                .onChange(of: scenePhase) { newScenePhase in
-                    if initialAppearFinished == nil {
-                        initialAppearFinished = true
-                        return
-                    }
-                }
-                .onAppear {
-                    // Check Show Whats New
-                    if currentSetting.entity!.splashScreensFinished == false && currentSetting.entity!.showWhatsNew == true {
-                        currentSetting.changeShowWhatsNew(to: false)
-                    }
-                }
+                .onAppear(perform: viewModel.onAppear)
             }
         }
         .ignoresSafeArea(.keyboard)
-        .onChange(of: scenePhase) { newScenePhase in
-            if newScenePhase == .active {
-                UIApplication.shared.applicationIconBadgeNumber = 0
-            }
-        }
+        .onChange(of: scenePhase, perform: viewModel.scenePhaseChanged)
     }
 }

@@ -15,13 +15,15 @@ struct SettingsPageView: View {
     @ObservedObject var currentSetting: CurrentSetting = Resolver.resolve()
     @ObservedObject var notificationService: NotificationService = Resolver.resolve()
     
+    let regionTaxSelectionViewModel = RegionTaxSelectionViewModel()
+    
     var body: some View {
         NavigationView {
             VStack {
                 if currentSetting.entity != nil {
                     ZStack(alignment: Alignment(horizontal: .center, vertical: .bottom)) {
                         CustomInsetGroupedList {
-                            RegionAndVatSelection()
+                            RegionTaxSelectionView(viewModel: regionTaxSelectionViewModel)
 
     //                        AwattarTariffSelectionSetting()
 

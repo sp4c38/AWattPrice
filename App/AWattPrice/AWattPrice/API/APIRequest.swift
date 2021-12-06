@@ -42,21 +42,24 @@ enum APIRequestFactory {
         return ResponseAPIRequest(urlRequest: urlRequest, expectedResponseCode: 200, decoder: decoder)
     }
     
-    static func notificationRequest(packedTasks: PackedNotificationTasks) -> PlainAPIRequest? {
-        guard packedTasks.tasks.isEmpty == false else { return nil }
+    static func notificationRequest(_ notificationConfiguration: NotificationConfiguration) -> PlainAPIRequest? {
+        guard notificationConfiguration.token != nil else {
+            print("Token of the notification configuration is still nil.")
+            return nil
+        }
         
         let encoder = JSONEncoder()
         let encodedTasks: Data
         do {
-            encodedTasks = try encoder.encode(packedTasks)
+            encodedTasks = try encoder.encode(notificationConfiguration)
         } catch {
-            print("Couldn't encode notification tasks: \(error).")
+            print("Couldn't encode notification configuration: \(error).")
             return nil
         }
         
         let requestURL = apiURL
             .appendingPathComponent("notifications", isDirectory: true)
-            .appendingPathComponent("run_tasks", isDirectory: true)
+            .appendingPathComponent("save_configuration", isDirectory: true)
         var urlRequest = URLRequest(
             url: requestURL,
             cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,

@@ -9,10 +9,14 @@ import Combine
 import Foundation
 
 extension NotificationService {
-    private func sendNotificationRequest(request: PlainAPIRequest) -> AnyPublisher<Never, Error> {
-        let response = APIClient().request(to: request)
+    /// Try to receive the required notification access permissions and send the notification request.
+    func sendNotificationConfiguration(_ notificationConfiguration: NotificationConfiguration, _ notificationSetting: CurrentNotificationSetting) -> AnyPublisher<Never, Error>? {
+        guard accessState == .granted, pushState == .apnsRegistrationSuccessful else { return nil }
         
-        response
+        guard let apiRequest = APIRequestFactory.notificationRequest(notificationConfiguration) else { return nil }
+        let request = APIClient().request(to: apiRequest)
+        
+        request
             .receive(on: DispatchQueue.main)
             .sink { completion in
                 switch completion {
@@ -22,57 +26,53 @@ extension NotificationService {
                 case .failure(let error):
                     print("Couldn't sent notification tasks: \(error).")
                     self.stateLastUpload = .failure(error: error)
+                    notificationSetting.changeForceUpload(to: true)
                 }
             } receiveValue: { _ in }
             .store(in: &cancellables)
         
-        return response
+        return request
     }
     
-    /// Try to receive the required notification access permissions and send the notification request.
-    func runNotificationRequest(interface: APINotificationInterface, appSetting: CurrentSetting, notificationSetting: CurrentNotificationSetting, ignorePushState: Bool = false, onSuccess: (() -> ())? = nil, onFailure: (() -> ())? = nil) {
-        guard accessState == .granted, isUploading.tryLock() == true,
-              let extendedInterface = extendNotificationInterface(interface, appSetting: appSetting, notificationSetting: notificationSetting)
-        else { return }
-        guard ignorePushState == true || pushState == .apnsRegistrationSuccessful else { return }
-        let packedTasks = extendedInterface.getPackedTasks()
+    func wantToReceiveAnyNotification(notificationSetting: CurrentNotificationSetting) -> Bool {
+        if notificationSetting.entity!.priceDropsBelowValueNotification == true {
+            return true
+        } else {
+            return false
+        }
+    }
+    
+    func changeNotificationConfiguration(
+        _ notificationConfiguration: NotificationConfiguration, _ notificationSetting: CurrentNotificationSetting, ensurePushAccess: Bool = true, skipWantNotificationCheck: Bool = false,
+        uploadFinished: (() -> ())? = nil, uploadError: (() -> ())? = nil, noUpload: (() -> ())? = nil
+    ) {
+        var notificationConfiguration = notificationConfiguration
         
-        guard let apiRequest = APIRequestFactory.notificationRequest(packedTasks: packedTasks) else { return }
-        let request = sendNotificationRequest(request: apiRequest)
-        request
-            .sink { completion in
-                switch completion {
-                case .finished:
-                    extendedInterface.copyToSettings(appSetting: appSetting, notificationSetting: notificationSetting)
-                    onSuccess?()
-                case .failure(_):
-                    onFailure?()
+        if skipWantNotificationCheck || wantToReceiveAnyNotification(notificationSetting: notificationSetting) {
+            ensureAccess(ensurePushAccess: ensurePushAccess) { access in
+                if access, let token = self.token {
+                    if notificationConfiguration.token == nil {
+                        notificationConfiguration.token = token
+                    }
+                    
+                    if let sendPublisher = self.sendNotificationConfiguration(notificationConfiguration, notificationSetting) {
+                        sendPublisher.sink(receiveCompletion: { completion in
+                            switch completion {
+                            case .finished:
+                                uploadFinished?()
+                            case .failure(_):
+                                uploadError?()
+                            }
+                        }, receiveValue: {_ in }).store(in: &self.cancellables)
+                    }
+                } else {
+                    print("Didn't get notification access.")
+                    noUpload?()
                 }
-                self.isUploading.releaseLock()
-            } receiveValue: { _ in }
-            .store(in: &cancellables)
-    }
-    
-    /// Extends the notification interface by adding missing tasks which are required to be sent with this notification request.
-    func extendNotificationInterface(_ interface: APINotificationInterface, appSetting: CurrentSetting, notificationSetting: CurrentNotificationSetting) -> APINotificationInterface? {
-        guard let tokenContainer = self.tokenContainer, let appSettingEntity = appSetting.entity else { return nil }
-        
-        if tokenContainer.nextUploadState == .addTokenTask, let region = Region(rawValue: appSettingEntity.regionIdentifier) {
-            interface.addAddTokenTask(AddTokenPayload(region: region, tax: appSettingEntity.pricesWithVAT), overwrite: false)
-        } else if tokenContainer.nextUploadState == .uploadAllNotificationConfig {
-            guard interface.extendToAllNotificationConfig(appSetting: appSetting, notificationSetting: notificationSetting) != nil else { return nil }
+            }
+        } else {
+            print("User doesn't want to receive any notifications and thus don't need to upload.")
+            noUpload?()
         }
-        
-        return interface
-    }
-    
-    func uploadAllNotificationConfig(appSetting: CurrentSetting, notificationSetting: CurrentNotificationSetting, onSuccess: (() -> ())? = nil, onFailure: (() -> ())? = nil) {
-        guard let token = tokenContainer?.token else { return }
-        let interface = APINotificationInterface(token: token)
-        guard interface.extendToAllNotificationConfig(appSetting: appSetting, notificationSetting: notificationSetting) != nil else {
-            onFailure?()
-            return
-        }
-        runNotificationRequest(interface: interface, appSetting: appSetting, notificationSetting: notificationSetting, ignorePushState: true, onSuccess: onSuccess, onFailure: onFailure)
     }
 }

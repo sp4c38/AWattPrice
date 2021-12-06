@@ -10,28 +10,6 @@ import Resolver
 import SwiftUI
 import UserNotifications
 
-class PublishedNSLock: ObservableObject {
-    private let lock = NSLock()
-    @Published var isLocked = false
-    
-    func acquireLock() {
-        self.lock.lock()
-        if isLocked != true { isLocked = true }
-    }
-    
-    func releaseLock() {
-        self.lock.unlock()
-        if isLocked != false { isLocked = false }
-    }
-    
-    func tryLock() -> Bool {
-        let trySuccessful = self.lock.try()
-        let currentIsLocked = trySuccessful
-        if isLocked != currentIsLocked { isLocked = currentIsLocked }
-        return trySuccessful
-    }
-}
-
 class NotificationService: ObservableObject {
     enum AccessState {
         case unknown
@@ -53,15 +31,29 @@ class NotificationService: ObservableObject {
         case failure(error: Error)
     }
     
-    let token: String
+    var token: String? = nil
     
-    @Published var accessState: AccessState = .unknown
-    @Published var pushState: PushState = .unknown
+    var publishedAccessState: CurrentValueSubject<AccessState, Never>
+    var publishedPushState: CurrentValueSubject<PushState, Never>
     
-    @ObservedObject var isUploading = PublishedNSLock()
+    var accessState: AccessState {
+        didSet { publishedAccessState.send(accessState) }
+    }
+    var pushState: PushState {
+        didSet { publishedPushState.send(pushState) }
+    }
+    
     @Published var stateLastUpload: StateLastUpload = .none
     
     internal let notificationCenter = UNUserNotificationCenter.current()
     
     internal var cancellables = [AnyCancellable]()
+    
+    init() {
+        publishedAccessState = .init(.unknown)
+        accessState = .unknown
+        
+        publishedPushState = .init(.unknown)
+        pushState = .unknown
+    }
 }

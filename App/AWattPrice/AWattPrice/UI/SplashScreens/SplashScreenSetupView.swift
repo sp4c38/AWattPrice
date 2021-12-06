@@ -21,7 +21,7 @@ struct SplashScreenSetupView: View {
         VStack {
             if currentSetting.entity != nil {
                 CustomInsetGroupedList {
-                    RegionAndVatSelection()
+                    RegionTaxSelectionView()
 
 //                    PriceDropsBelowValueNotificationView(showHeader: true)
 //                    AwattarTariffSelectionSetting()

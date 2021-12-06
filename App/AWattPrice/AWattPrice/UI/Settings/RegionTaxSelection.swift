@@ -159,14 +159,20 @@ class RegionTaxSelectionViewModel: ObservableObject {
         let changeSetting = { self.currentSetting.changeRegionIdentifier(to: newRegion.rawValue) }
         var notificationConfiguration = NotificationConfiguration.create(nil, self.currentSetting, self.notificationSetting)
         notificationConfiguration.general.region = newRegion
-        notificationService.changeNotificationConfiguration(notificationConfiguration, notificationSetting, uploadFinished: changeSetting, uploadError: changeSetting, noUpload: changeSetting)
+        notificationService.changeNotificationConfiguration(notificationConfiguration, notificationSetting, uploadFinished: changeSetting, uploadError: changeSetting, noUpload: {
+            self.notificationSetting.changeForceUpload(to: true)
+            changeSetting()
+        })
     }
     
     func taxSelectionChanges(newTaxSelection: Bool) {
         let changeSetting = { self.currentSetting.changeTaxSelection(to: newTaxSelection) }
         var notificationConfiguration = NotificationConfiguration.create(nil, self.currentSetting, self.notificationSetting)
         notificationConfiguration.general.tax = newTaxSelection
-        notificationService.changeNotificationConfiguration(notificationConfiguration, notificationSetting, uploadFinished: changeSetting, uploadError: changeSetting, noUpload: changeSetting)
+        notificationService.changeNotificationConfiguration(notificationConfiguration, notificationSetting, uploadFinished: changeSetting, uploadError: changeSetting, noUpload: {
+            self.notificationSetting.changeForceUpload(to: true)
+            changeSetting()
+        })
     }
 }
 

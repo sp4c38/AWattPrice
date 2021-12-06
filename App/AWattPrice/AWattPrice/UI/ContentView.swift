@@ -25,14 +25,19 @@ class ContentViewModel: ObservableObject {
     func scenePhaseChanged(to scenePhase: ScenePhase) {
         if scenePhase == .active {
             UIApplication.shared.applicationIconBadgeNumber = 0
+    
+            let checkForceUpload = {
+                if self.notificationSetting.entity!.forceUpload {
+                    let notificationConfiguration = NotificationConfiguration.create(nil, self.currentSetting, self.notificationSetting)
+                    self.notificationService.changeNotificationConfiguration(notificationConfiguration, self.notificationSetting, uploadFinished: { self.notificationSetting.changeForceUpload(to: false) })
+                }
+            }
             
             if checkAccessStates {
-                notificationService.refreshAccessStates()
-            } else { checkAccessStates = true }
-    
-            if notificationSetting.entity!.forceUpload {
-                let notificationConfiguration = NotificationConfiguration.create(nil, currentSetting, notificationSetting)
-                notificationService.changeNotificationConfiguration(notificationConfiguration, notificationSetting, uploadFinished: { self.notificationSetting.changeForceUpload(to: false) })
+                notificationService.refreshAccessStates { _ in checkForceUpload() }
+            } else {
+                checkForceUpload()
+                checkAccessStates = true
             }
         }
     }

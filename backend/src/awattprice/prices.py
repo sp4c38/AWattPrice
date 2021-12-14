@@ -55,8 +55,10 @@ class MarketPrice:
     @property
     def taxed(self) -> Decimal:
         """Get the taxed price."""
-        taxed_price = self.value * self.region.tax
-        return taxed_price
+        if self.region.tax:
+            return self.value * self.region.tax
+        else:
+            return self.value
 
     def ct_kwh(self, taxed: bool = False, round_: bool = False) -> Decimal:
         """Convert the price to cent per kWh.

@@ -10,28 +10,28 @@ import UserNotifications
 
 extension NotificationService {
     func refreshAccessStates(registerPushAccess: Bool = true, onCompletion: ((AccessState) -> ())? = nil) {
-        notificationCenter.getNotificationSettings { settings in
+        UNUserNotificationCenter.current().getNotificationSettings { settings in
             switch settings.authorizationStatus {
             case .authorized, .provisional:
                 print("Notification: Notification access granted.")
-                self.accessState = .granted
+                self.accessState.value = .granted
                 if registerPushAccess {
                     self.registerForRemoteNotifications()
                 }
             case .notDetermined:
                 print("Notification: Notification access wasn't asked for yet.")
-                self.accessState = .notAsked
+                self.accessState.value = .notAsked
             default:
                 print("Notification: Notification access not allowed: \(settings.authorizationStatus).")
-                self.accessState = .rejected
+                self.accessState.value = .rejected
             }
             
-            onCompletion?(self.accessState)
+            onCompletion?(self.accessState.value)
         }
     }
     
     func requestAccess(registerPushAccess: Bool = true, onCompletion: ((AccessState) -> ())? = nil) {
-        notificationCenter.requestAuthorization(options: [.alert, .badge, .sound]) { _, error in
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { _, error in
             if let error = error {
                 print("Notification: Notification access failed with error: \(error).")
                 return
@@ -42,15 +42,15 @@ extension NotificationService {
     
     func ensureAccess(ensurePushAccess: Bool = true, forceLastRecursion: Bool = false, _ onCompletion: @escaping ((Bool) -> ())) {
         if !ensurePushAccess {
-            if accessState == .granted {
+            if accessState.value == .granted {
                 onCompletion(true); return
-            } else if accessState == .rejected {
+            } else if accessState.value == .rejected {
                 onCompletion(false); return
             }
         } else {
-            if accessState == .granted, pushState == .apnsRegistrationSuccessful {
+            if accessState.value == .granted, pushState.value == .apnsRegistrationSuccessful {
                 onCompletion(true); return
-            } else if accessState == .rejected || pushState == .apnsRegistrationFailed {
+            } else if accessState.value == .rejected || pushState.value == .apnsRegistrationFailed {
                 onCompletion(false); return
             }
         }
@@ -60,29 +60,29 @@ extension NotificationService {
             return
         }
         
-        if accessState == .unknown {
+        if accessState.value == .unknown {
             refreshAccessStates(registerPushAccess: false) { _ in
                 self.ensureAccess(ensurePushAccess: ensurePushAccess) { onCompletion($0) }
             }
             return
-        } else if accessState == .notAsked {
+        } else if accessState.value == .notAsked {
             requestAccess(registerPushAccess: false) { _ in
                 self.ensureAccess(ensurePushAccess: ensurePushAccess) { onCompletion($0) }
             }
             return
-        } else if accessState != .granted {
+        } else if accessState.value != .granted {
             print("FATAL: Access state is \"\(accessState)\" although it must be \".granted\" in every case.",
             "Maybe added a new access state case but didn't consider it in the ensureAccess function yet?")
             onCompletion(false); return
         }
         
-        if pushState == .unknown {
+        if pushState.value == .unknown {
             registerForRemoteNotifications()
             ensureAccess(ensurePushAccess: ensurePushAccess) { onCompletion($0) }
             return
-        } else if pushState == .asked {
+        } else if pushState.value == .asked {
             var pushStateCancellable: AnyCancellable? = nil
-            pushStateCancellable = publishedPushState.dropFirst().sink { newPushState in
+            pushStateCancellable = pushState.dropFirst().sink { newPushState in
                 if newPushState != .asked {
                     self.ensureAccess(ensurePushAccess: ensurePushAccess, forceLastRecursion: true) { onCompletion($0) }
                     pushStateCancellable?.cancel()

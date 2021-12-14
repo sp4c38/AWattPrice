@@ -16,16 +16,15 @@ class APIClient {
             .eraseToAnyPublisher()
     }
     
-    func request(to apiRequest: PlainAPIRequest) -> AnyPublisher<Never, Error> {
+    func request(to apiRequest: PlainAPIRequest) -> AnyPublisher<(data: Data, response: URLResponse), Error> {
         self.request(request: apiRequest.urlRequest, expectedURLCode: apiRequest.expectedResponseCode)
-            .ignoreOutput()
             .eraseToAnyPublisher()
     }
     
     func request(request: URLRequest, expectedURLCode: Int? = nil) -> AnyPublisher<(data: Data, response: URLResponse), Error> {
         print("Performing url request to: \(request.url?.description ?? "nil").")
         return URLSession.shared.dataTaskPublisher(for: request)
-            .tryMap{ (data: Data, response: URLResponse) in
+            .tryMap { (data: Data, response: URLResponse) in
                 guard let expectedURLCode = expectedURLCode else { return (data, response) }
                 guard let response = response as? HTTPURLResponse else { throw URLError(.badServerResponse) }
                 if response.statusCode == expectedURLCode {

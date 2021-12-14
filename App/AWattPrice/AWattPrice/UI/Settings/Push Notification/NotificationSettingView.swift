@@ -16,16 +16,26 @@ extension AnyTransition {
     }
 }
 
+class NotificationSettingViewModel: ObservableObject {
+    var notificationService: NotificationService = Resolver.resolve()
+    
+    var cancellables = [AnyCancellable]()
+    
+    init() {
+        notificationService.accessState.receive(on: DispatchQueue.main).sink { _ in self.objectWillChange.send() }.store(in: &cancellables)
+    }
+}
+
 struct NotificationSettingView: View {
     @Environment(\.scenePhase) var scenePhase
 
-    @ObservedObject var notificationService: NotificationService = Resolver.resolve()
-    
+    @StateObject var viewModel = NotificationSettingViewModel()
+        
     var body: some View {
         ZStack(alignment: Alignment(horizontal: .center, vertical: .bottom)) {
             CustomInsetGroupedList {
                 VStack(spacing: 20) {
-                    if notificationService.accessState == .rejected {
+                    if viewModel.notificationService.accessState.value == .rejected {
                         NoNotificationAccessView()
                             .padding(.top, 10)
                             .transition(.opacity)
@@ -37,10 +47,10 @@ struct NotificationSettingView: View {
             }
 
             VStack {
-                if case .failure(_) = notificationService.stateLastUpload {
-                    SettingsUploadErrorView()
-                        .padding(.bottom, 15)
-                }
+//                if case .failure(_) = notificationService.stateLastUpload {
+//                    SettingsUploadErrorView()
+//                        .padding(.bottom, 15)
+//                }
             }
             .animation(.easeInOut)
         }

@@ -43,40 +43,62 @@ struct PriceDropsBelowValueNotificationInfoView: View {
 class PriceBelowNotificationViewModel: ObservableObject {
     @Injected var currentSetting: CurrentSetting
     @ObservedObject var notificationSetting: CurrentNotificationSetting = Resolver.resolve()
-    @ObservedObject var notificationService: NotificationService = Resolver.resolve()
+    var notificationService: NotificationService = Resolver.resolve()
 
     @Published var notificationIsEnabled: Bool = false
     @Published var priceBelowValue: String = ""
     
+    let uploadObserver: DownloadPublisherLoadingViewObserver
+    
     var cancellables = [AnyCancellable]()
-
+    
     init() {
-        notificationIsEnabled = notificationSetting.entity!.priceDropsBelowValueNotification
-        priceBelowValue = notificationSetting.entity!.priceBelowValue.priceString ?? ""
+        uploadObserver = DownloadPublisherLoadingViewObserver(intervalBeforeExceeded: 0.4)
         
+        uploadObserver.objectWillChange.receive(on: DispatchQueue.main).sink(receiveValue: { self.objectWillChange.send() }).store(in: &cancellables)
+
+        notificationIsEnabled = notificationSetting.entity!.priceDropsBelowValueNotification
         $notificationIsEnabled.dropFirst().sink(receiveValue: priceBelowNotificationToggled).store(in: &cancellables)
+        priceBelowValue = notificationSetting.entity!.priceBelowValue.priceString ?? ""
         $priceBelowValue.dropFirst().sink(receiveValue: updateWishPrice).store(in: &cancellables)
     }
     
+    var isUploading: Bool {
+        [.uploadingAndTimeExceeded, .uploadingAndTimeNotExceeded].contains(uploadObserver.loadingPublisher)
+    }
+    
+    var showUploadIndicators: Bool {
+        uploadObserver.loadingPublisher == .uploadingAndTimeExceeded
+    }
+    
     func priceBelowNotificationToggled(to newSelection: Bool) {
-        guard newSelection != self.notificationSetting.entity!.priceDropsBelowValueNotification else { return }
-        
         var notificationConfiguration = NotificationConfiguration.create(nil, currentSetting, notificationSetting)
         notificationConfiguration.notifications.priceBelow.active = newSelection
-        notificationService.changeNotificationConfiguration(notificationConfiguration, notificationSetting, skipWantNotificationCheck: true, uploadFinished: {
-            self.notificationSetting.changePriceDropsBelowValueNotifications(to: newSelection)
-        }, uploadError: { DispatchQueue.main.async { self.notificationIsEnabled = self.notificationSetting.entity!.priceDropsBelowValueNotification } })
+        let uploadFailure = { DispatchQueue.main.async { self.notificationIsEnabled = self.notificationSetting.entity!.priceDropsBelowValueNotification } }
+
+        notificationService.changeNotificationConfiguration(notificationConfiguration, notificationSetting, skipWantNotificationCheck: true, uploadStarted: { downloadPublisher in
+            self.uploadObserver.register(for: downloadPublisher.ignoreOutput().eraseToAnyPublisher())
+            downloadPublisher.sink(receiveCompletion: { completion in
+                switch completion { case .finished: self.notificationSetting.changePriceDropsBelowValueNotifications(to: newSelection)
+                                    case .failure: uploadFailure() }
+            }, receiveValue: {_ in}).store(in: &self.cancellables)
+        }, cantStartUpload:  uploadFailure)
     }
     
     func updateWishPrice(to newWishPriceString: String) {
         guard let newWishPrice = newWishPriceString.integerValue else { priceBelowValue = ""; return }
-        guard newWishPrice != self.notificationSetting.entity!.priceBelowValue else { return }
-        
         var notificationConfiguration = NotificationConfiguration.create(nil, currentSetting, notificationSetting)
         notificationConfiguration.notifications.priceBelow.belowValue = newWishPrice
-        notificationService.changeNotificationConfiguration(notificationConfiguration, notificationSetting, skipWantNotificationCheck: true, uploadFinished: {
+        let uploadFailure = { DispatchQueue.main.async { self.priceBelowValue = self.notificationSetting.entity!.priceBelowValue.priceString ?? "" } }
+        
+        notificationService.changeNotificationConfiguration(notificationConfiguration, notificationSetting, skipWantNotificationCheck: true, uploadStarted: { downloadPublisher in
+            self.uploadObserver.register(for: downloadPublisher.ignoreOutput().eraseToAnyPublisher())
+            downloadPublisher.sink(receiveCompletion: { completion in
+                switch completion { case .finished: self.notificationSetting.changePriceBelowValue(to: newWishPrice)
+                                    case .failure: uploadFailure() }
+            }, receiveValue: {_ in}).store(in: &self.cancellables)
             self.notificationSetting.changePriceBelowValue(to: newWishPrice)
-        }, uploadError: { DispatchQueue.main.async { self.priceBelowValue = self.notificationSetting.entity!.priceBelowValue.priceString ?? "" } })
+        }, cantStartUpload: uploadFailure)
     }
 }
 
@@ -99,15 +121,24 @@ struct PriceBelowNotificationView: View {
                 header: showHeader ? Text("general.notifications") : nil,
                 footer: nil
             ) {
-                VStack(alignment: .leading, spacing: 20) {
-                    toggleView
+                ZStack {
+                    VStack(spacing: 20) {
+                        toggleView
 
-                    if viewModel.notificationIsEnabled {
-                        wishPriceInputField
+                        if viewModel.notificationIsEnabled {
+                            wishPriceInputField
 
-                        PriceDropsBelowValueNotificationInfoView()
+                            PriceDropsBelowValueNotificationInfoView()
+                        }
+                    }
+                    .opacity(viewModel.showUploadIndicators ? 0.5 : 1)
+                    .grayscale(viewModel.showUploadIndicators ? 0.5 : 0)
+                    
+                    if viewModel.showUploadIndicators {
+                        loadingView
                     }
                 }
+                .disabled(viewModel.isUploading)
             }
         }
     }
@@ -126,8 +157,6 @@ struct PriceBelowNotificationView: View {
             HStack {
                 NumberField(text: $viewModel.priceBelowValue, placeholder: "general.cent.long".localized(), plusMinusButton: true, withDecimalSeperator: false)
                     .fixedSize(horizontal: false, vertical: true)
-//                    .disabled(!viewModel.areChangeable)
-//                    .opacity(viewModel.areChangeable ? 1.0 : 0.7)
 
                 Text("general.centPerKwh")
                     .transition(.opacity)
@@ -141,5 +170,26 @@ struct PriceBelowNotificationView: View {
             }
             .modifier(GeneralInputView(markedRed: false))
         }
+    }
+    
+    var loadingView: some View {
+        ProgressView()
+            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+    }
+}
+struct TestView: View {
+    @Environment(\.isEnabled) private var isEnabled
+
+    @State var test = true
+    
+    var body: some View {
+        Toggle("", isOn: $test)
+            .disabled(true)
+    }
+}
+
+struct PriceBelowNotifictionView_Previews: PreviewProvider {
+    static var previews: some View {
+        TestView()
     }
 }

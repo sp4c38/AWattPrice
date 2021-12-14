@@ -10,22 +10,19 @@ import Foundation
 
 extension NotificationService {
     /// Try to receive the required notification access permissions and send the notification request.
-    func sendNotificationConfiguration(_ notificationConfiguration: NotificationConfiguration, _ notificationSetting: CurrentNotificationSetting) -> AnyPublisher<Never, Error>? {
-        guard accessState == .granted, pushState == .apnsRegistrationSuccessful else { return nil }
+    func sendNotificationConfiguration(_ notificationConfiguration: NotificationConfiguration, _ notificationSetting: CurrentNotificationSetting) -> AnyPublisher<(data: Data, response: URLResponse), Error>? {
+        guard accessState.value == .granted, pushState.value == .apnsRegistrationSuccessful else { return nil }
         
         guard let apiRequest = APIRequestFactory.notificationRequest(notificationConfiguration) else { return nil }
         let request = APIClient().request(to: apiRequest)
-        
         request
             .receive(on: DispatchQueue.main)
             .sink { completion in
                 switch completion {
                 case .finished:
                     print("Successfully sent notification task.")
-                    self.stateLastUpload = .success
                 case .failure(let error):
                     print("Couldn't sent notification tasks: \(error).")
-                    self.stateLastUpload = .failure(error: error)
                     notificationSetting.changeForceUpload(to: true)
                 }
             } receiveValue: { _ in }
@@ -44,7 +41,7 @@ extension NotificationService {
     
     func changeNotificationConfiguration(
         _ notificationConfiguration: NotificationConfiguration, _ notificationSetting: CurrentNotificationSetting, ensurePushAccess: Bool = true, skipWantNotificationCheck: Bool = false,
-        uploadFinished: (() -> ())? = nil, uploadError: (() -> ())? = nil, noUpload: (() -> ())? = nil
+        uploadStarted: ((AnyPublisher<(data: Data, response: URLResponse), Error>) -> ())? = nil, cantStartUpload: (() -> ())? = nil, noUpload: (() -> ())? = nil
     ) {
         var notificationConfiguration = notificationConfiguration
         
@@ -56,18 +53,13 @@ extension NotificationService {
                     }
                     
                     if let sendPublisher = self.sendNotificationConfiguration(notificationConfiguration, notificationSetting) {
-                        sendPublisher.sink(receiveCompletion: { completion in
-                            switch completion {
-                            case .finished:
-                                uploadFinished?()
-                            case .failure(_):
-                                uploadError?()
-                            }
-                        }, receiveValue: {_ in }).store(in: &self.cancellables)
+                        uploadStarted?(sendPublisher)
+                    } else {
+                        cantStartUpload?()
                     }
                 } else {
                     print("Didn't get notification access.")
-                    noUpload?()
+                    cantStartUpload?()
                 }
             }
         } else {

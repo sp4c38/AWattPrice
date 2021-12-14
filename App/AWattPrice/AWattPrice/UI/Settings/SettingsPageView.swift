@@ -13,7 +13,7 @@ import SwiftUI
 struct SettingsPageView: View {
     @ObservedObject var crtNotifiSetting: CurrentNotificationSetting = Resolver.resolve()
     @ObservedObject var currentSetting: CurrentSetting = Resolver.resolve()
-    @ObservedObject var notificationService: NotificationService = Resolver.resolve()
+    var notificationService: NotificationService = Resolver.resolve()
     
     let regionTaxSelectionViewModel = RegionTaxSelectionViewModel()
     
@@ -54,10 +54,10 @@ struct SettingsPageView: View {
                         }
                         
                         VStack {
-                            if case .failure(_) = notificationService.stateLastUpload {
-                                SettingsUploadErrorView()
-                                    .padding(.bottom, 15)
-                            }
+//                            if case .failure(_) = notificationService.stateLastUpload {
+//                                SettingsUploadErrorView()
+//                                    .padding(.bottom, 15)
+//                            }
                         }
                         .animation(.easeInOut)
                     }

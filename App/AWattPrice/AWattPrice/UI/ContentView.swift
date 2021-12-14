@@ -5,6 +5,7 @@
 //  Created by Léon Becker on 28.11.20.
 //
 
+import Combine
 import Resolver
 import SwiftUI
 
@@ -14,6 +15,8 @@ class ContentViewModel: ObservableObject {
     var notificationService: NotificationService = Resolver.resolve()
     
     var checkAccessStates = false
+    
+    var cancellables = [AnyCancellable]()
     
     func onAppear() {
         // Check Show Whats New
@@ -29,7 +32,12 @@ class ContentViewModel: ObservableObject {
             let checkForceUpload = {
                 if self.notificationSetting.entity!.forceUpload {
                     let notificationConfiguration = NotificationConfiguration.create(nil, self.currentSetting, self.notificationSetting)
-                    self.notificationService.changeNotificationConfiguration(notificationConfiguration, self.notificationSetting, uploadFinished: { self.notificationSetting.changeForceUpload(to: false) })
+                    self.notificationService.changeNotificationConfiguration(notificationConfiguration, self.notificationSetting, uploadStarted: { publisher in
+                        publisher.sink { completion in
+                            if case .finished = completion { self.notificationSetting.changeForceUpload(to: false) }
+                        } receiveValue: { _ in
+                        }.store(in: &self.cancellables)
+                    })
                 }
             }
             

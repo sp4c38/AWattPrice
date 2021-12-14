@@ -19,25 +19,25 @@ extension NotificationService {
             
             if notificationSettingsEntity.lastApnsToken != currentToken, notificationSettingsEntity.lastApnsToken != nil {
                 let notificationConfiguration = NotificationConfiguration.create(currentToken, currentSetting, notificationSetting)
-                changeNotificationConfiguration(notificationConfiguration, notificationSetting, uploadFinished: nil, noUpload: nil)
+                changeNotificationConfiguration(notificationConfiguration, notificationSetting, noUpload: nil)
             }
             
             notificationSetting.changeLastApnsToken(to: currentToken)
             token = currentToken
-            self.pushState = .apnsRegistrationSuccessful
+            self.pushState.value = .apnsRegistrationSuccessful
         } else {
-            pushState = .apnsRegistrationFailed
+            pushState.value = .apnsRegistrationFailed
         }
     }
     
     func failedRegisteredForRemoteNotifications(error: Error) {
         print("Notification: Push notification registration not granted: \(error).")
-        pushState = .apnsRegistrationFailed
+        pushState.value = .apnsRegistrationFailed
     }
     
     func registerForRemoteNotifications() {
-        if pushState == .unknown {
-            self.pushState = .asked
+        if pushState.value == .unknown {
+            self.pushState.value = .asked
             DispatchQueue.main.async {
                 UIApplication.shared.registerForRemoteNotifications()
             }

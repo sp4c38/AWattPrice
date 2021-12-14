@@ -156,23 +156,23 @@ class RegionTaxSelectionViewModel: ObservableObject {
     }
     
     func regionChanges(newRegion: Region) {
-        let changeSetting = { self.currentSetting.changeRegionIdentifier(to: newRegion.rawValue) }
-        var notificationConfiguration = NotificationConfiguration.create(nil, self.currentSetting, self.notificationSetting)
-        notificationConfiguration.general.region = newRegion
-        notificationService.changeNotificationConfiguration(notificationConfiguration, notificationSetting, uploadFinished: changeSetting, uploadError: changeSetting, noUpload: {
-            self.notificationSetting.changeForceUpload(to: true)
-            changeSetting()
-        })
+//        let changeSetting = { self.currentSetting.changeRegionIdentifier(to: newRegion.rawValue) }
+//        var notificationConfiguration = NotificationConfiguration.create(nil, self.currentSetting, self.notificationSetting)
+//        notificationConfiguration.general.region = newRegion
+//        notificationService.changeNotificationConfiguration(notificationConfiguration, notificationSetting, uploadFinished: changeSetting, uploadError: changeSetting, noUpload: {
+//            self.notificatio1nSetting.changeForceUpload(to: true)
+//            changeSetting()
+//        })
     }
-    
+//
     func taxSelectionChanges(newTaxSelection: Bool) {
-        let changeSetting = { self.currentSetting.changeTaxSelection(to: newTaxSelection) }
-        var notificationConfiguration = NotificationConfiguration.create(nil, self.currentSetting, self.notificationSetting)
-        notificationConfiguration.general.tax = newTaxSelection
-        notificationService.changeNotificationConfiguration(notificationConfiguration, notificationSetting, uploadFinished: changeSetting, uploadError: changeSetting, noUpload: {
-            self.notificationSetting.changeForceUpload(to: true)
-            changeSetting()
-        })
+//        let changeSetting = { self.currentSetting.changeTaxSelection(to: newTaxSelection) }
+//        var notificationConfiguration = NotificationConfiguration.create(nil, self.currentSetting, self.notificationSetting)
+//        notificationConfiguration.general.tax = newTaxSelection
+//        notificationService.changeNotificationConfiguration(notificationConfiguration, notificationSetting, uploadFinished: changeSetting, uploadError: changeSetting, noUpload: {
+//            self.notificationSetting.changeForceUpload(to: true)
+//            changeSetting()
+//        })
     }
 }
 

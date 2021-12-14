@@ -42,19 +42,17 @@ struct PriceDropsBelowValueNotificationInfoView: View {
 
 class PriceBelowNotificationViewModel: ObservableObject {
     @Injected var currentSetting: CurrentSetting
-    @ObservedObject var notificationSetting: CurrentNotificationSetting = Resolver.resolve()
+    @Injected var notificationSetting: CurrentNotificationSetting
     var notificationService: NotificationService = Resolver.resolve()
 
     @Published var notificationIsEnabled: Bool = false
     @Published var priceBelowValue: String = ""
     
-    let uploadObserver: DownloadPublisherLoadingViewObserver
+    let uploadObserver = DownloadPublisherLoadingViewObserver(intervalBeforeExceeded: 0.4)
     
     var cancellables = [AnyCancellable]()
     
     init() {
-        uploadObserver = DownloadPublisherLoadingViewObserver(intervalBeforeExceeded: 0.4)
-        
         uploadObserver.objectWillChange.receive(on: DispatchQueue.main).sink(receiveValue: { self.objectWillChange.send() }).store(in: &cancellables)
 
         notificationIsEnabled = notificationSetting.entity!.priceDropsBelowValueNotification
@@ -76,13 +74,15 @@ class PriceBelowNotificationViewModel: ObservableObject {
         notificationConfiguration.notifications.priceBelow.active = newSelection
         let uploadFailure = { DispatchQueue.main.async { self.notificationIsEnabled = self.notificationSetting.entity!.priceDropsBelowValueNotification } }
 
-        notificationService.changeNotificationConfiguration(notificationConfiguration, notificationSetting, skipWantNotificationCheck: true, uploadStarted: { downloadPublisher in
+        notificationService.changeNotificationConfiguration(notificationConfiguration, notificationSetting, skipWantNotificationCheck: true) { downloadPublisher in
             self.uploadObserver.register(for: downloadPublisher.ignoreOutput().eraseToAnyPublisher())
             downloadPublisher.sink(receiveCompletion: { completion in
                 switch completion { case .finished: self.notificationSetting.changePriceDropsBelowValueNotifications(to: newSelection)
                                     case .failure: uploadFailure() }
             }, receiveValue: {_ in}).store(in: &self.cancellables)
-        }, cantStartUpload:  uploadFailure)
+        } cantStartUpload: {
+            uploadFailure()
+        }
     }
     
     func updateWishPrice(to newWishPriceString: String) {
@@ -91,14 +91,16 @@ class PriceBelowNotificationViewModel: ObservableObject {
         notificationConfiguration.notifications.priceBelow.belowValue = newWishPrice
         let uploadFailure = { DispatchQueue.main.async { self.priceBelowValue = self.notificationSetting.entity!.priceBelowValue.priceString ?? "" } }
         
-        notificationService.changeNotificationConfiguration(notificationConfiguration, notificationSetting, skipWantNotificationCheck: true, uploadStarted: { downloadPublisher in
+        notificationService.changeNotificationConfiguration(notificationConfiguration, notificationSetting, skipWantNotificationCheck: true) { downloadPublisher in
             self.uploadObserver.register(for: downloadPublisher.ignoreOutput().eraseToAnyPublisher())
             downloadPublisher.sink(receiveCompletion: { completion in
                 switch completion { case .finished: self.notificationSetting.changePriceBelowValue(to: newWishPrice)
                                     case .failure: uploadFailure() }
             }, receiveValue: {_ in}).store(in: &self.cancellables)
             self.notificationSetting.changePriceBelowValue(to: newWishPrice)
-        }, cantStartUpload: uploadFailure)
+        } cantStartUpload: {
+            uploadFailure()
+        }
     }
 }
 

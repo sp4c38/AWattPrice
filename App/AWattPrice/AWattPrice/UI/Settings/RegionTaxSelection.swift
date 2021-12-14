@@ -128,51 +128,75 @@ import SwiftUI
 //}
 
 class RegionTaxSelectionViewModel: ObservableObject {
-    var currentSetting: CurrentSetting
-    var notificationSetting: CurrentNotificationSetting
-    var notificationService: NotificationService
+    var currentSetting: CurrentSetting = Resolver.resolve()
+    var notificationSetting: CurrentNotificationSetting = Resolver.resolve()
+    var notificationService: NotificationService = Resolver.resolve()
     
     @Published var selectedRegion: Region
     @Published var taxSelection: Bool
-    @Published var isLoading: Bool = false
+    
+    let uploadObserver = DownloadPublisherLoadingViewObserver(intervalBeforeExceeded: 0.4)
     
     var cancellables = [AnyCancellable]()
-    var showTaxSelection: Bool { selectedRegion == Region.DE }
     
-    init(
-        currentSetting currentSettingD: CurrentSetting = Resolver.resolve(),
-        notificationSetting notificationSettingD: CurrentNotificationSetting = Resolver.resolve(),
-        notificationService notificationServiceD: NotificationService = Resolver.resolve()
-    ) {
-        currentSetting = currentSettingD
-        notificationSetting = notificationSettingD
-        notificationService = notificationServiceD
-        
+    init() {
         selectedRegion = Region(rawValue: currentSetting.entity!.regionIdentifier)!
         taxSelection = currentSetting.entity!.pricesWithVAT
+        
+        uploadObserver.objectWillChange.receive(on: DispatchQueue.main).sink(receiveValue: { self.objectWillChange.send() }).store(in: &cancellables)
         
         $selectedRegion.dropFirst().sink(receiveValue: regionChanges).store(in: &cancellables)
         $taxSelection.dropFirst().sink(receiveValue: taxSelectionChanges).store(in: &cancellables)
     }
     
-    func regionChanges(newRegion: Region) {
-//        let changeSetting = { self.currentSetting.changeRegionIdentifier(to: newRegion.rawValue) }
-//        var notificationConfiguration = NotificationConfiguration.create(nil, self.currentSetting, self.notificationSetting)
-//        notificationConfiguration.general.region = newRegion
-//        notificationService.changeNotificationConfiguration(notificationConfiguration, notificationSetting, uploadFinished: changeSetting, uploadError: changeSetting, noUpload: {
-//            self.notificatio1nSetting.changeForceUpload(to: true)
-//            changeSetting()
-//        })
+    var showTaxSelection: Bool {
+        selectedRegion == Region.DE
     }
-//
+    
+    var isUploading: Bool {
+        [.uploadingAndTimeExceeded, .uploadingAndTimeNotExceeded].contains(uploadObserver.loadingPublisher)
+    }
+    
+    var showUploadIndicators: Bool {
+        uploadObserver.loadingPublisher == .uploadingAndTimeExceeded
+    }
+    
+    func regionChanges(newRegion: Region) {
+        var notificationConfiguration = NotificationConfiguration.create(nil, currentSetting, notificationSetting)
+        notificationConfiguration.general.region = newRegion
+        let changeSetting = { self.currentSetting.changeRegionIdentifier(to: newRegion.rawValue) }
+        
+        notificationService.changeNotificationConfiguration(notificationConfiguration, notificationSetting, forceUploadTrueOnUploadFailure: true) { downloadPublisher in
+            self.uploadObserver.register(for: downloadPublisher.ignoreOutput().eraseToAnyPublisher())
+            downloadPublisher.sink(receiveCompletion: { completion in
+                switch completion { case .finished: changeSetting()
+                                    case .failure: changeSetting() }
+            }, receiveValue: {_ in}).store(in: &self.cancellables)
+        } cantStartUpload: {
+            self.notificationSetting.changeForceUpload(to: true)
+            changeSetting()
+        } noUpload: {
+            changeSetting()
+        }
+    }
+
     func taxSelectionChanges(newTaxSelection: Bool) {
-//        let changeSetting = { self.currentSetting.changeTaxSelection(to: newTaxSelection) }
-//        var notificationConfiguration = NotificationConfiguration.create(nil, self.currentSetting, self.notificationSetting)
-//        notificationConfiguration.general.tax = newTaxSelection
-//        notificationService.changeNotificationConfiguration(notificationConfiguration, notificationSetting, uploadFinished: changeSetting, uploadError: changeSetting, noUpload: {
-//            self.notificationSetting.changeForceUpload(to: true)
-//            changeSetting()
-//        })
+        var notificationConfiguration = NotificationConfiguration.create(nil, currentSetting, notificationSetting)
+        notificationConfiguration.general.tax = newTaxSelection
+        let changeSetting = { self.currentSetting.changeTaxSelection(to: newTaxSelection) }
+        
+        notificationService.changeNotificationConfiguration(notificationConfiguration, notificationSetting, forceUploadTrueOnUploadFailure: true) { downloadPublisher in
+            self.uploadObserver.register(for: downloadPublisher.ignoreOutput().eraseToAnyPublisher())
+            downloadPublisher.sink(receiveCompletion: { completion in
+                switch completion { case .finished: changeSetting()
+                                    case .failure: changeSetting() }
+            }, receiveValue: {_ in}).store(in: &self.cancellables)
+        } cantStartUpload: {
+            self.notificationSetting.changeForceUpload(to: true)
+            changeSetting()
+        } noUpload: {
+            changeSetting()
+        }
     }
 }
 
@@ -188,16 +212,23 @@ struct RegionTaxSelectionView: View {
             header: Text("settingsPage.region"),
             footer: Text("settingsPage.regionToGetPrices")
         ) {
-            VStack {
-                regionPicker
-                
-                if viewModel.showTaxSelection {
-                    taxSelection
-                        .padding(.top, 10)
+            ZStack {
+                VStack {
+                    regionPicker
+                    
+                    if viewModel.showTaxSelection {
+                        taxSelection
+                            .padding(.top, 10)
+                    }
+                }
+                .opacity(viewModel.showUploadIndicators ? 0.5 : 1)
+                .grayscale(viewModel.showUploadIndicators ? 0.5 : 0)
+            
+                if viewModel.showUploadIndicators {
+                    loadingView
                 }
             }
-            .opacity(viewModel.isLoading ? 0.6 : 1)
-            .disabled(viewModel.isLoading)
+            .disabled(viewModel.isUploading)
         }
         .animation(.easeInOut, value: viewModel.showTaxSelection)
     }
@@ -216,6 +247,11 @@ struct RegionTaxSelectionView: View {
         Toggle(isOn: $viewModel.taxSelection) {
             Text("settingsPage.priceWithVat")
         }
+    }
+    
+    var loadingView: some View {
+        ProgressView()
+            .progressViewStyle(CircularProgressViewStyle(tint: .white))
     }
 }
 

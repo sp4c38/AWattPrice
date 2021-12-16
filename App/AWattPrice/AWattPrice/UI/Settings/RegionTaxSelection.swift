@@ -201,11 +201,7 @@ class RegionTaxSelectionViewModel: ObservableObject {
 }
 
 struct RegionTaxSelectionView: View {
-    @ObservedObject var viewModel: RegionTaxSelectionViewModel
-    
-    init(viewModel: RegionTaxSelectionViewModel = RegionTaxSelectionViewModel()) {
-        self.viewModel = viewModel
-    }
+    @StateObject var viewModel = RegionTaxSelectionViewModel()
     
     var body: some View {
         CustomInsetGroupedListItem(

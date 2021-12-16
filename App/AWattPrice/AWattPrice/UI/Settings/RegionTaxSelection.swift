@@ -203,6 +203,14 @@ class RegionTaxSelectionViewModel: ObservableObject {
 struct RegionTaxSelectionView: View {
     @StateObject var viewModel = RegionTaxSelectionViewModel()
     
+    var changeSelectedRegion: Binding<Region> {
+        $viewModel.selectedRegion.setNewValue { newValue in
+            withAnimation {
+                viewModel.selectedRegion = newValue
+            }
+        }
+    }
+    
     var body: some View {
         CustomInsetGroupedListItem(
             header: Text("settingsPage.region"),
@@ -226,11 +234,10 @@ struct RegionTaxSelectionView: View {
             }
             .disabled(viewModel.isUploading)
         }
-        .animation(.easeInOut, value: viewModel.showTaxSelection)
     }
     
     var regionPicker: some View {
-        Picker("", selection: $viewModel.selectedRegion) {
+        Picker("", selection: changeSelectedRegion) {
             Text("settingsPage.region.germany")
                 .tag(Region.DE)
             Text("settingsPage.region.austria")

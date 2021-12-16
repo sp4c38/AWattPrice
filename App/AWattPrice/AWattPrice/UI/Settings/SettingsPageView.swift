@@ -59,7 +59,6 @@ struct SettingsPageView: View {
 //                                    .padding(.bottom, 15)
 //                            }
                         }
-                        .animation(.easeInOut)
                     }
                 } else {
                     Text("settingsPage.notLoadedSettings")

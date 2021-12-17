@@ -18,6 +18,10 @@ class ContentViewModel: ObservableObject {
     
     var cancellables = [AnyCancellable]()
     
+    init() {
+        currentSetting.objectWillChange.sink(receiveValue: { self.objectWillChange.send() }).store(in: &cancellables)
+    }
+    
     func onAppear() {
         // Check Show Whats New
         if currentSetting.entity!.splashScreensFinished == false && currentSetting.entity!.showWhatsNew == true {

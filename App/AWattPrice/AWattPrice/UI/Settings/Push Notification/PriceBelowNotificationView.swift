@@ -109,7 +109,6 @@ class PriceBelowNotificationViewModel: ObservableObject {
                 switch completion { case .finished: self.notificationSetting.changePriceBelowValue(to: newWishPrice)
                                     case .failure: uploadFailure() }
             }, receiveValue: {_ in}).store(in: &self.cancellables)
-            self.notificationSetting.changePriceBelowValue(to: newWishPrice)
         } cantStartUpload: {
             uploadFailure()
         }

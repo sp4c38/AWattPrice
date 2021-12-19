@@ -23,7 +23,8 @@ struct SplashScreenSetupView: View {
                 CustomInsetGroupedList {
                     RegionTaxSelectionView()
 
-//                    PriceDropsBelowValueNotificationView(showHeader: true)
+                    PriceBelowNotificationView(showHeader: true)
+                    
 //                    AwattarTariffSelectionSetting()
                 }
 

@@ -10,7 +10,7 @@ import Foundation
 
 extension NotificationService {
     /// Try to receive the required notification access permissions and send the notification request.
-    func sendNotificationConfiguration(_ notificationConfiguration: NotificationConfiguration, _ notificationSetting: CurrentNotificationSetting, _ forceUploadTrueOnUploadFailure: Bool = false) -> AnyPublisher<(data: Data, response: URLResponse), Error>? {
+    func sendNotificationConfiguration(_ notificationConfiguration: NotificationConfiguration, _ notificationSetting: CurrentNotificationSetting) -> AnyPublisher<(data: Data, response: URLResponse), Error>? {
         guard accessState.value == .granted, pushState.value == .apnsRegistrationSuccessful else { return nil }
         
         guard let apiRequest = APIRequestFactory.notificationRequest(notificationConfiguration) else { return nil }
@@ -23,9 +23,6 @@ extension NotificationService {
                     print("Successfully sent notification task.")
                 case .failure(let error):
                     print("Couldn't sent notification tasks: \(error).")
-                    if forceUploadTrueOnUploadFailure {
-                        notificationSetting.changeForceUpload(to: true)
-                    }
                 }
             } receiveValue: { _ in }
             .store(in: &cancellables)
@@ -42,7 +39,7 @@ extension NotificationService {
     }
     
     func changeNotificationConfiguration(
-        _ notificationConfiguration: NotificationConfiguration, _ notificationSetting: CurrentNotificationSetting, skipWantNotificationCheck: Bool = false, forceUploadTrueOnUploadFailure: Bool = false,
+        _ notificationConfiguration: NotificationConfiguration, _ notificationSetting: CurrentNotificationSetting, skipWantNotificationCheck: Bool = false,
         uploadStarted: ((AnyPublisher<(data: Data, response: URLResponse), Error>) -> ())? = nil, cantStartUpload: (() -> ())? = nil, noUpload: (() -> ())? = nil
     ) {
         var notificationConfiguration = notificationConfiguration
@@ -54,7 +51,7 @@ extension NotificationService {
                         notificationConfiguration.token = token
                     }
                     
-                    if let sendPublisher = self.sendNotificationConfiguration(notificationConfiguration, notificationSetting, forceUploadTrueOnUploadFailure) {
+                    if let sendPublisher = self.sendNotificationConfiguration(notificationConfiguration, notificationSetting) {
                         uploadStarted?(sendPublisher)
                     } else {
                         cantStartUpload?()

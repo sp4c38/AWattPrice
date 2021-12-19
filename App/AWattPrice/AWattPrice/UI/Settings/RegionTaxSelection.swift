@@ -42,11 +42,15 @@ class RegionTaxSelectionViewModel: ObservableObject {
         notificationConfiguration.general.region = newRegion
         let changeSetting = { self.currentSetting.changeRegionIdentifier(to: newRegion.rawValue) }
         
-        notificationService.changeNotificationConfiguration(notificationConfiguration, notificationSetting, forceUploadTrueOnUploadFailure: true) { downloadPublisher in
+        notificationService.changeNotificationConfiguration(notificationConfiguration, notificationSetting) { downloadPublisher in
             self.uploadObserver.register(for: downloadPublisher.ignoreOutput().eraseToAnyPublisher())
             downloadPublisher.sink(receiveCompletion: { completion in
-                switch completion { case .finished: changeSetting()
-                                    case .failure: changeSetting() }
+                switch completion {
+                case .finished: changeSetting()
+                case .failure:
+                    self.notificationSetting.changeForceUpload(to: true)
+                    changeSetting()
+                }
             }, receiveValue: {_ in}).store(in: &self.cancellables)
         } cantStartUpload: {
             self.notificationSetting.changeForceUpload(to: true)
@@ -60,12 +64,16 @@ class RegionTaxSelectionViewModel: ObservableObject {
         var notificationConfiguration = NotificationConfiguration.create(nil, currentSetting, notificationSetting)
         notificationConfiguration.general.tax = newTaxSelection
         let changeSetting = { self.currentSetting.changeTaxSelection(to: newTaxSelection) }
-        
-        notificationService.changeNotificationConfiguration(notificationConfiguration, notificationSetting, forceUploadTrueOnUploadFailure: true) { downloadPublisher in
+
+        notificationService.changeNotificationConfiguration(notificationConfiguration, notificationSetting) { downloadPublisher in
             self.uploadObserver.register(for: downloadPublisher.ignoreOutput().eraseToAnyPublisher())
             downloadPublisher.sink(receiveCompletion: { completion in
-                switch completion { case .finished: changeSetting()
-                                    case .failure: changeSetting() }
+                switch completion {
+                case .finished: changeSetting()
+                case .failure:
+                    self.notificationSetting.changeForceUpload(to: true)
+                    changeSetting()
+                }
             }, receiveValue: {_ in}).store(in: &self.cancellables)
         } cantStartUpload: {
             self.notificationSetting.changeForceUpload(to: true)

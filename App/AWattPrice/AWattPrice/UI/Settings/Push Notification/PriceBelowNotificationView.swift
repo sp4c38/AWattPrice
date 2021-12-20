@@ -51,6 +51,7 @@ class PriceBelowNotificationViewModel: ObservableObject {
     var priceBelowValueMethodNotifier: AnyCancellable? = nil
     
     let uploadObserver = DownloadPublisherLoadingViewObserver(intervalBeforeExceeded: 0.4)
+    var uploadErrorObserver: UploadErrorPublisherViewObserver? = nil
     
     var cancellables = [AnyCancellable]()
     
@@ -83,6 +84,7 @@ class PriceBelowNotificationViewModel: ObservableObject {
 
         notificationService.changeNotificationConfiguration(notificationConfiguration, notificationSetting, skipWantNotificationCheck: true) { downloadPublisher in
             self.uploadObserver.register(for: downloadPublisher.ignoreOutput().eraseToAnyPublisher())
+            self.uploadErrorObserver?.register(for: downloadPublisher.eraseToAnyPublisher())
             downloadPublisher.sink(receiveCompletion: { completion in
                 switch completion { case .finished: self.notificationSetting.changePriceDropsBelowValueNotifications(to: newSelection)
                                     case .failure: uploadFailure() }
@@ -105,6 +107,7 @@ class PriceBelowNotificationViewModel: ObservableObject {
         
         notificationService.changeNotificationConfiguration(notificationConfiguration, notificationSetting, skipWantNotificationCheck: true) { downloadPublisher in
             self.uploadObserver.register(for: downloadPublisher.ignoreOutput().eraseToAnyPublisher())
+            self.uploadErrorObserver?.register(for: downloadPublisher.eraseToAnyPublisher())
             downloadPublisher.sink(receiveCompletion: { completion in
                 switch completion { case .finished: self.notificationSetting.changePriceBelowValue(to: newWishPrice)
                                     case .failure: uploadFailure() }
@@ -122,9 +125,13 @@ struct PriceBelowNotificationView: View {
     @StateObject var viewModel = PriceBelowNotificationViewModel()
     @State var keyboardCurrentlyClosed = false
     
+    // This property will be injected in the views .onAppear. The view model is a StateObject which makes it a bit of a tricky situation but as this variable is used the earliest
+    // after the first view rendered it is a working and acceptable approach.
+    let uploadErrorObserver: UploadErrorPublisherViewObserver?
     let showHeader: Bool
     
-    init(showHeader: Bool = false) {
+    init(uploadErrorObserver: UploadErrorPublisherViewObserver? = nil, showHeader: Bool = false) {
+        self.uploadErrorObserver = uploadErrorObserver
         self.showHeader = showHeader
     }
     
@@ -154,6 +161,7 @@ struct PriceBelowNotificationView: View {
                 .disabled(viewModel.isUploading)
             }
         }
+        .onAppear { viewModel.uploadErrorObserver = uploadErrorObserver }
     }
 
     var toggleView: some View {
@@ -190,19 +198,9 @@ struct PriceBelowNotificationView: View {
             .progressViewStyle(CircularProgressViewStyle(tint: .white))
     }
 }
-struct TestView: View {
-    @Environment(\.isEnabled) private var isEnabled
-
-    @State var test = true
-    
-    var body: some View {
-        Toggle("", isOn: $test)
-            .disabled(true)
-    }
-}
 
 struct PriceBelowNotifictionView_Previews: PreviewProvider {
     static var previews: some View {
-        TestView()
+        PriceBelowNotificationView()
     }
 }

@@ -24,7 +24,6 @@ struct SettingsUploadErrorView: View {
         .background(Color.red)
         .cornerRadius(10)
         .shadow(radius: 5)
-        .transition(.belowScale)
     }
 }
 

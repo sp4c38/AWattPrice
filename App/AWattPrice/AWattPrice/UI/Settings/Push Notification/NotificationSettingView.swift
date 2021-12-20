@@ -18,11 +18,13 @@ extension AnyTransition {
 
 class NotificationSettingViewModel: ObservableObject {
     var notificationService: NotificationService = Resolver.resolve()
+    let uploadErrorObserver = UploadErrorPublisherViewObserver()
     
     var cancellables = [AnyCancellable]()
     
     init() {
         notificationService.accessState.receive(on: DispatchQueue.main).sink { _ in self.objectWillChange.send() }.store(in: &cancellables)
+        uploadErrorObserver.objectWillChange.sink(receiveValue: { _ in self.objectWillChange.send()}).store(in: &cancellables)
     }
 }
 
@@ -40,21 +42,23 @@ struct NotificationSettingView: View {
                             .padding(.top, 10)
                             .transition(.opacity)
                     } else {
-                        PriceBelowNotificationView()
+                        PriceBelowNotificationView(uploadErrorObserver: viewModel.uploadErrorObserver)
                     }
                 }
-                .animation(.easeInOut)
+                .animation(.easeInOut, value: viewModel.notificationService.accessState.value)
             }
 
             VStack {
-//                if case .failure(_) = notificationService.stateLastUpload {
-//                    SettingsUploadErrorView()
-//                        .padding(.bottom, 15)
-//                }
+                if viewModel.uploadErrorObserver.viewState == .lastUploadFailed {
+                    SettingsUploadErrorView()
+                        .padding(.bottom, 15)
+                        .transition(.belowScale)
+                }
             }
-            .animation(.easeInOut)
+            .animation(.easeInOut, value: viewModel.uploadErrorObserver.viewState)
         }
         .navigationTitle("general.priceGuard")
+        .onAppear { print(viewModel.uploadErrorObserver.viewState) }
     }
 }
 

@@ -6,8 +6,6 @@ from typing import Optional
 
 from box import Box
 
-from awattprice import defaults
-
 
 class Region(str, Enum):
     """Identify a region (country)."""
@@ -112,7 +110,7 @@ PRICE_DATA_REFRESH_LOCK_TIMEOUT = 10
 # Name of file which stores the timestamp when prices were updated last.
 PRICE_DATA_UPDATE_TS_FILE_NAME = "update-ts-{}.info"  # formatted with lowercase region name
 
-region_enum_names = [element.name for element in defaults.Region]
+region_enum_names = [element.name for element in Region]
 
 NOTIFICATION_CONFIGURATION_SCHEMA = {
     "type": "object",

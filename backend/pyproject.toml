@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "AWattPrice Backend"
-version = "2.1"
+version = "2.1.1"
 description = "Backend for the AWattPrice iOS app."
 authors = ["Léon Becker <lb@alien8.de>", "Frank Becker <fb@alien8.de>"]
 homepage = "https://awattprice.space8.me"

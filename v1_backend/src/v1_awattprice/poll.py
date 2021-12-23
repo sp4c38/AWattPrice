@@ -125,8 +125,8 @@ async def get_data(config: Box, region: Optional[Region] = None, force: bool = F
         # By default the Awattar API returns data for the next 24h. It can provide
         # data until tomorrow midnight. Let's ask for that. Further, set the start
         # time to the last full hour. The Awattar API expects microsecond timestamps.
-        start = now.replace(minute=0, second=0, microsecond=0).timestamp * TIME_CORRECT
-        end = now.shift(days=+2).replace(hour=0, minute=0, second=0, microsecond=0).timestamp * TIME_CORRECT
+        start = now.replace(minute=0, second=0, microsecond=0).int_timestamp * TIME_CORRECT
+        end = now.shift(days=+2).replace(hour=0, minute=0, second=0, microsecond=0).int_timestamp * TIME_CORRECT
 
         future = awattar_read_task(config=config, region=region, start=start, end=end)
         results = await asyncio.gather(*[future])
@@ -159,14 +159,14 @@ async def get_data(config: Box, region: Optional[Region] = None, force: bool = F
 
         # Must always equal True if new data was fetched to update update_ts to newest value.
         must_write_data = True
-        data.meta.update_ts = now.timestamp
+        data.meta.update_ts = now.int_timestamp
         new_uuid = uuid.uuid4().hex
         while new_uuid == data.meta.uuid:
             new_uuid = uuid.uuid4().hex
         data.meta.uuid = new_uuid
     elif fetched_data:
         data = Box({"prices": [], "meta": {}}, box_dots=True)
-        data.meta["update_ts"] = now.timestamp
+        data.meta["update_ts"] = now.int_timestamp
         data.meta["uuid"] = uuid.uuid4().hex
         for entry in fetched_data:
             entry = transform_entry(entry)
@@ -177,7 +177,7 @@ async def get_data(config: Box, region: Optional[Region] = None, force: bool = F
     # Filter out data older than 24h and write to disk
     if must_write_data:
         log.info("Writing Awattar data to disk.")
-        before_24h = now.shift(hours=-24).timestamp
+        before_24h = now.shift(hours=-24).int_timestamp
         data.prices = [e for e in data.prices if e.end_timestamp > before_24h]
         await write_data(data=data, file_path=file_path)
         if need_update or force:
@@ -198,7 +198,7 @@ async def get_headers(config: Box, data: Box) -> Dict:
     now = arrow.utcnow()
     price_points_in_future = 0
     for price_point in data.prices:
-        if price_point.start_timestamp > now.timestamp:
+        if price_point.start_timestamp > now.int_timestamp:
             price_points_in_future += 1
 
     if price_points_in_future < int(config.poll.if_less_than):

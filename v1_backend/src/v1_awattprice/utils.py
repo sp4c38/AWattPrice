@@ -188,12 +188,12 @@ def check_data_needs_update(data: Box, config: Box):
     now = arrow.utcnow()
     last_update = data.meta.update_ts
     # Only poll every config.poll.awattar seconds
-    if now.timestamp > last_update + int(config.poll.awattar):
+    if now.int_timestamp > last_update + int(config.poll.awattar):
         last_entry = max([d.start_timestamp for d in data.prices])
         need_update = any(
             [
                 # Should trigger if there are less than this amount of future energy price points.
-                len([True for e in data.prices if e.start_timestamp > now.timestamp])
+                len([True for e in data.prices if e.start_timestamp > now.int_timestamp])
                 < int(config.poll.if_less_than),
             ]
         )

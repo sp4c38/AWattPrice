@@ -78,7 +78,7 @@ def validate_token(raw_data: bytes) -> Optional[APNSToken]:
 
         notification_config[notification_config_mapping[key]] = notification_config.pop(key)
         
-    if not isinstance(notification_config["below_value"], float):
+    if not isinstance(notification_config["below_value"], (int, float,)):
         log.warning("The APNs data isn't valid because the below value isn't a float.")
         return None
     notification_config["below_value"] = round(float(notification_config["below_value"]), 2)

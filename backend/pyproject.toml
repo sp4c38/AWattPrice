@@ -15,9 +15,9 @@ classifiers = [
     "Programming Language :: Python",
 ]
 packages = [
-    # The "awattprice_group" directory serves as a container for the actual awattprice packages.
-    # It is used due to production deployment reasons.
-    { include = "awattprice_group", from = "src" },
+    { include = "awattprice", from = "src" },
+    { include = "awattprice_notifications", from = "src" },
+    { include = "awattprice_helpers", from = "src" },
 ]
 
 [tool.poetry.dependencies]

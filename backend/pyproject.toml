@@ -37,7 +37,7 @@ PyJWT = "^2.1.0"
 cryptography = "^3.4.7"
 tenacity = "^8.0.1"
 gunicorn = "^20.1.0"
-uvloop = "^0.15.3"
+uvloop = "^0.16.0"
 uvicorn = {extras = ["standard"], version = "^0.14.0"}
 
 [tool.poetry.dev-dependencies]

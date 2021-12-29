@@ -49,7 +49,17 @@ lane :push_to_testflight do
   match
   prompt_increment_marketing_number
   prompt_increment_build_number
-  # xcodegen
+  xcodegen
   build_app(export_method: "app-store", configuration: configuration)
   upload_to_testflight(app_identifier: awattprice_app_id, skip_submission: true, skip_waiting_for_build_processing: true)
+end
+
+lane :release do
+  configuration = "Distribution AppStore Production"
+  match
+  prompt_increment_marketing_number
+  prompt_increment_build_number
+  xcodegen
+  build_app(export_method: "app-store", configuration: configuration)
+  upload_to_app_store(app_identifier: awattprice_app_id, submit_for_review: false, force: true)
 end

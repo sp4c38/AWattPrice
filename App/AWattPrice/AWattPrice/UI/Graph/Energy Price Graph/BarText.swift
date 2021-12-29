@@ -19,8 +19,10 @@ struct HourOfDayText: View {
         centFormatter.maximumFractionDigits = 2
         centFormatter.minimumFractionDigits = 2
 
-        if currentSetting.entity!.pricesWithVAT {
-            return centFormatter.string(from: NSNumber(value: marketprice * currentSetting.currentVATToUse)) ?? "NaN"
+        if let regionTaxMultiplier = Region(rawValue: currentSetting.entity!.regionIdentifier)!.taxMultiplier,
+           currentSetting.entity!.pricesWithVAT
+        {
+            return centFormatter.string(from: NSNumber(value: marketprice * regionTaxMultiplier)) ?? "NaN"
         } else {
             return centFormatter.string(from: NSNumber(value: marketprice)) ?? "NaN"
         }

@@ -9,15 +9,12 @@ import Foundation
 
 protocol AppConfiguration {
     var apiURL: URL { get }
-    var vatAmount: Double { get }
 }
 
 class StagingAppConfiguration: AppConfiguration {
     var apiURL = URL(string: "https://test-awp.space8.me")!
-    var vatAmount = 1.19
 }
 
 class ProductionAppConfiguration: AppConfiguration {
     var apiURL = URL(string: "https://awattprice.space8.me/api/v2/")!
-    var vatAmount = 1.19
 }

@@ -8,8 +8,6 @@
 import CoreData
 
 class CurrentSetting: AutoUpdatingSingleEntity<Setting> {
-    @Published var currentVATToUse = AppContext.shared.config.vatAmount
-
     init(managedObjectContext: NSManagedObjectContext) {
         super.init(
             entityName: "Setting",

@@ -20,6 +20,15 @@ enum Region: Int16, Encodable {
         }
     }
     
+    var taxMultiplier: Double? {
+        switch self {
+        case .DE:
+            return 1.19
+        case .AT:
+            return nil
+        }
+    }
+    
     func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
         try container.encode(apiName)

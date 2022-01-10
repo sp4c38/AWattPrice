@@ -318,7 +318,7 @@ test = ["Cython (==0.29.22)"]
 
 [[package]]
 name = "httpx"
-version = "0.21.1"
+version = "0.21.3"
 description = "The next generation HTTP client."
 category = "main"
 optional = false
@@ -938,7 +938,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "310d66aaeabf637d95dd789f3d92731adbe7b349c1bae1dfe529c6cb3e08852e"
+content-hash = "36b2fce1c3a91153be420dfcd82a4de3558d10c7f941c29eba9992942e1f6ed2"
 
 [metadata.files]
 aiofile = [
@@ -1186,8 +1186,8 @@ httptools = [
     {file = "httptools-0.2.0.tar.gz", hash = "sha256:94505026be56652d7a530ab03d89474dc6021019d6b8682281977163b3471ea0"},
 ]
 httpx = [
-    {file = "httpx-0.21.1-py3-none-any.whl", hash = "sha256:208e5ef2ad4d105213463cfd541898ed9d11851b346473539a8425e644bb7c66"},
-    {file = "httpx-0.21.1.tar.gz", hash = "sha256:02af20df486b78892a614a7ccd4e4e86a5409ec4981ab0e422c579a887acad83"},
+    {file = "httpx-0.21.3-py3-none-any.whl", hash = "sha256:df9a0fd43fa79dbab411d83eb1ea6f7a525c96ad92e60c2d7f40388971b25777"},
+    {file = "httpx-0.21.3.tar.gz", hash = "sha256:7a3eb67ef0b8abbd6d9402248ef2f84a76080fa1c839f8662e6eb385640e445a"},
 ]
 hyperframe = [
     {file = "hyperframe-6.0.1-py3-none-any.whl", hash = "sha256:0ec6bafd80d8ad2195c4f03aacba3a8265e57bc4cff261e802bf39970ed02a15"},

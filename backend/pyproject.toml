@@ -24,7 +24,7 @@ packages = [
 python = "^3.9"
 fastapi = "^0.73.0"
 python-box = "^5.3.0"
-loguru = "^0.5.3"
+loguru = "^0.6.0"
 liteconfig = "^1.0.0"
 httpx = {extras = ["http2"], version = "^0.21.3"}
 arrow = "^1.2.2"

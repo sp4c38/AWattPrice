@@ -30,7 +30,7 @@ httpx = {extras = ["http2"], version = "^0.21.3"}
 arrow = "^1.2.2"
 filelock = "^3.4.2"
 aiofile = "^3.5.0"
-SQLAlchemy = "^1.4.29"
+SQLAlchemy = "^1.4.31"
 aiosqlite = "^0.17.0"
 jsonschema = "^4.4.0"
 PyJWT = "^2.1.0"

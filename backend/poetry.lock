@@ -134,7 +134,7 @@ uvloop = ["uvloop (>=0.15.2)"]
 
 [[package]]
 name = "caio"
-version = "0.9.3"
+version = "0.9.5"
 description = "Asynchronous file IO for Linux Posix and Windows."
 category = "main"
 optional = false
@@ -164,7 +164,7 @@ pycparser = "*"
 
 [[package]]
 name = "charset-normalizer"
-version = "2.0.11"
+version = "2.0.12"
 description = "The Real First Universal Charset Detector. Open, modern and actively maintained alternative to Chardet."
 category = "main"
 optional = false
@@ -247,7 +247,7 @@ test = ["pytest (>=6.2.4,<7.0.0)", "pytest-cov (>=2.12.0,<4.0.0)", "mypy (==0.91
 
 [[package]]
 name = "filelock"
-version = "3.4.2"
+version = "3.6.0"
 description = "A platform independent file lock."
 category = "main"
 optional = false
@@ -312,7 +312,7 @@ python-versions = ">=3.6.1"
 
 [[package]]
 name = "httpcore"
-version = "0.14.5"
+version = "0.14.7"
 description = "A minimal low-level HTTP client."
 category = "main"
 optional = false
@@ -341,7 +341,7 @@ test = ["Cython (>=0.29.24,<0.30.0)"]
 
 [[package]]
 name = "httpx"
-version = "0.21.3"
+version = "0.22.0"
 description = "The next generation HTTP client."
 category = "main"
 optional = false
@@ -351,7 +351,7 @@ python-versions = ">=3.6"
 certifi = "*"
 charset-normalizer = "*"
 h2 = {version = ">=3,<5", optional = true, markers = "extra == \"http2\""}
-httpcore = ">=0.14.0,<0.15.0"
+httpcore = ">=0.14.5,<0.15.0"
 rfc3986 = {version = ">=1.3,<2", extras = ["idna2008"]}
 sniffio = "*"
 
@@ -359,6 +359,7 @@ sniffio = "*"
 brotli = ["brotlicffi", "brotli"]
 cli = ["click (>=8.0.0,<9.0.0)", "rich (>=10.0.0,<11.0.0)", "pygments (>=2.0.0,<3.0.0)"]
 http2 = ["h2 (>=3,<5)"]
+socks = ["socksio (>=1.0.0,<2.0.0)"]
 
 [[package]]
 name = "hyperframe"
@@ -378,7 +379,7 @@ python-versions = ">=3.5"
 
 [[package]]
 name = "importlib-metadata"
-version = "4.10.0"
+version = "4.11.1"
 description = "Read metadata from Python packages"
 category = "dev"
 optional = false
@@ -390,11 +391,11 @@ zipp = ">=0.5"
 [package.extras]
 docs = ["sphinx", "jaraco.packaging (>=8.2)", "rst.linker (>=1.9)"]
 perf = ["ipython"]
-testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-cov", "pytest-enabler (>=1.0.1)", "packaging", "pyfakefs", "flufl.flake8", "pytest-perf (>=0.9.2)", "pytest-black (>=0.3.7)", "pytest-mypy", "importlib-resources (>=1.3)"]
+testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-cov", "pytest-enabler (>=1.0.1)", "packaging", "pyfakefs", "flufl.flake8", "pytest-perf (>=0.9.2)", "pytest-black (>=0.3.7)", "pytest-mypy (>=0.9.1)", "importlib-resources (>=1.3)"]
 
 [[package]]
 name = "ipython"
-version = "8.0.0"
+version = "8.0.1"
 description = "IPython: Productive Interactive Computing"
 category = "dev"
 optional = false
@@ -615,7 +616,7 @@ python-versions = "*"
 
 [[package]]
 name = "platformdirs"
-version = "2.4.1"
+version = "2.5.0"
 description = "A small Python module for determining appropriate platform-specific dirs, e.g. a \"user data dir\"."
 category = "dev"
 optional = false
@@ -627,7 +628,7 @@ test = ["appdirs (==1.4.4)", "pytest (>=6)", "pytest-cov (>=2.7)", "pytest-mock 
 
 [[package]]
 name = "prompt-toolkit"
-version = "3.0.24"
+version = "3.0.28"
 description = "Library for building powerful interactive command lines in Python"
 category = "dev"
 optional = false
@@ -646,7 +647,7 @@ python-versions = "*"
 
 [[package]]
 name = "pure-eval"
-version = "0.2.1"
+version = "0.2.2"
 description = "Safely evaluate AST nodes without side effects"
 category = "dev"
 optional = false
@@ -828,7 +829,7 @@ sqlcipher = ["sqlcipher3-binary"]
 
 [[package]]
 name = "sqlalchemy2-stubs"
-version = "0.0.2a19"
+version = "0.0.2a20"
 description = "Typing Stubs for SQLAlchemy 1.4"
 category = "dev"
 optional = false
@@ -839,7 +840,7 @@ typing-extensions = ">=3.7.4"
 
 [[package]]
 name = "stack-data"
-version = "0.1.4"
+version = "0.2.0"
 description = "Extract data from python stack frames and tracebacks for informative displays"
 category = "dev"
 optional = false
@@ -851,7 +852,7 @@ executing = "*"
 pure-eval = "*"
 
 [package.extras]
-tests = ["pytest", "typeguard", "pygments", "littleutils"]
+tests = ["pytest", "typeguard", "pygments", "littleutils", "cython"]
 
 [[package]]
 name = "starlette"
@@ -899,7 +900,7 @@ test = ["pytest"]
 
 [[package]]
 name = "typing-extensions"
-version = "4.0.1"
+version = "4.1.1"
 description = "Backported and Experimental Type Hints for Python 3.6+"
 category = "main"
 optional = false
@@ -907,11 +908,11 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "uvicorn"
-version = "0.17.0"
+version = "0.17.5"
 description = "The lightning-fast ASGI server."
 category = "main"
 optional = false
-python-versions = "*"
+python-versions = ">=3.7"
 
 [package.dependencies]
 asgiref = ">=3.4.0"
@@ -991,7 +992,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "127e4a73d5370b8fb0c2429a2658cdc66f33d2538bbe8ad8d4d0552a8bc487b2"
+content-hash = "f2e36051aa2aae63ad12bfb570a508acb7be2f19ba053d8598c0589b2443d615"
 
 [metadata.files]
 aiofile = [
@@ -1035,16 +1036,18 @@ black = [
     {file = "black-21.12b0.tar.gz", hash = "sha256:77b80f693a569e2e527958459634f18df9b0ba2625ba4e0c2d5da5be42e6f2b3"},
 ]
 caio = [
-    {file = "caio-0.9.3-cp36-cp36m-macosx_10_14_x86_64.whl", hash = "sha256:966575da339c004c2410b4a92a6b7639659a6e90f45849dafa839e9dd2177c77"},
-    {file = "caio-0.9.3-cp36-cp36m-manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:46f649cbd68c6762e0a2d6fc1ab69ab9b06ddcdaab52241514b8c7cce48be08a"},
-    {file = "caio-0.9.3-cp37-cp37m-macosx_10_14_x86_64.whl", hash = "sha256:cccd691fa9eadb378ec2baf6bce6427640a629426a4dcd56d66b849a09c49949"},
-    {file = "caio-0.9.3-cp37-cp37m-manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:7331c49c6d9036a72ba9ae17de9804359b84c0c3c69bb9f3ab7020bf47f59a53"},
-    {file = "caio-0.9.3-cp38-cp38-macosx_10_14_x86_64.whl", hash = "sha256:e475ed5cadd550aef36b10a74613fa797e8141cd7360af71507ed29eaaf20b0b"},
-    {file = "caio-0.9.3-cp38-cp38-manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:fa4b8f9538a2b52081edee7f972f6644f02149ae7d1ea9c3a7d55df9c1cc182f"},
-    {file = "caio-0.9.3-cp39-cp39-macosx_10_14_x86_64.whl", hash = "sha256:ab94072fb0b00ee0108acd938c9444b828bd9dd0afbb54059293c1e5e61f2a76"},
-    {file = "caio-0.9.3-cp39-cp39-manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:4c10054e6bc19e619033bb6f6ef8000b334596f0a947de91462513e5f54054db"},
-    {file = "caio-0.9.3-py3-none-any.whl", hash = "sha256:fae7cd90da87effda72ec2ca85df67f6dc91e58c0dfb6244db4c4d32d1a43fb7"},
-    {file = "caio-0.9.3.tar.gz", hash = "sha256:2e46b0c008b8baadcac9c8acc66aa1fff58acae779a8a81479795a499f3a6a40"},
+    {file = "caio-0.9.5-cp310-cp310-macosx_10_15_x86_64.whl", hash = "sha256:cd1c20aab04c18f0534b3f0b59103a94dede3c7d7b43c9cc525df3980b4c7c54"},
+    {file = "caio-0.9.5-cp310-cp310-manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:013aa374158c5074b3c65a0da6b9c6b20a987d85fb317dd077b045e84e2478e1"},
+    {file = "caio-0.9.5-cp36-cp36m-macosx_10_14_x86_64.whl", hash = "sha256:d767faf537a9ea774e8408ba15a0f1dc734f06857c2d28bdf4258a63b5885f42"},
+    {file = "caio-0.9.5-cp36-cp36m-manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:97d9a10522a8a25798229fc1113cfaba3832b1cd0c1a3648b009b9740ef5e054"},
+    {file = "caio-0.9.5-cp37-cp37m-macosx_10_14_x86_64.whl", hash = "sha256:4fe9eff5cf7a2d6f3f418aeeccd11ce9a38329e07527b6f52da085edb44bc2fd"},
+    {file = "caio-0.9.5-cp37-cp37m-manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:b8b6be369139edd678817dc0a313392d710f66fb521c275dce0a9067089b346b"},
+    {file = "caio-0.9.5-cp38-cp38-macosx_10_14_x86_64.whl", hash = "sha256:3ffc6259239e03962f9e14829e02795ca9d196eedf32fe61688ba6ed33da46c8"},
+    {file = "caio-0.9.5-cp38-cp38-manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:15f70d27e1009d279e4f9ff86290aad00b0511ce82a1879c40745244f0a9ec92"},
+    {file = "caio-0.9.5-cp39-cp39-macosx_10_15_x86_64.whl", hash = "sha256:0427a58c1814a091bfbb84318d344fdb9a68f3d49adc74e5fdc7bc9478e1e4fe"},
+    {file = "caio-0.9.5-cp39-cp39-manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:01061288391020f28e1ab8b0437420f7fe1e0ecc29b4107f7a8dcf7789f33b22"},
+    {file = "caio-0.9.5-py3-none-any.whl", hash = "sha256:3c74d84dff2bec5f93685cf2f32eb22e4cc5663434a9be5f4a759247229b69b3"},
+    {file = "caio-0.9.5.tar.gz", hash = "sha256:167d9342a807bae441b2e88f9ecb62da2f236b319939a8679f68f510a0194c40"},
 ]
 certifi = [
     {file = "certifi-2021.10.8-py2.py3-none-any.whl", hash = "sha256:d62a0163eb4c2344ac042ab2bdf75399a71a2d8c7d47eac2e2ee91b9d6339569"},
@@ -1103,8 +1106,8 @@ cffi = [
     {file = "cffi-1.15.0.tar.gz", hash = "sha256:920f0d66a896c2d99f0adbb391f990a84091179542c205fa53ce5787aff87954"},
 ]
 charset-normalizer = [
-    {file = "charset-normalizer-2.0.11.tar.gz", hash = "sha256:98398a9d69ee80548c762ba991a4728bfc3836768ed226b3945908d1a688371c"},
-    {file = "charset_normalizer-2.0.11-py3-none-any.whl", hash = "sha256:2842d8f5e82a1f6aa437380934d5e1cd4fcf2003b06fed6940769c164a480a45"},
+    {file = "charset-normalizer-2.0.12.tar.gz", hash = "sha256:2857e29ff0d34db842cd7ca3230549d1a697f96ee6d3fb071cfa6c7393832597"},
+    {file = "charset_normalizer-2.0.12-py3-none-any.whl", hash = "sha256:6881edbebdb17b39b4eaaa821b438bf6eddffb4468cf344f09f89def34a8b1df"},
 ]
 click = [
     {file = "click-8.0.3-py3-none-any.whl", hash = "sha256:353f466495adaeb40b6b5f592f9f91cb22372351c84caeb068132442a4518ef3"},
@@ -1149,8 +1152,8 @@ fastapi = [
     {file = "fastapi-0.73.0.tar.gz", hash = "sha256:dcfee92a7f9a72b5d4b7ca364bd2b009f8fc10d95ed5769be20e94f39f7e5a15"},
 ]
 filelock = [
-    {file = "filelock-3.4.2-py3-none-any.whl", hash = "sha256:cf0fc6a2f8d26bd900f19bf33915ca70ba4dd8c56903eeb14e1e7a2fd7590146"},
-    {file = "filelock-3.4.2.tar.gz", hash = "sha256:38b4f4c989f9d06d44524df1b24bd19e167d851f19b50bf3e3559952dddc5b80"},
+    {file = "filelock-3.6.0-py3-none-any.whl", hash = "sha256:f8314284bfffbdcfa0ff3d7992b023d4c628ced6feb957351d4c48d059f56bc0"},
+    {file = "filelock-3.6.0.tar.gz", hash = "sha256:9cd540a9352e432c7246a48fe4e8712b10acb1df2ad1f30e8c070b82ae1fed85"},
 ]
 greenlet = [
     {file = "greenlet-1.1.2-cp27-cp27m-macosx_10_14_x86_64.whl", hash = "sha256:58df5c2a0e293bf665a51f8a100d3e9956febfbf1d9aaf8c0677cf70218910c6"},
@@ -1226,8 +1229,8 @@ hpack = [
     {file = "hpack-4.0.0.tar.gz", hash = "sha256:fc41de0c63e687ebffde81187a948221294896f6bdc0ae2312708df339430095"},
 ]
 httpcore = [
-    {file = "httpcore-0.14.5-py3-none-any.whl", hash = "sha256:2621ee769d0236574df51b305c5f4c69ca8f0c7b215221ad247b1ee42a9a9de1"},
-    {file = "httpcore-0.14.5.tar.gz", hash = "sha256:435ab519628a6e2393f67812dea3ca5c6ad23b457412cd119295d9f906d96a2b"},
+    {file = "httpcore-0.14.7-py3-none-any.whl", hash = "sha256:47d772f754359e56dd9d892d9593b6f9870a37aeb8ba51e9a88b09b3d68cfade"},
+    {file = "httpcore-0.14.7.tar.gz", hash = "sha256:7503ec1c0f559066e7e39bc4003fd2ce023d01cf51793e3c173b864eb456ead1"},
 ]
 httptools = [
     {file = "httptools-0.3.0-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:4137137de8976511a392e27bfdcf231bd926ac13d375e0414e927b08217d779e"},
@@ -1256,8 +1259,8 @@ httptools = [
     {file = "httptools-0.3.0.tar.gz", hash = "sha256:3f9b4856d46ba1f0c850f4e84b264a9a8b4460acb20e865ec00978ad9fbaa4cf"},
 ]
 httpx = [
-    {file = "httpx-0.21.3-py3-none-any.whl", hash = "sha256:df9a0fd43fa79dbab411d83eb1ea6f7a525c96ad92e60c2d7f40388971b25777"},
-    {file = "httpx-0.21.3.tar.gz", hash = "sha256:7a3eb67ef0b8abbd6d9402248ef2f84a76080fa1c839f8662e6eb385640e445a"},
+    {file = "httpx-0.22.0-py3-none-any.whl", hash = "sha256:e35e83d1d2b9b2a609ef367cc4c1e66fd80b750348b20cc9e19d1952fc2ca3f6"},
+    {file = "httpx-0.22.0.tar.gz", hash = "sha256:d8e778f76d9bbd46af49e7f062467e3157a5a3d2ae4876a4bbfd8a51ed9c9cb4"},
 ]
 hyperframe = [
     {file = "hyperframe-6.0.1-py3-none-any.whl", hash = "sha256:0ec6bafd80d8ad2195c4f03aacba3a8265e57bc4cff261e802bf39970ed02a15"},
@@ -1268,12 +1271,12 @@ idna = [
     {file = "idna-3.3.tar.gz", hash = "sha256:9d643ff0a55b762d5cdb124b8eaa99c66322e2157b69160bc32796e824360e6d"},
 ]
 importlib-metadata = [
-    {file = "importlib_metadata-4.10.0-py3-none-any.whl", hash = "sha256:b7cf7d3fef75f1e4c80a96ca660efbd51473d7e8f39b5ab9210febc7809012a4"},
-    {file = "importlib_metadata-4.10.0.tar.gz", hash = "sha256:92a8b58ce734b2a4494878e0ecf7d79ccd7a128b5fc6014c401e0b61f006f0f6"},
+    {file = "importlib_metadata-4.11.1-py3-none-any.whl", hash = "sha256:e0bc84ff355328a4adfc5240c4f211e0ab386f80aa640d1b11f0618a1d282094"},
+    {file = "importlib_metadata-4.11.1.tar.gz", hash = "sha256:175f4ee440a0317f6e8d81b7f8d4869f93316170a65ad2b007d2929186c8052c"},
 ]
 ipython = [
-    {file = "ipython-8.0.0-py3-none-any.whl", hash = "sha256:5b58cf977635abad74d76be49dbb2e97fddd825fb8503083d55496aa1160b854"},
-    {file = "ipython-8.0.0.tar.gz", hash = "sha256:004a0d05aeecd32adec4841b6e2586d5ca35785b1477db4d8333a39333e0ce98"},
+    {file = "ipython-8.0.1-py3-none-any.whl", hash = "sha256:c503a0dd6ccac9c8c260b211f2dd4479c042b49636b097cc9a0d55fe62dff64c"},
+    {file = "ipython-8.0.1.tar.gz", hash = "sha256:ab564d4521ea8ceaac26c3a2c6e5ddbca15c8848fd5a5cc325f960da88d42974"},
 ]
 jedi = [
     {file = "jedi-0.18.1-py2.py3-none-any.whl", hash = "sha256:637c9635fcf47945ceb91cd7f320234a7be540ded6f3e99a50cb6febdfd1ba8d"},
@@ -1424,20 +1427,20 @@ pickleshare = [
     {file = "pickleshare-0.7.5.tar.gz", hash = "sha256:87683d47965c1da65cdacaf31c8441d12b8044cdec9aca500cd78fc2c683afca"},
 ]
 platformdirs = [
-    {file = "platformdirs-2.4.1-py3-none-any.whl", hash = "sha256:1d7385c7db91728b83efd0ca99a5afb296cab9d0ed8313a45ed8ba17967ecfca"},
-    {file = "platformdirs-2.4.1.tar.gz", hash = "sha256:440633ddfebcc36264232365d7840a970e75e1018d15b4327d11f91909045fda"},
+    {file = "platformdirs-2.5.0-py3-none-any.whl", hash = "sha256:30671902352e97b1eafd74ade8e4a694782bd3471685e78c32d0fdfd3aa7e7bb"},
+    {file = "platformdirs-2.5.0.tar.gz", hash = "sha256:8ec11dfba28ecc0715eb5fb0147a87b1bf325f349f3da9aab2cd6b50b96b692b"},
 ]
 prompt-toolkit = [
-    {file = "prompt_toolkit-3.0.24-py3-none-any.whl", hash = "sha256:e56f2ff799bacecd3e88165b1e2f5ebf9bcd59e80e06d395fa0cc4b8bd7bb506"},
-    {file = "prompt_toolkit-3.0.24.tar.gz", hash = "sha256:1bb05628c7d87b645974a1bad3f17612be0c29fa39af9f7688030163f680bad6"},
+    {file = "prompt_toolkit-3.0.28-py3-none-any.whl", hash = "sha256:30129d870dcb0b3b6a53efdc9d0a83ea96162ffd28ffe077e94215b233dc670c"},
+    {file = "prompt_toolkit-3.0.28.tar.gz", hash = "sha256:9f1cd16b1e86c2968f2519d7fb31dd9d669916f515612c269d14e9ed52b51650"},
 ]
 ptyprocess = [
     {file = "ptyprocess-0.7.0-py2.py3-none-any.whl", hash = "sha256:4b41f3967fce3af57cc7e94b888626c18bf37a083e3651ca8feeb66d492fef35"},
     {file = "ptyprocess-0.7.0.tar.gz", hash = "sha256:5c5d0a3b48ceee0b48485e0c26037c0acd7d29765ca3fbb5cb3831d347423220"},
 ]
 pure-eval = [
-    {file = "pure_eval-0.2.1-py3-none-any.whl", hash = "sha256:94eeb505a88721bec7bb21a4ac49758b8b1a01530da1a70d4ffc1d9937689d71"},
-    {file = "pure_eval-0.2.1.tar.gz", hash = "sha256:0f04483b16c9429532d2c0ddc96e2b3bb6b2dc37a2bfb0e986248dbfd0b78873"},
+    {file = "pure_eval-0.2.2-py3-none-any.whl", hash = "sha256:01eaab343580944bc56080ebe0a674b39ec44a945e6d09ba7db3cb8cec289350"},
+    {file = "pure_eval-0.2.2.tar.gz", hash = "sha256:2b45320af6dfaa1750f543d714b6d1c520a1688dec6fd24d339063ce0aaa9ac3"},
 ]
 pycparser = [
     {file = "pycparser-2.21-py2.py3-none-any.whl", hash = "sha256:8ee45429555515e1f6b185e78100aea234072576aa43ab53aefcae078162fca9"},
@@ -1613,12 +1616,12 @@ sqlalchemy = [
     {file = "SQLAlchemy-1.4.31.tar.gz", hash = "sha256:582b59d1e5780a447aada22b461e50b404a9dc05768da1d87368ad8190468418"},
 ]
 sqlalchemy2-stubs = [
-    {file = "sqlalchemy2-stubs-0.0.2a19.tar.gz", hash = "sha256:2117c48ce5acfe33bf9c9bfce2a981632d931949e68fa313aa5c2a3bc980ca7a"},
-    {file = "sqlalchemy2_stubs-0.0.2a19-py3-none-any.whl", hash = "sha256:aac7dca77a2c49e5f0934976421d5e25ae4dc5e27db48c01e055f81caa1e3ead"},
+    {file = "sqlalchemy2-stubs-0.0.2a20.tar.gz", hash = "sha256:3e96a5bb7d46a368c780ba57dcf2afbe2d3efdd75f7724ae7a859df0b0625f38"},
+    {file = "sqlalchemy2_stubs-0.0.2a20-py3-none-any.whl", hash = "sha256:da31d0e30a2af2e5ad83dbce5738543a9f488089774f506de5ec7d28d425a202"},
 ]
 stack-data = [
-    {file = "stack_data-0.1.4-py3-none-any.whl", hash = "sha256:02cc0683cbc445ae4ca8c4e3a0e58cb1df59f252efb0aa016b34804a707cf9bc"},
-    {file = "stack_data-0.1.4.tar.gz", hash = "sha256:7769ed2482ce0030e00175dd1bf4ef1e873603b6ab61cd3da443b410e64e9477"},
+    {file = "stack_data-0.2.0-py3-none-any.whl", hash = "sha256:999762f9c3132308789affa03e9271bbbe947bf78311851f4d485d8402ed858e"},
+    {file = "stack_data-0.2.0.tar.gz", hash = "sha256:45692d41bd633a9503a5195552df22b583caf16f0b27c4e58c98d88c8b648e12"},
 ]
 starlette = [
     {file = "starlette-0.17.1-py3-none-any.whl", hash = "sha256:26a18cbda5e6b651c964c12c88b36d9898481cd428ed6e063f5f29c418f73050"},
@@ -1637,12 +1640,12 @@ traitlets = [
     {file = "traitlets-5.1.1.tar.gz", hash = "sha256:059f456c5a7c1c82b98c2e8c799f39c9b8128f6d0d46941ee118daace9eb70c7"},
 ]
 typing-extensions = [
-    {file = "typing_extensions-4.0.1-py3-none-any.whl", hash = "sha256:7f001e5ac290a0c0401508864c7ec868be4e701886d5b573a9528ed3973d9d3b"},
-    {file = "typing_extensions-4.0.1.tar.gz", hash = "sha256:4ca091dea149f945ec56afb48dae714f21e8692ef22a395223bcd328961b6a0e"},
+    {file = "typing_extensions-4.1.1-py3-none-any.whl", hash = "sha256:21c85e0fe4b9a155d0799430b0ad741cdce7e359660ccbd8b530613e8df88ce2"},
+    {file = "typing_extensions-4.1.1.tar.gz", hash = "sha256:1a9462dcc3347a79b1f1c0271fbe79e844580bb598bafa1ed208b94da3cdcd42"},
 ]
 uvicorn = [
-    {file = "uvicorn-0.17.0-py3-none-any.whl", hash = "sha256:0b89c91bb8fe84c4bded9996af13c4b8c0de799d29bffeaa0c8ad298f2be0934"},
-    {file = "uvicorn-0.17.0.tar.gz", hash = "sha256:192c2422b056a3beb512c6c260bf77a7a884204a4ae41856719c1913ead63bbb"},
+    {file = "uvicorn-0.17.5-py3-none-any.whl", hash = "sha256:8adddf629b79857b48b999ae1b14d6c92c95d4d7840bd86461f09bee75f1653e"},
+    {file = "uvicorn-0.17.5.tar.gz", hash = "sha256:c04a9c069111489c324f427501b3840d306c6b91a77b00affc136a840a3f45f1"},
 ]
 uvloop = [
     {file = "uvloop-0.16.0-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:6224f1401025b748ffecb7a6e2652b17768f30b1a6a3f7b44660e5b5b690b12d"},

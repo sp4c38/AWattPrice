@@ -9,9 +9,7 @@ import Foundation
 
 extension Calendar {
     func startOfHour(for date: Date) -> Date {
-        let hourAmount = self.component(.hour, from: date)
-        let startOfDay = self.startOfDay(for: date)
-        let startOfHour = startOfDay.addingTimeInterval(TimeInterval(hourAmount * 60 * 60))
-        return startOfHour
+        let hours = self.component(.hour, from: date)
+        return self.date(bySettingHour: hours, minute: 0, second: 0, of: date)!
     }
 }

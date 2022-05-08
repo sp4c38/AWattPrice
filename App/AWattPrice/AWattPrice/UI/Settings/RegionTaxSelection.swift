@@ -25,10 +25,6 @@ class RegionTaxSelectionViewModel: ObservableObject {
         $taxSelection.dropFirst().sink(receiveValue: taxSelectionChanges).store(in: &cancellables)
     }
     
-    var showTaxSelection: Bool {
-        selectedRegion == Region.DE
-    }
-    
     var isUploading: Bool {
         [.uploadingAndTimeExceeded, .uploadingAndTimeNotExceeded].contains(uploadObserver.loadingPublisher)
     }
@@ -104,10 +100,8 @@ struct RegionTaxSelectionView: View {
                 VStack {
                     regionPicker
                     
-                    if viewModel.showTaxSelection {
-                        taxSelection
-                            .padding(.top, 10)
-                    }
+                    taxSelection
+                        .padding(.top, 10)
                 }
                 .opacity(viewModel.showUploadIndicators ? 0.5 : 1)
                 .grayscale(viewModel.showUploadIndicators ? 0.5 : 0)

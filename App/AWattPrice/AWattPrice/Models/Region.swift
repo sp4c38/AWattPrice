@@ -25,7 +25,7 @@ enum Region: Int16, Encodable {
         case .DE:
             return 1.19
         case .AT:
-            return nil
+            return 1.20
         }
     }
     

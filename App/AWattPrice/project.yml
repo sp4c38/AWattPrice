@@ -6,6 +6,12 @@ options:
     Development Test Staging
 
 configs:
+  # Use Development or Distribution to select if the configuration should be associated with the Development or Distribution certificate.
+  # Use the name in the middle to specify the name of the configuration.
+  # Use Staging or Production to specify the type of configuration.
+  # Assign debug or release, that xcodegen can configure some standard settings for the type of configuration. Staging basically means debug and Production means release, just used other names. 
+  
+  # A distinction between Staging and Production is needed as it specifies if the "me.space8.AWattPrice.staging" or "me.space8.AWattPrice" bundle id should be used when signing. For example this allows to sign an app for AdHoc with either the staging bundle id or the production bundle id. 
   Development Test Staging: debug
   Development Test Production: release
   Distribution AdHoc Staging: debug
@@ -27,6 +33,13 @@ targets:
   AWattPrice:
     type: application
     platform: iOS
+    
+    scheme:
+      configVariantes:
+        - Test
+        - AdHoc
+        - AppStore
+    
     sources:
       - path: AWattPrice
         configFiles:
@@ -36,6 +49,7 @@ targets:
           Distribution AdHoc Production: AWattPrice/Production.xcconfig
           Distribution AppStore Staging: AWattPrice/Staging.xcconfig
           Distribution AppStore Production: AWattprice/Production.xcconfig
+        
     settings:
       base:
         INFOPLIST_FILE: AWattPrice/Info.plist
@@ -63,5 +77,6 @@ targets:
           PROVISIONING_PROFILE_SPECIFIER: match AppStore me.space8.AWattPrice.staging
         Distribution AppStore Production:
           PROVISIONING_PROFILE_SPECIFIER: match AppStore me.space8.AWattPrice
+          
     dependencies:
       - package: Resolver

@@ -172,28 +172,6 @@ class HourPair {
         }
         averagePrice = pricesTogether / totalMinutes
     }
-
-//    func calculateHourlyPrice(currentSetting: CurrentSetting) {
-//        hourlyEnergyCosts = nil
-//        var hourlyPrice: Double = 0
-//
-//        if currentSetting.entity!.awattarTariffIndex == 0 {
-//            for hourPair in associatedPricePoints {
-//                let lengthOfIntervene = Double(abs(hourPair.endTimestamp - hourPair.startTimestamp)) / 60 / 60 // In hours
-//                var price = hourPair.marketprice
-//
-//                if currentSetting.entity!.pricesWithVAT {
-//                    price *= currentSetting.currentVATToUse
-//                }
-//
-//                let basePrice: Double = lengthOfIntervene * currentSetting.entity!.awattarBaseElectricityPrice
-//
-//                hourlyPrice += (lengthOfIntervene * price) + basePrice
-//            }
-//
-//            hourlyEnergyCosts = hourlyPrice
-//        }
-//    }
 }
 
 extension CheapestHourManager {

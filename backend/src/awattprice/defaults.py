@@ -40,9 +40,9 @@ url = https://api.awattar.de/v1/marketdata/
 url = https://api.awattar.at/v1/marketdata/
 
 [paths]
-log_dir = ~/awattprice/logs/
-data_dir = ~/awattprice/data/
-apns_dir = ~/awattprice/apns/
+log_dir = /etc/awattprice/logs/
+data_dir = /etc/awattprice/data/
+apns_dir = /etc/awattprice/apns/
 old_database =
 
 [apns]

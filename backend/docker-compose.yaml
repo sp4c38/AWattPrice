@@ -1,0 +1,9 @@
+services:
+  awattprice:
+    image: leonbecker1/awattprice-backend
+    volumes:
+      - "/Users/sp4c38/awattprice/data/:/etc/awattprice/data/"
+      - "/Users/sp4c38/awattprice/apns/:/etc/awattprice/apns/"
+      - "/Users/sp4c38/awattprice/logs/:/etc/awattprice/logs/"
+      - "/Users/sp4c38/.config/awattprice/config.ini:/etc/awattprice/config.ini"
+      - "/Users/sp4c38/awattprice/socket/:/etc/awattprice/socket/"

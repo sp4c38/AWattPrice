@@ -1,6 +1,6 @@
 [tool.poetry]
-name = "AWattPrice Backend"
-version = "2.1.1"
+name = "awattprice"
+version = "2.1.2"
 description = "Backend for the AWattPrice iOS app."
 authors = ["Léon Becker <lb@alien8.de>", "Frank Becker <fb@alien8.de>"]
 homepage = "https://awattprice.space8.me"
@@ -39,6 +39,7 @@ tenacity = "^8.0.1"
 gunicorn = "^20.1.0"
 uvloop = "^0.16.0"
 uvicorn = {extras = ["standard"], version = "^0.17.0"}
+greenlet = "^1.1.2"
 
 [tool.poetry.dev-dependencies]
 ipython = "^8.0.0"

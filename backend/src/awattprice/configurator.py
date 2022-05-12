@@ -69,8 +69,8 @@ def get_config() -> Config:
     """Read and transform config and check some requirements."""
     # First path in list will be used for creation if no config file exists yet.
     read_attempt_paths = [
-        Path("~/.config/awattprice/config.ini").expanduser(),
         Path("/etc/awattprice/config.ini"),
+        Path("~/.config/awattprice/config.ini").expanduser(),
     ]
     config_path = None
     for possible_path in read_attempt_paths:

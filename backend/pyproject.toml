@@ -4,7 +4,7 @@ version = "2.1.2"
 description = "Backend for the AWattPrice iOS app."
 authors = ["Léon Becker <lb@alien8.de>", "Frank Becker <fb@alien8.de>"]
 homepage = "https://awattprice.space8.me"
-repository = "https:l//www.github.com/sp4c38/AWattPrice"
+repository = "https://www.github.com/sp4c38/AWattPrice"
 # Add here all kinds of additional classifiers as defined under
 # https://pypi.python.org/pypi?%3Aaction=list_classifiers
 classifiers = [

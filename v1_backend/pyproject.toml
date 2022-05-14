@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "v1_backend"
+version = "0.1.0"
+description = ""
+authors = []
+
+packages = [
+    { include = "v1_awattprice", from = "src" },
+]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+aiofiles = "==0.6.0"
+ConfigUpdater = "^3.1"
+validators = "==0.18.2"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

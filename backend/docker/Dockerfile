@@ -31,7 +31,6 @@ COPY backend/pyproject.toml .
 COPY backend/poetry.lock .
 RUN poetry install --no-root
 COPY backend/src/ src/
-RUN ls -a
 # 'poetry install' will link to /usr/src/awattprice/src instead of copying it.
 RUN poetry install
 
@@ -39,10 +38,11 @@ RUN poetry install
 WORKDIR /usr/src/v1_awattprice/
 ENV VIRTUAL_ENV="$VIRTUAL_ENV_V1_AWATTPRICE"
 ENV PATH="$VIRTUAL_ENV/bin:$ORIGINAL_PATH"
-COPY v1_backend/requirements.txt .
-RUN pip install -r requirements.txt
-COPY v1_backend/ .
-RUN git init && pip install .
+COPY v1_backend/pyproject.toml .
+COPY v1_backend/poetry.lock .
+RUN poetry install --no-root
+COPY v1_backend/src/ src/
+RUN ln -s /usr/src/v1_awattprice/src/v1_awattprice/ /opt/venvs/v1_awattprice/lib/python3.10/site-packages/v1_awattprice
 
 ENV VIRTUAL_ENV="$VIRTUAL_ENV_AWATTPRICE"
 ENV PATH="$VIRTUAL_ENV_AWATTPRICE/bin:$ORIGINAL_PATH"

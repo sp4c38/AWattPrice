@@ -118,7 +118,7 @@ def read_config(path: Optional[Path] = None) -> Box:
         config_path_locations: Tuple[Path, ...] = (path,)
     else:
         config_path_locations = (
-            Path(Path("/etc") / "awattprice" / "v1_config.ini"),
+            Path("/etc") / "v1_awattprice" / "config.ini",
             Path(os.path.expanduser("~")) / ".config" / "awattprice" / "v1_config.ini",
         )
     found_config_file = False

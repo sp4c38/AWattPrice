@@ -42,7 +42,6 @@ ENV PATH="$VIRTUAL_ENV/bin:$ORIGINAL_PATH"
 COPY v1_backend/requirements.txt .
 RUN pip install -r requirements.txt
 COPY v1_backend/ .
-ARG CACHEBUST=1 
 RUN git init && pip install .
 
 ENV VIRTUAL_ENV="$VIRTUAL_ENV_AWATTPRICE"

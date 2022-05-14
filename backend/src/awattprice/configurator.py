@@ -82,8 +82,8 @@ def get_config() -> Config:
     if config_path:
         config = Config(str(config_path))
     else:
+        config_path = read_attempt_paths[1]
         sys.stdout.write(f"INFO: No config file found. Creating at {config_path}.\n")
-        config_path = read_attempt_paths[0]
         config_path.parent.mkdir(parents=True, exist_ok=True)
         with config_path.open("w") as config_file:
             config_file.write(defaults.DEFAULT_CONFIG)

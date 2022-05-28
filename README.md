@@ -22,7 +22,7 @@ https://apps.apple.com/app/awattprice/id1536629626</a>
 
 ### Description
 
-AWattPrice shows the hourly prices by the electricity provider aWATTar. The prices are based on factors like available wind and
+AWattPrice shows the hourly prices by the electricity provider aWATTar. Instead of paying a fixed price for electricity, aWATTar customers are billed the current stock price. These prices are based on factors like available wind and
 solar power generation. Hence, they vary over time. Let's say one wants to operate a washing machine for some time. It will pay
 off to run it when prices are low. That reduces the electricity bill and helps the grid to balance out peaks. Further it strengthens
 the use of regenerative power.
@@ -48,9 +48,6 @@ Feedback of all kind and patches are very welcome.
 	<img src="https://github.com/sp4c38/AWattPrice/blob/master/readme_assets/screenshots/3_screenshot.png?raw=true" width=270>
 </div>
 
-### Technical Notes:
+### Technical Note:
 AWattPrice consists out of two parts: The main app bundle and the backend part.
 To not overload the public aWATTar API AWattPrice caches the current price data. The AWattPrice Backend will only call the aWATTar API a few times a day.
-
-##### Request Scheme of AWattPrice:
-![Request Scheme](https://github.com/sp4c38/AWattPrice/blob/master/readme_assets/request_scheme.png)

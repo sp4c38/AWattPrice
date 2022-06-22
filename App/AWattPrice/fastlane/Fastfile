@@ -17,11 +17,32 @@
 
 default_platform(:ios)
 
+private_lane :prompt_increment_marketing_number do
+  marketing_version = get_version_number_from_plist
+  new_version = UI.input("What new marketing version? <enter to keep it at #{marketing_version}>")
+  unless new_version.strip == ""
+    increment_version_number_in_plist(version_number: new_version)
+    UI.message("Version number set to #{new_version}.")
+    marketing_version = new_version
+  end
+end
+
+private_lane :prompt_increment_build_number do
+  build_number = get_build_number_from_plist
+  new_build_number = UI.input("What new build number? <enter to keep it at #{build_number}>")
+  unless new_build_number.strip == ""
+    increment_build_number_in_plist(build_number: new_build_number)
+    UI.message("Build number set to #{new_build_number}.")
+    build_number = new_build_number
+  end
+end
+
 platform :ios do
   desc "Push a new beta build to TestFlight"
   lane :beta do
-    increment_build_number(xcodeproj: "AWattPrice.xcodeproj")
-    build_app(scheme: "AWattPrice", configuration: "Distribution AppStore Production")
-    upload_to_testflight(skip_submission: true, skip_waiting_for_build_processing: true)
+    prompt_increment_marketing_number
+    prompt_increment_build_number
+    # build_app(scheme: "AWattPrice", configuration: "Distribution AppStore Production")
+    # upload_to_testflight(skip_submission: true, skip_waiting_for_build_processing: true)
   end
 end

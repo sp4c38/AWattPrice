@@ -13,29 +13,15 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 # Available Actions
 
-### push_to_adhoc
+## iOS
+
+### ios beta
 
 ```sh
-[bundle exec] fastlane push_to_adhoc
+[bundle exec] fastlane ios beta
 ```
 
-
-
-### push_to_testflight
-
-```sh
-[bundle exec] fastlane push_to_testflight
-```
-
-
-
-### release
-
-```sh
-[bundle exec] fastlane release
-```
-
-
+Push a new beta build to TestFlight
 
 ----
 

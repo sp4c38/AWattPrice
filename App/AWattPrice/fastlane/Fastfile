@@ -1,3 +1,5 @@
+# Ruby syntax highlighting
+
 # This file contains the fastlane.tools configuration
 # You can find the documentation at https://docs.fastlane.tools
 #
@@ -10,56 +12,16 @@
 #     https://docs.fastlane.tools/plugins/available-plugins
 #
 
-default_scheme = "AWattPrice"
-awattprice_app_id = "me.space8.AWattPrice"
-
-update_fastlane
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
 
 default_platform(:ios)
 
-private_lane :prompt_increment_marketing_number do
-  marketing_version = get_version_number_from_plist
-  new_version = UI.input("What new marketing version? <enter to keep it at #{marketing_version}>")
-  unless new_version.strip == ""
-    increment_version_number_in_plist(version_number: new_version)
-    UI.message("Version number set to #{new_version}.")
-    marketing_version = new_version
+platform :ios do
+  desc "Push a new beta build to TestFlight"
+  lane :beta do
+    increment_build_number(xcodeproj: "AWattPrice.xcodeproj")
+    build_app(scheme: "AWattPrice", configuration: "Distribution AppStore Production")
+    upload_to_testflight(skip_submission: true, skip_waiting_for_build_processing: true)
   end
-end
-
-private_lane :prompt_increment_build_number do
-  build_number = get_build_number_from_plist
-  new_build_number = UI.input("What new build number? <enter to keep it at #{build_number}>")
-  unless new_build_number.strip == ""
-    increment_build_number_in_plist(build_number: new_build_number)
-    UI.message("Build number set to #{new_build_number}.")
-    build_number = new_build_number
-  end
-end
-
-lane :push_to_adhoc do |options|
-  match
-  # xcodegen
-  configuration = options[:staging] ? "Distribution AdHoc Staging" : "Distribution AdHoc Production"
-  build_app(export_method: "ad-hoc", configuration: configuration)
-end
-
-lane :push_to_testflight do
-  configuration = "Distribution AppStore Production"
-  match
-  prompt_increment_marketing_number
-  prompt_increment_build_number
-  xcodegen
-  build_app(export_method: "app-store", configuration: configuration)
-  upload_to_testflight(app_identifier: awattprice_app_id, skip_submission: true, skip_waiting_for_build_processing: true)
-end
-
-lane :release do
-  configuration = "Distribution AppStore Production"
-  match
-  prompt_increment_marketing_number
-  prompt_increment_build_number
-  xcodegen
-  build_app(export_method: "app-store", configuration: configuration)
-  upload_to_app_store(app_identifier: awattprice_app_id, submit_for_review: false, force: true)
 end

@@ -1,8 +1,4 @@
-app_identifier [
-  "me.space8.AWattPrice",
-  "me.space8.AWattPrice.staging"
-]
-
+app_identifier(["me.space8.AWattPrice", "me.space8.AWattPrice.staging"]) # The bundle identifier of your app
 apple_id("dev@space8.me") # Your Apple email address
 
 itc_team_id("122249847") # App Store Connect Team ID

@@ -62,55 +62,6 @@ struct NotificationSettingView: View {
     }
 }
 
-struct GoToNotificationSettingView: View {
-    @Environment(\.colorScheme) var colorScheme
-    
-    @State var redirectToNotificationPage: Int? = 0
-
-    var body: some View {
-        CustomInsetGroupedListItem(
-        ) {
-            NavigationLink(
-                destination: NotificationSettingView(),
-                tag: 1,
-                selection: $redirectToNotificationPage
-            ) {}
-                .frame(width: 0, height: 0)
-                .hidden()
-
-            VStack(alignment: .leading, spacing: 15) {
-                HStack(alignment: .center) {
-                    Image("PriceTag")
-                        .resizable()
-                        .renderingMode(.template)
-                        .foregroundColor(colorScheme == .light ? Color.black : Color.white)
-                        .scaledToFit()
-                        .frame(width: 22, height: 22, alignment: .center)
-
-                    Text("general.priceGuard")
-                        .bold()
-                        .font(.body)
-                        .padding(.top, 2)
-
-                    Spacer()
-
-                    Image(systemName: "chevron.right")
-                        .font(Font.caption.weight(.semibold))
-                        .foregroundColor(Color.gray)
-                }
-
-                Text("notificationPage.notification.priceDropsBelowValue.description")
-                    .font(.subheadline)
-                    .multilineTextAlignment(.center)
-            }
-            .contentShape(Rectangle())
-            .onTapGesture {
-                redirectToNotificationPage = 1
-            }
-        }
-    }
-}
-
 struct NotificationSettingView_Previews: PreviewProvider {
     static var appSettings = CurrentSetting(managedObjectContext: PersistenceManager().persistentContainer.viewContext)
     static var notificationSettings = CurrentNotificationSetting(managedObjectContext: PersistenceManager().persistentContainer.viewContext)

@@ -9,35 +9,94 @@ import Resolver
 import SceneKit
 import SwiftUI
 
-struct AgreementSettingView: View {
-    @Environment(\.colorScheme) var colorScheme
+struct GoToBaseFeeSettingsView: View {
+    var body: some View {
+        NavigationLink(destination: BaseFeeView()) {
+            Image(systemName: "eurosign.circle")
+                .resizable()
+                .frame(width: 22, height: 22)
+            
+            Text("Test")
+                .bold()
+        }
+    }
+}
 
+struct GoToNotificationSettingView: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 15) {
+            NavigationLink(destination: NotificationSettingView()) {
+                Image("PriceTag")
+                    .resizable()
+                    .renderingMode(.template)
+                    .frame(width: 22, height: 22)
+                
+                Text("general.priceGuard")
+                    .bold()
+            }
+            
+            Text("notificationPage.notification.priceDropsBelowValue.description")
+                .font(.subheadline)
+        }
+    }
+}
+
+struct GetHelpView: View {
+    var body: some View {
+        NavigationLink(destination: LazyNavigationDestination(HelpAndSuggestionView())) {
+            Image(systemName: "questionmark.circle")
+                .resizable()
+                .frame(width: 22, height: 22, alignment: .center)
+            
+            Text("settingsPage.helpAndSuggestions")
+                .font(.subheadline)
+        }
+    }
+}
+
+struct AgreementSettingView: View {
+    enum AgreementType {
+        case termsOfUse, privacyPolicy
+    }
+    
+    @Environment(\.colorScheme) var colorScheme
+    
+    var agreementType: AgreementType
+    
     var agreementIconName: String
     var agreementName: String
     var agreementLinks: (String, String)
-
+    
+    init(agreementType: AgreementType) {
+        self.agreementType = agreementType
+        
+        switch agreementType {
+        case .termsOfUse:
+            agreementIconName = "doc.text"
+            agreementName = "general.termsOfUse"
+            agreementLinks = ("https://awattprice.space8.me/terms_of_use/german.html",
+                              "https://awattprice.space8.me/terms_of_use/english.html")
+        case .privacyPolicy:
+            agreementIconName = "hand.raised"
+            agreementName = "general.privacyPolicy"
+            agreementLinks = ("https://awattprice.space8.me/privacy_policy/german.html",
+                              "https://awattprice.space8.me/privacy_policy/english.html")
+        }
+        
+    }
+    
     var body: some View {
-        CustomInsetGroupedListItem {
-            HStack {
-                Image(systemName: agreementIconName)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 22, height: 22, alignment: .center)
-
-                Text(agreementName.localized())
-                    .font(.subheadline)
-
-                Spacer(minLength: 3)
-
-                Image(systemName: "chevron.right")
-                    .font(Font.caption.weight(.semibold))
-                    .foregroundColor(Color.gray)
-            }
-            .foregroundColor(colorScheme == .light ? Color.black : Color.white)
-            .contentShape(Rectangle())
-            .onTapGesture {
-                openAgreementLink(agreementLinks)
-            }
+        NavigationLink(destination: EmptyView(), isActive: .constant(false)) {
+            Image(systemName: agreementIconName)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 22, height: 22)
+            
+            Text(agreementName.localized())
+                .font(.subheadline)
+        }
+        .onTapGesture {
+            openAgreementLink(agreementLinks)
         }
     }
 }
@@ -98,7 +157,6 @@ struct AppVersionView: View {
 }
 
 
-/// A place for the user to modify certain settings.
 struct SettingsPageView: View {
     @ObservedObject var crtNotifiSetting: CurrentNotificationSetting = Resolver.resolve()
     @ObservedObject var currentSetting: CurrentSetting = Resolver.resolve()
@@ -108,52 +166,33 @@ struct SettingsPageView: View {
     
     var body: some View {
         NavigationView {
-            VStack {
-                if currentSetting.entity != nil {
-                    ZStack(alignment: Alignment(horizontal: .center, vertical: .bottom)) {
-                        CustomInsetGroupedList {
-                            RegionTaxSelectionView(viewModel: regionTaxSelectionViewModel)
-
-                            if crtNotifiSetting.entity != nil {
-                                GoToNotificationSettingView()
-                            }
-
-                            GetHelpView()
-
-                            AgreementSettingView(agreementIconName: "doc.text",
-                                                 agreementName: "general.termsOfUse",
-                                                 agreementLinks: ("https://awattprice.space8.me/terms_of_use/german.html",
-                                                                  "https://awattprice.space8.me/terms_of_use/english.html"))
-
-                            AgreementSettingView(agreementIconName: "hand.raised",
-                                                 agreementName: "general.privacyPolicy",
-                                                 agreementLinks:
-                                                 ("https://awattprice.space8.me/privacy_policy/german.html",
-                                                  "https://awattprice.space8.me/privacy_policy/english.html"))
-
-                            VStack(spacing: 20) {
-                                NotAffiliatedView(showGrayedOut: true)
-                                    .padding([.leading, .trailing], 16)
-
-                                AppVersionView()
-                            }
-                            .padding(.bottom, 15)
-                        }
-                        
-                        VStack {
-//                            if case .failure(_) = notificationService.stateLastUpload {
-//                                SettingsUploadErrorView()
-//                                    .padding(.bottom, 15)
-//                            }
-                        }
-                    }
-                } else {
-                    Text("settingsPage.notLoadedSettings")
+            Form {
+                Section(header: Text("settingsPage.region"), footer: Text("settingsPage.regionToGetPrices")) {
+                    RegionTaxSelectionView(viewModel: regionTaxSelectionViewModel)
                 }
+
+                Section {
+                    GoToBaseFeeSettingsView()
+                }
+                
+                Section {
+                    GoToNotificationSettingView()
+                }
+                    
+                Section {
+                    GetHelpView()
+                    AgreementSettingView(agreementType: .termsOfUse)
+                    AgreementSettingView(agreementType: .privacyPolicy)
+                }
+
+                VStack(spacing: 20) {
+                    NotAffiliatedView(showGrayedOut: true)
+                    AppVersionView()
+                }
+                .listRowBackground(Color.clear)
             }
             .navigationTitle(Text("settingsPage.settings"))
         }
-        .navigationViewStyle(StackNavigationViewStyle())
     }
 }
 

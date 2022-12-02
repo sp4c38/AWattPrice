@@ -60,7 +60,7 @@
 "cheapestPriceResultPage.priceWithVatNote" = "(Preis mit MwSt., änderbar in Einstellungen)";
 "cheapestPriceResultPage.priceWithoutVatNote" = "(Preis ohne MwSt., änderbar in Einstellungen)";
 
-// Settings Page and Help & Suggestions page localizations
+// Settings Page and sub views
 "settingsPage.settings" = "Einstellungen";
 "settingsPage.notLoadedSettings" = "Einstellungen konnten nicht geladen werden.";
 "settingsPage.region" = "Region";
@@ -68,10 +68,7 @@
 "settingsPage.region.austria" = "🇦🇹 Österreich";
 "settingsPage.priceWithVat" = "Preise mit MwSt.";
 "settingsPage.regionToGetPrices" = "Wählen Sie die Region aus, für die Sie Strompreise erhalten möchten.";
-"settingsPage.baseElectricityPriceHint" = "Sie können Ihren Grundarbeitspreis für Ihre Region auf der aWATTar Webseite finden.";
-"settingsPage.toAwattarWebsite" = "Zur aWATTar Webseite";
 "settingsPage.awattarTariff" = "Awattar Tarif";
-"settingsPage.awattarTariffSelectionTip" = "Es ist nicht erforderlich, aWATTar-Kunde zu sein, um die App nutzen zu können. Aber wenn Sie den aWATTar HOURLY Tarif besitzen, können Sie diesen hier auswählen. In der App können sie nach den billigsten Zeitpunkt für einen Stromverbrauch suchen. Mit dieser Einstellung wird Ihnen hierbei der Endpreis angezeigt, den Sie bezahlen würden.";
 "settingsPage.helpAndSuggestions" = "Hilfe & Vorschläge";
 "settingsPage.version" = "Version";
 "settingsPage.help" = "Hilfe";

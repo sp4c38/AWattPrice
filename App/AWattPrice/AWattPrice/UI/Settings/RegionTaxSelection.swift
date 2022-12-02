@@ -92,26 +92,21 @@ struct RegionTaxSelectionView: View {
     }
     
     var body: some View {
-        CustomInsetGroupedListItem(
-            header: Text("settingsPage.region"),
-            footer: Text("settingsPage.regionToGetPrices")
-        ) {
-            ZStack {
-                VStack {
-                    regionPicker
-                    
-                    taxSelection
-                        .padding(.top, 10)
-                }
-                .opacity(viewModel.showUploadIndicators ? 0.5 : 1)
-                .grayscale(viewModel.showUploadIndicators ? 0.5 : 0)
-            
-                if viewModel.showUploadIndicators {
-                    loadingView
-                }
+        ZStack {
+            VStack {
+                regionPicker
+                
+                taxSelection
+                    .padding(.top, 10)
             }
-            .disabled(viewModel.isUploading)
+            .opacity(viewModel.showUploadIndicators ? 0.5 : 1)
+            .grayscale(viewModel.showUploadIndicators ? 0.5 : 0)
+        
+            if viewModel.showUploadIndicators {
+                loadingView
+            }
         }
+        .disabled(viewModel.isUploading)
     }
     
     var regionPicker: some View {

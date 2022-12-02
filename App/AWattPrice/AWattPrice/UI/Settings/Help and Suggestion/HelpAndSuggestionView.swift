@@ -133,47 +133,6 @@ struct HelpAndSuggestionView: View {
     }
 }
 
-struct GetHelpView: View {
-    @Environment(\.colorScheme) var colorScheme
-
-    @State var redirectToHelpAndSuggestionView: Int? = 0
-
-    var body: some View {
-        CustomInsetGroupedListItem {
-            HStack(spacing: 0) {
-                NavigationLink(
-                    destination: LazyNavigationDestination(HelpAndSuggestionView()),
-                    tag: 1,
-                    selection: $redirectToHelpAndSuggestionView
-                ) {}
-                    .frame(width: 0, height: 0)
-                    .hidden()
-
-                HStack {
-                    Image(systemName: "questionmark.circle")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 22, height: 22, alignment: .center)
-
-                    Text("settingsPage.helpAndSuggestions")
-                        .font(.subheadline)
-
-                    Spacer()
-
-                    Image(systemName: "chevron.right")
-                        .font(Font.caption.weight(.semibold))
-                        .foregroundColor(Color.gray)
-                }
-            }
-            .foregroundColor(colorScheme == .light ? Color.black : Color.white)
-            .contentShape(Rectangle())
-            .onTapGesture {
-                redirectToHelpAndSuggestionView = 1
-            }
-        }
-    }
-}
-
 struct HelpView_Previews: PreviewProvider {
     static var previews: some View {
 //        NavigationView {

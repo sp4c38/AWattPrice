@@ -69,10 +69,7 @@
 "settingsPage.region.austria" = "🇦🇹 Austria";
 "settingsPage.priceWithVat" = "Prices with VAT";
 "settingsPage.regionToGetPrices" = "Select the region for which you would like to get electricity prices.";
-"settingsPage.baseElectricityPriceHint" = "You can find your base electricity price for your region on the aWATTar website.";
-"settingsPage.toAwattarWebsite" = "To the aWATTar website";
 "settingsPage.awattarTariff" = "aWATTar Tariff";
-"settingsPage.awattarTariffSelectionTip" = "It isn't required to be an aWATTar customer to use the app, but if you have the aWATTar HOURLY Tariff, you can select it here. In the app you can search for the cheapest time for an electricity consumption. With this setting the final price you would pay will be displayed.";
 "settingsPage.helpAndSuggestions" = "Help & Suggestions";
 "settingsPage.help" = "Help";
 "settingsPage.suggestion" = "Suggestions";

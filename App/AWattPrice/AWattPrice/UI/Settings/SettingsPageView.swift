@@ -9,6 +9,95 @@ import Resolver
 import SceneKit
 import SwiftUI
 
+struct AgreementSettingView: View {
+    @Environment(\.colorScheme) var colorScheme
+
+    var agreementIconName: String
+    var agreementName: String
+    var agreementLinks: (String, String)
+
+    var body: some View {
+        CustomInsetGroupedListItem {
+            HStack {
+                Image(systemName: agreementIconName)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 22, height: 22, alignment: .center)
+
+                Text(agreementName.localized())
+                    .font(.subheadline)
+
+                Spacer(minLength: 3)
+
+                Image(systemName: "chevron.right")
+                    .font(Font.caption.weight(.semibold))
+                    .foregroundColor(Color.gray)
+            }
+            .foregroundColor(colorScheme == .light ? Color.black : Color.white)
+            .contentShape(Rectangle())
+            .onTapGesture {
+                openAgreementLink(agreementLinks)
+            }
+        }
+    }
+}
+
+struct NotAffiliatedView: View {
+    let setFixedSize: Bool
+    let showGrayedOut: Bool
+
+    init(setFixedSize: Bool = false, showGrayedOut: Bool) {
+        self.setFixedSize = setFixedSize
+        self.showGrayedOut = showGrayedOut
+    }
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 10) {
+            Image(systemName: "info.circle")
+                .font(.fSubHeadline)
+                .foregroundColor(Color.blue)
+
+            Text("splashScreen.start.notAffiliatedNote")
+                .font(setFixedSize ? .fSubHeadline : .subheadline)
+                .ifTrue(showGrayedOut == true) { content in
+                    content
+                        .foregroundColor(Color.gray)
+                }
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+}
+
+struct AppVersionView: View {
+    @Environment(\.colorScheme) var colorScheme
+
+    var body: some View {
+        HStack {
+            Spacer()
+            VStack(spacing: 2) {
+                Image("BigAppIcon")
+                    .resizable()
+                    .frame(width: 60, height: 60)
+                    .saturation(0)
+                    .opacity(0.6)
+
+                Text("AWattPrice")
+                    .font(.headline)
+
+                if let currentVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String {
+                    if let currentBuild = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String {
+                        Text("\("settingsPage.version".localized()) \(currentVersion) (\(currentBuild))")
+                            .font(.footnote)
+                    }
+                }
+            }
+            Spacer()
+        }
+        .foregroundColor(Color(hue: 0.6667, saturation: 0.0448, brightness: 0.5255))
+    }
+}
+
+
 /// A place for the user to modify certain settings.
 struct SettingsPageView: View {
     @ObservedObject var crtNotifiSetting: CurrentNotificationSetting = Resolver.resolve()

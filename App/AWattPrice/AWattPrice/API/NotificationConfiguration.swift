@@ -54,7 +54,7 @@ struct NotificationConfiguration: Encodable {
         
         let general = GeneralNotificationConfiguration(region: selectedRegion, tax: currentEntity.pricesWithVAT)
         let priceBelowNotification = PriceBelowNotificationNotificationConfiguration(
-            active: notificationEntity.priceDropsBelowValueNotification, belowValue: notificationEntity.priceBelowValue
+            active: notificationEntity.priceDropsBelowValueNotification, belowValue: Int(notificationEntity.priceBelowValue)
         )
         let notifications = NotificationsNotificationConfiguration(priceBelow: priceBelowNotification)
         

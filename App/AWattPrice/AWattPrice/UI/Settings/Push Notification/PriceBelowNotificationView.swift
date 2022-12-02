@@ -60,7 +60,7 @@ class PriceBelowNotificationViewModel: ObservableObject {
         
         notificationIsEnabled = notificationSetting.entity!.priceDropsBelowValueNotification
         notificationIsEnabledMethodNotifier = $notificationIsEnabled.dropFirst().sink(receiveValue: priceBelowNotificationToggled)
-        priceBelowValue = notificationSetting.entity!.priceBelowValue.priceString ?? ""
+        priceBelowValue = Int(notificationSetting.entity!.priceBelowValue).priceString ?? ""
         priceBelowValueMethodNotifier = $priceBelowValue.dropFirst().sink(receiveValue: updateWishPrice)
     }
     
@@ -101,7 +101,7 @@ class PriceBelowNotificationViewModel: ObservableObject {
         let uploadFailure = {
             DispatchQueue.main.async {
                 self.priceBelowValueMethodNotifier = self.$priceBelowValue.dropFirst().dropFirst().sink(receiveValue: self.updateWishPrice)
-                self.priceBelowValue = self.notificationSetting.entity!.priceBelowValue.priceString ?? ""
+                self.priceBelowValue = Int(self.notificationSetting.entity!.priceBelowValue).priceString ?? ""
             }
         }
         

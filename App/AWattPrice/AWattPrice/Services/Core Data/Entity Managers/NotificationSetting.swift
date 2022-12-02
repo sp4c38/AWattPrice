@@ -47,7 +47,7 @@ class CurrentNotificationSetting: AutoUpdatingSingleEntity<NotificationSetting> 
 
     func changePriceBelowValue(to newValue: Int) {
         changeSetting(self, isNew: { $0.priceBelowValue != newValue },
-                      bySetting: { $0.priceBelowValue = newValue })
+                      bySetting: { $0.priceBelowValue = Int64(newValue) })
     }
 
     func changePriceDropsBelowValueNotifications(to newValue: Bool) {

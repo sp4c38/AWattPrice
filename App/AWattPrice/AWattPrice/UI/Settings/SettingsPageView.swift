@@ -114,8 +114,6 @@ struct SettingsPageView: View {
                         CustomInsetGroupedList {
                             RegionTaxSelectionView(viewModel: regionTaxSelectionViewModel)
 
-    //                        AwattarTariffSelectionSetting()
-
                             if crtNotifiSetting.entity != nil {
                                 GoToNotificationSettingView()
                             }

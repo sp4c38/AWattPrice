@@ -34,17 +34,17 @@ struct SplashScreenSetupView: View {
                 Button(action: {
                     redirectToNextSplashScreen = 1
                 }) {
-                    Text("general.continue")
+                    Text("Continue")
                 }
                 .buttonStyle(ContinueButtonStyle())
                 .padding(.bottom, 16)
                 .padding([.leading, .trailing], 16)
             } else {
-                Text("settingsPage.notLoadedSettings")
+                Text("Couldn't load settings.")
             }
         }
         .ignoresSafeArea(.keyboard)
-        .navigationBarTitle("splashScreen.setup.title")
+        .navigationBarTitle("Setup")
         .navigationViewStyle(StackNavigationViewStyle())
     }
 }

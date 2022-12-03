@@ -31,7 +31,7 @@ struct CheapestTimeResultTimeRange: View {
             }
 
             
-            Text("general.until")
+            Text("until")
 
             if endDate != nil {
                 VStack(spacing: 4) {
@@ -212,7 +212,7 @@ struct CheapestTimeResultView: View {
                 Spacer(minLength: 0)
                 
                 HStack(alignment: .center) {
-                    Text("cheapestPriceResultPage.duration")
+                    Text("Duration:")
                     Text(getTotalTime())
                         .bold()
                 }
@@ -230,7 +230,7 @@ struct CheapestTimeResultView: View {
             }
         }
         .padding([.leading, .trailing], 16)
-        .navigationTitle("general.result")
+        .navigationTitle("Result")
         .onAppear {
             cheapestHourManager.calculateCheapestHours(energyData: energyDataController.energyData!, currentSetting: currentSetting)
         }

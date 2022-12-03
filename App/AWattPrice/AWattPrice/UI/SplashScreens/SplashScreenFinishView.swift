@@ -71,7 +71,7 @@ struct AnimatingCheckmark: View {
             .foregroundColor(Color.green)
 
             VStack(spacing: 30) {
-                Text("splashScreen.finish.setupFinished")
+                Text("Setup finished")
                     .multilineTextAlignment(.center)
                     .font(.system(size: 30, weight: .black))
                     .padding(.bottom, 5)
@@ -124,7 +124,7 @@ struct SplashScreenFinishView: View {
                 // Set splashScreensFinished to true so that splash screens aren't shown the next time the app opens
                 currentSetting.changeSplashScreenFinished(to: true)
             }) {
-                Text("splashScreen.finish.toApp")
+                Text("Enter app")
             }
             .buttonStyle(ContinueButtonStyle())
             .padding([.leading, .trailing], 20)

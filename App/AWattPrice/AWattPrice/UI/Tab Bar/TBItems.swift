@@ -20,9 +20,9 @@ class TBItem {
 
 class TBItems: ObservableObject {
     let items = [
-        TBItem(imageName: "gear", itemSubtitle: "settingsPage.settings"),
-        TBItem(imageName: "bolt", itemSubtitle: "electricityPage.tabBarTitle"),
-        TBItem(imageName: "rectangle.and.text.magnifyingglass", itemSubtitle: "cheapestPricePage.cheapestPrice"),
+        TBItem(imageName: "gear", itemSubtitle: "Settings"),
+        TBItem(imageName: "bolt", itemSubtitle: "Prices"),
+        TBItem(imageName: "rectangle.and.text.magnifyingglass", itemSubtitle: "Cheapest Time"),
     ]
 
     @Published var selectedItemIndex: Int = 1

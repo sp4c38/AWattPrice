@@ -12,11 +12,11 @@ import SwiftUI
 struct GraphHeader: View {
     var body: some View {
         HStack {
-            Text("general.centPerKwh")
+            Text("Cent per kWh")
 
             Spacer()
 
-            Text("electricityPage.hourOfDay")
+            Text("Hour of day")
         }
         .font(.fSubHeadline)
         .animation(.easeInOut)

@@ -13,7 +13,7 @@ struct DataRetrievalLoadingView: View {
         VStack(spacing: 20) {
             Spacer()
 
-            ProgressView("general.loading")
+            ProgressView("Loading")
 
             Spacer()
         }
@@ -35,7 +35,7 @@ struct DataRetrievalError: View {
                     .foregroundColor(Color.orange)
                     .font(.system(size: 60, weight: .light))
 
-                Text("dataError.download.tryAgainLater")
+                Text("Please try again later")
                     .font(.title3)
                     .multilineTextAlignment(.center)
 
@@ -44,7 +44,7 @@ struct DataRetrievalError: View {
                         energyDataController.download(region: region)
                     }
                 }) {
-                    Text("general.retry")
+                    Text("Retry")
                 }.buttonStyle(RetryButtonStyle())
             }
             .padding(25)
@@ -74,7 +74,7 @@ struct CurrentlyNoData: View {
                     .foregroundColor(Color(red: 0.99, green: 0.74, blue: 0.04, opacity: 1.0))
                     .font(.system(size: 60, weight: .light))
 
-                Text("dataError.download.noDataAvailable")
+                Text("No data available\nPlease try again later")
                     .font(.title3)
                     .multilineTextAlignment(.center)
 
@@ -83,7 +83,7 @@ struct CurrentlyNoData: View {
                         energyDataController.download(region: region)
                     }
                 }) {
-                    Text("general.retry")
+                    Text("Retry")
                 }.buttonStyle(RetryButtonStyle())
             }
             .padding(25)

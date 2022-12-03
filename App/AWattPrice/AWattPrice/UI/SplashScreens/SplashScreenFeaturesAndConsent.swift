@@ -176,19 +176,19 @@ struct SplashScreenFeaturesAndConsentView: View {
 
             VStack(spacing: 15) {
                 AppFeatureView(
-                    title: "splashScreen.featuresAndConsent.viewPrices",
+                    title: "View prices",
                     subTitle: "splashScreen.featuresAndConsent.viewPrices.info",
                     imageName: ("magnifyingglass", true)
                 )
 
                 AppFeatureView(
-                    title: "splashScreen.featuresAndConsent.comparePrices",
+                    title: "Compare prices",
                     subTitle: "splashScreen.featuresAndConsent.comparePrices.info",
                     imageName: ("arrow.left.arrow.right", true)
                 )
 
                 AppFeatureView(
-                    title: "general.priceGuard",
+                    title: "Price Guard",
                     subTitle: "notificationPage.notification.priceDropsBelowValue.description",
                     imageName: ("PriceTag", false)
                 )
@@ -198,8 +198,8 @@ struct SplashScreenFeaturesAndConsentView: View {
 
             VStack(spacing: 10) {
                 AgreementConsentView(
-                    agreeText: "splashScreen.featuresAndConsent.termsOfUse.agree",
-                    seeAgreementText: "general.view",
+                    agreeText: "Agree to the Terms Of Use",
+                    seeAgreementText: "View",
                     agreementLinks: ("https://awattprice.space8.me/terms_of_use/german.html",
                                      "https://awattprice.space8.me/terms_of_use/english.html"),
                     isChecked: $termsOfUseIsChecked,
@@ -207,8 +207,8 @@ struct SplashScreenFeaturesAndConsentView: View {
                 )
 
                 AgreementConsentView(
-                    agreeText: "splashScreen.featuresAndConsent.privacyPolicy.agree",
-                    seeAgreementText: "general.view",
+                    agreeText: "Agree to the Privacy Policy",
+                    seeAgreementText: "View",
                     agreementLinks: ("https://awattprice.space8.me/privacy_policy/german.html",
                                      "https://awattprice.space8.me/privacy_policy/english.html"),
                     isChecked: $privacyPolicyIsChecked,
@@ -232,7 +232,7 @@ struct SplashScreenFeaturesAndConsentView: View {
                     }
                 }
             }) {
-                Text("general.continue")
+                Text("Continue")
                     .font(.fBody)
             }
             .buttonStyle(ContinueButtonStyle())
@@ -240,7 +240,7 @@ struct SplashScreenFeaturesAndConsentView: View {
         .padding(.top, 5)
         .padding([.leading, .trailing], 20)
         .padding(.bottom, 16)
-        .navigationBarTitle("splashScreen.featuresAndConsent.features")
+        .navigationBarTitle("Features")
     }
 }
 

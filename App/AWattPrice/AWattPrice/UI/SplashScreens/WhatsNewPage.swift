@@ -17,7 +17,7 @@ struct WhatsNewPage: View {
             VStack(alignment: .leading) {
                 VStack(alignment: .leading, spacing: 15) {
                     AppFeatureView(
-                        title: "general.priceGuard",
+                        title: "Price Guard",
                         subTitle: "notificationPage.notification.priceDropsBelowValue.description",
                         tipText: "splashScreen.whatsNew.notifications.extrainfo",
                         imageName: ("PriceTag", false)
@@ -36,14 +36,14 @@ struct WhatsNewPage: View {
                 Button(action: {
                     presentationMode.wrappedValue.dismiss()
                 }, label: {
-                    Text("general.done")
+                    Text("Done")
                 })
                     .buttonStyle(ContinueButtonStyle())
                     .padding(.bottom, 10)
             }
             .padding([.leading, .trailing], 16)
             .padding(.top, 25)
-            .navigationTitle("splashScreen.whatsNew.title")
+            .navigationTitle("What's new?")
         }
     }
 }

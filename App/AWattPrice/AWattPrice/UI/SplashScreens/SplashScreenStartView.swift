@@ -16,7 +16,7 @@ struct SplashScreenStartViewTitle: View {
                 .frame(width: 220, height: 220)
 
             VStack(spacing: 5) {
-                Text("splashScreen.start.welcome")
+                Text("Welcome to")
                     .font(
                         .custom("SFCompactDisplay-Black", fixedSize: 35)
                     )
@@ -57,7 +57,7 @@ struct SplashScreenStartView: View {
                 Button(action: {
                     redirectToNextSplashScreen = 1
                 }) {
-                    Text("general.continue")
+                    Text("Continue")
                 }
                 .buttonStyle(ContinueButtonStyle())
             }

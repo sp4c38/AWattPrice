@@ -31,7 +31,7 @@ struct GoToNotificationSettingView: View {
                     .renderingMode(.template)
                     .frame(width: 22, height: 22)
                 
-                Text("general.priceGuard")
+                Text("Price Guard")
                     .bold()
             }
             
@@ -48,7 +48,7 @@ struct GetHelpView: View {
                 .resizable()
                 .frame(width: 22, height: 22, alignment: .center)
             
-            Text("settingsPage.helpAndSuggestions")
+            Text("Help & Suggestions")
                 .font(.subheadline)
         }
     }
@@ -73,12 +73,12 @@ struct AgreementSettingView: View {
         switch agreementType {
         case .termsOfUse:
             agreementIconName = "doc.text"
-            agreementName = "general.termsOfUse"
+            agreementName = "Terms Of Use"
             agreementLinks = ("https://awattprice.space8.me/terms_of_use/german.html",
                               "https://awattprice.space8.me/terms_of_use/english.html")
         case .privacyPolicy:
             agreementIconName = "hand.raised"
-            agreementName = "general.privacyPolicy"
+            agreementName = "Privacy Policy"
             agreementLinks = ("https://awattprice.space8.me/privacy_policy/german.html",
                               "https://awattprice.space8.me/privacy_policy/english.html")
         }
@@ -145,7 +145,7 @@ struct AppVersionView: View {
 
                 if let currentVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String {
                     if let currentBuild = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String {
-                        Text("\("settingsPage.version".localized()) \(currentVersion) (\(currentBuild))")
+                        Text("\("Version".localized()) \(currentVersion) (\(currentBuild))")
                             .font(.footnote)
                     }
                 }
@@ -167,7 +167,7 @@ struct SettingsPageView: View {
     var body: some View {
         NavigationView {
             Form {
-                Section(header: Text("settingsPage.region"), footer: Text("settingsPage.regionToGetPrices")) {
+                Section(header: Text("Region"), footer: Text("settingsPage.regionToGetPrices")) {
                     RegionTaxSelectionView(viewModel: regionTaxSelectionViewModel)
                 }
 
@@ -191,7 +191,7 @@ struct SettingsPageView: View {
                 }
                 .listRowBackground(Color.clear)
             }
-            .navigationTitle(Text("settingsPage.settings"))
+            .navigationTitle(Text("Settings"))
         }
     }
 }

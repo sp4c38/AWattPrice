@@ -42,14 +42,14 @@ struct EnergyUsageInputField: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
-                Text("cheapestPricePage.totalConsumption")
+                Text("Total consumption")
                     .font(.subheadline)
                     .foregroundColor(Color.gray)
                 Spacer()
             }
 
             HStack {
-                NumberField(text: $cheapestHourManager.energyUsageString.animation(), placeholder: "general.inKwh".localized(), withDecimalSeperator: true)
+                NumberField(text: $cheapestHourManager.energyUsageString.animation(), placeholder: "in kWh".localized(), withDecimalSeperator: true)
                     .fixedSize(horizontal: false, vertical: true)
                     .padding(.trailing, 5)
                     .ifTrue(firstAppear == false) { content in

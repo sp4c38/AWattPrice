@@ -57,7 +57,7 @@ struct NotificationSettingView: View {
             }
             .animation(.easeInOut, value: viewModel.uploadErrorObserver.viewState)
         }
-        .navigationTitle("general.priceGuard")
+        .navigationTitle("Price Guard")
         .onAppear { print(viewModel.uploadErrorObserver.viewState) }
     }
 }

@@ -15,15 +15,15 @@ class TotalTimeFormatter {
         let minuteString = numberFormatter.string(for: minute) ?? ""
 
         if hour == 0, minute > 0, minute < 1 {
-            return String("totalTimeFormatter.lessThanOneMinute".localized())
+            return String("<1min".localized())
         } else if hour > 0, minute > 0 {
-            return String(format: "totalTimeFormatter.hourCommaMinute".localized(), hourString, minuteString)
+            return String(format: "%@h, %@min".localized(), hourString, minuteString)
         } else if hour > 0, !(minute > 0) {
-            return String(format: "totalTimeFormatter.onlyHour".localized(), hourString)
+            return String(format: "%@h".localized(), hourString)
         } else if minute > 0, !(hour > 0) {
-            return String(format: "totalTimeFormatter.onlyMinute".localized(), minuteString)
+            return String(format: "%@min".localized(), minuteString)
         } else {
-            return String("totalTimeFormatter.lessThanOneMinute".localized())
+            return String("<1min".localized())
         }
     }
 }

@@ -201,7 +201,7 @@ struct CheapestTimeClockView: View {
             // The start date and if needed also the end date which help the user understand from when to when the cheapest hours apply
             VStack(spacing: 0) {
                 if endDateString == nil {
-                    Text("general.on")
+                    Text("on")
                         .padding(.bottom, 3)
 
                     HStack(spacing: 7) {
@@ -219,7 +219,7 @@ struct CheapestTimeClockView: View {
                                 .bold()
                                 .foregroundColor(Color.red)
 
-                            Text("general.to")
+                            Text("to")
                         }
                         .padding(.bottom, 3)
 
@@ -242,7 +242,7 @@ struct CheapestTimeClockView: View {
                         .padding(.bottom, 3)
 
                         HStack(spacing: 4) {
-                            Text("general.to")
+                            Text("to")
 
                             HStack(spacing: 5) {
                                 Text(endDateString!.0)

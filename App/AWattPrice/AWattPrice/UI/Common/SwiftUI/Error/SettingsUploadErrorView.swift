@@ -17,7 +17,7 @@ struct SettingsUploadErrorView: View {
             Image(systemName: "exclamationmark.circle")
                 .font(.title)
 
-            Text("dataError.apns.errorUploading")
+            Text("Error uploading settings")
         }
         .foregroundColor(.white)
         .padding()

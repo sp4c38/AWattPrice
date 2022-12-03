@@ -77,7 +77,7 @@ struct HomeView: View {
                     DataDownloadAndError()
                 }
             }
-            .navigationTitle("electricityPage.elecPrice")
+            .navigationTitle("Electricity Prices")
             .navigationBarTitleDisplayMode(.large)
         }
         .navigationViewStyle(StackNavigationViewStyle())
@@ -99,9 +99,9 @@ struct HomeView: View {
         .onChange(of: currentSetting.entity!.regionIdentifier) { _ in
             loadEnergyData()
         }
-        .sheet(isPresented: $showWhatsNewPage) {
-            WhatsNewPage()
-        }
+//        .sheet(isPresented: $showWhatsNewPage) {
+//            WhatsNewPage()
+//        }
         .onChange(of: showWhatsNewPage) { newValue in
             if newValue == false { currentSetting.changeShowWhatsNew(to: false) }
         }

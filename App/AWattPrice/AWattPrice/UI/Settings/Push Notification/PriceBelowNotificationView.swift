@@ -138,7 +138,7 @@ struct PriceBelowNotificationView: View {
     var body: some View {
         VStack {
             CustomInsetGroupedListItem(
-                header: showHeader ? Text("general.notifications") : nil,
+                header: showHeader ? Text("Notifications") : nil,
                 footer: nil
             ) {
                 ZStack {
@@ -165,21 +165,21 @@ struct PriceBelowNotificationView: View {
     }
 
     var toggleView: some View {
-        Toggle("notificationPage.notification.priceDropsBelowValue", isOn: $viewModel.notificationIsEnabled)
+        Toggle("Price notification", isOn: $viewModel.notificationIsEnabled)
     }
 
     var wishPriceInputField: some View {
         VStack(alignment: .leading) {
-            Text("notificationPage.notification.priceDropsBelowValue.wishPrice")
+            Text("Wish Price:")
                 .textCase(.uppercase)
                 .foregroundColor(.gray)
                 .font(.caption)
 
             HStack {
-                NumberField(text: $viewModel.priceBelowValue, placeholder: "general.cent.long".localized(), plusMinusButton: true, withDecimalSeperator: false)
+                NumberField(text: $viewModel.priceBelowValue, placeholder: "Cent".localized(), plusMinusButton: true, withDecimalSeperator: false)
                     .fixedSize(horizontal: false, vertical: true)
 
-                Text("general.centPerKwh")
+                Text("Cent per kWh")
                     .transition(.opacity)
             }
             .onReceive(keyboardObserver.keyboardHeight) { newKeyboardHeight in

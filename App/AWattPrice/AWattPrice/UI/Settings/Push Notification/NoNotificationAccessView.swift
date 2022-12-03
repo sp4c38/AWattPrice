@@ -18,7 +18,7 @@ struct NoNotificationAccessView: View {
                 Button(action: {
                     UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
                 }) {
-                    Text("general.openSettingsApp")
+                    Text("Open Settings App")
                 }
                 .buttonStyle(RoundedBorderButtonStyle())
             }

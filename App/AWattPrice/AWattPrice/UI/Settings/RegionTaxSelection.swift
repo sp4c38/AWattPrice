@@ -111,9 +111,9 @@ struct RegionTaxSelectionView: View {
     
     var regionPicker: some View {
         Picker("", selection: changeSelectedRegion) {
-            Text("settingsPage.region.germany")
+            Text("🇩🇪 Germany")
                 .tag(Region.DE)
-            Text("settingsPage.region.austria")
+            Text("🇦🇹 Austria")
                 .tag(Region.AT)
         }
         .pickerStyle(SegmentedPickerStyle())
@@ -121,7 +121,7 @@ struct RegionTaxSelectionView: View {
     
     var taxSelection: some View {
         Toggle(isOn: $viewModel.taxSelection) {
-            Text("settingsPage.priceWithVat")
+            Text("Prices with VAT")
         }
     }
     

@@ -1,143 +1,231 @@
-/*
-  Localizable.strings
-  AwattarApp
+/* DON'T EXPORT AND LATER IMPORT LOCALIZATION FILES...
+ it won't include certain strings which thus won't be translated, although they should.
+ */
 
-  Created by Léon Becker on 27.09.20.
+"hours" = "Std.";
 
-*/
+"min" = "min";
 
-// Welcome Splash Screen localizations
-"splashScreen.start.welcome" = "Willkommen zu";
-"splashScreen.start.notAffiliatedNote" = "Bitte beachten Sie, dass AWattPrice eine unabhängige App ist und in keiner Weise mit aWATTar GmbH in Verbindung steht.";
+"Electricity Prices" = "Strompreise";
 
-// Features and Consent Splash Screen localizations
-"splashScreen.featuresAndConsent.features" = "Funktionen";
-"splashScreen.featuresAndConsent.viewPrices" = "Preise ansehen";
-"splashScreen.featuresAndConsent.viewPrices.info" = "Sehen Sie sich die aktuellen Strompreise für jede Stunde des Tages an.";
-"splashScreen.featuresAndConsent.comparePrices" = "Preise vergleichen";
-"splashScreen.featuresAndConsent.comparePrices.info" = "Finden Sie die preislich günstigsten Stunden für Ihren Stromverbrauch.";
-// Notifications title handled by notificationPage.notifications
-"splashScreen.featuresAndConsent.termsOfUse.agree" = "Nutzungsbedingungen zustimmen";
-"splashScreen.featuresAndConsent.privacyPolicy.agree" = "Datenschutzrichtlinie zustimmen";
+"Price notification" = "Preisbenachrichtigung";
 
-// Setup splash screen localization
-"splashScreen.setup.title" = "Einrichtung";
+"Duration:" = "Dauer:";
 
-// What's new splash screen localization
-"splashScreen.whatsNew.title" = "Was gibt's Neues?";
-"splashScreen.whatsNew.notifications.extrainfo" = "Tipp: Um Benachrichtigungen zu aktivieren, gehen Sie zum \"Einstellungen\"-Tab in AWattPrice.";
-"splashScreen.whatsNew.withDuration.title" = "Neue Option: Dauer";
-"splashScreen.whatsNew.withDuration.extraInfo" = "Geben Sie eine Verbrauchsdauer an, um die günstigste Zeit zu finden.";
+"night" = "Nacht";
 
-// Finish splash screen localization
-"splashScreen.finish.setupFinished" = "Einrichtung abgeschlossen";
-"splashScreen.finish.toApp" = "Zur App";
+"Prices" = "Preise";
 
-// Electricity Price page localizations
-"electricityPage.elecPrice" = "Strompreise";
-"electricityPage.tabBarTitle" = "Preise";
-"electricityPage.hourOfDay" = "Uhrzeit";
+"Cheapest Time" = "Günstigste Zeit";
 
-// Cheapest Price page localizations
-"cheapestPricePage.cheapestPrice" = "Günstigste Zeit";
-"cheapestPricePage.inputMode.withDuration" = "Dauer";
-"cheapestPricePage.inputMode.withKwh" = "kWh";
+"Time range" = "Zeitfenster";
+
+/* No comment provided by engineer. */
+"🇦🇹 Austria" = "🇦🇹 Österreich";
+
+/* No comment provided by engineer. */
+"🇩🇪 Germany" = "🇩🇪 Deutschland";
+
+/* No comment provided by engineer. */
+"AWattPrice" = "AWattPrice";
+
+/* No comment provided by engineer. */
+"Cent per kWh" = "Cent pro kWh";
+
+/* Cheapest Price page localizations */
 "cheapestPricePage.emptyFieldError" = "Bitte füllen Sie dieses Feld aus.";
-"cheapestPricePage.wrongInputError" = "Dieses Feld darf nur Zahlen und , oder . enthalten.";
-"cheapestPricePage.totalConsumption" = "Gesamtverbrauch";
-"cheapestPricePage.timeRange" = "Zeitfenster";
-"cheapestPricePage.inputMode.withDuration.wrongTimeRangeError" = "Mit diesem Zeitintervall ist ein Mindestzeitfenster von %@ erforderlich.";
-"cheapestPricePage.inputMode.withKwh.wrongTimeRangeError" = "Mit dieser Leistung und diesem Gesamtverbrauch ist ein Mindestzeitfenster von %@ erforderlich.";
-"cheapestPricePage.todayTonight" = "Nacht";
-"cheapestPricePage.nextThreeHours" = "3h";
-"cheapestPricePage.nextTwelveHours" = "12h";
-"cheapestPricePage.maximal" = "max.";
 
-// Cheapest Price Result page localizations
+/* (No Comment) */
+"cheapestPricePage.inputMode.withDuration.wrongTimeRangeError" = "Mit diesem Zeitintervall ist ein Mindestzeitfenster von %@ erforderlich.";
+
+/* (No Comment) */
+"cheapestPricePage.inputMode.withKwh.wrongTimeRangeError" = "Mit dieser Leistung und diesem Gesamtverbrauch ist ein Mindestzeitfenster von %@ erforderlich.";
+
+/* (No Comment) */
+"cheapestPricePage.wrongInputError" = "Dieses Feld darf nur Zahlen und , oder . enthalten.";
+
+/* Cheapest Price Result page localizations */
 "cheapestPriceResultPage.cheapestTimeErrorOccurred" = "Es ist ein Fehler aufgetreten.\nBitte versuchen Sie es später noch einmal.";
-"cheapestPriceResultPage.duration" = "Dauer:";
-"cheapestPriceResultPage.elecCosts" = "Stromkosten";
-"cheapestPriceResultPage.priceWithVatNote" = "(Preis mit MwSt., änderbar in Einstellungen)";
+
+/* (No Comment) */
 "cheapestPriceResultPage.priceWithoutVatNote" = "(Preis ohne MwSt., änderbar in Einstellungen)";
 
-// Settings Page and sub views
-"settingsPage.settings" = "Einstellungen";
-"settingsPage.notLoadedSettings" = "Einstellungen konnten nicht geladen werden.";
-"settingsPage.region" = "Region";
-"settingsPage.region.germany" = "🇩🇪 Deutschland";
-"settingsPage.region.austria" = "🇦🇹 Österreich";
-"settingsPage.priceWithVat" = "Preise mit MwSt.";
-"settingsPage.regionToGetPrices" = "Wählen Sie die Region aus, für die Sie Strompreise erhalten möchten.";
-"settingsPage.awattarTariff" = "Awattar Tarif";
-"settingsPage.helpAndSuggestions" = "Hilfe & Vorschläge";
-"settingsPage.version" = "Version";
-"settingsPage.help" = "Hilfe";
-"settingsPage.suggestion" = "Vorschläge";
-"settingsPage.helpByEmail" = "Hilfe per E-Mail";
-"settingsPage.suggestionByEmail" = "Vorschläge per E-Mail";
+/* (No Comment) */
+"cheapestPriceResultPage.priceWithVatNote" = "(Preis mit MwSt., änderbar in Einstellungen)";
 
-// Notification Page localizations
+/* No comment provided by engineer. */
+"Continue" = "Weiter";
+
+/* No comment provided by engineer. */
+"Couldn't get new data. Tap to retry." = "Neue Daten konnten nicht heruntergeladen werden. Tippe, um erneut zu versuchen.";
+
+/* No comment provided by engineer. */
+"Couldn't load settings." = "Einstellungen konnten nicht geladen werden.";
+
+/* Data error localizations */
+"dataError.settings.settingsLoadingError" = "Einstellungen konnten nicht\ngeladen werden.\nBitte versuchen Sie es\nspäter erneut.";
+
+/* No comment provided by engineer. */
+"Done" = "Fertig";
+
+/* No comment provided by engineer. */
+"Duration" = "Dauer";
+
+/* No comment provided by engineer. */
+"Enter app" = "Zur App";
+
+/* No comment provided by engineer. */
+"Error uploading settings" = "Fehler beim Hochladen der Einstellungen.";
+
+/* No comment provided by engineer. */
+"Get help by email" = "Hilfe per E-Mail";
+
+/* Localizable.strings
+  AwattarApp
+
+/* No comment provided by engineer. */
+"Help" = "Hilfe";
+
+/* No comment provided by engineer. */
+"Help & Suggestions" = "Hilfe & Vorschläge";
+
+/* No comment provided by engineer. */
+"Hour of day" = "Uhrzeit";
+
+/* No comment provided by engineer. */
+"in %@" = "in %@";
+
+/* No comment provided by engineer. */
+"kW" = "kW";
+
+/* No comment provided by engineer. */
+"kWh" = "kWh";
+
+/* No comment provided by engineer. */
+"Loading" = "Lädt";
+
+/* No comment provided by engineer. */
+"maximal" = "maximal";
+
+/* No comment provided by engineer. */
+"No data available\nPlease try again later" = "Keine Daten verfügbar.\nBitte versuchen Sie es später erneut.";
+
+/* Notification Page Setting localizations */
 "notificationPage.noNotificationAccessInfo" = "Bitte erlauben Sie Benachrichtigungen für AWattPrice in der Einstellungs-App.";
-"notificationPage.notification.priceDropsBelowValue" = "Preisbenachrichtigung";
-"notificationPage.notification.priceDropsBelowValue.wishPrice" = "Wunschpreis";
+
+/* (No Comment) */
 "notificationPage.notification.priceDropsBelowValue.description" = "Erhalten Sie eine Benachrichtigung, sobald Preise unter einen Wunschpreis fallen.";
+
+/* (No Comment) */
 "notificationPage.notification.priceDropsBelowValue.description.firstLine.pt1" = "Sobald neue Preise verfügbar sind, erhalten Sie eine Benachrichtigung, falls ein Strompreis des";
+
+/* (No Comment) */
 "notificationPage.notification.priceDropsBelowValue.description.firstLine.pt2" = " Folgetages";
+
+/* (No Comment) */
 "notificationPage.notification.priceDropsBelowValue.description.firstLine.pt3" = " ";
+
+/* (No Comment) */
 "notificationPage.notification.priceDropsBelowValue.description.firstLine.pt4" = " auf ";
+
+/* (No Comment) */
 "notificationPage.notification.priceDropsBelowValue.description.firstLine.pt5" = "oder";
+
+/* (No Comment) */
 "notificationPage.notification.priceDropsBelowValue.description.firstLine.pt6" = " unter ";
+
+/* (No Comment) */
 "notificationPage.notification.priceDropsBelowValue.description.firstLine.pt7" = "Ihren Wunschpreis sinkt.";
 
-// Data error localizations
-"dataError.download.tryAgainLater" = "Bitte versuchen Sie es\nspäter noch einmal.";
-"dataError.download.noDataAvailable" = "Keine Daten verfügbar.\nBitte versuchen Sie es später erneut.";
-"dataError.settings.settingsLoadingError" = "Einstellungen konnten nicht\ngeladen werden.\nBitte versuchen Sie es\nspäter erneut.";
-"dataError.apns.errorUploading" = "Fehler beim Hochladen der Einstellungen.";
-
-// General localizations
-"general.loading" = "Lädt";
-"general.continue" = "Weiter";
-"general.centPerKwh" = "Cent pro kWh";
-"general.inKw" = "in kW";
-"general.inKwh" = "in kWh";
-"general.cent.long" = "Cent";
-"general.cent.short" = "ct";
-"general.until" = "bis";
-"general.from" = "von";
-"general.to" = "bis";
-"general.pm" = "Nachm.";
-"general.am" = "Vorm.";
-"general.result" = "Ergebnis";
-"general.power" = "Leistung";
-"general.none" = "Keiner";
-"general.today" = "Heute:";
-"general.retry" = "Erneut versuchen";
-"general.termsOfUse" = "Nutzungsbedingungen";
-"general.privacyPolicy" = "Datenschutzrichtlinie";
-"general.on" = "am";
-"general.done" = "Fertig";
-"general.openSettingsApp" = "Einstellungs-App öffnen";
-"general.priceGuard" = "Preiswächter";
-"general.notifications" = "Benachrichtigungen";
-"general.hour" = "Std.";
-"general.hours" = "Std.";
-"general.min" = "Min.";
-"general.view" = "Einsehen";
-
-// Total Time Formatter localizations
-"totalTimeFormatter.onlyHour"  = "%@h";
-"totalTimeFormatter.onlyMinute" = "%@min";
-"totalTimeFormatter.hourCommaMinute" =  "%@h, %@min";
-"totalTimeFormatter.lessThanOneMinute" =  "<1min";
-
-// Updare Date Time Formatter localizations
-"updateDataTimeFormatter.lessThanOneMinuteAgo" = "Vor weniger als einer Minute aktualisiert";
-"updateDataTimeFormatter.moreThanMMAgoSingular" = "Vor %@ Minute aktualisiert";
-"updateDataTimeFormatter.moreThanMMAgoPlural" = "Vor %@ Minuten aktualisiert";
-"updateDataTimeFormatter.updateNewDataFailed" = "Neue Daten konnten nicht heruntergeladen werden. Tippe, um erneut zu versuchen.";
-
-// Notification localizations
-// Title managed by general.priceGuard
-"notifications.price_drops_below.body.sing" = "Morgen fallen die Strompreise %1$@ Mal unter %2$@ ct. Günstigster Preis um %3$@ Uhr mit %4$@ ct.";
+/* (No Comment) */
 "notifications.price_drops_below.body.mult" = "Morgen fallen die Strompreise %1$@ Mal unter %2$@ ct. Günstigster Preis um %3$@ Uhr mit %4$@ ct.";
+
+/* Title managed by general.priceGuard */
+"notifications.price_drops_below.body.sing" = "Morgen fallen die Strompreise %1$@ Mal unter %2$@ ct. Günstigster Preis um %3$@ Uhr mit %4$@ ct.";
+
+/* No comment provided by engineer. */
+"on" = "am";
+
+/* No comment provided by engineer. */
+"Open Settings App" = "Einstellungs-App öffnen";
+
+/* No comment provided by engineer. */
+"Please try again later" = "Bitte versuchen Sie es\nspäter noch einmal.";
+
+/* No comment provided by engineer. */
+"Power" = "Leistung";
+
+/* No comment provided by engineer. */
+"Price Guard" = "Preiswächter";
+
+/* No comment provided by engineer. */
+"Prices with VAT" = "Preise mit MwSt.";
+
+/* No comment provided by engineer. */
+"Region" = "Region";
+
+/* No comment provided by engineer. */
+"Result" = "Ergebnis";
+
+/* No comment provided by engineer. */
+"Retry" = "Erneut versuchen";
+
+/* No comment provided by engineer. */
+"Send suggestions by email" = "Vorschläge per E-Mail";
+
+/* No comment provided by engineer. */
+"Settings" = "Einstellungen";
+
+/* Settings Page and Help & Suggestions page localizations */
+"settingsPage.regionToGetPrices" = "Wählen Sie die Region aus, für die Sie Strompreise erhalten möchten.";
+
+/* No comment provided by engineer. */
+"Setup finished" = "Einrichtung abgeschlossen";
+
+/* (No Comment) */
+"splashScreen.featuresAndConsent.comparePrices.info" = "Finden Sie die preislich günstigsten Stunden für Ihren Stromverbrauch.";
+
+/* Features and Consent Splash Screen localizations */
+"splashScreen.featuresAndConsent.viewPrices.info" = "Sehen Sie sich die aktuellen Strompreise für jede Stunde des Tages an.";
+
+/* Welcome Splash Screen localizations */
+"splashScreen.start.notAffiliatedNote" = "Bitte beachten Sie, dass AWattPrice eine unabhängige App ist und in keiner Weise mit aWATTar GmbH in Verbindung steht.";
+
+/* What's new splash screen localization */
+"splashScreen.whatsNew.notifications.extrainfo" = "Tipp: Um Benachrichtigungen zu aktivieren, gehen Sie zum \"Einstellungen\"-Tab in AWattPrice.";
+
+/* (No Comment) */
+"splashScreen.whatsNew.withDuration.extraInfo" = "Geben Sie eine Verbrauchsdauer an, um die günstigste Zeit zu finden.";
+
+/* (No Comment) */
+"splashScreen.whatsNew.withDuration.title" = "Neue Option: Dauer";
+
+/* No comment provided by engineer. */
+"Suggestions" = "Vorschläge";
+
+/* No comment provided by engineer. */
+"to" = "bis";
+
+"from" = "von";
+
+/* No comment provided by engineer. */
+"Total consumption" = "Gesamtverbrauch";
+
+/* No comment provided by engineer. */
+"until" = "bis";
+
+/* Update Data Time Formatter localizations */
+"updateDataTimeFormatter.lessThanOneMinuteAgo" = "Vor weniger als einer Minute aktualisiert";
+
+/* (No Comment) */
+"updateDataTimeFormatter.moreThanMMAgoPlural" = "Vor %@ Minuten aktualisiert";
+
+/* (No Comment) */
+"updateDataTimeFormatter.moreThanMMAgoSingular" = "Vor %@ Minute aktualisiert";
+
+/* No comment provided by engineer. */
+"Welcome to" = "Willkommen zu";
+
+/* No comment provided by engineer. */
+"Wish Price:" = "Wunschpreis:";
+

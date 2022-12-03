@@ -69,7 +69,7 @@ struct UpdatedDataView: View {
         HStack(spacing: 10) {
             switch viewModel.viewDownloadState {
             case .downloading:
-                Text("general.loading")
+                Text("Loading")
                     .foregroundColor(Color.blue)
                     .transition(.opacity)
                 
@@ -80,7 +80,7 @@ struct UpdatedDataView: View {
                     .scaleEffect(0.7, anchor: .center)
                     .progressViewStyle(CircularProgressViewStyle(tint: Color.blue))
             case .failed:
-                Text("updateDataTimeFormatter.updateNewDataFailed")
+                Text("Couldn't get new data. Tap to retry.")
                     .foregroundColor(Color.red)
             case .idle, .finished:
                 Text(viewModel.localizedTimeIntervalString)

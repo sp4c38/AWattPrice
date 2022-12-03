@@ -37,8 +37,8 @@ class EasyIntervalPicker: UIPickerView, UIPickerViewDelegate, UIPickerViewDataSo
         dataSource = self
         delegate = self
 
-        hoursLabel = newStaticLabelWithText(text: "general.hours".localized())
-        minLabel = newStaticLabelWithText(text: "general.min".localized())
+        hoursLabel = newStaticLabelWithText(text: "hours".localized())
+        minLabel = newStaticLabelWithText(text: "min".localized())
         addSubview(hoursLabel!)
         addSubview(minLabel!)
         updateStaticLabelsPositions()
@@ -221,10 +221,10 @@ extension EasyIntervalPicker {
         let newTimeIntervalHours = Int(timeInterval / 3600)
         if oldTimeIntervalHours != newTimeIntervalHours {
             if hours == 1 {
-                hoursLabel!.text = "general.hour".localized()
+                hoursLabel!.text = "hour".localized()
             } else {
                 // 0 or >1
-                hoursLabel!.text = "general.hours".localized()
+                hoursLabel!.text = "hours".localized()
             }
             let animation = CATransition()
             animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)

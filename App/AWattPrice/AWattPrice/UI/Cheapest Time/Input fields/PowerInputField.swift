@@ -42,14 +42,14 @@ struct PowerOutputInputField: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
-                Text("general.power")
+                Text("Power")
                     .font(.subheadline)
                     .foregroundColor(Color.gray)
                 Spacer()
             }
 
             HStack {
-                NumberField(text: $cheapestHourManager.powerOutputString.animation(), placeholder: "general.inKw".localized(), withDecimalSeperator: true)
+                NumberField(text: $cheapestHourManager.powerOutputString.animation(), placeholder: "in kW".localized(), withDecimalSeperator: true)
                     .fixedSize(horizontal: false, vertical: true)
                     .padding(.trailing, 5)
                     .ifTrue(firstAppear == false) { content in

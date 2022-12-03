@@ -78,9 +78,9 @@ struct CheapestTimeViewBody: View {
     var body: some View {
         VStack(spacing: 15) {
             Picker("", selection: $inputMode) {
-                Text("cheapestPricePage.inputMode.withDuration")
+                Text("Duration")
                     .tag(0)
-                Text("cheapestPricePage.inputMode.withKwh")
+                Text("kWh")
                     .tag(1)
             }
             .pickerStyle(SegmentedPickerStyle())
@@ -149,7 +149,7 @@ struct CheapestTimeView: View {
                                 }
                             }, label: {
                                 HStack {
-                                    Text("general.result")
+                                    Text("Result")
                                     Image(systemName: "chevron.right")
                                         .foregroundColor(Color.white)
                                         .padding(.leading, 10)
@@ -166,7 +166,7 @@ struct CheapestTimeView: View {
                     DataDownloadAndError()
                 }
             }
-            .navigationTitle("cheapestPricePage.cheapestPrice")
+            .navigationTitle("Cheapest Time")
         }
         .navigationViewStyle(StackNavigationViewStyle())
     }

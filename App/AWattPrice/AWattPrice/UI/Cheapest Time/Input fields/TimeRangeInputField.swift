@@ -72,10 +72,10 @@ struct TimeRangeInputFieldQuickSelectButtons: View {
     @State var buttonSize = CGSize(width: 0, height: 0)
 
     var buttons = [
-        "cheapestPricePage.todayTonight",
-        "cheapestPricePage.nextThreeHours",
-        "cheapestPricePage.nextTwelveHours",
-        "cheapestPricePage.maximal",
+        "night",
+        "3h",
+        "12h",
+        "max.",
     ]
 
     var gridLayout = [GridItem(.adaptive(minimum: 70), spacing: 0, alignment: .center)]
@@ -84,13 +84,13 @@ struct TimeRangeInputFieldQuickSelectButtons: View {
         LazyVGrid(columns: gridLayout, alignment: .center, spacing: 10) {
             ForEach(buttons, id: \.self) { name in
                 Button(action: {
-                    if name == "cheapestPricePage.todayTonight" {
+                    if name == "night" {
                         cheapestHourManager.setTimeIntervalThisNight(with: energyDataController.energyData!)
-                    } else if name == "cheapestPricePage.maximal" {
+                    } else if name == "max." {
                         cheapestHourManager.setMaxTimeInterval(with: energyDataController.energyData!)
-                    } else if name == "cheapestPricePage.nextThreeHours" {
+                    } else if name == "3h" {
                         cheapestHourManager.setTimeInterval(forHours: 3, with: energyDataController.energyData!)
-                    } else if name == "cheapestPricePage.nextTwelveHours" {
+                    } else if name == "12h" {
                         cheapestHourManager.setTimeInterval(forHours: 12, with: energyDataController.energyData!)
                     }
                 }) {
@@ -117,7 +117,7 @@ struct TimeRangeInputField: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
-                Text("cheapestPricePage.timeRange")
+                Text("Time range")
                     .font(.subheadline)
                     .foregroundColor(Color.gray)
                 Spacer()
@@ -125,13 +125,13 @@ struct TimeRangeInputField: View {
 
             VStack(alignment: .leading, spacing: 8) {
                 TimeRangeInputFieldSelectionPart(
-                    withName: "general.from",
+                    withName: "from",
                     selection: $cheapestHourManager.startDate,
                     in: inputDateRange
                 )
 
                 TimeRangeInputFieldSelectionPart(
-                    withName: "general.to",
+                    withName: "to",
                     selection: $cheapestHourManager.endDate,
                     in: inputDateRange
                 )

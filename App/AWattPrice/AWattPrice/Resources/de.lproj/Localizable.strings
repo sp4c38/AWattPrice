@@ -2,6 +2,8 @@
  it won't include certain strings which thus won't be translated, although they should.
  */
 
+"Notifications" = "Benachrichtigungen";
+
 "hours" = "Std.";
 
 "min" = "min";

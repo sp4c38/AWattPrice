@@ -136,31 +136,24 @@ struct PriceBelowNotificationView: View {
     }
     
     var body: some View {
-        VStack {
-            CustomInsetGroupedListItem(
-                header: showHeader ? Text("Notifications") : nil,
-                footer: nil
-            ) {
-                ZStack {
-                    VStack(spacing: 20) {
-                        toggleView
+        ZStack {
+            VStack(spacing: 20) {
+                toggleView
 
-                        if viewModel.notificationIsEnabled {
-                            wishPriceInputField
+                if viewModel.notificationIsEnabled {
+                    wishPriceInputField
 
-                            PriceDropsBelowValueNotificationInfoView()
-                        }
-                    }
-                    .opacity(viewModel.showUploadIndicators ? 0.5 : 1)
-                    .grayscale(viewModel.showUploadIndicators ? 0.5 : 0)
-                    
-                    if viewModel.showUploadIndicators {
-                        loadingView
-                    }
+                    PriceDropsBelowValueNotificationInfoView()
                 }
-                .disabled(viewModel.isUploading)
+            }
+            .opacity(viewModel.showUploadIndicators ? 0.5 : 1)
+            .grayscale(viewModel.showUploadIndicators ? 0.5 : 0)
+            
+            if viewModel.showUploadIndicators {
+                loadingView
             }
         }
+        .disabled(viewModel.isUploading)
         .onAppear { viewModel.uploadErrorObserver = uploadErrorObserver }
     }
 

@@ -9,21 +9,18 @@ import SwiftUI
 
 struct NoNotificationAccessView: View {
     var body: some View {
-        CustomInsetGroupedListItem {
-            VStack(alignment: .center, spacing: 30) {
-                Text("notificationPage.noNotificationAccessInfo")
-                    .multilineTextAlignment(.center)
-                    .foregroundColor(Color.gray)
+        VStack(alignment: .center, spacing: 30) {
+            Text("notificationPage.noNotificationAccessInfo")
+                .multilineTextAlignment(.center)
+                .foregroundColor(Color.gray)
 
-                Button(action: {
-                    UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
-                }) {
-                    Text("Open Settings App")
-                }
-                .buttonStyle(RoundedBorderButtonStyle())
+            Button(action: {
+                UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
+            }) {
+                Text("Open Settings App")
             }
+            .buttonStyle(RoundedBorderButtonStyle())
         }
-        .disableBackgroundColor(true)
     }
 }
 

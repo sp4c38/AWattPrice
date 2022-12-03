@@ -16,7 +16,7 @@ struct GoToBaseFeeSettingsView: View {
                 .resizable()
                 .frame(width: 22, height: 22)
             
-            Text("Test")
+            Text("Base Fee")
                 .bold()
         }
     }

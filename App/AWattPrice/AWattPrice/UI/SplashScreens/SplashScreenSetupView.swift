@@ -14,38 +14,32 @@ struct SplashScreenSetupView: View {
 
     @ObservedObject var currentSetting: CurrentSetting = Resolver.resolve()
 
-    @State var redirectToNextSplashScreen: Int? = 0
-    @State var basicCharge: String = ""
+    @State var nextSplashScreenActive: Bool = false
 
     var body: some View {
         VStack {
-            if currentSetting.entity != nil {
-                CustomInsetGroupedList {
+            Form {
+                Section {
                     RegionTaxSelectionView()
-
-                    PriceBelowNotificationView(showHeader: true)
-                    
-//                    AwattarTariffSelectionSetting()
                 }
-
-                NavigationLink("", destination: SplashScreenFinishView(), tag: 1, selection: $redirectToNextSplashScreen)
-                    .hidden()
-
-                Button(action: {
-                    redirectToNextSplashScreen = 1
-                }) {
+                
+                Section(header: Text("Notifications")) {
+                    PriceBelowNotificationView(showHeader: true)
+                }
+            }
+            
+            NavigationLink(destination: SplashScreenFinishView(), isActive: $nextSplashScreenActive) {
+                Button(action: { nextSplashScreenActive = true }) {
                     Text("Continue")
                 }
                 .buttonStyle(ContinueButtonStyle())
                 .padding(.bottom, 16)
                 .padding([.leading, .trailing], 16)
-            } else {
-                Text("Couldn't load settings.")
             }
         }
         .ignoresSafeArea(.keyboard)
         .navigationBarTitle("Setup")
-        .navigationViewStyle(StackNavigationViewStyle())
+        .background((colorScheme == .light ? Color(red: 0.95, green: 0.95, blue: 0.97) : Color.black).ignoresSafeArea(.all))
     }
 }
 

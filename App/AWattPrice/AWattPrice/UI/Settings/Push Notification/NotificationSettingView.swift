@@ -34,28 +34,26 @@ struct NotificationSettingView: View {
     @StateObject var viewModel = NotificationSettingViewModel()
         
     var body: some View {
-        ZStack(alignment: Alignment(horizontal: .center, vertical: .bottom)) {
-            CustomInsetGroupedList {
-                VStack(spacing: 20) {
-                    if viewModel.notificationService.accessState.value == .rejected {
-                        NoNotificationAccessView()
-                            .padding(.top, 10)
-                            .transition(.opacity)
-                    } else {
-                        PriceBelowNotificationView(uploadErrorObserver: viewModel.uploadErrorObserver)
-                    }
+        Form {
+            if viewModel.notificationService.accessState.value == .rejected {
+                Section {
+                    NoNotificationAccessView()
+                        .padding(.top, 10)
+                        .transition(.opacity)
                 }
-                .animation(.easeInOut, value: viewModel.notificationService.accessState.value)
+                .listRowBackground(Color.clear)
+            } else {
+                Section {
+                    PriceBelowNotificationView(uploadErrorObserver: viewModel.uploadErrorObserver)
+                }
             }
-
-            VStack {
-                if viewModel.uploadErrorObserver.viewState == .lastUploadFailed {
+            
+            if viewModel.uploadErrorObserver.viewState == .lastUploadFailed {
+                Section {
                     SettingsUploadErrorView()
-                        .padding(.bottom, 15)
-                        .transition(.belowScale)
                 }
+                .listRowBackground(Color.clear)
             }
-            .animation(.easeInOut, value: viewModel.uploadErrorObserver.viewState)
         }
         .navigationTitle("Price Guard")
         .onAppear { print(viewModel.uploadErrorObserver.viewState) }
@@ -70,10 +68,10 @@ struct NotificationSettingView_Previews: PreviewProvider {
     static var previews: some View {
         
         return Group {
-            GoToNotificationSettingView()
-
-            NotificationSettingView()
-                .environmentObject(notificationSettings)
+            NavigationView {
+                NotificationSettingView()
+                    .environmentObject(notificationSettings)
+            }
         }
     }
 }

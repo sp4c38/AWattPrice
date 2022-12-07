@@ -19,37 +19,36 @@ class CurrentSetting: AutoUpdatingSingleEntity<Setting> {
                 newEntry.regionIdentifier = 0
                 newEntry.showWhatsNew = false
                 newEntry.splashScreensFinished = false
+                newEntry.baseFee = 0
             }
         )
     }
 
     func changeCheapestTimeLastConsumption(to newValue: Double) {
-        changeSetting(self, isNew: { $0.cheapestTimeLastConsumption != newValue },
-                      bySetting: { $0.cheapestTimeLastConsumption = newValue })
+        changeSetting(self, isNew: { $0.cheapestTimeLastConsumption != newValue }, bySetting: { $0.cheapestTimeLastConsumption = newValue })
     }
 
     func changeCheapestTimeLastPower(to newValue: Double) {
-        changeSetting(self, isNew: { $0.cheapestTimeLastPower != newValue },
-                      bySetting: { $0.cheapestTimeLastPower = newValue })
+        changeSetting(self, isNew: { $0.cheapestTimeLastPower != newValue }, bySetting: { $0.cheapestTimeLastPower = newValue })
     }
 
     func changeTaxSelection(to newValue: Bool) {
-        changeSetting(self, isNew: { $0.pricesWithVAT != newValue },
-                      bySetting: { $0.pricesWithVAT = newValue })
+        changeSetting(self, isNew: { $0.pricesWithVAT != newValue }, bySetting: { $0.pricesWithVAT = newValue })
     }
 
     func changeRegionIdentifier(to newValue: Int16) {
-        changeSetting(self, isNew: { $0.regionIdentifier != newValue },
-                      bySetting: { $0.regionIdentifier = newValue })
+        changeSetting(self, isNew: { $0.regionIdentifier != newValue }, bySetting: { $0.regionIdentifier = newValue })
     }
 
     func changeShowWhatsNew(to newValue: Bool) {
-        changeSetting(self, isNew: { $0.showWhatsNew != newValue },
-                      bySetting: { $0.showWhatsNew = newValue })
+        changeSetting(self, isNew: { $0.showWhatsNew != newValue }, bySetting: { $0.showWhatsNew = newValue })
     }
 
     func changeSplashScreenFinished(to newValue: Bool) {
-        changeSetting(self, isNew: { $0.splashScreensFinished != newValue },
-                      bySetting: { $0.splashScreensFinished = newValue })
+        changeSetting(self, isNew: { $0.splashScreensFinished != newValue }, bySetting: { $0.splashScreensFinished = newValue })
+    }
+    
+    func changeBaseFee(to newValue: Double) {
+        changeSetting(self, isNew: { $0.baseFee != newValue }, bySetting: { $0.baseFee = newValue })
     }
 }

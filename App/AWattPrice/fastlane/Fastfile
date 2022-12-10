@@ -42,7 +42,7 @@ platform :ios do
   lane :beta do
     prompt_increment_marketing_number
     prompt_increment_build_number
-    # build_app(scheme: "AWattPrice", configuration: "Distribution AppStore Production")
-    # upload_to_testflight(skip_submission: true, skip_waiting_for_build_processing: true)
+    build_app(scheme: "AWattPrice", configuration: "Distribution AppStore Production")
+    upload_to_testflight(app_identifier: "me.space8.AWattPrice", skip_submission: true, skip_waiting_for_build_processing: true)
   end
 end

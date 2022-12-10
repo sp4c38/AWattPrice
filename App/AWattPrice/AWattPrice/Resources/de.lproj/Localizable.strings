@@ -231,3 +231,8 @@
 /* No comment provided by engineer. */
 "Wish Price:" = "Wunschpreis:";
 
+"baseFee.infoText" = "Die Grundgebühr wird auf jeden Strompreis innerhalb der gesamten AWattPrice-App addiert. Diese Gebühr hängt von Ihrem Vertrag mit aWATTar ab und kann von anderen Nutzern abweichen.";
+
+"Base Fee" = "Grundgebühr";
+
+"Base fee (incl. VAT):" = "Grundgebühr (inkl. MwSt.):";

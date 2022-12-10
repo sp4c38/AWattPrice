@@ -18,7 +18,7 @@ struct BaseFeeView: View {
     var body: some View {
         Form {
             Section(header: Text("Info").foregroundColor(.blue)) {
-                Text("The base fee is added on top of each electricity price within the entire AWattPrice app. This fee depends on your contract with aWATTar and may differ from other users.")
+                Text("baseFee.infoText")
             }
             
             Section {

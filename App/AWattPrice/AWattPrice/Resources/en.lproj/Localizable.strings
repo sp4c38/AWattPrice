@@ -55,3 +55,5 @@
 // Title managed by general.priceGuard
 "notifications.price_drops_below.body.sing" = "Tomorrow, electricity prices drop below %2$@ ct %1$@ time. Cheapest hour at %3$@ with %4$@ ct.";
 "notifications.price_drops_below.body.mult" = "Tomorrow, electricity prices drop below %2$@ ct %1$@ times. Cheapest hour at %3$@ with %4$@ ct.";
+
+"baseFee.infoText" = "The base fee is added on top of each electricity price within the entire AWattPrice app. This fee depends on your contract with aWATTar and may differ from other users.";

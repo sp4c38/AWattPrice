@@ -7,6 +7,7 @@
 
 import Combine
 import Foundation
+import Resolver
 
 struct EnergyPricePoint: Decodable {
     var startTime: Date
@@ -38,16 +39,17 @@ struct EnergyPricePoint: Decodable {
 }
 
 struct EnergyData: Decodable {
+    @Injected var currentSetting: CurrentSetting
     let prices: [EnergyPricePoint]
-
+    
     /// Prices which have start equal or past the start of the current hour.
-    let currentPrices: [EnergyPricePoint]
-    /// Current prices cheapest price point.
-    let minCostPricePoint: EnergyPricePoint?
-    /// Current prices expensivest
-    let maxCostPricePoint: EnergyPricePoint?
+    var currentPrices: [EnergyPricePoint] = []
+    
+    var minCostPricePoint: EnergyPricePoint? = nil
+    var maxCostPricePoint: EnergyPricePoint? = nil
+    
     /// Current prices time range from the start time of the earliest to the end time of the latest price point.
-    let minMaxTimeRange: ClosedRange<Date>?
+    var minMaxTimeRange: ClosedRange<Date>? = nil
 
     enum CodingKeys: CodingKey {
         case prices
@@ -56,7 +58,10 @@ struct EnergyData: Decodable {
     init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         prices = try values.decode([EnergyPricePoint].self, forKey: .prices)
-        
+        computeValues()
+    }
+    
+    mutating func computeValues() {
         let now = Date()
         let hourStart = Calendar.current.startOfHour(for: now)
         currentPrices = prices
@@ -64,6 +69,15 @@ struct EnergyData: Decodable {
             .sorted { lhsPricePoint, rhsPricePoint in
                 rhsPricePoint.startTime > lhsPricePoint.startTime ? true : false
             }
+        
+        for i in currentPrices.indices {
+            if currentSetting.entity?.pricesWithVAT == true,
+               let regionTaxMultiplier = Region(rawValue: currentSetting.entity!.regionIdentifier)?.taxMultiplier
+            {
+                currentPrices[i].marketprice *= regionTaxMultiplier
+            }
+            currentPrices[i].marketprice += currentSetting.entity!.baseFee
+        }
 
         minCostPricePoint = currentPrices.min(by: EnergyPricePoint.marketpricesAreInIncreasingOrder)
         maxCostPricePoint = currentPrices.max(by: EnergyPricePoint.marketpricesAreInIncreasingOrder)

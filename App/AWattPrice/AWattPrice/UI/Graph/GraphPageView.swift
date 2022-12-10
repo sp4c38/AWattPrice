@@ -25,9 +25,7 @@ struct HeaderSizePreferenceKey: PreferenceKey {
     }
 }
 
-/// The home view mainly holds the graph which represents energy costs for each hour throughout the day.
 struct HomeView: View {
-    @Environment(\.networkManager) var networkManager
     @Environment(\.scenePhase) var scenePhase
 
     @ObservedObject var energyDataController: EnergyDataController = Resolver.resolve()
@@ -95,9 +93,6 @@ struct HomeView: View {
                 loadEnergyData()
                 showWhatsNewPage = currentSetting.entity!.showWhatsNew
             }
-        }
-        .onChange(of: currentSetting.entity!.regionIdentifier) { _ in
-            loadEnergyData()
         }
 //        .sheet(isPresented: $showWhatsNewPage) {
 //            WhatsNewPage()

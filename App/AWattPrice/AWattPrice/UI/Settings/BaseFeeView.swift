@@ -10,6 +10,7 @@ import SwiftUI
 
 struct BaseFeeView: View {
     @Injected var currentSetting: CurrentSetting
+    @Injected var energyDataController: EnergyDataController
     
     @State var baseFee: Double = 0
     @FocusState var isInputActive: Bool
@@ -17,12 +18,12 @@ struct BaseFeeView: View {
     var body: some View {
         Form {
             Section(header: Text("Info").foregroundColor(.blue)) {
-                Text("The base fee is added to all electricity prices within the entire AWattPrice app. This fee depends on your contract with aWATTar and may differ from other users.")
+                Text("The base fee is added on top of each electricity price within the entire AWattPrice app. This fee depends on your contract with aWATTar and may differ from other users.")
             }
             
             Section {
                 VStack(alignment: .leading) {
-                    Text("Base fee:")
+                    Text("Base fee (incl. VAT):")
                         .textCase(.uppercase)
                         .foregroundColor(.gray)
                         .font(.caption)
@@ -36,14 +37,14 @@ struct BaseFeeView: View {
                                     Spacer()
                                     Button(action: {
                                         isInputActive = false
-                                        saveBaseFee()
+                                        updateBaseFee()
                                     }) {
                                         Text("Done")
                                             .bold()
                                     }
                                 }
                             }
-                            .onSubmit(saveBaseFee)
+                            .onSubmit(updateBaseFee)
                     
                         Text("Cent per kWh")
                     }
@@ -57,8 +58,9 @@ struct BaseFeeView: View {
         }
     }
     
-    func saveBaseFee() {
+    func updateBaseFee() {
         currentSetting.changeBaseFee(to: baseFee)
+        energyDataController.energyData?.computeValues()
     }
 }
 

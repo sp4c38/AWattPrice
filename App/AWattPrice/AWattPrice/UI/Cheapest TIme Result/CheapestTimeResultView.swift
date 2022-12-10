@@ -239,7 +239,7 @@ struct CheapestTimeResultView: View {
 
 struct CheapestTimeResultView_Previews: PreviewProvider {
     static var associatedPricePoints: [EnergyPricePoint] = {
-        let prices = EnergyData.previewContent().prices
+        let prices = EnergyData.previewContent().currentPrices
         return [prices[0]]
     }()
     

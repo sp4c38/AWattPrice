@@ -288,7 +288,7 @@ struct CheapestTimeClockView: View {
 
 struct ConsumptionClockView_Previews: PreviewProvider {
     static var associatedPricePoints: [EnergyPricePoint] = {
-        let prices = EnergyData.previewContent().prices
+        let prices = EnergyData.previewContent().currentPrices
         return [prices[0]]
     }()
     

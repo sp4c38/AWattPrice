@@ -7,6 +7,7 @@ class RegionTaxSelectionViewModel: ObservableObject {
     var currentSetting: CurrentSetting = Resolver.resolve()
     var notificationSetting: CurrentNotificationSetting = Resolver.resolve()
     var notificationService: NotificationService = Resolver.resolve()
+    @Injected var energyDataController: EnergyDataController
     
     @Published var selectedRegion: Region
     @Published var taxSelection: Bool
@@ -36,7 +37,10 @@ class RegionTaxSelectionViewModel: ObservableObject {
     func regionChanges(newRegion: Region) {
         var notificationConfiguration = NotificationConfiguration.create(nil, currentSetting, notificationSetting)
         notificationConfiguration.general.region = newRegion
-        let changeSetting = { self.currentSetting.changeRegionIdentifier(to: newRegion.rawValue) }
+        let changeSetting = {
+            self.currentSetting.changeRegionIdentifier(to: newRegion.rawValue)
+            DispatchQueue.main.async { self.energyDataController.download(region: newRegion) }
+        }
         
         notificationService.changeNotificationConfiguration(notificationConfiguration, notificationSetting) { downloadPublisher in
             self.uploadObserver.register(for: downloadPublisher.ignoreOutput().eraseToAnyPublisher())
@@ -59,7 +63,10 @@ class RegionTaxSelectionViewModel: ObservableObject {
     func taxSelectionChanges(newTaxSelection: Bool) {
         var notificationConfiguration = NotificationConfiguration.create(nil, currentSetting, notificationSetting)
         notificationConfiguration.general.tax = newTaxSelection
-        let changeSetting = { self.currentSetting.changeTaxSelection(to: newTaxSelection) }
+        let changeSetting = {
+            self.currentSetting.changeTaxSelection(to: newTaxSelection)
+            DispatchQueue.main.async { self.energyDataController.energyData?.computeValues() }
+        }
 
         notificationService.changeNotificationConfiguration(notificationConfiguration, notificationSetting) { downloadPublisher in
             self.uploadObserver.register(for: downloadPublisher.ignoreOutput().eraseToAnyPublisher())

@@ -2,6 +2,7 @@
 from sqlalchemy import Boolean
 from sqlalchemy import Column
 from sqlalchemy import Enum
+from sqlalchemy import Float
 from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
 from sqlalchemy import MetaData
@@ -47,11 +48,8 @@ class Token(Base):
     token_id = Column(Integer, primary_key=True)
     token = Column(String, unique=True, nullable=False)
     region = Column(Enum(Region), nullable=False)
-    # Tax selection is dependent on the region. For example in Austria there are no non-tax and tax prices.
-    # With this design this dependence violates the 3NF. This violation is disregarded in this case because
-    # it would make the design unnecessarily more complicated. Yhe region and tax selection is
-    # safe-checked in the program code.
     tax = Column(Boolean, default=False, nullable=False)
+    base_fee = Column(Float(2), default=0, nullable=False)
 
     price_below = relationship(
         PriceBelowNotification, back_populates="token", cascade="all, delete-orphan", uselist=False

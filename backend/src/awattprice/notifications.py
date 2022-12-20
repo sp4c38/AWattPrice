@@ -49,20 +49,22 @@ async def save_notification_configuration(db_engine: AsyncEngine, configuration:
 			logger.debug("Updating existing token.")
 			token.region = configuration.general.region
 			token.tax = configuration.general.tax
+			token.base_fee = configuration.general.base_fee
 
 			if token.price_below:
 				logger.debug("Updating existing price below notification configuration.")
 				token.price_below.active = configuration.notifications.price_below.active
 				token.price_below.below_value = configuration.notifications.price_below.below_value
 		else:
-			logger.debug("Creating new token.")
+			logger.debug("Creating new token entry.")
 			new_token = Token(
-				token=configuration.token, region=configuration.general.region, tax=configuration.general.tax
+				token=configuration.token, region=configuration.general.region, tax=configuration.general.tax,
+				base_fee=configuration.general.base_fee
 			)
 			session.add(new_token)
 
 		if not token or not token.price_below:
-			logger.debug("Creating new price below notification configuration.")
+			logger.debug("Creating new price below notification entry.")
 			if not token:
 				await session.flush()
 				token_id = new_token.token_id
@@ -93,5 +95,7 @@ def parse_notification_configuration_body(configuration: Box) -> Optional[Box]:
 		return None
 
 	configuration.general.region = Region[configuration.general.region]
+	if not "base_fee" in configuration.general: # Needed to ensure backwards compatibility with prior AWattPrice app versions.
+		configuration.general.base_fee = 0
 
 	return configuration

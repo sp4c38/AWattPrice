@@ -121,7 +121,8 @@ NOTIFICATION_CONFIGURATION_SCHEMA = {
             "type": "object",
             "properties": {
                 "region": {"enum": region_enum_names},
-                "tax": {"type": "boolean"}
+                "tax": {"type": "boolean"},
+                "base_fee": {"type": "number"}
             },
             "required": ["region", "tax"],
             "additionalProperties": False

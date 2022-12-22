@@ -28,9 +28,10 @@ def get_below_value_checks(regions_data: dict[Region, DetailedPriceData]) -> lis
     for region, price_data in regions_data.items():
         lowest_marketprice = price_data.lowest_price.marketprice
         lowest_marketprice_untaxed = lowest_marketprice.ct_kwh(taxed=False, round_=True)
+
         if region.tax is None:
             below_value_checks.append(
-                and_(Token.region == region, lowest_marketprice_untaxed <= PriceBelowNotification.below_value)
+                and_(Token.region == region, Token.base_fee+lowest_marketprice_untaxed <= PriceBelowNotification.below_value)
             )
         else:
             lowest_marketprice_taxed = lowest_marketprice.ct_kwh(taxed=True, round_=True)
@@ -40,11 +41,11 @@ def get_below_value_checks(regions_data: dict[Region, DetailedPriceData]) -> lis
                     or_(
                         and_(
                             Token.tax == True,
-                            lowest_marketprice_taxed <= PriceBelowNotification.below_value,
+                            Token.base_fee+lowest_marketprice_taxed <= PriceBelowNotification.below_value,
                         ),
                         and_(
                             Token.tax == False,
-                            lowest_marketprice_untaxed <= PriceBelowNotification.below_value,
+                            Token.base_fee+lowest_marketprice_untaxed <= PriceBelowNotification.below_value,
                         ),
                     ),
                 )

@@ -64,7 +64,7 @@ class MarketPrice:
         """Convert the price to cent per kWh.
 
         :param taxed: If set convert the taxed price.
-        :param round: If set round the price naturally before returning.
+        :param round_: If set round the price naturally before returning.
         """
         if taxed:
             price = self.taxed

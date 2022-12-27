@@ -3,6 +3,7 @@
 Sending the actual notifications is handled by an extra service outside of this web app.
 """
 from collections import namedtuple
+from decimal import Decimal
 from typing import Any
 from typing import Optional
 
@@ -95,7 +96,9 @@ def parse_notification_configuration_body(configuration: Box) -> Optional[Box]:
 		return None
 
 	configuration.general.region = Region[configuration.general.region]
-	if not "base_fee" in configuration.general: # Needed to ensure backwards compatibility with prior AWattPrice app versions.
-		configuration.general.base_fee = 0
+	if "base_fee" in configuration.general: # Needed to ensure backwards compatibility with prior AWattPrice app versions.
+		configuration.general.base_fee = Decimal(str(configuration.general.base_fee))
+	else:
+		configuration.general.base_fee = Decimal("0")
 
 	return configuration

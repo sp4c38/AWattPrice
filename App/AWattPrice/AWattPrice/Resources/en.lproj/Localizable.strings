@@ -52,7 +52,7 @@
 "updateDataTimeFormatter.moreThanMMAgoPlural" = "Updated %@ minutes ago";
 
 // Notification localizations
-// Title managed by general.priceGuard
+"general.priceGuard" = "Price Guard";
 "notifications.price_drops_below.body.sing" = "Tomorrow, electricity prices drop below %2$@ ct %1$@ time. Cheapest hour at %3$@ with %4$@ ct.";
 "notifications.price_drops_below.body.mult" = "Tomorrow, electricity prices drop below %2$@ ct %1$@ times. Cheapest hour at %3$@ with %4$@ ct.";
 

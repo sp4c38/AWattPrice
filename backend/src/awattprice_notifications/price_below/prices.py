@@ -34,7 +34,7 @@ class DetailedPriceData:
         lowest_price = min(self.data.prices, key=lambda price_point: price_point.marketprice.value)
         self.lowest_price = lowest_price
 
-    def get_prices_below_value(self, below_value: Decimal, taxed: bool) -> list[int]:
+    def get_prices_below_value(self, below_value: int, base_fee: float, taxed: bool) -> list[int]:
         """Get prices which are on or below the given value.
 
         :param taxed: If true prices are taxed before comparing to the below value. This doesn't affect the
@@ -42,10 +42,9 @@ class DetailedPriceData:
         """
         below_value_prices = []
         for price_point in self.data.prices:
-            marketprice = price_point.marketprice.ct_kwh(taxed=taxed, round_=True)
+            marketprice = base_fee+price_point.marketprice.ct_kwh(taxed=taxed, round_=True)
             if marketprice <= below_value:
                 below_value_prices.append(price_point)
-
         return below_value_prices
 
 

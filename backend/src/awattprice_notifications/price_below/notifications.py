@@ -65,7 +65,7 @@ def construct_notification(
     lowest_price = notifiable_prices.lowest_price
     lowest_price_start_str = lowest_price.start_timestamp.format("H")
     lowest_marketprice = lowest_price.marketprice
-    lowest_marketprice_value = lowest_price.marketprice.ct_kwh(taxed=token.tax, round_=True)
+    lowest_marketprice_value = token.base_fee+lowest_price.marketprice.ct_kwh(taxed=token.tax, round_=True)
     lowest_marketprice_value_str = awattprice_notifications.utils.stringify_price(
         lowest_marketprice_value, lowest_marketprice.region
     )
@@ -141,7 +141,7 @@ async def deliver_notifications(
 
         for token in tokens:
             below_value = token.price_below.below_value
-            prices_below = notifiable_prices.get_prices_below_value(below_value, token.tax)
+            prices_below = notifiable_prices.get_prices_below_value(below_value, token.base_fee, token.tax)
 
             headers = construct_notification_headers(apns_authorization, prices_below, config.general.staging)
             notification = construct_notification(token, prices_below, notifiable_prices)

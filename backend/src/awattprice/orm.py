@@ -1,4 +1,6 @@
 """Database tables represented as orms."""
+from decimal import Decimal
+
 from sqlalchemy import Boolean
 from sqlalchemy import Column
 from sqlalchemy import Enum
@@ -7,6 +9,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
 from sqlalchemy import MetaData
 from sqlalchemy import String
+from sqlalchemy import types
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm import registry as Registry
 
@@ -21,6 +24,15 @@ metadata = MetaData()
 registry = Registry(metadata)
 Base = registry.generate_base()
 
+class DatabaseDecimalType(types.TypeDecorator):
+    impl = String
+    cache_ok = True
+    
+    def process_bind_param(self, value: Decimal, dialect):
+        return str(value)
+        
+    def process_result_value(self, value: String, dialect):
+        return Decimal(value)
 
 # pylint: disable=too-few-public-methods
 class PriceBelowNotification(Base):
@@ -37,7 +49,6 @@ class PriceBelowNotification(Base):
 
 # pylint: enable=too-few-public-methods
 
-
 # pylint: disable=too-few-public-methods
 class Token(Base):
     """Store apns notification token information."""
@@ -49,7 +60,7 @@ class Token(Base):
     token = Column(String, unique=True, nullable=False)
     region = Column(Enum(Region), nullable=False)
     tax = Column(Boolean, default=False, nullable=False)
-    base_fee = Column(Float(2), default=0, nullable=False)
+    base_fee = Column(DatabaseDecimalType, default=0, nullable=False)
 
     price_below = relationship(
         PriceBelowNotification, back_populates="token", cascade="all, delete-orphan", uselist=False

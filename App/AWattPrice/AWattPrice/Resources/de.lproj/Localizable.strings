@@ -139,6 +139,8 @@
 /* (No Comment) */
 "notificationPage.notification.priceDropsBelowValue.description.firstLine.pt7" = "Ihren Wunschpreis sinkt.";
 
+"general.priceGuard" = "Preiswächter";
+
 /* (No Comment) */
 "notifications.price_drops_below.body.mult" = "Morgen fallen die Strompreise %1$@ Mal unter %2$@ ct. Günstigster Preis um %3$@ Uhr mit %4$@ ct.";
 

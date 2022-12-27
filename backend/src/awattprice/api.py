@@ -30,6 +30,9 @@ except FileNotFoundError as exc:
     sys.exit(1)
 orm.metadata.bind = database_engine
 
+# Uncomment to create all database tables inside the database. An empty sqlite database must already exist and async_ must be set to false upon engine creation. 
+# orm.Base.metadata.create_all()
+
 app = FastAPI()
 
 

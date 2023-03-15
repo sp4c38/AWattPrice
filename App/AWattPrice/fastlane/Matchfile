@@ -1,4 +1,4 @@
-git_url("https://github.com/sp4c38/AWattPrice-Code-Signing")
+git_url("git@github.com:sp4c38/AWattPrice-Code-Signing.git")
 
 storage_mode("git")
 

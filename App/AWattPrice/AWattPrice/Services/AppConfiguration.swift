@@ -13,7 +13,7 @@ protocol AppConfiguration {
 
 class StagingAppConfiguration: AppConfiguration {
 //    var apiURL = URL(string: "https://test-awp.space8.me")!
-    var apiURL = URL(string: "https://awattprice.space8.me/api/v2/")!
+    var apiURL = URL(string: "https://test-awp.space8.me/api/v2/")!
 }
 
 class ProductionAppConfiguration: AppConfiguration {

@@ -26,7 +26,7 @@ if not force_create:
         sys.exit(0)
 
 logger.info("Creating database file.")
-db_engine = database.get_engine(config)
+db_engine = database.get_awattprice_engine(config, ignore_database_not_found=True)
 orm.metadata.bind = db_engine
 
 table_names = orm.metadata.tables.keys()

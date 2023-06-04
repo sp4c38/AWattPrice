@@ -15,12 +15,12 @@ from sqlalchemy.ext.asyncio import create_async_engine
 CREATE_ENGINE_KWARGS = {"future": True, "echo": False}
 
 
-def get_engine(database_file: Path, async_=False) -> Optional[Union[Engine, AsyncEngine]]:
+def get_engine(database_file: Path, ignore_database_not_found=False, async_=False) -> Optional[Union[Engine, AsyncEngine]]:
     """Get either a sync or an async sqlalchemy engine for the app's database.
 
     :raises FileNotFoundError: If the backends database couldn't be found.
     """
-    if not database_file.exists():
+    if not database_file.exists() and not ignore_database_not_found:
         raise FileNotFoundError(database_file)
 
     if async_:
@@ -33,7 +33,7 @@ def get_engine(database_file: Path, async_=False) -> Optional[Union[Engine, Asyn
     return engine
 
 
-def get_awattprice_engine(config: Config, async_=False) -> Optional[Union[Engine, AsyncEngine]]:
+def get_awattprice_engine(config: Config, ignore_database_not_found=False, async_=False) -> Optional[Union[Engine, AsyncEngine]]:
     database_dir = config.paths.data_dir
     database_file = database_dir / defaults.DATABASE_FILE_NAME
-    return get_engine(database_file, async_)
+    return get_engine(database_file, ignore_database_not_found=ignore_database_not_found, async_=async_)

@@ -2,6 +2,7 @@
 
 # Build command (assuming you're in the `backend` directory).
 # docker build -f docker/Dockerfile -t leonbecker1/awattprice-backend ..
+# Note that the docker image is created for the architecture of the machine this command is executed on. If you'd like create the image for a different architecture it's easiest to create the image on the machine with the different architecture.
 
 # The docker image created from this Dockerfile includes the v2 backend as well as the modified v1 backend to support backwards compatibility. Both get installed inside this image.
 

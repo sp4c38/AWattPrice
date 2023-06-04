@@ -53,7 +53,5 @@ RUN echo -e "SHELL=/bin/sh \nPATH=$PATH \n2,*/23 * * * * root python /usr/src/aw
 RUN echo "* * * * * root env > /root/test.txt" >> /etc/crontab
 
 CMD cron -f & \
-	
 	gunicorn --workers 1 --access-logfile - --bind unix:/etc/awattprice/socket/awattprice.sock -k uvicorn.workers.UvicornWorker awattprice.api:app & \
-	
 	PYTHONPATH="/opt/venvs/v1_awattprice/lib/python3.10/site-packages:$PYTHONPATH" gunicorn --workers 1 --access-logfile - --bind unix:/etc/v1_awattprice/socket/awattprice.sock -k uvicorn.workers.UvicornWorker v1_awattprice.fastapi_conf.api:api

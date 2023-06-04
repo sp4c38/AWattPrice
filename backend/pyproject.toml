@@ -17,7 +17,6 @@ classifiers = [
 packages = [
     { include = "awattprice", from = "src" },
     { include = "awattprice_notifications", from = "src" },
-    { include = "awattprice_helpers", from = "src" },
 ]
 
 [tool.poetry.dependencies]

@@ -1,11 +1,9 @@
 services:
   awattprice:
     image: leonbecker1/awattprice-backend
+    restart: unless-stopped
     volumes:
+      # Format "SOURCE:TARGET", where SOURCE can be either a host path or volume name. TARGET is the container path where the volume is mounted.
       - "/etc/awattprice/app_data/:/etc/awattprice/app_data/"
       - "/etc/awattprice/config.ini:/etc/awattprice/config.ini"
       - "/etc/awattprice/socket/:/etc/awattprice/socket/"
-      
-      - "/etc/v1_awattprice/app_data/:/etc/v1_awattprice/app_data/"
-      - "/etc/v1_awattprice/config.ini:/etc/v1_awattprice/config.ini"
-      - "/etc/v1_awattprice/socket/:/etc/v1_awattprice/socket/"

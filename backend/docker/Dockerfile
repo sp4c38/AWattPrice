@@ -25,7 +25,8 @@ ENV ORIGINAL_PATH="$PATH"
 
 # Install v2 backend dependencies.
 WORKDIR /usr/src/awattprice/
-ENV PATH="$VIRTUAL_ENV_AWATTPRICE/bin:$ORIGINAL_PATH"
+ENV VIRTUAL_ENV="$VIRTUAL_ENV_AWATTPRICE"
+ENV PATH="$VIRTUAL_ENV/bin:$ORIGINAL_PATH"
 COPY backend/pyproject.toml .
 COPY backend/poetry.lock .
 RUN poetry install --no-root

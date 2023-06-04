@@ -1,5 +1,0 @@
-# Extra requirements in addition to the awattprice v2 backend requirements.
-
-aiofiles==0.6.0
-configupdater
-validators==0.18.2

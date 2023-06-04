@@ -1,4 +1,0 @@
-ipython
-pytest
-pytest-cov
-pysnooper

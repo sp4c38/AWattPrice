@@ -17,7 +17,6 @@ class CurrentSetting: AutoUpdatingSingleEntity<Setting> {
                 newEntry.cheapestTimeLastPower = 0
                 newEntry.pricesWithVAT = true
                 newEntry.regionIdentifier = 0
-                newEntry.showWhatsNew = false
                 newEntry.splashScreensFinished = false
                 newEntry.baseFee = 0
             }
@@ -38,10 +37,6 @@ class CurrentSetting: AutoUpdatingSingleEntity<Setting> {
 
     func changeRegionIdentifier(to newValue: Int16) {
         changeSetting(self, isNew: { $0.regionIdentifier != newValue }, bySetting: { $0.regionIdentifier = newValue })
-    }
-
-    func changeShowWhatsNew(to newValue: Bool) {
-        changeSetting(self, isNew: { $0.showWhatsNew != newValue }, bySetting: { $0.showWhatsNew = newValue })
     }
 
     func changeSplashScreenFinished(to newValue: Bool) {

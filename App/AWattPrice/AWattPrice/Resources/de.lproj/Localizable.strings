@@ -139,8 +139,6 @@
 /* (No Comment) */
 "notificationPage.notification.priceDropsBelowValue.description.firstLine.pt7" = "Ihren Wunschpreis sinkt.";
 
-"general.priceGuard" = "Preiswächter";
-
 /* (No Comment) */
 "notifications.price_drops_below.body.mult" = "Morgen fallen die Strompreise %1$@ Mal unter %2$@ ct. Günstigster Preis um %3$@ Uhr mit %4$@ ct.";
 
@@ -196,13 +194,7 @@
 "splashScreen.start.notAffiliatedNote" = "Bitte beachten Sie, dass AWattPrice eine unabhängige App ist und in keiner Weise mit aWATTar GmbH in Verbindung steht.";
 
 /* What's new splash screen localization */
-"splashScreen.whatsNew.notifications.extrainfo" = "Tipp: Um Benachrichtigungen zu aktivieren, gehen Sie zum \"Einstellungen\"-Tab in AWattPrice.";
-
-/* (No Comment) */
-"splashScreen.whatsNew.withDuration.extraInfo" = "Geben Sie eine Verbrauchsdauer an, um die günstigste Zeit zu finden.";
-
-/* (No Comment) */
-"splashScreen.whatsNew.withDuration.title" = "Neue Option: Dauer";
+"splashScreen.whatsNew.baseFee.extrainfo" = " Gehen Sie zum \"Einstellungen\"-Tab in AWattPrice um dies zu aktivieren.";
 
 /* No comment provided by engineer. */
 "Suggestions" = "Vorschläge";
@@ -233,7 +225,9 @@
 /* No comment provided by engineer. */
 "Wish Price:" = "Wunschpreis:";
 
-"baseFee.infoText" = "Die Grundgebühr wird auf jeden Strompreis innerhalb der gesamten AWattPrice-App addiert. Diese Gebühr hängt von Ihrem Vertrag mit aWATTar ab und kann von anderen Nutzern abweichen.";
+"baseFee.infoText" = "Die Grundgebühr wird auf jeden Strompreis innerhalb der gesamten App addiert. Diese Gebühr hängt von Ihrem Vertrag mit aWATTar ab.";
+
+"baseFee.priceGuardActivatedInfo" = "Der Preiswächter ist eingeschaltet. Denken Sie daran den Wunschpreis ggf. anzupassen, wenn Sie den Wert unten ändern.";
 
 "Base Fee" = "Grundgebühr";
 

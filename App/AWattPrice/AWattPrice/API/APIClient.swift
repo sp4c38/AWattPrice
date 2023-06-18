@@ -27,7 +27,7 @@ struct PlainAPIRequest: APIRequest {
 }
 
 enum APIRequestFactory {
-    static let apiURL = AppContext.shared.config.apiURL
+    static let apiURL = AppContext.shared.apiURL
 
     static func energyDataRequest(region: Region) -> ResponseAPIRequest<EnergyData, JSONDecoder> {
         let requestURL = apiURL

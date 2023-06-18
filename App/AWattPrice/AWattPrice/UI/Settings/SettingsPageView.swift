@@ -143,11 +143,9 @@ struct AppVersionView: View {
                 Text("AWattPrice")
                     .font(.headline)
 
-                if let currentVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String {
-                    if let currentBuild = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String {
-                        Text("\("Version".localized()) \(currentVersion) (\(currentBuild))")
-                            .font(.footnote)
-                    }
+                if let currentBuild = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String {
+                    Text("\("Version".localized()) \(AppContext.shared.currentAppVersion) (\(currentBuild))")
+                        .font(.footnote)
                 }
             }
             Spacer()

@@ -22,13 +22,6 @@ class ContentViewModel: ObservableObject {
         currentSetting.objectWillChange.sink(receiveValue: { self.objectWillChange.send() }).store(in: &cancellables)
     }
     
-    func onAppear() {
-        // Check Show Whats New
-        if currentSetting.entity!.splashScreensFinished == false && currentSetting.entity!.showWhatsNew == true {
-            currentSetting.changeShowWhatsNew(to: false)
-        }
-    }
-    
     func scenePhaseChanged(to scenePhase: ScenePhase) {
         if scenePhase == .active {
             UIApplication.shared.applicationIconBadgeNumber = 0
@@ -59,6 +52,7 @@ struct ContentView: View {
     @Environment(\.networkManager) var networkManager
     @Environment(\.scenePhase) var scenePhase
 
+    @State var showWhatsNewScreen = false
     @StateObject var viewModel = ContentViewModel()
     @ObservedObject var tabBarItems = TBItems()
 
@@ -77,6 +71,7 @@ struct ContentView: View {
                             CheapestTimeView()
                                 .opacity(tabBarItems.selectedItemIndex == 2 ? 1 : 0)
                         }
+                        .sheet(isPresented: $showWhatsNewScreen) { WhatsNewPage() }
 
                         Spacer(minLength: 0)
 
@@ -86,10 +81,12 @@ struct ContentView: View {
                         SplashScreenStartView()
                     }
                 }
-                .onAppear(perform: viewModel.onAppear)
             }
         }
         .ignoresSafeArea(.keyboard)
         .onChange(of: scenePhase, perform: viewModel.scenePhaseChanged)
+        .onAppear {
+            showWhatsNewScreen = AppContext.shared.checkShowWhatsNewScreen()
+        }
     }
 }

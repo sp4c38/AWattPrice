@@ -33,7 +33,6 @@ struct HomeView: View {
 
     @State var headerSize = CGSize(width: 0, height: 0)
     @State var initialAppearFinished: Bool? = false
-    @State var showWhatsNewPage: Bool = false
 
     func parseHeaderSize(preference: HeaderSizePreferenceKey.SizeBounds, geo: GeometryProxy) -> some View {
         let newHeaderSize = geo[preference.bounds].size
@@ -80,7 +79,6 @@ struct HomeView: View {
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .onAppear {
-            showWhatsNewPage = currentSetting.entity!.showWhatsNew
             initialAppearFinished = nil
         }
         .onChange(of: scenePhase) { phase in
@@ -91,14 +89,7 @@ struct HomeView: View {
             if phase == .active, initialAppearFinished == true {
                 logger.debug("App was reentered. Updating data.")
                 loadEnergyData()
-                showWhatsNewPage = currentSetting.entity!.showWhatsNew
             }
-        }
-//        .sheet(isPresented: $showWhatsNewPage) {
-//            WhatsNewPage()
-//        }
-        .onChange(of: showWhatsNewPage) { newValue in
-            if newValue == false { currentSetting.changeShowWhatsNew(to: false) }
         }
     }
     

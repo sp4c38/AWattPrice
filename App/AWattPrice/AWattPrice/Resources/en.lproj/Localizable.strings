@@ -14,9 +14,7 @@
 "splashScreen.featuresAndConsent.comparePrices.info" = "Find the cheapest hours for your electricity consumption.";
 
 // What's new splash screen localization
-"splashScreen.whatsNew.notifications.extrainfo" = "Tip: Go to the Settings tab in AWattPrice to enable notifications.";
-"splashScreen.whatsNew.withDuration.title" = "New option: Duration";
-"splashScreen.whatsNew.withDuration.extraInfo" = "Enter a consumption duration to find the cheapest time.";
+"splashScreen.whatsNew.baseFee.extrainfo" = "Go to the Settings tab in AWattPrice to enable this.";
 
 // Cheapest Price page localizations
 "cheapestPricePage.emptyFieldError" = "Please fill out this field.";
@@ -52,8 +50,8 @@
 "updateDataTimeFormatter.moreThanMMAgoPlural" = "Updated %@ minutes ago";
 
 // Notification localizations
-"general.priceGuard" = "Price Guard";
 "notifications.price_drops_below.body.sing" = "Tomorrow, electricity prices drop below %2$@ ct %1$@ time. Cheapest hour at %3$@ with %4$@ ct.";
 "notifications.price_drops_below.body.mult" = "Tomorrow, electricity prices drop below %2$@ ct %1$@ times. Cheapest hour at %3$@ with %4$@ ct.";
 
-"baseFee.infoText" = "The base fee is added on top of each electricity price within the entire AWattPrice app. This fee depends on your contract with aWATTar and may differ from other users.";
+"baseFee.infoText" = "The base fee is added on top of each electricity price within the entire app. This fee depends on your contract with aWATTar.";
+"baseFee.priceGuardActivatedInfo" = "The price guard is turned on. Remember to adjust the wish price if necessary when you change the value below.";

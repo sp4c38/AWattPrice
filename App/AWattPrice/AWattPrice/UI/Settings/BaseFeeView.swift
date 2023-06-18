@@ -10,6 +10,7 @@ import SwiftUI
 
 struct BaseFeeView: View {
     @Injected var currentSetting: CurrentSetting
+    @Injected var notificationSetting: CurrentNotificationSetting
     @Injected var energyDataController: EnergyDataController
     
     @State var baseFee: Double = 0
@@ -21,9 +22,15 @@ struct BaseFeeView: View {
                 Text("baseFee.infoText")
             }
             
+            if notificationSetting.entity!.priceDropsBelowValueNotification == true {
+                Section(header: Text("Price Guard").foregroundColor(.green)) {
+                    Text("baseFee.priceGuardActivatedInfo")
+                }
+            }
+            
             Section {
                 VStack(alignment: .leading) {
-                    Text("Base fee (incl. VAT):")
+                    Text("Base fee:")
                         .textCase(.uppercase)
                         .foregroundColor(.gray)
                         .font(.caption)

@@ -36,7 +36,7 @@ RUN poetry install
 
 # Setup cron (see https://blog.thesparktree.com/cron-in-docker).
 RUN rm -rf /etc/cron.*/* && env >> /etc/environment
-RUN echo -e "SHELL=/bin/sh \nPATH=$PATH \n2,*/23 * * * * root python /usr/src/awattprice/src/awattprice_notifications/price_below/service.py" > /etc/crontab
+RUN echo -e "SHELL=/bin/sh \nPATH=$PATH \n*/10 * * * * root python /usr/src/awattprice/src/awattprice_notifications/price_below/service.py" > /etc/crontab
 RUN echo "* * * * * root env > /root/test.txt" >> /etc/crontab
 
 CMD cron -f & \

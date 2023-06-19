@@ -1,8 +1,11 @@
 # syntax:docker/dockerfile:1
 
 # Build command (assuming you're in the `backend` directory).
-# docker build -f docker/Dockerfile -t leonbecker1/awattprice-backend ..
+# $ docker build -f docker/Dockerfile -t leonbecker1/awattprice-backend:[latest or pre_release] ..
 # Note that the docker image is created for the architecture of the machine this command is executed on. If you'd like create the image for a different architecture it's easiest to create the image on the machine with the different architecture.
+# Then:
+# $ docker image push leonbecker1/awattprice-backend:[latest or pre_release]
+
 
 # The docker image created from this Dockerfile includes the v2 backend. Since 4th of June 2023 the v1 backend isn't included anymore and support for this version is terminated. It was supported almost one year after releasing the v2 backend to ensure backwards compatibility.
 

@@ -10,15 +10,18 @@ import Foundation
 struct GeneralNotificationConfiguration: Encodable {
     var region: Region
     var tax: Bool
+    var baseFee: Double
     
-    enum CodingKeys: CodingKey {
+    enum CodingKeys: String, CodingKey {
         case region, tax
+        case baseFee = "base_fee"
     }
     
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(region.apiName, forKey: .region)
         try container.encode(tax, forKey: .tax)
+        try container.encode(baseFee, forKey: .baseFee)
     }
 }
 
@@ -52,7 +55,7 @@ struct NotificationConfiguration: Encodable {
         let notificationEntity = notificationSetting.entity!
         let selectedRegion = Region(rawValue: currentEntity.regionIdentifier)!
         
-        let general = GeneralNotificationConfiguration(region: selectedRegion, tax: currentEntity.pricesWithVAT)
+        let general = GeneralNotificationConfiguration(region: selectedRegion, tax: currentEntity.pricesWithVAT, baseFee: currentEntity.baseFee)
         let priceBelowNotification = PriceBelowNotificationNotificationConfiguration(
             active: notificationEntity.priceDropsBelowValueNotification, belowValue: Int(notificationEntity.priceBelowValue)
         )

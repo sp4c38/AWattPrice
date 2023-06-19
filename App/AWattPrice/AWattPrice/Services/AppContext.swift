@@ -14,8 +14,7 @@ class AppContext {
         #if DEBUG
         return URL(string: "https://test-awp.space8.me/api/v2/")!
         #else
-        return URL(string: "https://test-awp.space8.me/api/v2/")!
-//        return URL(string: "https://awattprice.space8.me/api/v2/")!
+        return URL(string: "https://awattprice.space8.me/api/v2/")!
         #endif
     }()
     

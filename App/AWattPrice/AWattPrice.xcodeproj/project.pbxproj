@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 51;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -37,6 +37,12 @@
 		5968D801ED3B64E9059A3555 /* CheapestHourManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2EFEC10A5ED85CC875CFCF7 /* CheapestHourManager.swift */; };
 		59BDBAACA1BB8316305D917B /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 95BD95FD492B1F960E9F23C4 /* Localizable.strings */; };
 		5DC2B66E8217B30642162424 /* NumberField.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF85B2B08E53E158A7DE4DFC /* NumberField.swift */; };
+		61635B272A482E690099F5AD /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 61635B262A482E690099F5AD /* WidgetKit.framework */; };
+		61635B292A482E690099F5AD /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 61635B282A482E690099F5AD /* SwiftUI.framework */; };
+		61635B2C2A482E690099F5AD /* AWattPriceWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61635B2B2A482E690099F5AD /* AWattPriceWidgetBundle.swift */; };
+		61635B2E2A482E690099F5AD /* AWattPriceWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61635B2D2A482E690099F5AD /* AWattPriceWidget.swift */; };
+		61635B302A482E6A0099F5AD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 61635B2F2A482E6A0099F5AD /* Assets.xcassets */; };
+		61635B342A482E6A0099F5AD /* AWattPriceWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 61635B242A482E690099F5AD /* AWattPriceWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		6AB9A889E5A3A17EBB1AF725 /* InputFieldStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 404CC5EAC0C3630A020070B0 /* InputFieldStyles.swift */; };
 		6B806C95A11BDB4E4B771D81 /* BarText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D8536DB7CE536410491DE1C /* BarText.swift */; };
 		6C580706DD96A47932AD8EE9 /* SplashScreenFinishView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E032003B344BBBB7BB4921D1 /* SplashScreenFinishView.swift */; };
@@ -95,6 +101,30 @@
 		FB4A52558DC90B76EA4F632A /* Int.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6FB7487869EADAEB411F1A7 /* Int.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		61635B322A482E6A0099F5AD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 80976F3A00A5122A760B668F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 61635B232A482E690099F5AD;
+			remoteInfo = AWattPriceWidgetExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		61635B352A482E6A0099F5AD /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				61635B342A482E6A0099F5AD /* AWattPriceWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		0128DEB3ECF3622979FBC803 /* LazyNavigationDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LazyNavigationDestination.swift; sourceTree = "<group>"; };
 		03463BA8FC9824B955935124 /* EntityHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntityHelpers.swift; sourceTree = "<group>"; };
@@ -118,7 +148,7 @@
 		495817D20A824DAF668E5DD6 /* AutoUpdatingEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoUpdatingEntity.swift; sourceTree = "<group>"; };
 		497048FB911746FF00EDC23F /* PowerInputField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PowerInputField.swift; sourceTree = "<group>"; };
 		4CAEECA30ABDB0DF6C9DB6DA /* EnergyPriceGraph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnergyPriceGraph.swift; sourceTree = "<group>"; };
-		4D92DAF6062C9BB0CC3973F3 /* AWattPrice.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = AWattPrice.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		4D92DAF6062C9BB0CC3973F3 /* AWattPrice.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AWattPrice.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4FE51C2772E07396AF458F34 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		51649CD95D1B046EA6D3FF0F /* BaseFeeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseFeeView.swift; sourceTree = "<group>"; };
 		52A4CD1362317193ABA4A25D /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -131,6 +161,13 @@
 		5E69EEB1FA019DD2F16C2815 /* AWattPriceWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AWattPriceWidgetExtension.entitlements; sourceTree = "<group>"; };
 		60087A5B0602E5789304BDF1 /* ButtonStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonStyles.swift; sourceTree = "<group>"; };
 		616111958CDF13E7ED308317 /* AWattPriceApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AWattPriceApp.swift; sourceTree = "<group>"; };
+		61635B242A482E690099F5AD /* AWattPriceWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = AWattPriceWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		61635B262A482E690099F5AD /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		61635B282A482E690099F5AD /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		61635B2B2A482E690099F5AD /* AWattPriceWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AWattPriceWidgetBundle.swift; sourceTree = "<group>"; };
+		61635B2D2A482E690099F5AD /* AWattPriceWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AWattPriceWidget.swift; sourceTree = "<group>"; };
+		61635B2F2A482E6A0099F5AD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		61635B312A482E6A0099F5AD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		61D751171DAD1E580C719772 /* TabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBar.swift; sourceTree = "<group>"; };
 		6630553CDA1300720DF753BE /* EnergyPriceSingleBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnergyPriceSingleBar.swift; sourceTree = "<group>"; };
 		6A5CE8C0A77D6361AD5B708C /* KeyboardObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardObserver.swift; sourceTree = "<group>"; };
@@ -168,7 +205,7 @@
 		C6293FEC5FEF17D21F998528 /* AppGroupManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppGroupManager.swift; sourceTree = "<group>"; };
 		CB1D6F1DDF182D030B3B1731 /* TBItems.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TBItems.swift; sourceTree = "<group>"; };
 		CB8219C5EDEC8DD1FB333D45 /* CurrentSetting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentSetting.swift; sourceTree = "<group>"; };
-		CC86F9987A19BB3FA4DA1124 /* SF-Compact-Display-Black.otf */ = {isa = PBXFileReference; path = "SF-Compact-Display-Black.otf"; sourceTree = "<group>"; };
+		CC86F9987A19BB3FA4DA1124 /* SF-Compact-Display-Black.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-Compact-Display-Black.otf"; sourceTree = "<group>"; };
 		CD1818E2114A46C67F823449 /* EnergyData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnergyData.swift; sourceTree = "<group>"; };
 		CD5548E86A4888A224ADE6E5 /* NotificationService+RemoteAccess.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NotificationService+RemoteAccess.swift"; sourceTree = "<group>"; };
 		CF85B2B08E53E158A7DE4DFC /* NumberField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberField.swift; sourceTree = "<group>"; };
@@ -192,6 +229,15 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		61635B212A482E690099F5AD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				61635B292A482E690099F5AD /* SwiftUI.framework in Frameworks */,
+				61635B272A482E690099F5AD /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		824AA55D230365CCD1944C98 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -306,6 +352,7 @@
 			isa = PBXGroup;
 			children = (
 				4D92DAF6062C9BB0CC3973F3 /* AWattPrice.app */,
+				61635B242A482E690099F5AD /* AWattPriceWidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -326,6 +373,26 @@
 				CC86F9987A19BB3FA4DA1124 /* SF-Compact-Display-Black.otf */,
 			);
 			path = Fonts;
+			sourceTree = "<group>";
+		};
+		61635B252A482E690099F5AD /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				61635B262A482E690099F5AD /* WidgetKit.framework */,
+				61635B282A482E690099F5AD /* SwiftUI.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		61635B2A2A482E690099F5AD /* AWattPriceWidget */ = {
+			isa = PBXGroup;
+			children = (
+				61635B2B2A482E690099F5AD /* AWattPriceWidgetBundle.swift */,
+				61635B2D2A482E690099F5AD /* AWattPriceWidget.swift */,
+				61635B2F2A482E6A0099F5AD /* Assets.xcassets */,
+				61635B312A482E6A0099F5AD /* Info.plist */,
+			);
+			path = AWattPriceWidget;
 			sourceTree = "<group>";
 		};
 		65BAAB64A90AA279A4A9B5E1 /* Entity Managers */ = {
@@ -566,6 +633,8 @@
 			isa = PBXGroup;
 			children = (
 				E18353461A3EAEA81012197F /* AWattPrice */,
+				61635B2A2A482E690099F5AD /* AWattPriceWidget */,
+				61635B252A482E690099F5AD /* Frameworks */,
 				4BBB0F3B49E60388309A1685 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -573,6 +642,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		61635B232A482E690099F5AD /* AWattPriceWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 61635B3C2A482E6A0099F5AD /* Build configuration list for PBXNativeTarget "AWattPriceWidgetExtension" */;
+			buildPhases = (
+				61635B202A482E690099F5AD /* Sources */,
+				61635B212A482E690099F5AD /* Frameworks */,
+				61635B222A482E690099F5AD /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = AWattPriceWidgetExtension;
+			productName = AWattPriceWidgetExtension;
+			productReference = 61635B242A482E690099F5AD /* AWattPriceWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		F9290196FBFAE745A3E6B2A3 /* AWattPrice */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1D71827138F44D0E59EFF688 /* Build configuration list for PBXNativeTarget "AWattPrice" */;
@@ -580,10 +666,12 @@
 				08A4FC5CA2325B9A0AE182C0 /* Sources */,
 				D8780892DE16317DA051C8E0 /* Resources */,
 				824AA55D230365CCD1944C98 /* Frameworks */,
+				61635B352A482E6A0099F5AD /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				61635B332A482E6A0099F5AD /* PBXTargetDependency */,
 			);
 			name = AWattPrice;
 			packageProductDependencies = (
@@ -599,8 +687,12 @@
 		80976F3A00A5122A760B668F /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftUpdateCheck = 1430;
 				LastUpgradeCheck = 1200;
 				TargetAttributes = {
+					61635B232A482E690099F5AD = {
+						CreatedOnToolsVersion = 14.3.1;
+					};
 					F9290196FBFAE745A3E6B2A3 = {
 						DevelopmentTeam = RC32A2AMHF;
 					};
@@ -623,11 +715,20 @@
 			projectRoot = "";
 			targets = (
 				F9290196FBFAE745A3E6B2A3 /* AWattPrice */,
+				61635B232A482E690099F5AD /* AWattPriceWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		61635B222A482E690099F5AD /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				61635B302A482E6A0099F5AD /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D8780892DE16317DA051C8E0 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -730,7 +831,24 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		61635B202A482E690099F5AD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				61635B2C2A482E690099F5AD /* AWattPriceWidgetBundle.swift in Sources */,
+				61635B2E2A482E690099F5AD /* AWattPriceWidget.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		61635B332A482E6A0099F5AD /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 61635B232A482E690099F5AD /* AWattPriceWidgetExtension */;
+			targetProxy = 61635B322A482E6A0099F5AD /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		95BD95FD492B1F960E9F23C4 /* Localizable.strings */ = {
@@ -748,12 +866,11 @@
 		10962E2B1509DDA53A27298D /* Development Test Production */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = AWattPrice/AWattPrice.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				DEVELOPMENT_ASSET_PATHS = (
-					"AWattPrice/Resources/Preview\\ Content",
-				);
+				DEVELOPMENT_ASSET_PATHS = "AWattPrice/Resources/Preview\\ Content";
 				INFOPLIST_FILE = AWattPrice/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -769,12 +886,11 @@
 		34A1711C1739A657351EA845 /* Distribution AppStore Production */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = AWattPrice/AWattPrice.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Distribution";
-				DEVELOPMENT_ASSET_PATHS = (
-					"AWattPrice/Resources/Preview\\ Content",
-				);
+				DEVELOPMENT_ASSET_PATHS = "AWattPrice/Resources/Preview\\ Content";
 				INFOPLIST_FILE = AWattPrice/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -790,12 +906,11 @@
 		3E93E073A812BEE4E1837E73 /* Distribution AdHoc Staging */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = AWattPrice/AWattPrice.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Distribution";
-				DEVELOPMENT_ASSET_PATHS = (
-					"AWattPrice/Resources/Preview\\ Content",
-				);
+				DEVELOPMENT_ASSET_PATHS = "AWattPrice/Resources/Preview\\ Content";
 				INFOPLIST_FILE = AWattPrice/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -931,6 +1046,498 @@
 			};
 			name = "Development Test Production";
 		};
+		61635B362A482E6A0099F5AD /* Development Test Production */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = RC32A2AMHF;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AWattPriceWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = AWattPriceWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = me.space8.AWattPrice.AWattPriceWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match Development me.space8.AWattPrice.AWattPriceWidget";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = "Development Test Production";
+		};
+		61635B372A482E6A0099F5AD /* Development Test Staging */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = RC32A2AMHF;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AWattPriceWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = AWattPriceWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = me.space8.AWattPrice.staging.AWattPriceWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match Development me.space8.AWattPrice.staging.AWattPriceWidget";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = "Development Test Staging";
+		};
+		61635B382A482E6A0099F5AD /* Distribution AdHoc Production */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "Apple Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_STYLE = Manual;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = RC32A2AMHF;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AWattPriceWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = AWattPriceWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = me.space8.AWattPrice.AWattPriceWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match AppStore me.space8.AWattPrice.AWattPriceWidget";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = "Distribution AdHoc Production";
+		};
+		61635B392A482E6A0099F5AD /* Distribution AdHoc Staging */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "Apple Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_STYLE = Manual;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = RC32A2AMHF;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AWattPriceWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = AWattPriceWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = me.space8.AWattPrice.staging.AWattPriceWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match AppStore me.space8.AWattPrice.staging.AWattPriceWidget";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = "Distribution AdHoc Staging";
+		};
+		61635B3A2A482E6A0099F5AD /* Distribution AppStore Production */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "Apple Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_STYLE = Manual;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = RC32A2AMHF;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AWattPriceWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = AWattPriceWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = me.space8.AWattPrice.AWattPriceWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match AppStore me.space8.AWattPrice.AWattPriceWidget";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = "Distribution AppStore Production";
+		};
+		61635B3B2A482E6A0099F5AD /* Distribution AppStore Staging */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "Apple Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_STYLE = Manual;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = RC32A2AMHF;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AWattPriceWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = AWattPriceWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = me.space8.AWattPrice.staging.AWattPriceWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match AppStore me.space8.AWattPrice.staging.AWattPriceWidget";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = "Distribution AppStore Staging";
+		};
 		6A0DA7D1E628F6CD0A85D894 /* Distribution AppStore Production */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -992,12 +1599,11 @@
 		7416E556DCF1DEBB7572C06A /* Development Test Staging */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = AWattPrice/AWattPrice.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				DEVELOPMENT_ASSET_PATHS = (
-					"AWattPrice/Resources/Preview\\ Content",
-				);
+				DEVELOPMENT_ASSET_PATHS = "AWattPrice/Resources/Preview\\ Content";
 				INFOPLIST_FILE = AWattPrice/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1013,12 +1619,11 @@
 		879E96E16140FAC60BBE694E /* Distribution AdHoc Production */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = AWattPrice/AWattPrice.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Distribution";
-				DEVELOPMENT_ASSET_PATHS = (
-					"AWattPrice/Resources/Preview\\ Content",
-				);
+				DEVELOPMENT_ASSET_PATHS = "AWattPrice/Resources/Preview\\ Content";
 				INFOPLIST_FILE = AWattPrice/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1099,12 +1704,11 @@
 		D3EFDD2E9A04DE05C54F3A14 /* Distribution AppStore Staging */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = AWattPrice/AWattPrice.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Distribution";
-				DEVELOPMENT_ASSET_PATHS = (
-					"AWattPrice/Resources/Preview\\ Content",
-				);
+				DEVELOPMENT_ASSET_PATHS = "AWattPrice/Resources/Preview\\ Content";
 				INFOPLIST_FILE = AWattPrice/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1265,6 +1869,19 @@
 				3E93E073A812BEE4E1837E73 /* Distribution AdHoc Staging */,
 				34A1711C1739A657351EA845 /* Distribution AppStore Production */,
 				D3EFDD2E9A04DE05C54F3A14 /* Distribution AppStore Staging */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = "Development Test Staging";
+		};
+		61635B3C2A482E6A0099F5AD /* Build configuration list for PBXNativeTarget "AWattPriceWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				61635B362A482E6A0099F5AD /* Development Test Production */,
+				61635B372A482E6A0099F5AD /* Development Test Staging */,
+				61635B382A482E6A0099F5AD /* Distribution AdHoc Production */,
+				61635B392A482E6A0099F5AD /* Distribution AdHoc Staging */,
+				61635B3A2A482E6A0099F5AD /* Distribution AppStore Production */,
+				61635B3B2A482E6A0099F5AD /* Distribution AppStore Staging */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = "Development Test Staging";

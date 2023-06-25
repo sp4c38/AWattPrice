@@ -108,8 +108,6 @@ struct PricesWidgetEntryView : View {
                 .chartXAxis {
                     AxisMarks(values: .stride(by: .hour, count: 6)) { value in
                         if let date = value.as(Date.self) {
-                            let hour = Calendar.current.component(.hour, from: date)
-                            
                             AxisValueLabel {
                                 VStack(alignment: .leading) {
                                     Text(date, format: .dateTime.hour())
@@ -118,23 +116,6 @@ struct PricesWidgetEntryView : View {
                         }
                         
                         AxisTick()
-                    }
-                    
-                    AxisMarks(values: .stride(by: .hour, count: 6)) { value in
-                        if let date = value.as(Date.self) {
-                            let hour = Calendar.current.component(.hour, from: date)
-
-                            AxisValueLabel {
-                                VStack(alignment: .leading) {
-                                    Text(date, format: .dateTime.hour())
-                                        .hidden()
-                                    
-                                    if value.index == 0 || hour == 0 {
-                                        Text(date, format: .dateTime.month().day())
-                                    }
-                                }
-                            }
-                        }
                     }
                 }
             } else {

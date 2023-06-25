@@ -2,12 +2,10 @@
 //  EnergyData.swift
 //  AWattPrice
 //
-//  Created by Léon Becker on 13.08.21.
+//  Created by Léon Becker on 25.06.23.
 //
 
-import Combine
 import Foundation
-import Resolver
 
 struct EnergyPricePoint: Decodable {
     var startTime: Date
@@ -40,18 +38,10 @@ struct EnergyPricePoint: Decodable {
 
 
 struct EnergyData: Decodable {
-    @Injected var currentSetting: CurrentSetting
     let prices: [EnergyPricePoint]
     
-    /// Prices which have start equal or past the start of the current hour.
     var currentPrices: [EnergyPricePoint] = []
     
-    var minCostPricePoint: EnergyPricePoint? = nil
-    var maxCostPricePoint: EnergyPricePoint? = nil
-    
-    /// Current prices time range from the start time of the earliest to the end time of the latest price point.
-    var minMaxTimeRange: ClosedRange<Date>? = nil
-
     enum CodingKeys: CodingKey {
         case prices
     }
@@ -59,10 +49,15 @@ struct EnergyData: Decodable {
     init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         prices = try values.decode([EnergyPricePoint].self, forKey: .prices)
-        computeValues()
+        processCalculatedValues()
     }
     
-    mutating func computeValues() {
+    init(prices: [EnergyPricePoint]) {
+        self.prices = prices
+        processCalculatedValues()
+    }
+    
+    mutating func processCalculatedValues() {
         let now = Date()
         let hourStart = Calendar.current.startOfHour(for: now)
         currentPrices = prices
@@ -70,27 +65,6 @@ struct EnergyData: Decodable {
             .sorted { lhsPricePoint, rhsPricePoint in
                 rhsPricePoint.startTime > lhsPricePoint.startTime ? true : false
             }
-        
-        for i in currentPrices.indices {
-            if currentSetting.entity?.pricesWithVAT == true,
-               currentPrices[i].marketprice > 0,
-               let regionTaxMultiplier = Region(rawValue: currentSetting.entity!.regionIdentifier)?.taxMultiplier
-            {
-                currentPrices[i].marketprice *= regionTaxMultiplier
-            }
-            currentPrices[i].marketprice += currentSetting.entity!.baseFee
-        }
-
-        minCostPricePoint = currentPrices.min(by: EnergyPricePoint.marketpricesAreInIncreasingOrder)
-        maxCostPricePoint = currentPrices.max(by: EnergyPricePoint.marketpricesAreInIncreasingOrder)
-        
-        if let firstCurrentPrice = currentPrices.first,
-           let lastCurrentPrice = currentPrices.last
-        {
-            minMaxTimeRange = firstCurrentPrice.startTime...lastCurrentPrice.endTime
-        } else {
-            minMaxTimeRange = nil
-        }
     }
     
     static func jsonDecoder() -> JSONDecoder {
@@ -99,10 +73,39 @@ struct EnergyData: Decodable {
         return jsonDecoder
     }
     
-    static func download(region: Region) -> AnyPublisher<EnergyData, Error> {
-        let apiClient = APIClient()
-        let energyDataRequest = APIRequestFactory.energyDataRequest(region: region)
-        return apiClient.request(to: energyDataRequest)
+    static func downloadEnergyData() async -> EnergyData? {
+        let apiURL: URL = {
+            #if DEBUG
+            return URL(string: "https://test-awp.space8.me/api/v2/")!
+            #else
+            return URL(string: "https://awattprice.space8.me/api/v2/")!
+            #endif
+        }()
+        
+        let requestURL = apiURL
+            .appendingPathComponent("data", isDirectory: true)
+            .appendingPathComponent(Region.DE.apiName)
+        
+        let urlRequest = URLRequest(
+            url: requestURL,
+            cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,
+            timeoutInterval: 30
+        )
+        
+        var data: Data
+        do {
+            (data, _) = try await URLSession.shared.data(for: urlRequest)
+        } catch {
+            print("Couldn't download energy data: \(error).")
+            return nil
+        }
+        
+        do {
+            return try EnergyData.jsonDecoder().decode(EnergyData.self, from: data)
+        } catch {
+            print("Couldn't parse downloaded energy data as expected JSON: \(error).")
+            return nil
+        }
     }
-}
 
+}

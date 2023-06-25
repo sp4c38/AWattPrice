@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 53;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -40,9 +40,13 @@
 		61635B272A482E690099F5AD /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 61635B262A482E690099F5AD /* WidgetKit.framework */; };
 		61635B292A482E690099F5AD /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 61635B282A482E690099F5AD /* SwiftUI.framework */; };
 		61635B2C2A482E690099F5AD /* AWattPriceWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61635B2B2A482E690099F5AD /* AWattPriceWidgetBundle.swift */; };
-		61635B2E2A482E690099F5AD /* AWattPriceWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61635B2D2A482E690099F5AD /* AWattPriceWidget.swift */; };
+		61635B2E2A482E690099F5AD /* PricesWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61635B2D2A482E690099F5AD /* PricesWidget.swift */; };
 		61635B302A482E6A0099F5AD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 61635B2F2A482E6A0099F5AD /* Assets.xcassets */; };
 		61635B342A482E6A0099F5AD /* AWattPriceWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 61635B242A482E690099F5AD /* AWattPriceWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		61635B4B2A4835CF0099F5AD /* EnergyData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61635B492A4835970099F5AD /* EnergyData.swift */; };
+		61635B4C2A4835E70099F5AD /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C06F1B5903714FE38928934 /* Extensions.swift */; };
+		61635B4D2A483B140099F5AD /* PricesPreviewContent.json in Resources */ = {isa = PBXBuildFile; fileRef = 61635B3D2A4833730099F5AD /* PricesPreviewContent.json */; };
+		61635B4F2A485FE20099F5AD /* Region.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52D6D993DB3CE3CBB4B1E644 /* Region.swift */; };
 		6AB9A889E5A3A17EBB1AF725 /* InputFieldStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 404CC5EAC0C3630A020070B0 /* InputFieldStyles.swift */; };
 		6B806C95A11BDB4E4B771D81 /* BarText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D8536DB7CE536410491DE1C /* BarText.swift */; };
 		6C580706DD96A47932AD8EE9 /* SplashScreenFinishView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E032003B344BBBB7BB4921D1 /* SplashScreenFinishView.swift */; };
@@ -65,12 +69,11 @@
 		A27624298A92276EDAC1CDFE /* AppContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = A41C1FC82200E2AFDF054FA4 /* AppContext.swift */; };
 		A64044376124E697D0D7D6EB /* ButtonStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60087A5B0602E5789304BDF1 /* ButtonStyles.swift */; };
 		AA3CDC3004E66F8829C0776F /* EnergyData.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD1818E2114A46C67F823449 /* EnergyData.swift */; };
-		B511AB77AED338BC7FD96786 /* Calendar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C06F1B5903714FE38928934 /* Calendar.swift */; };
+		B511AB77AED338BC7FD96786 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C06F1B5903714FE38928934 /* Extensions.swift */; };
 		B77B916DE3DD309081C17C25 /* EntityHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03463BA8FC9824B955935124 /* EntityHelpers.swift */; };
 		BAB3A99810F15DD023092DEA /* Services+Injections.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA9578A69AADA4DE52CD2C12 /* Services+Injections.swift */; };
 		C0067869CF8C26D9F619B651 /* AWattPriceApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 616111958CDF13E7ED308317 /* AWattPriceApp.swift */; };
 		C217F2DAE2765BCCBD3374A6 /* EnergyPriceGraph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CAEECA30ABDB0DF6C9DB6DA /* EnergyPriceGraph.swift */; };
-		C2F809AFF734A3AB210A251B /* Double.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8674C4FC63ADF4DE505007B6 /* Double.swift */; };
 		C5343BF07C16E831F183EEFE /* WhatsNewPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A77CDC6EAE09122F1C743CE4 /* WhatsNewPage.swift */; };
 		C94B7D632C148D4E2FFB7CBE /* EnergyPriceSingleBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6630553CDA1300720DF753BE /* EnergyPriceSingleBar.swift */; };
 		C997C76C683B67B76839425A /* NotificationConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CCBC50D92AE763388DAAB90 /* NotificationConfiguration.swift */; };
@@ -165,19 +168,20 @@
 		61635B262A482E690099F5AD /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		61635B282A482E690099F5AD /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		61635B2B2A482E690099F5AD /* AWattPriceWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AWattPriceWidgetBundle.swift; sourceTree = "<group>"; };
-		61635B2D2A482E690099F5AD /* AWattPriceWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AWattPriceWidget.swift; sourceTree = "<group>"; };
+		61635B2D2A482E690099F5AD /* PricesWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PricesWidget.swift; sourceTree = "<group>"; };
 		61635B2F2A482E6A0099F5AD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		61635B312A482E6A0099F5AD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		61635B3D2A4833730099F5AD /* PricesPreviewContent.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = PricesPreviewContent.json; sourceTree = "<group>"; };
+		61635B492A4835970099F5AD /* EnergyData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnergyData.swift; sourceTree = "<group>"; };
 		61D751171DAD1E580C719772 /* TabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBar.swift; sourceTree = "<group>"; };
 		6630553CDA1300720DF753BE /* EnergyPriceSingleBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnergyPriceSingleBar.swift; sourceTree = "<group>"; };
 		6A5CE8C0A77D6361AD5B708C /* KeyboardObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardObserver.swift; sourceTree = "<group>"; };
-		6C06F1B5903714FE38928934 /* Calendar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Calendar.swift; sourceTree = "<group>"; };
+		6C06F1B5903714FE38928934 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		6EEAB0C5FE21817587BFCFEB /* RegionTaxSelection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegionTaxSelection.swift; sourceTree = "<group>"; };
 		7312444A00735A79F3140BF9 /* SettingsUploadErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsUploadErrorView.swift; sourceTree = "<group>"; };
 		79260E66169C7FFE7A752077 /* SplashScreenSetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashScreenSetupView.swift; sourceTree = "<group>"; };
 		7BF7A4E1ED7229A8E6E0B03F /* QueueHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueueHelpers.swift; sourceTree = "<group>"; };
 		7D8536DB7CE536410491DE1C /* BarText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarText.swift; sourceTree = "<group>"; };
-		8674C4FC63ADF4DE505007B6 /* Double.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Double.swift; sourceTree = "<group>"; };
 		8C5F824C94B9912B11853532 /* EasyIntervalPickerRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EasyIntervalPickerRepresentable.swift; sourceTree = "<group>"; };
 		8C87AF4B25871BFD4A3501F5 /* NotificationService+AskAccess.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NotificationService+AskAccess.swift"; sourceTree = "<group>"; };
 		8E27EA2E00D4FD1A008773DB /* DownloadPublisherLoadingViewObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadPublisherLoadingViewObserver.swift; sourceTree = "<group>"; };
@@ -387,12 +391,55 @@
 		61635B2A2A482E690099F5AD /* AWattPriceWidget */ = {
 			isa = PBXGroup;
 			children = (
+				61635B482A4835890099F5AD /* Models */,
 				61635B2B2A482E690099F5AD /* AWattPriceWidgetBundle.swift */,
-				61635B2D2A482E690099F5AD /* AWattPriceWidget.swift */,
+				61635B2D2A482E690099F5AD /* PricesWidget.swift */,
 				61635B2F2A482E6A0099F5AD /* Assets.xcassets */,
 				61635B312A482E6A0099F5AD /* Info.plist */,
+				61635B3F2A4833EF0099F5AD /* Preview Content */,
 			);
 			path = AWattPriceWidget;
+			sourceTree = "<group>";
+		};
+		61635B3F2A4833EF0099F5AD /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				61635B3D2A4833730099F5AD /* PricesPreviewContent.json */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		61635B412A4834D20099F5AD /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				61635B4E2A485FDC0099F5AD /* Models */,
+				61635B462A4835030099F5AD /* Extensions */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		61635B462A4835030099F5AD /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				6C06F1B5903714FE38928934 /* Extensions.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		61635B482A4835890099F5AD /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				61635B492A4835970099F5AD /* EnergyData.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		61635B4E2A485FDC0099F5AD /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				52D6D993DB3CE3CBB4B1E644 /* Region.swift */,
+			);
+			path = Models;
 			sourceTree = "<group>";
 		};
 		65BAAB64A90AA279A4A9B5E1 /* Entity Managers */ = {
@@ -450,7 +497,6 @@
 			isa = PBXGroup;
 			children = (
 				CD1818E2114A46C67F823449 /* EnergyData.swift */,
-				52D6D993DB3CE3CBB4B1E644 /* Region.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -511,9 +557,7 @@
 			isa = PBXGroup;
 			children = (
 				DF7C95D15AFCFD75AB3833BC /* Any.swift */,
-				6C06F1B5903714FE38928934 /* Calendar.swift */,
 				591D0CDCA995859E422558AA /* DataHelpers.swift */,
-				8674C4FC63ADF4DE505007B6 /* Double.swift */,
 				22523FA7380336A83DEE1624 /* Environment.swift */,
 				D22CD9B053C7AA6D5411FFE0 /* Font.swift */,
 				9A00C100052CCD826957777A /* HapticFeedbacks.swift */,
@@ -632,6 +676,7 @@
 		FED1070106A78573488FD37A = {
 			isa = PBXGroup;
 			children = (
+				61635B412A4834D20099F5AD /* Shared */,
 				E18353461A3EAEA81012197F /* AWattPrice */,
 				61635B2A2A482E690099F5AD /* AWattPriceWidget */,
 				61635B252A482E690099F5AD /* Frameworks */,
@@ -687,8 +732,9 @@
 		80976F3A00A5122A760B668F /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				BuildIndependentTargetsInParallel = YES;
 				LastSwiftUpdateCheck = 1430;
-				LastUpgradeCheck = 1200;
+				LastUpgradeCheck = 1430;
 				TargetAttributes = {
 					61635B232A482E690099F5AD = {
 						CreatedOnToolsVersion = 14.3.1;
@@ -725,6 +771,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				61635B4D2A483B140099F5AD /* PricesPreviewContent.json in Resources */,
 				61635B302A482E6A0099F5AD /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -761,7 +808,7 @@
 				23D11D519B8DC7A7F5DA54BA /* BaseFeeView.swift in Sources */,
 				73B632E617E3A54BF59B3E2C /* Binding.swift in Sources */,
 				A64044376124E697D0D7D6EB /* ButtonStyles.swift in Sources */,
-				B511AB77AED338BC7FD96786 /* Calendar.swift in Sources */,
+				B511AB77AED338BC7FD96786 /* Extensions.swift in Sources */,
 				5968D801ED3B64E9059A3555 /* CheapestHourManager.swift in Sources */,
 				F50BC83C497A2E9713FB8B58 /* CheapestTimeClockView.swift in Sources */,
 				D48854808F7F125401420348 /* CheapestTimeResultView.swift in Sources */,
@@ -771,7 +818,6 @@
 				2D29DD479FDC741009B2AB32 /* CustomDatePicker.swift in Sources */,
 				D0B5F4C57BCEA12626689AA2 /* DataDownloadAndError.swift in Sources */,
 				42A01876BE7C9040AE139154 /* DataHelpers.swift in Sources */,
-				C2F809AFF734A3AB210A251B /* Double.swift in Sources */,
 				7E7333EBA324E6AF0A2CE7C1 /* DownloadPublisherLoadingViewObserver.swift in Sources */,
 				0E3EB76E159021A4574B6416 /* EasyIntervalPicker.swift in Sources */,
 				1CCDA78DC9491A406AB24B42 /* EasyIntervalPickerRepresentable.swift in Sources */,
@@ -835,8 +881,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				61635B4C2A4835E70099F5AD /* Extensions.swift in Sources */,
 				61635B2C2A482E690099F5AD /* AWattPriceWidgetBundle.swift in Sources */,
-				61635B2E2A482E690099F5AD /* AWattPriceWidget.swift in Sources */,
+				61635B4B2A4835CF0099F5AD /* EnergyData.swift in Sources */,
+				61635B4F2A485FE20099F5AD /* Region.swift in Sources */,
+				61635B2E2A482E690099F5AD /* PricesWidget.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1027,6 +1076,7 @@
 				DEVELOPMENT_TEAM = RC32A2AMHF;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -1038,6 +1088,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
@@ -1084,8 +1135,9 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 47;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_ASSET_PATHS = "AWattPriceWidget/Preview\\ Content";
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = RC32A2AMHF;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -1108,13 +1160,13 @@
 				INFOPLIST_FILE = AWattPriceWidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = AWattPriceWidget;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.3;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -1170,8 +1222,9 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 47;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_ASSET_PATHS = "AWattPriceWidget/Preview\\ Content";
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = RC32A2AMHF;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -1194,13 +1247,13 @@
 				INFOPLIST_FILE = AWattPriceWidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = AWattPriceWidget;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.3;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -1256,8 +1309,9 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 47;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_ASSET_PATHS = "AWattPriceWidget/Preview\\ Content";
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = RC32A2AMHF;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -1274,13 +1328,13 @@
 				INFOPLIST_FILE = AWattPriceWidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = AWattPriceWidget;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = me.space8.AWattPrice.AWattPriceWidget;
@@ -1336,8 +1390,9 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 47;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_ASSET_PATHS = "AWattPriceWidget/Preview\\ Content";
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = RC32A2AMHF;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -1354,13 +1409,13 @@
 				INFOPLIST_FILE = AWattPriceWidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = AWattPriceWidget;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = me.space8.AWattPrice.staging.AWattPriceWidget;
@@ -1416,8 +1471,9 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 47;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_ASSET_PATHS = "AWattPriceWidget/Preview\\ Content";
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = RC32A2AMHF;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -1434,13 +1490,13 @@
 				INFOPLIST_FILE = AWattPriceWidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = AWattPriceWidget;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = me.space8.AWattPrice.AWattPriceWidget;
@@ -1496,8 +1552,9 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 47;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_ASSET_PATHS = "AWattPriceWidget/Preview\\ Content";
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = RC32A2AMHF;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -1514,13 +1571,13 @@
 				INFOPLIST_FILE = AWattPriceWidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = AWattPriceWidget;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = me.space8.AWattPrice.staging.AWattPriceWidget;

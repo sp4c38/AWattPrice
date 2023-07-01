@@ -72,6 +72,7 @@ struct EnergyData: Decodable {
         
         for i in currentPrices.indices {
             if currentSetting.entity?.pricesWithVAT == true,
+               currentPrices[i].marketprice > 0,
                let regionTaxMultiplier = Region(rawValue: currentSetting.entity!.regionIdentifier)?.taxMultiplier
             {
                 currentPrices[i].marketprice *= regionTaxMultiplier

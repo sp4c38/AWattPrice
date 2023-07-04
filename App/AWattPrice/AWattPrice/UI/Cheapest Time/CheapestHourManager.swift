@@ -225,7 +225,7 @@ extension CheapestHourManager {
      - Returns: Doesn't return value directly. Instead sets cheapestHoursForUsage of CheapestHourManager to the result HourPair.
      - Parameter energyData: Current energy data (data downloaded from the server)
      */
-    func calculateCheapestHours(energyData: EnergyData, currentSetting _: CurrentSetting) {
+    func calculateCheapestHours(energyData: EnergyData, setting _: SettingCoreData) {
         DispatchQueue.global(qos: .userInitiated).async {
             var startTime = self.startDate
             var endTime = self.endDate

@@ -9,8 +9,8 @@ import Resolver
 import SwiftUI
 
 struct SettingsUploadErrorView: View {
-    @Injected var crtNotifiSetting: CurrentNotificationSetting
-    @Injected var currentSetting: CurrentSetting
+    @Injected var notificationSetting: NotificationSettingCoreData
+    @Injected var setting: SettingCoreData
 
     var body: some View {
         HStack(spacing: 8) {

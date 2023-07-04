@@ -24,7 +24,7 @@ struct DataRetrievalError: View {
     @Environment(\.colorScheme) var colorScheme
 
     @Injected var energyDataController: EnergyDataController
-    @Injected var currentSetting: CurrentSetting
+    @Injected var setting: SettingCoreData
 
     var body: some View {
         VStack(alignment: .center) {
@@ -40,7 +40,7 @@ struct DataRetrievalError: View {
                     .multilineTextAlignment(.center)
 
                 Button(action: {
-                    if let region = Region.init(rawValue: currentSetting.entity!.regionIdentifier) {
+                    if let region = Region.init(rawValue: setting.entity.regionIdentifier) {
                         energyDataController.download(region: region)
                     }
                 }) {
@@ -63,7 +63,7 @@ struct CurrentlyNoData: View {
     @Environment(\.networkManager) var networkManager
 
     @Injected var energyDataController: EnergyDataController
-    @Injected var currentSetting: CurrentSetting
+    @Injected var setting: SettingCoreData
 
     var body: some View {
         VStack(alignment: .center) {
@@ -79,7 +79,7 @@ struct CurrentlyNoData: View {
                     .multilineTextAlignment(.center)
 
                 Button(action: {
-                    if let region = Region(rawValue: currentSetting.entity!.regionIdentifier) {
+                    if let region = Region(rawValue: setting.entity.regionIdentifier) {
                         energyDataController.download(region: region)
                     }
                 }) {
@@ -128,8 +128,8 @@ struct SettingLoadingError: View {
 /// Classify network errors
 struct DataDownloadAndError: View {
     @ObservedObject var energyDataController: EnergyDataController = Resolver.resolve()
-    @ObservedObject var crtNotifiSetting: CurrentNotificationSetting = Resolver.resolve()
-    @ObservedObject var currentSetting: CurrentSetting = Resolver.resolve()
+    @ObservedObject var notificationSetting: NotificationSettingCoreData = Resolver.resolve()
+    @ObservedObject var setting: SettingCoreData = Resolver.resolve()
 
     var body: some View {
         VStack {
@@ -140,8 +140,6 @@ struct DataDownloadAndError: View {
             } else if let energyData = energyDataController.energyData, energyData.currentPrices.isEmpty == true {
                 CurrentlyNoData()
                     .transition(.opacity)
-            } else if crtNotifiSetting.entity == nil || currentSetting.entity == nil {
-                SettingLoadingError()
             }
         }
         .padding()

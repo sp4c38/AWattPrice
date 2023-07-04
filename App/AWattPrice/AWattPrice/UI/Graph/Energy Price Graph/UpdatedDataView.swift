@@ -12,7 +12,7 @@ import SwiftUI
 extension UpdatedDataView {
     class ViewModel: ObservableObject {
         @ObservedObject var energyDataController: EnergyDataController = Resolver.resolve()
-        @Injected var currentSetting: CurrentSetting
+        @Injected var setting: SettingCoreData
         
         @Published var viewDownloadState = EnergyDataController.DownloadState.idle
         var startedDownloadingTime: Date? = nil
@@ -105,7 +105,7 @@ struct UpdatedDataView: View {
         }
         .contentShape(Rectangle())
         .onTapGesture {
-            if let region = Region(rawValue: viewModel.currentSetting.entity!.regionIdentifier) {
+            if let region = Region(rawValue: viewModel.setting.entity.regionIdentifier) {
                 viewModel.energyDataController.download(region: region)
             }
         }

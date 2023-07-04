@@ -12,7 +12,7 @@ import SwiftUI
 struct SplashScreenSetupView: View {
     @Environment(\.colorScheme) var colorScheme
 
-    @ObservedObject var currentSetting: CurrentSetting = Resolver.resolve()
+    @ObservedObject var setting: SettingCoreData = Resolver.resolve()
 
     @State var nextSplashScreenActive: Bool = false
 
@@ -48,7 +48,7 @@ struct SplashScreenSetupView_Previews: PreviewProvider {
         NavigationView {
             SplashScreenSetupView()
                 .preferredColorScheme(.light)
-                .environmentObject(CurrentSetting(managedObjectContext: PersistenceManager().persistentContainer.viewContext))
+                .environmentObject(SettingCoreData(viewContext: getCoreDataContainer().viewContext))
         }
     }
 }

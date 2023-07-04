@@ -11,7 +11,7 @@ import SwiftUI
 /// Input field for the power output of the consumer
 struct PowerOutputInputField: View {
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
-    @Injected var currentSetting: CurrentSetting
+    @Injected var setting: SettingCoreData
 
     @State var firstAppear = true
 
@@ -32,8 +32,8 @@ struct PowerOutputInputField: View {
     }
 
     func setPowerOutputString() {
-        if currentSetting.entity!.cheapestTimeLastPower != 0 {
-            if let powerOutputString = currentSetting.entity!.cheapestTimeLastPower.priceString {
+        if setting.entity.cheapestTimeLastPower != 0 {
+            if let powerOutputString = setting.entity.cheapestTimeLastPower.priceString {
                 cheapestHourManager.powerOutputString = powerOutputString
             }
         }
@@ -55,7 +55,7 @@ struct PowerOutputInputField: View {
                     .ifTrue(firstAppear == false) { content in
                         content
                             .onChange(of: cheapestHourManager.powerOutputString) { newValue in
-                                currentSetting.changeCheapestTimeLastPower(to: newValue.doubleValue ?? 0)
+                                setting.changeSetting { $0.entity.cheapestTimeLastPower = newValue.doubleValue ?? 0 }
                                 if let energyUsageString = (newValue.doubleValue ?? 0).priceString {
                                     cheapestHourManager.powerOutputString = energyUsageString
                                 }

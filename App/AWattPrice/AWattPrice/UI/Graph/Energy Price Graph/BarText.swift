@@ -10,9 +10,9 @@ import SwiftUI
 
 struct HourOfDayText: View {
     @Environment(\.colorScheme) var colorScheme
-    @ObservedObject var currentSetting: CurrentSetting = Resolver.resolve()
+    @ObservedObject var setting: SettingCoreData = Resolver.resolve()
 
-    static func getPriceString(marketprice: Double, currentSetting: CurrentSetting) -> String {
+    static func getPriceString(marketprice: Double, setting: SettingCoreData) -> String {
         let centFormatter = NumberFormatter()
         centFormatter.numberStyle = .currency
         centFormatter.currencySymbol = "ct"
@@ -37,7 +37,7 @@ struct HourOfDayText: View {
 
     var body: some View {
         ZStack {
-            Text(HourOfDayText.getPriceString(marketprice: hourDataPoint.marketprice, currentSetting: currentSetting))
+            Text(HourOfDayText.getPriceString(marketprice: hourDataPoint.marketprice, setting: setting))
                 .foregroundColor(colorScheme == .light ? Color.black : Color.white)
                 .animatableFont(size: fontSize + 1, weight: fontWeight)
                 .padding(1)

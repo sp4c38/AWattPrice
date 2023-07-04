@@ -10,8 +10,8 @@ import Resolver
 import SwiftUI
 
 class ContentViewModel: ObservableObject {
-    var currentSetting: CurrentSetting = Resolver.resolve()
-    var notificationSetting: CurrentNotificationSetting = Resolver.resolve()
+    var setting: SettingCoreData = Resolver.resolve()
+    var notificationSetting: NotificationSettingCoreData = Resolver.resolve()
     var notificationService: NotificationService = Resolver.resolve()
     
     var checkAccessStates = false
@@ -19,7 +19,7 @@ class ContentViewModel: ObservableObject {
     var cancellables = [AnyCancellable]()
     
     init() {
-        currentSetting.objectWillChange.sink(receiveValue: { self.objectWillChange.send() }).store(in: &cancellables)
+        setting.objectWillChange.sink(receiveValue: { self.objectWillChange.send() }).store(in: &cancellables)
     }
     
     func scenePhaseChanged(to scenePhase: ScenePhase) {
@@ -27,11 +27,11 @@ class ContentViewModel: ObservableObject {
             UIApplication.shared.applicationIconBadgeNumber = 0
     
             let checkForceUpload = {
-                if self.notificationSetting.entity!.forceUpload {
-                    let notificationConfiguration = NotificationConfiguration.create(nil, self.currentSetting, self.notificationSetting)
+                if self.notificationSetting.entity.forceUpload {
+                    let notificationConfiguration = NotificationConfiguration.create(nil, self.setting, self.notificationSetting)
                     self.notificationService.changeNotificationConfiguration(notificationConfiguration, self.notificationSetting, uploadStarted: { publisher in
                         publisher.sink { completion in
-                            if case .finished = completion { self.notificationSetting.changeForceUpload(to: false) }
+                            if case .finished = completion { self.notificationSetting.changeSetting { $0.entity.forceUpload = false } }
                         } receiveValue: { _ in
                         }.store(in: &self.cancellables)
                     })
@@ -57,30 +57,26 @@ struct ContentView: View {
     @ObservedObject var tabBarItems = TBItems()
 
     var body: some View {
-        VStack {
-            if viewModel.currentSetting.entity != nil {
-                VStack(spacing: 0) {
-                    if viewModel.currentSetting.entity!.splashScreensFinished {
-                        ZStack {
-                            SettingsPageView()
-                                .opacity(tabBarItems.selectedItemIndex == 0 ? 1 : 0)
+        VStack(spacing: 0) {
+            if viewModel.setting.entity.splashScreensFinished {
+                ZStack {
+                    SettingsPageView()
+                        .opacity(tabBarItems.selectedItemIndex == 0 ? 1 : 0)
 
-                            HomeView()
-                                .opacity(tabBarItems.selectedItemIndex == 1 ? 1 : 0)
+                    HomeView()
+                        .opacity(tabBarItems.selectedItemIndex == 1 ? 1 : 0)
 
-                            CheapestTimeView()
-                                .opacity(tabBarItems.selectedItemIndex == 2 ? 1 : 0)
-                        }
-                        .sheet(isPresented: $showWhatsNewScreen) { WhatsNewPage() }
-
-                        Spacer(minLength: 0)
-
-                        TabBar()
-                            .environmentObject(tabBarItems)
-                    } else {
-                        SplashScreenStartView()
-                    }
+                    CheapestTimeView()
+                        .opacity(tabBarItems.selectedItemIndex == 2 ? 1 : 0)
                 }
+                .sheet(isPresented: $showWhatsNewScreen) { WhatsNewPage() }
+
+                Spacer(minLength: 0)
+
+                TabBar()
+                    .environmentObject(tabBarItems)
+            } else {
+                SplashScreenStartView()
             }
         }
         .ignoresSafeArea(.keyboard)

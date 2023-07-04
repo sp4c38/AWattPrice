@@ -40,7 +40,7 @@ struct EnergyPricePoint: Decodable {
 
 
 struct EnergyData: Decodable {
-    @Injected var currentSetting: CurrentSetting
+    @Injected var setting: SettingCoreData
     let prices: [EnergyPricePoint]
     
     /// Prices which have start equal or past the start of the current hour.
@@ -72,13 +72,13 @@ struct EnergyData: Decodable {
             }
         
         for i in currentPrices.indices {
-            if currentSetting.entity?.pricesWithVAT == true,
+            if setting.entity.pricesWithVAT == true,
                currentPrices[i].marketprice > 0,
-               let regionTaxMultiplier = Region(rawValue: currentSetting.entity!.regionIdentifier)?.taxMultiplier
+               let regionTaxMultiplier = Region(rawValue: setting.entity.regionIdentifier)?.taxMultiplier
             {
                 currentPrices[i].marketprice *= regionTaxMultiplier
             }
-            currentPrices[i].marketprice += currentSetting.entity!.baseFee
+            currentPrices[i].marketprice += setting.entity.baseFee
         }
 
         minCostPricePoint = currentPrices.min(by: EnergyPricePoint.marketpricesAreInIncreasingOrder)

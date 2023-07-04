@@ -49,15 +49,13 @@ struct NotificationConfiguration: Encodable {
     var notifications: NotificationsNotificationConfiguration
     
     static func create(
-        _ token: String?, _ currentSetting: CurrentSetting, _ notificationSetting: CurrentNotificationSetting
+        _ token: String?, _ setting: SettingCoreData, _ notificationSetting: NotificationSettingCoreData
     ) -> NotificationConfiguration {
-        let currentEntity = currentSetting.entity!
-        let notificationEntity = notificationSetting.entity!
-        let selectedRegion = Region(rawValue: currentEntity.regionIdentifier)!
+        let selectedRegion = Region(rawValue: setting.entity.regionIdentifier)!
         
-        let general = GeneralNotificationConfiguration(region: selectedRegion, tax: currentEntity.pricesWithVAT, baseFee: currentEntity.baseFee)
+        let general = GeneralNotificationConfiguration(region: selectedRegion, tax: setting.entity.pricesWithVAT, baseFee: setting.entity.baseFee)
         let priceBelowNotification = PriceBelowNotificationNotificationConfiguration(
-            active: notificationEntity.priceDropsBelowValueNotification, belowValue: Int(notificationEntity.priceBelowValue)
+            active: notificationSetting.entity.priceDropsBelowValueNotification, belowValue: Int(notificationSetting.entity.priceBelowValue)
         )
         let notifications = NotificationsNotificationConfiguration(priceBelow: priceBelowNotification)
         

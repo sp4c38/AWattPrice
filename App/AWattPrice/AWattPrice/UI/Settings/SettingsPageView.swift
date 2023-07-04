@@ -156,8 +156,8 @@ struct AppVersionView: View {
 
 
 struct SettingsPageView: View {
-    @ObservedObject var crtNotifiSetting: CurrentNotificationSetting = Resolver.resolve()
-    @ObservedObject var currentSetting: CurrentSetting = Resolver.resolve()
+    @ObservedObject var notificationSetting: NotificationSettingCoreData = Resolver.resolve()
+    @ObservedObject var setting: SettingCoreData = Resolver.resolve()
     var notificationService: NotificationService = Resolver.resolve()
     
     let regionTaxSelectionViewModel = RegionTaxSelectionViewModel()
@@ -197,10 +197,10 @@ struct SettingsPageView: View {
 struct SettingsPageView_Previews: PreviewProvider {
     static var previews: some View {
         SettingsPageView()
-            .environment(\.managedObjectContext, PersistenceManager().persistentContainer.viewContext)
+            .environment(\.managedObjectContext, getCoreDataContainer().viewContext)
             .environmentObject(
-                CurrentSetting(
-                    managedObjectContext: PersistenceManager().persistentContainer.viewContext
+                SettingCoreData(
+                    viewContext: getCoreDataContainer().viewContext
                 )
             )
     }

@@ -117,7 +117,7 @@ struct CheapestTimeView: View {
     @Environment(\.colorScheme) var colorScheme
 
     @ObservedObject var energyDataController: EnergyDataController = Resolver.resolve()
-    @ObservedObject var currentSetting: CurrentSetting = Resolver.resolve()
+    @ObservedObject var setting: SettingCoreData = Resolver.resolve()
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
 
     @State var redirectToComparisonResults: Int? = 0
@@ -125,7 +125,7 @@ struct CheapestTimeView: View {
     var body: some View {
         NavigationView {
             VStack {
-                if energyDataController.energyData != nil && currentSetting.entity != nil {
+                if energyDataController.energyData != nil {
                     ScrollView {
                         VStack(spacing: 0) {
                             CheapestTimeViewBody()
@@ -179,10 +179,10 @@ struct CheapestTimeView_Previews: PreviewProvider {
         CheapestTimeView()
             .environmentObject(energyDataController)
             .environmentObject(
-                CurrentNotificationSetting(managedObjectContext: PersistenceManager().persistentContainer.viewContext)
+                NotificationSettingCoreData(viewContext: getCoreDataContainer().viewContext)
             )
             .environmentObject(CheapestHourManager())
-            .environmentObject(CurrentSetting(managedObjectContext: PersistenceManager().persistentContainer.viewContext))
+            .environmentObject(SettingCoreData(viewContext: getCoreDataContainer().viewContext))
             .onAppear { energyDataController.download(region: Region.DE) }
     }
 }

@@ -10,7 +10,7 @@ import Foundation
 
 extension NotificationService {
     /// Try to receive the required notification access permissions and send the notification request.
-    func sendNotificationConfiguration(_ notificationConfiguration: NotificationConfiguration, _ notificationSetting: CurrentNotificationSetting) -> AnyPublisher<(data: Data, response: URLResponse), Error>? {
+    func sendNotificationConfiguration(_ notificationConfiguration: NotificationConfiguration, _ notificationSetting: NotificationSettingCoreData) -> AnyPublisher<(data: Data, response: URLResponse), Error>? {
         guard accessState.value == .granted, pushState.value == .apnsRegistrationSuccessful else { return nil }
         
         guard let apiRequest = APIRequestFactory.notificationRequest(notificationConfiguration) else { return nil }
@@ -30,8 +30,8 @@ extension NotificationService {
         return request
     }
     
-    func wantToReceiveAnyNotification(notificationSetting: CurrentNotificationSetting) -> Bool {
-        if notificationSetting.entity!.priceDropsBelowValueNotification == true {
+    func wantToReceiveAnyNotification(notificationSetting: NotificationSettingCoreData) -> Bool {
+        if notificationSetting.entity.priceDropsBelowValueNotification == true {
             return true
         } else {
             return false
@@ -39,7 +39,7 @@ extension NotificationService {
     }
     
     func changeNotificationConfiguration(
-        _ notificationConfiguration: NotificationConfiguration, _ notificationSetting: CurrentNotificationSetting, skipWantNotificationCheck: Bool = false,
+        _ notificationConfiguration: NotificationConfiguration, _ notificationSetting: NotificationSettingCoreData, skipWantNotificationCheck: Bool = false,
         uploadStarted: ((AnyPublisher<(data: Data, response: URLResponse), Error>) -> ())? = nil, cantStartUpload: (() -> ())? = nil, noUpload: (() -> ())? = nil
     ) {
         var notificationConfiguration = notificationConfiguration

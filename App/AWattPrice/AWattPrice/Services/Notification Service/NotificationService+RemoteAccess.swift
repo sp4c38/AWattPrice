@@ -9,25 +9,21 @@ import Foundation
 import UIKit
 
 extension NotificationService {    
-    func successfulRegisteredForRemoteNotifications(rawCurrentToken: Data, currentSetting: CurrentSetting, notificationSetting: CurrentNotificationSetting) {
+    func successfulRegisteredForRemoteNotifications(rawCurrentToken: Data, setting: SettingCoreData, notificationSetting: NotificationSettingCoreData) {
         logger.debug("Notification: Remote notifications granted with device token.")
 
-        if let notificationSettingsEntity = notificationSetting.entity {
-            let currentToken = rawCurrentToken.map {
-                String(format: "%02.2hhx", $0)
-            }.joined()
-            
-            if notificationSettingsEntity.lastApnsToken != currentToken, notificationSettingsEntity.lastApnsToken != nil {
-                let notificationConfiguration = NotificationConfiguration.create(currentToken, currentSetting, notificationSetting)
-                changeNotificationConfiguration(notificationConfiguration, notificationSetting, noUpload: nil)
-            }
-            
-            notificationSetting.changeLastApnsToken(to: currentToken)
-            token = currentToken
-            self.pushState.value = .apnsRegistrationSuccessful
-        } else {
-            pushState.value = .apnsRegistrationFailed
+        let currentToken = rawCurrentToken.map {
+            String(format: "%02.2hhx", $0)
+        }.joined()
+        
+        if notificationSetting.entity.lastApnsToken != currentToken, notificationSetting.entity.lastApnsToken != nil {
+            let notificationConfiguration = NotificationConfiguration.create(currentToken, setting, notificationSetting)
+            changeNotificationConfiguration(notificationConfiguration, notificationSetting, noUpload: nil)
         }
+        
+        notificationSetting.changeSetting { $0.entity.lastApnsToken = currentToken }
+        token = currentToken
+        self.pushState.value = .apnsRegistrationSuccessful
     }
     
     func failedRegisteredForRemoteNotifications(error: Error) {

@@ -14,21 +14,11 @@ public let logger = Logger()
 
 extension Resolver: ResolverRegistering {
     public static func registerAllServices() {
-        let container = NSPersistentContainer(name: "Model")
-        container.loadPersistentStores(completionHandler: { _, error in
-            if let error = error {
-                fatalError("Couldn't load persistent container. \(error)")
-            }
-        })
-        let viewContext = container.viewContext
+        let viewContext = getCoreDataContainer().viewContext
         
         register { SettingCoreData(viewContext: viewContext) }
             .scope(.application)
         register { NotificationSettingCoreData(viewContext: viewContext) }
-            .scope(.application)
-        register { CurrentSetting(managedObjectContext: viewContext) }
-            .scope(.application)
-        register { CurrentNotificationSetting(managedObjectContext: viewContext) }
             .scope(.application)
         
         register { EnergyDataController() }
@@ -41,7 +31,7 @@ extension Resolver: ResolverRegistering {
 
 @main
 struct AWattPriceApp: App {
-    @Injected var currentSetting: CurrentSetting
+    @Injected var setting: SettingCoreData
     @Injected var energyDataController: EnergyDataController
     @Injected var notificationService: NotificationService
     let cheapestHourManager = CheapestHourManager()
@@ -53,9 +43,7 @@ struct AWattPriceApp: App {
 
         notificationService.refreshAccessStates()
 
-        if let entity = currentSetting.entity,
-           let selectedRegion = Region(rawValue: entity.regionIdentifier)
-        {
+        if let selectedRegion = Region(rawValue: setting.entity.regionIdentifier) {
             energyDataController.download(region: selectedRegion)
         }
     }

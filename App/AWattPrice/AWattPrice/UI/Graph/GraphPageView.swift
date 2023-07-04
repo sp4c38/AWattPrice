@@ -29,7 +29,7 @@ struct HomeView: View {
     @Environment(\.scenePhase) var scenePhase
 
     @ObservedObject var energyDataController: EnergyDataController = Resolver.resolve()
-    @ObservedObject var currentSetting: CurrentSetting = Resolver.resolve()
+    @ObservedObject var setting: SettingCoreData = Resolver.resolve()
 
     @State var headerSize = CGSize(width: 0, height: 0)
     @State var initialAppearFinished: Bool? = false
@@ -44,7 +44,7 @@ struct HomeView: View {
     var body: some View {
         NavigationView {
             VStack {
-                if energyDataController.energyData != nil, currentSetting.entity != nil {
+                if energyDataController.energyData != nil {
                     ZStack {
                         VStack {
                             VStack(spacing: 5) {
@@ -94,7 +94,7 @@ struct HomeView: View {
     }
     
     func loadEnergyData() {
-        if let region = Region(rawValue: currentSetting.entity!.regionIdentifier) {
+        if let region = Region(rawValue: setting.entity.regionIdentifier) {
             energyDataController.download(region: region)
         }
     }
@@ -103,11 +103,7 @@ struct HomeView: View {
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
         HomeView()
-            .environment(\.managedObjectContext, PersistenceManager().persistentContainer.viewContext)
-            .environmentObject(
-                CurrentSetting(
-                    managedObjectContext: PersistenceManager().persistentContainer.viewContext
-                )
-            )
+            .environment(\.managedObjectContext, getCoreDataContainer().viewContext)
+            .environmentObject(SettingCoreData(viewContext: getCoreDataContainer().viewContext))
     }
 }

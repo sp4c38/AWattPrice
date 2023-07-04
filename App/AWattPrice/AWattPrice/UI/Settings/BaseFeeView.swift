@@ -10,8 +10,8 @@ import Resolver
 import SwiftUI
 
 class BaseFeeViewModel: ObservableObject {
-    var currentSetting: CurrentSetting = Resolver.resolve()
-    var notificationSetting: CurrentNotificationSetting = Resolver.resolve()
+    var setting: SettingCoreData = Resolver.resolve()
+    var notificationSetting: NotificationSettingCoreData = Resolver.resolve()
     var notificationService: NotificationService = Resolver.resolve()
     @Injected var energyDataController: EnergyDataController
     
@@ -23,7 +23,7 @@ class BaseFeeViewModel: ObservableObject {
     var cancellables = [AnyCancellable]()
     
     init() {
-        baseFee = currentSetting.entity!.baseFee
+        baseFee = setting.entity.baseFee
         
         uploadObserver.objectWillChange.receive(on: DispatchQueue.main).sink(receiveValue: { self.objectWillChange.send() }).store(in: &cancellables)
     }
@@ -37,10 +37,10 @@ class BaseFeeViewModel: ObservableObject {
     }
     
     func baseFeeChanges() {
-        var notificationConfiguration = NotificationConfiguration.create(nil, currentSetting, notificationSetting)
+        var notificationConfiguration = NotificationConfiguration.create(nil, setting, notificationSetting)
         notificationConfiguration.general.baseFee = baseFee
         let changeSetting = {
-            self.currentSetting.changeBaseFee(to: self.baseFee)
+            self.setting.changeSetting { $0.entity.baseFee = self.baseFee }
             DispatchQueue.main.async { self.energyDataController.energyData?.computeValues() }
         }
         
@@ -51,12 +51,12 @@ class BaseFeeViewModel: ObservableObject {
                 switch completion {
                 case .finished: changeSetting()
                 case .failure:
-                    self.notificationSetting.changeForceUpload(to: true)
+                    self.notificationSetting.changeSetting { $0.entity.forceUpload = true }
                     changeSetting()
                 }
             }, receiveValue: {_ in}).store(in: &self.cancellables)
         } cantStartUpload: {
-            self.notificationSetting.changeForceUpload(to: true)
+            self.notificationSetting.changeSetting { $0.entity.forceUpload = true }
             changeSetting()
         } noUpload: {
             changeSetting()
@@ -66,8 +66,6 @@ class BaseFeeViewModel: ObservableObject {
 
 
 struct BaseFeeView: View {
-    @Injected var currentSetting: CurrentSetting
-    @Injected var notificationSetting: CurrentNotificationSetting
     @Injected var energyDataController: EnergyDataController
     @ObservedObject var viewModel = BaseFeeViewModel()
     
@@ -79,7 +77,7 @@ struct BaseFeeView: View {
                 Text("baseFee.infoText")
             }
             
-            if notificationSetting.entity!.priceDropsBelowValueNotification == true {
+            if viewModel.notificationSetting.entity.priceDropsBelowValueNotification == true {
                 Section(header: Text("Price Guard").foregroundColor(.green)) {
                     Text("baseFee.priceGuardActivatedInfo")
                 }

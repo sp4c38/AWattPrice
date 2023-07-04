@@ -41,8 +41,8 @@ struct PriceDropsBelowValueNotificationInfoView: View {
 }
 
 class PriceBelowNotificationViewModel: ObservableObject {
-    @Injected var currentSetting: CurrentSetting
-    @Injected var notificationSetting: CurrentNotificationSetting
+    @Injected var setting: SettingCoreData
+    @Injected var notificationSetting: NotificationSettingCoreData
     var notificationService: NotificationService = Resolver.resolve()
 
     @Published var notificationIsEnabled: Bool = false
@@ -58,9 +58,9 @@ class PriceBelowNotificationViewModel: ObservableObject {
     init() {
         uploadObserver.objectWillChange.receive(on: DispatchQueue.main).sink(receiveValue: { self.objectWillChange.send() }).store(in: &cancellables)
         
-        notificationIsEnabled = notificationSetting.entity!.priceDropsBelowValueNotification
+        notificationIsEnabled = notificationSetting.entity.priceDropsBelowValueNotification
         notificationIsEnabledMethodNotifier = $notificationIsEnabled.dropFirst().sink(receiveValue: priceBelowNotificationToggled)
-        priceBelowValue = Int(notificationSetting.entity!.priceBelowValue).priceString ?? ""
+        priceBelowValue = Int(notificationSetting.entity.priceBelowValue).priceString ?? ""
         priceBelowValueMethodNotifier = $priceBelowValue.dropFirst().sink(receiveValue: updateWishPrice)
     }
     
@@ -73,12 +73,12 @@ class PriceBelowNotificationViewModel: ObservableObject {
     }
     
     func priceBelowNotificationToggled(to newSelection: Bool) {
-        var notificationConfiguration = NotificationConfiguration.create(nil, currentSetting, notificationSetting)
+        var notificationConfiguration = NotificationConfiguration.create(nil, setting, notificationSetting)
         notificationConfiguration.notifications.priceBelow.active = newSelection
         let uploadFailure = {
             DispatchQueue.main.async {
                 self.notificationIsEnabledMethodNotifier = self.$notificationIsEnabled.dropFirst().dropFirst().sink(receiveValue: self.priceBelowNotificationToggled)
-                self.notificationIsEnabled = self.notificationSetting.entity!.priceDropsBelowValueNotification
+                self.notificationIsEnabled = self.notificationSetting.entity.priceDropsBelowValueNotification
             }
         }
 
@@ -86,7 +86,7 @@ class PriceBelowNotificationViewModel: ObservableObject {
             self.uploadObserver.register(for: downloadPublisher.ignoreOutput().eraseToAnyPublisher())
             self.uploadErrorObserver?.register(for: downloadPublisher.eraseToAnyPublisher())
             downloadPublisher.sink(receiveCompletion: { completion in
-                switch completion { case .finished: self.notificationSetting.changePriceDropsBelowValueNotifications(to: newSelection)
+                switch completion { case .finished: self.notificationSetting.changeSetting { $0.entity.priceDropsBelowValueNotification = newSelection }
                                     case .failure: uploadFailure() }
             }, receiveValue: {_ in}).store(in: &self.cancellables)
         } cantStartUpload: {
@@ -96,12 +96,12 @@ class PriceBelowNotificationViewModel: ObservableObject {
     
     func updateWishPrice(to newWishPriceString: String) {
         guard let newWishPrice = newWishPriceString.integerValue else { priceBelowValue = ""; return }
-        var notificationConfiguration = NotificationConfiguration.create(nil, currentSetting, notificationSetting)
+        var notificationConfiguration = NotificationConfiguration.create(nil, setting, notificationSetting)
         notificationConfiguration.notifications.priceBelow.belowValue = newWishPrice
         let uploadFailure = {
             DispatchQueue.main.async {
                 self.priceBelowValueMethodNotifier = self.$priceBelowValue.dropFirst().dropFirst().sink(receiveValue: self.updateWishPrice)
-                self.priceBelowValue = Int(self.notificationSetting.entity!.priceBelowValue).priceString ?? ""
+                self.priceBelowValue = Int(self.notificationSetting.entity.priceBelowValue).priceString ?? ""
             }
         }
         
@@ -109,7 +109,7 @@ class PriceBelowNotificationViewModel: ObservableObject {
             self.uploadObserver.register(for: downloadPublisher.ignoreOutput().eraseToAnyPublisher())
             self.uploadErrorObserver?.register(for: downloadPublisher.eraseToAnyPublisher())
             downloadPublisher.sink(receiveCompletion: { completion in
-                switch completion { case .finished: self.notificationSetting.changePriceBelowValue(to: newWishPrice)
+                switch completion { case .finished: self.notificationSetting.changeSetting { $0.entity.priceBelowValue = Int64(newWishPrice) }
                                     case .failure: uploadFailure() }
             }, receiveValue: {_ in}).store(in: &self.cancellables)
         } cantStartUpload: {

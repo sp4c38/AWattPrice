@@ -11,7 +11,7 @@ import SwiftUI
 /// Input field for the energy usage which the consumer shall consume
 struct EnergyUsageInputField: View {
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
-    @Injected var currentSetting: CurrentSetting
+    @Injected var setting: SettingCoreData
 
     @State var firstAppear = true
 
@@ -32,8 +32,8 @@ struct EnergyUsageInputField: View {
     }
 
     func setEnergyUsageString() {
-        if currentSetting.entity!.cheapestTimeLastConsumption != 0 {
-            if let energyUsageString = currentSetting.entity!.cheapestTimeLastConsumption.priceString {
+        if setting.entity.cheapestTimeLastConsumption != 0 {
+            if let energyUsageString = setting.entity.cheapestTimeLastConsumption.priceString {
                 cheapestHourManager.energyUsageString = energyUsageString
             }
         }
@@ -55,7 +55,7 @@ struct EnergyUsageInputField: View {
                     .ifTrue(firstAppear == false) { content in
                         content
                             .onChange(of: cheapestHourManager.energyUsageString) { newValue in
-                                currentSetting.changeCheapestTimeLastConsumption(to: newValue.doubleValue ?? 0)
+                                setting.changeSetting { $0.entity.cheapestTimeLastConsumption = newValue.doubleValue ?? 0 }
                                 if let energyUsageString = (newValue.doubleValue ?? 0).priceString {
                                     cheapestHourManager.energyUsageString = energyUsageString
                                 }

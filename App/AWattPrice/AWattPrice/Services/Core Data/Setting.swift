@@ -8,6 +8,16 @@
 import Combine
 import CoreData
 
+func getCoreDataContainer() -> NSPersistentContainer {
+    let container = NSPersistentContainer(name: "Model")
+    container.loadPersistentStores(completionHandler: { _, error in
+        if let error = error {
+            fatalError("Couldn't load persistent container. \(error)")
+        }
+    })
+    return container
+}
+
 func getGeneralSettingEntity<T: NSManagedObject>(viewContext: NSManagedObjectContext, entityName: String, setDefaults: (T) -> ()) -> T {
     let settingsFetch = NSFetchRequest<T>(entityName: entityName)
     var settings: [T]
@@ -24,6 +34,7 @@ func getGeneralSettingEntity<T: NSManagedObject>(viewContext: NSManagedObjectCon
         setting = T(entity: description, insertInto: viewContext)
         setDefaults(setting)
     }
+    print("Retrieved setting for entity name: \(entityName).")
     return setting
 }
 
@@ -51,6 +62,15 @@ class SettingCoreData: ObservableObject {
             self.objectWillChange.send()
         }.store(in: &cancellables)
     }
+    
+    func changeSetting(_ changeTask: (SettingCoreData) -> ()) {
+        changeTask(self)
+        do {
+            try self.viewContext.save()
+        } catch {
+            print("Couldn't save the view context: \(error).")
+        }
+    }
 }
 
 class NotificationSettingCoreData: ObservableObject {
@@ -76,45 +96,13 @@ class NotificationSettingCoreData: ObservableObject {
             self.objectWillChange.send()
         }.store(in: &cancellables)
     }
-}
-
-class CurrentSetting: AutoUpdatingSingleEntity<Setting> {
-    init(managedObjectContext: NSManagedObjectContext) {
-        super.init(
-            entityName: "Setting",
-            managedObjectContext: managedObjectContext,
-            setDefaultValues: { newEntry in
-                newEntry.cheapestTimeLastConsumption = 0
-                newEntry.cheapestTimeLastPower = 0
-                newEntry.pricesWithVAT = true
-                newEntry.regionIdentifier = 0
-                newEntry.splashScreensFinished = false
-                newEntry.baseFee = 0
-            }
-        )
-    }
-
-    func changeCheapestTimeLastConsumption(to newValue: Double) {
-        changeSetting(self, isNew: { $0.cheapestTimeLastConsumption != newValue }, bySetting: { $0.cheapestTimeLastConsumption = newValue })
-    }
-
-    func changeCheapestTimeLastPower(to newValue: Double) {
-        changeSetting(self, isNew: { $0.cheapestTimeLastPower != newValue }, bySetting: { $0.cheapestTimeLastPower = newValue })
-    }
-
-    func changeTaxSelection(to newValue: Bool) {
-        changeSetting(self, isNew: { $0.pricesWithVAT != newValue }, bySetting: { $0.pricesWithVAT = newValue })
-    }
-
-    func changeRegionIdentifier(to newValue: Int16) {
-        changeSetting(self, isNew: { $0.regionIdentifier != newValue }, bySetting: { $0.regionIdentifier = newValue })
-    }
-
-    func changeSplashScreenFinished(to newValue: Bool) {
-        changeSetting(self, isNew: { $0.splashScreensFinished != newValue }, bySetting: { $0.splashScreensFinished = newValue })
-    }
     
-    func changeBaseFee(to newValue: Double) {
-        changeSetting(self, isNew: { $0.baseFee != newValue }, bySetting: { $0.baseFee = newValue })
+    func changeSetting(_ changeTask: (NotificationSettingCoreData) -> ()) {
+        changeTask(self)
+        do {
+            try self.viewContext.save()
+        } catch {
+            print("Couldn't save the view context: \(error).")
+        }
     }
 }

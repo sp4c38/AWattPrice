@@ -4,8 +4,8 @@ import SwiftUI
 
 
 class RegionTaxSelectionViewModel: ObservableObject {
-    var currentSetting: CurrentSetting = Resolver.resolve()
-    var notificationSetting: CurrentNotificationSetting = Resolver.resolve()
+    var setting: SettingCoreData = Resolver.resolve()
+    var notificationSetting: NotificationSettingCoreData = Resolver.resolve()
     var notificationService: NotificationService = Resolver.resolve()
     @Injected var energyDataController: EnergyDataController
     
@@ -17,8 +17,8 @@ class RegionTaxSelectionViewModel: ObservableObject {
     var cancellables = [AnyCancellable]()
     
     init() {
-        selectedRegion = Region(rawValue: currentSetting.entity!.regionIdentifier)!
-        taxSelection = currentSetting.entity!.pricesWithVAT
+        selectedRegion = Region(rawValue: setting.entity.regionIdentifier)!
+        taxSelection = setting.entity.pricesWithVAT
         
         uploadObserver.objectWillChange.receive(on: DispatchQueue.main).sink(receiveValue: { self.objectWillChange.send() }).store(in: &cancellables)
         
@@ -35,10 +35,10 @@ class RegionTaxSelectionViewModel: ObservableObject {
     }
     
     func regionChanges(newRegion: Region) {
-        var notificationConfiguration = NotificationConfiguration.create(nil, currentSetting, notificationSetting)
+        var notificationConfiguration = NotificationConfiguration.create(nil, setting, notificationSetting)
         notificationConfiguration.general.region = newRegion
         let changeSetting = {
-            self.currentSetting.changeRegionIdentifier(to: newRegion.rawValue)
+            self.setting.changeSetting { $0.entity.regionIdentifier = newRegion.rawValue }
             DispatchQueue.main.async { self.energyDataController.download(region: newRegion) }
         }
         
@@ -48,12 +48,12 @@ class RegionTaxSelectionViewModel: ObservableObject {
                 switch completion {
                 case .finished: changeSetting()
                 case .failure:
-                    self.notificationSetting.changeForceUpload(to: true)
+                    self.notificationSetting.changeSetting { $0.entity.forceUpload = true }
                     changeSetting()
                 }
             }, receiveValue: {_ in}).store(in: &self.cancellables)
         } cantStartUpload: {
-            self.notificationSetting.changeForceUpload(to: true)
+            self.notificationSetting.changeSetting { $0.entity.forceUpload = true }
             changeSetting()
         } noUpload: {
             changeSetting()
@@ -61,10 +61,10 @@ class RegionTaxSelectionViewModel: ObservableObject {
     }
 
     func taxSelectionChanges(newTaxSelection: Bool) {
-        var notificationConfiguration = NotificationConfiguration.create(nil, currentSetting, notificationSetting)
+        var notificationConfiguration = NotificationConfiguration.create(nil, setting, notificationSetting)
         notificationConfiguration.general.tax = newTaxSelection
         let changeSetting = {
-            self.currentSetting.changeTaxSelection(to: newTaxSelection)
+            self.setting.changeSetting { $0.entity.pricesWithVAT = newTaxSelection }
             DispatchQueue.main.async { self.energyDataController.energyData?.computeValues() }
         }
 
@@ -74,12 +74,12 @@ class RegionTaxSelectionViewModel: ObservableObject {
                 switch completion {
                 case .finished: changeSetting()
                 case .failure:
-                    self.notificationSetting.changeForceUpload(to: true)
+                    self.notificationSetting.changeSetting { $0.entity.forceUpload = true }
                     changeSetting()
                 }
             }, receiveValue: {_ in}).store(in: &self.cancellables)
         } cantStartUpload: {
-            self.notificationSetting.changeForceUpload(to: true)
+            self.notificationSetting.changeSetting { $0.entity.forceUpload = true }
             changeSetting()
         } noUpload: {
             changeSetting()

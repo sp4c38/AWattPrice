@@ -14,9 +14,28 @@ public let logger = Logger()
 
 extension Resolver: ResolverRegistering {
     public static func registerAllServices() {
-        registerEntityManagers()
-        registerEnergyDataController()
-        registerNotificationService()
+        let container = NSPersistentContainer(name: "Model")
+        container.loadPersistentStores(completionHandler: { _, error in
+            if let error = error {
+                fatalError("Couldn't load persistent container. \(error)")
+            }
+        })
+        let viewContext = container.viewContext
+        
+        register { SettingCoreData(viewContext: viewContext) }
+            .scope(.application)
+        register { NotificationSettingCoreData(viewContext: viewContext) }
+            .scope(.application)
+        register { CurrentSetting(managedObjectContext: viewContext) }
+            .scope(.application)
+        register { CurrentNotificationSetting(managedObjectContext: viewContext) }
+            .scope(.application)
+        
+        register { EnergyDataController() }
+            .scope(.application)
+        
+        register { NotificationService() }
+            .scope(.application)
     }
 }
 

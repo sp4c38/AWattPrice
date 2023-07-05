@@ -73,7 +73,7 @@ struct EnergyData: Decodable {
         return jsonDecoder
     }
     
-    static func downloadEnergyData() async -> EnergyData? {
+    static func downloadEnergyData(for region: Region) async -> EnergyData? {
         let apiURL: URL = {
             #if DEBUG
             return URL(string: "https://test-awp.space8.me/api/v2/")!
@@ -84,7 +84,7 @@ struct EnergyData: Decodable {
         
         let requestURL = apiURL
             .appendingPathComponent("data", isDirectory: true)
-            .appendingPathComponent(Region.DE.apiName)
+            .appendingPathComponent(region.apiName)
         
         let urlRequest = URLRequest(
             url: requestURL,

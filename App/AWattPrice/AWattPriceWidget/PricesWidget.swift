@@ -12,14 +12,20 @@ import WidgetKit
 struct PricesWidgetProvider: TimelineProvider {
     typealias EntryType = PricesWidgetEntry
     
+    let setting: SettingCoreData
+    
+    
     func placeholder(in context: Context) -> EntryType {
-        let energyData = EnergyData(prices: [])
-        return EntryType(date: Date(), energyData: energyData)
+        return EntryType(date: Date(), energyData: nil)
     }
 
     func getSnapshot(in context: Context, completion: @escaping (EntryType) -> ()) {
         Task {
-            let energyData = await EnergyData.downloadEnergyData()
+            guard let region = Region(rawValue: setting.entity.regionIdentifier) else {
+                completion(EntryType(date: Date(), energyData: nil))
+                return
+            }
+            let energyData = await EnergyData.downloadEnergyData(for: region)
             let entry = EntryType(date: Date(), energyData: energyData)
             completion(entry)
         }
@@ -38,7 +44,8 @@ struct PricesWidgetProvider: TimelineProvider {
             let startToday = calendar.startOfDay(for: now)
             let endToday = startToday.addingTimeInterval(24 * 60 * 60)
             
-            guard let energyData = await EnergyData.downloadEnergyData(),
+            guard let region = Region(rawValue: setting.entity.regionIdentifier),
+                  let energyData = await EnergyData.downloadEnergyData(for: region),
                   let lastEntry = energyData.prices.last else { // energyData.prices are sorted by start time.
                 entries.append(EntryType(date: Date(), energyData: nil))
                 let timeline = Timeline(entries: entries, policy: .after(beginNextHour))
@@ -77,6 +84,7 @@ struct PricesWidgetEntry: TimelineEntry {
 }
 
 struct PricesWidgetEntryView : View {
+    @EnvironmentObject var setting: SettingCoreData
     var entry: PricesWidgetProvider.Entry
     
     let gradientColorsPositive = [Color(red: 1, green: 0.78, blue: 0.44), Color(red: 1, green: 0.08, blue: 0.06)]
@@ -101,7 +109,7 @@ struct PricesWidgetEntryView : View {
                 
             if let energyData = entry.energyData {
                 Chart(energyData.currentPrices.prefix(24), id: \.startTime) { price in
-                    BarMark(x: .value("Time", price.startTime ..< price.endTime), y: .value("Price", price.marketprice), width: 9.5)
+                    BarMark(x: .value("Time", price.startTime ..< price.endTime), y: .value("Price", price.marketprice + setting.entity.baseFee), width: 9.5)
                         .foregroundStyle(.linearGradient(colors: price.marketprice >= 0 ? gradientColorsPositive : gradientColorsNegative, startPoint: .bottom, endPoint: .top))
                         .alignsMarkStylesWithPlotArea()
                 }
@@ -129,9 +137,16 @@ struct PricesWidgetEntryView : View {
 struct PricesWidget: Widget {
     let kind: String = "AWattPriceWidget.PricesWidget"
 
+    let setting: SettingCoreData
+    
+    init() {
+        self.setting = SettingCoreData(viewContext: CoreDataService.shared.container.viewContext)
+    }
+    
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: PricesWidgetProvider()) { entry in
+        StaticConfiguration(kind: kind, provider: PricesWidgetProvider(setting: setting)) { entry in
             PricesWidgetEntryView(entry: entry)
+                .environmentObject(setting)
         }
         .configurationDisplayName("Electricity Prices")
         .description("View electricity prices at a glance.")

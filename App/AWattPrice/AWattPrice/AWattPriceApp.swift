@@ -12,8 +12,6 @@ import SwiftUI
 
 public let logger = Logger()
 
-let internalAppGroupIdentifier = "group.me.space8.AWattPrice.internal"
-
 extension Resolver: ResolverRegistering {
     public static func registerAllServices() {
         let viewContext = CoreDataService.shared.container.viewContext

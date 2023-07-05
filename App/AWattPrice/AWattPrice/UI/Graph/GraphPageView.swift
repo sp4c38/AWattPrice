@@ -103,7 +103,7 @@ struct HomeView: View {
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
         HomeView()
-            .environment(\.managedObjectContext, getCoreDataContainer().viewContext)
-            .environmentObject(SettingCoreData(viewContext: getCoreDataContainer().viewContext))
+            .environment(\.managedObjectContext, CoreDataService.shared.container.viewContext)
+            .environmentObject(SettingCoreData(viewContext: CoreDataService.shared.container.viewContext))
     }
 }

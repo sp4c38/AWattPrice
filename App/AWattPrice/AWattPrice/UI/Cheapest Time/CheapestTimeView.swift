@@ -179,10 +179,10 @@ struct CheapestTimeView_Previews: PreviewProvider {
         CheapestTimeView()
             .environmentObject(energyDataController)
             .environmentObject(
-                NotificationSettingCoreData(viewContext: getCoreDataContainer().viewContext)
+                NotificationSettingCoreData(viewContext: CoreDataService.shared.container.viewContext)
             )
             .environmentObject(CheapestHourManager())
-            .environmentObject(SettingCoreData(viewContext: getCoreDataContainer().viewContext))
+            .environmentObject(SettingCoreData(viewContext: CoreDataService.shared.container.viewContext))
             .onAppear { energyDataController.download(region: Region.DE) }
     }
 }

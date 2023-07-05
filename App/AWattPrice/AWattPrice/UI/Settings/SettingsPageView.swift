@@ -197,10 +197,10 @@ struct SettingsPageView: View {
 struct SettingsPageView_Previews: PreviewProvider {
     static var previews: some View {
         SettingsPageView()
-            .environment(\.managedObjectContext, getCoreDataContainer().viewContext)
+            .environment(\.managedObjectContext, CoreDataService.shared.container.viewContext)
             .environmentObject(
                 SettingCoreData(
-                    viewContext: getCoreDataContainer().viewContext
+                    viewContext: CoreDataService.shared.container.viewContext
                 )
             )
     }

@@ -61,8 +61,8 @@ struct NotificationSettingView: View {
 }
 
 struct NotificationSettingView_Previews: PreviewProvider {
-    static var appSettings = SettingCoreData(viewContext: getCoreDataContainer().viewContext)
-    static var notificationSettings = NotificationSettingCoreData(viewContext: getCoreDataContainer().viewContext)
+    static var appSettings = SettingCoreData(viewContext: CoreDataService.shared.container.viewContext)
+    static var notificationSettings = NotificationSettingCoreData(viewContext: CoreDataService.shared.container.viewContext)
     static var notificationService = NotificationService()
     
     static var previews: some View {

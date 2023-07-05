@@ -139,7 +139,7 @@ struct SplashScreenFinishView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
             SplashScreenFinishView()
-                .environmentObject(SettingCoreData(viewContext: getCoreDataContainer().viewContext))
+                .environmentObject(SettingCoreData(viewContext: CoreDataService.shared.container.viewContext))
         }
     }
 }

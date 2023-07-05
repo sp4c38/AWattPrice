@@ -48,7 +48,7 @@ struct SplashScreenSetupView_Previews: PreviewProvider {
         NavigationView {
             SplashScreenSetupView()
                 .preferredColorScheme(.light)
-                .environmentObject(SettingCoreData(viewContext: getCoreDataContainer().viewContext))
+                .environmentObject(SettingCoreData(viewContext: CoreDataService.shared.container.viewContext))
         }
     }
 }

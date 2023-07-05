@@ -8,14 +8,55 @@
 import Combine
 import CoreData
 
-func getCoreDataContainer() -> NSPersistentContainer {
-    let container = NSPersistentContainer(name: "Model")
-    container.loadPersistentStores(completionHandler: { _, error in
-        if let error = error {
-            fatalError("Couldn't load persistent container. \(error)")
+class CoreDataService {
+    static let shared = CoreDataService()
+    
+    let container: NSPersistentContainer
+    
+    init(name: String = "Model") {
+        // The CoreData sqlite file is supposed to be located in the AWattPrice app group. Check if the sqlite file is already present in the app group. If it's only inside the app, move the file.
+
+        let fileManager = FileManager.default
+        let storeName = "\(name).sqlite"
+        let appDatabaseURL = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0].appendingPathComponent(storeName)
+        
+        guard let appGroupDatabaseURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: internalAppGroupIdentifier)?.appendingPathComponent(storeName) else {
+            fatalError("Couldn't create container URL for app group with security application group identifier \(internalAppGroupIdentifier) and name \(name).")
         }
-    })
-    return container
+        print(appDatabaseURL)
+        print(appGroupDatabaseURL)
+        let appDatabaseExists = fileManager.fileExists(atPath: appDatabaseURL.path)
+        let appGroupDatabaseExists = fileManager.fileExists(atPath: appGroupDatabaseURL.path)
+        if appDatabaseExists && !appGroupDatabaseExists {
+            print("No database was found in the app group container. Database was found inside the app container. It will now be moved to the app group...")
+            let container = NSPersistentContainer(name: name)
+            container.loadPersistentStores(completionHandler: { _, error in
+                if let error = error {
+                    fatalError("Couldn't load persistent container. \(error)")
+                }
+            })
+            guard let persistentStore = container.persistentStoreCoordinator.persistentStore(for: appDatabaseURL) else {
+                fatalError("Couldn't retrieve persistent store from persistent store coordinator for store url \(appDatabaseURL).")
+            }
+            do {
+                _ = try container.persistentStoreCoordinator.migratePersistentStore(persistentStore, to: appGroupDatabaseURL, type: .sqlite)
+                print("Successfully moved database from the app container to the app group container.")
+            } catch {
+                print("Couldn't move old database from the app container to the app group container.")
+            }
+        } else {
+            print("A database file was found inside the app group container. Using this one.")
+        }
+        
+        self.container = NSPersistentContainer(name: name)
+        let storeDescription = NSPersistentStoreDescription(url: appGroupDatabaseURL)
+        container.persistentStoreDescriptions = [storeDescription]
+        container.loadPersistentStores(completionHandler: { _, error in
+            if let error = error {
+                fatalError("Couldn't load persistent container. \(error)")
+            }
+        })
+    }
 }
 
 func getGeneralSettingEntity<T: NSManagedObject>(viewContext: NSManagedObjectContext, entityName: String, setDefaults: (T) -> ()) -> T {
@@ -63,12 +104,14 @@ class SettingCoreData: ObservableObject {
         }.store(in: &cancellables)
     }
     
-    func changeSetting(_ changeTask: (SettingCoreData) -> ()) {
-        changeTask(self)
-        do {
-            try self.viewContext.save()
-        } catch {
-            print("Couldn't save the view context: \(error).")
+    func changeSetting(_ changeTask: @escaping (SettingCoreData) -> ()) {
+        DispatchQueue.main.async {
+            changeTask(self)
+            do {
+                try self.viewContext.save()
+            } catch {
+                print("Couldn't save the view context: \(error).")
+            }
         }
     }
 }

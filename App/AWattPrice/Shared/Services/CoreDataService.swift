@@ -8,6 +8,8 @@
 import Combine
 import CoreData
 
+let internalAppGroupIdentifier = "group.me.space8.AWattPrice.internal"
+
 class CoreDataService {
     static let shared = CoreDataService()
     
@@ -23,8 +25,7 @@ class CoreDataService {
         guard let appGroupDatabaseURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: internalAppGroupIdentifier)?.appendingPathComponent(storeName) else {
             fatalError("Couldn't create container URL for app group with security application group identifier \(internalAppGroupIdentifier) and name \(name).")
         }
-        print(appDatabaseURL)
-        print(appGroupDatabaseURL)
+
         let appDatabaseExists = fileManager.fileExists(atPath: appDatabaseURL.path)
         let appGroupDatabaseExists = fileManager.fileExists(atPath: appGroupDatabaseURL.path)
         if appDatabaseExists && !appGroupDatabaseExists {

@@ -34,6 +34,8 @@
 		5968D801ED3B64E9059A3555 /* CheapestHourManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2EFEC10A5ED85CC875CFCF7 /* CheapestHourManager.swift */; };
 		59BDBAACA1BB8316305D917B /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 95BD95FD492B1F960E9F23C4 /* Localizable.strings */; };
 		5DC2B66E8217B30642162424 /* NumberField.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF85B2B08E53E158A7DE4DFC /* NumberField.swift */; };
+		61200EF92A55F05A002ED355 /* CoreDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB8219C5EDEC8DD1FB333D45 /* CoreDataService.swift */; };
+		61200EFA2A55F0B4002ED355 /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 658538AA38870B6F3A5C4B90 /* Model.xcdatamodeld */; };
 		61635B272A482E690099F5AD /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 61635B262A482E690099F5AD /* WidgetKit.framework */; };
 		61635B292A482E690099F5AD /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 61635B282A482E690099F5AD /* SwiftUI.framework */; };
 		61635B2C2A482E690099F5AD /* AWattPriceWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61635B2B2A482E690099F5AD /* AWattPriceWidgetBundle.swift */; };
@@ -53,7 +55,7 @@
 		79BF8D2C50E18982950D8CEC /* TimeRangeInputField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EF4803E3C737282BE08A7A8 /* TimeRangeInputField.swift */; };
 		7B02F34A1AEECCC149627609 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FE51C2772E07396AF458F34 /* ContentView.swift */; };
 		7E7333EBA324E6AF0A2CE7C1 /* DownloadPublisherLoadingViewObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E27EA2E00D4FD1A008773DB /* DownloadPublisherLoadingViewObserver.swift */; };
-		7E90347E27828E2718534FED /* Setting.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB8219C5EDEC8DD1FB333D45 /* Setting.swift */; };
+		7E90347E27828E2718534FED /* CoreDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB8219C5EDEC8DD1FB333D45 /* CoreDataService.swift */; };
 		805FDBDA608B766F64F5AAB1 /* Time.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54E7B03C854090F5B68712E1 /* Time.swift */; };
 		865F84BF2724ED9CD2000B47 /* SplashScreenStartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDDDD6143A8627F05026A525 /* SplashScreenStartView.swift */; };
 		8B1F60F9ED84DE93E4B6C89C /* CheapestTimeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6A7FC93BBC0020CE1CDC089 /* CheapestTimeView.swift */; };
@@ -202,7 +204,7 @@
 		BA787873331E37B0915FDD4D /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
 		C6293FEC5FEF17D21F998528 /* AppGroupManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppGroupManager.swift; sourceTree = "<group>"; };
 		CB1D6F1DDF182D030B3B1731 /* TBItems.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TBItems.swift; sourceTree = "<group>"; };
-		CB8219C5EDEC8DD1FB333D45 /* Setting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Setting.swift; sourceTree = "<group>"; };
+		CB8219C5EDEC8DD1FB333D45 /* CoreDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataService.swift; sourceTree = "<group>"; };
 		CC86F9987A19BB3FA4DA1124 /* SF-Compact-Display-Black.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-Compact-Display-Black.otf"; sourceTree = "<group>"; };
 		CD1818E2114A46C67F823449 /* EnergyData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnergyData.swift; sourceTree = "<group>"; };
 		CD5548E86A4888A224ADE6E5 /* NotificationService+RemoteAccess.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NotificationService+RemoteAccess.swift"; sourceTree = "<group>"; };
@@ -322,14 +324,6 @@
 			path = "Input fields";
 			sourceTree = "<group>";
 		};
-		476E62EA924194480A767AAF /* Core Data */ = {
-			isa = PBXGroup;
-			children = (
-				CB8219C5EDEC8DD1FB333D45 /* Setting.swift */,
-			);
-			path = "Core Data";
-			sourceTree = "<group>";
-		};
 		4B01E3B0A4286C104BC51EFA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -369,6 +363,14 @@
 			path = Fonts;
 			sourceTree = "<group>";
 		};
+		61200EF82A55F047002ED355 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				CB8219C5EDEC8DD1FB333D45 /* CoreDataService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
 		61635B252A482E690099F5AD /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -402,6 +404,8 @@
 		61635B412A4834D20099F5AD /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				7F6FB3097BAE9306D5079A7D /* Core Data */,
+				61200EF82A55F047002ED355 /* Services */,
 				61635B4E2A485FDC0099F5AD /* Models */,
 				61635B462A4835030099F5AD /* Extensions */,
 			);
@@ -525,7 +529,6 @@
 				A41C1FC82200E2AFDF054FA4 /* AppContext.swift */,
 				C6293FEC5FEF17D21F998528 /* AppGroupManager.swift */,
 				F7E1E9B883B731AD9BA0E6A9 /* EnergyDataController.swift */,
-				476E62EA924194480A767AAF /* Core Data */,
 				C8D94C9E116FA82A69CA798C /* Notification Service */,
 			);
 			path = Services;
@@ -623,7 +626,6 @@
 				5E69EEB1FA019DD2F16C2815 /* AWattPriceWidgetExtension.entitlements */,
 				95BAA5837C46F053F078FFAE /* Info.plist */,
 				0CBD63E7EADDC69751723529 /* API */,
-				7F6FB3097BAE9306D5079A7D /* Core Data */,
 				9F3CD26A7BD9992AE1BA052B /* Extensions */,
 				852D692AACD80F7CF95110CB /* Models */,
 				4B01E3B0A4286C104BC51EFA /* Resources */,
@@ -792,7 +794,7 @@
 				D48854808F7F125401420348 /* CheapestTimeResultView.swift in Sources */,
 				8B1F60F9ED84DE93E4B6C89C /* CheapestTimeView.swift in Sources */,
 				7B02F34A1AEECCC149627609 /* ContentView.swift in Sources */,
-				7E90347E27828E2718534FED /* Setting.swift in Sources */,
+				7E90347E27828E2718534FED /* CoreDataService.swift in Sources */,
 				2D29DD479FDC741009B2AB32 /* CustomDatePicker.swift in Sources */,
 				D0B5F4C57BCEA12626689AA2 /* DataDownloadAndError.swift in Sources */,
 				42A01876BE7C9040AE139154 /* DataHelpers.swift in Sources */,
@@ -858,7 +860,9 @@
 				61635B4C2A4835E70099F5AD /* Extensions.swift in Sources */,
 				61635B2C2A482E690099F5AD /* AWattPriceWidgetBundle.swift in Sources */,
 				61635B4B2A4835CF0099F5AD /* EnergyData.swift in Sources */,
+				61200EFA2A55F0B4002ED355 /* Model.xcdatamodeld in Sources */,
 				61635B4F2A485FE20099F5AD /* Region.swift in Sources */,
+				61200EF92A55F05A002ED355 /* CoreDataService.swift in Sources */,
 				61635B2E2A482E690099F5AD /* PricesWidget.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

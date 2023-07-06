@@ -125,9 +125,7 @@ struct PricesWidgetEntryView: View {
                     AxisMarks(values: .stride(by: .hour, count: 6)) { value in
                         if let date = value.as(Date.self) {
                             AxisValueLabel {
-                                VStack(alignment: .leading) {
-                                    Text(date, format: .dateTime.hour())
-                                }
+                                Text(date, format: .dateTime.hour())
                             }
                         }
                         

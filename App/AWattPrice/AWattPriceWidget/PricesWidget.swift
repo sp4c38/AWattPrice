@@ -21,11 +21,7 @@ struct PricesWidgetProvider: TimelineProvider {
 
     func getSnapshot(in context: Context, completion: @escaping (EntryType) -> ()) {
         Task {
-            guard let region = Region(rawValue: setting.entity.regionIdentifier) else {
-                completion(EntryType(date: Date(), energyData: nil))
-                return
-            }
-            let energyData = await EnergyData.downloadEnergyData(for: region)
+            let energyData = await EnergyData.downloadEnergyData(setting: setting)
             let entry = EntryType(date: Date(), energyData: energyData)
             completion(entry)
         }
@@ -44,8 +40,7 @@ struct PricesWidgetProvider: TimelineProvider {
             let startToday = calendar.startOfDay(for: now)
             let endToday = startToday.addingTimeInterval(24 * 60 * 60)
             
-            guard let region = Region(rawValue: setting.entity.regionIdentifier),
-                  let energyData = await EnergyData.downloadEnergyData(for: region),
+            guard let energyData = await EnergyData.downloadEnergyData(setting: setting),
                   let lastEntry = energyData.prices.last else { // energyData.prices are sorted by start time.
                 entries.append(EntryType(date: Date(), energyData: nil))
                 let timeline = Timeline(entries: entries, policy: .after(beginNextHour))
@@ -83,16 +78,17 @@ struct PricesWidgetEntry: TimelineEntry {
     var energyData: EnergyData?
 }
 
-struct PricesWidgetEntryView : View {
-    @EnvironmentObject var setting: SettingCoreData
+struct PricesWidgetEntryView: View {
     var entry: PricesWidgetProvider.Entry
+    var setting: SettingCoreData
     
     let gradientColorsPositive = [Color(red: 1, green: 0.78, blue: 0.44), Color(red: 1, green: 0.08, blue: 0.06)]
     let gradientColorsNegative = [Color(red: 0, green: 0.69, blue: 0.02), Color(red: 0.56, green: 1, blue: 0.46)]
     
-    init(entry: PricesWidgetProvider.Entry) {
+    init(entry: PricesWidgetProvider.Entry, setting: SettingCoreData) {
         self.entry = entry
-        self.entry.energyData?.processCalculatedValues()
+        self.setting = setting
+        self.entry.energyData?.processCalculatedValues(setting: setting)
     }
     
     var body: some View {
@@ -109,7 +105,7 @@ struct PricesWidgetEntryView : View {
                 
             if let energyData = entry.energyData {
                 Chart(energyData.currentPrices.prefix(24), id: \.startTime) { price in
-                    BarMark(x: .value("Time", price.startTime ..< price.endTime), y: .value("Price", price.marketprice + setting.entity.baseFee), width: 9.5)
+                    BarMark(x: .value("Time", price.startTime ..< price.endTime), y: .value("Price", price.marketprice), width: 9.5)
                         .foregroundStyle(.linearGradient(colors: price.marketprice >= 0 ? gradientColorsPositive : gradientColorsNegative, startPoint: .bottom, endPoint: .top))
                         .alignsMarkStylesWithPlotArea()
                 }
@@ -145,8 +141,7 @@ struct PricesWidget: Widget {
     
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: PricesWidgetProvider(setting: setting)) { entry in
-            PricesWidgetEntryView(entry: entry)
-                .environmentObject(setting)
+            PricesWidgetEntryView(entry: entry, setting: setting)
         }
         .configurationDisplayName("Electricity Prices")
         .description("View electricity prices at a glance.")
@@ -162,8 +157,10 @@ struct AWattPriceWidget_Previews: PreviewProvider {
         return try! decoder.decode(EnergyData.self, from: data)
     }
     
+    static var setting = SettingCoreData(viewContext: CoreDataService.shared.container.viewContext)
+    
     static var previews: some View {
-        PricesWidgetEntryView(entry: PricesWidgetEntry(date: Date(), energyData: getPreviewEnergyData()))
+        PricesWidgetEntryView(entry: PricesWidgetEntry(date: Date(), energyData: getPreviewEnergyData()), setting: Self.setting)
             .previewContext(WidgetPreviewContext(family: .systemMedium))
     }
 }

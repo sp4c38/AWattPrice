@@ -37,29 +37,28 @@ struct EnergyPricePoint: Decodable {
 }
 
 
-struct EnergyData: Decodable {
-    let prices: [EnergyPricePoint]
-    
+class EnergyData: Decodable {
+    var prices: [EnergyPricePoint]
     var currentPrices: [EnergyPricePoint] = []
     
     enum CodingKeys: CodingKey {
         case prices
     }
-    
-    init(from decoder: Decoder) throws {
-        let values = try decoder.container(keyedBy: CodingKeys.self)
-        prices = try values.decode([EnergyPricePoint].self, forKey: .prices)
-        processCalculatedValues()
-    }
-    
-    init(prices: [EnergyPricePoint]) {
-        self.prices = prices
-        processCalculatedValues()
-    }
-    
-    mutating func processCalculatedValues() {
+
+    func processCalculatedValues(setting: SettingCoreData) {
         let now = Date()
         let hourStart = Calendar.current.startOfHour(for: now)
+        
+        for pricePointIndex in prices.indices {
+            if setting.entity.pricesWithVAT == true,
+               prices[pricePointIndex].marketprice > 0,
+               let regionTaxMultiplier = Region(rawValue: setting.entity.regionIdentifier)?.taxMultiplier
+            {
+                prices[pricePointIndex].marketprice *= regionTaxMultiplier
+            }
+            prices[pricePointIndex].marketprice += setting.entity.baseFee
+        }
+        
         currentPrices = prices
             .compactMap { $0.startTime >= hourStart ? $0 : nil }
             .sorted { lhsPricePoint, rhsPricePoint in
@@ -73,7 +72,9 @@ struct EnergyData: Decodable {
         return jsonDecoder
     }
     
-    static func downloadEnergyData(for region: Region) async -> EnergyData? {
+    static func downloadEnergyData(setting: SettingCoreData) async -> EnergyData? {
+        guard let region = Region(rawValue: setting.entity.regionIdentifier) else { return nil }
+        
         let apiURL: URL = {
             #if DEBUG
             return URL(string: "https://test-awp.space8.me/api/v2/")!

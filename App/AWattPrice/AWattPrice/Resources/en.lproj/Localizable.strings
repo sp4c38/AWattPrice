@@ -9,7 +9,7 @@
 // Welcome Splash Screen localizations
 "splashScreen.start.notAffiliatedNote" = "Please note that AWattPrice is an independent app and is in no way related to aWATTar GmbH.";
 
-"whatsNew.widgets.subTitle" = "Sparks fly as we unveil our electrifying update: introducing the AWattPrice iOS widget! Let the excitement surge through your fingertips as you access real-time electricity prices directly on your home screen.";
+"whatsNew.widgets.subTitle" = "Sparks fly as we unveil our electrifying update: introducing the AWattPrice iOS widget!";
 "whatsNew.widgets.tipText" = "Ready to bring the power to your Home Screen? Simply long-press on your screen, tap the '+' icon in the top-left corner, find AWattPrice in the widget gallery, and zap it right onto your Home Screen.";
 
 // Features and Consent Splash Screen localizations

@@ -193,9 +193,6 @@
 /* Welcome Splash Screen localizations */
 "splashScreen.start.notAffiliatedNote" = "Bitte beachten Sie, dass AWattPrice eine unabhängige App ist und in keiner Weise mit aWATTar GmbH in Verbindung steht.";
 
-/* What's new splash screen localization */
-"splashScreen.whatsNew.baseFee.extrainfo" = " Gehen Sie zum \"Einstellungen\"-Tab in AWattPrice um dies zu aktivieren.";
-
 /* No comment provided by engineer. */
 "Suggestions" = "Vorschläge";
 
@@ -235,5 +232,7 @@
 
 "Widgets are here!" = "Widgets sind da!";
 
-"whatsNew.widgets.subTitle" = "Die Funken fliegen, denn wir stellen unser elektrisierendes Update vor: die Einführung des AWattPrice iOS-Widgets! Spüren Sie die kribbelnde Spannung in Ihren Fingerspitzen, während Sie direkt auf Ihrem Startbildschirm auf Echtzeit-Strompreise zugreifen.";
-"whatsNew.widgets.tipText" = "Bereit, die Power auf deinen Homescreen zu bringen? Halte einfach deinen Bildschirm gedrückt, tippe auf das '+'-Symbol oben links, finde AWattPrice in der Widget-Galerie und füge es direkt auf deinen Homescreen hinzu.";
+"whatsNew.widgets.subTitle" = "Die Funken fliegen, denn wir stellen unser elektrisierendes Update vor: die Einführung des AWattPrice iOS-Widgets!";
+"whatsNew.widgets.tipText" = "Bereit, die Power auf deinen Homescreen zu bringen? Halte einfach deinen Bildschirm gedrückt, tippe auf das '+'-Symbol oben links, finde AWattPrice in der Widget-Galerie und füge es auf deinen Homescreen hinzu.";
+
+"What's new?" = "Was gibt's Neues?";

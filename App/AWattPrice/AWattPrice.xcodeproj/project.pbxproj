@@ -12,7 +12,6 @@
 		0E3EB76E159021A4574B6416 /* EasyIntervalPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6AD0D0B3D95E6C7BB20D726 /* EasyIntervalPicker.swift */; };
 		0F40C45BA00F72E80C519F96 /* GraphPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E9C4F8C140D86F7F4233532 /* GraphPageView.swift */; };
 		179E5999F1C8E68A7EA1FD3B /* TotalConsumptionInputField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F9FE3FE7F1EE73B1DAD0AE3 /* TotalConsumptionInputField.swift */; };
-		1B4AF01AECAE87A13469EB5D /* Resolver in Frameworks */ = {isa = PBXBuildFile; productRef = 24F865211EDC65701F1AC469 /* Resolver */; };
 		1CCDA78DC9491A406AB24B42 /* EasyIntervalPickerRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C5F824C94B9912B11853532 /* EasyIntervalPickerRepresentable.swift */; };
 		1F050059A5AEEA309F5EF60A /* SplashScreenFeaturesAndConsent.swift in Sources */ = {isa = PBXBuildFile; fileRef = F532255ECC882E59C9739E19 /* SplashScreenFeaturesAndConsent.swift */; };
 		1FF85FE467F2EBD6F0165295 /* TotalTimeFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2BCED411DC7AD4E79FC22B9 /* TotalTimeFormatter.swift */; };
@@ -36,6 +35,7 @@
 		5DC2B66E8217B30642162424 /* NumberField.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF85B2B08E53E158A7DE4DFC /* NumberField.swift */; };
 		61200EF92A55F05A002ED355 /* CoreDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB8219C5EDEC8DD1FB333D45 /* CoreDataService.swift */; };
 		61200EFA2A55F0B4002ED355 /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 658538AA38870B6F3A5C4B90 /* Model.xcdatamodeld */; };
+		615C98FD2A56A6C400FC9D26 /* Resolver in Frameworks */ = {isa = PBXBuildFile; productRef = 615C98FC2A56A6C400FC9D26 /* Resolver */; };
 		61635B272A482E690099F5AD /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 61635B262A482E690099F5AD /* WidgetKit.framework */; };
 		61635B292A482E690099F5AD /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 61635B282A482E690099F5AD /* SwiftUI.framework */; };
 		61635B2C2A482E690099F5AD /* AWattPriceWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61635B2B2A482E690099F5AD /* AWattPriceWidgetBundle.swift */; };
@@ -46,6 +46,7 @@
 		61635B4C2A4835E70099F5AD /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C06F1B5903714FE38928934 /* Extensions.swift */; };
 		61635B4D2A483B140099F5AD /* PricesPreviewContent.json in Resources */ = {isa = PBXBuildFile; fileRef = 61635B3D2A4833730099F5AD /* PricesPreviewContent.json */; };
 		61635B4F2A485FE20099F5AD /* Region.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52D6D993DB3CE3CBB4B1E644 /* Region.swift */; };
+		61ACE7A62A56A7E7005D0110 /* EffectsLibrary in Frameworks */ = {isa = PBXBuildFile; productRef = 61ACE7A52A56A7E7005D0110 /* EffectsLibrary */; };
 		6AB9A889E5A3A17EBB1AF725 /* InputFieldStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 404CC5EAC0C3630A020070B0 /* InputFieldStyles.swift */; };
 		6B806C95A11BDB4E4B771D81 /* BarText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D8536DB7CE536410491DE1C /* BarText.swift */; };
 		6C580706DD96A47932AD8EE9 /* SplashScreenFinishView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E032003B344BBBB7BB4921D1 /* SplashScreenFinishView.swift */; };
@@ -239,7 +240,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1B4AF01AECAE87A13469EB5D /* Resolver in Frameworks */,
+				615C98FD2A56A6C400FC9D26 /* Resolver in Frameworks */,
+				61ACE7A62A56A7E7005D0110 /* EffectsLibrary in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -701,7 +703,8 @@
 			);
 			name = AWattPrice;
 			packageProductDependencies = (
-				24F865211EDC65701F1AC469 /* Resolver */,
+				615C98FC2A56A6C400FC9D26 /* Resolver */,
+				61ACE7A52A56A7E7005D0110 /* EffectsLibrary */,
 			);
 			productName = AWattPrice;
 			productReference = 4D92DAF6062C9BB0CC3973F3 /* AWattPrice.app */;
@@ -737,6 +740,7 @@
 			mainGroup = FED1070106A78573488FD37A;
 			packageReferences = (
 				7B0CCCAD70F471B791BE32BB /* XCRemoteSwiftPackageReference "Resolver" */,
+				61ACE7A42A56A7E7005D0110 /* XCRemoteSwiftPackageReference "effects-library" */,
 			);
 			projectDirPath = "";
 			projectRoot = "";
@@ -890,7 +894,7 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
-		10962E2B1509DDA53A27298D /* Development */ = {
+		10962E2B1509DDA53A27298D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
@@ -908,9 +912,9 @@
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
-			name = Development;
+			name = Debug;
 		};
-		34A1711C1739A657351EA845 /* AppStore */ = {
+		34A1711C1739A657351EA845 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
@@ -928,9 +932,9 @@
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
-			name = AppStore;
+			name = Release;
 		};
-		4ECD3899CBDABF2660149390 /* Development */ = {
+		4ECD3899CBDABF2660149390 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -942,6 +946,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_USE_OPTIMIZATION_PROFILE = NO;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
@@ -972,6 +977,7 @@
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -985,12 +991,12 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 			};
-			name = Development;
+			name = Debug;
 		};
-		61635B362A482E6A0099F5AD /* Development */ = {
+		61635B362A482E6A0099F5AD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -1076,7 +1082,7 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
-			name = Development;
+			name = Debug;
 		};
 		61635B382A482E6A0099F5AD /* AdHoc */ = {
 			isa = XCBuildConfiguration;
@@ -1160,7 +1166,7 @@
 			};
 			name = AdHoc;
 		};
-		61635B3A2A482E6A0099F5AD /* AppStore */ = {
+		61635B3A2A482E6A0099F5AD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -1240,9 +1246,9 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
-			name = AppStore;
+			name = Release;
 		};
-		6A0DA7D1E628F6CD0A85D894 /* AppStore */ = {
+		6A0DA7D1E628F6CD0A85D894 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -1254,6 +1260,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_USE_OPTIMIZATION_PROFILE = NO;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
@@ -1283,6 +1290,7 @@
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -1298,7 +1306,7 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 			};
-			name = AppStore;
+			name = Release;
 		};
 		879E96E16140FAC60BBE694E /* AdHoc */ = {
 			isa = XCBuildConfiguration;
@@ -1332,6 +1340,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_USE_OPTIMIZATION_PROFILE = NO;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
@@ -1361,6 +1370,7 @@
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -1384,36 +1394,44 @@
 		01093E4A43A780DE6BF5F5D1 /* Build configuration list for PBXProject "AWattPrice" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				4ECD3899CBDABF2660149390 /* Development */,
+				4ECD3899CBDABF2660149390 /* Debug */,
 				DCD9F96BDE3D0AA1F6BE1EA7 /* AdHoc */,
-				6A0DA7D1E628F6CD0A85D894 /* AppStore */,
+				6A0DA7D1E628F6CD0A85D894 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Development;
+			defaultConfigurationName = Debug;
 		};
 		1D71827138F44D0E59EFF688 /* Build configuration list for PBXNativeTarget "AWattPrice" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				10962E2B1509DDA53A27298D /* Development */,
+				10962E2B1509DDA53A27298D /* Debug */,
 				879E96E16140FAC60BBE694E /* AdHoc */,
-				34A1711C1739A657351EA845 /* AppStore */,
+				34A1711C1739A657351EA845 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Development;
+			defaultConfigurationName = Debug;
 		};
 		61635B3C2A482E6A0099F5AD /* Build configuration list for PBXNativeTarget "AWattPriceWidgetExtension" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				61635B362A482E6A0099F5AD /* Development */,
+				61635B362A482E6A0099F5AD /* Debug */,
 				61635B382A482E6A0099F5AD /* AdHoc */,
-				61635B3A2A482E6A0099F5AD /* AppStore */,
+				61635B3A2A482E6A0099F5AD /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Development;
+			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		61ACE7A42A56A7E7005D0110 /* XCRemoteSwiftPackageReference "effects-library" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "git@github.com:GetStream/effects-library.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
 		7B0CCCAD70F471B791BE32BB /* XCRemoteSwiftPackageReference "Resolver" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "git@github.com:hmlongco/Resolver.git";
@@ -1425,10 +1443,15 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		24F865211EDC65701F1AC469 /* Resolver */ = {
+		615C98FC2A56A6C400FC9D26 /* Resolver */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 7B0CCCAD70F471B791BE32BB /* XCRemoteSwiftPackageReference "Resolver" */;
 			productName = Resolver;
+		};
+		61ACE7A52A56A7E7005D0110 /* EffectsLibrary */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 61ACE7A42A56A7E7005D0110 /* XCRemoteSwiftPackageReference "effects-library" */;
+			productName = EffectsLibrary;
 		};
 /* End XCSwiftPackageProductDependency section */
 

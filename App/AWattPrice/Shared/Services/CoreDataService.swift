@@ -26,9 +26,14 @@ class CoreDataService {
         guard let appGroupDatabaseURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: internalAppGroupIdentifier)?.appendingPathComponent(storeName) else {
             fatalError("Couldn't create container URL for app group with security application group identifier \(internalAppGroupIdentifier) and name \(name).")
         }
-
+        
         let appDatabaseExists = fileManager.fileExists(atPath: appDatabaseURL.path)
         let appGroupDatabaseExists = fileManager.fileExists(atPath: appGroupDatabaseURL.path)
+
+        if !environmentIsMainApp() && !appGroupDatabaseExists {
+            fatalError("The app hasn't yet moved its database to the app group.")
+        }
+        
         if appDatabaseExists && !appGroupDatabaseExists {
             print("No database was found in the app group container. Database was found inside the app container. It will now be moved to the app group...")
             let container = NSPersistentContainer(name: name)
@@ -43,6 +48,7 @@ class CoreDataService {
             do {
                 _ = try container.persistentStoreCoordinator.migratePersistentStore(persistentStore, to: appGroupDatabaseURL, type: .sqlite)
                 print("Successfully moved database from the app container to the app group container.")
+                WidgetCenter.shared.reloadTimelines(ofKind: pricesWidgetKind)
             } catch {
                 print("Couldn't move old database from the app container to the app group container.")
             }
@@ -117,7 +123,7 @@ class SettingCoreData: ObservableObject {
             changeTask(self)
             do {
                 try self.viewContext.save()
-                WidgetCenter.shared.reloadTimelines(ofKind: "AWattPriceWidget.PricesWidget")
+                WidgetCenter.shared.reloadTimelines(ofKind: pricesWidgetKind)
                 print("Reloading prices widget timeline.")
             } catch {
                 print("Couldn't save the view context: \(error).")

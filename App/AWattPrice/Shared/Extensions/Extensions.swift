@@ -7,6 +7,8 @@
 
 import Foundation
 
+let pricesWidgetKind = "AWattPriceWidget.PricesWidget"
+
 extension Calendar {
     func startOfHour(for date: Date) -> Date {
         let hours = self.component(.hour, from: date)
@@ -33,4 +35,18 @@ extension Double {
     }
     
     var euroMWhToCentkWh: Double { self / 1000 * 100 }
+}
+
+/// Checks if the current code is executed by the main app.
+///
+/// - Returns: True if code is executed by main app. False if code is executed for example by an app extension.
+func environmentIsMainApp() -> Bool {
+    let bundleURL = Bundle.main.bundleURL
+    let bundlePathExtension = bundleURL.pathExtension
+    let isAppex = bundlePathExtension == "appex"
+    if isAppex {
+        return false
+    } else {
+        return true
+    }
 }

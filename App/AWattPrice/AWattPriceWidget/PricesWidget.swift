@@ -14,7 +14,6 @@ struct PricesWidgetProvider: TimelineProvider {
     
     let setting: SettingCoreData
     
-    
     func placeholder(in context: Context) -> EntryType {
         return EntryType(date: Date(), energyData: nil)
     }
@@ -133,7 +132,7 @@ struct PricesWidgetEntryView: View {
 }
 
 struct PricesWidget: Widget {
-    let kind: String = "AWattPriceWidget.PricesWidget"
+    let kind: String = pricesWidgetKind
 
     let setting: SettingCoreData
     

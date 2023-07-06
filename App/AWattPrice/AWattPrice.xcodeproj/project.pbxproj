@@ -47,6 +47,7 @@
 		61635B4D2A483B140099F5AD /* PricesPreviewContent.json in Resources */ = {isa = PBXBuildFile; fileRef = 61635B3D2A4833730099F5AD /* PricesPreviewContent.json */; };
 		61635B4F2A485FE20099F5AD /* Region.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52D6D993DB3CE3CBB4B1E644 /* Region.swift */; };
 		61ACE7A62A56A7E7005D0110 /* EffectsLibrary in Frameworks */ = {isa = PBXBuildFile; productRef = 61ACE7A52A56A7E7005D0110 /* EffectsLibrary */; };
+		61DC52D02A56F22B00FB2D08 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 95BD95FD492B1F960E9F23C4 /* Localizable.strings */; };
 		6AB9A889E5A3A17EBB1AF725 /* InputFieldStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 404CC5EAC0C3630A020070B0 /* InputFieldStyles.swift */; };
 		6B806C95A11BDB4E4B771D81 /* BarText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D8536DB7CE536410491DE1C /* BarText.swift */; };
 		6C580706DD96A47932AD8EE9 /* SplashScreenFinishView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E032003B344BBBB7BB4921D1 /* SplashScreenFinishView.swift */; };
@@ -331,7 +332,6 @@
 			children = (
 				2C75B85698299C6281666C42 /* Assets.xcassets */,
 				546D5FA692CB5FFBAF81B22A /* Launch Screen.storyboard */,
-				95BD95FD492B1F960E9F23C4 /* Localizable.strings */,
 				5972D0A707104900857937DF /* Fonts */,
 				8CAEE9A6D25CE48623C7A971 /* Preview Content */,
 			);
@@ -406,6 +406,7 @@
 		61635B412A4834D20099F5AD /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				61DC52CF2A56F22200FB2D08 /* Resources */,
 				7F6FB3097BAE9306D5079A7D /* Core Data */,
 				61200EF82A55F047002ED355 /* Services */,
 				61635B4E2A485FDC0099F5AD /* Models */,
@@ -436,6 +437,14 @@
 				52D6D993DB3CE3CBB4B1E644 /* Region.swift */,
 			);
 			path = Models;
+			sourceTree = "<group>";
+		};
+		61DC52CF2A56F22200FB2D08 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				95BD95FD492B1F960E9F23C4 /* Localizable.strings */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 		673A27A9ED070E839D262A5A /* Styles */ = {
@@ -757,6 +766,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				61635B4D2A483B140099F5AD /* PricesPreviewContent.json in Resources */,
+				61DC52D02A56F22B00FB2D08 /* Localizable.strings in Resources */,
 				61635B302A482E6A0099F5AD /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

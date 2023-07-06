@@ -55,3 +55,6 @@
 
 "baseFee.infoText" = "The base fee is added on top of each electricity price within the entire app. This fee depends on your contract with aWATTar.";
 "baseFee.priceGuardActivatedInfo" = "The price guard is turned on. Remember to adjust the wish price if necessary when you change the value below.";
+
+// Widget localizations
+"widget.pricesWidget.description" = "View electricity prices at a glance.";

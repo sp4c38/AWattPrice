@@ -146,7 +146,7 @@ struct PricesWidget: Widget {
             PricesWidgetEntryView(entry: entry, setting: setting)
         }
         .configurationDisplayName("Electricity Prices")
-        .description("View electricity prices at a glance.")
+        .description("widget.pricesWidget.description")
         .supportedFamilies([.systemMedium])
     }
 }

@@ -12,21 +12,29 @@ import WidgetKit
 struct PricesWidgetProvider: TimelineProvider {
     typealias EntryType = PricesWidgetEntry
     
-    let setting: SettingCoreData
-    
     func placeholder(in context: Context) -> EntryType {
-        return EntryType(date: Date(), energyData: nil)
+        return EntryType.emptyEntry
     }
 
     func getSnapshot(in context: Context, completion: @escaping (EntryType) -> ()) {
+        guard let container = CoreDataService()?.container else {
+            completion(EntryType.emptyEntry)
+            return
+        }
+        let setting = SettingCoreData(viewContext: container.viewContext)
         Task {
             let energyData = await EnergyData.downloadEnergyData(setting: setting)
-            let entry = EntryType(date: Date(), energyData: energyData)
+            let entry = EntryType(date: Date(), energyData: energyData, setting: setting)
             completion(entry)
         }
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
+        guard let container = CoreDataService()?.container else {
+            completion(Timeline(entries: [EntryType.emptyEntry], policy: .never))
+            return
+        }
+        let setting = SettingCoreData(viewContext: container.viewContext)
         print("Computing timeline.")
         setting.reloadEntity()
         Task {
@@ -42,13 +50,13 @@ struct PricesWidgetProvider: TimelineProvider {
             
             guard let energyData = await EnergyData.downloadEnergyData(setting: setting),
                   let lastEntry = energyData.prices.last else { // energyData.prices are sorted by start time.
-                entries.append(EntryType(date: Date(), energyData: nil))
+                entries.append(EntryType(date: Date(), energyData: nil, setting: setting))
                 let timeline = Timeline(entries: entries, policy: .after(beginNextHour))
                 completion(timeline)
                 return
             }
 
-            entries.append(EntryType(date: now, energyData: energyData))
+            entries.append(EntryType(date: now, energyData: energyData, setting: setting))
             if lastEntry.startTime > endToday {
                 completion(Timeline(entries: entries, policy: .after(beginNextHour)))
                 return
@@ -76,20 +84,23 @@ struct PricesWidgetProvider: TimelineProvider {
 struct PricesWidgetEntry: TimelineEntry {
     var date: Date
     var energyData: EnergyData?
+    let setting: SettingCoreData?
+    
+    static let emptyEntry = PricesWidgetEntry(date: Date(), energyData: nil, setting: nil)
 }
 
 struct PricesWidgetEntryView: View {
     var entry: PricesWidgetProvider.Entry
-    var setting: SettingCoreData
     
     let gradientColorsPositive = [Color(red: 1, green: 0.78, blue: 0.44), Color(red: 1, green: 0.08, blue: 0.06)]
     let gradientColorsNegative = [Color(red: 0, green: 0.69, blue: 0.02), Color(red: 0.56, green: 1, blue: 0.46)]
     
-    init(entry: PricesWidgetProvider.Entry, setting: SettingCoreData) {
+    init(entry: PricesWidgetProvider.Entry) {
         self.entry = entry
-        self.setting = setting
-        setting.reloadEntity()
-        self.entry.energyData?.processCalculatedValues(setting: setting)
+        entry.setting?.reloadEntity()
+        if let setting = entry.setting {
+            self.entry.energyData?.processCalculatedValues(setting: setting)
+        }
     }
     
     var body: some View {
@@ -124,7 +135,9 @@ struct PricesWidgetEntryView: View {
                     }
                 }
             } else {
+                Spacer()
                 Text("Couldn't download energy data.")
+                Spacer()
             }
         }
         .padding([.leading, .trailing, .top, .bottom], 13)
@@ -133,17 +146,10 @@ struct PricesWidgetEntryView: View {
 
 struct PricesWidget: Widget {
     let kind: String = pricesWidgetKind
-
-    let setting: SettingCoreData
-    
-    init() {
-        self.setting = SettingCoreData(viewContext: CoreDataService.shared.container.viewContext)
-        setting.viewContext.stalenessInterval = 0 // See SettingCoreData.reloadEntity(_) method to see why this attribute must be set to zero.
-    }
     
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: PricesWidgetProvider(setting: setting)) { entry in
-            PricesWidgetEntryView(entry: entry, setting: setting)
+        StaticConfiguration(kind: kind, provider: PricesWidgetProvider()) { entry in
+            PricesWidgetEntryView(entry: entry)
         }
         .configurationDisplayName("Electricity Prices")
         .description("widget.pricesWidget.description")
@@ -159,10 +165,13 @@ struct AWattPriceWidget_Previews: PreviewProvider {
         return try! decoder.decode(EnergyData.self, from: data)
     }
     
-    static var setting = SettingCoreData(viewContext: CoreDataService.shared.container.viewContext)
+    static var setting: SettingCoreData? = {
+        guard let container = CoreDataService()?.container else { return nil }
+        return SettingCoreData(viewContext: container.viewContext)
+    }()
     
     static var previews: some View {
-        PricesWidgetEntryView(entry: PricesWidgetEntry(date: Date(), energyData: getPreviewEnergyData()), setting: Self.setting)
+        PricesWidgetEntryView(entry: PricesWidgetEntry(date: Date(), energyData: getPreviewEnergyData(), setting: setting))
             .previewContext(WidgetPreviewContext(family: .systemMedium))
     }
 }

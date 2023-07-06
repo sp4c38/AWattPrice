@@ -17,7 +17,7 @@ struct WhatsNewPage: View {
         content: [
             .emoji("⚡️", 15.0)
         ],
-        intensity: .low,
+        intensity: .medium,
         lifetime: .long,
         initialVelocity: .fast,
         fadeOut: .medium
@@ -52,6 +52,7 @@ struct WhatsNewPage: View {
                 .navigationTitle("What's new?")
                 
                 FireworksView(config: fireworkConfig)
+                    .disabled(true)
             }
         }
     }

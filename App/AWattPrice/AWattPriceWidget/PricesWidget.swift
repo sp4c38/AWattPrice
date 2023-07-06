@@ -29,6 +29,7 @@ struct PricesWidgetProvider: TimelineProvider {
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
         print("Computing timeline.")
+        setting.reloadEntity()
         Task {
             var entries: [EntryType] = []
             
@@ -88,6 +89,7 @@ struct PricesWidgetEntryView: View {
     init(entry: PricesWidgetProvider.Entry, setting: SettingCoreData) {
         self.entry = entry
         self.setting = setting
+        setting.reloadEntity()
         self.entry.energyData?.processCalculatedValues(setting: setting)
     }
     
@@ -137,6 +139,7 @@ struct PricesWidget: Widget {
     
     init() {
         self.setting = SettingCoreData(viewContext: CoreDataService.shared.container.viewContext)
+        setting.viewContext.stalenessInterval = 0 // See SettingCoreData.reloadEntity(_) method to see why this attribute must be set to zero.
     }
     
     var body: some WidgetConfiguration {

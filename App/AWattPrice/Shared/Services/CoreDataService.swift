@@ -7,6 +7,7 @@
 
 import Combine
 import CoreData
+import WidgetKit
 
 let internalAppGroupIdentifier = "group.me.space8.AWattPrice.internal"
 
@@ -89,7 +90,7 @@ class SettingCoreData: ObservableObject {
     var cancellables =  [AnyCancellable]()
     
     init(viewContext: NSManagedObjectContext) {
-        let setting: Setting = getGeneralSettingEntity(viewContext: viewContext, entityName: Self.entityName, setDefaults: { newEntry in
+        self.entity = getGeneralSettingEntity(viewContext: viewContext, entityName: Self.entityName, setDefaults: { newEntry in
             newEntry.cheapestTimeLastConsumption = 0
             newEntry.cheapestTimeLastPower = 0
             newEntry.pricesWithVAT = true
@@ -97,12 +98,18 @@ class SettingCoreData: ObservableObject {
             newEntry.splashScreensFinished = false
             newEntry.baseFee = 0
         })
-        
+
         self.viewContext = viewContext
-        self.entity = setting
         self.entity.objectWillChange.sink { _ in
             self.objectWillChange.send()
         }.store(in: &cancellables)
+    }
+    
+    /// Reloads the entity from the underlying SQLite file used by CoreData. This function should only be used when using different instances of this class at different locations. Different instances should only be used if the there are multiple targets using this class.
+    ///
+    /// Note: This will only refresh the entity from the persistent store if the viewContext.stalenessInterval was exceeded. Set the stalnessInterval accordingly if you wish to call this method. If the stalenessInterval isn't exceeded this method will reload from cache.
+    func reloadEntity() {
+        self.viewContext.refresh(entity, mergeChanges: false)
     }
     
     func changeSetting(_ changeTask: @escaping (SettingCoreData) -> ()) {
@@ -110,6 +117,8 @@ class SettingCoreData: ObservableObject {
             changeTask(self)
             do {
                 try self.viewContext.save()
+                WidgetCenter.shared.reloadTimelines(ofKind: "AWattPriceWidget.PricesWidget")
+                print("Reloading prices widget timeline.")
             } catch {
                 print("Couldn't save the view context: \(error).")
             }

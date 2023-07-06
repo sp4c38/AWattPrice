@@ -24,6 +24,7 @@ class AppContext {
     
     func checkShowWhatsNewScreen() -> Bool {
         let savedVersion = UserDefaults.standard.string(forKey: "whatsNewScreenSavedAppVersion")
+
         if savedVersion != currentAppVersion, currentAppVersion == "1.4" {
             print("Detected app version update from \(savedVersion ?? "nil (first app launch with version tracking") to 1.4. Showing \"What's New?\" screen for version 1.4.")
             UserDefaults.standard.set(currentAppVersion, forKey: "whatsNewScreenSavedAppVersion")

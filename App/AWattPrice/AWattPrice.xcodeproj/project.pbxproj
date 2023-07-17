@@ -45,11 +45,14 @@
 		61635B4C2A4835E70099F5AD /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C06F1B5903714FE38928934 /* Extensions.swift */; };
 		61635B4D2A483B140099F5AD /* PricesPreviewContent.json in Resources */ = {isa = PBXBuildFile; fileRef = 61635B3D2A4833730099F5AD /* PricesPreviewContent.json */; };
 		61635B4F2A485FE20099F5AD /* Region.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52D6D993DB3CE3CBB4B1E644 /* Region.swift */; };
+		619455BF2A65C3C40090EEAE /* SnapshotHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 619455BE2A65C3C40090EEAE /* SnapshotHelper.swift */; };
 		61ACE7A62A56A7E7005D0110 /* EffectsLibrary in Frameworks */ = {isa = PBXBuildFile; productRef = 61ACE7A52A56A7E7005D0110 /* EffectsLibrary */; };
 		61DC52D02A56F22B00FB2D08 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 95BD95FD492B1F960E9F23C4 /* Localizable.strings */; };
 		61DC52D32A57191500FB2D08 /* CoreDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61DC52D22A57191500FB2D08 /* CoreDataService.swift */; };
 		61DC52D72A57199D00FB2D08 /* CoreDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61DC52D52A57194A00FB2D08 /* CoreDataService.swift */; };
 		61DC52D82A571AFC00FB2D08 /* SettingEntities.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB8219C5EDEC8DD1FB333D45 /* SettingEntities.swift */; };
+		61F4EF392A6584D6007CCAA6 /* UITesting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61F4EF382A6584D6007CCAA6 /* UITesting.swift */; };
+		61F4EF3B2A6584D6007CCAA6 /* UITestingLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61F4EF3A2A6584D6007CCAA6 /* UITestingLaunchTests.swift */; };
 		6AB9A889E5A3A17EBB1AF725 /* InputFieldStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 404CC5EAC0C3630A020070B0 /* InputFieldStyles.swift */; };
 		6B806C95A11BDB4E4B771D81 /* BarText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D8536DB7CE536410491DE1C /* BarText.swift */; };
 		6C580706DD96A47932AD8EE9 /* SplashScreenFinishView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E032003B344BBBB7BB4921D1 /* SplashScreenFinishView.swift */; };
@@ -113,6 +116,13 @@
 			remoteGlobalIDString = 61635B232A482E690099F5AD;
 			remoteInfo = AWattPriceWidgetExtension;
 		};
+		61F4EF3C2A6584D6007CCAA6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 80976F3A00A5122A760B668F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F9290196FBFAE745A3E6B2A3;
+			remoteInfo = AWattPrice;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -173,9 +183,13 @@
 		61635B312A482E6A0099F5AD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		61635B3D2A4833730099F5AD /* PricesPreviewContent.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = PricesPreviewContent.json; sourceTree = "<group>"; };
 		61635B492A4835970099F5AD /* EnergyData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnergyData.swift; sourceTree = "<group>"; };
+		619455BE2A65C3C40090EEAE /* SnapshotHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SnapshotHelper.swift; sourceTree = "<group>"; };
 		61D751171DAD1E580C719772 /* TabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBar.swift; sourceTree = "<group>"; };
 		61DC52D22A57191500FB2D08 /* CoreDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataService.swift; sourceTree = "<group>"; };
 		61DC52D52A57194A00FB2D08 /* CoreDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataService.swift; sourceTree = "<group>"; };
+		61F4EF362A6584D6007CCAA6 /* UITesting.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UITesting.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		61F4EF382A6584D6007CCAA6 /* UITesting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITesting.swift; sourceTree = "<group>"; };
+		61F4EF3A2A6584D6007CCAA6 /* UITestingLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITestingLaunchTests.swift; sourceTree = "<group>"; };
 		6630553CDA1300720DF753BE /* EnergyPriceSingleBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnergyPriceSingleBar.swift; sourceTree = "<group>"; };
 		6A5CE8C0A77D6361AD5B708C /* KeyboardObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardObserver.swift; sourceTree = "<group>"; };
 		6C06F1B5903714FE38928934 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
@@ -238,6 +252,13 @@
 			files = (
 				61635B292A482E690099F5AD /* SwiftUI.framework in Frameworks */,
 				61635B272A482E690099F5AD /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		61F4EF332A6584D6007CCAA6 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -347,6 +368,7 @@
 			children = (
 				4D92DAF6062C9BB0CC3973F3 /* AWattPrice.app */,
 				61635B242A482E690099F5AD /* AWattPriceWidgetExtension.appex */,
+				61F4EF362A6584D6007CCAA6 /* UITesting.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -449,6 +471,16 @@
 				61DC52D52A57194A00FB2D08 /* CoreDataService.swift */,
 			);
 			path = Services;
+			sourceTree = "<group>";
+		};
+		61F4EF372A6584D6007CCAA6 /* UITesting */ = {
+			isa = PBXGroup;
+			children = (
+				619455BE2A65C3C40090EEAE /* SnapshotHelper.swift */,
+				61F4EF382A6584D6007CCAA6 /* UITesting.swift */,
+				61F4EF3A2A6584D6007CCAA6 /* UITestingLaunchTests.swift */,
+			);
+			path = UITesting;
 			sourceTree = "<group>";
 		};
 		673A27A9ED070E839D262A5A /* Styles */ = {
@@ -677,6 +709,7 @@
 				61635B412A4834D20099F5AD /* Shared */,
 				E18353461A3EAEA81012197F /* AWattPrice */,
 				61635B2A2A482E690099F5AD /* AWattPriceWidget */,
+				61F4EF372A6584D6007CCAA6 /* UITesting */,
 				61635B252A482E690099F5AD /* Frameworks */,
 				4BBB0F3B49E60388309A1685 /* Products */,
 			);
@@ -701,6 +734,24 @@
 			productName = AWattPriceWidgetExtension;
 			productReference = 61635B242A482E690099F5AD /* AWattPriceWidgetExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
+		};
+		61F4EF352A6584D6007CCAA6 /* UITesting */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 61F4EF412A6584D6007CCAA6 /* Build configuration list for PBXNativeTarget "UITesting" */;
+			buildPhases = (
+				61F4EF322A6584D6007CCAA6 /* Sources */,
+				61F4EF332A6584D6007CCAA6 /* Frameworks */,
+				61F4EF342A6584D6007CCAA6 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				61F4EF3D2A6584D6007CCAA6 /* PBXTargetDependency */,
+			);
+			name = UITesting;
+			productName = UITesting;
+			productReference = 61F4EF362A6584D6007CCAA6 /* UITesting.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 		F9290196FBFAE745A3E6B2A3 /* AWattPrice */ = {
 			isa = PBXNativeTarget;
@@ -738,8 +789,9 @@
 					61635B232A482E690099F5AD = {
 						CreatedOnToolsVersion = 14.3.1;
 					};
-					F9290196FBFAE745A3E6B2A3 = {
-						DevelopmentTeam = RC32A2AMHF;
+					61F4EF352A6584D6007CCAA6 = {
+						CreatedOnToolsVersion = 14.3.1;
+						TestTargetID = F9290196FBFAE745A3E6B2A3;
 					};
 				};
 			};
@@ -762,6 +814,7 @@
 			targets = (
 				F9290196FBFAE745A3E6B2A3 /* AWattPrice */,
 				61635B232A482E690099F5AD /* AWattPriceWidgetExtension */,
+				61F4EF352A6584D6007CCAA6 /* UITesting */,
 			);
 		};
 /* End PBXProject section */
@@ -774,6 +827,13 @@
 				61635B4D2A483B140099F5AD /* PricesPreviewContent.json in Resources */,
 				61DC52D02A56F22B00FB2D08 /* Localizable.strings in Resources */,
 				61635B302A482E6A0099F5AD /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		61F4EF342A6584D6007CCAA6 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -889,6 +949,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		61F4EF322A6584D6007CCAA6 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				61F4EF392A6584D6007CCAA6 /* UITesting.swift in Sources */,
+				61F4EF3B2A6584D6007CCAA6 /* UITestingLaunchTests.swift in Sources */,
+				619455BF2A65C3C40090EEAE /* SnapshotHelper.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -896,6 +966,11 @@
 			isa = PBXTargetDependency;
 			target = 61635B232A482E690099F5AD /* AWattPriceWidgetExtension */;
 			targetProxy = 612286832A56E39700FA0F9C /* PBXContainerItemProxy */;
+		};
+		61F4EF3D2A6584D6007CCAA6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F9290196FBFAE745A3E6B2A3 /* AWattPrice */;
+			targetProxy = 61F4EF3C2A6584D6007CCAA6 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -918,14 +993,16 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = AWattPrice/AWattPrice.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "AWattPrice/Resources/Preview\\ Content";
+				DEVELOPMENT_TEAM = RC32A2AMHF;
 				INFOPLIST_FILE = AWattPrice/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = me.space8.AWattPrice;
-				PROVISIONING_PROFILE_SPECIFIER = "match Development me.space8.AWattPrice";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -936,15 +1013,17 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = AWattPrice/AWattPrice.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Distribution";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "AWattPrice/Resources/Preview\\ Content";
+				DEVELOPMENT_TEAM = RC32A2AMHF;
 				INFOPLIST_FILE = AWattPrice/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = me.space8.AWattPrice;
-				PROVISIONING_PROFILE_SPECIFIER = "match AppStore me.space8.AWattPrice";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -1048,14 +1127,12 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_ENTITLEMENTS = AWattPriceWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 53;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_ASSET_PATHS = "AWattPriceWidget/Preview\\ Content";
-				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = RC32A2AMHF;
+				DEVELOPMENT_TEAM = RC32A2AMHF;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -1089,7 +1166,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = me.space8.AWattPrice.AWattPriceWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match Development me.space8.AWattPrice.AWattPriceWidget";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
@@ -1099,88 +1175,6 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
-		};
-		61635B382A482E6A0099F5AD /* AdHoc */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_ENTITLEMENTS = AWattPriceWidgetExtension.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Distribution";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
-				CODE_SIGN_STYLE = Manual;
-				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 53;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_ASSET_PATHS = "AWattPriceWidget/Preview\\ Content";
-				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = RC32A2AMHF;
-				ENABLE_NS_ASSERTIONS = NO;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = AWattPriceWidget/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = AWattPriceWidget;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
-				MARKETING_VERSION = 2.0;
-				MTL_ENABLE_DEBUG_INFO = NO;
-				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = me.space8.AWattPrice.AWattPriceWidget;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match AppStore me.space8.AWattPrice.AWattPriceWidget";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = AdHoc;
 		};
 		61635B3A2A482E6A0099F5AD /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -1217,15 +1211,13 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_ENTITLEMENTS = AWattPriceWidgetExtension.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Distribution";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 53;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_ASSET_PATHS = "AWattPriceWidget/Preview\\ Content";
-				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = RC32A2AMHF;
+				DEVELOPMENT_TEAM = RC32A2AMHF;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -1252,7 +1244,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = me.space8.AWattPrice.AWattPriceWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match AppStore me.space8.AWattPrice.AWattPriceWidget";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
@@ -1260,6 +1251,54 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		61F4EF3E2A6584D6007CCAA6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = RC32A2AMHF;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				PRODUCT_BUNDLE_IDENTIFIER = me.space8.AWattPrice.UITesting;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = AWattPrice;
+			};
+			name = Debug;
+		};
+		61F4EF402A6584D6007CCAA6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = RC32A2AMHF;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = me.space8.AWattPrice.UITesting;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = AWattPrice;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -1324,85 +1363,6 @@
 			};
 			name = Release;
 		};
-		879E96E16140FAC60BBE694E /* AdHoc */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = AWattPrice/AWattPrice.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Distribution";
-				DEVELOPMENT_ASSET_PATHS = "AWattPrice/Resources/Preview\\ Content";
-				INFOPLIST_FILE = AWattPrice/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = me.space8.AWattPrice;
-				PROVISIONING_PROFILE_SPECIFIER = "match AdHoc me.space8.AWattPrice";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = AdHoc;
-		};
-		DCD9F96BDE3D0AA1F6BE1EA7 /* AdHoc */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_USE_OPTIMIZATION_PROFILE = NO;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = RC32A2AMHF;
-				ENABLE_NS_ASSERTIONS = NO;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_OPTIMIZATION_LEVEL = s;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
-				MTL_ENABLE_DEBUG_INFO = NO;
-				MTL_FAST_MATH = YES;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_VERSION = 5.0;
-			};
-			name = AdHoc;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1410,7 +1370,6 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				4ECD3899CBDABF2660149390 /* Debug */,
-				DCD9F96BDE3D0AA1F6BE1EA7 /* AdHoc */,
 				6A0DA7D1E628F6CD0A85D894 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
@@ -1420,7 +1379,6 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				10962E2B1509DDA53A27298D /* Debug */,
-				879E96E16140FAC60BBE694E /* AdHoc */,
 				34A1711C1739A657351EA845 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
@@ -1430,8 +1388,16 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				61635B362A482E6A0099F5AD /* Debug */,
-				61635B382A482E6A0099F5AD /* AdHoc */,
 				61635B3A2A482E6A0099F5AD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		61F4EF412A6584D6007CCAA6 /* Build configuration list for PBXNativeTarget "UITesting" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				61F4EF3E2A6584D6007CCAA6 /* Debug */,
+				61F4EF402A6584D6007CCAA6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

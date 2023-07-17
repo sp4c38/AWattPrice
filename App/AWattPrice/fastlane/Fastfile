@@ -45,4 +45,10 @@ platform :ios do
     build_app(scheme: "AWattPrice", configuration: "Distribution AppStore Production")
     upload_to_testflight(app_identifier: "me.space8.AWattPrice", skip_submission: true, skip_waiting_for_build_processing: true)
   end
+  
+  lane :screenshots do
+    capture_screenshots
+    upload_to_app_store
+  end
 end
+

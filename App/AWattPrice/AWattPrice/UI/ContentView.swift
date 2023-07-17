@@ -52,29 +52,25 @@ struct ContentView: View {
     @Environment(\.networkManager) var networkManager
     @Environment(\.scenePhase) var scenePhase
 
+    @State var tabSelection = 1
     @State var showWhatsNewScreen = false
     @StateObject var viewModel = ContentViewModel()
-    @ObservedObject var tabBarItems = TBItems()
 
     var body: some View {
         VStack(spacing: 0) {
             if viewModel.setting.entity.splashScreensFinished {
-                ZStack {
+                TabView(selection: $tabSelection) {
                     SettingsPageView()
-                        .opacity(tabBarItems.selectedItemIndex == 0 ? 1 : 0)
+                        .tabItem { Label("Settings", systemImage: "gear") }
 
                     HomeView()
-                        .opacity(tabBarItems.selectedItemIndex == 1 ? 1 : 0)
+                        .tag(1)
+                        .tabItem { Label("Prices", systemImage: "bolt") }
 
                     CheapestTimeView()
-                        .opacity(tabBarItems.selectedItemIndex == 2 ? 1 : 0)
+                        .tabItem { Label("Cheapest Time", systemImage: "rectangle.and.text.magnifyingglass") }
                 }
-                .sheet(isPresented: $showWhatsNewScreen) { WhatsNewPage() }
-
-                Spacer(minLength: 0)
-
-                TabBar()
-                    .environmentObject(tabBarItems)
+                .tint(Color(red: 0.87, green: 0.35, blue: 0.26))
             } else {
                 SplashScreenStartView()
             }

@@ -71,6 +71,7 @@ struct ContentView: View {
                         .tabItem { Label("Cheapest Time", systemImage: "rectangle.and.text.magnifyingglass") }
                 }
                 .tint(Color(red: 0.87, green: 0.35, blue: 0.26))
+                .sheet(isPresented: $showWhatsNewScreen) { WhatsNewPage() }
             } else {
                 SplashScreenStartView()
             }

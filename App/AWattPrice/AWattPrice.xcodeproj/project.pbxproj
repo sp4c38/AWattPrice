@@ -978,7 +978,6 @@
 				CODE_SIGN_ENTITLEMENTS = AWattPrice/AWattPrice.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 53;
 				DEVELOPMENT_ASSET_PATHS = "AWattPrice/Resources/Preview\\ Content";
 				DEVELOPMENT_TEAM = RC32A2AMHF;
 				INFOPLIST_FILE = AWattPrice/Info.plist;
@@ -988,7 +987,6 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = me.space8.AWattPrice;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
@@ -1003,7 +1001,6 @@
 				CODE_SIGN_ENTITLEMENTS = AWattPrice/AWattPrice.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 53;
 				DEVELOPMENT_ASSET_PATHS = "AWattPrice/Resources/Preview\\ Content";
 				DEVELOPMENT_TEAM = RC32A2AMHF;
 				INFOPLIST_FILE = AWattPrice/Info.plist;
@@ -1013,7 +1010,6 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = me.space8.AWattPrice;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
@@ -1123,7 +1119,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 54;
+				CURRENT_PROJECT_VERSION = 56;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_ASSET_PATHS = "AWattPriceWidget/Preview\\ Content";
 				DEVELOPMENT_TEAM = RC32A2AMHF;
@@ -1208,7 +1204,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 54;
+				CURRENT_PROJECT_VERSION = 56;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_ASSET_PATHS = "AWattPriceWidget/Preview\\ Content";
 				DEVELOPMENT_TEAM = RC32A2AMHF;

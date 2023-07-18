@@ -1,0 +1,4 @@
+Neu:
+- Die Strompreise der nächsten 24 Stunden können von nun an bequem auf dem Home-Bildschirm mithilfe des neuen Widgets angeschaut werden.
+
+Info: Öffne die App nachdem dieses Update installiert wurde, mindestens ein Mal, damit das Widget hinzugefügt werden kann.

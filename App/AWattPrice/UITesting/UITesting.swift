@@ -27,11 +27,15 @@ final class UITesting: XCTestCase {
         let app = XCUIApplication()
         setupSnapshot(app)
         app.launch()
+        XCUIDevice.shared.orientation = .portrait
         snapshot("00MainScreen")
-        app.images["rectangle.and.text.magnifyingglass"].tap()
-        snapshot("01CheapestPrice")
-        app.images["Einstellungen"].tap()
+        app.tabBars.firstMatch.buttons.element(boundBy: 0).tap()
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            app.navigationBars["_TtGC7SwiftUI19UIHosting"].buttons["ToggleSidebar"].tap()
+        }
         snapshot("02Setting")
+        app.tabBars.firstMatch.buttons.element(boundBy: 2).tap()
+        snapshot("01CheapestPrice")
         
         // Use XCTAssert and related functions to verify your tests produce the correct results.
     }

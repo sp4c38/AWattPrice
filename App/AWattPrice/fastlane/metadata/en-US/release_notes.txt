@@ -1,0 +1,4 @@
+New:
+- The electricity prices for the next 24 hours can now be conveniently viewed on the home screen using the new widget.
+
+Info: After installing this update, open the app at least once to add the widget.

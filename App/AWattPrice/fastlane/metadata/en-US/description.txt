@@ -1,0 +1,15 @@
+AWattPrice shows the hourly prices by the electricity provider aWATTar. The prices are based on factors like available wind and solar power generation. Hence, they vary over time. Let's say one wants to operate a washing machine for some time. It will pay off to run it when prices are low. That reduces the electricity bill and helps the grid to balance out peaks. Further it strengthens the use of regenerative power.
+
+The 2 main features of this app are:
+
+1) Show the hourly electricity prices in an interactive chart. They are sourced from the public aWATTar data feeds. One can switch between prices for Austria and Germany. At about 2 pm the data is updated to show prices for the next day.
+
+2) Based on the price info AWattPrice will find the time frame of the lowest energy cost. Example: One wants to charge the car by 23 kWh via an 11 kW outlet. The app will tell when to start to minimize the cost.
+
+3) A widget can be added to the home screen. It shows the electricity prices for the next 24 hours.
+
+4) A price below notification can be set up. It will be sent as soon as an electricity price of the following day falls below a set value.
+
+AWattPrice is a personal hobby project. Sharing is caring. The app is not related in any way to the company aWATTar GmbH. Feedback of all kind and patches are very welcome.
+
+AWattPrice is an Open Source project. Find the code on GitHub at https://github.com/sp4c38/AWattPrice. Please share criticism, suggestions and patches on GitHub or directly via e-mail to the developer (contact-awattprice@space8.me). We look forward to your feedback.

@@ -37,13 +37,13 @@ body{
 	font-family: 'Open Sans', sans-serif;
 }
 .header {
-  background: url("../images/banner.png") no-repeat 0px 0px;
+  background: url("../images/banner.jpg") no-repeat 0px 0px;
   background-size: cover;
   min-height: 590px;
 }
 
 .header-policy {
-  background: url("../images/banner.png") no-repeat 0px 0px;
+  background: url("../images/banner.jpg") no-repeat 0px 0px;
   background-size: cover;
   min-height: 90px;
 }
@@ -78,10 +78,9 @@ body{
 }
 .top-menu ul li a {
   color: #fff;
-  font-size: 1.2em;
+  font-size: 1.3em;
   text-transform: none;
   text-decoration: none;
-    text-shadow: 0px 1px #000;
  }
 
  .top-menu ul li a img {
@@ -90,10 +89,10 @@ body{
   }
 
 .top-menu ul li a:hover {
-  color: #000;
+  color: #d1bc8a;
 }
 .top-menu ul li a.active{
-  color: #000;
+  color: #fff;
 }
 span.menu {
   display: none;
@@ -464,6 +463,7 @@ padding-bottom: 2em;
 
 .footer-attr a {
     color: #31C3DB;
+    text-decoration: underline;
 }
 
 #toTop {

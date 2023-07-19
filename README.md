@@ -16,7 +16,7 @@ https://apps.apple.com/app/awattprice/id1536629626</a>
 
 💬 <b>Supported languages:</b> German and English
 
-📱 <b>Supported devices:</b> iOS 14+ and iPadOS 14+ devices
+📱 <b>Supported devices:</b> iOS 15+ and iPadOS 15+ devices
 
 🗂 <b>App category:</b> Utilities
 

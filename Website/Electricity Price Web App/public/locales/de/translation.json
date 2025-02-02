@@ -1,0 +1,15 @@
+{
+  "title": "Strompreise",
+  "description": "Echtzeit-Strompreisdaten für {{country}}",
+  "includeTax": "Inkl. MwSt.",
+  "excludeTax": "Exkl. MwSt.",
+  "detailedPriceData": "Detaillierte Preisdaten",
+  "dataUpdates": "Daten werden automatisch alle 5 Minuten aktualisiert",
+  "lastUpdated": "Zuletzt aktualisiert: {{time}}",
+  "time": "Zeit",
+  "price": "Preis (ct/kWh)",
+  "priceWithTax": "Preis (ct/kWh) inkl. MwSt.",
+  "priceWithoutTax": "Preis (ct/kWh) exkl. MwSt.",
+  "chartTitle": "Strompreise für {{country}} ({{tax}})",
+  "priceDisclaimer": "Für die Genauigkeit der Preise wird keine Garantie übernommen"
+}

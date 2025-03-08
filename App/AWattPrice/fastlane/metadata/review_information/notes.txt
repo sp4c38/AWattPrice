@@ -1,3 +1,0 @@
-AWattPrice is open source at: https://github.com/sp4c38/AWattPrice
-
-Thanks for reviewing.

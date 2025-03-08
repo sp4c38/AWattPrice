@@ -1,5 +1,5 @@
 <div>
-	<img src="https://raw.githubusercontent.com/sp4c38/AWattPrice/refs/heads/master/Assets/App%20Icon/AppIcon.png" width=100>
+	<img src="https://raw.githubusercontent.com/sp4c38/AWattPrice/refs/heads/master/Assets/App%20Icon/App%20Icon.png" width=100>
 	<h1>⚡️ AWattPrice ⚡️</div>
 </div>
 

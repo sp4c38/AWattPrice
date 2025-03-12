@@ -8,6 +8,7 @@
 import CoreData
 import os
 import SwiftUI
+import Combine
 
 public let logger = Logger()
 
@@ -21,19 +22,10 @@ struct AWattPriceApp: App {
     @StateObject private var cheapestHourManager = CheapestHourManager()
     
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-
-    init() {
-        // Assign all dependencies to the AppDelegate
-        appDelegate.notificationService = notificationService
-        appDelegate.setting = setting
-        appDelegate.notificationSetting = notificationSetting
-        
-        notificationService.refreshAccessStates()
-        if let selectedRegion = Region(rawValue: setting.entity.regionIdentifier) {
-            energyDataController.download(region: selectedRegion)
-        }
-    }
-
+    
+    // One-time publisher for initialization
+    private let appInitPublisher = Just(())
+    
     var body: some Scene {
         WindowGroup {
             ContentView()
@@ -42,6 +34,21 @@ struct AWattPriceApp: App {
                 .environmentObject(energyDataController)
                 .environmentObject(notificationService)
                 .environmentObject(cheapestHourManager)
+                .onReceive(appInitPublisher) { _ in
+                    configureApp()
+                }
+        }
+    }
+    
+    private func configureApp() {
+        // Assign all dependencies to the AppDelegate
+        appDelegate.notificationService = notificationService
+        appDelegate.setting = setting
+        appDelegate.notificationSetting = notificationSetting
+        
+        notificationService.refreshAccessStates()
+        if let selectedRegion = Region(rawValue: setting.entity.regionIdentifier) {
+            energyDataController.download(region: selectedRegion)
         }
     }
 }

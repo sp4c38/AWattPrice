@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct SettingsUploadErrorView: View {
-    @Injected var notificationSetting: NotificationSettingCoreData
-    @Injected var setting: SettingCoreData
+    @EnvironmentObject var notificationSetting: NotificationSettingCoreData
+    @EnvironmentObject var setting: SettingCoreData
 
     var body: some View {
         HStack(spacing: 8) {

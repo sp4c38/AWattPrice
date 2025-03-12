@@ -12,7 +12,7 @@ import SwiftUI
 struct SplashScreenSetupView: View {
     @Environment(\.colorScheme) var colorScheme
 
-    @ObservedObject var setting: SettingCoreData = Resolver.resolve()
+    @EnvironmentObject var setting: SettingCoreData
 
     @State var nextSplashScreenActive: Bool = false
 

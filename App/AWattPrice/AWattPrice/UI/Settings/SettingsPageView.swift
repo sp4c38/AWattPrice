@@ -155,17 +155,15 @@ struct AppVersionView: View {
 
 
 struct SettingsPageView: View {
-    @ObservedObject var notificationSetting: NotificationSettingCoreData = Resolver.resolve()
-    @ObservedObject var setting: SettingCoreData = Resolver.resolve()
-    var notificationService: NotificationService = Resolver.resolve()
-    
-    let regionTaxSelectionViewModel = RegionTaxSelectionViewModel()
+    @EnvironmentObject var notificationSetting: NotificationSettingCoreData
+    @EnvironmentObject var setting: SettingCoreData
+    @EnvironmentObject var notificationService: NotificationService
     
     var body: some View {
         NavigationView {
             Form {
                 Section(header: Text("Region"), footer: Text("settingsPage.regionToGetPrices")) {
-                    RegionTaxSelectionView(viewModel: regionTaxSelectionViewModel)
+                    RegionTaxSelectionView()
                 }
 
                 Section {

@@ -22,8 +22,8 @@ struct DataRetrievalLoadingView: View {
 struct DataRetrievalError: View {
     @Environment(\.colorScheme) var colorScheme
 
-    @Injected var energyDataController: EnergyDataController
-    @Injected var setting: SettingCoreData
+    @EnvironmentObject var energyDataController: EnergyDataController
+    @EnvironmentObject var setting: SettingCoreData
 
     var body: some View {
         VStack(alignment: .center) {
@@ -61,8 +61,8 @@ struct CurrentlyNoData: View {
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.networkManager) var networkManager
 
-    @Injected var energyDataController: EnergyDataController
-    @Injected var setting: SettingCoreData
+    @EnvironmentObject var energyDataController: EnergyDataController
+    @EnvironmentObject var setting: SettingCoreData
 
     var body: some View {
         VStack(alignment: .center) {
@@ -126,9 +126,9 @@ struct SettingLoadingError: View {
 
 /// Classify network errors
 struct DataDownloadAndError: View {
-    @ObservedObject var energyDataController: EnergyDataController = Resolver.resolve()
-    @ObservedObject var notificationSetting: NotificationSettingCoreData = Resolver.resolve()
-    @ObservedObject var setting: SettingCoreData = Resolver.resolve()
+    @EnvironmentObject var energyDataController: EnergyDataController
+    @EnvironmentObject var notificationSetting: NotificationSettingCoreData
+    @EnvironmentObject var setting: SettingCoreData
 
     var body: some View {
         VStack {

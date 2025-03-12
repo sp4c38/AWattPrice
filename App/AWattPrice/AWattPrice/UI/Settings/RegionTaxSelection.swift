@@ -1,13 +1,11 @@
 import Combine
-
 import SwiftUI
 
-
 class RegionTaxSelectionViewModel: ObservableObject {
-    var setting: SettingCoreData = Resolver.resolve()
-    var notificationSetting: NotificationSettingCoreData = Resolver.resolve()
-    var notificationService: NotificationService = Resolver.resolve()
-    @Injected var energyDataController: EnergyDataController
+    var setting: SettingCoreData
+    var notificationSetting: NotificationSettingCoreData
+    var notificationService: NotificationService
+    var energyDataController: EnergyDataController
     
     @Published var selectedRegion: Region
     @Published var taxSelection: Bool
@@ -16,7 +14,13 @@ class RegionTaxSelectionViewModel: ObservableObject {
     
     var cancellables = [AnyCancellable]()
     
-    init() {
+    init(setting: SettingCoreData, notificationSetting: NotificationSettingCoreData,
+         notificationService: NotificationService, energyDataController: EnergyDataController) {
+        self.setting = setting
+        self.notificationSetting = notificationSetting
+        self.notificationService = notificationService
+        self.energyDataController = energyDataController
+        
         selectedRegion = Region(rawValue: setting.entity.regionIdentifier)!
         taxSelection = setting.entity.pricesWithVAT
         
@@ -65,7 +69,7 @@ class RegionTaxSelectionViewModel: ObservableObject {
         notificationConfiguration.general.tax = newTaxSelection
         let changeSetting = {
             self.setting.changeSetting { $0.entity.pricesWithVAT = newTaxSelection }
-            DispatchQueue.main.async { self.energyDataController.energyData?.computeValues() }
+            DispatchQueue.main.async { self.energyDataController.energyData?.computeValues(with: self.setting) }
         }
 
         notificationService.changeNotificationConfiguration(notificationConfiguration, notificationSetting) { downloadPublisher in
@@ -88,7 +92,22 @@ class RegionTaxSelectionViewModel: ObservableObject {
 }
 
 struct RegionTaxSelectionView: View {
-    @StateObject var viewModel = RegionTaxSelectionViewModel()
+    @EnvironmentObject var setting: SettingCoreData
+    @EnvironmentObject var notificationSetting: NotificationSettingCoreData
+    @EnvironmentObject var notificationService: NotificationService
+    @EnvironmentObject var energyDataController: EnergyDataController
+    
+    @StateObject var viewModel: RegionTaxSelectionViewModel
+    
+    init() {
+        // Initialize with temporary values that will be replaced in onAppear
+        _viewModel = StateObject(wrappedValue: RegionTaxSelectionViewModel(
+            setting: SettingCoreData(viewContext: CoreDataService.shared.container.viewContext),
+            notificationSetting: NotificationSettingCoreData(viewContext: CoreDataService.shared.container.viewContext),
+            notificationService: NotificationService(),
+            energyDataController: EnergyDataController()
+        ))
+    }
     
     var changeSelectedRegion: Binding<Region> {
         $viewModel.selectedRegion.setNewValue { newValue in
@@ -114,6 +133,13 @@ struct RegionTaxSelectionView: View {
             }
         }
         .disabled(viewModel.isUploading)
+        .onAppear {
+            // Update viewModel with the actual environment objects
+            viewModel.setting = setting
+            viewModel.notificationSetting = notificationSetting
+            viewModel.notificationService = notificationService
+            viewModel.energyDataController = energyDataController
+        }
     }
     
     var regionPicker: some View {
@@ -141,5 +167,9 @@ struct RegionTaxSelectionView: View {
 struct RegionTaxSelection_Previews: PreviewProvider {
     static var previews: some View {
         RegionTaxSelectionView()
+            .environmentObject(SettingCoreData(viewContext: CoreDataService.shared.container.viewContext))
+            .environmentObject(NotificationSettingCoreData(viewContext: CoreDataService.shared.container.viewContext))
+            .environmentObject(NotificationService())
+            .environmentObject(EnergyDataController())
     }
 }

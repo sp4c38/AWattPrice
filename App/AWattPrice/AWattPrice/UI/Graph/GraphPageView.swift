@@ -27,8 +27,8 @@ struct HeaderSizePreferenceKey: PreferenceKey {
 struct HomeView: View {
     @Environment(\.scenePhase) var scenePhase
 
-    @ObservedObject var energyDataController: EnergyDataController = Resolver.resolve()
-    @ObservedObject var setting: SettingCoreData = Resolver.resolve()
+    @EnvironmentObject var energyDataController: EnergyDataController
+    @EnvironmentObject var setting: SettingCoreData
 
     @State var headerSize = CGSize(width: 0, height: 0)
     @State var initialAppearFinished: Bool? = false

@@ -9,7 +9,7 @@ import SwiftUI
 
 struct HourOfDayText: View {
     @Environment(\.colorScheme) var colorScheme
-    @ObservedObject var setting: SettingCoreData = Resolver.resolve()
+    @EnvironmentObject var setting: SettingCoreData
 
     static func getPriceString(marketprice: Double, setting: SettingCoreData) -> String {
         let centFormatter = NumberFormatter()

@@ -65,7 +65,7 @@ struct TimeRangeInputFieldSelectionPart: View {
 }
 
 struct TimeRangeInputFieldQuickSelectButtons: View {
-    @Injected var energyDataController: EnergyDataController
+    @EnvironmentObject var energyDataController: EnergyDataController
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
 
     @State var buttonSize = CGSize(width: 0, height: 0)
@@ -108,7 +108,7 @@ struct TimeRangeInputFieldQuickSelectButtons: View {
 struct TimeRangeInputField: View {
     @Environment(\.colorScheme) var colorScheme
 
-    @ObservedObject var energyDataController: EnergyDataController = Resolver.resolve()
+    @EnvironmentObject var energyDataController: EnergyDataController
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
 
     @State var inputDateRange: ClosedRange<Date> = Date() ... Date()

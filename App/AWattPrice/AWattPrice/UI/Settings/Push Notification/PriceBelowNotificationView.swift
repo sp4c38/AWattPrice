@@ -6,7 +6,6 @@
 //
 
 import Combine
-
 import SwiftUI
 
 struct PriceDropsBelowValueNotificationInfoView: View {
@@ -41,9 +40,9 @@ struct PriceDropsBelowValueNotificationInfoView: View {
 }
 
 class PriceBelowNotificationViewModel: ObservableObject {
-    @Injected var setting: SettingCoreData
-    @Injected var notificationSetting: NotificationSettingCoreData
-    var notificationService: NotificationService = Resolver.resolve()
+    var setting: SettingCoreData
+    var notificationSetting: NotificationSettingCoreData
+    var notificationService: NotificationService
 
     @Published var notificationIsEnabled: Bool = false
     var notificationIsEnabledMethodNotifier: AnyCancellable? = nil
@@ -55,7 +54,11 @@ class PriceBelowNotificationViewModel: ObservableObject {
     
     var cancellables = [AnyCancellable]()
     
-    init() {
+    init(setting: SettingCoreData, notificationSetting: NotificationSettingCoreData, notificationService: NotificationService) {
+        self.setting = setting
+        self.notificationSetting = notificationSetting
+        self.notificationService = notificationService
+        
         uploadObserver.objectWillChange.receive(on: DispatchQueue.main).sink(receiveValue: { self.objectWillChange.send() }).store(in: &cancellables)
         
         notificationIsEnabled = notificationSetting.entity.priceDropsBelowValueNotification
@@ -122,7 +125,11 @@ struct PriceBelowNotificationView: View {
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.keyboardObserver) var keyboardObserver
     
-    @StateObject var viewModel = PriceBelowNotificationViewModel()
+    @EnvironmentObject var setting: SettingCoreData
+    @EnvironmentObject var notificationSetting: NotificationSettingCoreData
+    @EnvironmentObject var notificationService: NotificationService
+    
+    @StateObject private var viewModel: PriceBelowNotificationViewModel
     @State var keyboardCurrentlyClosed = false
     
     // This property will be injected in the views .onAppear. The view model is a StateObject which makes it a bit of a tricky situation but as this variable is used the earliest
@@ -133,6 +140,13 @@ struct PriceBelowNotificationView: View {
     init(uploadErrorObserver: UploadErrorPublisherViewObserver? = nil, showHeader: Bool = false) {
         self.uploadErrorObserver = uploadErrorObserver
         self.showHeader = showHeader
+        
+        // Initialize with temporary values that will be replaced in onAppear
+        _viewModel = StateObject(wrappedValue: PriceBelowNotificationViewModel(
+            setting: SettingCoreData(viewContext: CoreDataService.shared.container.viewContext),
+            notificationSetting: NotificationSettingCoreData(viewContext: CoreDataService.shared.container.viewContext),
+            notificationService: NotificationService()
+        ))
     }
     
     var body: some View {
@@ -154,7 +168,13 @@ struct PriceBelowNotificationView: View {
             }
         }
         .disabled(viewModel.isUploading)
-        .onAppear { viewModel.uploadErrorObserver = uploadErrorObserver }
+        .onAppear {
+            // Update viewModel with the actual environment objects
+            viewModel.setting = setting
+            viewModel.notificationSetting = notificationSetting
+            viewModel.notificationService = notificationService
+            viewModel.uploadErrorObserver = uploadErrorObserver
+        }
     }
 
     var toggleView: some View {
@@ -176,7 +196,7 @@ struct PriceBelowNotificationView: View {
                     .transition(.opacity)
             }
             .onReceive(keyboardObserver.keyboardHeight) { newKeyboardHeight in
-                if newKeyboardHeight == 0 {
+                if (newKeyboardHeight == 0) {
                     keyboardCurrentlyClosed = true
                 } else {
                     keyboardCurrentlyClosed = false
@@ -195,5 +215,8 @@ struct PriceBelowNotificationView: View {
 struct PriceBelowNotifictionView_Previews: PreviewProvider {
     static var previews: some View {
         PriceBelowNotificationView()
+            .environmentObject(SettingCoreData(viewContext: CoreDataService.shared.container.viewContext))
+            .environmentObject(NotificationSettingCoreData(viewContext: CoreDataService.shared.container.viewContext))
+            .environmentObject(NotificationService())
     }
 }

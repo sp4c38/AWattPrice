@@ -10,7 +10,7 @@ import SwiftUI
 /// Input field for the energy usage which the consumer shall consume
 struct EnergyUsageInputField: View {
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
-    @Injected var setting: SettingCoreData
+    @EnvironmentObject var setting: SettingCoreData
 
     @State var firstAppear = true
 

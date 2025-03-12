@@ -170,9 +170,9 @@ struct CheapestTimeResultViewClock: View {
 /// A view which presents the results calculated by the CheapestHourManager of when the cheapest hours for the usage of energy are.
 struct CheapestTimeResultView: View {
     @Environment(\.colorScheme) var colorScheme
-    @Injected var energyDataController: EnergyDataController
+    @EnvironmentObject var energyDataController: EnergyDataController
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
-    @Injected var setting: SettingCoreData
+    @EnvironmentObject var setting: SettingCoreData
 
     var todayDateFormatter: DateFormatter
 

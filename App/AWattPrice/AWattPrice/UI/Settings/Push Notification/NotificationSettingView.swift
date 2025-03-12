@@ -16,12 +16,14 @@ extension AnyTransition {
 }
 
 class NotificationSettingViewModel: ObservableObject {
-    var notificationService: NotificationService = Resolver.resolve()
+    var notificationService: NotificationService
     let uploadErrorObserver = UploadErrorPublisherViewObserver()
     
     var cancellables = [AnyCancellable]()
     
-    init() {
+    init(notificationService: NotificationService) {
+        self.notificationService = notificationService
+        
         notificationService.accessState.receive(on: DispatchQueue.main).sink { _ in self.objectWillChange.send() }.store(in: &cancellables)
         uploadErrorObserver.objectWillChange.sink(receiveValue: { _ in self.objectWillChange.send()}).store(in: &cancellables)
     }
@@ -29,8 +31,16 @@ class NotificationSettingViewModel: ObservableObject {
 
 struct NotificationSettingView: View {
     @Environment(\.scenePhase) var scenePhase
+    @EnvironmentObject var notificationService: NotificationService
 
-    @StateObject var viewModel = NotificationSettingViewModel()
+    @StateObject private var viewModel: NotificationSettingViewModel
+    
+    init() {
+        // Initialize with temporary values that will be replaced in onAppear
+        _viewModel = StateObject(wrappedValue: NotificationSettingViewModel(
+            notificationService: NotificationService()
+        ))
+    }
         
     var body: some View {
         Form {
@@ -55,22 +65,20 @@ struct NotificationSettingView: View {
             }
         }
         .navigationTitle("Price Guard")
-        .onAppear { print(viewModel.uploadErrorObserver.viewState) }
+        .onAppear { 
+            // Update viewModel with the actual environment objects
+            viewModel.notificationService = notificationService
+            
+            print(viewModel.uploadErrorObserver.viewState) 
+        }
     }
 }
 
 struct NotificationSettingView_Previews: PreviewProvider {
-    static var appSettings = SettingCoreData(viewContext: CoreDataService.shared.container.viewContext)
-    static var notificationSettings = NotificationSettingCoreData(viewContext: CoreDataService.shared.container.viewContext)
-    static var notificationService = NotificationService()
-    
     static var previews: some View {
-        
-        return Group {
-            NavigationView {
-                NotificationSettingView()
-                    .environmentObject(notificationSettings)
-            }
+        return NavigationView {
+            NotificationSettingView()
+                .environmentObject(NotificationService())
         }
     }
 }

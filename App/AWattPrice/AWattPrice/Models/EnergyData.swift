@@ -39,7 +39,6 @@ struct EnergyPricePoint: Decodable {
 
 
 struct EnergyData: Decodable {
-    @Injected var setting: SettingCoreData
     let prices: [EnergyPricePoint]
     
     /// Prices which have start equal or past the start of the current hour.
@@ -58,10 +57,9 @@ struct EnergyData: Decodable {
     init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         prices = try values.decode([EnergyPricePoint].self, forKey: .prices)
-        computeValues()
     }
     
-    mutating func computeValues() {
+    mutating func computeValues(with setting: SettingCoreData) {
         let now = Date()
         let hourStart = Calendar.current.startOfHour(for: now)
         currentPrices = prices

@@ -21,7 +21,7 @@ struct ViewSizePreferenceKey: PreferenceKey {
 }
 
 struct CheapestTimeViewBodyPicker: View {
-    @ObservedObject var energyDataController: EnergyDataController = Resolver.resolve()
+    @EnvironmentObject var energyDataController: EnergyDataController
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
 
     @State var maxTimeInterval = TimeInterval(3600)
@@ -115,8 +115,8 @@ struct CheapestTimeViewBody: View {
 struct CheapestTimeView: View {
     @Environment(\.colorScheme) var colorScheme
 
-    @ObservedObject var energyDataController: EnergyDataController = Resolver.resolve()
-    @ObservedObject var setting: SettingCoreData = Resolver.resolve()
+    @EnvironmentObject var energyDataController: EnergyDataController
+    @EnvironmentObject var setting: SettingCoreData
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
 
     @State var redirectToComparisonResults: Int? = 0

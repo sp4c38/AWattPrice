@@ -67,7 +67,7 @@ class SingleBarSettings: ObservableObject {
 struct EnergyPriceGraph: View {
     @Environment(\.scenePhase) var scenePhase
 
-    @ObservedObject var energyDataController: EnergyDataController = Resolver.resolve()
+    @EnvironmentObject var energyDataController: EnergyDataController
 
     @State var graphHourPointData = [(EnergyPricePoint, CGFloat)]()
     @State var hapticEngine: CHHapticEngine?

@@ -109,7 +109,7 @@ struct AnimatingCheckmark: View {
 
 /// Final splash screen which tells that the setup process was completed.
 struct SplashScreenFinishView: View {
-    @Injected var setting: SettingCoreData
+    @EnvironmentObject var setting: SettingCoreData
 
     var body: some View {
         VStack {

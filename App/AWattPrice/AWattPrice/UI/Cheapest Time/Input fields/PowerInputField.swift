@@ -10,7 +10,7 @@ import SwiftUI
 /// Input field for the power output of the consumer
 struct PowerOutputInputField: View {
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
-    @Injected var setting: SettingCoreData
+    @EnvironmentObject var setting: SettingCoreData
 
     @State var firstAppear = true
 

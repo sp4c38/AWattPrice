@@ -5,7 +5,7 @@
 //  Created by Léon Becker on 16.10.20.
 //
 
-import Resolver
+
 import SwiftUI
 
 struct SplashScreenStartViewTitle: View {

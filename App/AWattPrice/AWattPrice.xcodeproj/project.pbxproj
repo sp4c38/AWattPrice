@@ -34,7 +34,6 @@
 		5DC2B66E8217B30642162424 /* NumberField.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF85B2B08E53E158A7DE4DFC /* NumberField.swift */; };
 		61200EFA2A55F0B4002ED355 /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 658538AA38870B6F3A5C4B90 /* Model.xcdatamodeld */; };
 		612286822A56E39700FA0F9C /* AWattPriceWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 61635B242A482E690099F5AD /* AWattPriceWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		615C98FD2A56A6C400FC9D26 /* Resolver in Frameworks */ = {isa = PBXBuildFile; productRef = 615C98FC2A56A6C400FC9D26 /* Resolver */; };
 		61635B2C2A482E690099F5AD /* AWattPriceWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61635B2B2A482E690099F5AD /* AWattPriceWidgetBundle.swift */; };
 		61635B2E2A482E690099F5AD /* PricesWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61635B2D2A482E690099F5AD /* PricesWidget.swift */; };
 		61635B302A482E6A0099F5AD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 61635B2F2A482E6A0099F5AD /* Assets.xcassets */; };
@@ -234,7 +233,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				615C98FD2A56A6C400FC9D26 /* Resolver in Frameworks */,
 				61ACE7A62A56A7E7005D0110 /* EffectsLibrary in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -686,7 +684,6 @@
 			);
 			name = AWattPrice;
 			packageProductDependencies = (
-				615C98FC2A56A6C400FC9D26 /* Resolver */,
 				61ACE7A52A56A7E7005D0110 /* EffectsLibrary */,
 			);
 			productName = AWattPrice;
@@ -719,7 +716,6 @@
 			);
 			mainGroup = FED1070106A78573488FD37A;
 			packageReferences = (
-				7B0CCCAD70F471B791BE32BB /* XCRemoteSwiftPackageReference "Resolver" */,
 				61ACE7A42A56A7E7005D0110 /* XCRemoteSwiftPackageReference "effects-library" */,
 			);
 			projectDirPath = "";
@@ -1263,22 +1259,9 @@
 				minimumVersion = 1.0.0;
 			};
 		};
-		7B0CCCAD70F471B791BE32BB /* XCRemoteSwiftPackageReference "Resolver" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "git@github.com:hmlongco/Resolver.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.4.3;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		615C98FC2A56A6C400FC9D26 /* Resolver */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 7B0CCCAD70F471B791BE32BB /* XCRemoteSwiftPackageReference "Resolver" */;
-			productName = Resolver;
-		};
 		61ACE7A52A56A7E7005D0110 /* EffectsLibrary */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 61ACE7A42A56A7E7005D0110 /* XCRemoteSwiftPackageReference "effects-library" */;

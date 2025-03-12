@@ -5,7 +5,6 @@
 //  Created by Léon Becker on 11.09.20.
 //
 
-import Resolver
 import SceneKit
 import SwiftUI
 

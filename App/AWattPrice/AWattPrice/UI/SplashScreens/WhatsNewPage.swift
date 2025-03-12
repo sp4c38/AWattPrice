@@ -6,7 +6,7 @@
 //
 
 import EffectsLibrary
-import Resolver
+
 import SwiftUI
 
 struct WhatsNewPage: View {

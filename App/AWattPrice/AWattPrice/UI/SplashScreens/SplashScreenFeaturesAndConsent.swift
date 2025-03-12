@@ -5,7 +5,7 @@
 //  Created by Léon Becker on 16.10.20.
 //
 
-import Resolver
+
 import SwiftUI
 
 /// Opens the apps privacy policy in the browser in the correct language depending on the device language.

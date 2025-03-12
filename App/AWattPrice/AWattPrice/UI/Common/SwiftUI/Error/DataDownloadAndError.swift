@@ -5,7 +5,6 @@
 //  Created by Léon Becker on 17.10.20.
 //
 
-import Resolver
 import SwiftUI
 
 struct DataRetrievalLoadingView: View {

@@ -6,7 +6,7 @@
 //
 
 import Combine
-import Resolver
+
 import SwiftUI
 
 struct PriceDropsBelowValueNotificationInfoView: View {

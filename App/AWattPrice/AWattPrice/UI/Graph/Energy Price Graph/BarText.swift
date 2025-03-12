@@ -5,7 +5,6 @@
 //  Created by Léon Becker on 27.12.20.
 //
 
-import Resolver
 import SwiftUI
 
 struct HourOfDayText: View {

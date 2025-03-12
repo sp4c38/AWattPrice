@@ -5,7 +5,7 @@
 //  Created by Léon Becker on 16.12.20.
 //
 
-import Resolver
+
 import SwiftUI
 
 /// A  checkmark which animates in

@@ -7,42 +7,28 @@
 
 import CoreData
 import os
-import Resolver
 import SwiftUI
 
 public let logger = Logger()
 
-extension Resolver: ResolverRegistering {
-    public static func registerAllServices() {
-        let viewContext = CoreDataService.shared.container.viewContext
-        
-        register { SettingCoreData(viewContext: viewContext) }
-            .scope(.application)
-        register { NotificationSettingCoreData(viewContext: viewContext) }
-            .scope(.application)
-        
-        register { EnergyDataController() }
-            .scope(.application)
-        
-        register { NotificationService() }
-            .scope(.application)
-    }
-}
-
 @main
 struct AWattPriceApp: App {
-    @Injected var setting: SettingCoreData
-    @Injected var energyDataController: EnergyDataController
-    @Injected var notificationService: NotificationService
-    let cheapestHourManager = CheapestHourManager()
+    // Create state objects that will be shared throughout the app
+    @StateObject private var setting = SettingCoreData(viewContext: CoreDataService.shared.container.viewContext)
+    @StateObject private var notificationSetting = NotificationSettingCoreData(viewContext: CoreDataService.shared.container.viewContext)
+    @StateObject private var energyDataController = EnergyDataController()
+    @StateObject private var notificationService = NotificationService()
+    @StateObject private var cheapestHourManager = CheapestHourManager()
     
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
     init() {
+        // Assign all dependencies to the AppDelegate
         appDelegate.notificationService = notificationService
-
+        appDelegate.setting = setting
+        appDelegate.notificationSetting = notificationSetting
+        
         notificationService.refreshAccessStates()
-
         if let selectedRegion = Region(rawValue: setting.entity.regionIdentifier) {
             energyDataController.download(region: selectedRegion)
         }
@@ -51,6 +37,10 @@ struct AWattPriceApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(setting)
+                .environmentObject(notificationSetting)
+                .environmentObject(energyDataController)
+                .environmentObject(notificationService)
                 .environmentObject(cheapestHourManager)
         }
     }

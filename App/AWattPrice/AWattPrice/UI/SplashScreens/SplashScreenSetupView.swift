@@ -5,7 +5,7 @@
 //  Created by Léon Becker on 16.12.20.
 //
 
-import Resolver
+
 import SwiftUI
 
 /// Splash screen which handles the input of settings which are required for the main functionality of the app.

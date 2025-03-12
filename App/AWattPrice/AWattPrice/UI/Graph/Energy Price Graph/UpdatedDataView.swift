@@ -6,13 +6,12 @@
 //
 
 import Combine
-import Resolver
 import SwiftUI
 
 extension UpdatedDataView {
     class ViewModel: ObservableObject {
-        @ObservedObject var energyDataController: EnergyDataController = Resolver.resolve()
-        @Injected var setting: SettingCoreData
+        @ObservedObject var energyDataController: EnergyDataController
+        @ObservedObject var setting: SettingCoreData
         
         @Published var viewDownloadState = EnergyDataController.DownloadState.idle
         var startedDownloadingTime: Date? = nil
@@ -25,7 +24,9 @@ extension UpdatedDataView {
         
         var downloadStateCancellable: AnyCancellable? = nil
         
-        init() {
+        init(energyDataController: EnergyDataController, setting: SettingCoreData) {
+            self.energyDataController = energyDataController
+            self.setting = setting
             downloadStateCancellable = energyDataController.$downloadState.sink(receiveValue: updateDownloadState)
         }
         
@@ -63,7 +64,17 @@ extension UpdatedDataView {
 }
 
 struct UpdatedDataView: View {
-    @StateObject var viewModel = ViewModel()
+    @EnvironmentObject var energyDataController: EnergyDataController
+    @EnvironmentObject var setting: SettingCoreData
+    @StateObject private var viewModel: ViewModel
+    
+    init() {
+        // Initialize with temporary values that will be replaced in onAppear
+        _viewModel = StateObject(wrappedValue: ViewModel(
+            energyDataController: EnergyDataController(),
+            setting: SettingCoreData(viewContext: CoreDataService.shared.container.viewContext)
+        ))
+    }
     
     var body: some View {
         HStack(spacing: 10) {
@@ -94,6 +105,10 @@ struct UpdatedDataView: View {
         .font(.fCaption)
         .animation(.easeInOut)
         .onAppear {
+            // Update viewModel with the actual environment objects
+            viewModel.energyDataController = energyDataController
+            viewModel.setting = setting
+            
             if case .finished(let time) = viewModel.viewDownloadState {
                 viewModel.updateLocalizedTimeIntervalString(lastDownloadFinishedTime: time)
             }
@@ -115,5 +130,7 @@ struct UpdatedDataView: View {
 struct UpdatedDataView_Previews: PreviewProvider {
     static var previews: some View {
         UpdatedDataView()
+            .environmentObject(EnergyDataController())
+            .environmentObject(SettingCoreData(viewContext: CoreDataService.shared.container.viewContext))
     }
 }

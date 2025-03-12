@@ -5,7 +5,6 @@
 //  Created by Léon Becker on 21.09.20.
 //
 
-import Resolver
 import SwiftUI
 
 struct CheapestTimeResultTimeRange: View {

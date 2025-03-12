@@ -5,7 +5,6 @@
 //  Created by Léon Becker on 06.09.20.
 //
 
-import Resolver
 import SwiftUI
 
 struct HeaderSizePreferenceKey: PreferenceKey {

@@ -6,11 +6,10 @@
 //
 
 import Combine
-import Resolver
 import SwiftUI
 import UserNotifications
 
-class NotificationService {
+class NotificationService: ObservableObject {
     enum AccessState {
         case unknown
         case notAsked

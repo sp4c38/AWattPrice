@@ -6,7 +6,7 @@
 //
 
 import CoreHaptics
-import Resolver
+
 import SwiftUI
 
 struct GraphHeader: View {

@@ -5,7 +5,6 @@
 //  Created by Léon Becker on 19.09.20.
 //
 
-import Resolver
 import SwiftUI
 
 struct ViewSizePreferenceKey: PreferenceKey {

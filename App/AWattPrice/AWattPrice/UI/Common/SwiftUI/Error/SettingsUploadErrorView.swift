@@ -5,7 +5,6 @@
 //  Created by Léon Becker on 22.01.21.
 //
 
-import Resolver
 import SwiftUI
 
 struct SettingsUploadErrorView: View {

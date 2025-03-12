@@ -5,7 +5,6 @@
 //  Created by Léon Becker on 30.10.20.
 //
 
-import Resolver
 import SwiftUI
 
 /// Input field for the energy usage which the consumer shall consume

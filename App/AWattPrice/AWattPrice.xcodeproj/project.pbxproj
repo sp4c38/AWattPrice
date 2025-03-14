@@ -10,7 +10,7 @@
 		02A564EE1DBA47DCD13CE399 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09B8A781BFC660F0533130E9 /* NotificationService.swift */; };
 		09604B49D0A9565193AC1D9F /* HapticFeedbacks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A00C100052CCD826957777A /* HapticFeedbacks.swift */; };
 		0E3EB76E159021A4574B6416 /* EasyIntervalPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6AD0D0B3D95E6C7BB20D726 /* EasyIntervalPicker.swift */; };
-		0F40C45BA00F72E80C519F96 /* GraphPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E9C4F8C140D86F7F4233532 /* GraphPageView.swift */; };
+		0F40C45BA00F72E80C519F96 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E9C4F8C140D86F7F4233532 /* HomeView.swift */; };
 		179E5999F1C8E68A7EA1FD3B /* TotalConsumptionInputField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F9FE3FE7F1EE73B1DAD0AE3 /* TotalConsumptionInputField.swift */; };
 		1CCDA78DC9491A406AB24B42 /* EasyIntervalPickerRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C5F824C94B9912B11853532 /* EasyIntervalPickerRepresentable.swift */; };
 		1F050059A5AEEA309F5EF60A /* SplashScreenFeaturesAndConsent.swift in Sources */ = {isa = PBXBuildFile; fileRef = F532255ECC882E59C9739E19 /* SplashScreenFeaturesAndConsent.swift */; };
@@ -140,7 +140,7 @@
 		3986605FAA7AF18D5AF2CB37 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		39CB79779C61C278DA81916F /* NotificationService+Requests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NotificationService+Requests.swift"; sourceTree = "<group>"; };
 		3CCBC50D92AE763388DAAB90 /* NotificationConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationConfiguration.swift; sourceTree = "<group>"; };
-		3E9C4F8C140D86F7F4233532 /* GraphPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphPageView.swift; sourceTree = "<group>"; };
+		3E9C4F8C140D86F7F4233532 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		3EF4803E3C737282BE08A7A8 /* TimeRangeInputField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeRangeInputField.swift; sourceTree = "<group>"; };
 		404CC5EAC0C3630A020070B0 /* InputFieldStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputFieldStyles.swift; sourceTree = "<group>"; };
 		497048FB911746FF00EDC23F /* PowerInputField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PowerInputField.swift; sourceTree = "<group>"; };
@@ -290,7 +290,7 @@
 				A8F7E90E8F3E09B2D1CA9070 /* Cheapest TIme Result */,
 				9317E581B0A34BC59EC62502 /* Common */,
 				56FA011CD7E46CFC0CA1208F /* Extensions */,
-				AAFDE64BA82300805406C499 /* Graph */,
+				AAFDE64BA82300805406C499 /* Price Graph */,
 				17D5F87782364637F81836D0 /* Settings */,
 				7EAC088DA04324FC0FDADE45 /* SplashScreens */,
 				673A27A9ED070E839D262A5A /* Styles */,
@@ -566,13 +566,13 @@
 			path = "Cheapest TIme Result";
 			sourceTree = "<group>";
 		};
-		AAFDE64BA82300805406C499 /* Graph */ = {
+		AAFDE64BA82300805406C499 /* Price Graph */ = {
 			isa = PBXGroup;
 			children = (
-				3E9C4F8C140D86F7F4233532 /* GraphPageView.swift */,
+				3E9C4F8C140D86F7F4233532 /* HomeView.swift */,
 				A0EEAF1E35084AD2316B5129 /* Energy Price Graph */,
 			);
-			path = Graph;
+			path = "Price Graph";
 			sourceTree = "<group>";
 		};
 		B8810A2BBEF694BD6D8049F5 /* API */ = {
@@ -790,7 +790,7 @@
 				C94B7D632C148D4E2FFB7CBE /* EnergyPriceSingleBar.swift in Sources */,
 				F86BCBE37F4FCFD4F68C99B2 /* Environment.swift in Sources */,
 				2AB8E54B3F4BB4E1E64CA519 /* Font.swift in Sources */,
-				0F40C45BA00F72E80C519F96 /* GraphPageView.swift in Sources */,
+				0F40C45BA00F72E80C519F96 /* HomeView.swift in Sources */,
 				26CAC870CD773AF23ED2877C /* GraphShapes.swift in Sources */,
 				09604B49D0A9565193AC1D9F /* HapticFeedbacks.swift in Sources */,
 				F9DE0E07C58B34E50ED56EE7 /* HelpAndSuggestionView.swift in Sources */,

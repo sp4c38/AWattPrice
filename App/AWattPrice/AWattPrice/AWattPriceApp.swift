@@ -23,8 +23,8 @@ struct AWattPriceApp: App {
     
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
-    // One-time publisher for initialization
-    private let appInitPublisher = Just(())
+    // Simple flag to track if we've already configured the app
+    @State private var hasConfigured = false
     
     var body: some Scene {
         WindowGroup {
@@ -34,8 +34,12 @@ struct AWattPriceApp: App {
                 .environmentObject(energyDataController)
                 .environmentObject(notificationService)
                 .environmentObject(cheapestHourManager)
-                .onReceive(appInitPublisher) { _ in
-                    configureApp()
+                .onAppear {
+                    // Only configure once
+                    if !hasConfigured {
+                        hasConfigured = true
+                        configureApp()
+                    }
                 }
         }
     }

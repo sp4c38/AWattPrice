@@ -21,10 +21,12 @@ struct ContentView: View {
     @EnvironmentObject var setting: SettingCoreData
     @EnvironmentObject var notificationSetting: NotificationSettingCoreData
     @EnvironmentObject var notificationService: NotificationService
+    @EnvironmentObject var energyDataController: EnergyDataController
 
     @State var tabSelection = 1
     @State var showWhatsNewScreen = false
     @State private var checkAccessStates = false
+    @State private var hasProcessedFirstActivation = false
     
     // Store cancellables in a reference type object that can be mutated
     @StateObject private var cancellableStore = CancellableStore()
@@ -76,6 +78,15 @@ struct ContentView: View {
                         }.store(in: &self.cancellableStore.cancellables)
                     })
                 }
+            }
+            
+            // Only refresh data when becoming active if we've already processed first activation
+            if hasProcessedFirstActivation {
+                if let selectedRegion = Region(rawValue: setting.entity.regionIdentifier) {
+                    energyDataController.download(region: selectedRegion)
+                }
+            } else {
+                hasProcessedFirstActivation = true
             }
             
             if checkAccessStates {

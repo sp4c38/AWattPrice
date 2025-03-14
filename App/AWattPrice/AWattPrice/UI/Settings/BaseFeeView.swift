@@ -15,9 +15,9 @@ class BaseFeeViewModel: ObservableObject {
     var energyDataService: EnergyDataService
     
     @Published var baseFee: Double = 0
-    
-    let uploadErrorObserver = UploadErrorPublisherViewObserver()
-    let uploadObserver = DownloadPublisherLoadingViewObserver(intervalBeforeExceeded: 0.4)
+    @Published var isUploading = false
+    @Published var showUploadIndicators = false
+    @Published var uploadFailed = false
     
     var cancellables = [AnyCancellable]()
     
@@ -29,40 +29,44 @@ class BaseFeeViewModel: ObservableObject {
         self.energyDataService = energyDataService
         
         baseFee = setting.entity.baseFee
-        
-        uploadObserver.objectWillChange.receive(on: DispatchQueue.main).sink(receiveValue: { self.objectWillChange.send() }).store(in: &cancellables)
     }
     
-    var isUploading: Bool {
-        [.uploadingAndTimeExceeded, .uploadingAndTimeNotExceeded].contains(uploadObserver.loadingPublisher)
-    }
-    
-    var showUploadIndicators: Bool {
-        uploadObserver.loadingPublisher == .uploadingAndTimeExceeded
-    }
-    
-    func baseFeeChanges() {
+    @MainActor
+    func baseFeeChanges() async {
         var notificationConfiguration = NotificationConfiguration.create(nil, setting, notificationSetting)
         notificationConfiguration.general.baseFee = baseFee
-        let changeSetting = {
-            self.setting.changeSetting { $0.entity.baseFee = self.baseFee }
-            DispatchQueue.main.async { self.energyDataService.energyData?.computeValues(with: self.setting) }
-        }
         
-        notificationService.changeNotificationConfiguration(notificationConfiguration, notificationSetting) { downloadPublisher in
-            self.uploadObserver.register(for: downloadPublisher.ignoreOutput().eraseToAnyPublisher())
-            self.uploadErrorObserver.register(for: downloadPublisher.eraseToAnyPublisher())
-            downloadPublisher.sink(receiveCompletion: { completion in
-                changeSetting()
-            }, receiveValue: {_ in}).store(in: &self.cancellables)
-        } cantStartUpload: {
-            changeSetting()
-        } noUpload: {
-            changeSetting()
+        // Update UI state
+        isUploading = true
+        showUploadIndicators = true
+        
+        do {
+            // Try to update notification configuration
+            _ = try await notificationService.changeNotificationConfiguration(
+                notificationConfiguration, 
+                notificationSetting
+            )
+            
+            // Success case - update local settings
+            isUploading = false
+            showUploadIndicators = false
+            uploadFailed = false
+            
+            // Update base fee in settings
+            setting.changeSetting { $0.entity.baseFee = self.baseFee }
+            
+            // Recompute energy data values with new base fee
+            energyDataService.energyData?.computeValues(with: setting)
+            
+        } catch {
+            // Error case - still update local settings but show error
+            print("Failed to update notification: \(error)")
+            isUploading = false
+            showUploadIndicators = false
+            uploadFailed = true
         }
     }
 }
-
 
 struct BaseFeeView: View {
     @EnvironmentObject var energyDataService: EnergyDataService
@@ -112,8 +116,8 @@ struct BaseFeeView: View {
                                     ToolbarItemGroup(placement: .keyboard) {
                                         Spacer()
                                         Button(action: {
-                                            viewModel.baseFeeChanges()
                                             isInputActive = false
+                                            Task { await viewModel.baseFeeChanges() }
                                         }) {
                                             Text("Done")
                                                 .bold()
@@ -136,8 +140,7 @@ struct BaseFeeView: View {
                 }
             }
             
-            
-            if viewModel.uploadErrorObserver.viewState == .lastUploadFailed  {
+            if viewModel.uploadFailed {
                 Section {
                     SettingsUploadErrorView()
                 }

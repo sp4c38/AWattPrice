@@ -50,9 +50,13 @@ struct AWattPriceApp: App {
         appDelegate.setting = setting
         appDelegate.notificationSetting = notificationSetting
         
-        notificationService.refreshAccessStates()
-        if let selectedRegion = Region(rawValue: setting.entity.regionIdentifier) {
-            energyDataService.download(region: selectedRegion)
+        // Use Task to call async methods during app initialization
+        Task {
+            _ = await notificationService.refreshAccessStates()
+            
+            if let selectedRegion = Region(rawValue: setting.entity.regionIdentifier) {
+                try? await energyDataService.downloadAsync(region: selectedRegion)
+            }
         }
     }
 }
@@ -107,31 +111,21 @@ struct ContentView: View {
         // Reset badge number when app becomes active
         UIApplication.shared.applicationIconBadgeNumber = 0
         
-        // Handle first activation differently
-        if !isFirstLaunch {
-            isFirstLaunch = true
-        } else {
-            // Refresh data when returning to active state
-            refreshEnergyDataIfNeeded()
+        // Use Task to refresh data when becoming active
+        Task {
+            // Refreshes energy data if a region is selected
+            if let selectedRegion = Region(rawValue: setting.entity.regionIdentifier) {
+                try? await energyDataService.downloadAsync(region: selectedRegion)
+            }
+            
+            // Refresh notification access state
+            await refreshNotificationAccess()
         }
-        
-        // Refresh notification access state
-        refreshNotificationAccess()
-    }
-    
-    /// Refreshes energy data if a region is selected
-    private func refreshEnergyDataIfNeeded() {
-        guard let selectedRegion = Region(rawValue: setting.entity.regionIdentifier) else { return }
-        energyDataService.download(region: selectedRegion)
     }
 
     /// Refreshes notification access states if needed
-    private func refreshNotificationAccess() {
-        if !hasCheckedNotificationAccess {
-            notificationService.refreshAccessStates()
-            hasCheckedNotificationAccess = true
-        } else {
-            notificationService.refreshAccessStates()
-        }
+    private func refreshNotificationAccess() async {
+        _ = await notificationService.refreshAccessStates()
+        hasCheckedNotificationAccess = true
     }
 }

@@ -8,6 +8,7 @@
 import Combine
 import SwiftUI
 import UserNotifications
+import UIKit
 
 class NotificationService: ObservableObject {
     enum AccessState {
@@ -26,8 +27,7 @@ class NotificationService: ObservableObject {
 
     var token: String? = nil
     
-    var accessState: CurrentValueSubject<AccessState, Never> = .init(.unknown)
-    var pushState: CurrentValueSubject<PushState, Never> = .init(.unknown)
-    
-    internal var cancellables = [AnyCancellable]()
+    // Published properties without private(set)
+    @Published var accessState: AccessState = .unknown
+    @Published var pushState: PushState = .unknown
 }

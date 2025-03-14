@@ -49,15 +49,9 @@ class RegionTaxSelectionViewModel: ObservableObject {
         notificationService.changeNotificationConfiguration(notificationConfiguration, notificationSetting) { downloadPublisher in
             self.uploadObserver.register(for: downloadPublisher.ignoreOutput().eraseToAnyPublisher())
             downloadPublisher.sink(receiveCompletion: { completion in
-                switch completion {
-                case .finished: changeSetting()
-                case .failure:
-                    self.notificationSetting.changeSetting { $0.entity.forceUpload = true }
-                    changeSetting()
-                }
+                changeSetting()
             }, receiveValue: {_ in}).store(in: &self.cancellables)
         } cantStartUpload: {
-            self.notificationSetting.changeSetting { $0.entity.forceUpload = true }
             changeSetting()
         } noUpload: {
             changeSetting()
@@ -75,15 +69,9 @@ class RegionTaxSelectionViewModel: ObservableObject {
         notificationService.changeNotificationConfiguration(notificationConfiguration, notificationSetting) { downloadPublisher in
             self.uploadObserver.register(for: downloadPublisher.ignoreOutput().eraseToAnyPublisher())
             downloadPublisher.sink(receiveCompletion: { completion in
-                switch completion {
-                case .finished: changeSetting()
-                case .failure:
-                    self.notificationSetting.changeSetting { $0.entity.forceUpload = true }
-                    changeSetting()
-                }
+                changeSetting()
             }, receiveValue: {_ in}).store(in: &self.cancellables)
         } cantStartUpload: {
-            self.notificationSetting.changeSetting { $0.entity.forceUpload = true }
             changeSetting()
         } noUpload: {
             changeSetting()

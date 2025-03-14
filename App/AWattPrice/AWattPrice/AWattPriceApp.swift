@@ -71,9 +71,6 @@ struct ContentView: View {
     @State var shouldShowWhatsNew = false
     @State private var hasCheckedNotificationAccess = false
     @State private var isFirstLaunch = false
-    
-    // Store cancellables directly in the view
-    @State private var cancellables = Set<AnyCancellable>()
 
     var body: some View {
         VStack(spacing: 0) {
@@ -118,8 +115,8 @@ struct ContentView: View {
             refreshEnergyDataIfNeeded()
         }
         
-        // Handle notification configuration
-        handleNotificationConfiguration()
+        // Refresh notification access state
+        refreshNotificationAccess()
     }
     
     /// Refreshes energy data if a region is selected
@@ -127,29 +124,14 @@ struct ContentView: View {
         guard let selectedRegion = Region(rawValue: setting.entity.regionIdentifier) else { return }
         energyDataService.download(region: selectedRegion)
     }
-    
-    /// Handles notification configuration and access states
-    private func handleNotificationConfiguration() {
-        let processForceUpload = {
-            guard self.notificationSetting.entity.forceUpload else { return }
-            
-            let notificationConfiguration = NotificationConfiguration.create(nil, self.setting, self.notificationSetting)
-            self.notificationService.changeNotificationConfiguration(notificationConfiguration, self.notificationSetting, uploadStarted: { publisher in
-                publisher
-                    .sink { completion in
-                        if case .finished = completion {
-                            self.notificationSetting.changeSetting { $0.entity.forceUpload = false }
-                        }
-                    } receiveValue: { _ in }
-                    .store(in: &self.cancellables)
-            })
-        }
-        
-        if hasCheckedNotificationAccess {
-            notificationService.refreshAccessStates { _ in processForceUpload() }
-        } else {
-            processForceUpload()
+
+    /// Refreshes notification access states if needed
+    private func refreshNotificationAccess() {
+        if !hasCheckedNotificationAccess {
+            notificationService.refreshAccessStates()
             hasCheckedNotificationAccess = true
+        } else {
+            notificationService.refreshAccessStates()
         }
     }
 }

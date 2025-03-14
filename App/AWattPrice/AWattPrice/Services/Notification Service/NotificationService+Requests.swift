@@ -10,24 +10,19 @@ import Foundation
 
 extension NotificationService {
     /// Try to receive the required notification access permissions and send the notification request.
-    func sendNotificationConfiguration(_ notificationConfiguration: NotificationConfiguration, _ notificationSetting: NotificationSettingCoreData) -> AnyPublisher<(data: Data, response: URLResponse), Error>? {
+    func sendNotificationConfiguration(_ notificationConfiguration: NotificationConfiguration, _ notificationSetting: NotificationSettingCoreData) async throws -> (data: Data, response: URLResponse)? {
         guard accessState.value == .granted, pushState.value == .apnsRegistrationSuccessful else { return nil }
         
-        guard let apiRequest = APIRequestFactory.notificationRequest(notificationConfiguration) else { return nil }
-        let request = APIClient().request(to: apiRequest)
-        request
-            .receive(on: DispatchQueue.main)
-            .sink { completion in
-                switch completion {
-                case .finished:
-                    print("Successfully sent notification task.")
-                case .failure(let error):
-                    print("Couldn't sent notification tasks: \(error).")
-                }
-            } receiveValue: { _ in }
-            .store(in: &cancellables)
+        guard let apiRequest = APIClient.createNotificationRequest(notificationConfiguration) else { return nil }
         
-        return request
+        do {
+            let result = try await APIClient().request(to: apiRequest)
+            print("Successfully sent notification task.")
+            return result
+        } catch {
+            print("Couldn't sent notification tasks: \(error).")
+            throw error
+        }
     }
     
     func wantToReceiveAnyNotification(notificationSetting: NotificationSettingCoreData) -> Bool {
@@ -40,7 +35,7 @@ extension NotificationService {
     
     func changeNotificationConfiguration(
         _ notificationConfiguration: NotificationConfiguration, _ notificationSetting: NotificationSettingCoreData, skipWantNotificationCheck: Bool = false,
-        uploadStarted: ((AnyPublisher<(data: Data, response: URLResponse), Error>) -> ())? = nil, cantStartUpload: (() -> ())? = nil, noUpload: (() -> ())? = nil
+        uploadStarted: ((Task<(data: Data, response: URLResponse)?, Error>) -> ())? = nil, cantStartUpload: (() -> ())? = nil, noUpload: (() -> ())? = nil
     ) {
         var notificationConfiguration = notificationConfiguration
         
@@ -51,11 +46,11 @@ extension NotificationService {
                         notificationConfiguration.token = token
                     }
                     
-                    if let sendPublisher = self.sendNotificationConfiguration(notificationConfiguration, notificationSetting) {
-                        uploadStarted?(sendPublisher)
-                    } else {
-                        cantStartUpload?()
+                    let task = Task { [self] in
+                        return try await self.sendNotificationConfiguration(notificationConfiguration, notificationSetting)
                     }
+                    
+                    uploadStarted?(task)
                 } else {
                     print("Didn't get notification access.")
                     cantStartUpload?()

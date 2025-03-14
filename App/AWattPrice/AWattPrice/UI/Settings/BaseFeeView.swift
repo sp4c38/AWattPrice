@@ -53,15 +53,9 @@ class BaseFeeViewModel: ObservableObject {
             self.uploadObserver.register(for: downloadPublisher.ignoreOutput().eraseToAnyPublisher())
             self.uploadErrorObserver.register(for: downloadPublisher.eraseToAnyPublisher())
             downloadPublisher.sink(receiveCompletion: { completion in
-                switch completion {
-                case .finished: changeSetting()
-                case .failure:
-                    self.notificationSetting.changeSetting { $0.entity.forceUpload = true }
-                    changeSetting()
-                }
+                changeSetting()
             }, receiveValue: {_ in}).store(in: &self.cancellables)
         } cantStartUpload: {
-            self.notificationSetting.changeSetting { $0.entity.forceUpload = true }
             changeSetting()
         } noUpload: {
             changeSetting()

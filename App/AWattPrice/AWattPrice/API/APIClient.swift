@@ -39,7 +39,7 @@ class APIClient {
     // MARK: - Request Creation
     
     /// Creates a request for energy data for the specified region
-    func createEnergyDataRequest(region: Region) -> ResponseRequest<EnergyData> {
+    static func createEnergyDataRequest(region: Region) -> ResponseRequest<EnergyData> {
         let requestURL = APIClient.apiURL
             .appendingPathComponent("data", isDirectory: true)
             .appendingPathComponent(region.apiName)
@@ -53,7 +53,7 @@ class APIClient {
     }
     
     /// Creates a request to save notification configuration
-    func createNotificationRequest(_ notificationConfiguration: NotificationConfiguration) -> PlainRequest? {
+    static func createNotificationRequest(_ notificationConfiguration: NotificationConfiguration) -> PlainRequest? {
         guard notificationConfiguration.token != nil else {
             print("Token of the notification configuration is still nil.")
             return nil

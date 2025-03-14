@@ -25,8 +25,6 @@ struct HeaderSizePreferenceKey: PreferenceKey {
 }
 
 struct PricesView: View {
-    @Environment(\.scenePhase) var scenePhase
-
     @EnvironmentObject var energyDataService: EnergyDataService
     @EnvironmentObject var setting: SettingCoreData
 
@@ -79,22 +77,6 @@ struct PricesView: View {
         .navigationViewStyle(StackNavigationViewStyle())
         .onAppear {
             initialAppearFinished = nil
-        }
-        .onChange(of: scenePhase) { phase in
-            if initialAppearFinished == nil {
-                initialAppearFinished = true
-                return
-            }
-            if phase == .active, initialAppearFinished == true {
-                logger.debug("App was reentered. Updating data.")
-                loadEnergyData()
-            }
-        }
-    }
-    
-    func loadEnergyData() {
-        if let region = Region(rawValue: setting.entity.regionIdentifier) {
-            energyDataService.download(region: region)
         }
     }
 }

@@ -10,14 +10,6 @@ import Foundation
 class AppContext {
     static var shared = AppContext()
     
-    var apiURL: URL = {
-        #if DEBUG
-        return URL(string: "https://test-awp.space8.me/api/v2/")!
-        #else
-        return URL(string: "https://awattprice.space8.me/api/v2/")!
-        #endif
-    }()
-    
     var currentAppVersion: String {
         Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as! String
     }

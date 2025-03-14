@@ -10,7 +10,7 @@
 		02A564EE1DBA47DCD13CE399 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09B8A781BFC660F0533130E9 /* NotificationService.swift */; };
 		09604B49D0A9565193AC1D9F /* HapticFeedbacks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A00C100052CCD826957777A /* HapticFeedbacks.swift */; };
 		0E3EB76E159021A4574B6416 /* EasyIntervalPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6AD0D0B3D95E6C7BB20D726 /* EasyIntervalPicker.swift */; };
-		0F40C45BA00F72E80C519F96 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E9C4F8C140D86F7F4233532 /* HomeView.swift */; };
+		0F40C45BA00F72E80C519F96 /* PricesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E9C4F8C140D86F7F4233532 /* PricesView.swift */; };
 		179E5999F1C8E68A7EA1FD3B /* TotalConsumptionInputField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F9FE3FE7F1EE73B1DAD0AE3 /* TotalConsumptionInputField.swift */; };
 		1CCDA78DC9491A406AB24B42 /* EasyIntervalPickerRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C5F824C94B9912B11853532 /* EasyIntervalPickerRepresentable.swift */; };
 		1F050059A5AEEA309F5EF60A /* SplashScreenFeaturesAndConsent.swift in Sources */ = {isa = PBXBuildFile; fileRef = F532255ECC882E59C9739E19 /* SplashScreenFeaturesAndConsent.swift */; };
@@ -53,7 +53,6 @@
 		73B632E617E3A54BF59B3E2C /* Binding.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABC1863825D3D8178C7C9954 /* Binding.swift */; };
 		7806C62BA8F28AC26C3C88B7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3986605FAA7AF18D5AF2CB37 /* AppDelegate.swift */; };
 		79BF8D2C50E18982950D8CEC /* TimeRangeInputField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EF4803E3C737282BE08A7A8 /* TimeRangeInputField.swift */; };
-		7B02F34A1AEECCC149627609 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FE51C2772E07396AF458F34 /* ContentView.swift */; };
 		7E7333EBA324E6AF0A2CE7C1 /* DownloadPublisherLoadingViewObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E27EA2E00D4FD1A008773DB /* DownloadPublisherLoadingViewObserver.swift */; };
 		7E90347E27828E2718534FED /* SettingEntities.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB8219C5EDEC8DD1FB333D45 /* SettingEntities.swift */; };
 		805FDBDA608B766F64F5AAB1 /* Time.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54E7B03C854090F5B68712E1 /* Time.swift */; };
@@ -66,7 +65,6 @@
 		9DFAE8AEACE3955D2EF55997 /* NoNotificationAccessView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B031C8AF2DCA5B3E86AA80A8 /* NoNotificationAccessView.swift */; };
 		A27624298A92276EDAC1CDFE /* AppContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = A41C1FC82200E2AFDF054FA4 /* AppContext.swift */; };
 		A64044376124E697D0D7D6EB /* ButtonStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60087A5B0602E5789304BDF1 /* ButtonStyles.swift */; };
-		AA3CDC3004E66F8829C0776F /* EnergyData.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD1818E2114A46C67F823449 /* EnergyData.swift */; };
 		B511AB77AED338BC7FD96786 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C06F1B5903714FE38928934 /* Extensions.swift */; };
 		C0067869CF8C26D9F619B651 /* AWattPriceApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 616111958CDF13E7ED308317 /* AWattPriceApp.swift */; };
 		C217F2DAE2765BCCBD3374A6 /* EnergyPriceGraph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CAEECA30ABDB0DF6C9DB6DA /* EnergyPriceGraph.swift */; };
@@ -140,13 +138,12 @@
 		3986605FAA7AF18D5AF2CB37 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		39CB79779C61C278DA81916F /* NotificationService+Requests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NotificationService+Requests.swift"; sourceTree = "<group>"; };
 		3CCBC50D92AE763388DAAB90 /* NotificationConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationConfiguration.swift; sourceTree = "<group>"; };
-		3E9C4F8C140D86F7F4233532 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		3E9C4F8C140D86F7F4233532 /* PricesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PricesView.swift; sourceTree = "<group>"; };
 		3EF4803E3C737282BE08A7A8 /* TimeRangeInputField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeRangeInputField.swift; sourceTree = "<group>"; };
 		404CC5EAC0C3630A020070B0 /* InputFieldStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputFieldStyles.swift; sourceTree = "<group>"; };
 		497048FB911746FF00EDC23F /* PowerInputField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PowerInputField.swift; sourceTree = "<group>"; };
 		4CAEECA30ABDB0DF6C9DB6DA /* EnergyPriceGraph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnergyPriceGraph.swift; sourceTree = "<group>"; };
 		4D92DAF6062C9BB0CC3973F3 /* AWattPrice.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AWattPrice.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		4FE51C2772E07396AF458F34 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		51649CD95D1B046EA6D3FF0F /* BaseFeeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseFeeView.swift; sourceTree = "<group>"; };
 		52A4CD1362317193ABA4A25D /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
 		52D6D993DB3CE3CBB4B1E644 /* Region.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Region.swift; sourceTree = "<group>"; };
@@ -201,7 +198,6 @@
 		C6293FEC5FEF17D21F998528 /* AppGroupManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppGroupManager.swift; sourceTree = "<group>"; };
 		CB8219C5EDEC8DD1FB333D45 /* SettingEntities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingEntities.swift; sourceTree = "<group>"; };
 		CC86F9987A19BB3FA4DA1124 /* SF-Compact-Display-Black.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-Compact-Display-Black.otf"; sourceTree = "<group>"; };
-		CD1818E2114A46C67F823449 /* EnergyData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnergyData.swift; sourceTree = "<group>"; };
 		CD5548E86A4888A224ADE6E5 /* NotificationService+RemoteAccess.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NotificationService+RemoteAccess.swift"; sourceTree = "<group>"; };
 		CF85B2B08E53E158A7DE4DFC /* NumberField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberField.swift; sourceTree = "<group>"; };
 		D22CD9B053C7AA6D5411FFE0 /* Font.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Font.swift; sourceTree = "<group>"; };
@@ -285,7 +281,6 @@
 		332438C78B5D2E059BDD53CC /* UI */ = {
 			isa = PBXGroup;
 			children = (
-				4FE51C2772E07396AF458F34 /* ContentView.swift */,
 				7801BE2B0DD9E7E0CDF28180 /* Cheapest Time */,
 				A8F7E90E8F3E09B2D1CA9070 /* Cheapest TIme Result */,
 				9317E581B0A34BC59EC62502 /* Common */,
@@ -460,14 +455,6 @@
 			path = "Core Data";
 			sourceTree = "<group>";
 		};
-		852D692AACD80F7CF95110CB /* Models */ = {
-			isa = PBXGroup;
-			children = (
-				CD1818E2114A46C67F823449 /* EnergyData.swift */,
-			);
-			path = Models;
-			sourceTree = "<group>";
-		};
 		8CAEE9A6D25CE48623C7A971 /* Preview Content */ = {
 			isa = PBXGroup;
 			children = (
@@ -569,7 +556,7 @@
 		AAFDE64BA82300805406C499 /* Price Graph */ = {
 			isa = PBXGroup;
 			children = (
-				3E9C4F8C140D86F7F4233532 /* HomeView.swift */,
+				3E9C4F8C140D86F7F4233532 /* PricesView.swift */,
 				A0EEAF1E35084AD2316B5129 /* Energy Price Graph */,
 			);
 			path = "Price Graph";
@@ -611,7 +598,6 @@
 				5E69EEB1FA019DD2F16C2815 /* AWattPriceWidgetExtension.entitlements */,
 				0CBD63E7EADDC69751723529 /* API */,
 				9F3CD26A7BD9992AE1BA052B /* Extensions */,
-				852D692AACD80F7CF95110CB /* Models */,
 				4B01E3B0A4286C104BC51EFA /* Resources */,
 				975A0BD653C590C02A0011DB /* Services */,
 				332438C78B5D2E059BDD53CC /* UI */,
@@ -774,7 +760,6 @@
 				F50BC83C497A2E9713FB8B58 /* CheapestTimeClockView.swift in Sources */,
 				D48854808F7F125401420348 /* CheapestTimeResultView.swift in Sources */,
 				8B1F60F9ED84DE93E4B6C89C /* CheapestTimeView.swift in Sources */,
-				7B02F34A1AEECCC149627609 /* ContentView.swift in Sources */,
 				7E90347E27828E2718534FED /* SettingEntities.swift in Sources */,
 				2D29DD479FDC741009B2AB32 /* CustomDatePicker.swift in Sources */,
 				D0B5F4C57BCEA12626689AA2 /* DataDownloadAndError.swift in Sources */,
@@ -782,7 +767,6 @@
 				7E7333EBA324E6AF0A2CE7C1 /* DownloadPublisherLoadingViewObserver.swift in Sources */,
 				0E3EB76E159021A4574B6416 /* EasyIntervalPicker.swift in Sources */,
 				1CCDA78DC9491A406AB24B42 /* EasyIntervalPickerRepresentable.swift in Sources */,
-				AA3CDC3004E66F8829C0776F /* EnergyData.swift in Sources */,
 				8E8FDA62E4A1CECC1E57FFE3 /* EnergyDataController.swift in Sources */,
 				DA697D947FD57718F9F2ADAC /* EnergyDataPreviewContent.swift in Sources */,
 				C217F2DAE2765BCCBD3374A6 /* EnergyPriceGraph.swift in Sources */,
@@ -790,7 +774,7 @@
 				C94B7D632C148D4E2FFB7CBE /* EnergyPriceSingleBar.swift in Sources */,
 				F86BCBE37F4FCFD4F68C99B2 /* Environment.swift in Sources */,
 				2AB8E54B3F4BB4E1E64CA519 /* Font.swift in Sources */,
-				0F40C45BA00F72E80C519F96 /* HomeView.swift in Sources */,
+				0F40C45BA00F72E80C519F96 /* PricesView.swift in Sources */,
 				26CAC870CD773AF23ED2877C /* GraphShapes.swift in Sources */,
 				09604B49D0A9565193AC1D9F /* HapticFeedbacks.swift in Sources */,
 				F9DE0E07C58B34E50ED56EE7 /* HelpAndSuggestionView.swift in Sources */,

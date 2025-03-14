@@ -24,7 +24,7 @@ struct HeaderSizePreferenceKey: PreferenceKey {
     }
 }
 
-struct HomeView: View {
+struct PricesView: View {
     @Environment(\.scenePhase) var scenePhase
 
     @EnvironmentObject var energyDataController: EnergyDataController
@@ -101,7 +101,7 @@ struct HomeView: View {
 
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
-        HomeView()
+        PricesView()
             .environment(\.managedObjectContext, CoreDataService.shared.container.viewContext)
             .environmentObject(SettingCoreData(viewContext: CoreDataService.shared.container.viewContext))
     }

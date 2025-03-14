@@ -27,7 +27,7 @@ struct HeaderSizePreferenceKey: PreferenceKey {
 struct PricesView: View {
     @Environment(\.scenePhase) var scenePhase
 
-    @EnvironmentObject var energyDataController: EnergyDataController
+    @EnvironmentObject var energyDataService: EnergyDataService
     @EnvironmentObject var setting: SettingCoreData
 
     @State var headerSize = CGSize(width: 0, height: 0)
@@ -43,7 +43,7 @@ struct PricesView: View {
     var body: some View {
         NavigationView {
             VStack {
-                if energyDataController.energyData != nil {
+                if energyDataService.energyData != nil {
                     ZStack {
                         VStack {
                             VStack(spacing: 5) {
@@ -94,7 +94,7 @@ struct PricesView: View {
     
     func loadEnergyData() {
         if let region = Region(rawValue: setting.entity.regionIdentifier) {
-            energyDataController.download(region: region)
+            energyDataService.download(region: region)
         }
     }
 }

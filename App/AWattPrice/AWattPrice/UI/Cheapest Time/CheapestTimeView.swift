@@ -21,7 +21,7 @@ struct ViewSizePreferenceKey: PreferenceKey {
 }
 
 struct CheapestTimeViewBodyPicker: View {
-    @EnvironmentObject var energyDataController: EnergyDataController
+    @EnvironmentObject var energyDataService: EnergyDataService
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
 
     @State var maxTimeInterval = TimeInterval(3600)
@@ -29,7 +29,7 @@ struct CheapestTimeViewBodyPicker: View {
     @State var timeOfUsageInterval = TimeInterval(0)
     
     func setMaxTimeInterval() {
-        guard let minMaxTimeRange = energyDataController.energyData?.minMaxTimeRange else { return }
+        guard let minMaxTimeRange = energyDataService.energyData?.minMaxTimeRange else { return }
         let nowHourStart = Calendar.current.date(
             bySettingHour: Calendar.current.component(.hour, from: Date()),
             minute: 0,
@@ -59,7 +59,7 @@ struct CheapestTimeViewBodyPicker: View {
             .onAppear {
                 setMaxTimeInterval()
             }
-            .onReceive(energyDataController.$energyData) { _ in
+            .onReceive(energyDataService.$energyData) { _ in
                 setMaxTimeInterval()
             }
             .onChange(of: timeOfUsageInterval) { newValue in
@@ -115,7 +115,7 @@ struct CheapestTimeViewBody: View {
 struct CheapestTimeView: View {
     @Environment(\.colorScheme) var colorScheme
 
-    @EnvironmentObject var energyDataController: EnergyDataController
+    @EnvironmentObject var energyDataService: EnergyDataService
     @EnvironmentObject var setting: SettingCoreData
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
 
@@ -124,7 +124,7 @@ struct CheapestTimeView: View {
     var body: some View {
         NavigationView {
             VStack {
-                if energyDataController.energyData != nil {
+                if energyDataService.energyData != nil {
                     ScrollView {
                         VStack(spacing: 0) {
                             CheapestTimeViewBody()
@@ -172,16 +172,16 @@ struct CheapestTimeView: View {
 }
 
 struct CheapestTimeView_Previews: PreviewProvider {
-    static let energyDataController = EnergyDataController()
+    static let energyDataService = EnergyDataService()
 
     static var previews: some View {
         CheapestTimeView()
-            .environmentObject(energyDataController)
+            .environmentObject(energyDataService)
             .environmentObject(
                 NotificationSettingCoreData(viewContext: CoreDataService.shared.container.viewContext)
             )
             .environmentObject(CheapestHourManager())
             .environmentObject(SettingCoreData(viewContext: CoreDataService.shared.container.viewContext))
-            .onAppear { energyDataController.download(region: Region.DE) }
+            .onAppear { energyDataService.download(region: Region.DE) }
     }
 }

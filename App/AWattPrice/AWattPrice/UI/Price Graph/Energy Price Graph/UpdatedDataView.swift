@@ -10,10 +10,10 @@ import SwiftUI
 
 extension UpdatedDataView {
     class ViewModel: ObservableObject {
-        @ObservedObject var energyDataController: EnergyDataController
+        @ObservedObject var energyDataService: EnergyDataService
         @ObservedObject var setting: SettingCoreData
         
-        @Published var viewDownloadState = EnergyDataController.DownloadState.idle
+        @Published var viewDownloadState = EnergyDataService.DownloadState.idle
         var startedDownloadingTime: Date? = nil
         
         @Published var firstAppear = true
@@ -24,13 +24,13 @@ extension UpdatedDataView {
         
         var downloadStateCancellable: AnyCancellable? = nil
         
-        init(energyDataController: EnergyDataController, setting: SettingCoreData) {
-            self.energyDataController = energyDataController
+        init(energyDataService: EnergyDataService, setting: SettingCoreData) {
+            self.energyDataService = energyDataService
             self.setting = setting
-            downloadStateCancellable = energyDataController.$downloadState.sink(receiveValue: updateDownloadState)
+            downloadStateCancellable = energyDataService.$downloadState.sink(receiveValue: updateDownloadState)
         }
         
-        func updateDownloadState(newDownloadState: EnergyDataController.DownloadState) {
+        func updateDownloadState(newDownloadState: EnergyDataService.DownloadState) {
             switch newDownloadState {
             case .idle:
                 viewDownloadState = .idle
@@ -64,14 +64,14 @@ extension UpdatedDataView {
 }
 
 struct UpdatedDataView: View {
-    @EnvironmentObject var energyDataController: EnergyDataController
+    @EnvironmentObject var energyDataService: EnergyDataService
     @EnvironmentObject var setting: SettingCoreData
     @StateObject private var viewModel: ViewModel
     
     init() {
         // Initialize with temporary values that will be replaced in onAppear
         _viewModel = StateObject(wrappedValue: ViewModel(
-            energyDataController: EnergyDataController(),
+            energyDataService: EnergyDataService(),
             setting: SettingCoreData(viewContext: CoreDataService.shared.container.viewContext)
         ))
     }
@@ -106,7 +106,7 @@ struct UpdatedDataView: View {
         .animation(.easeInOut)
         .onAppear {
             // Update viewModel with the actual environment objects
-            viewModel.energyDataController = energyDataController
+            viewModel.energyDataService = energyDataService
             viewModel.setting = setting
             
             if case .finished(let time) = viewModel.viewDownloadState {
@@ -121,7 +121,7 @@ struct UpdatedDataView: View {
         .contentShape(Rectangle())
         .onTapGesture {
             if let region = Region(rawValue: viewModel.setting.entity.regionIdentifier) {
-                viewModel.energyDataController.download(region: region)
+                viewModel.energyDataService.download(region: region)
             }
         }
     }
@@ -130,7 +130,7 @@ struct UpdatedDataView: View {
 struct UpdatedDataView_Previews: PreviewProvider {
     static var previews: some View {
         UpdatedDataView()
-            .environmentObject(EnergyDataController())
+            .environmentObject(EnergyDataService())
             .environmentObject(SettingCoreData(viewContext: CoreDataService.shared.container.viewContext))
     }
 }

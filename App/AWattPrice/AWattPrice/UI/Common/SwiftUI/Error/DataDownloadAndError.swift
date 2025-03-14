@@ -22,7 +22,7 @@ struct DataRetrievalLoadingView: View {
 struct DataRetrievalError: View {
     @Environment(\.colorScheme) var colorScheme
 
-    @EnvironmentObject var energyDataController: EnergyDataController
+    @EnvironmentObject var energyDataService: EnergyDataService
     @EnvironmentObject var setting: SettingCoreData
 
     var body: some View {
@@ -40,7 +40,7 @@ struct DataRetrievalError: View {
 
                 Button(action: {
                     if let region = Region.init(rawValue: setting.entity.regionIdentifier) {
-                        energyDataController.download(region: region)
+                        energyDataService.download(region: region)
                     }
                 }) {
                     Text("Retry")
@@ -61,7 +61,7 @@ struct CurrentlyNoData: View {
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.networkManager) var networkManager
 
-    @EnvironmentObject var energyDataController: EnergyDataController
+    @EnvironmentObject var energyDataService: EnergyDataService
     @EnvironmentObject var setting: SettingCoreData
 
     var body: some View {
@@ -79,7 +79,7 @@ struct CurrentlyNoData: View {
 
                 Button(action: {
                     if let region = Region(rawValue: setting.entity.regionIdentifier) {
-                        energyDataController.download(region: region)
+                        energyDataService.download(region: region)
                     }
                 }) {
                     Text("Retry")
@@ -126,17 +126,17 @@ struct SettingLoadingError: View {
 
 /// Classify network errors
 struct DataDownloadAndError: View {
-    @EnvironmentObject var energyDataController: EnergyDataController
+    @EnvironmentObject var energyDataService: EnergyDataService
     @EnvironmentObject var notificationSetting: NotificationSettingCoreData
     @EnvironmentObject var setting: SettingCoreData
 
     var body: some View {
         VStack {
-            if case .downloading = energyDataController.downloadState  {
+            if case .downloading = energyDataService.downloadState  {
                 DataRetrievalLoadingView()
-            } else if case .failed = energyDataController.downloadState {
+            } else if case .failed = energyDataService.downloadState {
                 DataRetrievalError()
-            } else if let energyData = energyDataController.energyData, energyData.currentPrices.isEmpty == true {
+            } else if let energyData = energyDataService.energyData, energyData.currentPrices.isEmpty == true {
                 CurrentlyNoData()
                     .transition(.opacity)
             }

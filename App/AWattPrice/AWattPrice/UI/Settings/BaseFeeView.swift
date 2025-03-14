@@ -12,7 +12,7 @@ class BaseFeeViewModel: ObservableObject {
     var setting: SettingCoreData
     var notificationSetting: NotificationSettingCoreData
     var notificationService: NotificationService
-    var energyDataController: EnergyDataController
+    var energyDataService: EnergyDataService
     
     @Published var baseFee: Double = 0
     
@@ -22,11 +22,11 @@ class BaseFeeViewModel: ObservableObject {
     var cancellables = [AnyCancellable]()
     
     init(setting: SettingCoreData, notificationSetting: NotificationSettingCoreData, 
-         notificationService: NotificationService, energyDataController: EnergyDataController) {
+         notificationService: NotificationService, energyDataService: EnergyDataService) {
         self.setting = setting
         self.notificationSetting = notificationSetting
         self.notificationService = notificationService
-        self.energyDataController = energyDataController
+        self.energyDataService = energyDataService
         
         baseFee = setting.entity.baseFee
         
@@ -46,7 +46,7 @@ class BaseFeeViewModel: ObservableObject {
         notificationConfiguration.general.baseFee = baseFee
         let changeSetting = {
             self.setting.changeSetting { $0.entity.baseFee = self.baseFee }
-            DispatchQueue.main.async { self.energyDataController.energyData?.computeValues(with: self.setting) }
+            DispatchQueue.main.async { self.energyDataService.energyData?.computeValues(with: self.setting) }
         }
         
         notificationService.changeNotificationConfiguration(notificationConfiguration, notificationSetting) { downloadPublisher in
@@ -71,7 +71,7 @@ class BaseFeeViewModel: ObservableObject {
 
 
 struct BaseFeeView: View {
-    @EnvironmentObject var energyDataController: EnergyDataController
+    @EnvironmentObject var energyDataService: EnergyDataService
     @EnvironmentObject var setting: SettingCoreData
     @EnvironmentObject var notificationSetting: NotificationSettingCoreData
     @EnvironmentObject var notificationService: NotificationService
@@ -86,7 +86,7 @@ struct BaseFeeView: View {
             setting: SettingCoreData(viewContext: CoreDataService.shared.container.viewContext),
             notificationSetting: NotificationSettingCoreData(viewContext: CoreDataService.shared.container.viewContext),
             notificationService: NotificationService(),
-            energyDataController: EnergyDataController()
+            energyDataService: EnergyDataService()
         ))
     }
 
@@ -156,7 +156,7 @@ struct BaseFeeView: View {
             viewModel.setting = setting
             viewModel.notificationSetting = notificationSetting
             viewModel.notificationService = notificationService
-            viewModel.energyDataController = energyDataController
+            viewModel.energyDataService = energyDataService
             viewModel.baseFee = setting.entity.baseFee
         }
     }
@@ -169,7 +169,7 @@ struct BaseFeeView_Previews: PreviewProvider {
                 .environmentObject(SettingCoreData(viewContext: CoreDataService.shared.container.viewContext))
                 .environmentObject(NotificationSettingCoreData(viewContext: CoreDataService.shared.container.viewContext))
                 .environmentObject(NotificationService())
-                .environmentObject(EnergyDataController())
+                .environmentObject(EnergyDataService())
         }
     }
 }

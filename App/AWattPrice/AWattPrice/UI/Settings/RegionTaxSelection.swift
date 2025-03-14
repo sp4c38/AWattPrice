@@ -5,7 +5,7 @@ class RegionTaxSelectionViewModel: ObservableObject {
     var setting: SettingCoreData
     var notificationSetting: NotificationSettingCoreData
     var notificationService: NotificationService
-    var energyDataController: EnergyDataController
+    var energyDataService: EnergyDataService
     
     @Published var selectedRegion: Region
     @Published var taxSelection: Bool
@@ -15,11 +15,11 @@ class RegionTaxSelectionViewModel: ObservableObject {
     var cancellables = [AnyCancellable]()
     
     init(setting: SettingCoreData, notificationSetting: NotificationSettingCoreData,
-         notificationService: NotificationService, energyDataController: EnergyDataController) {
+         notificationService: NotificationService, energyDataService: EnergyDataService) {
         self.setting = setting
         self.notificationSetting = notificationSetting
         self.notificationService = notificationService
-        self.energyDataController = energyDataController
+        self.energyDataService = energyDataService
         
         selectedRegion = Region(rawValue: setting.entity.regionIdentifier)!
         taxSelection = setting.entity.pricesWithVAT
@@ -43,7 +43,7 @@ class RegionTaxSelectionViewModel: ObservableObject {
         notificationConfiguration.general.region = newRegion
         let changeSetting = {
             self.setting.changeSetting { $0.entity.regionIdentifier = newRegion.rawValue }
-            DispatchQueue.main.async { self.energyDataController.download(region: newRegion) }
+            DispatchQueue.main.async { self.energyDataService.download(region: newRegion) }
         }
         
         notificationService.changeNotificationConfiguration(notificationConfiguration, notificationSetting) { downloadPublisher in
@@ -69,7 +69,7 @@ class RegionTaxSelectionViewModel: ObservableObject {
         notificationConfiguration.general.tax = newTaxSelection
         let changeSetting = {
             self.setting.changeSetting { $0.entity.pricesWithVAT = newTaxSelection }
-            DispatchQueue.main.async { self.energyDataController.energyData?.computeValues(with: self.setting) }
+            DispatchQueue.main.async { self.energyDataService.energyData?.computeValues(with: self.setting) }
         }
 
         notificationService.changeNotificationConfiguration(notificationConfiguration, notificationSetting) { downloadPublisher in
@@ -95,7 +95,7 @@ struct RegionTaxSelectionView: View {
     @EnvironmentObject var setting: SettingCoreData
     @EnvironmentObject var notificationSetting: NotificationSettingCoreData
     @EnvironmentObject var notificationService: NotificationService
-    @EnvironmentObject var energyDataController: EnergyDataController
+    @EnvironmentObject var energyDataService: EnergyDataService
     
     @StateObject var viewModel: RegionTaxSelectionViewModel
     
@@ -105,7 +105,7 @@ struct RegionTaxSelectionView: View {
             setting: SettingCoreData(viewContext: CoreDataService.shared.container.viewContext),
             notificationSetting: NotificationSettingCoreData(viewContext: CoreDataService.shared.container.viewContext),
             notificationService: NotificationService(),
-            energyDataController: EnergyDataController()
+            energyDataService: EnergyDataService()
         ))
     }
     
@@ -138,7 +138,7 @@ struct RegionTaxSelectionView: View {
             viewModel.setting = setting
             viewModel.notificationSetting = notificationSetting
             viewModel.notificationService = notificationService
-            viewModel.energyDataController = energyDataController
+            viewModel.energyDataService = energyDataService
         }
     }
     
@@ -170,6 +170,6 @@ struct RegionTaxSelection_Previews: PreviewProvider {
             .environmentObject(SettingCoreData(viewContext: CoreDataService.shared.container.viewContext))
             .environmentObject(NotificationSettingCoreData(viewContext: CoreDataService.shared.container.viewContext))
             .environmentObject(NotificationService())
-            .environmentObject(EnergyDataController())
+            .environmentObject(EnergyDataService())
     }
 }

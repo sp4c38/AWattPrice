@@ -67,7 +67,7 @@ class SingleBarSettings: ObservableObject {
 struct EnergyPriceGraph: View {
     @Environment(\.scenePhase) var scenePhase
 
-    @EnvironmentObject var energyDataController: EnergyDataController
+    @EnvironmentObject var energyDataService: EnergyDataService
 
     @State var graphHourPointData = [(EnergyPricePoint, CGFloat)]()
     @State var hapticEngine: CHHapticEngine?
@@ -82,7 +82,7 @@ struct EnergyPriceGraph: View {
 
     func updateBarHeights(localHeaderSize: CGSize) {
         if graphHourPointData.count > 0 {
-            singleHeight = (sizeRect.height - headerSize.height) / CGFloat(energyDataController.energyData!.currentPrices.count)
+            singleHeight = (sizeRect.height - headerSize.height) / CGFloat(energyDataService.energyData!.currentPrices.count)
             var currentHeight: CGFloat = localHeaderSize.height
 
             for hourPointIndex in 0 ... (graphHourPointData.count - 1) {
@@ -238,15 +238,15 @@ struct EnergyPriceGraph: View {
             .onChange(of: scenePhase) { newScenePhase in
                 if newScenePhase == .active {
                     initCHEngine()
-                    setGraphValues(energyData: energyDataController.energyData!, localSizeRect: sizeRect, localHeaderSize: headerSize)
+                    setGraphValues(energyData: energyDataService.energyData!, localSizeRect: sizeRect, localHeaderSize: headerSize)
                 }
             }
-            .onReceive(energyDataController.$energyData) { newEnergyData in
+            .onReceive(energyDataService.$energyData) { newEnergyData in
                 guard let energyData = newEnergyData else { return }
                 setGraphValues(energyData: energyData, localSizeRect: sizeRect, localHeaderSize: headerSize)
             }
             .onChange(of: sizeRect) { newSizeRect in
-                setGraphValues(energyData: energyDataController.energyData!, localSizeRect: newSizeRect, localHeaderSize: headerSize)
+                setGraphValues(energyData: energyDataService.energyData!, localSizeRect: newSizeRect, localHeaderSize: headerSize)
             }
             .onChange(of: headerSize) { newHeaderSize in
                 updateBarHeights(localHeaderSize: newHeaderSize)

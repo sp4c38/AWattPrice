@@ -1,5 +1,5 @@
 //
-//  EnergyDataController.swift
+//  EnergyDataService.swift
 //  AWattPrice
 //
 //  Created by Léon Becker on 13.08.21.
@@ -109,7 +109,7 @@ struct EnergyData: Decodable {
 
 
 /// Service responsible for managing energy data throughout the application
-class EnergyDataController: ObservableObject {
+class EnergyDataService: ObservableObject {
     enum DownloadState {
         case idle
         case downloading

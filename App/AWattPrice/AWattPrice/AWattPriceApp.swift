@@ -17,7 +17,7 @@ struct AWattPriceApp: App {
     // Create state objects that will be shared throughout the app
     @StateObject private var setting = SettingCoreData(viewContext: CoreDataService.shared.container.viewContext)
     @StateObject private var notificationSetting = NotificationSettingCoreData(viewContext: CoreDataService.shared.container.viewContext)
-    @StateObject private var energyDataController = EnergyDataController()
+    @StateObject private var energyDataService = EnergyDataService()
     @StateObject private var notificationService = NotificationService()
     @StateObject private var cheapestHourManager = CheapestHourManager()
     
@@ -31,7 +31,7 @@ struct AWattPriceApp: App {
             ContentView()
                 .environmentObject(setting)
                 .environmentObject(notificationSetting)
-                .environmentObject(energyDataController)
+                .environmentObject(energyDataService)
                 .environmentObject(notificationService)
                 .environmentObject(cheapestHourManager)
                 .onAppear {
@@ -52,7 +52,7 @@ struct AWattPriceApp: App {
         
         notificationService.refreshAccessStates()
         if let selectedRegion = Region(rawValue: setting.entity.regionIdentifier) {
-            energyDataController.download(region: selectedRegion)
+            energyDataService.download(region: selectedRegion)
         }
     }
 }
@@ -65,7 +65,7 @@ struct ContentView: View {
     @EnvironmentObject var setting: SettingCoreData
     @EnvironmentObject var notificationSetting: NotificationSettingCoreData
     @EnvironmentObject var notificationService: NotificationService
-    @EnvironmentObject var energyDataController: EnergyDataController
+    @EnvironmentObject var energyDataService: EnergyDataService
 
     @State var selectedTab = 1
     @State var shouldShowWhatsNew = false
@@ -125,7 +125,7 @@ struct ContentView: View {
     /// Refreshes energy data if a region is selected
     private func refreshEnergyDataIfNeeded() {
         guard let selectedRegion = Region(rawValue: setting.entity.regionIdentifier) else { return }
-        energyDataController.download(region: selectedRegion)
+        energyDataService.download(region: selectedRegion)
     }
     
     /// Handles notification configuration and access states

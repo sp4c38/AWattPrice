@@ -65,7 +65,7 @@ struct TimeRangeInputFieldSelectionPart: View {
 }
 
 struct TimeRangeInputFieldQuickSelectButtons: View {
-    @EnvironmentObject var energyDataController: EnergyDataController
+    @EnvironmentObject var energyDataService: EnergyDataService
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
 
     @State var buttonSize = CGSize(width: 0, height: 0)
@@ -84,13 +84,13 @@ struct TimeRangeInputFieldQuickSelectButtons: View {
             ForEach(buttons, id: \.self) { name in
                 Button(action: {
                     if name == "night" {
-                        cheapestHourManager.setTimeIntervalThisNight(with: energyDataController.energyData!)
+                        cheapestHourManager.setTimeIntervalThisNight(with: energyDataService.energyData!)
                     } else if name == "max." {
-                        cheapestHourManager.setMaxTimeInterval(with: energyDataController.energyData!)
+                        cheapestHourManager.setMaxTimeInterval(with: energyDataService.energyData!)
                     } else if name == "3h" {
-                        cheapestHourManager.setTimeInterval(forHours: 3, with: energyDataController.energyData!)
+                        cheapestHourManager.setTimeInterval(forHours: 3, with: energyDataService.energyData!)
                     } else if name == "12h" {
-                        cheapestHourManager.setTimeInterval(forHours: 12, with: energyDataController.energyData!)
+                        cheapestHourManager.setTimeInterval(forHours: 12, with: energyDataService.energyData!)
                     }
                 }) {
                     Text(name.localized())
@@ -108,7 +108,7 @@ struct TimeRangeInputFieldQuickSelectButtons: View {
 struct TimeRangeInputField: View {
     @Environment(\.colorScheme) var colorScheme
 
-    @EnvironmentObject var energyDataController: EnergyDataController
+    @EnvironmentObject var energyDataService: EnergyDataService
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
 
     @State var inputDateRange: ClosedRange<Date> = Date() ... Date()
@@ -149,7 +149,7 @@ struct TimeRangeInputField: View {
             TimeRangeInputFieldQuickSelectButtons()
         }
         .frame(maxWidth: .infinity)
-        .onReceive(energyDataController.$energyData) { _ in
+        .onReceive(energyDataService.$energyData) { _ in
             self.setTimeIntervalValues()
         }
     }
@@ -160,7 +160,7 @@ extension TimeRangeInputField {
 
     /// Set the max upper and lower bound for the time range input
     func setTimeIntervalValues() {
-        if let energyData = energyDataController.energyData,
+        if let energyData = energyDataService.energyData,
            let minMaxTimeRange = energyData.minMaxTimeRange
         {
             let minTime = minMaxTimeRange.lowerBound.addingTimeInterval(+1)

@@ -23,7 +23,7 @@
 		308BF75D91396CBC372C60C1 /* View+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0395AE6386769843A6A0D5CF /* View+Helpers.swift */; };
 		3764069C227C8A20FD65EB7C /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0D566683455A9834699592 /* String.swift */; };
 		3B97EF0D59A77C4995F737C8 /* SettingsPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CF596453B643BA753483A2C /* SettingsPageView.swift */; };
-		4190E3BB83AC5F034211C2B9 /* NotificationService+AskAccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C87AF4B25871BFD4A3501F5 /* NotificationService+AskAccess.swift */; };
+		4190E3BB83AC5F034211C2B9 /* NotificationService+Access.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C87AF4B25871BFD4A3501F5 /* NotificationService+Access.swift */; };
 		42A01876BE7C9040AE139154 /* DataHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 591D0CDCA995859E422558AA /* DataHelpers.swift */; };
 		471979041724562B571FA8D2 /* NotificationSettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A97A562A68DEF8AD1937E4EE /* NotificationSettingView.swift */; };
 		528881FAC4C067E4B2DA475C /* AnyTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0F25A3D9297785396AED471 /* AnyTransition.swift */; };
@@ -87,11 +87,9 @@
 		F0EF08E10D3BD6AF40D000D7 /* UpdatedDataView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A865543E750ED5EC6084D67D /* UpdatedDataView.swift */; };
 		F1212CD12690C400EAB49863 /* PreviewEnergyData.json in Resources */ = {isa = PBXBuildFile; fileRef = 3459FFEC069D6C1D4DA27E5E /* PreviewEnergyData.json */; };
 		F1CF752BC4D41867364F7994 /* MailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09C662D82C544FFEBADE9BB1 /* MailView.swift */; };
-		F34FC9236FDE10B64099BF89 /* NotificationService+RemoteAccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD5548E86A4888A224ADE6E5 /* NotificationService+RemoteAccess.swift */; };
 		F410144D194798FE40260368 /* Any.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF7C95D15AFCFD75AB3833BC /* Any.swift */; };
 		F50BC83C497A2E9713FB8B58 /* CheapestTimeClockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D78D2EC93C5C2767F2B9B865 /* CheapestTimeClockView.swift */; };
 		F55E81CD8605DF223B6F4457 /* PowerInputField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 497048FB911746FF00EDC23F /* PowerInputField.swift */; };
-		F72E93780170E585D07E3380 /* NotificationService+Requests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39CB79779C61C278DA81916F /* NotificationService+Requests.swift */; };
 		F86BCBE37F4FCFD4F68C99B2 /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22523FA7380336A83DEE1624 /* Environment.swift */; };
 		F96A6404866E6E378668A877 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9F2601A3B2EA2477FA2070C3 /* Preview Assets.xcassets */; };
 		F9DE0E07C58B34E50ED56EE7 /* HelpAndSuggestionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA5DF4BB1567348D207BC3BC /* HelpAndSuggestionView.swift */; };
@@ -136,7 +134,6 @@
 		2F9FE3FE7F1EE73B1DAD0AE3 /* TotalConsumptionInputField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TotalConsumptionInputField.swift; sourceTree = "<group>"; };
 		3459FFEC069D6C1D4DA27E5E /* PreviewEnergyData.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = PreviewEnergyData.json; sourceTree = "<group>"; };
 		3986605FAA7AF18D5AF2CB37 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		39CB79779C61C278DA81916F /* NotificationService+Requests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NotificationService+Requests.swift"; sourceTree = "<group>"; };
 		3CCBC50D92AE763388DAAB90 /* NotificationConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationConfiguration.swift; sourceTree = "<group>"; };
 		3E9C4F8C140D86F7F4233532 /* PricesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PricesView.swift; sourceTree = "<group>"; };
 		3EF4803E3C737282BE08A7A8 /* TimeRangeInputField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeRangeInputField.swift; sourceTree = "<group>"; };
@@ -173,7 +170,7 @@
 		7BF7A4E1ED7229A8E6E0B03F /* QueueHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueueHelpers.swift; sourceTree = "<group>"; };
 		7D8536DB7CE536410491DE1C /* BarText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarText.swift; sourceTree = "<group>"; };
 		8C5F824C94B9912B11853532 /* EasyIntervalPickerRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EasyIntervalPickerRepresentable.swift; sourceTree = "<group>"; };
-		8C87AF4B25871BFD4A3501F5 /* NotificationService+AskAccess.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NotificationService+AskAccess.swift"; sourceTree = "<group>"; };
+		8C87AF4B25871BFD4A3501F5 /* NotificationService+Access.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NotificationService+Access.swift"; sourceTree = "<group>"; };
 		8E27EA2E00D4FD1A008773DB /* DownloadPublisherLoadingViewObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadPublisherLoadingViewObserver.swift; sourceTree = "<group>"; };
 		934DBF6AF7CFB20EB6697643 /* NSRegularExpression.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSRegularExpression.swift; sourceTree = "<group>"; };
 		99DA04381A4011A2B6E1423C /* Model 4.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Model 4.xcdatamodel"; sourceTree = "<group>"; };
@@ -198,7 +195,6 @@
 		C6293FEC5FEF17D21F998528 /* AppGroupManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppGroupManager.swift; sourceTree = "<group>"; };
 		CB8219C5EDEC8DD1FB333D45 /* SettingEntities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingEntities.swift; sourceTree = "<group>"; };
 		CC86F9987A19BB3FA4DA1124 /* SF-Compact-Display-Black.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-Compact-Display-Black.otf"; sourceTree = "<group>"; };
-		CD5548E86A4888A224ADE6E5 /* NotificationService+RemoteAccess.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NotificationService+RemoteAccess.swift"; sourceTree = "<group>"; };
 		CF85B2B08E53E158A7DE4DFC /* NumberField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberField.swift; sourceTree = "<group>"; };
 		D22CD9B053C7AA6D5411FFE0 /* Font.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Font.swift; sourceTree = "<group>"; };
 		D6047C9B5C250D36D898FE1F /* CheapestTimeResultView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheapestTimeResultView.swift; sourceTree = "<group>"; };
@@ -574,9 +570,7 @@
 			isa = PBXGroup;
 			children = (
 				09B8A781BFC660F0533130E9 /* NotificationService.swift */,
-				8C87AF4B25871BFD4A3501F5 /* NotificationService+AskAccess.swift */,
-				CD5548E86A4888A224ADE6E5 /* NotificationService+RemoteAccess.swift */,
-				39CB79779C61C278DA81916F /* NotificationService+Requests.swift */,
+				8C87AF4B25871BFD4A3501F5 /* NotificationService+Access.swift */,
 			);
 			path = "Notification Service";
 			sourceTree = "<group>";
@@ -788,9 +782,7 @@
 				E898FE496A54CDC1CCD315ED /* NetworkManager.swift in Sources */,
 				9DFAE8AEACE3955D2EF55997 /* NoNotificationAccessView.swift in Sources */,
 				C997C76C683B67B76839425A /* NotificationConfiguration.swift in Sources */,
-				4190E3BB83AC5F034211C2B9 /* NotificationService+AskAccess.swift in Sources */,
-				F34FC9236FDE10B64099BF89 /* NotificationService+RemoteAccess.swift in Sources */,
-				F72E93780170E585D07E3380 /* NotificationService+Requests.swift in Sources */,
+				4190E3BB83AC5F034211C2B9 /* NotificationService+Access.swift in Sources */,
 				02A564EE1DBA47DCD13CE399 /* NotificationService.swift in Sources */,
 				471979041724562B571FA8D2 /* NotificationSettingView.swift in Sources */,
 				5DC2B66E8217B30642162424 /* NumberField.swift in Sources */,

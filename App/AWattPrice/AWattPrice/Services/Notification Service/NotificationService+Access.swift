@@ -9,16 +9,15 @@ import Combine
 import UserNotifications
 
 extension NotificationService {
+    // MARK: Ask Access
+    
     /// Gets the current notification settings asynchronously
-    func updateAccessStates(registerPushAccess: Bool = true) async -> AccessState {
+    func updateAccessStates() async -> AccessState {
         let settings = await UNUserNotificationCenter.current().notificationSettings()
         switch settings.authorizationStatus {
         case .authorized, .provisional:
             print("Notification: Notification access granted.")
             self.accessState = .granted
-            if registerPushAccess {
-                self.registerForRemoteNotifications()
-            }
         case .notDetermined:
             print("Notification: Notification access wasn't asked for yet.")
             self.accessState = .notAsked
@@ -31,7 +30,7 @@ extension NotificationService {
     }
     
     /// Requests notification access asynchronously
-    func requestAccess(registerPushAccess: Bool = true) async -> AccessState {
+    func requestAccess() async -> AccessState {
         // Request authorization using the native async API
         do {
             let authGranted = try await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound])
@@ -40,7 +39,7 @@ extension NotificationService {
         }
         
         // Check the current state after request
-        return await updateAccessStates(registerPushAccess: registerPushAccess)
+        return await updateAccessStates()
     }
     
     /// Asynchronous function to ensure we have the required access for notifications
@@ -66,12 +65,12 @@ extension NotificationService {
         
         // Handle states requiring updates or requests
         if accessState == .unknown {
-            _ = await updateAccessStates(registerPushAccess: false)
+            _ = await updateAccessStates()
             return await ensureAccess(ensurePushAccess: ensurePushAccess)
         }
 
         if accessState == .notAsked {
-            _ = await requestAccess(registerPushAccess: false)
+            _ = await requestAccess()
             return await ensureAccess(ensurePushAccess: ensurePushAccess)
         }
 
@@ -108,6 +107,45 @@ extension NotificationService {
             return true
         case .apnsRegistrationFailed:
             return false
+        }
+    }
+    
+    // MARK: Remote access
+    
+    func successfulRegisteredForRemoteNotifications(rawCurrentToken: Data, setting: SettingCoreData, notificationSetting: NotificationSettingCoreData) {
+        logger.debug("Notification: Remote notifications granted with device token.")
+
+        let currentToken = rawCurrentToken.map {
+            String(format: "%02.2hhx", $0)
+        }.joined()
+        
+        if notificationSetting.entity.lastApnsToken != currentToken, notificationSetting.entity.lastApnsToken != nil {
+            Task {
+                let notificationConfiguration = NotificationConfiguration.create(currentToken, setting, notificationSetting)
+                do {
+                    _ = try await changeNotificationConfiguration(notificationConfiguration, notificationSetting)
+                } catch {
+                    print("Failed to update notification configuration after token change: \(error)")
+                }
+            }
+        }
+        
+        notificationSetting.changeSetting { $0.entity.lastApnsToken = currentToken }
+        token = currentToken
+        self.pushState = .apnsRegistrationSuccessful
+    }
+    
+    func failedRegisteredForRemoteNotifications(error: Error) {
+        print("Notification: Push notification registration not granted: \(error).")
+        pushState = .apnsRegistrationFailed
+    }
+    
+    func registerForRemoteNotifications() {
+        if pushState == .unknown {
+            self.pushState = .asked
+            DispatchQueue.main.async {
+                UIApplication.shared.registerForRemoteNotifications()
+            }
         }
     }
 }

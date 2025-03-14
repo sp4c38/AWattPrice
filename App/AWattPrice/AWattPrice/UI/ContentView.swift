@@ -8,11 +8,6 @@
 import Combine
 import SwiftUI
 
-// Create a class to hold our cancellables - added ObservableObject conformance
-private class CancellableStore: ObservableObject {
-    var cancellables = Set<AnyCancellable>()
-}
-
 struct ContentView: View {
     @Environment(\.networkManager) var networkManager
     @Environment(\.scenePhase) var scenePhase
@@ -23,20 +18,17 @@ struct ContentView: View {
     @EnvironmentObject var notificationService: NotificationService
     @EnvironmentObject var energyDataController: EnergyDataController
 
-    @State var tabSelection = 1
-    @State var showWhatsNewScreen = false
-    @State private var checkAccessStates = false
-    @State private var hasProcessedFirstActivation = false
+    @State var selectedTab = 1
+    @State var shouldShowWhatsNew = false
+    @State private var hasCheckedNotificationAccess = false
+    @State private var isFirstLaunch = false
     
-    // Store cancellables in a reference type object that can be mutated
-    @StateObject private var cancellableStore = CancellableStore()
+    // Store cancellables directly in the view
+    @State private var cancellables = Set<AnyCancellable>()
 
     var body: some View {
         VStack(spacing: 0) {
             if setting.entity.splashScreensFinished {
-                TabView(selection: $tabSelection) {
-                    SettingsPageView()
-                        .tabItem { Label("Settings", systemImage: "gear") }
 
                     HomeView()
                         .tag(1)
@@ -54,47 +46,58 @@ struct ContentView: View {
         .ignoresSafeArea(.keyboard)
         .onChange(of: scenePhase, perform: scenePhaseChanged)
         .onAppear {
-            // Set up observation for setting changes if needed
-            setting.objectWillChange
-                .sink { _ in }
-                .store(in: &cancellableStore.cancellables)
-                
-            showWhatsNewScreen = AppContext.shared.checkShowWhatsNewScreen()
+            // Check if we should show what's new screen
+            shouldShowWhatsNew = AppContext.shared.checkShowWhatsNewScreen()
         }
     }
     
-    // Moved from ViewModel directly into the View
+    /// Handles scene phase changes to perform appropriate actions
     func scenePhaseChanged(to scenePhase: ScenePhase) {
-        if scenePhase == .active {
-            UIApplication.shared.applicationIconBadgeNumber = 0
+        guard scenePhase == .active else { return }
+        
+        // Reset badge number when app becomes active
+        UIApplication.shared.applicationIconBadgeNumber = 0
+        
+        // Handle first activation differently
+        if !isFirstLaunch {
+            isFirstLaunch = true
+        } else {
+            // Refresh data when returning to active state
+            refreshEnergyDataIfNeeded()
+        }
+        
+        // Handle notification configuration
+        handleNotificationConfiguration()
+    }
     
-            let checkForceUpload = {
-                if self.notificationSetting.entity.forceUpload {
-                    let notificationConfiguration = NotificationConfiguration.create(nil, self.setting, self.notificationSetting)
-                    self.notificationService.changeNotificationConfiguration(notificationConfiguration, self.notificationSetting, uploadStarted: { publisher in
-                        publisher.sink { completion in
-                            if case .finished = completion { self.notificationSetting.changeSetting { $0.entity.forceUpload = false } }
-                        } receiveValue: { _ in
-                        }.store(in: &self.cancellableStore.cancellables)
-                    })
-                }
-            }
+    /// Refreshes energy data if a region is selected
+    private func refreshEnergyDataIfNeeded() {
+        guard let selectedRegion = Region(rawValue: setting.entity.regionIdentifier) else { return }
+        energyDataController.download(region: selectedRegion)
+    }
+    
+    /// Handles notification configuration and access states
+    private func handleNotificationConfiguration() {
+        let processForceUpload = {
+            guard self.notificationSetting.entity.forceUpload else { return }
             
-            // Only refresh data when becoming active if we've already processed first activation
-            if hasProcessedFirstActivation {
-                if let selectedRegion = Region(rawValue: setting.entity.regionIdentifier) {
-                    energyDataController.download(region: selectedRegion)
-                }
-            } else {
-                hasProcessedFirstActivation = true
-            }
-            
-            if checkAccessStates {
-                notificationService.refreshAccessStates { _ in checkForceUpload() }
-            } else {
-                checkForceUpload()
-                checkAccessStates = true
-            }
+            let notificationConfiguration = NotificationConfiguration.create(nil, self.setting, self.notificationSetting)
+            self.notificationService.changeNotificationConfiguration(notificationConfiguration, self.notificationSetting, uploadStarted: { publisher in
+                publisher
+                    .sink { completion in
+                        if case .finished = completion { 
+                            self.notificationSetting.changeSetting { $0.entity.forceUpload = false }
+                        }
+                    } receiveValue: { _ in }
+                    .store(in: &self.cancellables)
+            })
+        }
+        
+        if hasCheckedNotificationAccess {
+            notificationService.refreshAccessStates { _ in processForceUpload() }
+        } else {
+            processForceUpload()
+            hasCheckedNotificationAccess = true
         }
     }
 }

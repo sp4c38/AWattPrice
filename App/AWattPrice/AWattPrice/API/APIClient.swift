@@ -5,32 +5,42 @@
 //  Created by Léon Becker on 11.08.21.
 //
 
-import Combine
 import Foundation
 
-protocol APIRequest {
-    var urlRequest: URLRequest { get }
-    var expectedResponseCode: Int? { get }
-}
-
-/// APIRequest which expects a decodable response.
-struct ResponseAPIRequest<ResponseType: Decodable, DecoderType: TopLevelDecoder>: APIRequest where DecoderType.Input == Data {
-    var urlRequest: URLRequest
-    var expectedResponseCode: Int? = nil
-    let decoder: DecoderType
-}
-
-/// APIRequest which doesn't expect any response.
-struct PlainAPIRequest: APIRequest {
-    let urlRequest: URLRequest
-    var expectedResponseCode: Int? = nil
-}
-
-enum APIRequestFactory {
-    static let apiURL = AppContext.shared.apiURL
-
-    static func energyDataRequest(region: Region) -> ResponseAPIRequest<EnergyData, JSONDecoder> {
-        let requestURL = apiURL
+class APIClient {
+    // MARK: - Request Types
+    
+    /// Protocol for API requests
+    protocol Request {
+        var urlRequest: URLRequest { get }
+    }
+    
+    /// Request expecting a decodable response
+    struct ResponseRequest<ResponseType: Decodable>: Request {
+        var urlRequest: URLRequest
+        let decoder: JSONDecoder
+    }
+    
+    /// Request that doesn't expect a response
+    struct PlainRequest: Request {
+        let urlRequest: URLRequest
+    }
+    
+    // MARK: - API Configuration
+    
+    static let apiURL: URL = {
+        #if DEBUG
+        return URL(string: "https://test-awp.space8.me/api/v2/")!
+        #else
+        return URL(string: "https://awattprice.space8.me/api/v2/")!
+        #endif
+    }()
+    
+    // MARK: - Request Creation
+    
+    /// Creates a request for energy data for the specified region
+    func createEnergyDataRequest(region: Region) -> ResponseRequest<EnergyData> {
+        let requestURL = APIClient.apiURL
             .appendingPathComponent("data", isDirectory: true)
             .appendingPathComponent(region.apiName)
         let urlRequest = URLRequest(
@@ -39,10 +49,11 @@ enum APIRequestFactory {
             timeoutInterval: 30
         )
         let decoder = EnergyData.jsonDecoder()
-        return ResponseAPIRequest(urlRequest: urlRequest, expectedResponseCode: 200, decoder: decoder)
+        return ResponseRequest(urlRequest: urlRequest, decoder: decoder)
     }
     
-    static func notificationRequest(_ notificationConfiguration: NotificationConfiguration) -> PlainAPIRequest? {
+    /// Creates a request to save notification configuration
+    func createNotificationRequest(_ notificationConfiguration: NotificationConfiguration) -> PlainRequest? {
         guard notificationConfiguration.token != nil else {
             print("Token of the notification configuration is still nil.")
             return nil
@@ -57,7 +68,7 @@ enum APIRequestFactory {
             return nil
         }
         
-        let requestURL = apiURL
+        let requestURL = APIClient.apiURL
             .appendingPathComponent("notifications", isDirectory: true)
             .appendingPathComponent("save_configuration", isDirectory: true)
         var urlRequest = URLRequest(
@@ -68,36 +79,42 @@ enum APIRequestFactory {
         urlRequest.httpMethod = "POST"
         urlRequest.httpBody = encodedTasks
         
-        return PlainAPIRequest(urlRequest: urlRequest, expectedResponseCode: 200)
-    }
-}
-
-class APIClient {
-    func request<ResponseDataType, DecoderType>(to apiRequest: ResponseAPIRequest<ResponseDataType, DecoderType>) -> AnyPublisher<ResponseDataType, Error> {
-        self.request(request: apiRequest.urlRequest)
-            .map(\.data)
-            .decode(type: ResponseDataType.self, decoder: apiRequest.decoder)
-            .eraseToAnyPublisher()
+        return PlainRequest(urlRequest: urlRequest)
     }
     
-    func request(to apiRequest: PlainAPIRequest) -> AnyPublisher<(data: Data, response: URLResponse), Error> {
-        self.request(request: apiRequest.urlRequest, expectedURLCode: apiRequest.expectedResponseCode)
-            .eraseToAnyPublisher()
+    // MARK: - Request Execution
+    
+    /// Request that returns a decoded response
+    func request<ResponseType: Decodable>(to apiRequest: ResponseRequest<ResponseType>) async throws -> ResponseType {
+        let (data, _) = try await self.request(request: apiRequest.urlRequest)
+        return try apiRequest.decoder.decode(ResponseType.self, from: data)
     }
     
-    func request(request: URLRequest, expectedURLCode: Int? = nil) -> AnyPublisher<(data: Data, response: URLResponse), Error> {
-        print("Performing url request to: \(request.url?.description ?? "nil").")
-        return URLSession.shared.dataTaskPublisher(for: request)
-            .tryMap { (data: Data, response: URLResponse) in
-                guard let expectedURLCode = expectedURLCode else { return (data, response) }
-                guard let response = response as? HTTPURLResponse else { throw URLError(.badServerResponse) }
-                if response.statusCode == expectedURLCode {
-                    return (data, response)
-                } else {
-                    print("URL response from server doesn't have expected url code of \(expectedURLCode): \(response.statusCode)")
-                    throw URLError(.badServerResponse)
-                }
-            }
-            .eraseToAnyPublisher()
+    /// Plain request without specific response type
+    func request(to apiRequest: PlainRequest) async throws -> (data: Data, response: URLResponse) {
+        return try await self.request(request: apiRequest.urlRequest)
+    }
+    
+    /// Base request method that performs the network call
+    func request(request: URLRequest) async throws -> (data: Data, response: URLResponse) {
+        print("Performing async url request to: \(request.url?.description ?? "nil").")
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw URLError(.badServerResponse)
+        }
+        
+        guard httpResponse.statusCode == 200 else {
+            print("URL response from server has status code \(httpResponse.statusCode), expected 200")
+            throw URLError(.badServerResponse)
+        }
+        
+        return (data, response)
+    }
+    
+    /// Convenience method to directly download energy data for a region
+    func downloadEnergyData(region: Region) async throws -> EnergyData {
+        let request = createEnergyDataRequest(region: region)
+        return try await self.request(to: request)
     }
 }

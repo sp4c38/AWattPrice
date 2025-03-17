@@ -111,10 +111,4 @@ class APIClient {
         
         return (data, response)
     }
-    
-    /// Convenience method to directly download energy data for a region
-    func downloadEnergyData(region: Region) async throws -> EnergyData {
-        let request = APIClient.createEnergyDataRequest(region: region)
-        return try await self.request(to: request)
-    }
 }

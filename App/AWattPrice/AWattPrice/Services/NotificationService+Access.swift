@@ -31,13 +31,17 @@ extension NotificationService {
         }
         
         notificationSetting.changeSetting { $0.entity.lastApnsToken = currentToken }
-        token = currentToken
-        self.pushState = .apnsRegistrationSuccessful
+        DispatchQueue.main.async {
+            self.token = currentToken
+            self.pushState = .apnsRegistrationSuccessful
+        }
     }
     
     func failedRegisteredForRemoteNotifications(error: Error) {
         print("Notification: Push notification registration not granted: \(error).")
-        pushState = .apnsRegistrationFailed
+        DispatchQueue.main.async {
+            self.pushState = .apnsRegistrationFailed
+        }
     }
     
     private func registerForRemoteNotifications() {
@@ -53,20 +57,24 @@ extension NotificationService {
     
     /// Gets the current notification settings asynchronously
     func updateAccessStates() async {
-        let settings = await UNUserNotificationCenter.current().notificationSettings()
-        switch settings.authorizationStatus {
-        case .authorized, .provisional:
-            print("Notification: Notification access granted.")
-            self.accessState = .granted
-            if self.pushState == .unknown {
-                registerForRemoteNotifications()
+        let authorizationStatus = await UNUserNotificationCenter.current().notificationSettings().authorizationStatus
+        
+        // Update on main thread using the extracted value
+        await MainActor.run {
+            switch authorizationStatus {
+            case .authorized, .provisional:
+                print("Notification: Notification access granted.")
+                self.accessState = .granted
+                if self.pushState == .unknown {
+                    self.registerForRemoteNotifications()
+                }
+            case .notDetermined:
+                print("Notification: Notification access wasn't asked for yet.")
+                self.accessState = .notAsked
+            default:
+                print("Notification: Notification access not allowed: \(authorizationStatus).")
+                self.accessState = .rejected
             }
-        case .notDetermined:
-            print("Notification: Notification access wasn't asked for yet.")
-            self.accessState = .notAsked
-        default:
-            print("Notification: Notification access not allowed: \(settings.authorizationStatus).")
-            self.accessState = .rejected
         }
     }
     
@@ -76,7 +84,7 @@ extension NotificationService {
     private func requestAccess() async {
         // Request authorization using the native async API
         do {
-            let authGranted = try await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound])
+            _ = try await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound])
         } catch {
             print("Notification: Notification access failed with error: \(error).")
         }

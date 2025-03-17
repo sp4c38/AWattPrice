@@ -101,8 +101,8 @@ struct EnergyData: Decodable {
     /// - Returns: The downloaded and decoded energy data
     /// - Throws: Error if the download or decoding fails
     static func download(region: Region) async throws -> EnergyData {
-        let apiClient = APIClient()
-        return try await apiClient.downloadEnergyData(region: region)
+        let request = APIClient.createEnergyDataRequest(region: region)
+        return try await APIClient().request(to: request)
     }
 }
 

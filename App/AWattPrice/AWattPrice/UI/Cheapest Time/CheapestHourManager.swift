@@ -256,7 +256,7 @@ extension CheapestHourManager {
             }
 
             func recursiveSearch(with allPairs: [HourPair], lastCheapestPairIndex: Int? = nil) -> Int? {
-                // logger.debug("Running recursive search to find cheapest time")
+                 print("Running recursive search to find cheapest time")
                 var cheapestPairIndex = self.compareHourPairs(allPairs: allPairs)
 
                 if cheapestPairIndex != nil {
@@ -285,14 +285,14 @@ extension CheapestHourManager {
                             for item in energyData.currentPrices {
                                 if Int(item.startTime.timeIntervalSince1970) == timestamp {
                                     cheapestPair.associatedPricePoints.append(item)
-                                    // logger.debug("Found the missing energy price point with start timestamp \(item.startTimestamp).")
+                                    print("Found the missing energy price point with start timestamp \(item.startTimestamp).")
                                     break
                                 }
                             }
                         }
 
                         if intervenesWithStartHour, !intervenesWithEndHour, startTimeDifference != 0 {
-                            // logger.debug("Intervenes with start hour")
+                            print("Intervenes with start hour")
                             searchAndAddFollowingItem(timestamp: Int(endDateLastItem.timeIntervalSince1970))
                             maxPointIndex = cheapestPair.associatedPricePoints.count - 1
 
@@ -311,7 +311,7 @@ extension CheapestHourManager {
                             // Find the pre-following price point
                             for item in energyData.currentPrices {
                                 if Int(item.endTime.timeIntervalSince1970) == timestamp {
-                                    // logger.debug("Found the missing energy price point with end timestamp \(item.endTimestamp).")
+//                                    print("Found the missing energy price point with end timestamp \(item.endTimestamp).")
                                     cheapestPair.associatedPricePoints.insert(item, at: 0)
                                     break
                                 }
@@ -319,7 +319,7 @@ extension CheapestHourManager {
                         }
 
                         if intervenesWithEndHour, !intervenesWithStartHour, endTimeDifference != 0 {
-                            // logger.debug("Intervenes with end hour")
+                            print("Intervenes with end hour")
                             searchAndAddPreFollowingItem(timestamp: Int(startDateFirstItem.timeIntervalSince1970))
                             maxPointIndex = cheapestPair.associatedPricePoints.count - 1
 
@@ -335,7 +335,7 @@ extension CheapestHourManager {
                         }
 
                         if intervenesWithStartHour, intervenesWithEndHour {
-                            // logger.debug("Intervenes with both start and end hour")
+                            print("Intervenes with both start and end hour")
                             // No need to change something
                         }
 

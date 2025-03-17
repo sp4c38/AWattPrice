@@ -10,8 +10,6 @@ import os
 import SwiftUI
 import Combine
 
-public let logger = Logger()
-
 class AppContext {
     static var shared = AppContext()
     
@@ -95,9 +93,9 @@ struct ContentView: View {
 //                    SettingsPageView()
 //                        .tabItem { Label("Settings", systemImage: "gear") }
 
-                      PricesView()
-                        .tag(1)
-                        .tabItem { Label("Prices", systemImage: "bolt") }
+//                      PricesView()
+//                        .tag(1)
+//                        .tabItem { Label("Pricesa", systemImage: "bolt") }
 
 //                    CheapestTimeView()
 //                        .tabItem { Label("Cheapest Time", systemImage: "rectangle.and.text.magnifyingglass") }
@@ -122,7 +120,6 @@ struct ContentView: View {
         
         // Reset badge number
         UIApplication.shared.applicationIconBadgeNumber = 0
-        
         Task {
             await notificationService.updateAccessStates()
         }

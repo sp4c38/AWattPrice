@@ -137,12 +137,12 @@ class EnergyDataService: ObservableObject {
                 // Switch to the main thread only for UI updates
                 await MainActor.run {
                     self.energyData = newEnergyData
-                    logger.debug("Energy data download completed.")
+                    print("Energy data download completed.")
                     self.downloadState = .finished(time: Date())
                 }
             } catch {
                 await MainActor.run {
-                    logger.error("Energy data download failed: \(error).")
+                    print("Energy data download failed: \(error).")
                     self.downloadState = .failed(error: error)
                 }
             }

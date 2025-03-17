@@ -13,11 +13,11 @@ extension NotificationService {
     // MARK: Remote access
     
     func successfulRegisteredForRemoteNotifications(rawCurrentToken: Data, setting: SettingCoreData, notificationSetting: NotificationSettingCoreData) {
-        logger.debug("Notification: Remote notifications granted with device token.")
-
         let currentToken = rawCurrentToken.map {
             String(format: "%02.2hhx", $0)
         }.joined()
+        
+        print("Notification: Remote notifications granted with device token \(currentToken).")
         
         if notificationSetting.entity.lastApnsToken != currentToken, notificationSetting.entity.lastApnsToken != nil {
             Task {

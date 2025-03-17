@@ -1,4 +1,3 @@
-import Combine
 import SwiftUI
 
 class RegionTaxSelectionViewModel: ObservableObject {
@@ -7,12 +6,23 @@ class RegionTaxSelectionViewModel: ObservableObject {
     var notificationService: NotificationService
     var energyDataService: EnergyDataService
     
-    @Published var selectedRegion: Region
-    @Published var taxSelection: Bool
+    @Published var selectedRegion: Region {
+        didSet {
+            if oldValue != selectedRegion {
+                Task { await regionChanges(newRegion: selectedRegion) }
+            }
+        }
+    }
     
-    let uploadObserver = DownloadPublisherLoadingViewObserver(intervalBeforeExceeded: 0.4)
+    @Published var taxSelection: Bool {
+        didSet {
+            if oldValue != taxSelection {
+                Task { await taxSelectionChanges(newTaxSelection: taxSelection) }
+            }
+        }
+    }
     
-    var cancellables = [AnyCancellable]()
+    @Published private(set) var isLoading = false
     
     init(setting: SettingCoreData, notificationSetting: NotificationSettingCoreData,
          notificationService: NotificationService, energyDataService: EnergyDataService) {
@@ -21,60 +31,63 @@ class RegionTaxSelectionViewModel: ObservableObject {
         self.notificationService = notificationService
         self.energyDataService = energyDataService
         
-        selectedRegion = Region(rawValue: setting.entity.regionIdentifier)!
-        taxSelection = setting.entity.pricesWithVAT
-        
-        uploadObserver.objectWillChange.receive(on: DispatchQueue.main).sink(receiveValue: { self.objectWillChange.send() }).store(in: &cancellables)
-        
-        $selectedRegion.dropFirst().sink(receiveValue: regionChanges).store(in: &cancellables)
-        $taxSelection.dropFirst().sink(receiveValue: taxSelectionChanges).store(in: &cancellables)
+        self.selectedRegion = Region(rawValue: setting.entity.regionIdentifier)!
+        self.taxSelection = setting.entity.pricesWithVAT
     }
     
-    var isUploading: Bool {
-        [.uploadingAndTimeExceeded, .uploadingAndTimeNotExceeded].contains(uploadObserver.loadingPublisher)
-    }
-    
-    var showUploadIndicators: Bool {
-        uploadObserver.loadingPublisher == .uploadingAndTimeExceeded
-    }
-    
-    func regionChanges(newRegion: Region) {
+    func regionChanges(newRegion: Region) async {
         var notificationConfiguration = NotificationConfiguration.create(nil, setting, notificationSetting)
         notificationConfiguration.general.region = newRegion
-        let changeSetting = {
-            self.setting.changeSetting { $0.entity.regionIdentifier = newRegion.rawValue }
-            DispatchQueue.main.async { self.energyDataService.download(region: newRegion) }
-        }
         
-        notificationService.changeNotificationConfiguration(notificationConfiguration, notificationSetting) { downloadPublisher in
-            self.uploadObserver.register(for: downloadPublisher.ignoreOutput().eraseToAnyPublisher())
-            downloadPublisher.sink(receiveCompletion: { completion in
-                changeSetting()
-            }, receiveValue: {_ in}).store(in: &self.cancellables)
-        } cantStartUpload: {
-            changeSetting()
-        } noUpload: {
-            changeSetting()
+        do {
+            // Show loading indicator
+            await MainActor.run { isLoading = true }
+            
+            _ = try await notificationService.changeNotificationConfiguration(
+                notificationConfiguration,
+                notificationSetting
+            )
+            
+            // Update UI elements on main thread
+            await MainActor.run {
+                self.setting.changeSetting { $0.entity.regionIdentifier = newRegion.rawValue }
+                isLoading = false
+            }
+            
+            self.energyDataService.download(region: newRegion)
+            
+        } catch {
+            print("Failed to update notification configuration: \(error)")
+            await MainActor.run {
+                isLoading = false
+            }
         }
     }
 
-    func taxSelectionChanges(newTaxSelection: Bool) {
+    func taxSelectionChanges(newTaxSelection: Bool) async {
         var notificationConfiguration = NotificationConfiguration.create(nil, setting, notificationSetting)
         notificationConfiguration.general.tax = newTaxSelection
-        let changeSetting = {
-            self.setting.changeSetting { $0.entity.pricesWithVAT = newTaxSelection }
-            DispatchQueue.main.async { self.energyDataService.energyData?.computeValues(with: self.setting) }
-        }
-
-        notificationService.changeNotificationConfiguration(notificationConfiguration, notificationSetting) { downloadPublisher in
-            self.uploadObserver.register(for: downloadPublisher.ignoreOutput().eraseToAnyPublisher())
-            downloadPublisher.sink(receiveCompletion: { completion in
-                changeSetting()
-            }, receiveValue: {_ in}).store(in: &self.cancellables)
-        } cantStartUpload: {
-            changeSetting()
-        } noUpload: {
-            changeSetting()
+        
+        do {
+            // Show loading indicator
+            await MainActor.run { isLoading = true }
+            
+            _ = try await notificationService.changeNotificationConfiguration(
+                notificationConfiguration,
+                notificationSetting
+            )
+            
+            await MainActor.run {
+                self.setting.changeSetting { $0.entity.pricesWithVAT = newTaxSelection }
+                isLoading = false
+            }
+            
+            self.energyDataService.energyData?.computeValues(with: self.setting)
+        } catch {
+            print("Failed to update notification configuration: \(error)")
+            await MainActor.run {
+                isLoading = false
+            }
         }
     }
 }
@@ -113,14 +126,14 @@ struct RegionTaxSelectionView: View {
                 taxSelection
                     .padding(.top, 10)
             }
-            .opacity(viewModel.showUploadIndicators ? 0.5 : 1)
-            .grayscale(viewModel.showUploadIndicators ? 0.5 : 0)
+            .opacity(viewModel.isLoading ? 0.5 : 1)
+            .grayscale(viewModel.isLoading ? 0.5 : 0)
         
-            if viewModel.showUploadIndicators {
+            if viewModel.isLoading {
                 loadingView
             }
         }
-        .disabled(viewModel.isUploading)
+        .disabled(viewModel.isLoading)
         .onAppear {
             // Update viewModel with the actual environment objects
             viewModel.setting = setting

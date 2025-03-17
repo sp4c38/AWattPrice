@@ -5,7 +5,6 @@
 //  Created by Léon Becker on 24.12.20.
 //
 
-import Combine
 import SwiftUI
 
 struct PriceDropsBelowValueNotificationInfoView: View {
@@ -44,79 +43,93 @@ class PriceBelowNotificationViewModel: ObservableObject {
     var notificationSetting: NotificationSettingCoreData
     var notificationService: NotificationService
 
-    @Published var notificationIsEnabled: Bool = false
-    var notificationIsEnabledMethodNotifier: AnyCancellable? = nil
-    @Published var priceBelowValue: String = ""
-    var priceBelowValueMethodNotifier: AnyCancellable? = nil
+    @Published var notificationIsEnabled: Bool {
+        didSet {
+            if oldValue != notificationIsEnabled {
+                Task { await priceBelowNotificationToggled(to: notificationIsEnabled) }
+            }
+        }
+    }
     
-    let uploadObserver = DownloadPublisherLoadingViewObserver(intervalBeforeExceeded: 0.4)
-    var uploadErrorObserver: UploadErrorPublisherViewObserver? = nil
+    @Published var priceBelowValue: String {
+        didSet {
+            if oldValue != priceBelowValue {
+                Task { await updateWishPrice(to: priceBelowValue) }
+            }
+        }
+    }
     
-    var cancellables = [AnyCancellable]()
+    @Published private(set) var isLoading = false
     
     init(setting: SettingCoreData, notificationSetting: NotificationSettingCoreData, notificationService: NotificationService) {
         self.setting = setting
         self.notificationSetting = notificationSetting
         self.notificationService = notificationService
         
-        uploadObserver.objectWillChange.receive(on: DispatchQueue.main).sink(receiveValue: { self.objectWillChange.send() }).store(in: &cancellables)
-        
         notificationIsEnabled = notificationSetting.entity.priceDropsBelowValueNotification
-        notificationIsEnabledMethodNotifier = $notificationIsEnabled.dropFirst().sink(receiveValue: priceBelowNotificationToggled)
         priceBelowValue = Int(notificationSetting.entity.priceBelowValue).priceString ?? ""
-        priceBelowValueMethodNotifier = $priceBelowValue.dropFirst().sink(receiveValue: updateWishPrice)
-    }
-    
-    var isUploading: Bool {
-        [.uploadingAndTimeExceeded, .uploadingAndTimeNotExceeded].contains(uploadObserver.loadingPublisher)
     }
     
     var showUploadIndicators: Bool {
-        uploadObserver.loadingPublisher == .uploadingAndTimeExceeded
+        return isLoading
     }
     
-    func priceBelowNotificationToggled(to newSelection: Bool) {
+    func priceBelowNotificationToggled(to newSelection: Bool) async {
         var notificationConfiguration = NotificationConfiguration.create(nil, setting, notificationSetting)
         notificationConfiguration.notifications.priceBelow.active = newSelection
-        let uploadFailure = {
-            DispatchQueue.main.async {
-                self.notificationIsEnabledMethodNotifier = self.$notificationIsEnabled.dropFirst().dropFirst().sink(receiveValue: self.priceBelowNotificationToggled)
-                self.notificationIsEnabled = self.notificationSetting.entity.priceDropsBelowValueNotification
+        
+        do {
+            // Show loading indicator
+            await MainActor.run { isLoading = true }
+            
+            _ = try await notificationService.changeNotificationConfiguration(
+                notificationConfiguration,
+                notificationSetting
+            )
+            
+            await MainActor.run {
+                self.notificationSetting.changeSetting { $0.entity.priceDropsBelowValueNotification = newSelection }
+                isLoading = false
             }
-        }
-
-        notificationService.changeNotificationConfiguration(notificationConfiguration, notificationSetting, skipWantNotificationCheck: true) { downloadPublisher in
-            self.uploadObserver.register(for: downloadPublisher.ignoreOutput().eraseToAnyPublisher())
-            self.uploadErrorObserver?.register(for: downloadPublisher.eraseToAnyPublisher())
-            downloadPublisher.sink(receiveCompletion: { completion in
-                switch completion { case .finished: self.notificationSetting.changeSetting { $0.entity.priceDropsBelowValueNotification = newSelection }
-                                    case .failure: uploadFailure() }
-            }, receiveValue: {_ in}).store(in: &self.cancellables)
-        } cantStartUpload: {
-            uploadFailure()
+        } catch {
+            print("Failed to update notification configuration: \(error)")
+            // Revert to the previous value on failure
+            await MainActor.run {
+                self.notificationIsEnabled = self.notificationSetting.entity.priceDropsBelowValueNotification
+                isLoading = false
+            }
         }
     }
     
-    func updateWishPrice(to newWishPriceString: String) {
-        guard let newWishPrice = newWishPriceString.integerValue else { priceBelowValue = ""; return }
-        var notificationConfiguration = NotificationConfiguration.create(nil, setting, notificationSetting)
-        notificationConfiguration.notifications.priceBelow.belowValue = newWishPrice
-        let uploadFailure = {
-            DispatchQueue.main.async {
-                self.priceBelowValueMethodNotifier = self.$priceBelowValue.dropFirst().dropFirst().sink(receiveValue: self.updateWishPrice)
-                self.priceBelowValue = Int(self.notificationSetting.entity.priceBelowValue).priceString ?? ""
-            }
+    func updateWishPrice(to newWishPriceString: String) async {
+        guard let newWishPrice = newWishPriceString.integerValue else { 
+            await MainActor.run { priceBelowValue = "" }
+            return 
         }
         
-        notificationService.changeNotificationConfiguration(notificationConfiguration, notificationSetting, skipWantNotificationCheck: true) { downloadPublisher in
-            self.uploadObserver.register(for: downloadPublisher.ignoreOutput().eraseToAnyPublisher())
-            self.uploadErrorObserver?.register(for: downloadPublisher.eraseToAnyPublisher())
-            downloadPublisher.sink(receiveCompletion: { completion in
-                switch completion { case .finished: self.notificationSetting.changeSetting { $0.entity.priceBelowValue = Int64(newWishPrice) }
-                                    case .failure: uploadFailure() }
-            }, receiveValue: {_ in}).store(in: &self.cancellables)
-        } cantStartUpload: {
-            uploadFailure()
+        var notificationConfiguration = NotificationConfiguration.create(nil, setting, notificationSetting)
+        notificationConfiguration.notifications.priceBelow.belowValue = newWishPrice
+        
+        do {
+            // Show loading indicator
+            await MainActor.run { isLoading = true }
+            
+            _ = try await notificationService.changeNotificationConfiguration(
+                notificationConfiguration,
+                notificationSetting
+            )
+            
+            await MainActor.run {
+                self.notificationSetting.changeSetting { $0.entity.priceBelowValue = Int64(newWishPrice) }
+                isLoading = false
+            }
+        } catch {
+            print("Failed to update notification configuration: \(error)")
+            // Revert to the previous value on failure
+            await MainActor.run {
+                self.priceBelowValue = Int(self.notificationSetting.entity.priceBelowValue).priceString ?? ""
+                isLoading = false
+            }
         }
     }
 }
@@ -132,13 +145,10 @@ struct PriceBelowNotificationView: View {
     @StateObject private var viewModel: PriceBelowNotificationViewModel
     @State var keyboardCurrentlyClosed = false
     
-    // This property will be injected in the views .onAppear. The view model is a StateObject which makes it a bit of a tricky situation but as this variable is used the earliest
-    // after the first view rendered it is a working and acceptable approach.
-    let uploadErrorObserver: UploadErrorPublisherViewObserver?
+    // This property will be simplified since we no longer need error observers
     let showHeader: Bool
     
     init(uploadErrorObserver: UploadErrorPublisherViewObserver? = nil, showHeader: Bool = false) {
-        self.uploadErrorObserver = uploadErrorObserver
         self.showHeader = showHeader
         
         // Initialize with temporary values that will be replaced in onAppear
@@ -167,13 +177,12 @@ struct PriceBelowNotificationView: View {
                 loadingView
             }
         }
-        .disabled(viewModel.isUploading)
+        .disabled(viewModel.isLoading)
         .onAppear {
             // Update viewModel with the actual environment objects
             viewModel.setting = setting
             viewModel.notificationSetting = notificationSetting
             viewModel.notificationService = notificationService
-            viewModel.uploadErrorObserver = uploadErrorObserver
         }
     }
 
@@ -196,11 +205,7 @@ struct PriceBelowNotificationView: View {
                     .transition(.opacity)
             }
             .onReceive(keyboardObserver.keyboardHeight) { newKeyboardHeight in
-                if (newKeyboardHeight == 0) {
-                    keyboardCurrentlyClosed = true
-                } else {
-                    keyboardCurrentlyClosed = false
-                }
+                keyboardCurrentlyClosed = (newKeyboardHeight == 0)
             }
             .modifier(GeneralInputView(markedRed: false))
         }

@@ -67,10 +67,8 @@ class NotificationService: ObservableObject {
             print("User doesn't want to receive any notifications and thus don't need to upload.")
             return nil
         }
-
-        let hasAccess = await ensureAccess()
         
-        guard hasAccess, let token = self.token else {
+        guard await ensureAccess(), let token = self.token else {
             print("Didn't get notification access.")
             return nil
         }

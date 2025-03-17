@@ -86,7 +86,7 @@ extension NotificationService {
     }
     
     /// Asynchronous function to ensure we have the required access for notifications
-    private func ensureAccess(ensurePushAccess: Bool = true) async -> Bool {
+    func ensureAccess(ensurePushAccess: Bool = true) async -> Bool {
         if accessState == .rejected {
             return false  // Permission already denied, no need to continue
         }

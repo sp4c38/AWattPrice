@@ -26,7 +26,6 @@
 		4190E3BB83AC5F034211C2B9 /* NotificationService+Access.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C87AF4B25871BFD4A3501F5 /* NotificationService+Access.swift */; };
 		42A01876BE7C9040AE139154 /* DataHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 591D0CDCA995859E422558AA /* DataHelpers.swift */; };
 		471979041724562B571FA8D2 /* NotificationSettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A97A562A68DEF8AD1937E4EE /* NotificationSettingView.swift */; };
-		528881FAC4C067E4B2DA475C /* AnyTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0F25A3D9297785396AED471 /* AnyTransition.swift */; };
 		555F47FC1D9F98F6114CFD89 /* SettingsUploadErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7312444A00735A79F3140BF9 /* SettingsUploadErrorView.swift */; };
 		593C14ACDA8A7823983C839A /* PriceBelowNotificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5A96314B5FDFB69823B75C9 /* PriceBelowNotificationView.swift */; };
 		5968D801ED3B64E9059A3555 /* CheapestHourManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2EFEC10A5ED85CC875CFCF7 /* CheapestHourManager.swift */; };
@@ -177,7 +176,6 @@
 		9A00C100052CCD826957777A /* HapticFeedbacks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticFeedbacks.swift; sourceTree = "<group>"; };
 		9F0D566683455A9834699592 /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		9F2601A3B2EA2477FA2070C3 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		A0F25A3D9297785396AED471 /* AnyTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyTransition.swift; sourceTree = "<group>"; };
 		A2EFEC10A5ED85CC875CFCF7 /* CheapestHourManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheapestHourManager.swift; sourceTree = "<group>"; };
 		A41C1FC82200E2AFDF054FA4 /* AppContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppContext.swift; sourceTree = "<group>"; };
 		A5A96314B5FDFB69823B75C9 /* PriceBelowNotificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceBelowNotificationView.swift; sourceTree = "<group>"; };
@@ -322,7 +320,6 @@
 		56FA011CD7E46CFC0CA1208F /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
-				A0F25A3D9297785396AED471 /* AnyTransition.swift */,
 				ABC1863825D3D8178C7C9954 /* Binding.swift */,
 				0395AE6386769843A6A0D5CF /* View+Helpers.swift */,
 			);
@@ -741,7 +738,6 @@
 				268ABCBD2289736785AE38B3 /* APIClient.swift in Sources */,
 				C0067869CF8C26D9F619B651 /* AWattPriceApp.swift in Sources */,
 				F410144D194798FE40260368 /* Any.swift in Sources */,
-				528881FAC4C067E4B2DA475C /* AnyTransition.swift in Sources */,
 				A27624298A92276EDAC1CDFE /* AppContext.swift in Sources */,
 				7806C62BA8F28AC26C3C88B7 /* AppDelegate.swift in Sources */,
 				C9D5C1447B8C71534A26DDEA /* AppGroupManager.swift in Sources */,

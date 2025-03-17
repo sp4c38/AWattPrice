@@ -117,10 +117,7 @@ struct NotAffiliatedView: View {
 
             Text("splashScreen.start.notAffiliatedNote")
                 .font(setFixedSize ? .fSubHeadline : .subheadline)
-                .ifTrue(showGrayedOut == true) { content in
-                    content
-                        .foregroundColor(Color.gray)
-                }
+                .foregroundColor(showGrayedOut ? Color.gray : nil)
                 .fixedSize(horizontal: false, vertical: true)
         }
     }

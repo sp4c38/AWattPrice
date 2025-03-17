@@ -110,14 +110,6 @@ struct RegionTaxSelectionView: View {
         ))
     }
     
-    var changeSelectedRegion: Binding<Region> {
-        $viewModel.selectedRegion.setNewValue { newValue in
-            withAnimation {
-                viewModel.selectedRegion = newValue
-            }
-        }
-    }
-    
     var body: some View {
         ZStack {
             VStack {
@@ -144,7 +136,7 @@ struct RegionTaxSelectionView: View {
     }
     
     var regionPicker: some View {
-        Picker("", selection: changeSelectedRegion) {
+        Picker("", selection: $viewModel.selectedRegion.animation()) {
             Text("🇩🇪 Germany")
                 .tag(Region.DE)
             Text("🇦🇹 Austria")

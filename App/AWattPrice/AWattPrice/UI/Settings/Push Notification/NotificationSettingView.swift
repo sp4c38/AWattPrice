@@ -5,46 +5,46 @@
 //  Created by Léon Becker on 24.12.20.
 //
 
-import Combine
 import SwiftUI
 
 extension AnyTransition {
     static var belowScale: AnyTransition {
-        let animation = AnyTransition.scale.combined(with: .move(edge: .bottom))
-        return AnyTransition.asymmetric(insertion: animation, removal: animation)
+        .scale.combined(with: .move(edge: .bottom))
     }
 }
 
+// Simple enum to replace publisher-based error observer
+enum UploadErrorViewState {
+    case noError
+    case lastUploadFailed
+}
+
+@MainActor
 class NotificationSettingViewModel: ObservableObject {
     var notificationService: NotificationService
-    let uploadErrorObserver = UploadErrorPublisherViewObserver()
-    
-    var cancellables = [AnyCancellable]()
+    @Published var uploadErrorState: UploadErrorViewState = .noError
     
     init(notificationService: NotificationService) {
         self.notificationService = notificationService
-        
-        notificationService.accessState.receive(on: DispatchQueue.main).sink { _ in self.objectWillChange.send() }.store(in: &cancellables)
-        uploadErrorObserver.objectWillChange.sink(receiveValue: { _ in self.objectWillChange.send()}).store(in: &cancellables)
+    }
+    
+    func updateErrorState(_ newState: UploadErrorViewState) {
+        uploadErrorState = newState
+    }
+    
+    func refreshAccessState() async {
+        await notificationService.updateAccessStates()
     }
 }
 
 struct NotificationSettingView: View {
     @Environment(\.scenePhase) var scenePhase
     @EnvironmentObject var notificationService: NotificationService
-
-    @StateObject private var viewModel: NotificationSettingViewModel
+    @StateObject private var viewModel = NotificationSettingViewModel(notificationService: NotificationService())
     
-    init() {
-        // Initialize with temporary values that will be replaced in onAppear
-        _viewModel = StateObject(wrappedValue: NotificationSettingViewModel(
-            notificationService: NotificationService()
-        ))
-    }
-        
     var body: some View {
         Form {
-            if viewModel.notificationService.accessState.value == .rejected {
+            if viewModel.notificationService.accessState == .rejected {
                 Section {
                     NoNotificationAccessView()
                         .padding(.top, 10)
@@ -53,11 +53,11 @@ struct NotificationSettingView: View {
                 .listRowBackground(Color.clear)
             } else {
                 Section {
-                    PriceBelowNotificationView(uploadErrorObserver: viewModel.uploadErrorObserver)
+                    PriceBelowNotificationView(uploadErrorState: $viewModel.uploadErrorState)
                 }
             }
             
-            if viewModel.uploadErrorObserver.viewState == .lastUploadFailed {
+            if viewModel.uploadErrorState == .lastUploadFailed {
                 Section {
                     SettingsUploadErrorView()
                 }
@@ -65,18 +65,38 @@ struct NotificationSettingView: View {
             }
         }
         .navigationTitle("Price Guard")
-        .onAppear { 
-            // Update viewModel with the actual environment objects
+        .task {
             viewModel.notificationService = notificationService
-            
-            print(viewModel.uploadErrorObserver.viewState) 
+            await viewModel.refreshAccessState()
+        }
+        .onChange(of: scenePhase) { newPhase in
+            if newPhase == .active {
+                Task { await viewModel.refreshAccessState() }
+            }
+        }
+    }
+}
+
+struct NoNotificationAccessView: View {
+    var body: some View {
+        VStack(alignment: .center, spacing: 30) {
+            Text("notificationPage.noNotificationAccessInfo")
+                .multilineTextAlignment(.center)
+                .foregroundColor(.gray)
+
+            Button("Open Settings App") {
+                if let url = URL(string: UIApplication.openSettingsURLString) {
+                    UIApplication.shared.open(url)
+                }
+            }
+            .buttonStyle(RoundedBorderButtonStyle())
         }
     }
 }
 
 struct NotificationSettingView_Previews: PreviewProvider {
     static var previews: some View {
-        return NavigationView {
+        NavigationView {
             NotificationSettingView()
                 .environmentObject(NotificationService())
         }

@@ -21,13 +21,12 @@ struct TimeRangeInputFieldSelectionPartModifier: ViewModifier {
                     Color(hue: 0.6667, saturation: 0.0340, brightness: 0.1424)
             )
             .cornerRadius(7)
-            .ifTrue(cheapestHourManager.errorValues.contains(5)) { content in
-                content
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 7)
-                            .stroke(Color.red, lineWidth: 2)
-                    )
-            }
+            .overlay(
+                cheapestHourManager.errorValues.contains(5) ?
+                RoundedRectangle(cornerRadius: 7)
+                    .stroke(Color.red, lineWidth: 2)
+                : nil
+            )
     }
 }
 

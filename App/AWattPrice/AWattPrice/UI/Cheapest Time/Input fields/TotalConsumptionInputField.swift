@@ -13,11 +13,12 @@ struct EnergyUsageInputField: View {
     @EnvironmentObject var setting: SettingCoreData
 
     @State var firstAppear = true
+    @Binding var isFocused: Bool
 
     let emptyFieldError: Bool
     let wrongInputError: Bool
 
-    init(errorValues: [Int]) {
+    init(errorValues: [Int], isFocused: Binding<Bool> = .constant(false)) {
         if errorValues.contains(3) {
             emptyFieldError = true
             wrongInputError = false
@@ -28,6 +29,7 @@ struct EnergyUsageInputField: View {
             emptyFieldError = false
             wrongInputError = false
         }
+        _isFocused = isFocused
     }
 
     func setEnergyUsageString() {
@@ -51,14 +53,14 @@ struct EnergyUsageInputField: View {
                 NumberField(text: $cheapestHourManager.energyUsageString.animation(), placeholder: "in kWh".localized(), withDecimalSeperator: true)
                     .fixedSize(horizontal: false, vertical: true)
                     .padding(.trailing, 5)
-                    .ifTrue(firstAppear == false) { content in
-                        content
-                            .onChange(of: cheapestHourManager.energyUsageString) { newValue in
-                                setting.changeSetting { $0.entity.cheapestTimeLastConsumption = newValue.doubleValue ?? 0 }
-                                if let energyUsageString = (newValue.doubleValue ?? 0).priceString {
-                                    cheapestHourManager.energyUsageString = energyUsageString
-                                }
+                    .focused($isFocused)
+                    .onChange(of: cheapestHourManager.energyUsageString) { newValue in
+                        if !firstAppear {
+                            setting.changeSetting { $0.entity.cheapestTimeLastConsumption = newValue.doubleValue ?? 0 }
+                            if let energyUsageString = (newValue.doubleValue ?? 0).priceString {
+                                cheapestHourManager.energyUsageString = energyUsageString
                             }
+                        }
                     }
                     .onAppear {
                         setEnergyUsageString()

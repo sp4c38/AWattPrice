@@ -44,9 +44,7 @@ struct TimeRangeButtonStyle: ButtonStyle {
             .background(Color.blue)
             .cornerRadius(10)
             .opacity(configuration.isPressed ? 0.6 : 1.0)
-            .ifTrue(configuration.isPressed) { content in
-                content.animation(.easeInOut(duration: 0.1))
-            }
+            .animation(configuration.isPressed ? .easeInOut(duration: 0.1) : nil, value: configuration.isPressed)
     }
 }
 

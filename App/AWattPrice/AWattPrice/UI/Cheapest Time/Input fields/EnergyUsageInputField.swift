@@ -1,5 +1,5 @@
 //
-//  PowerOutputInputField.swift
+//  EnergyUsageInputField.swift
 //  AWattPrice
 //
 //  Created by Léon Becker on 30.10.20.
@@ -7,35 +7,33 @@
 
 import SwiftUI
 
-/// Input field for the power output of the consumer
-struct PowerOutputInputField: View {
+/// Input field for the energy usage which the consumer shall consume
+struct EnergyUsageInputField: View {
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
     @EnvironmentObject var setting: SettingCoreData
 
     @State var firstAppear = true
-    @Binding var isFocused: Bool
 
     let emptyFieldError: Bool
     let wrongInputError: Bool
 
-    init(errorValues: [Int], isFocused: Binding<Bool> = .constant(false)) {
-        if errorValues.contains(1) {
+    init(errorValues: [Int]) {
+        if errorValues.contains(3) {
             emptyFieldError = true
             wrongInputError = false
-        } else if errorValues.contains(2) {
+        } else if errorValues.contains(4) {
             emptyFieldError = false
             wrongInputError = true
         } else {
             emptyFieldError = false
             wrongInputError = false
         }
-        _isFocused = isFocused
     }
 
-    func setPowerOutputString() {
-        if setting.entity.cheapestTimeLastPower != 0 {
-            if let powerOutputString = setting.entity.cheapestTimeLastPower.priceString {
-                cheapestHourManager.powerOutputString = powerOutputString
+    func setEnergyUsageString() {
+        if setting.entity.cheapestTimeLastConsumption != 0 {
+            if let energyUsageString = setting.entity.cheapestTimeLastConsumption.priceString {
+                cheapestHourManager.energyUsageString = energyUsageString
             }
         }
     }
@@ -43,32 +41,31 @@ struct PowerOutputInputField: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
-                Text("Power")
+                Text("Total consumption")
                     .font(.subheadline)
                     .foregroundColor(Color.gray)
                 Spacer()
             }
 
             HStack {
-                NumberField(text: $cheapestHourManager.powerOutputString.animation(), placeholder: "in kW".localized(), withDecimalSeperator: true)
+                NumberField(text: $cheapestHourManager.energyUsageString.animation(), placeholder: "in kWh".localized(), withDecimalSeperator: true)
                     .fixedSize(horizontal: false, vertical: true)
                     .padding(.trailing, 5)
-                    .focused($isFocused)
-                    .onChange(of: cheapestHourManager.powerOutputString) { newValue in
+                    .onChange(of: cheapestHourManager.energyUsageString) { newValue in
                         if !firstAppear {
-                            setting.changeSetting { $0.entity.cheapestTimeLastPower = newValue.doubleValue ?? 0 }
+                            setting.changeSetting { $0.entity.cheapestTimeLastConsumption = newValue.doubleValue ?? 0 }
                             if let energyUsageString = (newValue.doubleValue ?? 0).priceString {
-                                cheapestHourManager.powerOutputString = energyUsageString
+                                cheapestHourManager.energyUsageString = energyUsageString
                             }
                         }
                     }
                     .onAppear {
-                        setPowerOutputString()
+                        setEnergyUsageString()
                         firstAppear = false
                     }
 
-                if cheapestHourManager.powerOutputString != "" {
-                    Text("kW")
+                if cheapestHourManager.energyUsageString != "" {
+                    Text("kWh")
                         .transition(.opacity)
                 }
             }
@@ -90,9 +87,9 @@ struct PowerOutputInputField: View {
     }
 }
 
-struct PowerOutputInputField_Previews: PreviewProvider {
+struct EnergyUsageField_Previews: PreviewProvider {
     static var previews: some View {
-        PowerOutputInputField(errorValues: [])
+        EnergyUsageInputField(errorValues: [])
             .environmentObject(CheapestHourManager())
     }
 }

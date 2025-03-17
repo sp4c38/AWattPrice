@@ -71,6 +71,7 @@ struct CheapestTimeViewBodyPicker: View {
 
 struct CheapestTimeViewBody: View {
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
+    @Binding var inputFieldFocused: Bool
 
     @State var inputMode: Int = 0
 
@@ -89,8 +90,8 @@ struct CheapestTimeViewBody: View {
                     if inputMode == 0 {
                         CheapestTimeViewBodyPicker()
                     } else if inputMode == 1 {
-                        PowerOutputInputField(errorValues: cheapestHourManager.errorValues)
-                        EnergyUsageInputField(errorValues: cheapestHourManager.errorValues)
+                        PowerOutputInputField(errorValues: cheapestHourManager.errorValues, isFocused: $inputFieldFocused)
+                        EnergyUsageInputField(errorValues: cheapestHourManager.errorValues, isFocused: $inputFieldFocused)
                     }
                 }
                 .padding(.bottom, inputMode == 0 ? 0 : 25)
@@ -118,6 +119,8 @@ struct CheapestTimeView: View {
     @EnvironmentObject var energyDataService: EnergyDataService
     @EnvironmentObject var setting: SettingCoreData
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
+    
+    @FocusState private var inputFieldFocused: Bool
 
     @State var redirectToComparisonResults: Int? = 0
 
@@ -127,7 +130,7 @@ struct CheapestTimeView: View {
                 if energyDataService.energyData != nil {
                     ScrollView {
                         VStack(spacing: 0) {
-                            CheapestTimeViewBody()
+                            CheapestTimeViewBody(inputFieldFocused: $inputFieldFocused)
 
                             Spacer()
 
@@ -140,7 +143,7 @@ struct CheapestTimeView: View {
                             // Button to perform calculations to find cheapest hours and
                             // to redirect to the result view to show the results calculated
                             Button(action: {
-                                self.hideKeyboard()
+                                inputFieldFocused = false
                                 cheapestHourManager.setValues()
                                 if cheapestHourManager.errorValues.contains(0) {
                                     // All requirements are satisfied

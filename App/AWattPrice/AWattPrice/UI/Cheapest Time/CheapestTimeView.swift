@@ -120,7 +120,8 @@ struct CheapestTimeView: View {
     @EnvironmentObject var setting: SettingCoreData
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
     
-    @FocusState private var inputFieldFocused: Bool
+    @FocusState private var focusState: Bool
+    @State private var inputFieldFocused: Bool = false
 
     @State var redirectToComparisonResults: Int? = 0
 
@@ -171,6 +172,13 @@ struct CheapestTimeView: View {
             .navigationTitle("Cheapest Time")
         }
         .navigationViewStyle(StackNavigationViewStyle())
+        // Keep the state and focus state in sync
+        .onChange(of: focusState) { newValue in
+            inputFieldFocused = newValue
+        }
+        .onChange(of: inputFieldFocused) { newValue in
+            focusState = newValue
+        }
     }
 }
 

@@ -13,10 +13,11 @@ struct PowerOutputInputField: View {
     @EnvironmentObject var setting: SettingCoreData
 
     @State var firstAppear = true
-    @Binding var isFocused: Bool
-
+    @FocusState private var fieldIsFocused: Bool
+    
     let emptyFieldError: Bool
     let wrongInputError: Bool
+    let onFocusChange: (Bool) -> Void
 
     init(errorValues: [Int], isFocused: Binding<Bool> = .constant(false)) {
         if errorValues.contains(1) {
@@ -29,7 +30,9 @@ struct PowerOutputInputField: View {
             emptyFieldError = false
             wrongInputError = false
         }
-        _isFocused = isFocused
+        self.onFocusChange = { newValue in
+            isFocused.wrappedValue = newValue
+        }
     }
 
     func setPowerOutputString() {
@@ -53,7 +56,10 @@ struct PowerOutputInputField: View {
                 NumberField(text: $cheapestHourManager.powerOutputString.animation(), placeholder: "in kW".localized(), withDecimalSeperator: true)
                     .fixedSize(horizontal: false, vertical: true)
                     .padding(.trailing, 5)
-                    .focused($isFocused)
+                    .focused($fieldIsFocused)
+                    .onChange(of: fieldIsFocused) { newValue in
+                        onFocusChange(newValue)
+                    }
                     .onChange(of: cheapestHourManager.powerOutputString) { newValue in
                         if !firstAppear {
                             setting.changeSetting { $0.entity.cheapestTimeLastPower = newValue.doubleValue ?? 0 }

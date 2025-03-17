@@ -50,16 +50,12 @@
 		719B65E6682DFBDF94B4D461 /* QueueHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BF7A4E1ED7229A8E6E0B03F /* QueueHelpers.swift */; };
 		7806C62BA8F28AC26C3C88B7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3986605FAA7AF18D5AF2CB37 /* AppDelegate.swift */; };
 		79BF8D2C50E18982950D8CEC /* TimeRangeInputField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EF4803E3C737282BE08A7A8 /* TimeRangeInputField.swift */; };
-		7E7333EBA324E6AF0A2CE7C1 /* DownloadPublisherLoadingViewObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E27EA2E00D4FD1A008773DB /* DownloadPublisherLoadingViewObserver.swift */; };
 		7E90347E27828E2718534FED /* SettingEntities.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB8219C5EDEC8DD1FB333D45 /* SettingEntities.swift */; };
 		805FDBDA608B766F64F5AAB1 /* Time.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54E7B03C854090F5B68712E1 /* Time.swift */; };
 		865F84BF2724ED9CD2000B47 /* SplashScreenStartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDDDD6143A8627F05026A525 /* SplashScreenStartView.swift */; };
 		8B1F60F9ED84DE93E4B6C89C /* CheapestTimeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6A7FC93BBC0020CE1CDC089 /* CheapestTimeView.swift */; };
-		8B85DF3CCCB6CE75508CE969 /* SF-Compact-Display-Black.otf in Resources */ = {isa = PBXBuildFile; fileRef = CC86F9987A19BB3FA4DA1124 /* SF-Compact-Display-Black.otf */; };
 		8CF83B7D4714ABE33B8964AD /* RegionTaxSelection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EEAB0C5FE21817587BFCFEB /* RegionTaxSelection.swift */; };
 		8E8FDA62E4A1CECC1E57FFE3 /* EnergyDataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E1E9B883B731AD9BA0E6A9 /* EnergyDataController.swift */; };
-		94650414B4D10CBDA61E9CC6 /* UpdateDataTimeFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6AFDBB5DD6BB251A0D7B616 /* UpdateDataTimeFormatter.swift */; };
-		A27624298A92276EDAC1CDFE /* AppContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = A41C1FC82200E2AFDF054FA4 /* AppContext.swift */; };
 		A64044376124E697D0D7D6EB /* ButtonStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60087A5B0602E5789304BDF1 /* ButtonStyles.swift */; };
 		B511AB77AED338BC7FD96786 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C06F1B5903714FE38928934 /* Extensions.swift */; };
 		C0067869CF8C26D9F619B651 /* AWattPriceApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 616111958CDF13E7ED308317 /* AWattPriceApp.swift */; };
@@ -67,7 +63,6 @@
 		C5343BF07C16E831F183EEFE /* WhatsNewPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A77CDC6EAE09122F1C743CE4 /* WhatsNewPage.swift */; };
 		C94B7D632C148D4E2FFB7CBE /* EnergyPriceSingleBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6630553CDA1300720DF753BE /* EnergyPriceSingleBar.swift */; };
 		C997C76C683B67B76839425A /* NotificationConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CCBC50D92AE763388DAAB90 /* NotificationConfiguration.swift */; };
-		C9D5C1447B8C71534A26DDEA /* AppGroupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6293FEC5FEF17D21F998528 /* AppGroupManager.swift */; };
 		CA4360AEE16A6061CFF33864 /* LazyNavigationDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0128DEB3ECF3622979FBC803 /* LazyNavigationDestination.swift */; };
 		D0B5F4C57BCEA12626689AA2 /* DataDownloadAndError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59B5203B024111C62B8F9D80 /* DataDownloadAndError.swift */; };
 		D19754BAE15970139A862323 /* Region.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52D6D993DB3CE3CBB4B1E644 /* Region.swift */; };
@@ -83,11 +78,9 @@
 		F0EF08E10D3BD6AF40D000D7 /* UpdatedDataView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A865543E750ED5EC6084D67D /* UpdatedDataView.swift */; };
 		F1212CD12690C400EAB49863 /* PreviewEnergyData.json in Resources */ = {isa = PBXBuildFile; fileRef = 3459FFEC069D6C1D4DA27E5E /* PreviewEnergyData.json */; };
 		F1CF752BC4D41867364F7994 /* MailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09C662D82C544FFEBADE9BB1 /* MailView.swift */; };
-		F410144D194798FE40260368 /* Any.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF7C95D15AFCFD75AB3833BC /* Any.swift */; };
 		F50BC83C497A2E9713FB8B58 /* CheapestTimeClockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D78D2EC93C5C2767F2B9B865 /* CheapestTimeClockView.swift */; };
 		F55E81CD8605DF223B6F4457 /* PowerInputField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 497048FB911746FF00EDC23F /* PowerInputField.swift */; };
 		F86BCBE37F4FCFD4F68C99B2 /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22523FA7380336A83DEE1624 /* Environment.swift */; };
-		F96A6404866E6E378668A877 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9F2601A3B2EA2477FA2070C3 /* Preview Assets.xcassets */; };
 		F9DE0E07C58B34E50ED56EE7 /* HelpAndSuggestionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA5DF4BB1567348D207BC3BC /* HelpAndSuggestionView.swift */; };
 		FB4A52558DC90B76EA4F632A /* Int.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6FB7487869EADAEB411F1A7 /* Int.swift */; };
 /* End PBXBuildFile section */
@@ -166,14 +159,11 @@
 		7D8536DB7CE536410491DE1C /* BarText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarText.swift; sourceTree = "<group>"; };
 		8C5F824C94B9912B11853532 /* EasyIntervalPickerRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EasyIntervalPickerRepresentable.swift; sourceTree = "<group>"; };
 		8C87AF4B25871BFD4A3501F5 /* NotificationService+Access.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NotificationService+Access.swift"; sourceTree = "<group>"; };
-		8E27EA2E00D4FD1A008773DB /* DownloadPublisherLoadingViewObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadPublisherLoadingViewObserver.swift; sourceTree = "<group>"; };
 		934DBF6AF7CFB20EB6697643 /* NSRegularExpression.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSRegularExpression.swift; sourceTree = "<group>"; };
 		99DA04381A4011A2B6E1423C /* Model 4.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Model 4.xcdatamodel"; sourceTree = "<group>"; };
 		9A00C100052CCD826957777A /* HapticFeedbacks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticFeedbacks.swift; sourceTree = "<group>"; };
 		9F0D566683455A9834699592 /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
-		9F2601A3B2EA2477FA2070C3 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		A2EFEC10A5ED85CC875CFCF7 /* CheapestHourManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheapestHourManager.swift; sourceTree = "<group>"; };
-		A41C1FC82200E2AFDF054FA4 /* AppContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppContext.swift; sourceTree = "<group>"; };
 		A5A96314B5FDFB69823B75C9 /* PriceBelowNotificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceBelowNotificationView.swift; sourceTree = "<group>"; };
 		A6A7FC93BBC0020CE1CDC089 /* CheapestTimeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheapestTimeView.swift; sourceTree = "<group>"; };
 		A77CDC6EAE09122F1C743CE4 /* WhatsNewPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatsNewPage.swift; sourceTree = "<group>"; };
@@ -181,19 +171,15 @@
 		A97A562A68DEF8AD1937E4EE /* NotificationSettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSettingView.swift; sourceTree = "<group>"; };
 		ACFB7D008A70F4BE3C80E897 /* Model 3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Model 3.xcdatamodel"; sourceTree = "<group>"; };
 		B6AD0D0B3D95E6C7BB20D726 /* EasyIntervalPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EasyIntervalPicker.swift; sourceTree = "<group>"; };
-		B6AFDBB5DD6BB251A0D7B616 /* UpdateDataTimeFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateDataTimeFormatter.swift; sourceTree = "<group>"; };
 		B8FC646AC0ECA7024DB8607C /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
 		BA787873331E37B0915FDD4D /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
-		C6293FEC5FEF17D21F998528 /* AppGroupManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppGroupManager.swift; sourceTree = "<group>"; };
 		CB8219C5EDEC8DD1FB333D45 /* SettingEntities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingEntities.swift; sourceTree = "<group>"; };
-		CC86F9987A19BB3FA4DA1124 /* SF-Compact-Display-Black.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-Compact-Display-Black.otf"; sourceTree = "<group>"; };
 		CF85B2B08E53E158A7DE4DFC /* NumberField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberField.swift; sourceTree = "<group>"; };
 		D22CD9B053C7AA6D5411FFE0 /* Font.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Font.swift; sourceTree = "<group>"; };
 		D6047C9B5C250D36D898FE1F /* CheapestTimeResultView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheapestTimeResultView.swift; sourceTree = "<group>"; };
 		D62C2B2A2D81CAC000FA294C /* AWattPriceWidgetExtension-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "AWattPriceWidgetExtension-Info.plist"; sourceTree = "<group>"; };
 		D6FB7487869EADAEB411F1A7 /* Int.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Int.swift; sourceTree = "<group>"; };
 		D78D2EC93C5C2767F2B9B865 /* CheapestTimeClockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheapestTimeClockView.swift; sourceTree = "<group>"; };
-		DF7C95D15AFCFD75AB3833BC /* Any.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Any.swift; sourceTree = "<group>"; };
 		E032003B344BBBB7BB4921D1 /* SplashScreenFinishView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashScreenFinishView.swift; sourceTree = "<group>"; };
 		E2BCED411DC7AD4E79FC22B9 /* TotalTimeFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TotalTimeFormatter.swift; sourceTree = "<group>"; };
 		EA5DF4BB1567348D207BC3BC /* HelpAndSuggestionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpAndSuggestionView.swift; sourceTree = "<group>"; };
@@ -257,15 +243,6 @@
 			path = SwiftUI;
 			sourceTree = "<group>";
 		};
-		2F752AC37BA1CC7C891CBC8A /* Formatter */ = {
-			isa = PBXGroup;
-			children = (
-				E2BCED411DC7AD4E79FC22B9 /* TotalTimeFormatter.swift */,
-				B6AFDBB5DD6BB251A0D7B616 /* UpdateDataTimeFormatter.swift */,
-			);
-			path = Formatter;
-			sourceTree = "<group>";
-		};
 		332438C78B5D2E059BDD53CC /* UI */ = {
 			isa = PBXGroup;
 			children = (
@@ -295,7 +272,6 @@
 			children = (
 				2C75B85698299C6281666C42 /* Assets.xcassets */,
 				546D5FA692CB5FFBAF81B22A /* Launch Screen.storyboard */,
-				5972D0A707104900857937DF /* Fonts */,
 				8CAEE9A6D25CE48623C7A971 /* Preview Content */,
 			);
 			path = Resources;
@@ -308,14 +284,6 @@
 				61635B242A482E690099F5AD /* AWattPriceWidgetExtension.appex */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		5972D0A707104900857937DF /* Fonts */ = {
-			isa = PBXGroup;
-			children = (
-				CC86F9987A19BB3FA4DA1124 /* SF-Compact-Display-Black.otf */,
-			);
-			path = Fonts;
 			sourceTree = "<group>";
 		};
 		61635B2A2A482E690099F5AD /* AWattPriceWidget */ = {
@@ -435,7 +403,6 @@
 		8CAEE9A6D25CE48623C7A971 /* Preview Content */ = {
 			isa = PBXGroup;
 			children = (
-				9F2601A3B2EA2477FA2070C3 /* Preview Assets.xcassets */,
 				93B9EE1DDFDA47BB0AC0EDEB /* Energy Data */,
 			);
 			path = "Preview Content";
@@ -445,8 +412,7 @@
 			isa = PBXGroup;
 			children = (
 				6A5CE8C0A77D6361AD5B708C /* KeyboardObserver.swift */,
-				B8810A2BBEF694BD6D8049F5 /* API */,
-				2F752AC37BA1CC7C891CBC8A /* Formatter */,
+				E2BCED411DC7AD4E79FC22B9 /* TotalTimeFormatter.swift */,
 				18C2A8C64DF1B7502F7FE301 /* SwiftUI */,
 			);
 			path = Common;
@@ -474,10 +440,9 @@
 			isa = PBXGroup;
 			children = (
 				61DC52D22A57191500FB2D08 /* CoreDataService.swift */,
-				A41C1FC82200E2AFDF054FA4 /* AppContext.swift */,
-				C6293FEC5FEF17D21F998528 /* AppGroupManager.swift */,
 				F7E1E9B883B731AD9BA0E6A9 /* EnergyDataController.swift */,
-				C8D94C9E116FA82A69CA798C /* Notification Service */,
+				09B8A781BFC660F0533130E9 /* NotificationService.swift */,
+				8C87AF4B25871BFD4A3501F5 /* NotificationService+Access.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -485,7 +450,6 @@
 		9F3CD26A7BD9992AE1BA052B /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
-				DF7C95D15AFCFD75AB3833BC /* Any.swift */,
 				591D0CDCA995859E422558AA /* DataHelpers.swift */,
 				22523FA7380336A83DEE1624 /* Environment.swift */,
 				D22CD9B053C7AA6D5411FFE0 /* Font.swift */,
@@ -536,23 +500,6 @@
 				A0EEAF1E35084AD2316B5129 /* Energy Price Graph */,
 			);
 			path = "Price Graph";
-			sourceTree = "<group>";
-		};
-		B8810A2BBEF694BD6D8049F5 /* API */ = {
-			isa = PBXGroup;
-			children = (
-				8E27EA2E00D4FD1A008773DB /* DownloadPublisherLoadingViewObserver.swift */,
-			);
-			path = API;
-			sourceTree = "<group>";
-		};
-		C8D94C9E116FA82A69CA798C /* Notification Service */ = {
-			isa = PBXGroup;
-			children = (
-				09B8A781BFC660F0533130E9 /* NotificationService.swift */,
-				8C87AF4B25871BFD4A3501F5 /* NotificationService+Access.swift */,
-			);
-			path = "Notification Service";
 			sourceTree = "<group>";
 		};
 		CFF62FA3D1D5B4649B2A8585 /* Networking */ = {
@@ -705,9 +652,7 @@
 				DBA5B1FE42B492B0CB2D8D35 /* Assets.xcassets in Resources */,
 				D8CFCC7C18D97EA76DB02E08 /* Launch Screen.storyboard in Resources */,
 				59BDBAACA1BB8316305D917B /* Localizable.strings in Resources */,
-				F96A6404866E6E378668A877 /* Preview Assets.xcassets in Resources */,
 				F1212CD12690C400EAB49863 /* PreviewEnergyData.json in Resources */,
-				8B85DF3CCCB6CE75508CE969 /* SF-Compact-Display-Black.otf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -720,10 +665,7 @@
 			files = (
 				268ABCBD2289736785AE38B3 /* APIClient.swift in Sources */,
 				C0067869CF8C26D9F619B651 /* AWattPriceApp.swift in Sources */,
-				F410144D194798FE40260368 /* Any.swift in Sources */,
-				A27624298A92276EDAC1CDFE /* AppContext.swift in Sources */,
 				7806C62BA8F28AC26C3C88B7 /* AppDelegate.swift in Sources */,
-				C9D5C1447B8C71534A26DDEA /* AppGroupManager.swift in Sources */,
 				6B806C95A11BDB4E4B771D81 /* BarText.swift in Sources */,
 				23D11D519B8DC7A7F5DA54BA /* BaseFeeView.swift in Sources */,
 				A64044376124E697D0D7D6EB /* ButtonStyles.swift in Sources */,
@@ -736,7 +678,6 @@
 				2D29DD479FDC741009B2AB32 /* CustomDatePicker.swift in Sources */,
 				D0B5F4C57BCEA12626689AA2 /* DataDownloadAndError.swift in Sources */,
 				42A01876BE7C9040AE139154 /* DataHelpers.swift in Sources */,
-				7E7333EBA324E6AF0A2CE7C1 /* DownloadPublisherLoadingViewObserver.swift in Sources */,
 				0E3EB76E159021A4574B6416 /* EasyIntervalPicker.swift in Sources */,
 				1CCDA78DC9491A406AB24B42 /* EasyIntervalPickerRepresentable.swift in Sources */,
 				8E8FDA62E4A1CECC1E57FFE3 /* EnergyDataController.swift in Sources */,
@@ -779,7 +720,6 @@
 				79BF8D2C50E18982950D8CEC /* TimeRangeInputField.swift in Sources */,
 				179E5999F1C8E68A7EA1FD3B /* EnergyUsageInputField.swift in Sources */,
 				1FF85FE467F2EBD6F0165295 /* TotalTimeFormatter.swift in Sources */,
-				94650414B4D10CBDA61E9CC6 /* UpdateDataTimeFormatter.swift in Sources */,
 				F0EF08E10D3BD6AF40D000D7 /* UpdatedDataView.swift in Sources */,
 				C5343BF07C16E831F183EEFE /* WhatsNewPage.swift in Sources */,
 			);

@@ -13,11 +13,13 @@ struct EnergyUsageInputField: View {
     @EnvironmentObject var setting: SettingCoreData
 
     @State var firstAppear = true
-
+    @FocusState private var fieldIsFocused: Bool
+    
     let emptyFieldError: Bool
     let wrongInputError: Bool
+    let onFocusChange: (Bool) -> Void
 
-    init(errorValues: [Int]) {
+    init(errorValues: [Int], isFocused: Binding<Bool> = .constant(false)) {
         if errorValues.contains(3) {
             emptyFieldError = true
             wrongInputError = false
@@ -27,6 +29,9 @@ struct EnergyUsageInputField: View {
         } else {
             emptyFieldError = false
             wrongInputError = false
+        }
+        self.onFocusChange = { newValue in
+            isFocused.wrappedValue = newValue
         }
     }
 
@@ -51,6 +56,10 @@ struct EnergyUsageInputField: View {
                 NumberField(text: $cheapestHourManager.energyUsageString.animation(), placeholder: "in kWh".localized(), withDecimalSeperator: true)
                     .fixedSize(horizontal: false, vertical: true)
                     .padding(.trailing, 5)
+                    .focused($fieldIsFocused)
+                    .onChange(of: fieldIsFocused) { newValue in
+                        onFocusChange(newValue)
+                    }
                     .onChange(of: cheapestHourManager.energyUsageString) { newValue in
                         if !firstAppear {
                             setting.changeSetting { $0.entity.cheapestTimeLastConsumption = newValue.doubleValue ?? 0 }

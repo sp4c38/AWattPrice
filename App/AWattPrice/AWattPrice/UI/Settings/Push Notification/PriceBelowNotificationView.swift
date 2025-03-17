@@ -148,7 +148,7 @@ struct PriceBelowNotificationView: View {
     // This property will be simplified since we no longer need error observers
     let showHeader: Bool
     
-    init(uploadErrorObserver: UploadErrorPublisherViewObserver? = nil, showHeader: Bool = false) {
+    init(showHeader: Bool = false) {
         self.showHeader = showHeader
         
         // Initialize with temporary values that will be replaced in onAppear

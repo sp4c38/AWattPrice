@@ -22,14 +22,9 @@ enum UploadErrorViewState {
 @MainActor
 class NotificationSettingViewModel: ObservableObject {
     var notificationService: NotificationService
-    @Published var uploadErrorState: UploadErrorViewState = .noError
     
     init(notificationService: NotificationService) {
         self.notificationService = notificationService
-    }
-    
-    func updateErrorState(_ newState: UploadErrorViewState) {
-        uploadErrorState = newState
     }
     
     func refreshAccessState() async {
@@ -53,16 +48,16 @@ struct NotificationSettingView: View {
                 .listRowBackground(Color.clear)
             } else {
                 Section {
-                    PriceBelowNotificationView(uploadErrorState: $viewModel.uploadErrorState)
+                    PriceBelowNotificationView()
                 }
             }
             
-            if viewModel.uploadErrorState == .lastUploadFailed {
-                Section {
-                    SettingsUploadErrorView()
-                }
-                .listRowBackground(Color.clear)
-            }
+//            if viewModel.uploadErrorState == .lastUploadFailed {
+//                Section {
+//                    SettingsUploadErrorView()
+//                }
+//                .listRowBackground(Color.clear)
+//            }
         }
         .navigationTitle("Price Guard")
         .task {

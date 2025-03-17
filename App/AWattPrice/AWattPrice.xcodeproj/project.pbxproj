@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		02A564EE1DBA47DCD13CE399 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09B8A781BFC660F0533130E9 /* NotificationService.swift */; };
-		09604B49D0A9565193AC1D9F /* HapticFeedbacks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A00C100052CCD826957777A /* HapticFeedbacks.swift */; };
 		0E3EB76E159021A4574B6416 /* EasyIntervalPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6AD0D0B3D95E6C7BB20D726 /* EasyIntervalPicker.swift */; };
 		0F40C45BA00F72E80C519F96 /* PricesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E9C4F8C140D86F7F4233532 /* PricesView.swift */; };
 		179E5999F1C8E68A7EA1FD3B /* EnergyUsageInputField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F9FE3FE7F1EE73B1DAD0AE3 /* EnergyUsageInputField.swift */; };
@@ -23,7 +22,6 @@
 		3764069C227C8A20FD65EB7C /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0D566683455A9834699592 /* String.swift */; };
 		3B97EF0D59A77C4995F737C8 /* SettingsPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CF596453B643BA753483A2C /* SettingsPageView.swift */; };
 		4190E3BB83AC5F034211C2B9 /* NotificationService+Access.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C87AF4B25871BFD4A3501F5 /* NotificationService+Access.swift */; };
-		42A01876BE7C9040AE139154 /* DataHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 591D0CDCA995859E422558AA /* DataHelpers.swift */; };
 		471979041724562B571FA8D2 /* NotificationSettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A97A562A68DEF8AD1937E4EE /* NotificationSettingView.swift */; };
 		555F47FC1D9F98F6114CFD89 /* SettingsUploadErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7312444A00735A79F3140BF9 /* SettingsUploadErrorView.swift */; };
 		593C14ACDA8A7823983C839A /* PriceBelowNotificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5A96314B5FDFB69823B75C9 /* PriceBelowNotificationView.swift */; };
@@ -47,11 +45,9 @@
 		6AB9A889E5A3A17EBB1AF725 /* InputFieldStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 404CC5EAC0C3630A020070B0 /* InputFieldStyles.swift */; };
 		6B806C95A11BDB4E4B771D81 /* BarText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D8536DB7CE536410491DE1C /* BarText.swift */; };
 		6C580706DD96A47932AD8EE9 /* SplashScreenFinishView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E032003B344BBBB7BB4921D1 /* SplashScreenFinishView.swift */; };
-		719B65E6682DFBDF94B4D461 /* QueueHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BF7A4E1ED7229A8E6E0B03F /* QueueHelpers.swift */; };
 		7806C62BA8F28AC26C3C88B7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3986605FAA7AF18D5AF2CB37 /* AppDelegate.swift */; };
 		79BF8D2C50E18982950D8CEC /* TimeRangeInputField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EF4803E3C737282BE08A7A8 /* TimeRangeInputField.swift */; };
 		7E90347E27828E2718534FED /* SettingEntities.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB8219C5EDEC8DD1FB333D45 /* SettingEntities.swift */; };
-		805FDBDA608B766F64F5AAB1 /* Time.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54E7B03C854090F5B68712E1 /* Time.swift */; };
 		865F84BF2724ED9CD2000B47 /* SplashScreenStartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDDDD6143A8627F05026A525 /* SplashScreenStartView.swift */; };
 		8B1F60F9ED84DE93E4B6C89C /* CheapestTimeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6A7FC93BBC0020CE1CDC089 /* CheapestTimeView.swift */; };
 		8CF83B7D4714ABE33B8964AD /* RegionTaxSelection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EEAB0C5FE21817587BFCFEB /* RegionTaxSelection.swift */; };
@@ -74,7 +70,6 @@
 		DBA5B1FE42B492B0CB2D8D35 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2C75B85698299C6281666C42 /* Assets.xcassets */; };
 		E14132039163741F518C2B41 /* KeyboardObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A5CE8C0A77D6361AD5B708C /* KeyboardObserver.swift */; };
 		E898FE496A54CDC1CCD315ED /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8FC646AC0ECA7024DB8607C /* NetworkManager.swift */; };
-		F075FFBE7DC75982CFBE65AB /* NSRegularExpression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 934DBF6AF7CFB20EB6697643 /* NSRegularExpression.swift */; };
 		F0EF08E10D3BD6AF40D000D7 /* UpdatedDataView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A865543E750ED5EC6084D67D /* UpdatedDataView.swift */; };
 		F1212CD12690C400EAB49863 /* PreviewEnergyData.json in Resources */ = {isa = PBXBuildFile; fileRef = 3459FFEC069D6C1D4DA27E5E /* PreviewEnergyData.json */; };
 		F1CF752BC4D41867364F7994 /* MailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09C662D82C544FFEBADE9BB1 /* MailView.swift */; };
@@ -133,8 +128,6 @@
 		52A4CD1362317193ABA4A25D /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
 		52D6D993DB3CE3CBB4B1E644 /* Region.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Region.swift; sourceTree = "<group>"; };
 		546D5FA692CB5FFBAF81B22A /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
-		54E7B03C854090F5B68712E1 /* Time.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Time.swift; sourceTree = "<group>"; };
-		591D0CDCA995859E422558AA /* DataHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataHelpers.swift; sourceTree = "<group>"; };
 		59B5203B024111C62B8F9D80 /* DataDownloadAndError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataDownloadAndError.swift; sourceTree = "<group>"; };
 		5CF596453B643BA753483A2C /* SettingsPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPageView.swift; sourceTree = "<group>"; };
 		5E69EEB1FA019DD2F16C2815 /* AWattPriceWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AWattPriceWidgetExtension.entitlements; sourceTree = "<group>"; };
@@ -155,13 +148,10 @@
 		6EEAB0C5FE21817587BFCFEB /* RegionTaxSelection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegionTaxSelection.swift; sourceTree = "<group>"; };
 		7312444A00735A79F3140BF9 /* SettingsUploadErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsUploadErrorView.swift; sourceTree = "<group>"; };
 		79260E66169C7FFE7A752077 /* SplashScreenSetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashScreenSetupView.swift; sourceTree = "<group>"; };
-		7BF7A4E1ED7229A8E6E0B03F /* QueueHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueueHelpers.swift; sourceTree = "<group>"; };
 		7D8536DB7CE536410491DE1C /* BarText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarText.swift; sourceTree = "<group>"; };
 		8C5F824C94B9912B11853532 /* EasyIntervalPickerRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EasyIntervalPickerRepresentable.swift; sourceTree = "<group>"; };
 		8C87AF4B25871BFD4A3501F5 /* NotificationService+Access.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NotificationService+Access.swift"; sourceTree = "<group>"; };
-		934DBF6AF7CFB20EB6697643 /* NSRegularExpression.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSRegularExpression.swift; sourceTree = "<group>"; };
 		99DA04381A4011A2B6E1423C /* Model 4.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Model 4.xcdatamodel"; sourceTree = "<group>"; };
-		9A00C100052CCD826957777A /* HapticFeedbacks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticFeedbacks.swift; sourceTree = "<group>"; };
 		9F0D566683455A9834699592 /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		A2EFEC10A5ED85CC875CFCF7 /* CheapestHourManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheapestHourManager.swift; sourceTree = "<group>"; };
 		A5A96314B5FDFB69823B75C9 /* PriceBelowNotificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceBelowNotificationView.swift; sourceTree = "<group>"; };
@@ -248,7 +238,7 @@
 			children = (
 				7801BE2B0DD9E7E0CDF28180 /* Cheapest Time */,
 				A8F7E90E8F3E09B2D1CA9070 /* Cheapest TIme Result */,
-				9317E581B0A34BC59EC62502 /* Common */,
+				9317E581B0A34BC59EC62502 /* Shared */,
 				AAFDE64BA82300805406C499 /* Price Graph */,
 				17D5F87782364637F81836D0 /* Settings */,
 				7EAC088DA04324FC0FDADE45 /* SplashScreens */,
@@ -408,14 +398,14 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
-		9317E581B0A34BC59EC62502 /* Common */ = {
+		9317E581B0A34BC59EC62502 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
 				6A5CE8C0A77D6361AD5B708C /* KeyboardObserver.swift */,
 				E2BCED411DC7AD4E79FC22B9 /* TotalTimeFormatter.swift */,
 				18C2A8C64DF1B7502F7FE301 /* SwiftUI */,
 			);
-			path = Common;
+			path = Shared;
 			sourceTree = "<group>";
 		};
 		93B9EE1DDFDA47BB0AC0EDEB /* Energy Data */ = {
@@ -450,16 +440,11 @@
 		9F3CD26A7BD9992AE1BA052B /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
-				591D0CDCA995859E422558AA /* DataHelpers.swift */,
 				22523FA7380336A83DEE1624 /* Environment.swift */,
 				D22CD9B053C7AA6D5411FFE0 /* Font.swift */,
-				9A00C100052CCD826957777A /* HapticFeedbacks.swift */,
 				D6FB7487869EADAEB411F1A7 /* Int.swift */,
-				934DBF6AF7CFB20EB6697643 /* NSRegularExpression.swift */,
-				7BF7A4E1ED7229A8E6E0B03F /* QueueHelpers.swift */,
 				9F0D566683455A9834699592 /* String.swift */,
-				54E7B03C854090F5B68712E1 /* Time.swift */,
-				CFF62FA3D1D5B4649B2A8585 /* Networking */,
+				B8FC646AC0ECA7024DB8607C /* NetworkManager.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -500,14 +485,6 @@
 				A0EEAF1E35084AD2316B5129 /* Energy Price Graph */,
 			);
 			path = "Price Graph";
-			sourceTree = "<group>";
-		};
-		CFF62FA3D1D5B4649B2A8585 /* Networking */ = {
-			isa = PBXGroup;
-			children = (
-				B8FC646AC0ECA7024DB8607C /* NetworkManager.swift */,
-			);
-			path = Networking;
 			sourceTree = "<group>";
 		};
 		E18353461A3EAEA81012197F /* AWattPrice */ = {
@@ -677,7 +654,6 @@
 				7E90347E27828E2718534FED /* SettingEntities.swift in Sources */,
 				2D29DD479FDC741009B2AB32 /* CustomDatePicker.swift in Sources */,
 				D0B5F4C57BCEA12626689AA2 /* DataDownloadAndError.swift in Sources */,
-				42A01876BE7C9040AE139154 /* DataHelpers.swift in Sources */,
 				0E3EB76E159021A4574B6416 /* EasyIntervalPicker.swift in Sources */,
 				1CCDA78DC9491A406AB24B42 /* EasyIntervalPickerRepresentable.swift in Sources */,
 				8E8FDA62E4A1CECC1E57FFE3 /* EnergyDataController.swift in Sources */,
@@ -689,7 +665,6 @@
 				2AB8E54B3F4BB4E1E64CA519 /* Font.swift in Sources */,
 				0F40C45BA00F72E80C519F96 /* PricesView.swift in Sources */,
 				26CAC870CD773AF23ED2877C /* GraphShapes.swift in Sources */,
-				09604B49D0A9565193AC1D9F /* HapticFeedbacks.swift in Sources */,
 				F9DE0E07C58B34E50ED56EE7 /* HelpAndSuggestionView.swift in Sources */,
 				6AB9A889E5A3A17EBB1AF725 /* InputFieldStyles.swift in Sources */,
 				FB4A52558DC90B76EA4F632A /* Int.swift in Sources */,
@@ -697,7 +672,6 @@
 				CA4360AEE16A6061CFF33864 /* LazyNavigationDestination.swift in Sources */,
 				F1CF752BC4D41867364F7994 /* MailView.swift in Sources */,
 				D93B605273388D76B0AAF09E /* Model.xcdatamodeld in Sources */,
-				F075FFBE7DC75982CFBE65AB /* NSRegularExpression.swift in Sources */,
 				E898FE496A54CDC1CCD315ED /* NetworkManager.swift in Sources */,
 				C997C76C683B67B76839425A /* NotificationConfiguration.swift in Sources */,
 				4190E3BB83AC5F034211C2B9 /* NotificationService+Access.swift in Sources */,
@@ -706,7 +680,6 @@
 				5DC2B66E8217B30642162424 /* NumberField.swift in Sources */,
 				F55E81CD8605DF223B6F4457 /* PowerInputField.swift in Sources */,
 				593C14ACDA8A7823983C839A /* PriceBelowNotificationView.swift in Sources */,
-				719B65E6682DFBDF94B4D461 /* QueueHelpers.swift in Sources */,
 				D19754BAE15970139A862323 /* Region.swift in Sources */,
 				8CF83B7D4714ABE33B8964AD /* RegionTaxSelection.swift in Sources */,
 				3B97EF0D59A77C4995F737C8 /* SettingsPageView.swift in Sources */,
@@ -716,7 +689,6 @@
 				D94911F464C45AAEFFDEEF53 /* SplashScreenSetupView.swift in Sources */,
 				865F84BF2724ED9CD2000B47 /* SplashScreenStartView.swift in Sources */,
 				3764069C227C8A20FD65EB7C /* String.swift in Sources */,
-				805FDBDA608B766F64F5AAB1 /* Time.swift in Sources */,
 				79BF8D2C50E18982950D8CEC /* TimeRangeInputField.swift in Sources */,
 				179E5999F1C8E68A7EA1FD3B /* EnergyUsageInputField.swift in Sources */,
 				1FF85FE467F2EBD6F0165295 /* TotalTimeFormatter.swift in Sources */,

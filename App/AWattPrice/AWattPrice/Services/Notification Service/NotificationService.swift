@@ -32,7 +32,7 @@ class NotificationService: ObservableObject {
     @Published var pushState: PushState = .unknown
     
     /// Try to receive the required notification access permissions and send the notification request.
-    func sendNotificationConfiguration(_ notificationConfiguration: NotificationConfiguration, _ notificationSetting: NotificationSettingCoreData) async throws -> (data: Data, response: URLResponse)? {
+    private func sendNotificationConfiguration(_ notificationConfiguration: NotificationConfiguration, _ notificationSetting: NotificationSettingCoreData) async throws -> (data: Data, response: URLResponse)? {
         guard accessState == .granted, pushState == .apnsRegistrationSuccessful else { return nil }
         
         guard let apiRequest = APIClient.createNotificationRequest(notificationConfiguration) else { return nil }

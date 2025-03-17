@@ -49,15 +49,6 @@ struct AWattPriceApp: App {
         appDelegate.notificationService = notificationService
         appDelegate.setting = setting
         appDelegate.notificationSetting = notificationSetting
-        
-        // Use Task to call async methods during app initialization
-        Task {
-            _ = await notificationService.refreshAccessStates()
-            
-            if let selectedRegion = Region(rawValue: setting.entity.regionIdentifier) {
-                try? await energyDataService.downloadAsync(region: selectedRegion)
-            }
-        }
     }
 }
 
@@ -73,7 +64,6 @@ struct ContentView: View {
 
     @State var selectedTab = 1
     @State var shouldShowWhatsNew = false
-    @State private var hasCheckedNotificationAccess = false
     @State private var isFirstLaunch = false
 
     var body: some View {
@@ -108,24 +98,15 @@ struct ContentView: View {
     func scenePhaseChanged(to scenePhase: ScenePhase) {
         guard scenePhase == .active else { return }
         
-        // Reset badge number when app becomes active
+        // Reset badge number
         UIApplication.shared.applicationIconBadgeNumber = 0
         
-        // Use Task to refresh data when becoming active
         Task {
-            // Refreshes energy data if a region is selected
-            if let selectedRegion = Region(rawValue: setting.entity.regionIdentifier) {
-                try? await energyDataService.downloadAsync(region: selectedRegion)
-            }
-            
-            // Refresh notification access state
-            await refreshNotificationAccess()
+            await notificationService.updateAccessStates()
         }
-    }
-
-    /// Refreshes notification access states if needed
-    private func refreshNotificationAccess() async {
-        _ = await notificationService.refreshAccessStates()
-        hasCheckedNotificationAccess = true
+        
+        if let selectedRegion = Region(rawValue: setting.entity.regionIdentifier) {
+            energyDataService.download(region: selectedRegion)
+        }
     }
 }

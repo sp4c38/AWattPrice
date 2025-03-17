@@ -7,17 +7,60 @@
 
 import Combine
 import UserNotifications
+import UIKit
 
 extension NotificationService {
+    // MARK: Remote access
+    
+    func successfulRegisteredForRemoteNotifications(rawCurrentToken: Data, setting: SettingCoreData, notificationSetting: NotificationSettingCoreData) {
+        logger.debug("Notification: Remote notifications granted with device token.")
+
+        let currentToken = rawCurrentToken.map {
+            String(format: "%02.2hhx", $0)
+        }.joined()
+        
+        if notificationSetting.entity.lastApnsToken != currentToken, notificationSetting.entity.lastApnsToken != nil {
+            Task {
+                let notificationConfiguration = NotificationConfiguration.create(currentToken, setting, notificationSetting)
+                do {
+                    _ = try await changeNotificationConfiguration(notificationConfiguration, notificationSetting)
+                } catch {
+                    print("Failed to update notification configuration after token change: \(error)")
+                }
+            }
+        }
+        
+        notificationSetting.changeSetting { $0.entity.lastApnsToken = currentToken }
+        token = currentToken
+        self.pushState = .apnsRegistrationSuccessful
+    }
+    
+    func failedRegisteredForRemoteNotifications(error: Error) {
+        print("Notification: Push notification registration not granted: \(error).")
+        pushState = .apnsRegistrationFailed
+    }
+    
+    private func registerForRemoteNotifications() {
+        if pushState == .unknown {
+            self.pushState = .asked
+            DispatchQueue.main.async {
+                UIApplication.shared.registerForRemoteNotifications()
+            }
+        }
+    }
+    
     // MARK: Ask Access
     
     /// Gets the current notification settings asynchronously
-    func updateAccessStates() async -> AccessState {
+    func updateAccessStates() async {
         let settings = await UNUserNotificationCenter.current().notificationSettings()
         switch settings.authorizationStatus {
         case .authorized, .provisional:
             print("Notification: Notification access granted.")
             self.accessState = .granted
+            if self.pushState == .unknown {
+                registerForRemoteNotifications()
+            }
         case .notDetermined:
             print("Notification: Notification access wasn't asked for yet.")
             self.accessState = .notAsked
@@ -25,12 +68,12 @@ extension NotificationService {
             print("Notification: Notification access not allowed: \(settings.authorizationStatus).")
             self.accessState = .rejected
         }
-        
-        return self.accessState
     }
     
     /// Requests notification access asynchronously
-    func requestAccess() async -> AccessState {
+    ///
+    /// Currently this function is private as it supposed to be only called from `ensureAccess` which in turn is called as soon as a notification configuration is changed
+    private func requestAccess() async {
         // Request authorization using the native async API
         do {
             let authGranted = try await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound])
@@ -39,11 +82,11 @@ extension NotificationService {
         }
         
         // Check the current state after request
-        return await updateAccessStates()
+        await updateAccessStates()
     }
     
     /// Asynchronous function to ensure we have the required access for notifications
-    func ensureAccess(ensurePushAccess: Bool = true) async -> Bool {
+    private func ensureAccess(ensurePushAccess: Bool = true) async -> Bool {
         if accessState == .rejected {
             return false  // Permission already denied, no need to continue
         }
@@ -70,7 +113,7 @@ extension NotificationService {
         }
 
         if accessState == .notAsked {
-            _ = await requestAccess()
+            await requestAccess()
             return await ensureAccess(ensurePushAccess: ensurePushAccess)
         }
 
@@ -107,45 +150,6 @@ extension NotificationService {
             return true
         case .apnsRegistrationFailed:
             return false
-        }
-    }
-    
-    // MARK: Remote access
-    
-    func successfulRegisteredForRemoteNotifications(rawCurrentToken: Data, setting: SettingCoreData, notificationSetting: NotificationSettingCoreData) {
-        logger.debug("Notification: Remote notifications granted with device token.")
-
-        let currentToken = rawCurrentToken.map {
-            String(format: "%02.2hhx", $0)
-        }.joined()
-        
-        if notificationSetting.entity.lastApnsToken != currentToken, notificationSetting.entity.lastApnsToken != nil {
-            Task {
-                let notificationConfiguration = NotificationConfiguration.create(currentToken, setting, notificationSetting)
-                do {
-                    _ = try await changeNotificationConfiguration(notificationConfiguration, notificationSetting)
-                } catch {
-                    print("Failed to update notification configuration after token change: \(error)")
-                }
-            }
-        }
-        
-        notificationSetting.changeSetting { $0.entity.lastApnsToken = currentToken }
-        token = currentToken
-        self.pushState = .apnsRegistrationSuccessful
-    }
-    
-    func failedRegisteredForRemoteNotifications(error: Error) {
-        print("Notification: Push notification registration not granted: \(error).")
-        pushState = .apnsRegistrationFailed
-    }
-    
-    func registerForRemoteNotifications() {
-        if pushState == .unknown {
-            self.pushState = .asked
-            DispatchQueue.main.async {
-                UIApplication.shared.registerForRemoteNotifications()
-            }
         }
     }
 }

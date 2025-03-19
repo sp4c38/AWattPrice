@@ -38,8 +38,6 @@
 		61635B4F2A485FE20099F5AD /* Region.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52D6D993DB3CE3CBB4B1E644 /* Region.swift */; };
 		61ACE7A62A56A7E7005D0110 /* EffectsLibrary in Frameworks */ = {isa = PBXBuildFile; productRef = 61ACE7A52A56A7E7005D0110 /* EffectsLibrary */; };
 		61DC52D02A56F22B00FB2D08 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 95BD95FD492B1F960E9F23C4 /* Localizable.strings */; };
-		61DC52D32A57191500FB2D08 /* CoreDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61DC52D22A57191500FB2D08 /* CoreDataService.swift */; };
-		61DC52D72A57199D00FB2D08 /* CoreDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61DC52D52A57194A00FB2D08 /* CoreDataService.swift */; };
 		6AB9A889E5A3A17EBB1AF725 /* InputFieldStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 404CC5EAC0C3630A020070B0 /* InputFieldStyles.swift */; };
 		6B806C95A11BDB4E4B771D81 /* BarText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D8536DB7CE536410491DE1C /* BarText.swift */; };
 		6C580706DD96A47932AD8EE9 /* SplashScreenFinishView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E032003B344BBBB7BB4921D1 /* SplashScreenFinishView.swift */; };
@@ -138,8 +136,6 @@
 		61635B2F2A482E6A0099F5AD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		61635B3D2A4833730099F5AD /* PricesPreviewContent.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = PricesPreviewContent.json; sourceTree = "<group>"; };
 		61635B492A4835970099F5AD /* EnergyData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnergyData.swift; sourceTree = "<group>"; };
-		61DC52D22A57191500FB2D08 /* CoreDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataService.swift; sourceTree = "<group>"; };
-		61DC52D52A57194A00FB2D08 /* CoreDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataService.swift; sourceTree = "<group>"; };
 		6630553CDA1300720DF753BE /* EnergyPriceSingleBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnergyPriceSingleBar.swift; sourceTree = "<group>"; };
 		6A5CE8C0A77D6361AD5B708C /* KeyboardObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardObserver.swift; sourceTree = "<group>"; };
 		6C06F1B5903714FE38928934 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
@@ -276,7 +272,6 @@
 			isa = PBXGroup;
 			children = (
 				D62C2B2A2D81CAC000FA294C /* AWattPriceWidgetExtension-Info.plist */,
-				61DC52D42A57193100FB2D08 /* Services */,
 				61635B482A4835890099F5AD /* Models */,
 				61635B2B2A482E690099F5AD /* AWattPriceWidgetBundle.swift */,
 				61635B2D2A482E690099F5AD /* PricesWidget.swift */,
@@ -336,14 +331,6 @@
 				95BD95FD492B1F960E9F23C4 /* Localizable.strings */,
 			);
 			path = Resources;
-			sourceTree = "<group>";
-		};
-		61DC52D42A57193100FB2D08 /* Services */ = {
-			isa = PBXGroup;
-			children = (
-				61DC52D52A57194A00FB2D08 /* CoreDataService.swift */,
-			);
-			path = Services;
 			sourceTree = "<group>";
 		};
 		673A27A9ED070E839D262A5A /* Styles */ = {
@@ -426,7 +413,6 @@
 		975A0BD653C590C02A0011DB /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				61DC52D22A57191500FB2D08 /* CoreDataService.swift */,
 				F7E1E9B883B731AD9BA0E6A9 /* EnergyDataController.swift */,
 				09B8A781BFC660F0533130E9 /* NotificationService.swift */,
 				8C87AF4B25871BFD4A3501F5 /* NotificationService+Access.swift */,
@@ -664,7 +650,6 @@
 				8E8FDA62E4A1CECC1E57FFE3 /* EnergyDataController.swift in Sources */,
 				DA697D947FD57718F9F2ADAC /* EnergyDataPreviewContent.swift in Sources */,
 				C217F2DAE2765BCCBD3374A6 /* EnergyPriceGraph.swift in Sources */,
-				61DC52D32A57191500FB2D08 /* CoreDataService.swift in Sources */,
 				C94B7D632C148D4E2FFB7CBE /* EnergyPriceSingleBar.swift in Sources */,
 				F86BCBE37F4FCFD4F68C99B2 /* Environment.swift in Sources */,
 				2AB8E54B3F4BB4E1E64CA519 /* Font.swift in Sources */,
@@ -705,7 +690,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				61DC52D72A57199D00FB2D08 /* CoreDataService.swift in Sources */,
 				61635B4C2A4835E70099F5AD /* Extensions.swift in Sources */,
 				61635B2C2A482E690099F5AD /* AWattPriceWidgetBundle.swift in Sources */,
 				61635B4B2A4835CF0099F5AD /* EnergyData.swift in Sources */,

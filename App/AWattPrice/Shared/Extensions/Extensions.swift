@@ -7,9 +7,6 @@
 
 import Foundation
 
-let pricesWidgetKind = "AWattPriceWidget.PricesWidget"
-let internalAppGroupIdentifier = "group.me.space8.AWattPrice.internal"
-
 extension Calendar {
     func startOfHour(for date: Date) -> Date {
         let hours = self.component(.hour, from: date)

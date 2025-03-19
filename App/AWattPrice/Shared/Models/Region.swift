@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum Region: Int16, Encodable {
+enum Region: Int16, Codable {
     case DE = 0
     case AT = 1
     
@@ -33,4 +33,7 @@ enum Region: Int16, Encodable {
         var container = encoder.singleValueContainer()
         try container.encode(apiName)
     }
+    
+    // No need to implement init(from:) since it's an Int16-based enum
+    // and SwiftData can handle that automatically
 }

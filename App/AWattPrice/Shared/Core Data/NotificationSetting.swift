@@ -9,15 +9,13 @@
 import Foundation
 import SwiftData
 
-
-@Model public class NotificationSetting {
-    var changesButErrorUploading: Bool?
-    var forceUpload: Bool? = false
-    var lastApnsToken: String?
-    var priceBelowValue: Int64? = 0.0
-    var priceDropsBelowValueNotification: Bool?
-    public init() {
-
-    }
+@Model
+public class NotificationSetting {
+    var pushToken: String?
+    var priceThreshold: Int64 = 0
+    var priceDropsBelowEnabled: Bool = false
     
+    public init() {
+        // Empty initializer - property defaults are set above
+    }
 }

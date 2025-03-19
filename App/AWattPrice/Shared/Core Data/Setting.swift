@@ -9,16 +9,14 @@
 import Foundation
 import SwiftData
 
-
-@Model public class Setting {
-    var baseFee: Double? = 0.0
-    var cheapestTimeLastConsumption: Double? = 0
-    var cheapestTimeLastPower: Double? = 0
-    var pricesWithVAT: Bool? = true
-    var regionIdentifier: Int16? = 0
-    var splashScreensFinished: Bool?
-    public init() {
-
-    }
+@Model
+public class Setting {
+    var baseFee: Double = 0.0
+    var taxEnabled: Bool = true
+    var region: Region = .DE
+    var onboarded: Bool = false // Splash screens finished
     
+    public init() {
+        // Empty initializer - property defaults are set above
+    }
 }

@@ -60,6 +60,10 @@
 		D48854808F7F125401420348 /* CheapestTimeResultView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6047C9B5C250D36D898FE1F /* CheapestTimeResultView.swift */; };
 		D6A2D1C12D8B2AC00013028D /* SwiftDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6A2D1C02D8B2AC00013028D /* SwiftDataService.swift */; };
 		D6A2D1C22D8B2AC00013028D /* SwiftDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6A2D1C02D8B2AC00013028D /* SwiftDataService.swift */; };
+		D6A2D1C82D8B3BDF0013028D /* NotificationSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6A2D1BE2D8B29A40013028D /* NotificationSetting.swift */; };
+		D6A2D1C92D8B3BDF0013028D /* NotificationSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6A2D1BE2D8B29A40013028D /* NotificationSetting.swift */; };
+		D6A2D1CA2D8B3BE40013028D /* Setting.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6A2D1BF2D8B29A40013028D /* Setting.swift */; };
+		D6A2D1CB2D8B3BE40013028D /* Setting.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6A2D1BF2D8B29A40013028D /* Setting.swift */; };
 		D8CFCC7C18D97EA76DB02E08 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 546D5FA692CB5FFBAF81B22A /* Launch Screen.storyboard */; };
 		D94911F464C45AAEFFDEEF53 /* SplashScreenSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79260E66169C7FFE7A752077 /* SplashScreenSetupView.swift */; };
 		DA697D947FD57718F9F2ADAC /* EnergyDataPreviewContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 147B08A0FC4429D5BA97DFA2 /* EnergyDataPreviewContent.swift */; };
@@ -634,6 +638,7 @@
 				268ABCBD2289736785AE38B3 /* APIClient.swift in Sources */,
 				C0067869CF8C26D9F619B651 /* AWattPriceApp.swift in Sources */,
 				7806C62BA8F28AC26C3C88B7 /* AppDelegate.swift in Sources */,
+				D6A2D1C82D8B3BDF0013028D /* NotificationSetting.swift in Sources */,
 				6B806C95A11BDB4E4B771D81 /* BarText.swift in Sources */,
 				23D11D519B8DC7A7F5DA54BA /* BaseFeeView.swift in Sources */,
 				A64044376124E697D0D7D6EB /* ButtonStyles.swift in Sources */,
@@ -674,6 +679,7 @@
 				3B97EF0D59A77C4995F737C8 /* SettingsPageView.swift in Sources */,
 				555F47FC1D9F98F6114CFD89 /* SettingsUploadErrorView.swift in Sources */,
 				1F050059A5AEEA309F5EF60A /* SplashScreenFeaturesAndConsent.swift in Sources */,
+				D6A2D1CA2D8B3BE40013028D /* Setting.swift in Sources */,
 				6C580706DD96A47932AD8EE9 /* SplashScreenFinishView.swift in Sources */,
 				D94911F464C45AAEFFDEEF53 /* SplashScreenSetupView.swift in Sources */,
 				865F84BF2724ED9CD2000B47 /* SplashScreenStartView.swift in Sources */,
@@ -690,11 +696,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D6A2D1C92D8B3BDF0013028D /* NotificationSetting.swift in Sources */,
 				61635B4C2A4835E70099F5AD /* Extensions.swift in Sources */,
 				61635B2C2A482E690099F5AD /* AWattPriceWidgetBundle.swift in Sources */,
 				61635B4B2A4835CF0099F5AD /* EnergyData.swift in Sources */,
 				D6A2D1C22D8B2AC00013028D /* SwiftDataService.swift in Sources */,
 				61635B4F2A485FE20099F5AD /* Region.swift in Sources */,
+				D6A2D1CB2D8B3BE40013028D /* Setting.swift in Sources */,
 				61635B2E2A482E690099F5AD /* PricesWidget.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

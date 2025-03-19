@@ -59,9 +59,7 @@ struct AWattPriceApp: App {
     @StateObject private var settingsManager = SettingsManager.shared
     
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-    
-    // No need for init() anymore as the SettingsManager handles initialization
-    
+
     var body: some Scene {
         WindowGroup {
             ContentView()

@@ -18,10 +18,12 @@ class SwiftDataService {
             let schema = Schema([Setting.self, NotificationSetting.self])
             
             // Configure container for shared app group storage
+            let url = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: internalAppGroupIdentifier)?
+                .appendingPathComponent("AWattPrice.store") ?? URL.documentsDirectory.appendingPathComponent("AWattPrice.store")
+            
             let modelConfiguration = ModelConfiguration(
                 schema: schema,
-                url: FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: internalAppGroupIdentifier)?
-                    .appendingPathComponent("AWattPrice.store"),
+                url: url,
                 cloudKitDatabase: .none
             )
             
@@ -29,8 +31,7 @@ class SwiftDataService {
             self.modelContainer = try ModelContainer(for: schema, configurations: [modelConfiguration])
             print("SwiftData model container initialized with shared app group")
             
-            // Ensure we have default settings in the database
-            ensureSettingsExist(in: modelContainer.mainContext)
+            // Note: SettingsManager now handles ensuring settings exist
             
         } catch {
             fatalError("Failed to create SwiftData model container: \(error.localizedDescription)")
@@ -41,45 +42,10 @@ class SwiftDataService {
     func notifyWidget() {
         WidgetCenter.shared.reloadTimelines(ofKind: pricesWidgetKind)
     }
-    
-    // Make sure we have one instance of each setting
-    private func ensureSettingsExist(in context: ModelContext) {
-        do {
-            // Check for Setting
-            let settingDescriptor = FetchDescriptor<Setting>()
-            let settings = try context.fetch(settingDescriptor)
-            
-            if settings.isEmpty {
-                // Simply create a new Setting - defaults are already defined in the model
-                context.insert(Setting())
-                print("Created default Setting")
-            }
-            
-            // Check for NotificationSetting
-            let notifDescriptor = FetchDescriptor<NotificationSetting>()
-            let notifSettings = try context.fetch(notifDescriptor)
-            
-            if notifSettings.isEmpty {
-                // Simply create a new NotificationSetting - defaults are already defined in the model
-                context.insert(NotificationSetting())
-                print("Created default NotificationSetting")
-            }
-            
-            try context.save()
-            
-        } catch {
-            print("Error ensuring settings exist: \(error)")
-        }
-    }
-    
-    // This method is no longer needed as SettingsManager now handles initialization
-    func initializeSettings() {
-        // Empty implementation to avoid breaking existing code
-        // SettingsManager handles all settings initialization in its constructor
-    }
 }
 
 /// Settings manager that provides access to app settings
+@MainActor
 class SettingsManager: ObservableObject {
     static let shared = SettingsManager()
     
@@ -95,33 +61,46 @@ class SettingsManager: ObservableObject {
         self.setting = Setting()
         self.notificationSetting = NotificationSetting()
         
-        // Load settings from SwiftData
-        loadSettings()
+        // Ensure settings exist and load them in one operation
+        ensureAndLoadSettings()
     }
     
-    func loadSettings() {
-        // Fetch Setting
-        let settingDescriptor = FetchDescriptor<Setting>()
-        if let existingSetting = try? context.fetch(settingDescriptor).first {
-            self.setting = existingSetting
-        } else {
-            // Create new setting if none exists
-            let newSetting = Setting()
-            context.insert(newSetting)
-            try? context.save()
-            self.setting = newSetting
-        }
-        
-        // Fetch NotificationSetting
-        let notifDescriptor = FetchDescriptor<NotificationSetting>()
-        if let existingNotifSetting = try? context.fetch(notifDescriptor).first {
-            self.notificationSetting = existingNotifSetting
-        } else {
-            // Create new notification setting if none exists
-            let newNotifSetting = NotificationSetting()
-            context.insert(newNotifSetting)
-            try? context.save()
-            self.notificationSetting = newNotifSetting
+    private func ensureAndLoadSettings() {
+        do {
+            // Check for and load Setting
+            let settingDescriptor = FetchDescriptor<Setting>()
+            let settings = try context.fetch(settingDescriptor)
+            
+            if settings.isEmpty {
+                // Create a new Setting since none exists
+                let newSetting = Setting()
+                context.insert(newSetting)
+                self.setting = newSetting
+                print("Created default Setting")
+            } else {
+                // Use the existing Setting
+                self.setting = settings.first!
+            }
+            
+            // Check for and load NotificationSetting
+            let notifDescriptor = FetchDescriptor<NotificationSetting>()
+            let notifSettings = try context.fetch(notifDescriptor)
+            
+            if notifSettings.isEmpty {
+                // Create a new NotificationSetting since none exists
+                let newNotifSetting = NotificationSetting()
+                context.insert(newNotifSetting)
+                self.notificationSetting = newNotifSetting
+                print("Created default NotificationSetting")
+            } else {
+                // Use the existing NotificationSetting
+                self.notificationSetting = notifSettings.first!
+            }
+            
+            try context.save()
+            
+        } catch {
+            print("Error ensuring and loading settings: \(error)")
         }
     }
     

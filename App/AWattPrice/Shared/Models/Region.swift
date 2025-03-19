@@ -20,7 +20,7 @@ enum Region: Int16, Codable {
         }
     }
     
-    var taxMultiplier: Double? {
+    var taxMultiplier: Double {
         switch self {
         case .DE:
             return 1.19

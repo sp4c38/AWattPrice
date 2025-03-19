@@ -58,7 +58,7 @@ struct EnergyData: Decodable {
         prices = try values.decode([EnergyPricePoint].self, forKey: .prices)
     }
     
-    mutating func computeValues(with setting: SettingCoreData) {
+    mutating func computeValues(with setting: Setting) {
         let now = Date()
         let hourStart = Calendar.current.startOfHour(for: now)
         
@@ -69,13 +69,10 @@ struct EnergyData: Decodable {
         
         // Apply price adjustments
         for i in currentPrices.indices {
-            if setting.entity.pricesWithVAT == true,
-               currentPrices[i].marketprice > 0,
-               let regionTaxMultiplier = Region(rawValue: setting.entity.regionIdentifier)?.taxMultiplier
-            {
-                currentPrices[i].marketprice *= regionTaxMultiplier
+            if setting.taxEnabled == true && currentPrices[i].marketprice > 0 {
+                currentPrices[i].marketprice *= setting.region.taxMultiplier
             }
-            currentPrices[i].marketprice += setting.entity.baseFee
+            currentPrices[i].marketprice += setting.baseFeePrice
         }
 
         minCostPricePoint = currentPrices.min(by: EnergyPricePoint.marketpricesAreInIncreasingOrder)
@@ -124,7 +121,7 @@ class EnergyDataService: ObservableObject {
     
     /// Downloads energy data for the specified region using async/await
     /// - Parameter region: The region to fetch data for
-    func download(region: Region, setting: SettingCoreData) {
+    func download(region: Region, setting: Setting) {
         // Cancel any existing task first
         cancelDownloads()
         downloadState = .downloading

@@ -11,11 +11,10 @@ import UIKit
 
 class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
     var notificationService: NotificationService!
-    var setting: SettingCoreData!
-    var notificationSetting: NotificationSettingCoreData!
+    var setting: Setting!
 
     func application(_: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        notificationService.successfulRegisteredForRemoteNotifications(rawCurrentToken: deviceToken, setting: setting, notificationSetting: notificationSetting)
+        notificationService.successfulRegisteredForRemoteNotifications(rawCurrentToken: deviceToken, setting: setting)
     }
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
         notificationService.failedRegisteredForRemoteNotifications(error: error)

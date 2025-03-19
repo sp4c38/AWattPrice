@@ -7,8 +7,8 @@
 
 import os
 import SwiftUI
-import Combine
 import SwiftData
+import UserNotifications
 
 class AppContext {
     static var shared = AppContext()
@@ -77,6 +77,7 @@ struct AWattPriceApp: App {
     private func configureApp() {
         // Assign all dependencies to the AppDelegate
         appDelegate.notificationService = notificationService
+        appDelegate.setting = settingsManager.setting
     }
 }
 
@@ -113,23 +114,21 @@ struct ContentView: View {
             }
         }
         .ignoresSafeArea(.keyboard)
-        .onChange(of: scenePhase, perform: scenePhaseChanged)
+        .onChange(of: scenePhase) { _, newPhase in
+            guard newPhase == .active else { return }
+            
+            // Reset badge number
+            UNUserNotificationCenter.current().setBadgeCount(0)
+            
+            Task {
+                await notificationService.updateAccessStates()
+            }
+            
+            energyDataService.download(region: settingsManager.setting.region, setting: settingsManager.setting)
+        }
         .onAppear {
             // Check if we should show what's new screen
             shouldShowWhatsNew = AppContext.shared.checkShowWhatsNewScreen()
         }
-    }
-    
-    /// Handles scene phase changes to perform appropriate actions
-    func scenePhaseChanged(to scenePhase: ScenePhase) {
-        guard scenePhase == .active else { return }
-        
-        // Reset badge number
-        UIApplication.shared.applicationIconBadgeNumber = 0
-        Task {
-            await notificationService.updateAccessStates()
-        }
-        
-        energyDataService.download(region: settingsManager.setting.region)
     }
 }

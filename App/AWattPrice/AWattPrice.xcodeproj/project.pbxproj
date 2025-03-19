@@ -62,6 +62,8 @@
 		D6A2D1CA2D8B3BE40013028D /* Setting.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6A2D1BF2D8B29A40013028D /* Setting.swift */; };
 		D6A2D1CB2D8B3BE40013028D /* Setting.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6A2D1BF2D8B29A40013028D /* Setting.swift */; };
 		D6A2D1CD2D8B5A8C0013028D /* EnergyDataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E1E9B883B731AD9BA0E6A9 /* EnergyDataController.swift */; };
+		D6A2D1CE2D8B752D0013028D /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13637B90539D4C9A8BB48CC0 /* APIClient.swift */; };
+		D6A2D1D02D8B75700013028D /* NotificationConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CCBC50D92AE763388DAAB90 /* NotificationConfiguration.swift */; };
 		D8CFCC7C18D97EA76DB02E08 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 546D5FA692CB5FFBAF81B22A /* Launch Screen.storyboard */; };
 		D94911F464C45AAEFFDEEF53 /* SplashScreenSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79260E66169C7FFE7A752077 /* SplashScreenSetupView.swift */; };
 		DA697D947FD57718F9F2ADAC /* EnergyDataPreviewContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 147B08A0FC4429D5BA97DFA2 /* EnergyDataPreviewContent.swift */; };
@@ -192,15 +194,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		0CBD63E7EADDC69751723529 /* API */ = {
-			isa = PBXGroup;
-			children = (
-				13637B90539D4C9A8BB48CC0 /* APIClient.swift */,
-				3CCBC50D92AE763388DAAB90 /* NotificationConfiguration.swift */,
-			);
-			path = API;
-			sourceTree = "<group>";
-		};
 		17D5F87782364637F81836D0 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
@@ -291,6 +284,7 @@
 		61635B412A4834D20099F5AD /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				D6A2D1CF2D8B75430013028D /* API */,
 				D6A2D1CC2D8B5A7C0013028D /* Services */,
 				61DC52CF2A56F22200FB2D08 /* Resources */,
 				7F6FB3097BAE9306D5079A7D /* SwiftData */,
@@ -468,6 +462,15 @@
 			path = Services;
 			sourceTree = "<group>";
 		};
+		D6A2D1CF2D8B75430013028D /* API */ = {
+			isa = PBXGroup;
+			children = (
+				13637B90539D4C9A8BB48CC0 /* APIClient.swift */,
+				3CCBC50D92AE763388DAAB90 /* NotificationConfiguration.swift */,
+			);
+			path = API;
+			sourceTree = "<group>";
+		};
 		E18353461A3EAEA81012197F /* AWattPrice */ = {
 			isa = PBXGroup;
 			children = (
@@ -475,7 +478,6 @@
 				EFB366C2E4BA54E151458B35 /* AWattPrice.entitlements */,
 				616111958CDF13E7ED308317 /* AWattPriceApp.swift */,
 				5E69EEB1FA019DD2F16C2815 /* AWattPriceWidgetExtension.entitlements */,
-				0CBD63E7EADDC69751723529 /* API */,
 				9F3CD26A7BD9992AE1BA052B /* Extensions */,
 				4B01E3B0A4286C104BC51EFA /* Resources */,
 				975A0BD653C590C02A0011DB /* Services */,
@@ -684,9 +686,11 @@
 				61635B4C2A4835E70099F5AD /* Extensions.swift in Sources */,
 				61635B2C2A482E690099F5AD /* AWattPriceWidgetBundle.swift in Sources */,
 				D6A2D1C22D8B2AC00013028D /* SwiftDataService.swift in Sources */,
+				D6A2D1CE2D8B752D0013028D /* APIClient.swift in Sources */,
 				61635B4F2A485FE20099F5AD /* Region.swift in Sources */,
 				D6A2D1CD2D8B5A8C0013028D /* EnergyDataController.swift in Sources */,
 				D6A2D1CB2D8B3BE40013028D /* Setting.swift in Sources */,
+				D6A2D1D02D8B75700013028D /* NotificationConfiguration.swift in Sources */,
 				61635B2E2A482E690099F5AD /* PricesWidget.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -814,7 +818,7 @@
 				CURRENT_PROJECT_VERSION = 59;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = RC32A2AMHF;
-				ENABLE_DEBUG_DYLIB = NO;
+				ENABLE_DEBUG_DYLIB = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -1037,7 +1041,7 @@
 				CURRENT_PROJECT_VERSION = 59;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = RC32A2AMHF;
-				ENABLE_DEBUG_DYLIB = NO;
+				ENABLE_DEBUG_DYLIB = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;

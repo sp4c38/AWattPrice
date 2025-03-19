@@ -12,23 +12,21 @@ import SwiftUI
 struct SplashScreenSetupView: View {
     @Environment(\.colorScheme) var colorScheme
 
-    @EnvironmentObject var setting: SettingCoreData
-
     @State var nextSplashScreenActive: Bool = false
 
     var body: some View {
-        VStack {
-            Form {
-                Section {
-                    RegionTaxSelectionView()
+        NavigationStack {
+            VStack {
+                Form {
+                    Section {
+                        RegionTaxSelectionView()
+                    }
+                    
+                    Section(header: Text("Notifications")) {
+                        PriceBelowNotificationView(showHeader: true)
+                    }
                 }
                 
-                Section(header: Text("Notifications")) {
-                    PriceBelowNotificationView(showHeader: true)
-                }
-            }
-            
-            NavigationLink(destination: SplashScreenFinishView(), isActive: $nextSplashScreenActive) {
                 Button(action: { nextSplashScreenActive = true }) {
                     Text("Continue")
                 }
@@ -36,19 +34,21 @@ struct SplashScreenSetupView: View {
                 .padding(.bottom, 16)
                 .padding([.leading, .trailing], 16)
             }
+            .ignoresSafeArea(.keyboard)
+            .navigationTitle("Setup")
+            .background((colorScheme == .light ? Color(red: 0.95, green: 0.95, blue: 0.97) : Color.black).ignoresSafeArea(.all))
+            .navigationDestination(isPresented: $nextSplashScreenActive) {
+                SplashScreenFinishView()
+            }
         }
-        .ignoresSafeArea(.keyboard)
-        .navigationBarTitle("Setup")
-        .background((colorScheme == .light ? Color(red: 0.95, green: 0.95, blue: 0.97) : Color.black).ignoresSafeArea(.all))
     }
 }
 
 struct SplashScreenSetupView_Previews: PreviewProvider {
     static var previews: some View {
-        NavigationView {
+        NavigationStack {
             SplashScreenSetupView()
                 .preferredColorScheme(.light)
-                .environmentObject(SettingCoreData(viewContext: CoreDataService.shared.container.viewContext))
         }
     }
 }

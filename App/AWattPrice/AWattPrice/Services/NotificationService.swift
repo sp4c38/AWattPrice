@@ -32,7 +32,7 @@ class NotificationService: ObservableObject {
     @Published var pushState: PushState = .unknown
     
     /// Try to receive the required notification access permissions and send the notification request.
-    private func sendNotificationConfiguration(_ notificationConfiguration: NotificationConfiguration, _ notificationSetting: NotificationSettingCoreData) async throws -> (data: Data, response: URLResponse)? {
+    private func sendNotificationConfiguration(_ notificationConfiguration: NotificationConfiguration) async throws -> (data: Data, response: URLResponse)? {
         guard accessState == .granted, pushState == .apnsRegistrationSuccessful else { return nil }
         
         guard let apiRequest = APIClient.createNotificationRequest(notificationConfiguration) else { return nil }
@@ -47,8 +47,8 @@ class NotificationService: ObservableObject {
         }
     }
     
-    func wantToReceiveAnyNotification(notificationSetting: NotificationSettingCoreData) -> Bool {
-        if notificationSetting.entity.priceDropsBelowValueNotification == true {
+    func wantToReceiveAnyNotification(setting: Setting) -> Bool {
+        if setting.priceDropsBelowEnabled == true {
             return true
         } else {
             return false
@@ -57,13 +57,10 @@ class NotificationService: ObservableObject {
     
     /// Configure notifications with the provided configuration
     /// Returns the server response data if successful, nil if no upload was needed or access wasn't granted
-    func changeNotificationConfiguration(
-        _ notificationConfiguration: NotificationConfiguration,
-        _ notificationSetting: NotificationSettingCoreData
-    ) async throws -> (data: Data, response: URLResponse)? {
+    func changeNotificationConfiguration(_ notificationConfiguration: NotificationConfiguration, _ setting: Setting) async throws -> (data: Data, response: URLResponse)? {
         var notificationConfiguration = notificationConfiguration
         
-        if !wantToReceiveAnyNotification(notificationSetting: notificationSetting) {
+        if !wantToReceiveAnyNotification(setting: setting) {
             print("User doesn't want to receive any notifications and thus don't need to upload.")
             return nil
         }
@@ -80,7 +77,7 @@ class NotificationService: ObservableObject {
         
         // Try to send the configuration
         do {
-            return try await sendNotificationConfiguration(notificationConfiguration, notificationSetting)
+            return try await sendNotificationConfiguration(notificationConfiguration)
         } catch {
             print("Failed to send notification configuration: \(error)")
             throw error

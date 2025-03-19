@@ -38,9 +38,9 @@ struct PriceDropsBelowValueNotificationInfoView: View {
     }
 }
 
+@MainActor
 class PriceBelowNotificationViewModel: ObservableObject {
-    var setting: SettingCoreData
-    var notificationSetting: NotificationSettingCoreData
+    var settingsManager: SettingsManager
     var notificationService: NotificationService
 
     @Published var notificationIsEnabled: Bool {
@@ -61,13 +61,12 @@ class PriceBelowNotificationViewModel: ObservableObject {
     
     @Published private(set) var isLoading = false
     
-    init(setting: SettingCoreData, notificationSetting: NotificationSettingCoreData, notificationService: NotificationService) {
-        self.setting = setting
-        self.notificationSetting = notificationSetting
+    init(settingsManager: SettingsManager, notificationService: NotificationService) {
+        self.settingsManager = settingsManager
         self.notificationService = notificationService
         
-        notificationIsEnabled = notificationSetting.entity.priceDropsBelowValueNotification
-        priceBelowValue = Int(notificationSetting.entity.priceBelowValue).priceString ?? ""
+        notificationIsEnabled = settingsManager.setting.priceDropsBelowEnabled
+        priceBelowValue = settingsManager.setting.priceDropsBelowThreshold.priceString ?? ""
     }
     
     var showUploadIndicators: Bool {
@@ -75,7 +74,7 @@ class PriceBelowNotificationViewModel: ObservableObject {
     }
     
     func priceBelowNotificationToggled(to newSelection: Bool) async {
-        var notificationConfiguration = NotificationConfiguration.create(nil, setting, notificationSetting)
+        var notificationConfiguration = NotificationConfiguration.create(nil, settingsManager.setting)
         notificationConfiguration.notifications.priceBelow.active = newSelection
         
         do {
@@ -84,18 +83,18 @@ class PriceBelowNotificationViewModel: ObservableObject {
             
             _ = try await notificationService.changeNotificationConfiguration(
                 notificationConfiguration,
-                notificationSetting
+                settingsManager.setting
             )
             
             await MainActor.run {
-                self.notificationSetting.changeSetting { $0.entity.priceDropsBelowValueNotification = newSelection }
+                settingsManager.setting.priceDropsBelowEnabled = newSelection
                 isLoading = false
             }
         } catch {
             print("Failed to update notification configuration: \(error)")
             // Revert to the previous value on failure
             await MainActor.run {
-                self.notificationIsEnabled = self.notificationSetting.entity.priceDropsBelowValueNotification
+                self.notificationIsEnabled = settingsManager.setting.priceDropsBelowEnabled
                 isLoading = false
             }
         }
@@ -107,7 +106,7 @@ class PriceBelowNotificationViewModel: ObservableObject {
             return 
         }
         
-        var notificationConfiguration = NotificationConfiguration.create(nil, setting, notificationSetting)
+        var notificationConfiguration = NotificationConfiguration.create(nil, settingsManager.setting)
         notificationConfiguration.notifications.priceBelow.belowValue = newWishPrice
         
         do {
@@ -116,18 +115,18 @@ class PriceBelowNotificationViewModel: ObservableObject {
             
             _ = try await notificationService.changeNotificationConfiguration(
                 notificationConfiguration,
-                notificationSetting
+                settingsManager.setting
             )
             
             await MainActor.run {
-                self.notificationSetting.changeSetting { $0.entity.priceBelowValue = Int64(newWishPrice) }
+                settingsManager.setting.priceDropsBelowThreshold = newWishPrice
                 isLoading = false
             }
         } catch {
             print("Failed to update notification configuration: \(error)")
             // Revert to the previous value on failure
             await MainActor.run {
-                self.priceBelowValue = Int(self.notificationSetting.entity.priceBelowValue).priceString ?? ""
+                self.priceBelowValue = settingsManager.setting.priceDropsBelowThreshold.priceString ?? ""
                 isLoading = false
             }
         }
@@ -138,8 +137,7 @@ struct PriceBelowNotificationView: View {
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.keyboardObserver) var keyboardObserver
     
-    @EnvironmentObject var setting: SettingCoreData
-    @EnvironmentObject var notificationSetting: NotificationSettingCoreData
+    @EnvironmentObject var settingsManager: SettingsManager
     @EnvironmentObject var notificationService: NotificationService
     
     @StateObject private var viewModel: PriceBelowNotificationViewModel
@@ -153,8 +151,7 @@ struct PriceBelowNotificationView: View {
         
         // Initialize with temporary values that will be replaced in onAppear
         _viewModel = StateObject(wrappedValue: PriceBelowNotificationViewModel(
-            setting: SettingCoreData(viewContext: CoreDataService.shared.container.viewContext),
-            notificationSetting: NotificationSettingCoreData(viewContext: CoreDataService.shared.container.viewContext),
+            settingsManager: SettingsManager.shared,
             notificationService: NotificationService()
         ))
     }
@@ -180,8 +177,7 @@ struct PriceBelowNotificationView: View {
         .disabled(viewModel.isLoading)
         .onAppear {
             // Update viewModel with the actual environment objects
-            viewModel.setting = setting
-            viewModel.notificationSetting = notificationSetting
+            viewModel.settingsManager = settingsManager
             viewModel.notificationService = notificationService
         }
     }
@@ -220,8 +216,6 @@ struct PriceBelowNotificationView: View {
 struct PriceBelowNotifictionView_Previews: PreviewProvider {
     static var previews: some View {
         PriceBelowNotificationView()
-            .environmentObject(SettingCoreData(viewContext: CoreDataService.shared.container.viewContext))
-            .environmentObject(NotificationSettingCoreData(viewContext: CoreDataService.shared.container.viewContext))
             .environmentObject(NotificationService())
     }
 }

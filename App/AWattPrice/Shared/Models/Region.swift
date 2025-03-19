@@ -29,11 +29,6 @@ enum Region: Int16, Codable {
         }
     }
     
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.singleValueContainer()
-        try container.encode(apiName)
-    }
-    
-    // No need to implement init(from:) since it's an Int16-based enum
-    // and SwiftData can handle that automatically
+    // Remove the custom encode method which was causing the issue
+    // SwiftData will now use the default Int16 raw value encoding
 }

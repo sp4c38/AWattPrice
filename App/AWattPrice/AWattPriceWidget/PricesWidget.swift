@@ -6,8 +6,21 @@
 //
 
 import Charts
+import SwiftData
 import SwiftUI
 import WidgetKit
+
+// Constants for time calculations and updates
+private enum TimeConstants {
+    static let hoursInDay = 24
+    static let minutesInHour = 60
+    static let secondsInMinute = 60
+    static let thirtyMinutes = 30 * 60
+    static let hourInSeconds = 60 * 60
+    static let dayInSeconds = 24 * 60 * 60
+    static let afternoonHourThreshold = 13
+    static let halfHourMark = 30
+}
 
 struct PricesWidgetProvider: TimelineProvider {
     typealias EntryType = PricesWidgetEntry
@@ -16,66 +29,81 @@ struct PricesWidgetProvider: TimelineProvider {
         return EntryType.emptyEntry
     }
 
+    /// Fetches energy data for the current settings
+    private func fetchEnergyData(for setting: Setting) async throws -> EnergyData {
+        var energyData = try await EnergyData.download(region: setting.region)
+        energyData.computeValues(with: setting)
+        return energyData
+    }
+
     func getSnapshot(in context: Context, completion: @escaping (EntryType) -> ()) {
-        guard let container = CoreDataService()?.container else {
-            completion(EntryType.emptyEntry)
-            return
-        }
-        let setting = SettingCoreData(viewContext: container.viewContext)
+        // Use WidgetSettingsProvider instead of SettingsManager
+        let setting = WidgetSettingsProvider.shared.setting
+        
         Task {
-            let energyData = await EnergyData.downloadEnergyData(setting: setting)
-            let entry = EntryType(date: Date(), energyData: energyData, setting: setting)
-            completion(entry)
+            do {
+                let energyData = try await fetchEnergyData(for: setting)
+                let entry = EntryType(date: Date(), energyData: energyData, setting: setting)
+                completion(entry)
+            } catch {
+                NSLog("Error downloading energy data for widget snapshot: \(error)")
+                completion(EntryType.emptyEntry)
+            }
         }
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
-        guard let container = CoreDataService()?.container else {
-            completion(Timeline(entries: [EntryType.emptyEntry], policy: .never))
-            return
-        }
-        let setting = SettingCoreData(viewContext: container.viewContext)
-        print("Computing timeline.")
-        setting.reloadEntity()
         Task {
             var entries: [EntryType] = []
+            let setting = WidgetSettingsProvider.shared.setting
             
             let now = Date()
             var calendar = Calendar.current
-            calendar.timeZone = TimeZone(identifier: "Europe/Berlin")!
+            calendar.timeZone = TimeZone(identifier: "Europe/Berlin") ?? TimeZone.current
             let startOfHour = calendar.startOfHour(for: now)
-            let beginNextHour = startOfHour.addingTimeInterval(60 * 60)
+            let beginNextHour = startOfHour.addingTimeInterval(TimeInterval(TimeConstants.hourInSeconds))
             let startToday = calendar.startOfDay(for: now)
-            let endToday = startToday.addingTimeInterval(24 * 60 * 60)
+            let endToday = startToday.addingTimeInterval(TimeInterval(TimeConstants.dayInSeconds))
             
-            guard let energyData = await EnergyData.downloadEnergyData(setting: setting),
-                  let lastEntry = energyData.prices.last else { // energyData.prices are sorted by start time.
-                entries.append(EntryType(date: Date(), energyData: nil, setting: setting))
-                let timeline = Timeline(entries: entries, policy: .after(beginNextHour))
-                completion(timeline)
-                return
-            }
-
-            entries.append(EntryType(date: now, energyData: energyData, setting: setting))
-            if lastEntry.startTime > endToday {
-                completion(Timeline(entries: entries, policy: .after(beginNextHour)))
-                return
-            } else {
-                let currentHour = calendar.component(.hour, from: now)
-                if currentHour < 13 {
-                    completion(Timeline(entries: entries, policy: .after(beginNextHour)))
+            do {
+                let energyData = try await fetchEnergyData(for: setting)
+                
+                guard let lastEntry = energyData.prices.last else {
+                    entries.append(EntryType(date: Date(), energyData: nil, setting: setting))
+                    let timeline = Timeline(entries: entries, policy: .after(beginNextHour))
+                    completion(timeline)
                     return
-                } else {
-                    // Update each 30 minutes
-                    var updatePolicy: TimelineReloadPolicy
-                    let currentMinutes = calendar.component(.minute, from: now)
-                    if currentMinutes < 30 {
-                        updatePolicy = .after(startOfHour.addingTimeInterval(30 * 60))
-                    } else {
-                        updatePolicy = .after(startOfHour.addingTimeInterval(60 * 60))
-                    }
-                    completion(Timeline(entries: entries, policy: updatePolicy))
                 }
+
+                entries.append(EntryType(date: now, energyData: energyData, setting: setting))
+                
+                // Determine when to update the widget next
+                let updatePolicy: TimelineReloadPolicy
+                
+                if lastEntry.startTime > endToday {
+                    // We have data for tomorrow already
+                    updatePolicy = .after(beginNextHour)
+                } else {
+                    let currentHour = calendar.component(.hour, from: now)
+                    if currentHour < TimeConstants.afternoonHourThreshold {
+                        // Morning hours - update on the hour
+                        updatePolicy = .after(beginNextHour)
+                    } else {
+                        // Afternoon hours - update every 30 minutes
+                        let currentMinutes = calendar.component(.minute, from: now)
+                        let nextUpdateTime = currentMinutes < TimeConstants.halfHourMark
+                        ? startOfHour.addingTimeInterval(TimeInterval(TimeConstants.thirtyMinutes))
+                            : beginNextHour
+                        
+                        updatePolicy = .after(nextUpdateTime)
+                    }
+                }
+                
+                completion(Timeline(entries: entries, policy: updatePolicy))
+            } catch {
+                NSLog("Error downloading energy data for widget timeline: \(error)")
+                entries.append(EntryType(date: Date(), energyData: nil, setting: setting))
+                completion(Timeline(entries: entries, policy: .after(beginNextHour)))
             }
         }
     }
@@ -84,9 +112,9 @@ struct PricesWidgetProvider: TimelineProvider {
 struct PricesWidgetEntry: TimelineEntry {
     var date: Date
     var energyData: EnergyData?
-    let setting: SettingCoreData?
+    let setting: Setting
     
-    static let emptyEntry = PricesWidgetEntry(date: Date(), energyData: nil, setting: nil)
+    static let emptyEntry = PricesWidgetEntry(date: Date(), energyData: nil, setting: Setting())
 }
 
 struct PricesWidgetEntryView: View {
@@ -97,10 +125,8 @@ struct PricesWidgetEntryView: View {
     
     init(entry: PricesWidgetProvider.Entry) {
         self.entry = entry
-        entry.setting?.reloadEntity()
-        if let setting = entry.setting {
-            self.entry.energyData?.processCalculatedValues(setting: setting)
-        }
+        // Setting is now non-optional, so no need for if-let
+        // The energyData is already processed during download
     }
     
     var body: some View {
@@ -160,13 +186,17 @@ struct AWattPriceWidget_Previews: PreviewProvider {
         let decoder = EnergyData.jsonDecoder()
         let dataURL = URL(fileURLWithPath: Bundle.main.path(forResource: "PricesPreviewContent", ofType: "json")!)
         let data = try! Data(contentsOf: dataURL)
-        return try! decoder.decode(EnergyData.self, from: data)
+        var energyData = try! decoder.decode(EnergyData.self, from: data)
+        
+        // Process the preview data with settings from widget provider
+        energyData.computeValues(with: WidgetSettingsProvider.shared.setting)
+        
+        return energyData
     }
     
-    static var setting: SettingCoreData? = {
-        guard let container = CoreDataService()?.container else { return nil }
-        return SettingCoreData(viewContext: container.viewContext)
-    }()
+    static var setting: Setting {
+        WidgetSettingsProvider.shared.setting
+    }
     
     static var previews: some View {
         PricesWidgetEntryView(entry: PricesWidgetEntry(date: Date(), energyData: getPreviewEnergyData(), setting: setting))

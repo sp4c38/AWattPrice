@@ -23,7 +23,7 @@ struct DataRetrievalError: View {
     @Environment(\.colorScheme) var colorScheme
 
     @EnvironmentObject var energyDataService: EnergyDataService
-    @EnvironmentObject var setting: SettingCoreData
+    @EnvironmentObject var settingsManager: SettingsManager
 
     var body: some View {
         VStack(alignment: .center) {
@@ -39,9 +39,7 @@ struct DataRetrievalError: View {
                     .multilineTextAlignment(.center)
 
                 Button(action: {
-                    if let region = Region.init(rawValue: setting.entity.regionIdentifier) {
-                        energyDataService.download(region: region, setting: setting)
-                    }
+                    energyDataService.download(region: settingsManager.setting.region, setting: settingsManager.setting)
                 }) {
                     Text("Retry")
                 }.buttonStyle(RetryButtonStyle())
@@ -62,7 +60,7 @@ struct CurrentlyNoData: View {
     @Environment(\.networkManager) var networkManager
 
     @EnvironmentObject var energyDataService: EnergyDataService
-    @EnvironmentObject var setting: SettingCoreData
+    @EnvironmentObject var settingsManager: SettingsManager
 
     var body: some View {
         VStack(alignment: .center) {
@@ -78,9 +76,7 @@ struct CurrentlyNoData: View {
                     .multilineTextAlignment(.center)
 
                 Button(action: {
-                    if let region = Region(rawValue: setting.entity.regionIdentifier) {
-                        energyDataService.download(region: region, setting: setting)
-                    }
+                    energyDataService.download(region: settingsManager.setting.region, setting: settingsManager.setting)
                 }) {
                     Text("Retry")
                 }.buttonStyle(RetryButtonStyle())
@@ -127,8 +123,6 @@ struct SettingLoadingError: View {
 /// Classify network errors
 struct DataDownloadAndError: View {
     @EnvironmentObject var energyDataService: EnergyDataService
-    @EnvironmentObject var notificationSetting: NotificationSettingCoreData
-    @EnvironmentObject var setting: SettingCoreData
 
     var body: some View {
         VStack {

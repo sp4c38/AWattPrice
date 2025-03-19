@@ -152,8 +152,7 @@ struct AppVersionView: View {
 
 
 struct SettingsPageView: View {
-    @EnvironmentObject var notificationSetting: NotificationSettingCoreData
-    @EnvironmentObject var setting: SettingCoreData
+    @EnvironmentObject var settingsManager: SettingsManager
     @EnvironmentObject var notificationService: NotificationService
     
     var body: some View {
@@ -188,14 +187,6 @@ struct SettingsPageView: View {
     }
 }
 
-struct SettingsPageView_Previews: PreviewProvider {
-    static var previews: some View {
-        SettingsPageView()
-            .environment(\.managedObjectContext, CoreDataService.shared.container.viewContext)
-            .environmentObject(
-                SettingCoreData(
-                    viewContext: CoreDataService.shared.container.viewContext
-                )
-            )
-    }
+#Preview {
+    SettingsPageView()
 }

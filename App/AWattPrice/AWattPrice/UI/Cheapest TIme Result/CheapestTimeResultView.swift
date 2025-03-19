@@ -172,7 +172,6 @@ struct CheapestTimeResultView: View {
     @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var energyDataService: EnergyDataService
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
-    @EnvironmentObject var setting: SettingCoreData
 
     var todayDateFormatter: DateFormatter
 
@@ -231,7 +230,7 @@ struct CheapestTimeResultView: View {
         .padding([.leading, .trailing], 16)
         .navigationTitle("Result")
         .onAppear {
-            cheapestHourManager.calculateCheapestHours(energyData: energyDataService.energyData!, setting: setting)
+            cheapestHourManager.calculateCheapestHours(energyData: energyDataService.energyData!)
         }
     }
 }

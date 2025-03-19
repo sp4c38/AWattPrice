@@ -26,7 +26,6 @@ struct HeaderSizePreferenceKey: PreferenceKey {
 
 struct PricesView: View {
     @EnvironmentObject var energyDataService: EnergyDataService
-    @EnvironmentObject var setting: SettingCoreData
 
     @State var headerSize = CGSize(width: 0, height: 0)
     @State var initialAppearFinished: Bool? = false
@@ -84,7 +83,5 @@ struct PricesView: View {
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
         PricesView()
-            .environment(\.managedObjectContext, CoreDataService.shared.container.viewContext)
-            .environmentObject(SettingCoreData(viewContext: CoreDataService.shared.container.viewContext))
     }
 }

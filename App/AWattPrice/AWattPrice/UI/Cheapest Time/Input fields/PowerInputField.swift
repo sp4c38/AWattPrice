@@ -10,7 +10,7 @@ import SwiftUI
 /// Input field for the power output of the consumer
 struct PowerOutputInputField: View {
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
-    @EnvironmentObject var setting: SettingCoreData
+    @EnvironmentObject var settingsManager: SettingsManager
 
     @State var firstAppear = true
     @FocusState private var fieldIsFocused: Bool
@@ -35,14 +35,6 @@ struct PowerOutputInputField: View {
         }
     }
 
-    func setPowerOutputString() {
-        if setting.entity.cheapestTimeLastPower != 0 {
-            if let powerOutputString = setting.entity.cheapestTimeLastPower.priceString {
-                cheapestHourManager.powerOutputString = powerOutputString
-            }
-        }
-    }
-
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
@@ -57,19 +49,17 @@ struct PowerOutputInputField: View {
                     .fixedSize(horizontal: false, vertical: true)
                     .padding(.trailing, 5)
                     .focused($fieldIsFocused)
-                    .onChange(of: fieldIsFocused) { newValue in
-                        onFocusChange(newValue)
+                    .onChange(of: fieldIsFocused) {
+                        onFocusChange(fieldIsFocused)
                     }
-                    .onChange(of: cheapestHourManager.powerOutputString) { newValue in
+                    .onChange(of: cheapestHourManager.powerOutputString) {
                         if !firstAppear {
-                            setting.changeSetting { $0.entity.cheapestTimeLastPower = newValue.doubleValue ?? 0 }
-                            if let energyUsageString = (newValue.doubleValue ?? 0).priceString {
+                            if let energyUsageString = (cheapestHourManager.powerOutputString.doubleValue ?? 0).priceString {
                                 cheapestHourManager.powerOutputString = energyUsageString
                             }
                         }
                     }
                     .onAppear {
-                        setPowerOutputString()
                         firstAppear = false
                     }
 

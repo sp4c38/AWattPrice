@@ -8,9 +8,6 @@
 import SwiftUI
 
 struct SettingsUploadErrorView: View {
-    @EnvironmentObject var notificationSetting: NotificationSettingCoreData
-    @EnvironmentObject var setting: SettingCoreData
-
     var body: some View {
         HStack(spacing: 8) {
             Image(systemName: "exclamationmark.circle")

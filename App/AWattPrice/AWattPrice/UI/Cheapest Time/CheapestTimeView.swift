@@ -62,7 +62,7 @@ struct CheapestTimeViewBodyPicker: View {
             .onReceive(energyDataService.$energyData) { _ in
                 setMaxTimeInterval()
             }
-            .onChange(of: timeOfUsageInterval) { newValue in
+            .onChange(of: timeOfUsageInterval) {
                 cheapestHourManager.timeOfUsageInterval = timeOfUsageInterval
             }
         }
@@ -98,11 +98,11 @@ struct CheapestTimeViewBody: View {
 
                 TimeRangeInputField()
             }
-            .onChange(of: inputMode) { newInputMode in
+            .onChange(of: inputMode) {
                 DispatchQueue.main.asyncAfter(deadline: .now()) {
                     cheapestHourManager.errorValues = []
                 }
-                cheapestHourManager.inputMode = newInputMode
+                cheapestHourManager.inputMode = inputMode
             }
         }
         .padding(.top, 20)
@@ -117,16 +117,15 @@ struct CheapestTimeView: View {
     @Environment(\.colorScheme) var colorScheme
 
     @EnvironmentObject var energyDataService: EnergyDataService
-    @EnvironmentObject var setting: SettingCoreData
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
     
     @FocusState private var focusState: Bool
     @State private var inputFieldFocused: Bool = false
 
-    @State var redirectToComparisonResults: Int? = 0
+    @State private var navigateToResults = false
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack {
                 if energyDataService.energyData != nil {
                     ScrollView {
@@ -135,12 +134,6 @@ struct CheapestTimeView: View {
 
                             Spacer()
 
-                            NavigationLink(
-                                destination: CheapestTimeResultView(),
-                                tag: 1,
-                                selection: $redirectToComparisonResults
-                            ) {}
-
                             // Button to perform calculations to find cheapest hours and
                             // to redirect to the result view to show the results calculated
                             Button(action: {
@@ -148,7 +141,7 @@ struct CheapestTimeView: View {
                                 cheapestHourManager.setValues()
                                 if cheapestHourManager.errorValues.contains(0) {
                                     // All requirements are satisfied
-                                    redirectToComparisonResults = 1
+                                    navigateToResults = true
                                 }
                             }, label: {
                                 HStack {
@@ -165,19 +158,21 @@ struct CheapestTimeView: View {
                         .animation(.easeInOut)
                     }
                     .padding(.top, 1.5)
+                    .navigationDestination(isPresented: $navigateToResults) {
+                        CheapestTimeResultView()
+                    }
                 } else {
                     DataDownloadAndError()
                 }
             }
             .navigationTitle("Cheapest Time")
         }
-        .navigationViewStyle(StackNavigationViewStyle())
         // Keep the state and focus state in sync
-        .onChange(of: focusState) { newValue in
-            inputFieldFocused = newValue
+        .onChange(of: focusState) {
+            inputFieldFocused = focusState
         }
-        .onChange(of: inputFieldFocused) { newValue in
-            focusState = newValue
+        .onChange(of: inputFieldFocused) {
+            focusState = inputFieldFocused
         }
     }
 }
@@ -188,11 +183,7 @@ struct CheapestTimeView_Previews: PreviewProvider {
     static var previews: some View {
         CheapestTimeView()
             .environmentObject(energyDataService)
-            .environmentObject(
-                NotificationSettingCoreData(viewContext: CoreDataService.shared.container.viewContext)
-            )
             .environmentObject(CheapestHourManager())
-            .environmentObject(SettingCoreData(viewContext: CoreDataService.shared.container.viewContext))
-            .onAppear { energyDataService.download(region: Region.DE, setting: SettingCoreData(viewContext: CoreDataService.shared.container.viewContext)) }
+            .onAppear { energyDataService.download(region: Region.DE, setting: SettingsManager.shared.setting) }
     }
 }

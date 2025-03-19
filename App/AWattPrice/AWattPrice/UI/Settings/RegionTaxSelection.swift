@@ -1,8 +1,8 @@
 import SwiftUI
 
+@MainActor
 class RegionTaxSelectionViewModel: ObservableObject {
-    var setting: SettingCoreData
-    var notificationSetting: NotificationSettingCoreData
+    var settingsManager: SettingsManager
     var notificationService: NotificationService
     var energyDataService: EnergyDataService
     
@@ -24,37 +24,32 @@ class RegionTaxSelectionViewModel: ObservableObject {
     
     @Published private(set) var isLoading = false
     
-    init(setting: SettingCoreData, notificationSetting: NotificationSettingCoreData,
-         notificationService: NotificationService, energyDataService: EnergyDataService) {
-        self.setting = setting
-        self.notificationSetting = notificationSetting
+    init(settingsManager: SettingsManager,notificationService: NotificationService, energyDataService: EnergyDataService) {
+        self.settingsManager = settingsManager
         self.notificationService = notificationService
         self.energyDataService = energyDataService
         
-        self.selectedRegion = Region(rawValue: setting.entity.regionIdentifier)!
-        self.taxSelection = setting.entity.pricesWithVAT
+        self.selectedRegion = settingsManager.setting.region
+        self.taxSelection = settingsManager.setting.taxEnabled
     }
     
     func regionChanges(newRegion: Region) async {
-        var notificationConfiguration = NotificationConfiguration.create(nil, setting, notificationSetting)
+        var notificationConfiguration = NotificationConfiguration.create(nil, settingsManager.setting)
         notificationConfiguration.general.region = newRegion
         
         do {
             // Show loading indicator
             await MainActor.run { isLoading = true }
             
-            _ = try await notificationService.changeNotificationConfiguration(
-                notificationConfiguration,
-                notificationSetting
-            )
+            _ = try await notificationService.changeNotificationConfiguration(notificationConfiguration, settingsManager.setting)
             
             // Update UI elements on main thread
             await MainActor.run {
-                self.setting.changeSetting { $0.entity.regionIdentifier = newRegion.rawValue }
+                self.settingsManager.setting.region = newRegion
                 isLoading = false
             }
             
-            self.energyDataService.download(region: newRegion, setting: setting)
+            self.energyDataService.download(region: newRegion, setting: settingsManager.setting)
             
         } catch {
             print("Failed to update notification configuration: \(error)")
@@ -65,7 +60,7 @@ class RegionTaxSelectionViewModel: ObservableObject {
     }
 
     func taxSelectionChanges(newTaxSelection: Bool) async {
-        var notificationConfiguration = NotificationConfiguration.create(nil, setting, notificationSetting)
+        var notificationConfiguration = NotificationConfiguration.create(nil, settingsManager.setting)
         notificationConfiguration.general.tax = newTaxSelection
         
         do {
@@ -74,15 +69,15 @@ class RegionTaxSelectionViewModel: ObservableObject {
             
             _ = try await notificationService.changeNotificationConfiguration(
                 notificationConfiguration,
-                notificationSetting
+                settingsManager.setting
             )
             
             await MainActor.run {
-                self.setting.changeSetting { $0.entity.pricesWithVAT = newTaxSelection }
+                self.settingsManager.setting.taxEnabled = newTaxSelection
                 isLoading = false
             }
             
-            self.energyDataService.energyData?.computeValues(with: self.setting)
+            self.energyDataService.energyData?.computeValues(with: settingsManager.setting)
         } catch {
             print("Failed to update notification configuration: \(error)")
             await MainActor.run {
@@ -93,8 +88,7 @@ class RegionTaxSelectionViewModel: ObservableObject {
 }
 
 struct RegionTaxSelectionView: View {
-    @EnvironmentObject var setting: SettingCoreData
-    @EnvironmentObject var notificationSetting: NotificationSettingCoreData
+    @EnvironmentObject var settingsManager: SettingsManager
     @EnvironmentObject var notificationService: NotificationService
     @EnvironmentObject var energyDataService: EnergyDataService
     
@@ -103,8 +97,7 @@ struct RegionTaxSelectionView: View {
     init() {
         // Initialize with temporary values that will be replaced in onAppear
         _viewModel = StateObject(wrappedValue: RegionTaxSelectionViewModel(
-            setting: SettingCoreData(viewContext: CoreDataService.shared.container.viewContext),
-            notificationSetting: NotificationSettingCoreData(viewContext: CoreDataService.shared.container.viewContext),
+            settingsManager: SettingsManager.shared,
             notificationService: NotificationService(),
             energyDataService: EnergyDataService()
         ))
@@ -128,8 +121,7 @@ struct RegionTaxSelectionView: View {
         .disabled(viewModel.isLoading)
         .onAppear {
             // Update viewModel with the actual environment objects
-            viewModel.setting = setting
-            viewModel.notificationSetting = notificationSetting
+            viewModel.settingsManager = settingsManager
             viewModel.notificationService = notificationService
             viewModel.energyDataService = energyDataService
         }
@@ -160,8 +152,6 @@ struct RegionTaxSelectionView: View {
 struct RegionTaxSelection_Previews: PreviewProvider {
     static var previews: some View {
         RegionTaxSelectionView()
-            .environmentObject(SettingCoreData(viewContext: CoreDataService.shared.container.viewContext))
-            .environmentObject(NotificationSettingCoreData(viewContext: CoreDataService.shared.container.viewContext))
             .environmentObject(NotificationService())
             .environmentObject(EnergyDataService())
     }

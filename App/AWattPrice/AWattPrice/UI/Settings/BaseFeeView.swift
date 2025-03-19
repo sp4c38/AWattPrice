@@ -8,9 +8,9 @@
 import Combine
 import SwiftUI
 
+@MainActor
 class BaseFeeViewModel: ObservableObject {
-    var setting: SettingCoreData
-    var notificationSetting: NotificationSettingCoreData
+    var settingsManager: SettingsManager
     var notificationService: NotificationService
     var energyDataService: EnergyDataService
     
@@ -21,19 +21,16 @@ class BaseFeeViewModel: ObservableObject {
     
     var cancellables = [AnyCancellable]()
     
-    init(setting: SettingCoreData, notificationSetting: NotificationSettingCoreData, 
-         notificationService: NotificationService, energyDataService: EnergyDataService) {
-        self.setting = setting
-        self.notificationSetting = notificationSetting
+    init(settingsManager: SettingsManager, notificationService: NotificationService, energyDataService: EnergyDataService) {
+        self.settingsManager = settingsManager
         self.notificationService = notificationService
         self.energyDataService = energyDataService
         
-        baseFee = setting.entity.baseFee
+        baseFee = settingsManager.setting.baseFeePrice
     }
     
-    @MainActor
     func baseFeeChanges() async {
-        var notificationConfiguration = NotificationConfiguration.create(nil, setting, notificationSetting)
+        var notificationConfiguration = NotificationConfiguration.create(nil, settingsManager.setting)
         notificationConfiguration.general.baseFee = baseFee
         
         // Update UI state
@@ -44,7 +41,7 @@ class BaseFeeViewModel: ObservableObject {
             // Try to update notification configuration
             _ = try await notificationService.changeNotificationConfiguration(
                 notificationConfiguration, 
-                notificationSetting
+                settingsManager.setting
             )
             
             // Success case - update local settings
@@ -53,10 +50,10 @@ class BaseFeeViewModel: ObservableObject {
             uploadFailed = false
             
             // Update base fee in settings
-            setting.changeSetting { $0.entity.baseFee = self.baseFee }
+            settingsManager.setting.baseFeePrice = self.baseFee
             
             // Recompute energy data values with new base fee
-            energyDataService.energyData?.computeValues(with: setting)
+            energyDataService.energyData?.computeValues(with: settingsManager.setting)
             
         } catch {
             // Error case - still update local settings but show error
@@ -70,8 +67,7 @@ class BaseFeeViewModel: ObservableObject {
 
 struct BaseFeeView: View {
     @EnvironmentObject var energyDataService: EnergyDataService
-    @EnvironmentObject var setting: SettingCoreData
-    @EnvironmentObject var notificationSetting: NotificationSettingCoreData
+    @EnvironmentObject var settingsManager: SettingsManager
     @EnvironmentObject var notificationService: NotificationService
     
     @StateObject private var viewModel: BaseFeeViewModel
@@ -81,8 +77,7 @@ struct BaseFeeView: View {
     init() {
         // Initialize with temporary values that will be replaced in onAppear
         _viewModel = StateObject(wrappedValue: BaseFeeViewModel(
-            setting: SettingCoreData(viewContext: CoreDataService.shared.container.viewContext),
-            notificationSetting: NotificationSettingCoreData(viewContext: CoreDataService.shared.container.viewContext),
+            settingsManager: SettingsManager.shared,
             notificationService: NotificationService(),
             energyDataService: EnergyDataService()
         ))
@@ -94,7 +89,7 @@ struct BaseFeeView: View {
                 Text("baseFee.infoText")
             }
             
-            if viewModel.notificationSetting.entity.priceDropsBelowValueNotification == true {
+            if viewModel.settingsManager.setting.priceDropsBelowEnabled == true {
                 Section(header: Text("Price Guard").foregroundColor(.green)) {
                     Text("baseFee.priceGuardActivatedInfo")
                 }
@@ -150,11 +145,10 @@ struct BaseFeeView: View {
         .navigationTitle("Base Fee")
         .onAppear {
             // Update viewModel with the actual environment objects
-            viewModel.setting = setting
-            viewModel.notificationSetting = notificationSetting
+            viewModel.settingsManager = settingsManager
             viewModel.notificationService = notificationService
             viewModel.energyDataService = energyDataService
-            viewModel.baseFee = setting.entity.baseFee
+            viewModel.baseFee = settingsManager.setting.baseFeePrice
         }
     }
 }
@@ -163,8 +157,6 @@ struct BaseFeeView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
             BaseFeeView()
-                .environmentObject(SettingCoreData(viewContext: CoreDataService.shared.container.viewContext))
-                .environmentObject(NotificationSettingCoreData(viewContext: CoreDataService.shared.container.viewContext))
                 .environmentObject(NotificationService())
                 .environmentObject(EnergyDataService())
         }

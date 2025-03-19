@@ -12,25 +12,25 @@ import UIKit
 extension NotificationService {
     // MARK: Remote access
     
-    func successfulRegisteredForRemoteNotifications(rawCurrentToken: Data, setting: SettingCoreData, notificationSetting: NotificationSettingCoreData) {
+    func successfulRegisteredForRemoteNotifications(rawCurrentToken: Data, setting: Setting) {
         let currentToken = rawCurrentToken.map {
             String(format: "%02.2hhx", $0)
         }.joined()
         
         print("Notification: Remote notifications granted with device token \(currentToken).")
         
-        if notificationSetting.entity.lastApnsToken != currentToken, notificationSetting.entity.lastApnsToken != nil {
+        if setting.pushToken != currentToken, setting.pushToken != nil {
             Task {
-                let notificationConfiguration = NotificationConfiguration.create(currentToken, setting, notificationSetting)
+                let notificationConfiguration = NotificationConfiguration.create(currentToken, setting)
                 do {
-                    _ = try await changeNotificationConfiguration(notificationConfiguration, notificationSetting)
+                    _ = try await changeNotificationConfiguration(notificationConfiguration, setting)
                 } catch {
                     print("Failed to update notification configuration after token change: \(error)")
                 }
             }
         }
         
-        notificationSetting.changeSetting { $0.entity.lastApnsToken = currentToken }
+        setting.pushToken = currentToken
         DispatchQueue.main.async {
             self.token = currentToken
             self.pushState = .apnsRegistrationSuccessful

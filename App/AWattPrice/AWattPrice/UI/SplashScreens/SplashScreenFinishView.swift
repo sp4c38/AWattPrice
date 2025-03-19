@@ -109,7 +109,7 @@ struct AnimatingCheckmark: View {
 
 /// Final splash screen which tells that the setup process was completed.
 struct SplashScreenFinishView: View {
-    @EnvironmentObject var setting: SettingCoreData
+    @EnvironmentObject var settingsManager: SettingsManager
 
     var body: some View {
         VStack {
@@ -120,11 +120,9 @@ struct SplashScreenFinishView: View {
 
             Spacer()
 
-            Button(action: {
+            Button("Enter app") {
                 // Set splashScreensFinished to true so that splash screens aren't shown the next time the app opens
-                setting.changeSetting { $0.entity.splashScreensFinished = true }
-            }) {
-                Text("Enter app")
+                settingsManager.setting.onboarded = true
             }
             .buttonStyle(ContinueButtonStyle())
             .padding([.leading, .trailing], 20)
@@ -139,7 +137,6 @@ struct SplashScreenFinishView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
             SplashScreenFinishView()
-                .environmentObject(SettingCoreData(viewContext: CoreDataService.shared.container.viewContext))
         }
     }
 }

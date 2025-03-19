@@ -37,7 +37,6 @@ class UpdatedDataTimeFormatter {
 extension UpdatedDataView {
     class ViewModel: ObservableObject {
         @ObservedObject var energyDataService: EnergyDataService
-        @ObservedObject var setting: SettingCoreData
         
         @Published var viewDownloadState = EnergyDataService.DownloadState.idle
         var startedDownloadingTime: Date? = nil
@@ -50,9 +49,8 @@ extension UpdatedDataView {
         
         var downloadStateCancellable: AnyCancellable? = nil
         
-        init(energyDataService: EnergyDataService, setting: SettingCoreData) {
+        init(energyDataService: EnergyDataService) {
             self.energyDataService = energyDataService
-            self.setting = setting
             downloadStateCancellable = energyDataService.$downloadState.sink(receiveValue: updateDownloadState)
         }
         
@@ -91,14 +89,13 @@ extension UpdatedDataView {
 
 struct UpdatedDataView: View {
     @EnvironmentObject var energyDataService: EnergyDataService
-    @EnvironmentObject var setting: SettingCoreData
+    @EnvironmentObject var settingsManager: SettingsManager
     @StateObject private var viewModel: ViewModel
     
     init() {
         // Initialize with temporary values that will be replaced in onAppear
         _viewModel = StateObject(wrappedValue: ViewModel(
-            energyDataService: EnergyDataService(),
-            setting: SettingCoreData(viewContext: CoreDataService.shared.container.viewContext)
+            energyDataService: EnergyDataService()
         ))
     }
     
@@ -133,7 +130,6 @@ struct UpdatedDataView: View {
         .onAppear {
             // Update viewModel with the actual environment objects
             viewModel.energyDataService = energyDataService
-            viewModel.setting = setting
             
             if case .finished(let time) = viewModel.viewDownloadState {
                 viewModel.updateLocalizedTimeIntervalString(lastDownloadFinishedTime: time)
@@ -146,9 +142,7 @@ struct UpdatedDataView: View {
         }
         .contentShape(Rectangle())
         .onTapGesture {
-            if let region = Region(rawValue: viewModel.setting.entity.regionIdentifier) {
-                viewModel.energyDataService.download(region: region, setting: setting)
-            }
+            viewModel.energyDataService.download(region: settingsManager.setting.region, setting: settingsManager.setting)
         }
     }
 }
@@ -157,6 +151,5 @@ struct UpdatedDataView_Previews: PreviewProvider {
     static var previews: some View {
         UpdatedDataView()
             .environmentObject(EnergyDataService())
-            .environmentObject(SettingCoreData(viewContext: CoreDataService.shared.container.viewContext))
     }
 }

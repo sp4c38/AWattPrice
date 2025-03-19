@@ -193,6 +193,6 @@ struct CheapestTimeView_Previews: PreviewProvider {
             )
             .environmentObject(CheapestHourManager())
             .environmentObject(SettingCoreData(viewContext: CoreDataService.shared.container.viewContext))
-            .onAppear { energyDataService.download(region: Region.DE) }
+            .onAppear { energyDataService.download(region: Region.DE, setting: SettingCoreData(viewContext: CoreDataService.shared.container.viewContext)) }
     }
 }

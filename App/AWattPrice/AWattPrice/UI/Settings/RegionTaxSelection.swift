@@ -54,7 +54,7 @@ class RegionTaxSelectionViewModel: ObservableObject {
                 isLoading = false
             }
             
-            self.energyDataService.download(region: newRegion)
+            self.energyDataService.download(region: newRegion, setting: setting)
             
         } catch {
             print("Failed to update notification configuration: \(error)")

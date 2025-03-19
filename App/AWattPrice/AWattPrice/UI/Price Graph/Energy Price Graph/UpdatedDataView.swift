@@ -147,7 +147,7 @@ struct UpdatedDataView: View {
         .contentShape(Rectangle())
         .onTapGesture {
             if let region = Region(rawValue: viewModel.setting.entity.regionIdentifier) {
-                viewModel.energyDataService.download(region: region)
+                viewModel.energyDataService.download(region: region, setting: setting)
             }
         }
     }

@@ -40,7 +40,7 @@ struct DataRetrievalError: View {
 
                 Button(action: {
                     if let region = Region.init(rawValue: setting.entity.regionIdentifier) {
-                        energyDataService.download(region: region)
+                        energyDataService.download(region: region, setting: setting)
                     }
                 }) {
                     Text("Retry")
@@ -79,7 +79,7 @@ struct CurrentlyNoData: View {
 
                 Button(action: {
                     if let region = Region(rawValue: setting.entity.regionIdentifier) {
-                        energyDataService.download(region: region)
+                        energyDataService.download(region: region, setting: setting)
                     }
                 }) {
                     Text("Retry")

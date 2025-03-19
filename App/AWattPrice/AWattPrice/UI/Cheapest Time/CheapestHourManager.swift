@@ -285,7 +285,7 @@ extension CheapestHourManager {
                             for item in energyData.currentPrices {
                                 if Int(item.startTime.timeIntervalSince1970) == timestamp {
                                     cheapestPair.associatedPricePoints.append(item)
-                                    print("Found the missing energy price point with start timestamp \(item.startTimestamp).")
+//                                    print("Found the missing energy price point with start timestamp \(item.startTimestamp).")
                                     break
                                 }
                             }

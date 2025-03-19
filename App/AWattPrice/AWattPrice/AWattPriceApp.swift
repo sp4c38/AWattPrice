@@ -93,9 +93,9 @@ struct ContentView: View {
 //                    SettingsPageView()
 //                        .tabItem { Label("Settings", systemImage: "gear") }
 
-//                      PricesView()
-//                        .tag(1)
-//                        .tabItem { Label("Pricesa", systemImage: "bolt") }
+                      PricesView()
+                        .tag(1)
+                        .tabItem { Label("Pricesa", systemImage: "bolt") }
 
 //                    CheapestTimeView()
 //                        .tabItem { Label("Cheapest Time", systemImage: "rectangle.and.text.magnifyingglass") }
@@ -125,7 +125,7 @@ struct ContentView: View {
         }
         
         if let selectedRegion = Region(rawValue: setting.entity.regionIdentifier) {
-            energyDataService.download(region: selectedRegion)
+            energyDataService.download(region: selectedRegion, setting: setting)
         }
     }
 }

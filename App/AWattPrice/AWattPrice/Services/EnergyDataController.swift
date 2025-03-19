@@ -124,7 +124,7 @@ class EnergyDataService: ObservableObject {
     
     /// Downloads energy data for the specified region using async/await
     /// - Parameter region: The region to fetch data for
-    func download(region: Region) {
+    func download(region: Region, setting: SettingCoreData) {
         // Cancel any existing task first
         cancelDownloads()
         downloadState = .downloading
@@ -137,6 +137,7 @@ class EnergyDataService: ObservableObject {
                 // Switch to the main thread only for UI updates
                 await MainActor.run {
                     self.energyData = newEnergyData
+                    self.energyData?.computeValues(with: setting)
                     print("Energy data download completed.")
                     self.downloadState = .finished(time: Date())
                 }

@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { formatTimeRange } from '../utils/formatTimeRange';
 
-const PriceTable = ({ data, includeTax }) => {
+const PriceTable = ({ data, includeTax, baseFee }) => {
   const { t } = useTranslation();
   return (
     <div className="overflow-x-auto rounded-lg">
@@ -13,6 +13,9 @@ const PriceTable = ({ data, includeTax }) => {
               {t('price')}
               <span className="text-xs text-gray-400 block">
                 {includeTax ? t('includeTax') : t('excludeTax')}
+                {baseFee !== null && (
+                  <span className="text-orange-300"> + {t('baseFee')}</span>
+                )}
               </span>
             </th>
           </tr>

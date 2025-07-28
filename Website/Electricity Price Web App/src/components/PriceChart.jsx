@@ -23,30 +23,32 @@ ChartJS.register(
   TimeScale
 );
 
-const getOptions = (title) => ({
+const getOptions = (title, isHorizontal = false) => ({
   responsive: true,
   maintainAspectRatio: false,
+  indexAxis: isHorizontal ? 'y' : 'x',
   interaction: {
     mode: 'index',
     intersect: false,
   },
   scales: {
     x: {
-      type: 'time',
-      time: {
+      type: isHorizontal ? 'linear' : 'time',
+      position: isHorizontal ? 'bottom' : undefined,
+      time: isHorizontal ? undefined : {
         unit: 'hour',
         displayFormats: {
           hour: 'HH:mm'
         }
       },
-      adapters: {
+      adapters: isHorizontal ? undefined : {
         date: {
           locale: de
         }
       },
       title: {
         display: true,
-        text: 'Zeit',
+        text: isHorizontal ? 'Preis (ct/kWh)' : 'Zeit',
         color: 'rgba(255, 255, 255, 0.8)'
       },
       grid: {
@@ -54,15 +56,29 @@ const getOptions = (title) => ({
       },
       ticks: {
         color: 'rgba(255, 255, 255, 0.8)'
-      }
+      },
+      min: isHorizontal ? 0 : undefined
     },
     y: {
+      type: isHorizontal ? 'time' : 'linear',
+      reverse: isHorizontal ? true : false, // Show earliest time at the top in horizontal view
+      time: isHorizontal ? {
+        unit: 'hour',
+        displayFormats: {
+          hour: 'HH:mm'
+        }
+      } : undefined,
+      adapters: isHorizontal ? {
+        date: {
+          locale: de
+        }
+      } : undefined,
       title: {
         display: true,
-        text: 'Preis (ct/kWh)',
+        text: isHorizontal ? 'Zeit' : 'Preis (ct/kWh)',
         color: 'rgba(255, 255, 255, 0.8)'
       },
-      min: 0,
+      min: isHorizontal ? undefined : 0,
       grid: {
         color: 'rgba(255, 162, 77, 0.1)'
       },
@@ -88,9 +104,13 @@ const getOptions = (title) => ({
     tooltip: {
       callbacks: {
         title: (context) => {
-          return formatTimeRange(context[0].raw.x);
+          const timeValue = isHorizontal ? context[0].raw.y : context[0].raw.x;
+          return formatTimeRange(timeValue);
         },
-        label: (context) => `${context.parsed.y.toFixed(2).replace('.', ',')} ct/kWh`
+        label: (context) => {
+          const priceValue = isHorizontal ? context[0].parsed.x : context[0].parsed.y;
+          return `${priceValue.toFixed(2).replace('.', ',')} ct/kWh`;
+        }
       },
       backgroundColor: 'rgba(255, 162, 77, 0.9)',
       titleColor: 'rgb(255, 255, 255)',
@@ -101,13 +121,13 @@ const getOptions = (title) => ({
   }
 });
 
-const PriceChart = ({ data, title }) => {
+const PriceChart = ({ data, title, isHorizontal = false }) => {
   const chartData = {
     datasets: [
       {
         data: data.map((item) => ({
-          x: item.timestamp,
-          y: item.price,
+          x: isHorizontal ? item.price : item.timestamp,
+          y: isHorizontal ? item.timestamp : item.price,
         })),
         backgroundColor: 'rgba(249, 115, 22, 0.8)',
         hoverBackgroundColor: 'rgba(249, 115, 22, 1)',
@@ -117,9 +137,26 @@ const PriceChart = ({ data, title }) => {
     ],
   };
 
+  // Calculate height based on data points and orientation
+  const getChartHeight = () => {
+    if (isHorizontal) {
+      const baseHeight = Math.max(data.length * 25, 400);
+      // For mobile devices (horizontal bars) we want to ensure enough height
+      const isMobile = window.innerWidth < 768;
+      return isMobile 
+        ? Math.min(Math.max(baseHeight, window.innerHeight * 0.7), 1500)
+        : Math.min(baseHeight, 1200);
+    }
+    return 600; // Default height for vertical chart
+  };
+
+  const chartHeight = getChartHeight();
+
   return (
-    <div className="w-full h-[600px] card p-4">
-      <Bar options={getOptions(title)} data={chartData} />
+    <div className={`w-full ${isHorizontal ? 'overflow-y-auto md:overflow-visible' : ''} card p-2 md:p-4`}>
+      <div style={{ height: chartHeight + 'px' }} className="chart-container">
+        <Bar options={getOptions(title, isHorizontal)} data={chartData} />
+      </div>
     </div>
   );
 };

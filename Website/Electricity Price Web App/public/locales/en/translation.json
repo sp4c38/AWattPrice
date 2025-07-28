@@ -1,0 +1,21 @@
+{
+  "title": "Electricity Prices",
+  "description": "Real-time electricity price data for {{country}}",
+  "includeTax": "Including VAT",
+  "excludeTax": "Excluding VAT",
+  "detailedPriceData": "Detailed Price Data",
+  "dataUpdates": "Data automatically updates every 5 minutes",
+  "lastUpdated": "Last updated: {{time}}",
+  "time": "Time",
+  "price": "Price (ct/kWh)",
+  "priceWithTax": "Price (ct/kWh) including VAT",
+  "priceWithoutTax": "Price (ct/kWh) excluding VAT",
+  "chartTitle": "Electricity Prices for {{country}} ({{tax}})",
+  "priceDisclaimer": "No guarantee is made for the accuracy of the prices",
+  "viewMode": "View Mode",
+  "verticalView": "Vertical",
+  "horizontalView": "Horizontal",
+  "baseFee": "Base Fee",
+  "baseFeeApplied": "A base fee of {{fee}} ct/kWh has been applied",
+  "error": "Error loading data. Please try again later."
+}

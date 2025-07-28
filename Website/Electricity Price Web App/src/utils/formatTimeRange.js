@@ -1,9 +1,17 @@
 export const formatTimeRange = (timestamp) => {
-  const datePrefix = timestamp.toLocaleString('de-DE', {
-    weekday: 'short',
+  // Get the short weekday with proper formatting
+  const weekday = timestamp.toLocaleString('de-DE', {
+    weekday: 'short'
+  }).replace(',', '').trim();
+  
+  // Format the day and month separately
+  const day = timestamp.toLocaleString('de-DE', {
     day: '2-digit',
     month: '2-digit'
-  }).replace(',', '.');
+  });
+  
+  // Combine with just a single dot after weekday abbreviation
+  const datePrefix = `${weekday}. ${day}`;
 
   const startHour = timestamp.toLocaleString('de-DE', {
     hour: '2-digit',

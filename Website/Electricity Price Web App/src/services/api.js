@@ -1,6 +1,8 @@
 import axios from 'axios';
 
-const BASE_URL = 'https://awattprice.space8.me/api/v2/data';
+// Use relative URL for development, which will be handled by Vite's proxy
+// In production, the server's nginx config handles this forwarding
+const BASE_URL = '/api/v2/data';
 
 export const COUNTRIES = {
   DE: {

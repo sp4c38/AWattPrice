@@ -11,5 +11,11 @@
   "priceWithTax": "Preis (ct/kWh) inkl. MwSt.",
   "priceWithoutTax": "Preis (ct/kWh) exkl. MwSt.",
   "chartTitle": "Strompreise für {{country}} ({{tax}})",
-  "priceDisclaimer": "Für die Genauigkeit der Preise wird keine Garantie übernommen"
+  "priceDisclaimer": "Für die Genauigkeit der Preise wird keine Garantie übernommen",
+  "viewMode": "Ansichtsmodus",
+  "verticalView": "Vertikal",
+  "horizontalView": "Horizontal",
+  "baseFee": "Grundgebühr",
+  "baseFeeApplied": "Eine Grundgebühr von {{fee}} ct/kWh wurde angewendet",
+  "error": "Fehler beim Laden der Daten. Bitte versuche es später erneut."
 }

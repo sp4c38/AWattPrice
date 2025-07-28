@@ -6,10 +6,31 @@ import CountrySelector from './components/CountrySelector';
 import TaxToggle from './components/TaxToggle';
 import PriceTable from './components/PriceTable';
 import { fetchPriceData, applyTax, COUNTRIES } from './services/api';
+import { getUrlParameter, setUrlParameter } from './utils/urlParams';
 
 function App() {
   const { t } = useTranslation();
-  const [selectedCountry, setSelectedCountry] = useState('DE');
+  
+  // Parse URL parameters for initial country selection
+  const getInitialCountry = () => {
+    const countryParam = getUrlParameter('country');
+    
+    // Check if the country parameter is valid (matches one of our country codes)
+    if (countryParam) {
+      // Convert to uppercase for consistent comparison
+      const normalizedCountry = countryParam.toUpperCase();
+      
+      // Check if it's a valid country code
+      if (Object.keys(COUNTRIES).includes(normalizedCountry)) {
+        return normalizedCountry;
+      }
+    }
+    
+    // Default to Germany if no valid country parameter is found
+    return 'DE';
+  };
+  
+  const [selectedCountry, setSelectedCountry] = useState(getInitialCountry);
   const [includeTax, setIncludeTax] = useState(true);
   const [priceData, setPriceData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -38,6 +59,9 @@ function App() {
 
   const handleCountryChange = (country) => {
     setSelectedCountry(country);
+    
+    // Update URL with the new country parameter
+    setUrlParameter('country', country);
   };
 
   const handleTaxToggle = (newValue) => {

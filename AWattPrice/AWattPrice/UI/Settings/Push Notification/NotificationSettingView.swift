@@ -7,64 +7,127 @@
 
 import SwiftUI
 
-extension AnyTransition {
-    static var belowScale: AnyTransition {
-        .scale.combined(with: .move(edge: .bottom))
+private struct NotificationSettingsBackground: View {
+    var body: some View {
+        LinearGradient(
+            colors: [
+                Color(red: 0.97, green: 0.95, blue: 0.92),
+                Color(red: 0.95, green: 0.97, blue: 0.99),
+                Color.white,
+            ],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+        .ignoresSafeArea()
     }
 }
 
-// Simple enum to replace publisher-based error observer
-enum UploadErrorViewState {
-    case noError
-    case lastUploadFailed
+private struct NotificationSettingsCard<Content: View>: View {
+    @ViewBuilder let content: Content
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            content
+        }
+        .padding(18)
+        .background(
+            RoundedRectangle(cornerRadius: 28, style: .continuous)
+                .fill(.ultraThinMaterial)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 28, style: .continuous)
+                        .stroke(Color.white.opacity(0.55), lineWidth: 1)
+                )
+        )
+        .shadow(color: Color.black.opacity(0.04), radius: 20, y: 8)
+    }
+}
+
+private struct NotificationSettingsBadge: View {
+    let text: String
+    let tint: Color
+
+    var body: some View {
+        Text(text.localized())
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(tint)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 6)
+            .background(tint.opacity(0.12), in: Capsule())
+    }
 }
 
 @MainActor
 class NotificationSettingViewModel: ObservableObject {
     var notificationService: NotificationService
-    
+
     init(notificationService: NotificationService) {
         self.notificationService = notificationService
     }
-    
+
     func refreshAccessState() async {
         await notificationService.updateAccessStates()
     }
 }
 
 struct NotificationSettingView: View {
-    @Environment(\.scenePhase) var scenePhase
-    @EnvironmentObject var notificationService: NotificationService
+    @Environment(\.scenePhase) private var scenePhase
+    @EnvironmentObject private var notificationService: NotificationService
     @StateObject private var viewModel = NotificationSettingViewModel(notificationService: NotificationService())
-    
+
+    private var statusBadge: (String, Color) {
+        switch viewModel.notificationService.accessState {
+        case .granted:
+            return ("Ready", .green)
+        case .rejected:
+            return ("Notifications Off", .red)
+        case .notAsked:
+            return ("Not Configured", .orange)
+        case .unknown:
+            return ("Checking", .secondary)
+        }
+    }
+
     var body: some View {
-        Form {
-            if viewModel.notificationService.accessState == .rejected {
-                Section {
-                    NoNotificationAccessView()
-                        .padding(.top, 10)
-                        .transition(.opacity)
+        ZStack {
+            NotificationSettingsBackground()
+
+            ScrollView {
+                VStack(alignment: .leading, spacing: 18) {
+                    NotificationSettingsCard {
+                        HStack {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Price Guard")
+                                    .font(.system(size: 34, weight: .bold, design: .rounded))
+
+                                NotificationSettingsBadge(text: statusBadge.0, tint: statusBadge.1)
+                            }
+
+                            Spacer()
+                        }
+                    }
+
+                    if viewModel.notificationService.accessState == .rejected {
+                        NotificationSettingsCard {
+                            NoNotificationAccessView()
+                        }
+                    } else {
+                        NotificationSettingsCard {
+                            PriceBelowNotificationView(showHeader: false)
+                        }
+                    }
                 }
-                .listRowBackground(Color.clear)
-            } else {
-                Section {
-                    PriceBelowNotificationView()
-                }
+                .padding(.horizontal, 16)
+                .padding(.top, 14)
+                .padding(.bottom, 28)
             }
-            
-//            if viewModel.uploadErrorState == .lastUploadFailed {
-//                Section {
-//                    SettingsUploadErrorView()
-//                }
-//                .listRowBackground(Color.clear)
-//            }
         }
         .navigationTitle("Price Guard")
+        .navigationBarTitleDisplayMode(.inline)
         .task {
             viewModel.notificationService = notificationService
             await viewModel.refreshAccessState()
         }
-        .onChange(of: scenePhase) { newPhase in
+        .onChange(of: scenePhase) { _, newPhase in
             if newPhase == .active {
                 Task { await viewModel.refreshAccessState() }
             }
@@ -74,17 +137,17 @@ struct NotificationSettingView: View {
 
 struct NoNotificationAccessView: View {
     var body: some View {
-        VStack(alignment: .center, spacing: 30) {
-            Text("notificationPage.noNotificationAccessInfo")
-                .multilineTextAlignment(.center)
-                .foregroundColor(.gray)
+        VStack(alignment: .leading, spacing: 16) {
+            Label("Notifications are disabled.".localized(), systemImage: "bell.slash.fill")
+                .font(.headline)
 
             Button("Open Settings App") {
                 if let url = URL(string: UIApplication.openSettingsURLString) {
                     UIApplication.shared.open(url)
                 }
             }
-            .buttonStyle(RoundedBorderButtonStyle())
+            .buttonStyle(.borderedProminent)
+            .tint(.blue)
         }
     }
 }
@@ -93,6 +156,7 @@ struct NotificationSettingView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
             NotificationSettingView()
+                .environmentObject(SettingsManager.shared)
                 .environmentObject(NotificationService())
         }
     }

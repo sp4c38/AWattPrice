@@ -8,143 +8,153 @@
 import MessageUI
 import SwiftUI
 
-struct HelpAndSuggestionButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .opacity(configuration.isPressed ? 0.3 : 1)
-            .foregroundColor(Color.white)
-            .frame(maxWidth: .infinity)
-            .padding([.top, .bottom], 16)
-            .padding([.leading, .trailing], 5)
-            .background(Color.blue)
-            .cornerRadius(10)
-            .background(
-                RoundedRectangle(cornerRadius: 10)
-                    .stroke(Color.black, lineWidth: 5)
-            )
+private struct HelpAndSuggestionBackground: View {
+    var body: some View {
+        LinearGradient(
+            colors: [
+                Color(red: 0.97, green: 0.95, blue: 0.92),
+                Color(red: 0.95, green: 0.97, blue: 0.99),
+                Color.white,
+            ],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+        .ignoresSafeArea()
     }
 }
 
-struct HelpView: View {
-    @Environment(\.colorScheme) var colorScheme
-
-    @State var isShowingMailView = false
-
-    let mailContent: HelpMailContent
-
-    init() {
-        mailContent = HelpMailContent()
-        mailContent.setValues()
-    }
+private struct HelpAndSuggestionCard<Content: View>: View {
+    @ViewBuilder let content: Content
 
     var body: some View {
-        VStack(spacing: 30) {
-            Text("Help")
-                .bold()
-                .font(.title)
-
-            Button(action: {
-                if MFMailComposeViewController.canSendMail() {
-                    self.isShowingMailView.toggle()
-                } else {
-                    if let alternativeUrl = MailView(
-                        mailContent: mailContent)
-                        .getAlternativeMailApp()
-                    {
-                        UIApplication.shared.open(alternativeUrl)
-                    }
-                }
-            }) {
-                HStack(spacing: 10) {
-                    Image(systemName: "envelope")
-                        .font(.system(size: 20, weight: .semibold))
-
-                    Text("Get help by email")
-                        .font(.title3)
-                        .bold()
-                }
-            }
-            .buttonStyle(HelpAndSuggestionButtonStyle())
+        VStack(alignment: .leading, spacing: 16) {
+            content
         }
-        .padding()
-        .background(colorScheme == .light ? Color(hue: 0.6667, saturation: 0.0202, brightness: 0.9686) : Color(hue: 0.6667, saturation: 0.0340, brightness: 0.1424))
-        .cornerRadius(20)
-        .padding()
-        .sheet(isPresented: $isShowingMailView) {
-            MailView(mailContent: mailContent)
-                .edgesIgnoringSafeArea(.bottom)
-        }
+        .padding(18)
+        .background(
+            RoundedRectangle(cornerRadius: 28, style: .continuous)
+                .fill(.ultraThinMaterial)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 28, style: .continuous)
+                        .stroke(Color.white.opacity(0.55), lineWidth: 1)
+                )
+        )
+        .shadow(color: Color.black.opacity(0.04), radius: 20, y: 8)
     }
 }
 
-struct SuggestionView: View {
-    @Environment(\.colorScheme) var colorScheme
+private struct SupportMailAction: Identifiable {
+    let id: String
+    let title: String
+    let systemImage: String
+    let tint: Color
+    let mailContent: MailContent
+}
 
-    @State var isShowingMailView = false
+private struct SupportMailRow: View {
+    let action: SupportMailAction
+    let trigger: () -> Void
 
     var body: some View {
-        VStack(spacing: 30) {
-            Text("Suggestions")
-                .bold()
-                .font(.title)
+        Button(action: trigger) {
+            HStack(spacing: 14) {
+                Image(systemName: action.systemImage)
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(action.tint)
+                    .frame(width: 40, height: 40)
+                    .background(action.tint.opacity(0.12), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
 
-            Button(action: {
-                if MFMailComposeViewController.canSendMail() {
-                    self.isShowingMailView.toggle()
-                } else {
-                    if let alternativeUrl = MailView(mailContent: SuggestionMailContent()).getAlternativeMailApp() {
-                        UIApplication.shared.open(alternativeUrl)
-                    }
-                }
-            }) {
-                HStack(spacing: 10) {
-                    Image("Suggestion")
-                        .resizable()
-                        .renderingMode(.template)
-                        .frame(width: 25, height: 25)
+                Text(action.title.localized())
+                    .font(.headline)
+                    .foregroundStyle(.primary)
 
-                    Text("Send suggestions by email")
-                        .font(.title3)
-                        .bold()
-                }
+                Spacer()
+
+                Image(systemName: "arrow.up.right")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(.tertiary)
             }
-            .buttonStyle(HelpAndSuggestionButtonStyle())
+            .contentShape(Rectangle())
         }
-        .padding()
-        .background(colorScheme == .light ? Color(hue: 0.6667, saturation: 0.0202, brightness: 0.9686) : Color(hue: 0.6667, saturation: 0.0340, brightness: 0.1424))
-        .cornerRadius(20)
-        .padding()
-        .sheet(isPresented: $isShowingMailView) {
-            MailView(mailContent: SuggestionMailContent())
-                .edgesIgnoringSafeArea(.bottom)
-        }
+        .buttonStyle(.plain)
     }
 }
 
 struct HelpAndSuggestionView: View {
-    @Environment(\.colorScheme) var colorScheme
+    @State private var activeMailAction: SupportMailAction?
+
+    private var helpAction: SupportMailAction {
+        let content = HelpMailContent()
+        content.setValues()
+
+        return SupportMailAction(
+            id: "help",
+            title: "Get Help",
+            systemImage: "lifepreserver.fill",
+            tint: .blue,
+            mailContent: content
+        )
+    }
+
+    private var suggestionAction: SupportMailAction {
+        SupportMailAction(
+            id: "suggestion",
+            title: "Send Suggestion",
+            systemImage: "sparkles",
+            tint: .orange,
+            mailContent: SuggestionMailContent()
+        )
+    }
 
     var body: some View {
-        VStack {
-            HelpView()
-            SuggestionView()
+        ZStack {
+            HelpAndSuggestionBackground()
+
+            ScrollView {
+                VStack(alignment: .leading, spacing: 18) {
+                    HelpAndSuggestionCard {
+                        Text("Help & Suggestions")
+                            .font(.system(size: 34, weight: .bold, design: .rounded))
+                    }
+
+                    HelpAndSuggestionCard {
+                        SupportMailRow(action: helpAction) {
+                            openMail(for: helpAction)
+                        }
+
+                        Divider()
+
+                        SupportMailRow(action: suggestionAction) {
+                            openMail(for: suggestionAction)
+                        }
+                    }
+                }
+                .padding(.horizontal, 16)
+                .padding(.top, 14)
+                .padding(.bottom, 28)
+            }
         }
         .navigationTitle("Help & Suggestions")
+        .navigationBarTitleDisplayMode(.inline)
+        .sheet(item: $activeMailAction) { action in
+            MailView(mailContent: action.mailContent)
+                .edgesIgnoringSafeArea(.bottom)
+        }
+    }
+
+    private func openMail(for action: SupportMailAction) {
+        if MFMailComposeViewController.canSendMail() {
+            activeMailAction = action
+        } else if let alternativeUrl = MailView(mailContent: action.mailContent).getAlternativeMailApp() {
+            UIApplication.shared.open(alternativeUrl)
+        }
     }
 }
 
 struct HelpView_Previews: PreviewProvider {
     static var previews: some View {
-//        NavigationView {
-//            List {
-//                HelpView
-//            }
-//            .listStyle(InsetGroupedListStyle())
-//            .navigationTitle("Settings")
-//        }
-//        .preferredColorScheme(.light)
-
-        HelpAndSuggestionView()
-            .preferredColorScheme(.dark)
+        NavigationStack {
+            HelpAndSuggestionView()
+        }
     }
 }

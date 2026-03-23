@@ -239,6 +239,32 @@
 "baseFee.priceGuardActivatedInfo" = "Der Preiswächter ist eingeschaltet. Denken Sie daran den Wunschpreis ggf. anzupassen, wenn Sie den Wert unten ändern.";
 
 "Base Fee" = "Grundgebühr";
+"Austria" = "Österreich";
+"Germany" = "Deutschland";
+"VAT On" = "MwSt. an";
+"VAT Off" = "MwSt. aus";
+"Energy Setup" = "Energie";
+"Live Price Source" = "Preisquelle";
+"Alerts & Help" = "Hinweise & Hilfe";
+"Legal & About" = "Rechtliches & Info";
+"Terms of Use" = "Nutzungsbedingungen";
+"Privacy Policy" = "Datenschutz";
+"Below %@ ct/kWh" = "Unter %@ ct/kWh";
+"Set alert threshold" = "Grenzwert festlegen";
+"Notifications off" = "Benachrichtigungen aus";
+"Not configured" = "Nicht eingerichtet";
+"Value" = "Wert";
+"Used in Price Guard" = "Im Preiswächter aktiv";
+"Ready" = "Bereit";
+"Notifications Off" = "Benachrichtigungen aus";
+"Checking" = "Wird geprueft";
+"Notifications are disabled." = "Benachrichtigungen sind deaktiviert.";
+"Notify me" = "Benachrichtigen";
+"Threshold" = "Grenzwert";
+"On" = "An";
+"Off" = "Aus";
+"Get Help" = "Hilfe erhalten";
+"Send Suggestion" = "Vorschlag senden";
 
 "Base fee (incl. VAT):" = "Grundgebühr (inkl. MwSt.):";
 

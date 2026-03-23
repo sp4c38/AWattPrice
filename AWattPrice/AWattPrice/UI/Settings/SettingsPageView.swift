@@ -5,97 +5,241 @@
 //  Created by Léon Becker on 11.09.20.
 //
 
-import SceneKit
 import SwiftUI
 
-struct GoToBaseFeeSettingsView: View {
-    var body: some View {
-        NavigationLink(destination: BaseFeeView()) {
-            Image(systemName: "eurosign.circle")
-                .resizable()
-                .frame(width: 22, height: 22)
-            
-            Text("Base Fee")
-                .bold()
+private extension Region {
+    var settingsLabel: String {
+        switch self {
+        case .DE:
+            return "Germany".localized()
+        case .AT:
+            return "Austria".localized()
+        }
+    }
+
+    var settingsFlag: String {
+        switch self {
+        case .DE:
+            return "DE"
+        case .AT:
+            return "AT"
         }
     }
 }
 
-struct GoToNotificationSettingView: View {
+private extension Double {
+    var settingsCentText: String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.minimumFractionDigits = 2
+        formatter.maximumFractionDigits = 2
+        return (formatter.string(from: NSNumber(value: self)) ?? "0.00") + " ct/kWh"
+    }
+}
+
+private struct SettingsPageBackground: View {
     var body: some View {
-        VStack(alignment: .leading, spacing: 15) {
-            NavigationLink(destination: NotificationSettingView()) {
-                Image("PriceTag")
-                    .resizable()
-                    .renderingMode(.template)
-                    .frame(width: 22, height: 22)
-                
-                Text("Price Guard")
-                    .bold()
+        LinearGradient(
+            colors: [
+                Color(red: 0.97, green: 0.95, blue: 0.92),
+                Color(red: 0.95, green: 0.97, blue: 0.99),
+                Color.white,
+            ],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+        .overlay(alignment: .topTrailing) {
+            Circle()
+                .fill(Color.orange.opacity(0.12))
+                .frame(width: 220, height: 220)
+                .offset(x: 70, y: -80)
+        }
+        .overlay(alignment: .bottomLeading) {
+            Circle()
+                .fill(Color.blue.opacity(0.08))
+                .frame(width: 240, height: 240)
+                .offset(x: -90, y: 120)
+        }
+        .ignoresSafeArea()
+    }
+}
+
+private struct SettingsSectionLabel: View {
+    let title: String
+    let subtitle: String?
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(title)
+                .font(.system(.title3, design: .rounded).weight(.bold))
+
+            if let subtitle {
+                Text(subtitle)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
             }
-            
-            Text("notificationPage.notification.priceDropsBelowValue.description")
-                .font(.subheadline)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+private struct SettingsCard<Content: View>: View {
+    @ViewBuilder let content: Content
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            content
+        }
+        .padding(18)
+        .background(
+            RoundedRectangle(cornerRadius: 28, style: .continuous)
+                .fill(.ultraThinMaterial)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 28, style: .continuous)
+                        .stroke(Color.white.opacity(0.55), lineWidth: 1)
+                )
+        )
+        .shadow(color: Color.black.opacity(0.04), radius: 20, y: 8)
+    }
+}
+
+private struct SettingsBadge: View {
+    let text: String
+    let tint: Color
+
+    var body: some View {
+        Text(text)
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(tint)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 6)
+            .background(tint.opacity(0.12), in: Capsule())
+    }
+}
+
+private struct SettingsDestinationRow<Destination: View>: View {
+    let title: String
+    let subtitle: String?
+    let systemImage: String
+    let tint: Color
+    @ViewBuilder let destination: Destination
+
+    var body: some View {
+        NavigationLink(destination: destination) {
+            HStack(spacing: 14) {
+                Image(systemName: systemImage)
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(tint)
+                    .frame(width: 40, height: 40)
+                    .background(tint.opacity(0.12), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(title)
+                        .font(.headline)
+                        .foregroundStyle(.primary)
+
+                    if let subtitle {
+                        Text(subtitle)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.leading)
+                    }
+                }
+
+                Spacer()
+
+                Image(systemName: "chevron.right")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(.tertiary)
+            }
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+private struct SettingsActionRow: View {
+    let title: String
+    let subtitle: String?
+    let systemImage: String
+    let tint: Color
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 14) {
+                Image(systemName: systemImage)
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(tint)
+                    .frame(width: 40, height: 40)
+                    .background(tint.opacity(0.12), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(title)
+                        .font(.headline)
+                        .foregroundStyle(.primary)
+
+                    if let subtitle {
+                        Text(subtitle)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.leading)
+                    }
+                }
+
+                Spacer()
+
+                Image(systemName: "arrow.up.right")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(.tertiary)
+            }
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+private struct SettingsHeaderCard: View {
+    let regionText: String
+    let vatEnabled: Bool
+    let baseFeeText: String
+
+    var body: some View {
+        SettingsCard {
+            VStack(alignment: .leading, spacing: 16) {
+                Text("Settings")
+                    .font(.system(size: 38, weight: .bold, design: .rounded))
+
+                HStack(spacing: 10) {
+                    SettingsBadge(text: regionText, tint: .orange)
+                    SettingsBadge(text: vatEnabled ? "VAT On".localized() : "VAT Off".localized(), tint: .blue)
+                    SettingsBadge(text: baseFeeText, tint: .green)
+                }
+            }
         }
     }
 }
 
-struct GetHelpView: View {
+private struct SettingsAppVersionView: View {
     var body: some View {
-        NavigationLink(destination: LazyNavigationDestination(HelpAndSuggestionView())) {
-            Image(systemName: "questionmark.circle")
+        HStack(spacing: 14) {
+            Image("BigAppIcon")
                 .resizable()
-                .frame(width: 22, height: 22, alignment: .center)
-            
-            Text("Help & Suggestions")
-                .font(.subheadline)
-        }
-    }
-}
+                .frame(width: 54, height: 54)
+                .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
 
-struct AgreementSettingView: View {
-    enum AgreementType {
-        case termsOfUse, privacyPolicy
-    }
-    
-    @Environment(\.colorScheme) var colorScheme
-    
-    var agreementType: AgreementType
-    
-    var agreementIconName: String
-    var agreementName: String
-    var agreementLinks: (String, String)
-    
-    init(agreementType: AgreementType) {
-        self.agreementType = agreementType
-        
-        switch agreementType {
-        case .termsOfUse:
-            agreementIconName = "doc.text"
-            agreementName = "Terms Of Use"
-            agreementLinks = ("https://awattprice.space8.me/terms_of_use/german.html",
-                              "https://awattprice.space8.me/terms_of_use/english.html")
-        case .privacyPolicy:
-            agreementIconName = "hand.raised"
-            agreementName = "Privacy Policy"
-            agreementLinks = ("https://awattprice.space8.me/privacy_policy/german.html",
-                              "https://awattprice.space8.me/privacy_policy/english.html")
-        }
-        
-    }
-    
-    var body: some View {
-        NavigationLink(destination: EmptyView(), isActive: .constant(false)) {
-            Image(systemName: agreementIconName)
-                .resizable()
-                .scaledToFit()
-                .frame(width: 22, height: 22)
-            
-            Text(agreementName.localized())
-                .font(.subheadline)
-        }
-        .onTapGesture {
-            openAgreementLink(agreementLinks)
+            VStack(alignment: .leading, spacing: 4) {
+                Text("AWattPrice")
+                    .font(.headline)
+
+                if let currentBuild = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String {
+                    Text("\("Version".localized()) \(AppContext.shared.currentAppVersion) (\(currentBuild))")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+            }
+
+            Spacer()
         }
     }
 }
@@ -123,70 +267,172 @@ struct NotAffiliatedView: View {
     }
 }
 
-struct AppVersionView: View {
-    @Environment(\.colorScheme) var colorScheme
-
+private struct SettingsNotAffiliatedView: View {
     var body: some View {
-        HStack {
-            Spacer()
-            VStack(spacing: 2) {
-                Image("BigAppIcon")
-                    .resizable()
-                    .frame(width: 60, height: 60)
-                    .saturation(0)
-                    .opacity(0.6)
-
-                Text("AWattPrice")
-                    .font(.headline)
-
-                if let currentBuild = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String {
-                    Text("\("Version".localized()) \(AppContext.shared.currentAppVersion) (\(currentBuild))")
-                        .font(.footnote)
-                }
-            }
-            Spacer()
-        }
-        .foregroundColor(Color(hue: 0.6667, saturation: 0.0448, brightness: 0.5255))
+        NotAffiliatedView(showGrayedOut: true)
     }
 }
 
-
 struct SettingsPageView: View {
-    @EnvironmentObject var settingsManager: SettingsManager
-    @EnvironmentObject var notificationService: NotificationService
-    
+    @EnvironmentObject private var settingsManager: SettingsManager
+    @EnvironmentObject private var notificationService: NotificationService
+
+    private var regionSummary: String {
+        "\(settingsManager.setting.region.settingsFlag) \(settingsManager.setting.region.settingsLabel)"
+    }
+
+    private var baseFeeSummary: String {
+        settingsManager.setting.baseFeePrice.settingsCentText
+    }
+
+    private var priceGuardSubtitle: String {
+        if settingsManager.setting.priceDropsBelowEnabled {
+            let threshold = settingsManager.setting.priceDropsBelowThreshold.priceString ?? "0"
+            return String(format: "Below %@ ct/kWh".localized(), threshold)
+        }
+
+        switch notificationService.accessState {
+        case .granted:
+            return "Set alert threshold".localized()
+        case .rejected:
+            return "Notifications off".localized()
+        default:
+            return "Not configured".localized()
+        }
+    }
+
     var body: some View {
-        NavigationView {
-            Form {
-                Section(header: Text("Region"), footer: Text("settingsPage.regionToGetPrices")) {
-                    RegionTaxSelectionView()
-                }
+        NavigationStack {
+            ZStack {
+                SettingsPageBackground()
 
-                Section {
-                    GoToBaseFeeSettingsView()
-                }
-                
-                Section {
-                    GoToNotificationSettingView()
-                }
-                    
-                Section {
-                    GetHelpView()
-                    AgreementSettingView(agreementType: .termsOfUse)
-                    AgreementSettingView(agreementType: .privacyPolicy)
-                }
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 18) {
+                        SettingsHeaderCard(
+                            regionText: regionSummary,
+                            vatEnabled: settingsManager.setting.taxEnabled,
+                            baseFeeText: baseFeeSummary
+                        )
 
-                VStack(spacing: 20) {
-                    NotAffiliatedView(showGrayedOut: true)
-                    AppVersionView()
+                        SettingsSectionLabel(
+                            title: "Energy Setup".localized(),
+                            subtitle: nil
+                        )
+
+                        SettingsCard {
+                            VStack(alignment: .leading, spacing: 14) {
+                                HStack(alignment: .center) {
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        Text("Live Price Source")
+                                            .font(.headline)
+                                    }
+
+                                    Spacer()
+
+                                    SettingsBadge(text: regionSummary, tint: .orange)
+                                }
+
+                                RegionTaxSelectionView()
+
+                                Divider()
+
+                                SettingsDestinationRow(
+                                    title: "Base Fee".localized(),
+                                    subtitle: nil,
+                                    systemImage: "eurosign.circle.fill",
+                                    tint: .green
+                                ) {
+                                    BaseFeeView()
+                                }
+                            }
+                        }
+
+                        SettingsSectionLabel(
+                            title: "Alerts & Help".localized(),
+                            subtitle: nil
+                        )
+
+                        SettingsCard {
+                            VStack(spacing: 16) {
+                                SettingsDestinationRow(
+                                    title: "Price Guard".localized(),
+                                    subtitle: priceGuardSubtitle,
+                                    systemImage: "bell.badge.fill",
+                                    tint: .red
+                                ) {
+                                    NotificationSettingView()
+                                }
+
+                                Divider()
+
+                                SettingsDestinationRow(
+                                    title: "Help & Suggestions".localized(),
+                                    subtitle: nil,
+                                    systemImage: "questionmark.bubble.fill",
+                                    tint: .blue
+                                ) {
+                                    HelpAndSuggestionView()
+                                }
+                            }
+                        }
+
+                        SettingsSectionLabel(
+                            title: "Legal & About".localized(),
+                            subtitle: nil
+                        )
+
+                        SettingsCard {
+                            VStack(spacing: 16) {
+                                SettingsActionRow(
+                                    title: "Terms of Use".localized(),
+                                    subtitle: nil,
+                                    systemImage: "doc.text.fill",
+                                    tint: .indigo
+                                ) {
+                                    openAgreementLink((
+                                        "https://awattprice.space8.me/terms_of_use/german.html",
+                                        "https://awattprice.space8.me/terms_of_use/english.html"
+                                    ))
+                                }
+
+                                Divider()
+
+                                SettingsActionRow(
+                                    title: "Privacy Policy".localized(),
+                                    subtitle: nil,
+                                    systemImage: "hand.raised.fill",
+                                    tint: .teal
+                                ) {
+                                    openAgreementLink((
+                                        "https://awattprice.space8.me/privacy_policy/german.html",
+                                        "https://awattprice.space8.me/privacy_policy/english.html"
+                                    ))
+                                }
+                            }
+                        }
+
+                        SettingsCard {
+                            VStack(alignment: .leading, spacing: 18) {
+                                SettingsAppVersionView()
+                                Divider()
+                                SettingsNotAffiliatedView()
+                            }
+                        }
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.top, 14)
+                    .padding(.bottom, 28)
                 }
-                .listRowBackground(Color.clear)
             }
-            .navigationTitle(Text("Settings"))
+            .navigationTitle("Settings")
+            .navigationBarTitleDisplayMode(.inline)
         }
     }
 }
 
 #Preview {
     SettingsPageView()
+        .environmentObject(SettingsManager.shared)
+        .environmentObject(NotificationService())
+        .environmentObject(EnergyDataService())
 }

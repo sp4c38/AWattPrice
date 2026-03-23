@@ -70,5 +70,32 @@
 "baseFee.infoText" = "The base fee is added on top of each electricity price within the entire app. This fee depends on your contract with aWATTar.";
 "baseFee.priceGuardActivatedInfo" = "The price guard is turned on. Remember to adjust the wish price if necessary when you change the value below.";
 
+"Austria" = "Austria";
+"Germany" = "Germany";
+"VAT On" = "VAT On";
+"VAT Off" = "VAT Off";
+"Energy Setup" = "Energy Setup";
+"Live Price Source" = "Live Price Source";
+"Alerts & Help" = "Alerts & Help";
+"Legal & About" = "Legal & About";
+"Terms of Use" = "Terms of Use";
+"Privacy Policy" = "Privacy Policy";
+"Below %@ ct/kWh" = "Below %@ ct/kWh";
+"Set alert threshold" = "Set alert threshold";
+"Notifications off" = "Notifications off";
+"Not configured" = "Not configured";
+"Value" = "Value";
+"Used in Price Guard" = "Used in Price Guard";
+"Ready" = "Ready";
+"Notifications Off" = "Notifications Off";
+"Checking" = "Checking";
+"Notifications are disabled." = "Notifications are disabled.";
+"Notify me" = "Notify me";
+"Threshold" = "Threshold";
+"On" = "On";
+"Off" = "Off";
+"Get Help" = "Get Help";
+"Send Suggestion" = "Send Suggestion";
+
 // Widget localizations
 "widget.pricesWidget.description" = "View electricity prices at a glance.";

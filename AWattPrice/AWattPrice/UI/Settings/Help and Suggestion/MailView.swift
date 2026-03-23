@@ -25,6 +25,10 @@ class MailContent {
 }
 
 class HelpMailContent: MailContent {
+    private var languageIdentifier: String {
+        Locale.current.language.languageCode?.identifier ?? "en"
+    }
+
     init() {
         let recipientEmails = "contact-awattprice@space8.me"
 
@@ -38,7 +42,7 @@ class HelpMailContent: MailContent {
     }
 
     func setSubject() {
-        if Locale.current.languageCode == "de" {
+        if languageIdentifier == "de" {
             subject = "AWattPrice Hilfe"
         } else {
             subject = "AWattPrice Help"
@@ -59,7 +63,7 @@ class HelpMailContent: MailContent {
     }
 
     func setBody() {
-        let isGermanLanguage = Locale.current.identifier == "de" ? true : false
+        let isGermanLanguage = languageIdentifier == "de"
 
         if let currentVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String {
             if isGermanLanguage {
@@ -101,7 +105,7 @@ class SuggestionMailContent: MailContent {
         var body = ""
         var encodedBody = ""
 
-        if Locale.current.languageCode == "en" {
+        if Locale.current.language.languageCode?.identifier == "en" {
             recipientEmails = "contact-awattprice@space8.me"
             subject = "AWattPrice Suggestion"
             encodedSubject = subject.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!

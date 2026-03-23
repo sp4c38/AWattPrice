@@ -5,272 +5,412 @@
 //  Created by Léon Becker on 08.09.20.
 //
 
-import CoreHaptics
-
 import SwiftUI
+import UIKit
 
 struct GraphHeader: View {
     var body: some View {
         HStack {
-            Text("Cent per kWh")
+            Text("Hour of day")
 
             Spacer()
 
-            Text("Hour of day")
+            Text("Cent per kWh")
         }
-        .font(.fSubHeadline)
-        .animation(.easeInOut)
+        .font(.footnote.weight(.semibold))
+        .foregroundStyle(.secondary)
+        .textCase(.uppercase)
     }
 }
 
-struct GraphSizePreferenceKey: PreferenceKey {
-    struct SizeBounds: Equatable {
-        static func == (_: GraphSizePreferenceKey.SizeBounds, _: GraphSizePreferenceKey.SizeBounds) -> Bool {
-            false
-        }
+private enum EnergyPriceGraphEmphasis: Equatable {
+    case standard
+    case adjacent
+    case selected
 
-        var bounds: Anchor<CGRect>
+    var trackHeightFactor: CGFloat {
+        switch self {
+        case .standard:
+            return 0.82
+        case .adjacent:
+            return 0.82
+        case .selected:
+            return 1.14
+        }
     }
 
-    typealias Value = SizeBounds?
-    static var defaultValue: Value = nil
+    var labelScale: CGFloat {
+        switch self {
+        case .standard:
+            return 1
+        case .adjacent:
+            return 1
+        case .selected:
+            return 1.22
+        }
+    }
 
-    static func reduce(value: inout Value, nextValue: () -> Value) {
-        value = nextValue()
+    var horizontalLabelPadding: CGFloat {
+        switch self {
+        case .standard:
+            return 5
+        case .adjacent:
+            return 5
+        case .selected:
+            return 6
+        }
+    }
+
+    var verticalLabelPadding: CGFloat {
+        switch self {
+        case .standard:
+            return 2
+        case .adjacent:
+            return 2
+        case .selected:
+            return 3
+        }
+    }
+
+    var labelCornerRadius: CGFloat {
+        switch self {
+        case .standard:
+            return 5
+        case .adjacent:
+            return 5
+        case .selected:
+            return 6
+        }
+    }
+
+    var highlightOpacity: Double {
+        switch self {
+        case .standard, .adjacent:
+            return 0
+        case .selected:
+            return 0.06
+        }
     }
 }
 
-/// Some single bar settings which is used by each bar
-class SingleBarSettings: ObservableObject {
-    var centFormatter: NumberFormatter
-    var hourFormatter: DateFormatter
+private struct EnergyPriceGraphMetrics {
+    let maxPrice: Double
 
-    var minPrice: Double
-    var maxPrice: Double
+    init(prices: [EnergyPricePoint]) {
+        let priceValues = prices.map(\.marketprice)
+        maxPrice = max(priceValues.map(abs).max() ?? 0, 1)
+    }
 
-    init(minPrice: Double, maxPrice: Double) {
-        centFormatter = NumberFormatter()
-        centFormatter.numberStyle = .currency
-        centFormatter.currencySymbol = "ct"
-        centFormatter.maximumFractionDigits = 2
-        centFormatter.minimumFractionDigits = 2
-
-        hourFormatter = DateFormatter()
-        hourFormatter.dateFormat = "H"
-
-        self.minPrice = minPrice
-        self.maxPrice = maxPrice
+    func barFrame(for price: Double, width: CGFloat) -> (x: CGFloat, width: CGFloat) {
+        guard price != 0 else { return (0, 0) }
+        let scaledWidth = max(CGFloat(abs(price) / maxPrice) * width, 2)
+        return (0, min(scaledWidth, width))
     }
 }
 
-/// The interactive graph drawn on the home screen displaying the price for each hour throughout the day
-struct EnergyPriceGraph: View {
-    @Environment(\.scenePhase) var scenePhase
+private struct EnergyPriceGraphLayout {
+    let rowHeight: CGFloat
+    let rowCenters: [CGFloat]
+    let rowSpacing: CGFloat
+    let availableHeight: CGFloat
 
-    @EnvironmentObject var energyDataService: EnergyDataService
+    init(count: Int, availableHeight: CGFloat) {
+        let localRowSpacing: CGFloat = 0.5
 
-    @State var graphHourPointData = [(EnergyPricePoint, CGFloat)]()
-    @State var hapticEngine: CHHapticEngine?
-    @State var currentPointerIndexSelected: Int?
-    @State var singleHeight: CGFloat = 0
-    @State var singleBarSettings: SingleBarSettings?
-    @State var dateMarkPointIndex: Int?
-
-    @State var sizeRect = CGRect(x: 0, y: 0, width: 0, height: 0)
-
-    @Binding var headerSize: CGSize
-
-    func updateBarHeights(localHeaderSize: CGSize) {
-        if graphHourPointData.count > 0 {
-            singleHeight = (sizeRect.height - headerSize.height) / CGFloat(energyDataService.energyData!.currentPrices.count)
-            var currentHeight: CGFloat = localHeaderSize.height
-
-            for hourPointIndex in 0 ... (graphHourPointData.count - 1) {
-                withAnimation {
-                    graphHourPointData[hourPointIndex].1 = currentHeight
-                }
-                currentHeight += singleHeight
-            }
+        let totalSpacing = localRowSpacing * CGFloat(max(count - 1, 0))
+        let localRowHeight = count == 0 ? 0 : max((availableHeight - totalSpacing) / CGFloat(count), 0)
+        let centers = (0 ..< count).map { index in
+            CGFloat(index) * (localRowHeight + localRowSpacing) + localRowHeight / 2
         }
+
+        rowSpacing = localRowSpacing
+        rowHeight = localRowHeight
+        rowCenters = centers
+        self.availableHeight = availableHeight
     }
 
-    func setGraphValues(energyData: EnergyData, localSizeRect: CGRect, localHeaderSize: CGSize) {
-        if !(localSizeRect.width == 0 || localSizeRect.height == 0) {
-            var minPrice = energyData.minCostPricePoint?.marketprice ?? 0
-            if minPrice > 0 {
-                minPrice = 0
-            }
-            let maxPrice = energyData.maxCostPricePoint?.marketprice ?? 0
-            singleBarSettings = SingleBarSettings(minPrice: minPrice, maxPrice: maxPrice)
-            singleHeight = (localSizeRect.height - localHeaderSize.height) / CGFloat(energyData.currentPrices.count)
+    func index(at locationY: CGFloat) -> Int? {
+        guard rowHeight > 0, rowCenters.isEmpty == false else { return nil }
 
-            if singleHeight != 0 {
-                graphHourPointData = []
-                dateMarkPointIndex = nil
-
-                let firstItemDate = energyData.currentPrices.first!.startTime
-                var currentHeight: CGFloat = localHeaderSize.height
-                for hourPointEntry in energyData.currentPrices {
-                    graphHourPointData.append((hourPointEntry, currentHeight))
-                    let currentItemDate = hourPointEntry.startTime
-
-                    if !(Calendar.current.compare(firstItemDate, to: currentItemDate, toGranularity: .day) == .orderedSame), dateMarkPointIndex == nil {
-                        var hourPointEntryIndex = (currentHeight - localHeaderSize.height) / singleHeight
-                        hourPointEntryIndex = ((hourPointEntryIndex * 100).rounded() / 100).rounded(.up)
-                        dateMarkPointIndex = Int(hourPointEntryIndex)
-                    }
-
-                    currentHeight += singleHeight
-                }
+        for (index, centerY) in rowCenters.enumerated() {
+            let minY = centerY - rowHeight / 2
+            let maxY = centerY + rowHeight / 2
+            if locationY >= minY, locationY <= maxY {
+                return index
             }
         }
+        return nil
+    }
+}
+
+private struct EnergyPriceBarRow: View {
+    let pricePoint: EnergyPricePoint
+    let emphasis: EnergyPriceGraphEmphasis
+    let metrics: EnergyPriceGraphMetrics
+    let rowHeight: CGFloat
+    let showsDayChange: Bool
+
+    private var timeRangeText: String {
+        let startHour = pricePoint.startTime.formatted(.dateTime.hour(.twoDigits(amPM: .omitted)))
+        let endHour = pricePoint.endTime.formatted(.dateTime.hour(.twoDigits(amPM: .omitted)))
+        return "\(startHour)-\(endHour)"
     }
 
-    func initCHEngine() {
-        guard CHHapticEngine.capabilitiesForHardware().supportsHaptics else { return }
-
-        do {
-            hapticEngine = try CHHapticEngine()
-            do {
-                try hapticEngine?.start()
-            } catch {
-                hapticEngine = nil
-            }
-        } catch {
-            print("There was an error initiating the haptic engine: \(error.localizedDescription).")
-        }
+    private var priceText: String {
+        let formattedPrice = pricePoint.marketprice.priceString.flatMap { $0.isEmpty ? nil : $0 } ?? "0.00"
+        return "\(formattedPrice) ct"
     }
 
-    func shortTapHaptic() {
-        guard hapticEngine != nil else { return }
-
-        var hapticEvents = [CHHapticEvent]()
-
-        let intensity = CHHapticEventParameter(parameterID: .hapticIntensity, value: 0.4)
-        let sharpness = CHHapticEventParameter(parameterID: .hapticSharpness, value: 0.6)
-        let hapticEvent = CHHapticEvent(eventType: .hapticTransient, parameters: [intensity, sharpness], relativeTime: 0)
-        hapticEvents.append(hapticEvent)
-
-        do {
-            let pattern = try CHHapticPattern(events: hapticEvents, parameters: [])
-            let player = try hapticEngine!.makePlayer(with: pattern)
-            try player.start(atTime: 0)
-        } catch {
-            print("Failed to play haptic pattern: \(error.localizedDescription).")
-        }
+    private var dayBadgeText: String {
+        pricePoint.startTime.formatted(.dateTime.weekday(.abbreviated).day())
     }
 
-    func readRectSize(preference: GraphSizePreferenceKey.SizeBounds, geo: GeometryProxy) -> some View {
-        let newSizeRect = geo[preference.bounds]
-        DispatchQueue.main.async {
-            guard newSizeRect != self.sizeRect else { return }
-            self.sizeRect = newSizeRect
-//             print("Set graph size to \(newSizeRect.debugDescription)")
-        }
-        return Color.clear
+    private var positiveGradient: LinearGradient {
+        LinearGradient(
+            colors: [
+                Color(red: 1.00, green: 0.76, blue: 0.31),
+                Color(red: 0.93, green: 0.32, blue: 0.29),
+            ],
+            startPoint: .leading,
+            endPoint: .trailing
+        )
+    }
+
+    private var negativeGradient: LinearGradient {
+        LinearGradient(
+            colors: [
+                Color(red: 0.35, green: 0.77, blue: 0.55),
+                Color(red: 0.14, green: 0.46, blue: 0.39),
+            ],
+            startPoint: .leading,
+            endPoint: .trailing
+        )
+    }
+
+    private var rowBackgroundFillColor: Color {
+        Color(red: 0.95, green: 0.50, blue: 0.23, opacity: emphasis.highlightOpacity)
     }
 
     var body: some View {
-        // The drag gesture responsible for making the graph interactive.
-        // It gets active when the user presses anywhere on the graph.
-        // After that the gesture calculates the bar which the user pressed on. This bar and its
-        // associated text is than resized to be larger. This is used to display many
-        // bars on one screen and still ensure that they can be easily recognized
+        GeometryReader { geometry in
+            let trackHeight = max((rowHeight - 1) * emphasis.trackHeightFactor, 10)
+            let barFrame = metrics.barFrame(for: pricePoint.marketprice, width: geometry.size.width)
+            let gradient = pricePoint.marketprice >= 0 ? positiveGradient : negativeGradient
 
-        let graphDragGesture = DragGesture(minimumDistance: 0)
-            .onChanged { location in
-                let locationHeight = location.location.y
-
-                var newPointerIndexSelected: Int? = Int(((locationHeight / singleHeight) - 1).rounded(.up))
-
-                if newPointerIndexSelected != nil {
-                    if newPointerIndexSelected! < 0 || newPointerIndexSelected! > graphHourPointData.count - 1 {
-                        newPointerIndexSelected = nil
-                    }
-
-                    if newPointerIndexSelected != currentPointerIndexSelected {
-                        shortTapHaptic()
-                    }
-                }
-
-                withAnimation(.easeInOut(duration: 0.3)) {
-                    currentPointerIndexSelected = newPointerIndexSelected
-                }
-            }
-            .onEnded { _ in
-                withAnimation(.easeInOut(duration: 0.3)) {
-                    currentPointerIndexSelected = nil
-                }
-            }
-
-        ZStack {
-            GeometryReader { _ in
-                ZStack {
-                    if singleBarSettings != nil {
-                        ForEach(0 ..< graphHourPointData.count, id: \.self) { hourPointIndex -> EnergyPriceSingleBar in
-                            EnergyPriceSingleBar(
-                                singleBarSettings: singleBarSettings!,
-                                width: sizeRect.width,
-                                height: singleHeight,
-                                startHeight: graphHourPointData[hourPointIndex].1,
-                                indexSelected: currentPointerIndexSelected,
-                                ownIndex: hourPointIndex,
-                                maxIndex: graphHourPointData.count - 1,
-                                hourDataPoint: graphHourPointData[hourPointIndex].0
-                            )
-                        }
-                    }
-
-                    if dateMarkPointIndex != nil && graphHourPointData.isEmpty == false {
-                        DayMarkView(
-                            graphPointItem: graphHourPointData[dateMarkPointIndex!],
-                            indexSelected: currentPointerIndexSelected,
-                            ownIndex: dateMarkPointIndex!,
-                            maxIndex: graphHourPointData.count - 1,
-                            height: singleHeight
+            ZStack(alignment: .leading) {
+                if barFrame.width > 0 {
+                    gradient
+                        .mask(
+                            RoundedRectangle(cornerRadius: min(trackHeight * 0.18, 4), style: .continuous)
+                                .frame(width: barFrame.width, height: trackHeight)
+                                .frame(maxWidth: .infinity, alignment: .leading)
                         )
-                    }
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
                 }
-            }
-            .onAppear {
-                initCHEngine()
-            }
-            .onChange(of: scenePhase) { newScenePhase in
-                if newScenePhase == .active {
-                    initCHEngine()
-                    setGraphValues(energyData: energyDataService.energyData!, localSizeRect: sizeRect, localHeaderSize: headerSize)
-                }
-            }
-            .onReceive(energyDataService.$energyData) { newEnergyData in
-                guard let energyData = newEnergyData else { return }
-                setGraphValues(energyData: energyData, localSizeRect: sizeRect, localHeaderSize: headerSize)
-            }
-            .onChange(of: sizeRect) { newSizeRect in
-                setGraphValues(energyData: energyDataService.energyData!, localSizeRect: newSizeRect, localHeaderSize: headerSize)
-            }
-            .onChange(of: headerSize) { newHeaderSize in
-                updateBarHeights(localHeaderSize: newHeaderSize)
-            }
-            .anchorPreference(key: GraphSizePreferenceKey.self, value: .bounds, transform: { GraphSizePreferenceKey.SizeBounds(bounds: $0) })
-            .backgroundPreferenceValue(GraphSizePreferenceKey.self) { preference in
-                if preference != nil {
-                    GeometryReader { geo in
-                        self.readRectSize(preference: preference!, geo: geo)
-                    }
-                }
-            }
-            .ignoresSafeArea(.keyboard)
-            .drawingGroup()
 
-            VStack {
-                if sizeRect.height != 0 {
-                    Color.clear
-                        .frame(width: sizeRect.width, height: sizeRect.height)
-                        .contentShape(Rectangle())
-                        .gesture(graphDragGesture)
-                        .position(x: sizeRect.width / 2, y: headerSize.height + (sizeRect.height / 2))
+                HStack(spacing: 8) {
+                    Text(timeRangeText)
+                        .font(.system(size: 11, weight: .semibold, design: .rounded))
+                        .monospacedDigit()
+                        .foregroundStyle(.primary)
+                        .padding(.horizontal, emphasis.horizontalLabelPadding)
+                        .padding(.vertical, emphasis.verticalLabelPadding)
+                        .background(
+                            RoundedRectangle(cornerRadius: emphasis.labelCornerRadius, style: .continuous)
+                                .fill(Color.white.opacity(emphasis == .selected ? 0.9 : 0.8))
+                        )
+                        .scaleEffect(emphasis.labelScale)
+                        .frame(height: 20, alignment: .center)
+
+                    if showsDayChange {
+                        Text(dayBadgeText)
+                            .font(.caption2.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 3)
+                            .background(Color.white.opacity(0.72), in: Capsule())
+                    }
+
+                    Spacer(minLength: 8)
+
+                    Text(priceText)
+                        .font(.system(size: 11, weight: .semibold, design: .rounded))
+                        .monospacedDigit()
+                        .foregroundStyle(.primary)
+                        .padding(.horizontal, emphasis.horizontalLabelPadding + 1)
+                        .padding(.vertical, emphasis.verticalLabelPadding)
+                        .background(
+                            RoundedRectangle(cornerRadius: emphasis.labelCornerRadius, style: .continuous)
+                                .fill(Color.white.opacity(emphasis == .selected ? 0.9 : 0.78))
+                        )
+                        .scaleEffect(emphasis.labelScale)
+                        .fixedSize(horizontal: true, vertical: false)
+                        .frame(height: 20, alignment: .center)
+                }
+                .padding(.horizontal, 8)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .frame(height: rowHeight)
+        .background(
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .fill(rowBackgroundFillColor)
+        )
+    }
+}
+
+/// The interactive graph drawn on the prices screen displaying the price for each upcoming hour.
+struct EnergyPriceGraph: View {
+    @EnvironmentObject private var energyDataService: EnergyDataService
+
+    @State private var selectedIndex: Int?
+    @State private var feedbackGenerator = UISelectionFeedbackGenerator()
+
+    private var currentPrices: [EnergyPricePoint] {
+        energyDataService.energyData?.currentPrices ?? []
+    }
+
+    private func emphasis(for index: Int) -> EnergyPriceGraphEmphasis {
+        guard let selectedIndex else { return .standard }
+
+        switch abs(index - selectedIndex) {
+        case 0:
+            return .selected
+        case 1:
+            return .adjacent
+        default:
+            return .standard
+        }
+    }
+
+    private var selectionAnimation: Animation {
+        .interactiveSpring(response: 0.24, dampingFraction: 0.88, blendDuration: 0.1)
+    }
+
+    private func rowDisplacement(for index: Int, layout: EnergyPriceGraphLayout) -> CGFloat {
+        guard let selectedIndex else { return 0 }
+        guard index != selectedIndex else { return 0 }
+
+        let direction: CGFloat = index < selectedIndex ? -1 : 1
+        let pushDistance = min(max(layout.rowHeight * 0.42, 4), 10)
+        return direction * pushDistance
+    }
+
+    private func visualHalfHeight(for emphasis: EnergyPriceGraphEmphasis, rowHeight: CGFloat) -> CGFloat {
+        max((rowHeight - 1) * emphasis.trackHeightFactor, 8) / 2
+    }
+
+    private func rowPositionY(for index: Int, layout: EnergyPriceGraphLayout) -> CGFloat {
+        let baseY = layout.rowCenters[index]
+        let displacedY = baseY + rowDisplacement(for: index, layout: layout)
+
+        guard selectedIndex != nil else { return displacedY }
+
+        let topEdge = currentPrices.indices.reduce(CGFloat.greatestFiniteMagnitude) { partialResult, currentIndex in
+            let emphasis = emphasis(for: currentIndex)
+            let centerY = layout.rowCenters[currentIndex] + rowDisplacement(for: currentIndex, layout: layout)
+            return min(partialResult, centerY - visualHalfHeight(for: emphasis, rowHeight: layout.rowHeight))
+        }
+
+        let bottomEdge = currentPrices.indices.reduce(-CGFloat.greatestFiniteMagnitude) { partialResult, currentIndex in
+            let emphasis = emphasis(for: currentIndex)
+            let centerY = layout.rowCenters[currentIndex] + rowDisplacement(for: currentIndex, layout: layout)
+            return max(partialResult, centerY + visualHalfHeight(for: emphasis, rowHeight: layout.rowHeight))
+        }
+
+        let compensation: CGFloat
+        if topEdge < 0 {
+            compensation = -topEdge
+        } else if bottomEdge > layout.availableHeight {
+            compensation = layout.availableHeight - bottomEdge
+        } else {
+            compensation = 0
+        }
+
+        return displacedY + compensation
+    }
+
+    private func rowOffset(for index: Int) -> CGFloat {
+        guard let selectedIndex else { return 0 }
+
+        let distance = abs(index - selectedIndex)
+        guard distance > 0 else { return 0 }
+
+        let direction: CGFloat = index < selectedIndex ? -1 : 1
+        let magnitude: CGFloat
+
+        switch distance {
+        case 1:
+            magnitude = 8
+        case 2:
+            magnitude = 4
+        case 3:
+            magnitude = 1.5
+        default:
+            magnitude = 0
+        }
+
+        return magnitude * direction
+    }
+
+    private func showsDayChange(at index: Int, prices: [EnergyPricePoint]) -> Bool {
+        guard index > 0 else { return false }
+        return Calendar.current.isDate(prices[index - 1].startTime, inSameDayAs: prices[index].startTime) == false
+    }
+
+    private func updateSelection(to newIndex: Int?) {
+        guard selectedIndex != newIndex else { return }
+
+        if newIndex != nil {
+            feedbackGenerator.selectionChanged()
+            feedbackGenerator.prepare()
+        }
+
+        selectedIndex = newIndex
+    }
+
+    var body: some View {
+        GeometryReader { geometry in
+            let prices = currentPrices
+            let layout = EnergyPriceGraphLayout(
+                count: prices.count,
+                availableHeight: geometry.size.height
+            )
+            let metrics = EnergyPriceGraphMetrics(prices: prices)
+
+            ZStack {
+                ForEach(Array(prices.enumerated()), id: \.offset) { index, pricePoint in
+                    EnergyPriceBarRow(
+                        pricePoint: pricePoint,
+                        emphasis: emphasis(for: index),
+                        metrics: metrics,
+                        rowHeight: layout.rowHeight,
+                        showsDayChange: showsDayChange(at: index, prices: prices)
+                    )
+                    .position(
+                        x: geometry.size.width / 2,
+                        y: rowPositionY(for: index, layout: layout)
+                    )
+                    .zIndex(selectedIndex == index ? 1 : 0)
                 }
             }
+            .animation(selectionAnimation, value: selectedIndex)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+            .contentShape(Rectangle())
+            .gesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged { value in
+                        let nextIndex = layout.index(at: value.location.y)
+                        updateSelection(to: nextIndex)
+                    }
+                    .onEnded { _ in
+                        updateSelection(to: nil)
+                    }
+            )
+        }
+        .onAppear {
+            feedbackGenerator.prepare()
         }
     }
 }

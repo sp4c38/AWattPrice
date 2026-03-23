@@ -7,64 +7,24 @@
 
 import SwiftUI
 
-struct HeaderSizePreferenceKey: PreferenceKey {
-    struct SizeBounds: Equatable {
-        static func == (_: HeaderSizePreferenceKey.SizeBounds, _: HeaderSizePreferenceKey.SizeBounds) -> Bool {
-            false
-        }
-
-        var bounds: Anchor<CGRect>
-    }
-
-    typealias Value = SizeBounds?
-    static var defaultValue: Value = nil
-
-    static func reduce(value: inout Value, nextValue: () -> Value) {
-        value = nextValue()
-    }
-}
-
 struct PricesView: View {
-    @EnvironmentObject var energyDataService: EnergyDataService
-
-    @State var headerSize = CGSize(width: 0, height: 0)
-    @State var initialAppearFinished: Bool? = false
-
-    func parseHeaderSize(preference: HeaderSizePreferenceKey.SizeBounds, geo: GeometryProxy) -> some View {
-        let newHeaderSize = geo[preference.bounds].size
-        guard newHeaderSize != headerSize else { return Color.clear }
-        headerSize = newHeaderSize
-        return Color.clear
-    }
+    @EnvironmentObject private var energyDataService: EnergyDataService
 
     var body: some View {
         NavigationView {
-            VStack {
+            Group {
                 if energyDataService.energyData != nil {
-                    ZStack {
-                        VStack {
-                            VStack(spacing: 5) {
-                                UpdatedDataView()
-                                GraphHeader()
-                            }
-                            .padding([.leading, .trailing], 16)
-                            .padding(.top, 8)
-                            .padding(.bottom, 5)
-                            .anchorPreference(key: HeaderSizePreferenceKey.self,
-                                              value: .bounds,
-                                              transform: { HeaderSizePreferenceKey.SizeBounds(bounds: $0) })
-                            .backgroundPreferenceValue(HeaderSizePreferenceKey.self) { headerSize in
-                                if headerSize != nil {
-                                    GeometryReader { geo in
-                                        self.parseHeaderSize(preference: headerSize!, geo: geo)
-                                    }
-                                }
-                            }
-
-                            Spacer()
+                    VStack(spacing: 12) {
+                        VStack(spacing: 8) {
+                            UpdatedDataView()
+                            GraphHeader()
                         }
+                        .padding(.horizontal, 16)
+                        .padding(.top, 8)
 
-                        EnergyPriceGraph(headerSize: self.$headerSize)
+                        EnergyPriceGraph()
+                            .padding(.horizontal, 16)
+                            .padding(.bottom, 16)
                     }
                 } else {
                     DataDownloadAndError()
@@ -74,9 +34,6 @@ struct PricesView: View {
             .navigationBarTitleDisplayMode(.large)
         }
         .navigationViewStyle(StackNavigationViewStyle())
-        .onAppear {
-            initialAppearFinished = nil
-        }
     }
 }
 

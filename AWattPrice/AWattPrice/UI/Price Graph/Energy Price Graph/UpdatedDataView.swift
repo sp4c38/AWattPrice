@@ -98,6 +98,19 @@ struct UpdatedDataView: View {
             energyDataService: EnergyDataService()
         ))
     }
+
+    private var animationStateKey: Int {
+        switch viewModel.viewDownloadState {
+        case .idle:
+            return 0
+        case .downloading:
+            return 1
+        case .finished:
+            return 2
+        case .failed:
+            return 3
+        }
+    }
     
     var body: some View {
         HStack(spacing: 10) {
@@ -120,13 +133,12 @@ struct UpdatedDataView: View {
                 Text(viewModel.localizedTimeIntervalString)
                     .foregroundColor(Color.gray)
                     .transition(.opacity)
-                    .animation(nil)
             }
 
             Spacer()
         }
         .font(.fCaption)
-        .animation(.easeInOut)
+        .animation(.easeInOut, value: animationStateKey)
         .onAppear {
             // Update viewModel with the actual environment objects
             viewModel.energyDataService = energyDataService

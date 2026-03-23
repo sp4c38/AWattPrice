@@ -31,11 +31,11 @@ private enum EnergyPriceGraphEmphasis: Equatable {
     var trackHeightFactor: CGFloat {
         switch self {
         case .standard:
-            return 0.82
+            return 0.9
         case .adjacent:
-            return 0.82
+            return 0.92
         case .selected:
-            return 1.14
+            return 1.90
         }
     }
 
@@ -115,7 +115,7 @@ private struct EnergyPriceGraphLayout {
     let availableHeight: CGFloat
 
     init(count: Int, availableHeight: CGFloat) {
-        let localRowSpacing: CGFloat = 0.5
+        let localRowSpacing: CGFloat = 0.25
 
         let totalSpacing = localRowSpacing * CGFloat(max(count - 1, 0))
         let localRowHeight = count == 0 ? 0 : max((availableHeight - totalSpacing) / CGFloat(count), 0)
@@ -143,12 +143,19 @@ private struct EnergyPriceGraphLayout {
     }
 }
 
+private enum EnergyPriceGraphExpansionAnchor {
+    case centered
+    case lockTop
+    case lockBottom
+}
+
 private struct EnergyPriceBarRow: View {
     let pricePoint: EnergyPricePoint
     let emphasis: EnergyPriceGraphEmphasis
     let metrics: EnergyPriceGraphMetrics
     let rowHeight: CGFloat
     let showsDayChange: Bool
+    let expansionAnchor: EnergyPriceGraphExpansionAnchor
 
     private var timeRangeText: String {
         let startHour = pricePoint.startTime.formatted(.dateTime.hour(.twoDigits(amPM: .omitted)))
@@ -193,9 +200,18 @@ private struct EnergyPriceBarRow: View {
 
     var body: some View {
         GeometryReader { geometry in
+            let baseTrackHeight = max((rowHeight - 1) * EnergyPriceGraphEmphasis.standard.trackHeightFactor, 10)
             let trackHeight = max((rowHeight - 1) * emphasis.trackHeightFactor, 10)
             let barFrame = metrics.barFrame(for: pricePoint.marketprice, width: geometry.size.width)
             let gradient = pricePoint.marketprice >= 0 ? positiveGradient : negativeGradient
+            let inwardOffset = switch expansionAnchor {
+            case .centered:
+                CGFloat.zero
+            case .lockTop:
+                (trackHeight - baseTrackHeight) / 2
+            case .lockBottom:
+                -(trackHeight - baseTrackHeight) / 2
+            }
 
             ZStack(alignment: .leading) {
                 if barFrame.width > 0 {
@@ -250,6 +266,7 @@ private struct EnergyPriceBarRow: View {
                 .padding(.horizontal, 8)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
             }
+            .offset(y: inwardOffset)
         }
         .frame(maxWidth: .infinity)
         .frame(height: rowHeight)
@@ -285,7 +302,7 @@ struct EnergyPriceGraph: View {
     }
 
     private var selectionAnimation: Animation {
-        .interactiveSpring(response: 0.24, dampingFraction: 0.88, blendDuration: 0.1)
+        .interactiveSpring(response: 0.34, dampingFraction: 0.38, blendDuration: 0.15)
     }
 
     private func rowDisplacement(for index: Int, layout: EnergyPriceGraphLayout) -> CGFloat {
@@ -293,7 +310,7 @@ struct EnergyPriceGraph: View {
         guard index != selectedIndex else { return 0 }
 
         let direction: CGFloat = index < selectedIndex ? -1 : 1
-        let pushDistance = min(max(layout.rowHeight * 0.42, 4), 10)
+        let pushDistance = min(max(layout.rowHeight * 0.18, 1.5), 4.5)
         return direction * pushDistance
     }
 
@@ -331,32 +348,16 @@ struct EnergyPriceGraph: View {
         return displacedY + compensation
     }
 
-    private func rowOffset(for index: Int) -> CGFloat {
-        guard let selectedIndex else { return 0 }
-
-        let distance = abs(index - selectedIndex)
-        guard distance > 0 else { return 0 }
-
-        let direction: CGFloat = index < selectedIndex ? -1 : 1
-        let magnitude: CGFloat
-
-        switch distance {
-        case 1:
-            magnitude = 8
-        case 2:
-            magnitude = 4
-        case 3:
-            magnitude = 1.5
-        default:
-            magnitude = 0
-        }
-
-        return magnitude * direction
-    }
-
     private func showsDayChange(at index: Int, prices: [EnergyPricePoint]) -> Bool {
         guard index > 0 else { return false }
         return Calendar.current.isDate(prices[index - 1].startTime, inSameDayAs: prices[index].startTime) == false
+    }
+
+    private func expansionAnchor(for index: Int, prices: [EnergyPricePoint]) -> EnergyPriceGraphExpansionAnchor {
+        guard selectedIndex == index else { return .centered }
+        if index == 0 { return .lockTop }
+        if index == prices.count - 1 { return .lockBottom }
+        return .centered
     }
 
     private func updateSelection(to newIndex: Int?) {
@@ -386,7 +387,8 @@ struct EnergyPriceGraph: View {
                         emphasis: emphasis(for: index),
                         metrics: metrics,
                         rowHeight: layout.rowHeight,
-                        showsDayChange: showsDayChange(at: index, prices: prices)
+                        showsDayChange: showsDayChange(at: index, prices: prices),
+                        expansionAnchor: expansionAnchor(for: index, prices: prices)
                     )
                     .position(
                         x: geometry.size.width / 2,

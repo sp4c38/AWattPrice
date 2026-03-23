@@ -7,27 +7,14 @@
 
 import SwiftUI
 
-struct ViewSizePreferenceKey: PreferenceKey {
-    struct SizeBounds {
-        var bounds: Anchor<CGRect>
-    }
-
-    typealias Value = SizeBounds?
-    var defaultValue: Value = nil
-
-    static func reduce(value: inout SizeBounds?, nextValue: () -> SizeBounds?) {
-        value = nextValue()
-    }
-}
+let cheapestTimeAccent = Color(red: 0.87, green: 0.35, blue: 0.26)
 
 struct CheapestTimeViewBodyPicker: View {
     @EnvironmentObject var energyDataService: EnergyDataService
     @EnvironmentObject var cheapestHourManager: CheapestHourManager
 
     @State var maxTimeInterval = TimeInterval(3600)
-    
-    @State var timeOfUsageInterval = TimeInterval(0)
-    
+
     func setMaxTimeInterval() {
         guard let minMaxTimeRange = energyDataService.energyData?.minMaxTimeRange else { return }
         let nowHourStart = Calendar.current.date(
@@ -51,7 +38,7 @@ struct CheapestTimeViewBodyPicker: View {
     var body: some View {
         VStack {
             EasyIntervalPickerRepresentable(
-                $timeOfUsageInterval,
+                $cheapestHourManager.timeOfUsageInterval,
                 maxTimeInterval: maxTimeInterval,
                 selectionInterval: 5
             )
@@ -62,102 +49,113 @@ struct CheapestTimeViewBodyPicker: View {
             .onReceive(energyDataService.$energyData) { _ in
                 setMaxTimeInterval()
             }
-            .onChange(of: timeOfUsageInterval) {
-                cheapestHourManager.timeOfUsageInterval = timeOfUsageInterval
-            }
         }
     }
 }
 
-struct CheapestTimeViewBody: View {
-    @EnvironmentObject var cheapestHourManager: CheapestHourManager
-    @Binding var inputFieldFocused: Bool
+struct CheapestTimeCardModifier: ViewModifier {
+    @Environment(\.colorScheme) private var colorScheme
 
-    @State var inputMode: Int = 0
+    func body(content: Content) -> some View {
+        content
+            .padding(20)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(
+                RoundedRectangle(cornerRadius: 26, style: .continuous)
+                    .fill(
+                        LinearGradient(
+                            colors: colorScheme == .light
+                                ? [Color.white, Color(red: 0.98, green: 0.97, blue: 0.95)]
+                                : [Color(red: 0.13, green: 0.13, blue: 0.15), Color(red: 0.09, green: 0.09, blue: 0.11)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 26, style: .continuous)
+                    .strokeBorder(
+                        colorScheme == .light
+                            ? Color.black.opacity(0.05)
+                            : Color.white.opacity(0.08),
+                        lineWidth: 1
+                    )
+            )
+            .shadow(
+                color: colorScheme == .light ? Color.black.opacity(0.06) : Color.black.opacity(0.25),
+                radius: 16,
+                y: 8
+            )
+    }
+}
+
+extension View {
+    func cheapestTimeCardStyle() -> some View {
+        modifier(CheapestTimeCardModifier())
+    }
+}
+
+private struct CheapestTimeDurationSection: View {
+    @EnvironmentObject private var cheapestHourManager: CheapestHourManager
+
+    private var selectedDurationText: String {
+        let interval = max(Int(cheapestHourManager.timeOfUsageInterval), 0)
+        let hours = interval / 3600
+        let minutes = (interval % 3600) / 60
+        return TotalTimeFormatter().string(hour: hours, minute: minutes)
+    }
 
     var body: some View {
-        VStack(spacing: 15) {
-            Picker("", selection: $inputMode) {
-                Text("Duration")
-                    .tag(0)
-                Text("kWh")
-                    .tag(1)
-            }
-            .pickerStyle(SegmentedPickerStyle())
+        VStack(alignment: .leading, spacing: 18) {
+            VStack(alignment: .leading, spacing: 8) {
+                Label("Duration", systemImage: "timer")
+                    .font(.headline)
+                    .foregroundStyle(.primary)
 
-            VStack(alignment: .center, spacing: 0) {
-                VStack(alignment: .center, spacing: 25) {
-                    if inputMode == 0 {
-                        CheapestTimeViewBodyPicker()
-                    } else if inputMode == 1 {
-                        PowerOutputInputField(errorValues: cheapestHourManager.errorValues, isFocused: $inputFieldFocused)
-                        EnergyUsageInputField(errorValues: cheapestHourManager.errorValues, isFocused: $inputFieldFocused)
-                    }
-                }
-                .padding(.bottom, inputMode == 0 ? 0 : 25)
+                Text("Pick how long your device should run, then limit the search window below.".localized())
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
 
-                TimeRangeInputField()
+            HStack(alignment: .firstTextBaseline, spacing: 10) {
+                Text(selectedDurationText)
+                    .font(.system(.title2, design: .rounded).weight(.semibold))
+                    .contentTransition(.numericText())
+
+                Text("selected".localized())
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
             }
-            .onChange(of: inputMode) {
-                DispatchQueue.main.asyncAfter(deadline: .now()) {
-                    cheapestHourManager.errorValues = []
-                }
-                cheapestHourManager.inputMode = inputMode
-            }
+
+            CheapestTimeViewBodyPicker()
         }
-        .padding(.top, 20)
-        .padding([.leading, .trailing], 20)
-        .padding(.bottom, 10)
+        .cheapestTimeCardStyle()
+        .onChange(of: cheapestHourManager.timeOfUsageInterval) {
+            cheapestHourManager.resetTransientState()
+        }
     }
 }
 
-/// A view which allows the user to find the cheapest hours for using energy. It optionally can also show
-/// the final price which the user would have to pay to aWATTar if consuming the specified amount of energy.
+/// A view which allows the user to find the cheapest time window for a given duration.
 struct CheapestTimeView: View {
-    @Environment(\.colorScheme) var colorScheme
-
-    @EnvironmentObject var energyDataService: EnergyDataService
-    @EnvironmentObject var cheapestHourManager: CheapestHourManager
-    
-    @FocusState private var focusState: Bool
-    @State private var inputFieldFocused: Bool = false
+    @EnvironmentObject private var energyDataService: EnergyDataService
+    @EnvironmentObject private var cheapestHourManager: CheapestHourManager
 
     @State private var navigateToResults = false
 
     var body: some View {
         NavigationStack {
-            VStack {
+            Group {
                 if energyDataService.energyData != nil {
                     ScrollView {
-                        VStack(spacing: 0) {
-                            CheapestTimeViewBody(inputFieldFocused: $inputFieldFocused)
-
-                            Spacer()
-
-                            // Button to perform calculations to find cheapest hours and
-                            // to redirect to the result view to show the results calculated
-                            Button(action: {
-                                inputFieldFocused = false
-                                cheapestHourManager.setValues()
-                                if cheapestHourManager.errorValues.contains(0) {
-                                    // All requirements are satisfied
-                                    navigateToResults = true
-                                }
-                            }, label: {
-                                HStack {
-                                    Text("Result")
-                                    Image(systemName: "chevron.right")
-                                        .foregroundColor(Color.white)
-                                        .padding(.leading, 10)
-                                }
-                            })
-                                .buttonStyle(ActionButtonStyle())
-                                .padding([.leading, .trailing, .bottom], 16)
-                                .padding(.top, 5)
+                        VStack(alignment: .leading, spacing: 18) {
+                            CheapestTimeDurationSection()
+                            TimeRangeInputField()
                         }
-                        .animation(.easeInOut)
+                        .padding(.horizontal, 16)
+                        .padding(.top, 14)
+                        .padding(.bottom, 120)
                     }
-                    .padding(.top, 1.5)
                     .navigationDestination(isPresented: $navigateToResults) {
                         CheapestTimeResultView()
                     }
@@ -166,13 +164,39 @@ struct CheapestTimeView: View {
                 }
             }
             .navigationTitle("Cheapest Time")
-        }
-        // Keep the state and focus state in sync
-        .onChange(of: focusState) {
-            inputFieldFocused = focusState
-        }
-        .onChange(of: inputFieldFocused) {
-            focusState = inputFieldFocused
+            .safeAreaInset(edge: .bottom) {
+                if energyDataService.energyData != nil {
+                    VStack(spacing: 0) {
+                        Divider()
+                            .overlay(Color.primary.opacity(0.08))
+
+                        Button(action: {
+                            cheapestHourManager.validateInputs()
+                            if cheapestHourManager.hasValidInput {
+                                navigateToResults = true
+                            }
+                        }) {
+                            HStack(spacing: 10) {
+                                Text("Show Result".localized())
+                                Image(systemName: "arrow.right")
+                            }
+                            .font(.headline)
+                            .foregroundStyle(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 16)
+                            .background(
+                                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                                    .fill(cheapestTimeAccent)
+                            )
+                        }
+                        .buttonStyle(.plain)
+                        .padding(.horizontal, 16)
+                        .padding(.top, 12)
+                        .padding(.bottom, 8)
+                    }
+                    .background(.ultraThinMaterial)
+                }
+            }
         }
     }
 }

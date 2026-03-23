@@ -9,77 +9,39 @@ import Foundation
 
 /// An object which manages the calculation of when the cheapest hours are for energy consumption
 class CheapestHourManager: ObservableObject {
-    @Published var inputMode = 0
-    @Published var errorValues = [Int]()
-
-    @Published var powerOutputString = ""
-    @Published var powerOutput: Double = 0
-
-    @Published var energyUsageString = ""
-    @Published var energyUsage: Double = 0
-
     @Published var startDate = Date()
     @Published var endDate = Date().addingTimeInterval(3600)
 
-    @Published var timeOfUsageInterval = TimeInterval(0)
-
+    @Published var timeOfUsageInterval = TimeInterval(3600)
     @Published var timeOfUsage: Int = 0
-
-    @Published var cheapestHoursForUsage: HourPair? = nil
-
-    /// Set to true if calculations have been performed but no cheapest hours could be found.
-    @Published var errorOccurredFindingCheapestHours = false
+    @Published private(set) var result: HourPair? = nil
+    @Published private(set) var failedToFindResult = false
+    @Published var showsTimeRangeError = false
 }
 
 extension CheapestHourManager {
-    /// Sets the values after the user entered them.
-    /// - Returns: If errors occur because of wrong input of the user and values cannot be set correctly a list is returned with error values.
-    ///     - [0] all values were entered correctly
-    ///     - [1] powerOutputString is empty
-    ///     - [2] powerOutputString contains wrong characters
-    ///     - [3] energyUsageString is empty
-    ///     - [4] energyUsageString contains wrong characters
-    ///     - [5] the time which is needed with current power output and energy usage is smaller than the time range specified.
-    ///     - [6] not supported in this beta release
-    func setValues() {
-        errorValues = []
-        cheapestHoursForUsage = nil
-        if inputMode == 1 {
-            if powerOutputString.replacingOccurrences(of: " ", with: "") == "" {
-                errorValues.append(1)
-            } else {
-                if let powerOutputConverted = powerOutputString.doubleValue {
-                    powerOutput = powerOutputConverted
-                } else {
-                    errorValues.append(2)
-                }
-            }
+    func resetTransientState() {
+        showsTimeRangeError = false
+        result = nil
+        failedToFindResult = false
+    }
 
-            if energyUsageString.replacingOccurrences(of: " ", with: "") == "" {
-                errorValues.append(3)
-            } else {
-                if let energyUsageConverted = energyUsageString.doubleValue {
-                    energyUsage = energyUsageConverted
-                } else {
-                    errorValues.append(4)
-                }
-            }
+    var hasValidInput: Bool {
+        !showsTimeRangeError
+    }
+
+    func validateInputs() {
+        resetTransientState()
+        timeOfUsage = Int(timeOfUsageInterval)
+
+        let timeRangeMax = Int(endDate.timeIntervalSince(startDate))
+        if timeOfUsage > timeRangeMax {
+            showsTimeRangeError = true
         }
+    }
 
-        if errorValues.isEmpty {
-            timeOfUsage = Int(timeOfUsageInterval)
-            if inputMode == 1 {
-                timeOfUsage = Int(
-                    (energyUsage / powerOutput) * 60 * 60
-                )
-            }
-            let timeRangeMax = Int(endDate.timeIntervalSince(startDate))
-            if timeOfUsage > timeRangeMax {
-                errorValues.append(5)
-            }
-        }
-
-        if errorValues.isEmpty { errorValues.append(0) }
+    func setPreviewResult(_ result: HourPair) {
+        self.result = result
     }
 }
 
@@ -151,9 +113,6 @@ extension CheapestHourManager {
 class HourPair {
     var averagePrice: Double = 0
     var associatedPricePoints: [EnergyPricePoint]
-    /// Final energy cost which is calculated with a certain power (kW) a electrical
-    /// consumer uses and the time of the usage.
-    var hourlyEnergyCosts: Double?
 
     init(associatedPricePoints: [EnergyPricePoint]) {
         self.associatedPricePoints = associatedPricePoints
@@ -171,6 +130,23 @@ class HourPair {
             totalMinutes += pricePointMinuteLength
         }
         averagePrice = pricesTogether / totalMinutes
+    }
+
+    var startDate: Date? {
+        associatedPricePoints.first?.startTime
+    }
+
+    var endDate: Date? {
+        associatedPricePoints.last?.endTime
+    }
+
+    var duration: TimeInterval {
+        guard let startDate, let endDate else { return 0 }
+        return endDate.timeIntervalSince(startDate)
+    }
+
+    var slotCount: Int {
+        associatedPricePoints.count
     }
 }
 
@@ -203,29 +179,19 @@ extension CheapestHourManager {
 
 extension CheapestHourManager {
     func compareHourPairs(allPairs: [HourPair]) -> Int? {
-        // Compare all hour pairs to find the index of the hour pair with the smallest average price
-        var cheapestPairIndex: Int?
-        for pairIndex in 0 ..< allPairs.count {
-            if cheapestPairIndex != nil {
-                if allPairs[pairIndex].averagePrice < allPairs[cheapestPairIndex!].averagePrice {
-                    cheapestPairIndex = pairIndex
-                }
-            } else {
-                cheapestPairIndex = pairIndex
-            }
-        }
-
-        return cheapestPairIndex
+        allPairs.indices.min { allPairs[$0].averagePrice < allPairs[$1].averagePrice }
     }
 }
 
 extension CheapestHourManager {
     /**
      Function to calculate when energy prices are cheapest.
-     - Returns: Doesn't return value directly. Instead sets cheapestHoursForUsage of CheapestHourManager to the result HourPair.
+     - Returns: Doesn't return value directly. Instead stores the resulting time window on the manager.
      - Parameter energyData: Current energy data (data downloaded from the server)
      */
     func calculateCheapestHours(energyData: EnergyData) {
+        resetTransientState()
+
         DispatchQueue.global(qos: .userInitiated).async {
             var startTime = self.startDate
             var endTime = self.endDate
@@ -396,9 +362,9 @@ extension CheapestHourManager {
 
             DispatchQueue.main.async {
                 if cheapestHourPairIndex != nil {
-                    self.cheapestHoursForUsage = allPairs[cheapestHourPairIndex!]
+                    self.result = allPairs[cheapestHourPairIndex!]
                 } else {
-                    self.errorOccurredFindingCheapestHours = true
+                    self.failedToFindResult = true
                 }
             }
         }

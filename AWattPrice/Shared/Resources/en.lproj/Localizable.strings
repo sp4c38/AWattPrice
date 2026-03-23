@@ -20,12 +20,26 @@
 "cheapestPricePage.emptyFieldError" = "Please fill out this field.";
 "cheapestPricePage.wrongInputError" = "This field may only contain numbers and , or .";
 "cheapestPricePage.inputMode.withDuration.wrongTimeRangeError" = "With this time interval a minimum time range of %@ is required.";
-"cheapestPricePage.inputMode.withKwh.wrongTimeRangeError" = "With this power output and this total consumption a minimum time range of %@ is required.";
 
 // Cheapest Price Result page localizations
 "cheapestPriceResultPage.cheapestTimeErrorOccurred" = "An error occurred.\nPlease try again later.";
 "cheapestPriceResultPage.priceWithVatNote" = "(price with VAT, changeable in settings)";
 "cheapestPriceResultPage.priceWithoutVatNote" = "(price without VAT, changeable in settings)";
+"Best Window" = "Best Window";
+"Best Window Today" = "Best Window Today";
+"Best Window Tomorrow" = "Best Window Tomorrow";
+"Average Price" = "Average Price";
+"Covered Hours" = "Covered Hours";
+"Timeline" = "Timeline";
+"Recommended start" = "Recommended start";
+"Hourly slot" = "Hourly slot";
+"The highlighted window gives you the lowest average price within your selected range." = "The highlighted window gives you the lowest average price within your selected range.";
+"No Result Found" = "No Result Found";
+"Finding best window..." = "Finding best window...";
+"Show Result" = "Show Result";
+"Pick how long your device should run, then limit the search window below." = "Pick how long your device should run, then limit the search window below.";
+"selected" = "selected";
+"Constrain the search window to the hours that actually work for you." = "Constrain the search window to the hours that actually work for you.";
 
 // Settings Page and Help & Suggestions page localizations
 "settingsPage.regionToGetPrices" = "Select the region for which you would like to get electricity prices.";

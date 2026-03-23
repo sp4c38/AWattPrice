@@ -41,9 +41,6 @@
 "cheapestPricePage.inputMode.withDuration.wrongTimeRangeError" = "Mit diesem Zeitintervall ist ein Mindestzeitfenster von %@ erforderlich.";
 
 /* (No Comment) */
-"cheapestPricePage.inputMode.withKwh.wrongTimeRangeError" = "Mit dieser Leistung und diesem Gesamtverbrauch ist ein Mindestzeitfenster von %@ erforderlich.";
-
-/* (No Comment) */
 "cheapestPricePage.wrongInputError" = "Dieses Feld darf nur Zahlen und , oder . enthalten.";
 
 /* Cheapest Price Result page localizations */
@@ -54,6 +51,21 @@
 
 /* (No Comment) */
 "cheapestPriceResultPage.priceWithVatNote" = "(Preis mit MwSt., änderbar in Einstellungen)";
+"Best Window" = "Bestes Zeitfenster";
+"Best Window Today" = "Bestes Zeitfenster heute";
+"Best Window Tomorrow" = "Bestes Zeitfenster morgen";
+"Average Price" = "Durchschnittspreis";
+"Covered Hours" = "Abgedeckte Stunden";
+"Timeline" = "Ablauf";
+"Recommended start" = "Empfohlener Start";
+"Hourly slot" = "Stundenslot";
+"The highlighted window gives you the lowest average price within your selected range." = "Das hervorgehobene Zeitfenster bietet den niedrigsten Durchschnittspreis innerhalb Ihres gewählten Bereichs.";
+"No Result Found" = "Kein Ergebnis gefunden";
+"Finding best window..." = "Bestes Zeitfenster wird gesucht...";
+"Show Result" = "Ergebnis anzeigen";
+"Pick how long your device should run, then limit the search window below." = "Wählen Sie aus, wie lange Ihr Gerät laufen soll, und begrenzen Sie darunter das Suchfenster.";
+"selected" = "ausgewählt";
+"Constrain the search window to the hours that actually work for you." = "Begrenzen Sie das Suchfenster auf die Stunden, die für Sie wirklich passen.";
 
 /* No comment provided by engineer. */
 "Continue" = "Weiter";

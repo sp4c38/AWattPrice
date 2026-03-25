@@ -9,12 +9,18 @@
 import Foundation
 import SwiftData
 
+struct PricingConfiguration: Sendable {
+    let baseFeePrice: Double
+    let taxEnabled: Bool
+    let marketArea: MarketArea
+}
+
 @Model
 public class Setting {
     // General attributes
     var baseFeePrice: Double = 0.0
     var taxEnabled: Bool = true
-    var region: Region = Region.DE
+    var marketAreaKey: String = MarketArea.defaultAreaKey
     var onboarded: Bool = false // Splash screens finished
     
     // Notification attributes
@@ -25,5 +31,18 @@ public class Setting {
     
     public init() {
         // Empty initializer - property defaults are set above
+    }
+
+    var marketArea: MarketArea {
+        get { MarketArea.area(for: marketAreaKey) }
+        set { marketAreaKey = newValue.key }
+    }
+
+    var pricingConfiguration: PricingConfiguration {
+        PricingConfiguration(
+            baseFeePrice: baseFeePrice,
+            taxEnabled: taxEnabled,
+            marketArea: marketArea
+        )
     }
 }

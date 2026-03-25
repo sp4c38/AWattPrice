@@ -1,15 +1,111 @@
+import MapKit
 import SwiftUI
 
+enum MarketAreaDataSource {
+    case remote
+    case fallback
+}
+
+private enum MarketAreaMapCatalog {
+    static let europeRegion = MKCoordinateRegion(
+        center: CLLocationCoordinate2D(latitude: 52.0, longitude: 18.0),
+        span: MKCoordinateSpan(latitudeDelta: 36, longitudeDelta: 54)
+    )
+
+    static let countryCoordinates: [String: CLLocationCoordinate2D] = [
+        "AL": CLLocationCoordinate2D(latitude: 41.1, longitude: 20.0),
+        "AM": CLLocationCoordinate2D(latitude: 40.3, longitude: 44.9),
+        "AT": CLLocationCoordinate2D(latitude: 47.6, longitude: 14.3),
+        "AZ": CLLocationCoordinate2D(latitude: 40.4, longitude: 47.7),
+        "BA": CLLocationCoordinate2D(latitude: 44.2, longitude: 17.7),
+        "BE": CLLocationCoordinate2D(latitude: 50.7, longitude: 4.6),
+        "BG": CLLocationCoordinate2D(latitude: 42.8, longitude: 25.2),
+        "CH": CLLocationCoordinate2D(latitude: 46.8, longitude: 8.3),
+        "CZ": CLLocationCoordinate2D(latitude: 49.9, longitude: 15.5),
+        "DE": CLLocationCoordinate2D(latitude: 51.0, longitude: 10.4),
+        "DK": CLLocationCoordinate2D(latitude: 56.1, longitude: 10.0),
+        "EE": CLLocationCoordinate2D(latitude: 58.7, longitude: 25.0),
+        "ES": CLLocationCoordinate2D(latitude: 40.3, longitude: -3.5),
+        "FI": CLLocationCoordinate2D(latitude: 64.5, longitude: 26.0),
+        "FR": CLLocationCoordinate2D(latitude: 46.4, longitude: 2.4),
+        "GE": CLLocationCoordinate2D(latitude: 42.1, longitude: 43.5),
+        "GB": CLLocationCoordinate2D(latitude: 54.5, longitude: -2.5),
+        "GR": CLLocationCoordinate2D(latitude: 39.1, longitude: 22.9),
+        "HR": CLLocationCoordinate2D(latitude: 45.3, longitude: 16.2),
+        "HU": CLLocationCoordinate2D(latitude: 47.1, longitude: 19.4),
+        "IE": CLLocationCoordinate2D(latitude: 53.3, longitude: -8.0),
+        "IT": CLLocationCoordinate2D(latitude: 42.9, longitude: 12.8),
+        "LT": CLLocationCoordinate2D(latitude: 55.2, longitude: 23.9),
+        "LU": CLLocationCoordinate2D(latitude: 49.8, longitude: 6.1),
+        "LV": CLLocationCoordinate2D(latitude: 56.9, longitude: 24.6),
+        "MD": CLLocationCoordinate2D(latitude: 47.2, longitude: 28.5),
+        "ME": CLLocationCoordinate2D(latitude: 42.8, longitude: 19.3),
+        "MK": CLLocationCoordinate2D(latitude: 41.6, longitude: 21.7),
+        "MT": CLLocationCoordinate2D(latitude: 35.9, longitude: 14.4),
+        "NL": CLLocationCoordinate2D(latitude: 52.2, longitude: 5.4),
+        "NO": CLLocationCoordinate2D(latitude: 61.4, longitude: 8.5),
+        "PL": CLLocationCoordinate2D(latitude: 52.0, longitude: 19.3),
+        "PT": CLLocationCoordinate2D(latitude: 39.6, longitude: -8.0),
+        "RO": CLLocationCoordinate2D(latitude: 45.8, longitude: 24.9),
+        "RS": CLLocationCoordinate2D(latitude: 44.1, longitude: 20.8),
+        "SE": CLLocationCoordinate2D(latitude: 62.0, longitude: 16.8),
+        "SI": CLLocationCoordinate2D(latitude: 46.1, longitude: 14.9),
+        "SK": CLLocationCoordinate2D(latitude: 48.7, longitude: 19.7),
+        "TR": CLLocationCoordinate2D(latitude: 39.0, longitude: 35.0),
+        "UA": CLLocationCoordinate2D(latitude: 49.0, longitude: 31.3),
+        "XK": CLLocationCoordinate2D(latitude: 42.7, longitude: 21.0),
+    ]
+
+    static let areaCoordinates: [String: CLLocationCoordinate2D] = [
+        "DE-LU": CLLocationCoordinate2D(latitude: 50.9, longitude: 8.9),
+        "AT": CLLocationCoordinate2D(latitude: 47.6, longitude: 14.3),
+        "DK1": CLLocationCoordinate2D(latitude: 56.2, longitude: 9.0),
+        "DK2": CLLocationCoordinate2D(latitude: 55.6, longitude: 12.4),
+        "IT-Brindisi": CLLocationCoordinate2D(latitude: 40.6, longitude: 17.9),
+        "IT-Calabria": CLLocationCoordinate2D(latitude: 38.9, longitude: 16.4),
+        "IT-Centre-North": CLLocationCoordinate2D(latitude: 43.6, longitude: 11.0),
+        "IT-Centre-South": CLLocationCoordinate2D(latitude: 41.9, longitude: 14.4),
+        "IT-Foggia": CLLocationCoordinate2D(latitude: 41.5, longitude: 15.5),
+        "IT-North": CLLocationCoordinate2D(latitude: 45.1, longitude: 9.5),
+        "IT-Priolo": CLLocationCoordinate2D(latitude: 37.1, longitude: 15.2),
+        "IT-Rossano": CLLocationCoordinate2D(latitude: 39.6, longitude: 16.6),
+        "IT-Sardinia": CLLocationCoordinate2D(latitude: 40.1, longitude: 9.0),
+        "IT-Sicily": CLLocationCoordinate2D(latitude: 37.5, longitude: 14.1),
+        "IT-South": CLLocationCoordinate2D(latitude: 40.6, longitude: 16.8),
+        "NO1": CLLocationCoordinate2D(latitude: 59.9, longitude: 10.8),
+        "NO2": CLLocationCoordinate2D(latitude: 58.6, longitude: 7.6),
+        "NO3": CLLocationCoordinate2D(latitude: 63.4, longitude: 10.4),
+        "NO4": CLLocationCoordinate2D(latitude: 66.9, longitude: 14.6),
+        "NO5": CLLocationCoordinate2D(latitude: 60.5, longitude: 5.4),
+        "SE1": CLLocationCoordinate2D(latitude: 67.5, longitude: 20.0),
+        "SE2": CLLocationCoordinate2D(latitude: 63.8, longitude: 16.0),
+        "SE3": CLLocationCoordinate2D(latitude: 59.4, longitude: 15.2),
+        "SE4": CLLocationCoordinate2D(latitude: 56.5, longitude: 14.8),
+        "UA": CLLocationCoordinate2D(latitude: 49.0, longitude: 31.3),
+        "UA-BEI": CLLocationCoordinate2D(latitude: 50.3, longitude: 28.7),
+        "UA-DobTPP": CLLocationCoordinate2D(latitude: 50.0, longitude: 24.1),
+        "UA-IPS": CLLocationCoordinate2D(latitude: 48.5, longitude: 24.7),
+    ]
+
+    static func coordinate(for marketArea: MarketArea) -> CLLocationCoordinate2D? {
+        areaCoordinates[marketArea.key] ?? countryCoordinates[marketArea.countryCode]
+    }
+}
+
 @MainActor
-class RegionTaxSelectionViewModel: ObservableObject {
+class MarketAreaTaxSelectionViewModel: ObservableObject {
     var settingsManager: SettingsManager
     var notificationService: NotificationService
     var energyDataService: EnergyDataService
+
+    @Published private(set) var availableMarketAreas: [MarketArea] = MarketArea.fallbackAreas
+    @Published private(set) var marketAreaDataSource: MarketAreaDataSource = .fallback
+    @Published var mapCameraPosition: MapCameraPosition = .region(MarketAreaMapCatalog.europeRegion)
     
-    @Published var selectedRegion: Region {
+    @Published var selectedMarketAreaKey: String {
         didSet {
-            if oldValue != selectedRegion {
-                Task { await regionChanges(newRegion: selectedRegion) }
+            if oldValue != selectedMarketAreaKey {
+                Task { await marketAreaChanges(newAreaKey: selectedMarketAreaKey) }
             }
         }
     }
@@ -23,33 +119,97 @@ class RegionTaxSelectionViewModel: ObservableObject {
     }
     
     @Published private(set) var isLoading = false
+    @Published private(set) var isLoadingAreas = false
+
+    private var hasLoadedAreas = false
     
     init(settingsManager: SettingsManager,notificationService: NotificationService, energyDataService: EnergyDataService) {
         self.settingsManager = settingsManager
         self.notificationService = notificationService
         self.energyDataService = energyDataService
         
-        self.selectedRegion = settingsManager.setting.region
+        self.selectedMarketAreaKey = settingsManager.setting.marketAreaKey
         self.taxSelection = settingsManager.setting.taxEnabled
     }
+
+    var selectedMarketArea: MarketArea {
+        marketArea(for: selectedMarketAreaKey)
+    }
+
+    var mappableMarketAreas: [MarketArea] {
+        availableMarketAreas.filter { MarketAreaMapCatalog.coordinate(for: $0) != nil }
+    }
+
+    func marketArea(for key: String) -> MarketArea {
+        availableMarketAreas.first(where: { $0.key == key }) ?? MarketArea.area(for: key)
+    }
+
+    func coordinate(for marketArea: MarketArea) -> CLLocationCoordinate2D? {
+        MarketAreaMapCatalog.coordinate(for: marketArea)
+    }
+
+    func focusSelectedArea() {
+        guard let coordinate = coordinate(for: selectedMarketArea) else { return }
+        mapCameraPosition = .region(
+            MKCoordinateRegion(
+                center: coordinate,
+                span: MKCoordinateSpan(latitudeDelta: 6, longitudeDelta: 8)
+            )
+        )
+    }
+
+    func loadAreasIfNeeded() {
+        guard hasLoadedAreas == false else { return }
+        hasLoadedAreas = true
+
+        Task { await loadAreas() }
+    }
+
+    func loadAreas() async {
+        isLoadingAreas = true
+        defer { isLoadingAreas = false }
+
+        do {
+            let response = try await MarketArea.fetchSupportedAreas()
+            let sortedAreas = response.areas.sorted { $0.localizedDisplayName < $1.localizedDisplayName }
+
+            availableMarketAreas = sortedAreas.isEmpty ? MarketArea.fallbackAreas : sortedAreas
+            marketAreaDataSource = .remote
+
+            if availableMarketAreas.contains(where: { $0.key == selectedMarketAreaKey }) == false {
+                let newSelectedKey = availableMarketAreas.first(where: { $0.key == response.defaultArea })?.key
+                    ?? availableMarketAreas.first?.key
+                    ?? MarketArea.defaultAreaKey
+                selectedMarketAreaKey = newSelectedKey
+            } else {
+                focusSelectedArea()
+            }
+        } catch {
+            print("Failed to load market areas from /areas/: \(error)")
+            availableMarketAreas = MarketArea.fallbackAreas
+            marketAreaDataSource = .fallback
+            focusSelectedArea()
+        }
+    }
     
-    func regionChanges(newRegion: Region) async {
+    func marketAreaChanges(newAreaKey: String) async {
+        let newMarketArea = marketArea(for: newAreaKey)
         var notificationConfiguration = NotificationConfiguration.create(nil, settingsManager.setting)
-        notificationConfiguration.general.region = newRegion
+        notificationConfiguration.general.marketArea = newMarketArea
+
+        focusSelectedArea()
         
         do {
-            // Show loading indicator
             await MainActor.run { isLoading = true }
             
             _ = try await notificationService.changeNotificationConfiguration(notificationConfiguration, settingsManager.setting)
             
-            // Update UI elements on main thread
             await MainActor.run {
-                self.settingsManager.setting.region = newRegion
+                self.settingsManager.setting.marketArea = newMarketArea
                 isLoading = false
             }
             
-            self.energyDataService.download(region: newRegion, setting: settingsManager.setting)
+            self.energyDataService.download(setting: settingsManager.setting)
             
         } catch {
             print("Failed to update notification configuration: \(error)")
@@ -77,7 +237,7 @@ class RegionTaxSelectionViewModel: ObservableObject {
                 isLoading = false
             }
             
-            self.energyDataService.energyData?.computeValues(with: settingsManager.setting)
+            self.energyDataService.energyData?.computeValues(with: settingsManager.setting.pricingConfiguration)
         } catch {
             print("Failed to update notification configuration: \(error)")
             await MainActor.run {
@@ -92,11 +252,10 @@ struct RegionTaxSelectionView: View {
     @EnvironmentObject var notificationService: NotificationService
     @EnvironmentObject var energyDataService: EnergyDataService
     
-    @StateObject var viewModel: RegionTaxSelectionViewModel
+    @StateObject var viewModel: MarketAreaTaxSelectionViewModel
     
     init() {
-        // Initialize with temporary values that will be replaced in onAppear
-        _viewModel = StateObject(wrappedValue: RegionTaxSelectionViewModel(
+        _viewModel = StateObject(wrappedValue: MarketAreaTaxSelectionViewModel(
             settingsManager: SettingsManager.shared,
             notificationService: NotificationService(),
             energyDataService: EnergyDataService()
@@ -106,7 +265,7 @@ struct RegionTaxSelectionView: View {
     var body: some View {
         ZStack {
             VStack {
-                regionPicker
+                marketAreaSelector
                 
                 taxSelection
                     .padding(.top, 10)
@@ -120,21 +279,108 @@ struct RegionTaxSelectionView: View {
         }
         .disabled(viewModel.isLoading)
         .onAppear {
-            // Update viewModel with the actual environment objects
             viewModel.settingsManager = settingsManager
             viewModel.notificationService = notificationService
             viewModel.energyDataService = energyDataService
+            viewModel.selectedMarketAreaKey = settingsManager.setting.marketAreaKey
+            viewModel.loadAreasIfNeeded()
+            viewModel.focusSelectedArea()
         }
     }
     
-    var regionPicker: some View {
-        Picker("", selection: $viewModel.selectedRegion.animation()) {
-            Text("🇩🇪 Germany")
-                .tag(Region.DE)
-            Text("🇦🇹 Austria")
-                .tag(Region.AT)
+    var marketAreaSelector: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .center) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("settingsPage.regionToGetPrices".localized())
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+
+                    Text(
+                        viewModel.marketAreaDataSource == .remote
+                            ? "settingsPage.marketArea.apiLoaded".localized()
+                            : "settingsPage.marketArea.fallbackLoaded".localized()
+                    )
+                        .font(.caption)
+                        .foregroundStyle(.tertiary)
+                }
+
+                Spacer()
+
+                if viewModel.isLoadingAreas {
+                    ProgressView()
+                        .scaleEffect(0.85)
+                }
+            }
+
+            mapSelectionView
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    ForEach(viewModel.availableMarketAreas) { marketArea in
+                        Button {
+                            viewModel.selectedMarketAreaKey = marketArea.key
+                        } label: {
+                            Text("\(marketArea.settingsFlag) \(marketArea.localizedDisplayName)")
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(viewModel.selectedMarketAreaKey == marketArea.key ? .white : .primary)
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 8)
+                                .background(
+                                    Capsule()
+                                        .fill(viewModel.selectedMarketAreaKey == marketArea.key ? Color.orange : Color.orange.opacity(0.12))
+                                )
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+            }
         }
-        .pickerStyle(SegmentedPickerStyle())
+    }
+
+    var mapSelectionView: some View {
+        Map(position: $viewModel.mapCameraPosition, interactionModes: [.pan, .zoom]) {
+            ForEach(viewModel.mappableMarketAreas) { marketArea in
+                if let coordinate = viewModel.coordinate(for: marketArea) {
+                    Annotation(marketArea.localizedDisplayName, coordinate: coordinate) {
+                        Button {
+                            viewModel.selectedMarketAreaKey = marketArea.key
+                        } label: {
+                            VStack(spacing: 6) {
+                                Text(marketArea.settingsFlag)
+                                    .font(.caption2.weight(.bold))
+                                    .foregroundStyle(viewModel.selectedMarketAreaKey == marketArea.key ? .white : .orange)
+                                    .frame(width: 30, height: 30)
+                                    .background(
+                                        Circle()
+                                            .fill(viewModel.selectedMarketAreaKey == marketArea.key ? Color.orange : Color.white)
+                                    )
+                                    .overlay(
+                                        Circle()
+                                            .stroke(Color.orange, lineWidth: 2)
+                                    )
+                                    .shadow(color: Color.black.opacity(0.12), radius: 6, y: 3)
+
+                                if viewModel.selectedMarketAreaKey == marketArea.key {
+                                    Text(marketArea.localizedDisplayName)
+                                        .font(.caption2.weight(.semibold))
+                                        .padding(.horizontal, 8)
+                                        .padding(.vertical, 5)
+                                        .background(.thinMaterial, in: Capsule())
+                                }
+                            }
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+            }
+        }
+        .frame(height: 280)
+        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .stroke(Color.orange.opacity(0.2), lineWidth: 1)
+        )
     }
     
     var taxSelection: some View {

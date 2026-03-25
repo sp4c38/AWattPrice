@@ -124,7 +124,7 @@ struct ContentView: View {
                 await notificationService.updateAccessStates()
             }
             
-            energyDataService.download(region: settingsManager.setting.region, setting: settingsManager.setting)
+            energyDataService.download(setting: settingsManager.setting)
         }
         .onAppear {
             // Check if we should show what's new screen

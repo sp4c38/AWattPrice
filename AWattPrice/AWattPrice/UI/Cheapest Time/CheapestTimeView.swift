@@ -208,6 +208,6 @@ struct CheapestTimeView_Previews: PreviewProvider {
         CheapestTimeView()
             .environmentObject(energyDataService)
             .environmentObject(CheapestHourManager())
-            .onAppear { energyDataService.download(region: Region.DE, setting: SettingsManager.shared.setting) }
+            .onAppear { energyDataService.download(setting: SettingsManager.shared.setting) }
     }
 }

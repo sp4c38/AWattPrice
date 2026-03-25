@@ -7,26 +7,6 @@
 
 import SwiftUI
 
-private extension Region {
-    var settingsLabel: String {
-        switch self {
-        case .DE:
-            return "Germany".localized()
-        case .AT:
-            return "Austria".localized()
-        }
-    }
-
-    var settingsFlag: String {
-        switch self {
-        case .DE:
-            return "DE"
-        case .AT:
-            return "AT"
-        }
-    }
-}
-
 private extension Double {
     var settingsCentText: String {
         let formatter = NumberFormatter()
@@ -278,7 +258,7 @@ struct SettingsPageView: View {
     @EnvironmentObject private var notificationService: NotificationService
 
     private var regionSummary: String {
-        "\(settingsManager.setting.region.settingsFlag) \(settingsManager.setting.region.settingsLabel)"
+        "\(settingsManager.setting.marketArea.settingsFlag) \(settingsManager.setting.marketArea.settingsLabel)"
     }
 
     private var baseFeeSummary: String {

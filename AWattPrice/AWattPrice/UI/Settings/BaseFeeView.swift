@@ -102,7 +102,7 @@ class BaseFeeViewModel: ObservableObject {
             uploadFailed = false
 
             settingsManager.setting.baseFeePrice = self.baseFee
-            energyDataService.energyData?.computeValues(with: settingsManager.setting)
+            energyDataService.energyData?.computeValues(with: settingsManager.setting.pricingConfiguration)
         } catch {
             print("Failed to update notification: \(error)")
             isUploading = false

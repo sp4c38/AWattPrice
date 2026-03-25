@@ -7,7 +7,7 @@
 */
 
 // Welcome Splash Screen localizations
-"splashScreen.start.notAffiliatedNote" = "Please note that AWattPrice is an independent app and is in no way related to aWATTar GmbH.";
+"splashScreen.start.notAffiliatedNote" = "Please note that AWattPrice is an independent app and energy prices depend on your selected market area and tariff.";
 
 "whatsNew.widgets.subTitle" = "Sparks fly as we unveil our electrifying update: introducing the AWattPrice iOS widget!";
 "whatsNew.widgets.tipText" = "Ready to bring the power to your Home Screen? Simply long-press on your screen, tap the '+' icon in the top-left corner, find AWattPrice in the widget gallery, and zap it right onto your Home Screen.";
@@ -42,12 +42,14 @@
 "Constrain the search window to the hours that actually work for you." = "Constrain the search window to the hours that actually work for you.";
 
 // Settings Page and Help & Suggestions page localizations
-"settingsPage.regionToGetPrices" = "Select the region for which you would like to get electricity prices.";
+"settingsPage.regionToGetPrices" = "Select the market area for which you would like to get electricity prices.";
+"settingsPage.marketArea.apiLoaded" = "Map data loaded from the new API.";
+"settingsPage.marketArea.fallbackLoaded" = "Using built-in map areas until the new API is live.";
 
 // Notification Page Setting localizations
 "notificationPage.noNotificationAccessInfo" = "Please allow AWattPrice notifications in the Settings App.";
 "notificationPage.notification.priceDropsBelowValue.description" = "Receive a notification as soon as prices fall below a certain value.";
-"notificationPage.notification.priceDropsBelowValue.description.firstLine.pt1" = "When new prices are available, you will receive a notification if a hourly price of the";
+"notificationPage.notification.priceDropsBelowValue.description.firstLine.pt1" = "When new prices are available, you will receive a notification if a price of the";
 "notificationPage.notification.priceDropsBelowValue.description.firstLine.pt2" = " next day ";
 "notificationPage.notification.priceDropsBelowValue.description.firstLine.pt3" = "drops";
 "notificationPage.notification.priceDropsBelowValue.description.firstLine.pt4" = " on ";
@@ -67,11 +69,12 @@
 "notifications.price_drops_below.body.sing" = "Tomorrow, electricity prices drop below %2$@ ct %1$@ time. Cheapest hour at %3$@ with %4$@ ct.";
 "notifications.price_drops_below.body.mult" = "Tomorrow, electricity prices drop below %2$@ ct %1$@ times. Cheapest hour at %3$@ with %4$@ ct.";
 
-"baseFee.infoText" = "The base fee is added on top of each electricity price within the entire app. This fee depends on your contract with aWATTar.";
+"baseFee.infoText" = "The base fee is added on top of each electricity price within the entire app. This fee depends on your electricity contract.";
 "baseFee.priceGuardActivatedInfo" = "The price guard is turned on. Remember to adjust the wish price if necessary when you change the value below.";
 
 "Austria" = "Austria";
 "Germany" = "Germany";
+"Germany / Luxembourg" = "Germany / Luxembourg";
 "VAT On" = "VAT On";
 "VAT Off" = "VAT Off";
 "Energy Setup" = "Energy Setup";

@@ -99,6 +99,7 @@ class SettingsManager: ObservableObject {
             
         } catch {
             print("❕ Error ensuring and loading settings: \(error)")
+            recreateDatabaseIfNeeded(error: error)
         }
     }
     
@@ -164,6 +165,15 @@ class WidgetSettingsProvider {
             }
         } catch {
             print("❕ Error loading settings for widget: \(error)")
+            recreateDatabaseIfNeeded()
         }
+    }
+
+    private func recreateDatabaseIfNeeded() {
+        try? context.delete(model: Setting.self)
+        let newSetting = Setting()
+        context.insert(newSetting)
+        self.setting = newSetting
+        try? context.save()
     }
 }

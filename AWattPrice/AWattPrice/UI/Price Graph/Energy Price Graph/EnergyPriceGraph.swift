@@ -11,7 +11,7 @@ import UIKit
 struct GraphHeader: View {
     var body: some View {
         HStack {
-            Text("Hour of day")
+            Text("Time of day")
 
             Spacer()
 
@@ -158,8 +158,8 @@ private struct EnergyPriceBarRow: View {
     let expansionAnchor: EnergyPriceGraphExpansionAnchor
 
     private var timeRangeText: String {
-        let startHour = pricePoint.startTime.formatted(.dateTime.hour(.twoDigits(amPM: .omitted)))
-        let endHour = pricePoint.endTime.formatted(.dateTime.hour(.twoDigits(amPM: .omitted)))
+        let startHour = pricePoint.startTime.formatted(.dateTime.hour(.twoDigits(amPM: .omitted)).minute(.twoDigits))
+        let endHour = pricePoint.endTime.formatted(.dateTime.hour(.twoDigits(amPM: .omitted)).minute(.twoDigits))
         return "\(startHour)-\(endHour)"
     }
 

@@ -39,7 +39,7 @@ struct DataRetrievalError: View {
                     .multilineTextAlignment(.center)
 
                 Button(action: {
-                    energyDataService.download(region: settingsManager.setting.region, setting: settingsManager.setting)
+                    energyDataService.download(setting: settingsManager.setting)
                 }) {
                     Text("Retry")
                 }.buttonStyle(RetryButtonStyle())
@@ -76,7 +76,7 @@ struct CurrentlyNoData: View {
                     .multilineTextAlignment(.center)
 
                 Button(action: {
-                    energyDataService.download(region: settingsManager.setting.region, setting: settingsManager.setting)
+                    energyDataService.download(setting: settingsManager.setting)
                 }) {
                     Text("Retry")
                 }.buttonStyle(RetryButtonStyle())

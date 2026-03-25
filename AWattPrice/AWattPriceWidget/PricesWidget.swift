@@ -12,9 +12,6 @@ import WidgetKit
 
 // Constants for time calculations and updates
 private enum TimeConstants {
-    static let hoursInDay = 24
-    static let minutesInHour = 60
-    static let secondsInMinute = 60
     static let thirtyMinutes = 30 * 60
     static let hourInSeconds = 60 * 60
     static let dayInSeconds = 24 * 60 * 60
@@ -31,8 +28,9 @@ struct PricesWidgetProvider: TimelineProvider {
 
     /// Fetches energy data for the current settings
     private func fetchEnergyData(for setting: Setting) async throws -> EnergyData {
-        var energyData = try await EnergyData.download(region: setting.region)
-        energyData.computeValues(with: setting)
+        let pricingConfiguration = setting.pricingConfiguration
+        var energyData = try await EnergyData.download(marketArea: pricingConfiguration.marketArea)
+        energyData.computeValues(with: pricingConfiguration)
         return energyData
     }
 
@@ -142,7 +140,7 @@ struct PricesWidgetEntryView: View {
             .padding(.bottom, 3)
                 
             if let energyData = entry.energyData {
-                Chart(energyData.currentPrices.prefix(24), id: \.startTime) { price in
+                Chart(energyData.currentPrices.filter { $0.startTime < Date().addingTimeInterval(TimeInterval(TimeConstants.dayInSeconds)) }, id: \.startTime) { price in
                     BarMark(x: .value("Time", price.startTime ..< price.endTime), y: .value("Price", price.marketprice), width: 9.5)
                         .foregroundStyle(.linearGradient(colors: price.marketprice >= 0 ? gradientColorsPositive : gradientColorsNegative, startPoint: .bottom, endPoint: .top))
                         .alignsMarkStylesWithPlotArea()
@@ -189,7 +187,7 @@ struct AWattPriceWidget_Previews: PreviewProvider {
         var energyData = try! decoder.decode(EnergyData.self, from: data)
         
         // Process the preview data with settings from widget provider
-        energyData.computeValues(with: WidgetSettingsProvider.shared.setting)
+        energyData.computeValues(with: WidgetSettingsProvider.shared.setting.pricingConfiguration)
         
         return energyData
     }

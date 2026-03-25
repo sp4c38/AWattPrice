@@ -191,7 +191,9 @@
 "Settings" = "Einstellungen";
 
 /* Settings Page and Help & Suggestions page localizations */
-"settingsPage.regionToGetPrices" = "Wählen Sie die Region aus, für die Sie Strompreise erhalten möchten.";
+"settingsPage.regionToGetPrices" = "Wählen Sie die Marktzone aus, für die Sie Strompreise erhalten möchten.";
+"settingsPage.marketArea.apiLoaded" = "Kartendaten wurden aus der neuen API geladen.";
+"settingsPage.marketArea.fallbackLoaded" = "Es werden eingebaute Marktzonen verwendet, bis die neue API live ist.";
 
 /* No comment provided by engineer. */
 "Setup finished" = "Einrichtung abgeschlossen";
@@ -203,7 +205,7 @@
 "splashScreen.featuresAndConsent.viewPrices.info" = "Sehen Sie sich die aktuellen Strompreise für jede Stunde des Tages an.";
 
 /* Welcome Splash Screen localizations */
-"splashScreen.start.notAffiliatedNote" = "Bitte beachten Sie, dass AWattPrice eine unabhängige App ist und in keiner Weise mit aWATTar GmbH in Verbindung steht.";
+"splashScreen.start.notAffiliatedNote" = "Bitte beachten Sie, dass AWattPrice eine unabhängige App ist und die Strompreise von Ihrer gewählten Marktzone und Ihrem Tarif abhängen.";
 
 /* No comment provided by engineer. */
 "Suggestions" = "Vorschläge";
@@ -234,13 +236,14 @@
 /* No comment provided by engineer. */
 "Wish Price:" = "Wunschpreis:";
 
-"baseFee.infoText" = "Die Grundgebühr wird auf jeden Strompreis innerhalb der gesamten App addiert. Diese Gebühr hängt von Ihrem Vertrag mit aWATTar ab.";
+"baseFee.infoText" = "Die Grundgebühr wird auf jeden Strompreis innerhalb der gesamten App addiert. Diese Gebühr hängt von Ihrem Stromvertrag ab.";
 
 "baseFee.priceGuardActivatedInfo" = "Der Preiswächter ist eingeschaltet. Denken Sie daran den Wunschpreis ggf. anzupassen, wenn Sie den Wert unten ändern.";
 
 "Base Fee" = "Grundgebühr";
 "Austria" = "Österreich";
 "Germany" = "Deutschland";
+"Germany / Luxembourg" = "Deutschland / Luxemburg";
 "VAT On" = "MwSt. an";
 "VAT Off" = "MwSt. aus";
 "Energy Setup" = "Energie";

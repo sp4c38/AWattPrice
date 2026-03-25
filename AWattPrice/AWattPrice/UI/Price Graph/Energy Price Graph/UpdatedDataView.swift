@@ -154,7 +154,7 @@ struct UpdatedDataView: View {
         }
         .contentShape(Rectangle())
         .onTapGesture {
-            viewModel.energyDataService.download(region: settingsManager.setting.region, setting: settingsManager.setting)
+            viewModel.energyDataService.download(setting: settingsManager.setting)
         }
     }
 }

@@ -29,26 +29,34 @@ class APIClient {
     // MARK: - API Configuration
     
     static let apiURL: URL = {
-        #if DEBUG
-        return URL(string: "https://test-awp.space8.me/api/v2/")!
-        #else
-        return URL(string: "https://awattprice.space8.me/api/v2/")!
-        #endif
+        URL(string: "https://awattprice.space8.me/api/v3/")!
     }()
     
     // MARK: - Request Creation
     
-    /// Creates a request for energy data for the specified region
-    static func createEnergyDataRequest(region: Region) -> ResponseRequest<EnergyData> {
+    /// Creates a request for energy data for the specified market area
+    static func createEnergyDataRequest(marketArea: MarketArea) -> ResponseRequest<EnergyData> {
         let requestURL = APIClient.apiURL
-            .appendingPathComponent("data", isDirectory: true)
-            .appendingPathComponent(region.apiName)
+            .appendingPathComponent("prices", isDirectory: true)
+            .appendingPathComponent(marketArea.key)
         let urlRequest = URLRequest(
             url: requestURL,
             cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,
             timeoutInterval: 30
         )
         let decoder = EnergyData.jsonDecoder()
+        return ResponseRequest(urlRequest: urlRequest, decoder: decoder)
+    }
+
+    static func createSupportedMarketAreasRequest() -> ResponseRequest<SupportedMarketAreasResponse> {
+        let requestURL = APIClient.apiURL
+            .appendingPathComponent("areas", isDirectory: true)
+        let urlRequest = URLRequest(
+            url: requestURL,
+            cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,
+            timeoutInterval: 30
+        )
+        let decoder = JSONDecoder()
         return ResponseRequest(urlRequest: urlRequest, decoder: decoder)
     }
     

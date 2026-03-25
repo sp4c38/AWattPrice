@@ -8,18 +8,18 @@
 import Foundation
 
 struct GeneralNotificationConfiguration: Encodable {
-    var region: Region
+    var marketArea: MarketArea
     var tax: Bool
     var baseFee: Double
     
     enum CodingKeys: String, CodingKey {
-        case region, tax
+        case area, tax
         case baseFee = "base_fee"
     }
     
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(region.apiName, forKey: .region)
+        try container.encode(marketArea.key, forKey: .area)
         try container.encode(tax, forKey: .tax)
         try container.encode(baseFee, forKey: .baseFee)
     }
@@ -49,7 +49,11 @@ struct NotificationConfiguration: Encodable {
     var notifications: NotificationsNotificationConfiguration
     
     static func create(_ token: String?, _ setting: Setting) -> NotificationConfiguration {
-        let general = GeneralNotificationConfiguration(region: setting.region, tax: setting.taxEnabled, baseFee: setting.baseFeePrice)
+        let general = GeneralNotificationConfiguration(
+            marketArea: setting.marketArea,
+            tax: setting.taxEnabled,
+            baseFee: setting.baseFeePrice
+        )
         let priceBelowNotification = PriceBelowNotificationNotificationConfiguration(
             active: setting.priceDropsBelowEnabled, belowValue: Int(setting.priceDropsBelowThreshold)
         )

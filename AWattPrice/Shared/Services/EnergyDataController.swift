@@ -38,9 +38,11 @@ struct EnergyPricePoint: Decodable {
 
 
 struct EnergyData: Decodable {
+    let area: String?
+    let resolution: String?
     let prices: [EnergyPricePoint]
     
-    /// Prices which have start equal or past the start of the current hour.
+    /// Prices that are still active or upcoming.
     var currentPrices: [EnergyPricePoint] = []
     
     var minCostPricePoint: EnergyPricePoint?
@@ -50,29 +52,44 @@ struct EnergyData: Decodable {
     var minMaxTimeRange: ClosedRange<Date>?
 
     enum CodingKeys: CodingKey {
+        case area
+        case resolution
         case prices
     }
     
     init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
+        area = try values.decodeIfPresent(String.self, forKey: .area)
+        resolution = try values.decodeIfPresent(String.self, forKey: .resolution)
         prices = try values.decode([EnergyPricePoint].self, forKey: .prices)
     }
+
+    var priceStep: TimeInterval {
+        if prices.count >= 2 {
+            return prices[1].startTime.timeIntervalSince(prices[0].startTime)
+        }
+        if let firstPrice = prices.first {
+            return firstPrice.endTime.timeIntervalSince(firstPrice.startTime)
+        }
+        return 60 * 60
+    }
     
-    mutating func computeValues(with setting: Setting) {
+    mutating func computeValues(with pricingConfiguration: PricingConfiguration) {
         let now = Date()
-        let hourStart = Calendar.current.startOfHour(for: now)
         
-        // Filter and sort in a more clear and concise way
         currentPrices = prices
-            .filter { $0.startTime >= hourStart }
+            .filter { $0.endTime > now }
             .sorted { $0.startTime < $1.startTime }
         
-        // Apply price adjustments
         for i in currentPrices.indices {
-            if setting.taxEnabled == true && currentPrices[i].marketprice > 0 {
-                currentPrices[i].marketprice *= setting.region.taxMultiplier
+            if
+                pricingConfiguration.taxEnabled == true,
+                currentPrices[i].marketprice > 0,
+                let taxMultiplier = pricingConfiguration.marketArea.taxMultiplier
+            {
+                currentPrices[i].marketprice *= taxMultiplier
             }
-            currentPrices[i].marketprice += setting.baseFeePrice
+            currentPrices[i].marketprice += pricingConfiguration.baseFeePrice
         }
 
         minCostPricePoint = currentPrices.min(by: EnergyPricePoint.marketpricesAreInIncreasingOrder)
@@ -93,12 +110,12 @@ struct EnergyData: Decodable {
         return jsonDecoder
     }
     
-    /// Downloads energy data for the specified region using async/await
-    /// - Parameter region: The region to fetch data for
+    /// Downloads energy data for the specified market area using async/await
+    /// - Parameter marketArea: The market area to fetch data for
     /// - Returns: The downloaded and decoded energy data
     /// - Throws: Error if the download or decoding fails
-    static func download(region: Region) async throws -> EnergyData {
-        let request = APIClient.createEnergyDataRequest(region: region)
+    static func download(marketArea: MarketArea) async throws -> EnergyData {
+        let request = APIClient.createEnergyDataRequest(marketArea: marketArea)
         return try await APIClient().request(to: request)
     }
 }
@@ -119,22 +136,20 @@ class EnergyDataService: ObservableObject {
     @Published var downloadState: DownloadState = .idle
     @Published var energyData: EnergyData? = nil
     
-    /// Downloads energy data for the specified region using async/await
-    /// - Parameter region: The region to fetch data for
-    func download(region: Region, setting: Setting) {
+    func download(setting: Setting) {
+        let pricingConfiguration = setting.pricingConfiguration
+
         // Cancel any existing task first
         cancelDownloads()
         downloadState = .downloading
         
         currentDownloadTask = Task {
             do {
-                // This work happens on a background thread
-                let newEnergyData = try await EnergyData.download(region: region)
+                let newEnergyData = try await EnergyData.download(marketArea: pricingConfiguration.marketArea)
                 
-                // Switch to the main thread only for UI updates
                 await MainActor.run {
                     self.energyData = newEnergyData
-                    self.energyData?.computeValues(with: setting)
+                    self.energyData?.computeValues(with: pricingConfiguration)
                     print("Energy data download completed.")
                     self.downloadState = .finished(time: Date())
                 }

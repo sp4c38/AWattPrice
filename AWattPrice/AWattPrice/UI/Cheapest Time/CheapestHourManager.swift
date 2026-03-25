@@ -124,8 +124,7 @@ class HourPair {
         var pricesTogether: Double = 0
         var totalMinutes: Double = 0
         for pricePoint in associatedPricePoints {
-            let pricePointMinuteLength: Double = pricePoint.startTime
-                .timeIntervalSince(pricePoint.endTime) / 60
+            let pricePointMinuteLength = pricePoint.endTime.timeIntervalSince(pricePoint.startTime) / 60
             pricesTogether += pricePointMinuteLength * pricePoint.marketprice
             totalMinutes += pricePointMinuteLength
         }
@@ -195,31 +194,28 @@ extension CheapestHourManager {
         DispatchQueue.global(qos: .userInitiated).async {
             var startTime = self.startDate
             var endTime = self.endDate
+            let slotDuration = energyData.priceStep
 
             let timeRangeNumber = Int(
-                (Double(self.timeOfUsage) / 3600)
+                (Double(self.timeOfUsage) / slotDuration)
                     .rounded(.up)
             )
 
-            var startTimeDifference = 0
-            var endTimeDifference = 0
+            let originalStartTime = startTime
+            let originalEndTime = endTime
 
-            if Calendar.current.component(.minute, from: startTime) != 0 {
-                startTimeDifference = Calendar.current.component(.minute, from: startTime)
-                startTime = Calendar.current.date(
-                    bySettingHour: Calendar.current.component(.hour, from: startTime),
-                    minute: 0,
-                    second: 0,
-                    of: startTime
-                )! // Set the minute and second of the start time both to zero
+            if let matchingStartSlot = energyData.currentPrices.last(where: { $0.startTime <= startTime }) {
+                startTime = matchingStartSlot.startTime
             }
 
-            if Calendar.current.component(.minute, from: self.endDate) != 0 {
-                endTimeDifference = Calendar.current.component(.minute, from: self.endDate)
-                endTime = Calendar.current.date(bySettingHour: Calendar.current.component(.hour, from: endTime), minute: 0, second: 0, of: endTime)!
-                endTime = endTime.addingTimeInterval(3600)
-                // Set the end time to the start of the next following hour
+            if let exactEndSlot = energyData.currentPrices.first(where: { $0.endTime == endTime }) {
+                endTime = exactEndSlot.endTime
+            } else if let matchingEndSlot = energyData.currentPrices.first(where: { $0.endTime >= endTime }) {
+                endTime = matchingEndSlot.endTime
             }
+
+            let startTimeDifference = originalStartTime.timeIntervalSince(startTime)
+            let endTimeDifference = endTime.timeIntervalSince(originalEndTime)
 
             func recursiveSearch(with allPairs: [HourPair], lastCheapestPairIndex: Int? = nil) -> Int? {
                  print("Running recursive search to find cheapest time")
@@ -232,17 +228,17 @@ extension CheapestHourManager {
                         let cheapestPair = allPairs[cheapestPairIndex!]
                         var maxPointIndex = cheapestPair.associatedPricePoints.count - 1
 
-                        let startTimeHourEnd = startTime.addingTimeInterval(3600)
-                        let endTimeHourStart = endTime.addingTimeInterval(-3600)
+                        let startTimeSlotEnd = startTime.addingTimeInterval(slotDuration)
+                        let endTimeSlotStart = endTime.addingTimeInterval(-slotDuration)
                         let startDateFirstItem = cheapestPair.associatedPricePoints.first!.startTime
                         let endDateLastItem = cheapestPair.associatedPricePoints.last!.endTime
 
                         var intervenesWithStartHour = false
-                        if startDateFirstItem >= startTime, startDateFirstItem < startTimeHourEnd {
+                        if startDateFirstItem >= startTime, startDateFirstItem < startTimeSlotEnd {
                             intervenesWithStartHour = true
                         }
                         var intervenesWithEndHour = false
-                        if endDateLastItem > endTimeHourStart, endDateLastItem <= endTime {
+                        if endDateLastItem > endTimeSlotStart, endDateLastItem <= endTime {
                             intervenesWithEndHour = true
                         }
 
@@ -264,11 +260,11 @@ extension CheapestHourManager {
 
                             cheapestPair.associatedPricePoints[0].startTime =
                                 cheapestPair.associatedPricePoints.first!.startTime.addingTimeInterval(
-                                    TimeInterval(startTimeDifference * 60)
+                                    startTimeDifference
                                 )
                             cheapestPair.associatedPricePoints[maxPointIndex].endTime =
                                 cheapestPair.associatedPricePoints.last!.endTime.addingTimeInterval(
-                                    TimeInterval(-((60 - startTimeDifference) * 60))
+                                    -(slotDuration - startTimeDifference)
                                 )
                             performAnotherSearch = true
                         }
@@ -291,11 +287,11 @@ extension CheapestHourManager {
 
                             cheapestPair.associatedPricePoints[maxPointIndex].endTime =
                                 cheapestPair.associatedPricePoints.last!.endTime.addingTimeInterval(
-                                    TimeInterval(-((60 - endTimeDifference) * 60))
+                                    -endTimeDifference
                                 )
                             cheapestPair.associatedPricePoints[0].startTime =
                                 cheapestPair.associatedPricePoints.first!.startTime.addingTimeInterval(
-                                    TimeInterval(endTimeDifference * 60)
+                                    slotDuration - endTimeDifference
                                 )
                             performAnotherSearch = true
                         }
@@ -329,7 +325,7 @@ extension CheapestHourManager {
             if cheapestHourPairIndex != nil {
                 let cheapestPair = allPairs[cheapestHourPairIndex!]
 
-                let timeRangeNumberInSeconds = timeRangeNumber * 3600
+                let timeRangeNumberInSeconds = Int(Double(timeRangeNumber) * slotDuration)
                 let timeRangeDifference = Int(
                     (
                         Double(timeRangeNumberInSeconds - self.timeOfUsage)

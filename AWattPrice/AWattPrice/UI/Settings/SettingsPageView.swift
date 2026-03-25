@@ -181,7 +181,6 @@ private struct SettingsActionRow: View {
 
 private struct SettingsHeaderCard: View {
     let regionText: String
-    let vatEnabled: Bool
     let baseFeeText: String
 
     var body: some View {
@@ -192,7 +191,6 @@ private struct SettingsHeaderCard: View {
 
                 HStack(spacing: 10) {
                     SettingsBadge(text: regionText, tint: .orange)
-                    SettingsBadge(text: vatEnabled ? "VAT On".localized() : "VAT Off".localized(), tint: .blue)
                     SettingsBadge(text: baseFeeText, tint: .green)
                 }
             }
@@ -290,7 +288,6 @@ struct SettingsPageView: View {
                     VStack(alignment: .leading, spacing: 18) {
                         SettingsHeaderCard(
                             regionText: regionSummary,
-                            vatEnabled: settingsManager.setting.taxEnabled,
                             baseFeeText: baseFeeSummary
                         )
 

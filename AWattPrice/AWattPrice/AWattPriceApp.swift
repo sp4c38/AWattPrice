@@ -98,6 +98,7 @@ struct ContentView: View {
             if settingsManager.setting.onboarded {
                 TabView(selection: $selectedTab) {
                     SettingsPageView()
+                        .tag(0)
                         .tabItem { Label("Settings", systemImage: "gear") }
 
                     PricesView()
@@ -105,6 +106,7 @@ struct ContentView: View {
                         .tabItem { Label("Prices", systemImage: "bolt") }
 
                     CheapestTimeView()
+                        .tag(2)
                         .tabItem { Label("Cheapest Time", systemImage: "rectangle.and.text.magnifyingglass") }
                 }
                 .tint(Color(red: 0.87, green: 0.35, blue: 0.26))

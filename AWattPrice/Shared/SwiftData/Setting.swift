@@ -11,7 +11,6 @@ import SwiftData
 
 struct PricingConfiguration: Sendable {
     let baseFeePrice: Double
-    let taxEnabled: Bool
     let marketArea: MarketArea
 }
 
@@ -41,7 +40,6 @@ public class Setting {
     var pricingConfiguration: PricingConfiguration {
         PricingConfiguration(
             baseFeePrice: baseFeePrice,
-            taxEnabled: taxEnabled,
             marketArea: marketArea
         )
     }

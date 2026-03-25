@@ -109,15 +109,7 @@ class MarketAreaTaxSelectionViewModel: ObservableObject {
             }
         }
     }
-    
-    @Published var taxSelection: Bool {
-        didSet {
-            if oldValue != taxSelection {
-                Task { await taxSelectionChanges(newTaxSelection: taxSelection) }
-            }
-        }
-    }
-    
+
     @Published private(set) var isLoading = false
     @Published private(set) var isLoadingAreas = false
 
@@ -129,7 +121,6 @@ class MarketAreaTaxSelectionViewModel: ObservableObject {
         self.energyDataService = energyDataService
         
         self.selectedMarketAreaKey = settingsManager.setting.marketAreaKey
-        self.taxSelection = settingsManager.setting.taxEnabled
     }
 
     var selectedMarketArea: MarketArea {
@@ -219,32 +210,6 @@ class MarketAreaTaxSelectionViewModel: ObservableObject {
         }
     }
 
-    func taxSelectionChanges(newTaxSelection: Bool) async {
-        var notificationConfiguration = NotificationConfiguration.create(nil, settingsManager.setting)
-        notificationConfiguration.general.tax = newTaxSelection
-        
-        do {
-            // Show loading indicator
-            await MainActor.run { isLoading = true }
-            
-            _ = try await notificationService.changeNotificationConfiguration(
-                notificationConfiguration,
-                settingsManager.setting
-            )
-            
-            await MainActor.run {
-                self.settingsManager.setting.taxEnabled = newTaxSelection
-                isLoading = false
-            }
-            
-            self.energyDataService.energyData?.computeValues(with: settingsManager.setting.pricingConfiguration)
-        } catch {
-            print("Failed to update notification configuration: \(error)")
-            await MainActor.run {
-                isLoading = false
-            }
-        }
-    }
 }
 
 struct RegionTaxSelectionView: View {
@@ -264,11 +229,8 @@ struct RegionTaxSelectionView: View {
     
     var body: some View {
         ZStack {
-            VStack {
-                marketAreaSelector
-                
-                taxSelection
-                    .padding(.top, 10)
+            VStack(alignment: .leading, spacing: 14) {
+                marketAreaSelectionLink
             }
             .opacity(viewModel.isLoading ? 0.5 : 1)
             .grayscale(viewModel.isLoading ? 0.5 : 0)
@@ -287,12 +249,24 @@ struct RegionTaxSelectionView: View {
             viewModel.focusSelectedArea()
         }
     }
-    
-    var marketAreaSelector: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack(alignment: .center) {
+
+    var marketAreaSelectionLink: some View {
+        NavigationLink {
+            MarketAreaSelectionPage(viewModel: viewModel)
+        } label: {
+            HStack(spacing: 14) {
+                Image(systemName: "globe.europe.africa.fill")
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(.orange)
+                    .frame(width: 40, height: 40)
+                    .background(Color.orange.opacity(0.12), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+
                 VStack(alignment: .leading, spacing: 4) {
                     Text("settingsPage.regionToGetPrices".localized())
+                        .font(.headline)
+                        .foregroundStyle(.primary)
+
+                    Text("\(viewModel.selectedMarketArea.settingsFlag) \(viewModel.selectedMarketArea.localizedDisplayName)")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
 
@@ -310,35 +284,28 @@ struct RegionTaxSelectionView: View {
                 if viewModel.isLoadingAreas {
                     ProgressView()
                         .scaleEffect(0.85)
+                } else {
+                    Image(systemName: "chevron.right")
+                        .font(.footnote.weight(.semibold))
+                        .foregroundStyle(.tertiary)
                 }
             }
-
-            mapSelectionView
-
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
-                    ForEach(viewModel.availableMarketAreas) { marketArea in
-                        Button {
-                            viewModel.selectedMarketAreaKey = marketArea.key
-                        } label: {
-                            Text("\(marketArea.settingsFlag) \(marketArea.localizedDisplayName)")
-                                .font(.caption.weight(.semibold))
-                                .foregroundStyle(viewModel.selectedMarketAreaKey == marketArea.key ? .white : .primary)
-                                .padding(.horizontal, 12)
-                                .padding(.vertical, 8)
-                                .background(
-                                    Capsule()
-                                        .fill(viewModel.selectedMarketAreaKey == marketArea.key ? Color.orange : Color.orange.opacity(0.12))
-                                )
-                        }
-                        .buttonStyle(.plain)
-                    }
-                }
-            }
+            .contentShape(Rectangle())
         }
+        .buttonStyle(.plain)
     }
 
-    var mapSelectionView: some View {
+    var loadingView: some View {
+        ProgressView()
+            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+    }
+}
+
+private struct MarketAreaMapSelectionView: View {
+    @ObservedObject var viewModel: MarketAreaTaxSelectionViewModel
+    let height: CGFloat
+
+    var body: some View {
         Map(position: $viewModel.mapCameraPosition, interactionModes: [.pan, .zoom]) {
             ForEach(viewModel.mappableMarketAreas) { marketArea in
                 if let coordinate = viewModel.coordinate(for: marketArea) {
@@ -375,23 +342,65 @@ struct RegionTaxSelectionView: View {
                 }
             }
         }
-        .frame(height: 280)
+        .frame(height: height)
         .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 18, style: .continuous)
                 .stroke(Color.orange.opacity(0.2), lineWidth: 1)
         )
     }
-    
-    var taxSelection: some View {
-        Toggle(isOn: $viewModel.taxSelection) {
-            Text("Prices with VAT")
+}
+
+private struct MarketAreaSelectionPage: View {
+    @ObservedObject var viewModel: MarketAreaTaxSelectionViewModel
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("settingsPage.regionToGetPrices".localized())
+                        .font(.system(.title2, design: .rounded).weight(.bold))
+
+                    Text(
+                        viewModel.marketAreaDataSource == .remote
+                            ? "settingsPage.marketArea.apiLoaded".localized()
+                            : "settingsPage.marketArea.fallbackLoaded".localized()
+                    )
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+
+                MarketAreaMapSelectionView(viewModel: viewModel, height: 420)
+
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        ForEach(viewModel.availableMarketAreas) { marketArea in
+                            Button {
+                                viewModel.selectedMarketAreaKey = marketArea.key
+                            } label: {
+                                Text("\(marketArea.settingsFlag) \(marketArea.localizedDisplayName)")
+                                    .font(.caption.weight(.semibold))
+                                    .foregroundStyle(viewModel.selectedMarketAreaKey == marketArea.key ? .white : .primary)
+                                    .padding(.horizontal, 12)
+                                    .padding(.vertical, 8)
+                                    .background(
+                                        Capsule()
+                                            .fill(viewModel.selectedMarketAreaKey == marketArea.key ? Color.orange : Color.orange.opacity(0.12))
+                                    )
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                }
+            }
+            .padding(16)
         }
-    }
-    
-    var loadingView: some View {
-        ProgressView()
-            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+        .navigationTitle("Market Area")
+        .navigationBarTitleDisplayMode(.inline)
+        .onAppear {
+            viewModel.loadAreasIfNeeded()
+            viewModel.focusSelectedArea()
+        }
     }
 }
 

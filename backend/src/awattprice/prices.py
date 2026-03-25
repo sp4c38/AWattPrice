@@ -314,7 +314,6 @@ async def get_latest_new_prices(stored_data: None, region: Region, config: Confi
     refresh_lock = get_data_refresh_lock(region, config)
     could_acquire_immediately = await acquire_refresh_lock_immediate(refresh_lock)
 
-    # See 'energy_prices.get' doc for an explanation of these update steps.
     if could_acquire_immediately:
         with refresh_lock.context(acquire=False):
             new_data = await download_data(region, config)

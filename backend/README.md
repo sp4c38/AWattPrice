@@ -26,6 +26,14 @@ Config lookup starts with:
 - `/etc/awattprice/config.ini`
 - `~/.config/awattprice/config.ini`
 
+## Local Setup
+
+The backend uses `uv`.
+
+- Create or update the local environment: `uv sync`
+- Run commands inside that environment: `uv run ...`
+- Refresh the lockfile after dependency changes: `uv lock`
+
 ## Price Data Flow
 
 The backend caches aWATTar prices locally and only refreshes when needed.
@@ -76,6 +84,7 @@ Files:
 
 - `backend/Dockerfile`: build the image.
 - `backend/compose.yaml`: run it with Docker Compose.
+- `backend/uv.lock`: lock the Python dependencies used by `uv`.
 
 1. Pull `leonbecker1/awattprice-backend:latest`.
 2. Create `/etc/awattprice/` with `app_data/` and `socket/`.

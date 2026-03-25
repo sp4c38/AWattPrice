@@ -2,26 +2,8 @@
 name = "awattprice"
 version = "2.1.2"
 description = "Backend for the AWattPrice iOS app."
-authors = [
-    {name = "Léon Becker", email = "lb@alien8.de>"},
-    {name = "Frank Becker", email = "fb@alien8.de"}
-]
+readme = "README.md"
 requires-python = ">=3.11,<4"
-homepage = "https://awattprice.space8.me"
-repository = "https://www.github.com/sp4c38/AWattPrice"
-# Add here all kinds of additional classifiers as defined under
-# https://pypi.python.org/pypi?%3Aaction=list_classifiers
-classifiers = [
-    "Development Status :: 2 - Pre-Alpha",
-    "Environment :: Console",
-    "Intended Audience :: Other Audience",
-    "Operating System :: POSIX :: Linux",
-    "Programming Language :: Python",
-]
-packages = [
-    { include = "awattprice", from = "src" },
-    { include = "awattprice_notifications", from = "src" },
-]
 dependencies = [
     "fastapi>=0.73.0",
     "python-box>=5.3.0",
@@ -43,12 +25,9 @@ dependencies = [
     "greenlet>=1.1.2"
 ]
 
-[poetry.group.dev.dependencies]
-ipython = "^8.0.0"
-nest-asyncio = "^1.5.1"
-pdoc3 = "^0.10.0"
-SQLAlchemy = {extras = ["mypy"], version = "^1.4.17"}
-
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["uv_build>=0.11.1,<0.12.0"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = ["awattprice", "awattprice_notifications"]

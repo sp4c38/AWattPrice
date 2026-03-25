@@ -4,22 +4,21 @@ WORKDIR /usr/src/awattprice
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
-ENV POETRY_VERSION=1.8.3
+ENV PATH="/usr/src/awattprice/.venv/bin:$PATH"
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends cron \
     && rm -rf /var/lib/apt/lists/*
 
-RUN pip install --no-cache-dir "poetry==$POETRY_VERSION"
+RUN pip install --no-cache-dir "uv>=0.11.1,<0.12.0"
 
-COPY pyproject.toml poetry.lock ./
+COPY pyproject.toml uv.lock README.md ./
 
-RUN poetry config virtualenvs.create false \
-    && poetry install --only main --no-interaction --no-ansi --no-root
+RUN uv sync --locked --no-dev --no-install-project
 
 COPY src ./src
 
-RUN poetry install --only main --no-interaction --no-ansi
+RUN uv sync --locked --no-dev --no-editable
 
 RUN printf 'SHELL=/bin/sh\nPATH=%s\n*/10 * * * * root python /usr/src/awattprice/src/awattprice_notifications/price_below/service.py\n' "$PATH" > /etc/crontab
 

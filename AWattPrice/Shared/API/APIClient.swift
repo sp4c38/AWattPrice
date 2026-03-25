@@ -8,6 +8,10 @@
 import Foundation
 
 class APIClient {
+    private enum DebugConfiguration {
+        static let apiBaseURLEnvironmentKey = "AWATTPRICE_API_BASE_URL"
+    }
+
     // MARK: - Request Types
     
     /// Protocol for API requests
@@ -27,10 +31,35 @@ class APIClient {
     }
     
     // MARK: - API Configuration
-    
-    static let apiURL: URL = {
-        URL(string: "https://awattprice.space8.me/api/v3/")!
-    }()
+
+    private static let productionAPIURL = URL(string: "https://awattprice.space8.me/api/v3/")!
+
+    static var apiURL: URL {
+        if let overrideURL = debugOverrideAPIURL {
+            return overrideURL
+        }
+
+        return productionAPIURL
+    }
+
+    private static var debugOverrideAPIURL: URL? {
+        let environment = ProcessInfo.processInfo.environment
+        guard let rawValue = environment[DebugConfiguration.apiBaseURLEnvironmentKey] else {
+            return nil
+        }
+
+        return normalizedAPIURL(from: rawValue)
+    }
+
+    private static func normalizedAPIURL(from rawValue: String) -> URL? {
+        let trimmedValue = rawValue.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard trimmedValue.isEmpty == false else {
+            return nil
+        }
+
+        let normalizedValue = trimmedValue.hasSuffix("/") ? trimmedValue : "\(trimmedValue)/"
+        return URL(string: normalizedValue)
+    }
     
     // MARK: - Request Creation
     

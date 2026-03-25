@@ -700,6 +700,8 @@
 				DEVELOPMENT_ASSET_PATHS = "AWattPrice/Resources/Preview\\ Content";
 				DEVELOPMENT_TEAM = RC32A2AMHF;
 				INFOPLIST_FILE = "";
+				INFOPLIST_KEY_NSAppTransportSecurity_NSAllowsArbitraryLoads = YES;
+				INFOPLIST_KEY_NSAppTransportSecurity_NSAllowsLocalNetworking = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = AWattPrice;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;

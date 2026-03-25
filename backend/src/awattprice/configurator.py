@@ -27,9 +27,39 @@ def _check_config_none(config_value: ConfigValue) -> Optional[ConfigValue]:
     return config_value
 
 
+def _is_missing_config_value(config_value: ConfigValue) -> bool:
+    """Check whether liteconfig returned a missing-value placeholder."""
+    return config_value.__class__.__name__ == "Nothing"
+
+
+def _fill_missing_config_values(config: Config):
+    """Fill missing config values with the defaults shipped by the backend."""
+    default_config = Config(defaults.DEFAULT_CONFIG)
+
+    for section_name in ("general", "entsoe", "paths", "apns"):
+        current_section = getattr(config, section_name)
+        default_section = getattr(default_config, section_name)
+
+        if _is_missing_config_value(current_section):
+            setattr(config, section_name, default_section)
+            continue
+
+        for property_name, default_value in vars(default_section).items():
+            if property_name.startswith("_"):
+                continue
+
+            current_value = getattr(current_section, property_name)
+            if _is_missing_config_value(current_value):
+                setattr(current_section, property_name, default_value)
+
+
 def _transform_config(config: Config):
     """Transform certain config fields to another data type and/or value."""
+    _fill_missing_config_values(config)
+
     config.general.log_level = config.general.log_level.upper()
+
+    config.entsoe.token_file = Path(config.entsoe.token_file).expanduser()
 
     config.paths.log_dir = Path(config.paths.log_dir).expanduser()
     config.paths.data_dir = Path(config.paths.data_dir).expanduser()

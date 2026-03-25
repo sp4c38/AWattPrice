@@ -3,7 +3,6 @@ from decimal import Decimal
 
 from sqlalchemy import Boolean
 from sqlalchemy import Column
-from sqlalchemy import Enum
 from sqlalchemy import Float
 from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
@@ -14,14 +13,13 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.orm import registry as Registry
 
 from awattprice import defaults
-from awattprice.defaults import Region
 
 
 TABLE_NAMES = defaults.ORM_TABLE_NAMES
 
 
 metadata = MetaData()
-registry = Registry(metadata)
+registry = Registry(metadata=metadata)
 Base = registry.generate_base()
 
 
@@ -56,7 +54,7 @@ class Token(Base):
     # Note: The token id *as well as* the token can be used to identify a single row.
     token_id = Column(Integer, primary_key=True)
     token = Column(String, unique=True, nullable=False)
-    region = Column(Enum(Region), nullable=False)
+    area = Column(String, nullable=False)
     tax = Column(Boolean, default=False, nullable=False)
     base_fee = Column(DatabaseDecimalType, default=0, nullable=False)
 

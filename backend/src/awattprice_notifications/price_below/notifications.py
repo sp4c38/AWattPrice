@@ -5,9 +5,8 @@ import json
 import awattprice
 import httpx
 
-from awattprice.defaults import Region
 from awattprice.orm import Token
-from awattprice.utils import round_ctkwh
+from awattprice.utils import round_subunitkwh
 from box import Box
 from decimal import Decimal
 from http import HTTPStatus
@@ -23,6 +22,13 @@ from awattprice_notifications.apns import get_apns_authorization
 from awattprice_notifications.notifications import send_notification
 from awattprice_notifications.price_below import defaults
 from awattprice_notifications.price_below.prices import NotifiableDetailedPriceData
+
+
+def format_price_timestamp(price_timestamp, resolution: str) -> str:
+    """Format a price timestamp for notifications."""
+    if resolution == "PT60M":
+        return price_timestamp.format("H")
+    return price_timestamp.format("H:mm")
 
 
 def construct_notification_headers(apns_authorization: str, prices_below: list[Box], use_sandbox: bool) -> Box:
@@ -58,16 +64,16 @@ def construct_notification(
     prices_below_length_str = str(prices_below_length)
 
     below_value = Decimal(str(token.price_below.below_value))
-    below_value = round_ctkwh(below_value)
-    below_value_str = str(below_value)
-    below_value_str = below_value_str.replace(".", ",")
+    below_value = round_subunitkwh(below_value)
 
     lowest_price = notifiable_prices.lowest_price
-    lowest_price_start_str = lowest_price.start_timestamp.format("H")
+    lowest_price_start_str = format_price_timestamp(lowest_price.start_timestamp, notifiable_prices.data.resolution)
     lowest_marketprice = lowest_price.marketprice
-    lowest_marketprice_value = token.base_fee+lowest_price.marketprice.ct_kwh(taxed=token.tax, round_=True)
+    area = awattprice.defaults.get_market_area(token.area)
+    below_value_str = awattprice_notifications.utils.stringify_price(below_value, area)
+    lowest_marketprice_value = token.base_fee + lowest_price.marketprice.subunit_kwh(taxed=token.tax, round_=True)
     lowest_marketprice_value_str = awattprice_notifications.utils.stringify_price(
-        lowest_marketprice_value, lowest_marketprice.region
+        lowest_marketprice_value, lowest_marketprice.area
     )
 
     notification = Box()
@@ -93,6 +99,7 @@ def construct_notification(
 
 async def handle_apns_response(session: AsyncSession, token: Token, response: httpx.Response):
     """Handle an apns response for a price below notification."""
+    status_code = response.status_code
     if len(response.content) != 0:
         try:
             status = Box(response.json())
@@ -101,7 +108,6 @@ async def handle_apns_response(session: AsyncSession, token: Token, response: ht
             return
     else:
         status = None
-    status_code = response.status_code
 
     if status_code == HTTPStatus.OK:
         logger.debug(f"Notification to token {token.token} sent successfully.")
@@ -122,22 +128,22 @@ async def handle_apns_response(session: AsyncSession, token: Token, response: ht
 async def deliver_notifications(
     engine: AsyncEngine,
     config: Config,
-    regions_tokens: Box[Region, list[Token]],
-    notifiable_regions_prices: Box[Region, NotifiableDetailedPriceData],
+    areas_tokens: Box[str, list[Token]],
+    notifiable_areas_prices: Box[str, NotifiableDetailedPriceData],
 ):
     """Send price below notifications for certain tokens.
 
-    :param regions_tokens, notifiable_regions_prices: Each region with tokens *must* also be present in the price data.
+    :param areas_tokens, notifiable_areas_prices: Each area with tokens *must* also be present in the price data.
     """
 
     apns_authorization = await get_apns_authorization(config)
 
     notifications_infos = []
-    for region, tokens in regions_tokens.items():
+    for area_key, tokens in areas_tokens.items():
         if tokens is None:
             continue
 
-        notifiable_prices = notifiable_regions_prices[region]
+        notifiable_prices = notifiable_areas_prices[area_key]
 
         for token in tokens:
             below_value = token.price_below.below_value

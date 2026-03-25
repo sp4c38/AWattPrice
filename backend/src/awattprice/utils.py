@@ -66,13 +66,13 @@ def log_attempts(logger: Callable, service_name: str):
     return log_single_attempt
 
 
-def euromwh_to_ctkwh(value: Decimal) -> Decimal:
-    """Convert euro per mwh to cent per kwh."""
-    converted_value = value * defaults.EURMWH_TO_CENTWKWH
+def unitmwh_to_subunitkwh(value: Decimal, subunits_per_currency_unit: int) -> Decimal:
+    """Convert currency-unit per MWh to subunit per kWh."""
+    converted_value = value * Decimal(str(subunits_per_currency_unit)) * Decimal("0.001")
     return converted_value
 
 
-def round_ctkwh(value: Union[float, Decimal]) -> Union[float, Decimal]:
-    """Round ct per kwh to the natual decimal places."""
-    rounded_value = round(value, defaults.CENT_KWH_ROUNDING_PLACES)
+def round_subunitkwh(value: Union[float, Decimal]) -> Union[float, Decimal]:
+    """Round subunit per kWh to the natural decimal places."""
+    rounded_value = round(value, defaults.PRICE_SUBUNIT_ROUNDING_PLACES)
     return rounded_value

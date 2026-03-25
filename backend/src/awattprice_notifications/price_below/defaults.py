@@ -5,12 +5,11 @@ import arrow
 import awattprice
 
 from arrow import Arrow
-from awattprice.defaults import Region
 from box import Box
 from loguru import logger
 
-# Regions for which to send price below notifications.
-REGIONS_TO_SEND = [Region.DE, Region.AT]
+# Areas for which to send price below notifications.
+MARKET_AREAS_TO_SEND = list(awattprice.defaults.SUPPORTED_MARKET_AREAS.keys())
 
 LAST_UPDATED_ENDTIME_FILE_NAME = "last-updated-{}-endtime.pickle"
 
@@ -33,28 +32,32 @@ def get_notifiable_prices(price_data: Box) -> Optional[list[Box]]:
     """Get the prices about which users should be notified."""
     selected_prices = []
 
-    now_berlin = arrow.now(awattprice.defaults.EUROPE_BERLIN_TIMEZONE)
-    # Note: Time range must not exceed 24 hours.
-    berlin_tomorrow_start = now_berlin.floor("day").shift(days=+1)
-    berlin_tomorrow_end = berlin_tomorrow_start.shift(days=+1)
+    area = awattprice.defaults.get_market_area(price_data.area)
+    now_local = arrow.now(area.timezone)
+    tomorrow_start = now_local.floor("day").shift(days=+1)
+    tomorrow_end = tomorrow_start.shift(days=+1)
+    expected_points = int(
+        (tomorrow_end - tomorrow_start).total_seconds() / awattprice.prices.resolution_to_seconds(price_data.resolution)
+    )
 
-    for price_point in price_data:
+    for price_point in price_data.prices:
         if (
-            price_point.start_timestamp >= berlin_tomorrow_start
-            and price_point.end_timestamp <= berlin_tomorrow_end
+            price_point.start_timestamp >= tomorrow_start
+            and price_point.end_timestamp <= tomorrow_end
         ):
             selected_prices.append(price_point)
 
-    if not len(selected_prices) == 24:
-        logger.debug(f"Length of selected prices isn't equal to 24: {len(selected_prices)}.")
+    if len(selected_prices) != expected_points:
+        logger.debug(f"Length of selected prices isn't equal to {expected_points}: {len(selected_prices)}.")
         return None
 
     return selected_prices
 
 
-def check_region_updated(stored_endtime: Optional[Arrow], new_endtime: Arrow) -> bool:
-    """Check if a region can be marked as updated to previouse runs based on the endtimes."""
-    now = arrow.now().to(awattprice.defaults.EUROPE_BERLIN_TIMEZONE)
+def check_area_updated(stored_endtime: Optional[Arrow], new_endtime: Arrow, area_key: str) -> bool:
+    """Check if an area can be marked as updated relative to previous runs based on the endtimes."""
+    area = awattprice.defaults.get_market_area(area_key)
+    now = arrow.now().to(area.timezone)
     tomorrow_midnight = now.floor("day").shift(days=+2)
     if not new_endtime == tomorrow_midnight:
         return False

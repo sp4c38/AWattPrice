@@ -22,7 +22,6 @@ from sqlalchemy.orm import selectinload
 
 from awattprice import defaults
 from awattprice import utils
-from awattprice.defaults import Region
 from awattprice.orm import PriceBelowNotification
 from awattprice.orm import Token
 
@@ -48,7 +47,7 @@ async def save_notification_configuration(db_engine: AsyncEngine, configuration:
 
 		if token:
 			logger.debug("Updating existing token.")
-			token.region = configuration.general.region
+			token.area = configuration.general.area
 			token.tax = configuration.general.tax
 			token.base_fee = configuration.general.base_fee
 
@@ -59,7 +58,7 @@ async def save_notification_configuration(db_engine: AsyncEngine, configuration:
 		else:
 			logger.debug("Creating new token entry.")
 			new_token = Token(
-				token=configuration.token, region=configuration.general.region, tax=configuration.general.tax,
+				token=configuration.token, area=configuration.general.area, tax=configuration.general.tax,
 				base_fee=configuration.general.base_fee
 			)
 			session.add(new_token)
@@ -88,6 +87,9 @@ def parse_notification_configuration_body(configuration: Box) -> Optional[Box]:
 
 	:returns: None if configuration couldn't be parsed, otherwise return the configuration in internal format.
 	"""
+	if "general" in configuration and "area" in configuration.general:
+		configuration.general.area = defaults.normalize_market_area_key(configuration.general.area)
+
 	schema = defaults.NOTIFICATION_CONFIGURATION_SCHEMA
 	try:
 		jsonschema.validate(configuration, schema)
@@ -95,7 +97,6 @@ def parse_notification_configuration_body(configuration: Box) -> Optional[Box]:
 		logger.warning(f"Clients tasks json is not valid: {exc}.")
 		return None
 
-	configuration.general.region = Region[configuration.general.region]
 	if "base_fee" in configuration.general: # Needed to ensure backwards compatibility with prior AWattPrice app versions.
 		configuration.general.base_fee = Decimal(str(configuration.general.base_fee))
 	else:

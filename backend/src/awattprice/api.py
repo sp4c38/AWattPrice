@@ -3,8 +3,6 @@ import sys
 
 from json import JSONDecodeError
 
-import arrow
-
 from box import Box
 from fastapi import FastAPI
 from fastapi import HTTPException
@@ -18,7 +16,6 @@ from awattprice import defaults
 from awattprice import notifications
 from awattprice import orm
 from awattprice import prices
-from awattprice.defaults import Region
 
 config = configurator.get_config()
 configurator.configure_loguru(defaults.AWATTPRICE_SERVICE_NAME, config)
@@ -37,13 +34,45 @@ app = FastAPI()
 
 
 @logger.catch
-@app.get("/data/{region}")
-async def get_region_data(region: Region):
-    """Get current price data for specified region."""
-    price_data = await prices.get_current_prices(region, config, fall_back=True)
+@app.get("/areas/")
+async def get_supported_areas():
+    """Get the supported market areas."""
+    areas = []
+    for area in defaults.list_market_areas():
+        areas.append(
+            {
+                "key": area.key,
+                "display_name": area.display_name,
+                "country_code": area.country_code,
+                "entsoe_domain": area.entsoe_domain,
+                "timezone": area.timezone,
+                "currency": area.currency,
+                "tax_multiplier": float(area.tax_multiplier) if area.tax_multiplier is not None else None,
+            }
+        )
+
+    return {"default_area": defaults.DEFAULT_MARKET_AREA_KEY, "areas": areas}
+
+
+@logger.catch
+@app.get("/prices/{area_key}")
+async def get_area_prices(area_key: str):
+    """Get current price data for a market area."""
+    try:
+        normalized_area_key = defaults.normalize_market_area_key(area_key)
+        defaults.get_market_area(normalized_area_key)
+    except KeyError:
+        raise HTTPException(404)
+
+    price_data = await prices.get_current_prices(
+        normalized_area_key,
+        config,
+        fall_back=True,
+        background_refresh=True,
+    )
 
     if price_data is None:
-        logger.warning(f"Couldn't get current price data for region {region.name}.")
+        logger.warning(f"Couldn't get current price data for area {normalized_area_key}.")
         raise HTTPException(503)
 
     response_price_data = prices.parse_to_response_data(price_data)
@@ -52,14 +81,13 @@ async def get_region_data(region: Region):
 
 
 @logger.catch
-@app.get("/data/")
-async def get_default_region_data():
-    """Get current price data for default region.
+@app.get("/prices/")
+async def get_default_area_prices():
+    """Get current price data for the default market area.
 
-    This will respond with an temporary redirect to the data price site of the default region.
+    This will respond with a temporary redirect to the default market area price endpoint.
     """
-    region = Region.DE
-    return RedirectResponse(url=f"/data/{region.value}")
+    return RedirectResponse(url=f"/prices/{defaults.DEFAULT_MARKET_AREA_KEY}")
 
 
 @logger.catch

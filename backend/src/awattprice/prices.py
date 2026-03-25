@@ -1,23 +1,19 @@
 """Poll and process price data."""
 import asyncio
-import json
 import pickle
+import xml.etree.ElementTree as ET
 
-from copy import deepcopy
 from decimal import Decimal
 from typing import Optional
-from typing import Union
 
 import arrow
 import filelock
 import httpx
-import jsonschema
 
 from aiofile import async_open
 from arrow import Arrow
 from box import Box
 from box import BoxList
-from fastapi import HTTPException
 from liteconfig import Config
 from loguru import logger
 from tenacity import (
@@ -30,38 +26,39 @@ from tenacity import (
 )
 
 from awattprice import defaults
-from awattprice import exceptions
 from awattprice import utils
-from awattprice.defaults import Region
+from awattprice.market_areas import MarketArea
 from awattprice.utils import ExtendedFileLock
 from awattprice.utils import log_attempts
+
+_background_refresh_tasks: dict[str, asyncio.Task] = {}
 
 
 class MarketPrice:
     """Provide extra helper functions next to storing the marketprice."""
 
     value: Decimal
-    region: Region
+    area: MarketArea
 
-    def __init__(self, price: Decimal, region: Region):
+    def __init__(self, price: Decimal, area: MarketArea):
         """Constructor for a new marketprice instance.
 
         :param value: Price as euro per MWh.
         :param tax: Multiplier to get the taxed price.
         """
         self.value = price
-        self.region = region
+        self.area = area
 
     @property
     def taxed(self) -> Decimal:
         """Get the taxed price."""
-        if self.region.tax:
-            return self.value * self.region.tax
+        if self.area.tax_multiplier is not None:
+            return self.value * self.area.tax_multiplier
         else:
             return self.value
 
-    def ct_kwh(self, taxed: bool = False, round_: bool = False) -> Decimal:
-        """Convert the price to cent per kWh.
+    def subunit_kwh(self, taxed: bool = False, round_: bool = False) -> Decimal:
+        """Convert the price to currency subunits per kWh.
 
         :param taxed: If set convert the taxed price.
         :param round_: If set round the price naturally before returning.
@@ -70,21 +67,36 @@ class MarketPrice:
             price = self.taxed
         else:
             price = self.value
-        ct_kwh_price = utils.euromwh_to_ctkwh(price)
+        subunit_kwh_price = utils.unitmwh_to_subunitkwh(price, self.area.subunits_per_currency_unit)
 
         if round_ is True:
-            ct_kwh_price = utils.round_ctkwh(ct_kwh_price)
+            subunit_kwh_price = utils.round_subunitkwh(subunit_kwh_price)
 
-        return ct_kwh_price
+        return subunit_kwh_price
 
 
-async def get_stored_data(region: Region, config: Config) -> Optional[Box]:
+def area_file_key(area_key: str) -> str:
+    """Get a filesystem-friendly area key."""
+    return defaults.normalize_market_area_key(area_key).lower()
+
+
+def resolution_to_seconds(resolution: str) -> int:
+    """Convert a simple ISO8601 ENTSO-E duration to seconds."""
+    resolution_mapping = {
+        "PT15M": 15 * 60,
+        "PT30M": 30 * 60,
+        "PT60M": 60 * 60,
+    }
+    return resolution_mapping[resolution]
+
+
+async def get_stored_data(area_key: str, config: Config) -> Optional[Box]:
     """Get locally cached price data.
 
     :returns: Price data wrapped as a Box. If file not found returns None.
     """
     file_dir = config.paths.price_data_dir
-    file_name = defaults.PRICE_DATA_FILE_NAME.format(region.value.lower())
+    file_name = defaults.PRICE_DATA_FILE_NAME.format(area_file_key(area_key))
     file_path = file_dir / file_name
 
     try:
@@ -103,14 +115,14 @@ async def get_stored_data(region: Region, config: Config) -> Optional[Box]:
     return data
 
 
-async def get_last_update_time(region: Region, config: Config) -> Optional[Arrow]:
+async def get_last_update_time(area_key: str, config: Config) -> Optional[Arrow]:
     """Get time the price data was updated last.
 
     :returns None: If file not found.
     :returns arrow.Arrow: Last update time.
     """
     file_dir = config.paths.price_data_dir
-    file_name = defaults.PRICE_DATA_UPDATE_TS_FILE_NAME.format(region.name.lower())
+    file_name = defaults.PRICE_DATA_UPDATE_TS_FILE_NAME.format(area_file_key(area_key))
     file_path = file_dir / file_name
 
     try:
@@ -125,47 +137,45 @@ async def get_last_update_time(region: Region, config: Config) -> Optional[Arrow
     return time
 
 
-def check_update_data(data: Optional[Box], last_update_time: Optional[Arrow]) -> bool:
+def check_update_data(data: Optional[Box], last_update_time: Optional[Arrow], area: MarketArea) -> bool:
     """Check if price data is due for update.
 
-    :param last_update_time: Time data was last polled from the awattar api.
+    :param last_update_time: Time data was last polled from the ENTSO-E API.
     :returns: True if data is due, false if not due.
     """
     if data is None:
         return True
 
-    now_berlin = arrow.now(defaults.EUROPE_BERLIN_TIMEZONE)
+    now_local = arrow.now(area.timezone)
 
     if last_update_time is not None:
-        next_update_time = last_update_time.shift(seconds=defaults.AWATTAR_COOLDOWN_INTERVAL)
-        if now_berlin < next_update_time:
-            seconds_remaining = (next_update_time - now_berlin).total_seconds()
-            logger.debug(f"AWATTar cooldown has {seconds_remaining}s remaining.")
+        next_update_time = last_update_time.shift(seconds=defaults.ENTSOE_COOLDOWN_INTERVAL)
+        if now_local < next_update_time:
+            seconds_remaining = (next_update_time - now_local).total_seconds()
+            logger.debug(f"ENTSO-E cooldown has {seconds_remaining}s remaining.")
             return False
 
-    midnight_tomorrow_berlin = now_berlin.floor("day").shift(days=+2)
+    midnight_tomorrow_local = now_local.floor("day").shift(days=+2)
     latest_price = max(data.prices, key=lambda point: point.end_timestamp)
-    if latest_price.end_timestamp >= midnight_tomorrow_berlin:
+    if latest_price.end_timestamp >= midnight_tomorrow_local:
         logger.debug("Price points still available until tomorrow midnight.")
         return False
 
-    midnight_today_berlin = now_berlin.floor("day").shift(days=+1)
-    latest_price_end_berlin = latest_price.end_timestamp.to(defaults.EUROPE_BERLIN_TIMEZONE)
-    midnight_today_latest_price_end_diff = midnight_today_berlin - latest_price_end_berlin
-    if midnight_today_latest_price_end_diff.total_seconds() >= 3600:
+    midnight_today_local = now_local.floor("day").shift(days=+1)
+    if latest_price.end_timestamp < midnight_today_local:
         return True
 
-    if now_berlin.hour < defaults.AWATTAR_UPDATE_HOUR:
-        logger.debug(f"Not past update hour ({defaults.AWATTAR_UPDATE_HOUR}).")
+    if now_local.hour < defaults.ENTSOE_UPDATE_HOUR:
+        logger.debug(f"Not past update hour ({defaults.ENTSOE_UPDATE_HOUR}).")
         return False
 
     return True
 
 
-def get_data_refresh_lock(region: Region, config: Config) -> ExtendedFileLock:
+def get_data_refresh_lock(area_key: str, config: Config) -> ExtendedFileLock:
     """Get file lock used when refreshing price data."""
     lock_dir = config.paths.price_data_dir
-    lock_file_name = defaults.PRICE_DATA_FILE_NAME.format(region.value.lower()) + ".lock"
+    lock_file_name = defaults.PRICE_DATA_FILE_NAME.format(area_file_key(area_key)) + ".lock"
     lock_file_path = lock_dir / lock_file_name
     lock = ExtendedFileLock(lock_file_path)
     return lock
@@ -191,6 +201,9 @@ async def acquire_refresh_lock_immediate(
         logger.debug("Lock acquired immediately.")
         return True
 
+    if timeout <= 0:
+        raise filelock.Timeout(lock.lock_file)
+
     try:
         await async_acquire(timeout=timeout)
     except filelock.Timeout as exc:
@@ -201,57 +214,101 @@ async def acquire_refresh_lock_immediate(
         return False
 
 
-async def download_data(region: Region, config: Config) -> Optional[Box]:
-    """Download price data from the aWATTar API and extract the json.
+def get_entsoe_query_params(area: MarketArea) -> dict[str, str]:
+    """Build ENTSO-E query parameters for an area."""
+    now_local = arrow.now(area.timezone)
+    today_start_local = now_local.floor("day")
+    tomorrow_end_local = today_start_local.shift(days=+2)
 
-    :returns price data: As a box object.
-    :returns None: If price data couldn't be downloaded or is no valid json.
-    """
-    region_config_identifier = f"awattar.{region.value.lower()}"
-    url = getattr(config, region_config_identifier).url
-
-    now = arrow.utcnow()
-    now_berlin = now.to(defaults.EUROPE_BERLIN_TIMEZONE)
-    today_start = now_berlin.floor(frame="day")
-    tomorrow_end = today_start.shift(days=+2)
-
-    url_parameters = {
-        "start": today_start.int_timestamp * defaults.SEC_TO_MILLISEC,
-        "end": tomorrow_end.int_timestamp * defaults.SEC_TO_MILLISEC,
+    return {
+        "documentType": "A44",
+        "in_Domain": area.entsoe_domain,
+        "out_Domain": area.entsoe_domain,
+        "periodStart": today_start_local.to("UTC").format("YYYYMMDDHHmm"),
+        "periodEnd": tomorrow_end_local.to("UTC").format("YYYYMMDDHHmm"),
     }
-    logger.info(f"Polling {region.value.upper()} price data from {url}.")
+
+
+def get_matching_time_series(root: ET.Element, area: MarketArea) -> list[ET.Element]:
+    """Get the ENTSO-E time series matching the configured area."""
+    matching_series = []
+    for time_series in root.findall(".//{*}TimeSeries"):
+        in_domain = time_series.findtext("{*}in_Domain.mRID")
+        out_domain = time_series.findtext("{*}out_Domain.mRID")
+        if in_domain != area.entsoe_domain or out_domain != area.entsoe_domain:
+            continue
+        matching_series.append(time_series)
+
+    return matching_series
+
+
+def select_time_series(area: MarketArea, time_series_list: list[ET.Element]) -> ET.Element:
+    """Select the ENTSO-E time series to use for the area."""
+    if len(time_series_list) == 0:
+        raise ValueError(f"No ENTSO-E price series found for {area.key}.")
+
+    if len(time_series_list) == 1:
+        return time_series_list[0]
+
+    if area.preferred_price_sequence is not None:
+        preferred_time_series = [
+            time_series
+            for time_series in time_series_list
+            if time_series.findtext("{*}classificationSequence_AttributeInstanceComponent.position")
+            == str(area.preferred_price_sequence)
+        ]
+        if len(preferred_time_series) == 1:
+            logger.debug(
+                f"Selected ENTSO-E sequence {area.preferred_price_sequence} for {area.key}."
+            )
+            return preferred_time_series[0]
+
+    sequence_one_series = [
+        time_series
+        for time_series in time_series_list
+        if time_series.findtext("{*}classificationSequence_AttributeInstanceComponent.position") == "1"
+    ]
+    if len(sequence_one_series) == 1:
+        logger.warning(f"Falling back to ENTSO-E sequence 1 for {area.key}.")
+        return sequence_one_series[0]
+
+    logger.warning(f"Multiple ENTSO-E series found for {area.key}. Falling back to the first one.")
+    return time_series_list[0]
+
+
+async def download_data(area: MarketArea, config: Config) -> Optional[bytes]:
+    """Download price data from the ENTSO-E API."""
+    url = config.entsoe.url
+    token = config.entsoe.token_file.read_text().strip()
+    query_params = get_entsoe_query_params(area)
+    query_params["securityToken"] = token
+    logger.info(f"Polling {area.key} price data from ENTSO-E.")
 
 
     async with httpx.AsyncClient() as client:
         try:
             async for attempt in AsyncRetrying(
-                before=log_attempts(logger.debug, "download awattar price data"),
+                before=log_attempts(logger.debug, "download ENTSO-E price data"),
                 stop=(
-                    stop_after_attempt(defaults.AWATTAR_RETRY_MAX_ATTEMPTS)
-                    | stop_after_delay(defaults.AWATTAR_RETRY_STOP_DELAY)
+                    stop_after_attempt(defaults.ENTSOE_RETRY_MAX_ATTEMPTS)
+                    | stop_after_delay(defaults.ENTSOE_RETRY_STOP_DELAY)
                 ),
                 wait=wait_exponential(multiplier=1.5, min=0, max=4)
             ):
                 with attempt:
-                    response = await client.get(url, params=url_parameters, timeout=defaults.AWATTAR_TIMEOUT)
+                    response = await client.get(url, params=query_params, timeout=defaults.ENTSOE_TIMEOUT)
+                    response.raise_for_status()
         except Exception as exc:
             logger.exception(f"Requests - also after retrying -  failed when downloading price data: {exc}.")
             return None
 
-    try:
-        data_raw = response.json()
-    except json.JSONDecodeError as exc:
-        logger.exception(f"Couldn't decode downloaded price data as json: {exc}.")
-        return None
-    data = Box(data_raw)
-
-    return data
+    return response.content
 
 
-async def update_last_update_time(region: Region, config: Config):
+async def update_last_update_time(area_key: str, config: Config):
     """Set the time the price data was updated last to the current time."""
     file_dir = config.paths.price_data_dir
-    file_name = defaults.PRICE_DATA_UPDATE_TS_FILE_NAME.format(region.name.lower())
+    file_name = defaults.PRICE_DATA_UPDATE_TS_FILE_NAME.format(area_file_key(area_key))
     file_path = file_dir / file_name
 
     now = arrow.now()
@@ -260,19 +317,55 @@ async def update_last_update_time(region: Region, config: Config):
         await file.write(now_string)
 
 
-def parse_downloaded_data(region: Region, data: Box) -> Box:
-    """Parse the downloaded price data into the app internal format."""
+def parse_downloaded_data(area: MarketArea, xml_content: bytes) -> Box:
+    """Parse the downloaded ENTSO-E price data into the app internal format."""
+    root = ET.fromstring(xml_content)
+    if root.tag.endswith("Acknowledgement_MarketDocument"):
+        reason = root.findtext(".//{*}text") or "Unknown ENTSO-E error."
+        raise ValueError(reason)
+
+    matching_time_series = get_matching_time_series(root, area)
+    selected_time_series = select_time_series(area, matching_time_series)
+
+    selected_resolution = None
     new_data = Box()
+    new_data.source = "ENTSOE"
+    new_data.area = area.key
+    new_data.display_name = area.display_name
+    new_data.entsoe_domain = area.entsoe_domain
+    new_data.timezone = area.timezone
+    new_data.currency = selected_time_series.findtext("{*}currency_Unit.name") or area.currency
+    new_data.sequence_position = selected_time_series.findtext(
+        "{*}classificationSequence_AttributeInstanceComponent.position"
+    )
     new_data.prices = BoxList()
-    for point in data.data:
-        new_point = Box()
-        start_timestamp = point.start_timestamp / defaults.SEC_TO_MILLISEC
-        new_point.start_timestamp = arrow.get(start_timestamp).to(defaults.EUROPE_BERLIN_TIMEZONE)
-        end_timestamp = point.end_timestamp / defaults.SEC_TO_MILLISEC
-        new_point.end_timestamp = arrow.get(end_timestamp).to(defaults.EUROPE_BERLIN_TIMEZONE)
-        marketprice = Decimal(str(point.marketprice))
-        new_point.marketprice = MarketPrice(marketprice, region)
-        new_data.prices.append(new_point)
+    for period in selected_time_series.findall("{*}Period"):
+        resolution = period.findtext("{*}resolution")
+        if resolution is None:
+            continue
+        if selected_resolution is None:
+            selected_resolution = resolution
+        elif selected_resolution != resolution:
+            raise ValueError(f"Mixed ENTSO-E resolutions for {area.key}: {selected_resolution} and {resolution}.")
+
+        interval_seconds = resolution_to_seconds(resolution)
+        period_start = arrow.get(period.findtext("{*}timeInterval/{*}start")).to(area.timezone)
+
+        for point in period.findall("{*}Point"):
+            position_text = point.findtext("{*}position")
+            price_text = point.findtext("{*}price.amount")
+            if position_text is None or price_text is None:
+                continue
+
+            new_point = Box()
+            position = int(position_text)
+            new_point.start_timestamp = period_start.shift(seconds=interval_seconds * (position - 1))
+            new_point.end_timestamp = new_point.start_timestamp.shift(seconds=interval_seconds)
+            new_point.marketprice = MarketPrice(Decimal(str(price_text)), area)
+            new_data.prices.append(new_point)
+
+    new_data.resolution = selected_resolution
+    new_data.prices = BoxList(sorted(new_data.prices, key=lambda point: point.start_timestamp))
 
     return new_data
 
@@ -292,93 +385,144 @@ def check_data_new(old_data: Optional[Box], new_data: Box) -> bool:
         return False
 
 
-async def store_data(data: Box, region: Region, config: Config):
+async def store_data(data: Box, area_key: str, config: Config):
     """Store new price data to the filesystem."""
     store_dir = config.paths.price_data_dir
-    file_name = defaults.PRICE_DATA_FILE_NAME.format(region.value.lower())
+    file_name = defaults.PRICE_DATA_FILE_NAME.format(area_file_key(area_key))
     file_path = store_dir / file_name
 
     pickled_data = pickle.dumps(data)
 
-    logger.info(f"Storing aWATTar {region.value} price data to {file_path}.")
+    logger.info(f"Storing ENTSO-E {area_key} price data to {file_path}.")
     async with async_open(file_path, "wb") as file:
         await file.write(pickled_data)
 
 
-async def get_latest_new_prices(stored_data: None, region: Region, config: Config) -> Optional[Box]:
+async def get_latest_new_prices(
+    stored_data: Optional[Box],
+    area_key: str,
+    config: Config,
+    lock_timeout: float = defaults.PRICE_DATA_REFRESH_LOCK_TIMEOUT,
+) -> Optional[Box]:
     """Download the latest new prices.
 
     :returns downloaded price data: If all went well.
     :returns None: There are no latest new prices.
     """
-    refresh_lock = get_data_refresh_lock(region, config)
-    could_acquire_immediately = await acquire_refresh_lock_immediate(refresh_lock)
+    area = defaults.get_market_area(area_key)
+    refresh_lock = get_data_refresh_lock(area_key, config)
+    try:
+        could_acquire_immediately = await acquire_refresh_lock_immediate(refresh_lock, timeout=lock_timeout)
+    except filelock.Timeout:
+        logger.debug(f"Skipping refresh for {area.key} because another refresh is already running.")
+        return None
 
     if could_acquire_immediately:
         with refresh_lock.context(acquire=False):
-            new_data = await download_data(region, config)
-            if new_data is None:
+            downloaded_data = await download_data(area, config)
+            if downloaded_data is None:
                 return None
             try:
-                await update_last_update_time(region, config)
+                await update_last_update_time(area_key, config)
             except Exception as exc:
                 logger.exception(f"Couldn't write last update time: {exc}.")
                 # Not ideal, but also not essential to provide the latest new prices.
-            jsonschema.validate(new_data, defaults.AWATTAR_API_PRICE_DATA_SCHEMA)
-            new_data = parse_downloaded_data(region, new_data)
+            new_data = parse_downloaded_data(area, downloaded_data)
             data_is_new = check_data_new(stored_data, new_data)
             if not data_is_new:
-                logger.debug(f"Downloaded data for region {region.name} includes no new prices.")
+                logger.debug(f"Downloaded data for area {area.key} includes no new prices.")
                 return None
             else:
-                logger.debug(f"Got fresh new data for region {region.name}.")
-            await store_data(new_data, region, config)
+                logger.debug(f"Got fresh new data for area {area.key}.")
+            await store_data(new_data, area_key, config)
             latest_prices = new_data
     else:
         refresh_lock.release()
-        latest_prices = await get_stored_data(region, config)
+        latest_prices = await get_stored_data(area_key, config)
 
     return latest_prices
 
 
-async def get_current_prices(region: Region, config: Config, fall_back=False) -> Optional[dict]:
+def _finalize_background_refresh(area_key: str, refresh_task: asyncio.Task):
+    """Clean up background refresh bookkeeping."""
+    active_task = _background_refresh_tasks.get(area_key)
+    if active_task is refresh_task:
+        _background_refresh_tasks.pop(area_key, None)
+
+    try:
+        refresh_task.result()
+    except Exception as exc:
+        logger.exception(f"Background refresh for {area_key} failed: {exc}.")
+
+
+def schedule_background_refresh(stored_data: Optional[Box], area_key: str, config: Config):
+    """Start a background refresh unless one is already running for the area."""
+    existing_task = _background_refresh_tasks.get(area_key)
+    if existing_task is not None and not existing_task.done():
+        logger.debug(f"Background refresh for {area_key} is already running.")
+        return
+
+    async def run_refresh():
+        refreshed_data = await get_latest_new_prices(stored_data, area_key, config, lock_timeout=0)
+        if refreshed_data is not None:
+            logger.debug(f"Background refresh finished for {area_key}.")
+
+    refresh_task = asyncio.create_task(run_refresh(), name=f"awattprice-refresh-{area_key}")
+    _background_refresh_tasks[area_key] = refresh_task
+    refresh_task.add_done_callback(lambda finished_task: _finalize_background_refresh(area_key, finished_task))
+    logger.debug(f"Scheduled background refresh for {area_key}.")
+
+
+async def get_current_prices(
+    area_key: str,
+    config: Config,
+    fall_back: bool = False,
+    background_refresh: bool = False,
+) -> Optional[dict]:
     """Get the currently up to date price data.
 
     :param fall_back: If true function will fall back to the stored data in certain situations when an
         error retrieving the actual current prices occurrs. If false none will be returned in such cases.
+    :param background_refresh: If true stale cached data is returned immediately and refresh is scheduled
+        in the background. If no cached data exists yet, the refresh still happens synchronously.
     """
+    area = defaults.get_market_area(area_key)
     stored_data, last_update_time = await asyncio.gather(
-        get_stored_data(region, config),
-        get_last_update_time(region, config),
+        get_stored_data(area_key, config),
+        get_last_update_time(area_key, config),
         return_exceptions=True,
     )
     if isinstance(stored_data, Exception):
-        logger.exception(f"Couldn't get stored {region.name} data: {stored_data}.")
+        logger.exception(f"Couldn't get stored {area.key} data: {stored_data}.")
         return None
     if isinstance(last_update_time, Exception):
         logger.exception(
-            f"Couldn't get the {region.name} last update time and thus will assume it is none: {last_update_time}."
+            f"Couldn't get the {area.key} last update time and thus will assume it is none: {last_update_time}."
         )
         last_update_time = None
 
-    do_update_data = check_update_data(stored_data, last_update_time)
+    do_update_data = check_update_data(stored_data, last_update_time, area)
     price_data = None
     if do_update_data:
+        if background_refresh and stored_data is not None:
+            schedule_background_refresh(stored_data, area_key, config)
+            return stored_data
+
         try:
-            price_data = await get_latest_new_prices(stored_data, region, config)
+            price_data = await get_latest_new_prices(stored_data, area_key, config)
         except Exception as exc:
-            logger.exception(f"Couldn't get latest new {region.name} prices: {exc}.")
+            logger.exception(f"Couldn't get latest new {area.key} prices: {exc}.")
             if not fall_back:
                 return None
             price_data = stored_data
         else:
             if price_data is None:
-                logger.debug(f"No latest new price data for region {region.name} prices.")
+                logger.debug(f"No latest new price data for area {area.key}.")
                 if not fall_back:
                     return None
                 price_data = stored_data
     else:
-        logger.debug(f"Local {region.name} prices still up to date.")
+        logger.debug(f"Local {area.key} prices still up to date.")
         price_data = stored_data
 
     return price_data
@@ -388,6 +532,14 @@ def parse_to_response_data(price_data: Box) -> Box:
     """Parse app interal format to the response format."""
     # Don't create copy to need to explicitly make data included in response opt-in.
     response_data = Box()
+    response_data.source = price_data.source
+    response_data.area = price_data.area
+    response_data.display_name = price_data.display_name
+    response_data.entsoe_domain = price_data.entsoe_domain
+    response_data.timezone = price_data.timezone
+    response_data.currency = price_data.currency
+    response_data.resolution = price_data.resolution
+    response_data.sequence_position = price_data.sequence_position
     response_data.prices = []
     for price_point in price_data.prices:
         response_point = Box()

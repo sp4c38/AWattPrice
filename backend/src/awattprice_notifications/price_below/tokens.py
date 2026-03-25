@@ -3,7 +3,6 @@ from collections import defaultdict
 
 import awattprice
 
-from awattprice.defaults import Region
 from awattprice.orm import PriceBelowNotification
 from awattprice.orm import Token
 from box import Box
@@ -19,32 +18,33 @@ from sqlalchemy.sql.elements import BooleanClauseList
 from awattprice_notifications.price_below.prices import DetailedPriceData
 
 
-def get_below_value_checks(regions_data: dict[Region, DetailedPriceData]) -> list[BooleanClauseList]:
+def get_below_value_checks(areas_data: dict[str, DetailedPriceData]) -> list[BooleanClauseList]:
     """Get sqlalchemy and_ clauses which check if the price data drops below or on the users below value.
 
     These checks respect the tax option of the user by adding or leaving away the tax on the price data.
     """
     below_value_checks = []
-    for region, price_data in regions_data.items():
+    for area_key, price_data in areas_data.items():
+        area = awattprice.defaults.get_market_area(area_key)
         lowest_marketprice = price_data.lowest_price.marketprice
-        lowest_marketprice_untaxed = lowest_marketprice.ct_kwh(taxed=False, round_=True)
-        if region.tax is None:
+        lowest_marketprice_untaxed = lowest_marketprice.subunit_kwh(taxed=False, round_=True)
+        if area.tax_multiplier is None:
             below_value_checks.append(
-                and_(Token.region == region, Token.base_fee+lowest_marketprice_untaxed <= PriceBelowNotification.below_value)
+                and_(Token.area == area_key, Token.base_fee + lowest_marketprice_untaxed <= PriceBelowNotification.below_value)
             )
         else:
-            lowest_marketprice_taxed = lowest_marketprice.ct_kwh(taxed=True, round_=True)
+            lowest_marketprice_taxed = lowest_marketprice.subunit_kwh(taxed=True, round_=True)
             below_value_checks.append(
                 and_(
-                    Token.region == region,
+                    Token.area == area_key,
                     or_(
                         and_(
                             Token.tax == True,
-                            Token.base_fee+lowest_marketprice_taxed <= PriceBelowNotification.below_value,
+                            Token.base_fee + lowest_marketprice_taxed <= PriceBelowNotification.below_value,
                         ),
                         and_(
                             Token.tax == False,
-                            Token.base_fee+lowest_marketprice_untaxed <= PriceBelowNotification.below_value,
+                            Token.base_fee + lowest_marketprice_untaxed <= PriceBelowNotification.below_value,
                         ),
                     ),
                 )
@@ -53,16 +53,16 @@ def get_below_value_checks(regions_data: dict[Region, DetailedPriceData]) -> lis
 
 
 async def collect_applying_tokens(
-    engine: AsyncEngine, regions_data: dict[Region, DetailedPriceData]
-) -> Box[Region, list[Token]]:
-    """Collect all tokens from the database for the specified regions which apply to get a price below notification.
+    engine: AsyncEngine, areas_data: dict[str, DetailedPriceData]
+) -> Box[str, list[Token]]:
+    """Collect all tokens from the database for the specified areas which apply to get a price below notification.
 
     The price below rows on the returned tokens are loaded.
 
-    :returns: Dictionary with region as key and list of tokens as the value. Updated regions which
+    :returns: Dictionary with area as key and list of tokens as the value. Updated areas which
         don't have any tokens associated aren't included in the returned dictionary.
     """
-    below_value_checks = get_below_value_checks(regions_data)
+    below_value_checks = get_below_value_checks(areas_data)
     if not below_value_checks:
         return Box()
     async with AsyncSession(engine) as session:
@@ -76,8 +76,8 @@ async def collect_applying_tokens(
         ungrouped_tokens = await session.execute(applying_notifications_stmt)
         ungrouped_tokens = ungrouped_tokens.scalars().all()
 
-    region_tokens = defaultdict(list)
+    area_tokens = defaultdict(list)
     for token in ungrouped_tokens:
-        region_tokens[token.region].append(token)
-    region_tokens = Box(region_tokens)
-    return region_tokens
+        area_tokens[token.area].append(token)
+    area_tokens = Box(area_tokens)
+    return area_tokens

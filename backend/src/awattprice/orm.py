@@ -24,17 +24,18 @@ metadata = MetaData()
 registry = Registry(metadata)
 Base = registry.generate_base()
 
+
 class DatabaseDecimalType(types.TypeDecorator):
     impl = String
     cache_ok = True
-    
+
     def process_bind_param(self, value: Decimal, dialect):
         return str(value)
-        
+
     def process_result_value(self, value: String, dialect):
         return Decimal(value)
 
-# pylint: disable=too-few-public-methods
+
 class PriceBelowNotification(Base):
     """Hold info about the subscription of the price below notification of a token."""
 
@@ -47,9 +48,6 @@ class PriceBelowNotification(Base):
     token = relationship("Token", back_populates="price_below", uselist=False)
 
 
-# pylint: enable=too-few-public-methods
-
-# pylint: disable=too-few-public-methods
 class Token(Base):
     """Store apns notification token information."""
 
@@ -65,6 +63,3 @@ class Token(Base):
     price_below = relationship(
         PriceBelowNotification, back_populates="token", cascade="all, delete-orphan", uselist=False
     )
-
-
-# pylint: enable=too-few-public-methods

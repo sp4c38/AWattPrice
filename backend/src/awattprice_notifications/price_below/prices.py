@@ -6,10 +6,9 @@ import sys
 from decimal import Decimal
 from typing import Optional
 
-import awattprice
-
 from aiofile import async_open
 from arrow import Arrow
+from awattprice import prices as awattprice_prices
 from box import Box
 from liteconfig import Config
 from loguru import logger
@@ -57,7 +56,7 @@ class NotifiableDetailedPriceData(DetailedPriceData):
 
 async def collect_areas_prices(config: Config, area_keys: list[str]) -> Box:
     """Get the current prices for multiple market areas."""
-    prices_tasks = [awattprice.prices.get_current_prices(area_key, config, fall_back=False) for area_key in area_keys]
+    prices_tasks = [awattprice_prices.get_current_prices(area_key, config, fall_back=False) for area_key in area_keys]
     areas_prices = await asyncio.gather(*prices_tasks)
     areas_prices = dict(zip(area_keys, areas_prices))
 

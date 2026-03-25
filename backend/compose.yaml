@@ -6,3 +6,13 @@ services:
       - "${AWATTPRICE_HOST_ROOT:-/etc/awattprice}/app_data:/etc/awattprice/app_data"
       - "${AWATTPRICE_HOST_ROOT:-/etc/awattprice}/config.ini:/etc/awattprice/config.ini:ro"
       - "${AWATTPRICE_HOST_ROOT:-/etc/awattprice}/socket:/etc/awattprice/socket"
+  price-below:
+    image: ${AWATTPRICE_IMAGE:-leonbecker1/awattprice-backend:latest}
+    restart: unless-stopped
+    command:
+      - /bin/sh
+      - -c
+      - while true; do python /usr/src/awattprice/src/awattprice_notifications/price_below/service.py; sleep 600; done
+    volumes:
+      - "${AWATTPRICE_HOST_ROOT:-/etc/awattprice}/app_data:/etc/awattprice/app_data"
+      - "${AWATTPRICE_HOST_ROOT:-/etc/awattprice}/config.ini:/etc/awattprice/config.ini:ro"

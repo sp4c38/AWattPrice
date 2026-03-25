@@ -2,11 +2,12 @@
 import asyncio
 import json
 
-import awattprice
 import httpx
 
+from awattprice import defaults as awattprice_defaults
 from awattprice.orm import Token
 from awattprice.utils import round_subunitkwh
+from awattprice_notifications import utils as awattprice_notification_utils
 from box import Box
 from decimal import Decimal
 from http import HTTPStatus
@@ -15,9 +16,6 @@ from loguru import logger
 from sqlalchemy.ext.asyncio import AsyncEngine
 from sqlalchemy.ext.asyncio import AsyncSession
 
-import awattprice_notifications
-
-from awattprice_notifications import defaults as notification_defaults
 from awattprice_notifications.apns import get_apns_authorization
 from awattprice_notifications.notifications import send_notification
 from awattprice_notifications.price_below import defaults
@@ -41,9 +39,9 @@ def construct_notification_headers(apns_authorization: str, prices_below: list[B
     headers["apns-priority"] = str(defaults.NOTIFICATION.priority)
     headers["apns-collapse-id"] = defaults.NOTIFICATION.collapse_id
     if use_sandbox is False:
-        headers["apns-topic"] = awattprice.defaults.APP_BUNDLE_ID.production
+        headers["apns-topic"] = awattprice_defaults.APP_BUNDLE_ID.production
     else:
-        headers["apns-topic"] = awattprice.defaults.APP_BUNDLE_ID.staging
+        headers["apns-topic"] = awattprice_defaults.APP_BUNDLE_ID.staging
     headers["apns-expiration"] = str(latest_price_below.start_timestamp.int_timestamp)
 
     return headers
@@ -69,10 +67,10 @@ def construct_notification(
     lowest_price = notifiable_prices.lowest_price
     lowest_price_start_str = format_price_timestamp(lowest_price.start_timestamp, notifiable_prices.data.resolution)
     lowest_marketprice = lowest_price.marketprice
-    area = awattprice.defaults.get_market_area(token.area)
-    below_value_str = awattprice_notifications.utils.stringify_price(below_value, area)
+    area = awattprice_defaults.get_market_area(token.area)
+    below_value_str = awattprice_notification_utils.stringify_price(below_value, area)
     lowest_marketprice_value = token.base_fee + lowest_price.marketprice.subunit_kwh(taxed=token.tax, round_=True)
-    lowest_marketprice_value_str = awattprice_notifications.utils.stringify_price(
+    lowest_marketprice_value_str = awattprice_notification_utils.stringify_price(
         lowest_marketprice_value, lowest_marketprice.area
     )
 

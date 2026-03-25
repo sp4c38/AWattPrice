@@ -7,8 +7,7 @@ from awattprice import configurator
 from awattprice import database
 from loguru import logger
 
-import awattprice_notifications
-
+from awattprice_notifications import defaults as notification_defaults
 from awattprice_notifications.price_below import defaults
 from awattprice_notifications.price_below import notifications
 from awattprice_notifications.price_below import prices
@@ -18,7 +17,7 @@ from awattprice_notifications.price_below import tokens
 async def main():
     """Run steps to send price below notifications to users."""
     config = configurator.get_config()
-    price_below_service_name = awattprice_notifications.defaults.PRICE_BELOW_SERVICE_NAME
+    price_below_service_name = notification_defaults.PRICE_BELOW_SERVICE_NAME
     configurator.configure_loguru(price_below_service_name, config)
 
     try:

@@ -61,7 +61,7 @@ Requests to `POST /notifications/save_configuration/` must include:
 
 ## Price Below Service
 
-The price-below service is not long-running. It should be started periodically, for example by cron. Running it more often during the usual ENTSO-E update window around 13:00 to 15:00 makes sense; outside that window it can run less often.
+The price-below service is a periodic worker. In Docker it runs as its own service and sleeps 10 minutes between runs. Running it more often during the usual ENTSO-E update window around 13:00 to 15:00 makes sense; outside that window it can run less often.
 
 Each run:
 
@@ -80,8 +80,8 @@ The Docker setup is intended mainly for production, not debugging.
 
 Files:
 
-- `backend/Dockerfile`: build the image.
-- `backend/compose.yaml`: run it with Docker Compose.
+- `backend/Dockerfile`: shared image for the API and worker.
+- `backend/compose.yaml`: runs the web API and the price-below worker as separate services.
 - `backend/uv.lock`: lock the Python dependencies used by `uv`.
 
 1. Pull `leonbecker1/awattprice-backend:latest`.
@@ -102,6 +102,11 @@ AWATTPRICE_IMAGE=leonbecker1/awattprice-backend:pre_release \
 AWATTPRICE_HOST_ROOT=/etc/staging_awattprice \
 docker compose -f backend/compose.yaml up -d
 ```
+
+This starts:
+
+- `awattprice`: the FastAPI web service
+- `price-below`: the notification worker loop
 
 To build locally from the project root:
 

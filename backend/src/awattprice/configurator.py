@@ -66,11 +66,6 @@ def _transform_config(config: Config):
     config.paths.price_data_dir = config.paths.data_dir / defaults.PRICE_DATA_SUBDIR_NAME
     config.paths.apns_dir = Path(config.paths.apns_dir).expanduser()
 
-    config.paths.old_database = _check_config_none(config.paths.old_database)
-    if config.paths.old_database is not None:
-        config.paths.old_database = Path(config.paths.old_database)
-
-
 def _ensure_dir(path: Path):
     """Ensure that the dir at the parsed path is a directory and exists.
 

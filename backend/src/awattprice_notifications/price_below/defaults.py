@@ -2,14 +2,15 @@
 from typing import Optional
 
 import arrow
-import awattprice
 
 from arrow import Arrow
+from awattprice import defaults as awattprice_defaults
+from awattprice import prices as awattprice_prices
 from box import Box
 from loguru import logger
 
 # Areas for which to send price below notifications.
-MARKET_AREAS_TO_SEND = list(awattprice.defaults.SUPPORTED_MARKET_AREAS.keys())
+MARKET_AREAS_TO_SEND = list(awattprice_defaults.SUPPORTED_MARKET_AREAS.keys())
 
 LAST_UPDATED_ENDTIME_FILE_NAME = "last-updated-{}-endtime.pickle"
 
@@ -32,12 +33,12 @@ def get_notifiable_prices(price_data: Box) -> Optional[list[Box]]:
     """Get the prices about which users should be notified."""
     selected_prices = []
 
-    area = awattprice.defaults.get_market_area(price_data.area)
+    area = awattprice_defaults.get_market_area(price_data.area)
     now_local = arrow.now(area.timezone)
     tomorrow_start = now_local.floor("day").shift(days=+1)
     tomorrow_end = tomorrow_start.shift(days=+1)
     expected_points = int(
-        (tomorrow_end - tomorrow_start).total_seconds() / awattprice.prices.resolution_to_seconds(price_data.resolution)
+        (tomorrow_end - tomorrow_start).total_seconds() / awattprice_prices.resolution_to_seconds(price_data.resolution)
     )
 
     for price_point in price_data.prices:
@@ -56,7 +57,7 @@ def get_notifiable_prices(price_data: Box) -> Optional[list[Box]]:
 
 def check_area_updated(stored_endtime: Optional[Arrow], new_endtime: Arrow, area_key: str) -> bool:
     """Check if an area can be marked as updated relative to previous runs based on the endtimes."""
-    area = awattprice.defaults.get_market_area(area_key)
+    area = awattprice_defaults.get_market_area(area_key)
     now = arrow.now().to(area.timezone)
     tomorrow_midnight = now.floor("day").shift(days=+2)
     if not new_endtime == tomorrow_midnight:

@@ -1,8 +1,8 @@
 """Send notifications."""
-import awattprice
 import httpx
 
 from awattprice.orm import Token
+from awattprice import utils as awattprice_utils
 from box import Box
 from loguru import logger
 
@@ -35,7 +35,7 @@ async def send_notification(
     attempts = defaults.APNS_ATTEMPTS
     stop_delay = defaults.APNS_STOP_DELAY
     async for attempt in AsyncRetrying(
-        before=awattprice.utils.log_attempts(logger.debug, "send notification"),
+        before=awattprice_utils.log_attempts(logger.debug, "send notification"),
         retry=retry_if_exception_type(
             (
                 httpx.TimeoutException,

@@ -1,8 +1,7 @@
 """Perform operations on tokens and their configurations."""
 from collections import defaultdict
 
-import awattprice
-
+from awattprice import defaults as awattprice_defaults
 from awattprice.orm import PriceBelowNotification
 from awattprice.orm import Token
 from box import Box
@@ -25,7 +24,7 @@ def get_below_value_checks(areas_data: dict[str, DetailedPriceData]) -> list[Boo
     """
     below_value_checks = []
     for area_key, price_data in areas_data.items():
-        area = awattprice.defaults.get_market_area(area_key)
+        area = awattprice_defaults.get_market_area(area_key)
         lowest_marketprice = price_data.lowest_price.marketprice
         lowest_marketprice_untaxed = lowest_marketprice.subunit_kwh(taxed=False, round_=True)
         if area.tax_multiplier is None:

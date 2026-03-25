@@ -72,8 +72,32 @@ If no region changed, the service exits without sending anything.
 
 The Docker setup is intended mainly for production, not debugging.
 
-1. Pull `leonbecker1/awattprice-backend`.
+Files:
+
+- `backend/Dockerfile`: build the image.
+- `backend/compose.yaml`: run it with Docker Compose.
+
+1. Pull `leonbecker1/awattprice-backend:latest`.
 2. Create `/etc/awattprice/` with `app_data/` and `socket/`.
 3. Copy `logs/`, `apns/`, and `data/` into `/etc/awattprice/app_data/`.
 4. Put `config.ini` at `/etc/awattprice/config.ini` and make sure its paths match the mounted directories.
-5. Use `backend/docker/docker-compose/docker-compose.yaml` to start the container with `docker compose up -d`.
+5. Start it with `docker compose -f backend/compose.yaml up -d`.
+
+For staging, reuse the same compose file with different environment variables instead of keeping a second compose file:
+
+- `AWATTPRICE_IMAGE=leonbecker1/awattprice-backend:pre_release`
+- `AWATTPRICE_HOST_ROOT=/etc/staging_awattprice`
+
+Example:
+
+```sh
+AWATTPRICE_IMAGE=leonbecker1/awattprice-backend:pre_release \
+AWATTPRICE_HOST_ROOT=/etc/staging_awattprice \
+docker compose -f backend/compose.yaml up -d
+```
+
+To build locally from the project root:
+
+```sh
+docker build -t leonbecker1/awattprice-backend:latest ./backend
+```

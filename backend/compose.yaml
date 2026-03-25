@@ -1,0 +1,8 @@
+services:
+  awattprice:
+    image: ${AWATTPRICE_IMAGE:-leonbecker1/awattprice-backend:latest}
+    restart: unless-stopped
+    volumes:
+      - "${AWATTPRICE_HOST_ROOT:-/etc/awattprice}/app_data:/etc/awattprice/app_data"
+      - "${AWATTPRICE_HOST_ROOT:-/etc/awattprice}/config.ini:/etc/awattprice/config.ini:ro"
+      - "${AWATTPRICE_HOST_ROOT:-/etc/awattprice}/socket:/etc/awattprice/socket"

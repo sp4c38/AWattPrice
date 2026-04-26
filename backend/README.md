@@ -34,6 +34,14 @@ The backend uses `uv`.
 - Run commands inside that environment: `uv run ...`
 - Refresh the lockfile after dependency changes: `uv lock`
 
+To run the API locally for debugging:
+
+```sh
+PYTHONPATH=src uv run uvicorn awattprice.api:app --host 0.0.0.0 --port 8000 --reload
+```
+
+This exposes the API at `http://127.0.0.1:8000/api/v3/` for the iOS simulator and at `http://<your-mac-ip>:8000/api/v3/` for a real device on the same network.
+
 ## Price Data Flow
 
 The backend caches ENTSO-E prices locally and only refreshes when needed.

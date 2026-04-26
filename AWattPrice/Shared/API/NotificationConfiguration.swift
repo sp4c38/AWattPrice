@@ -11,10 +11,12 @@ struct GeneralNotificationConfiguration: Encodable {
     var marketArea: MarketArea
     var tax: Bool
     var baseFee: Double
+    var percentageAddOn: Double
     
     enum CodingKeys: String, CodingKey {
         case area, tax
         case baseFee = "base_fee"
+        case percentageAddOn = "percentage_add_on"
     }
     
     func encode(to encoder: Encoder) throws {
@@ -22,6 +24,7 @@ struct GeneralNotificationConfiguration: Encodable {
         try container.encode(marketArea.key, forKey: .area)
         try container.encode(tax, forKey: .tax)
         try container.encode(baseFee, forKey: .baseFee)
+        try container.encode(percentageAddOn, forKey: .percentageAddOn)
     }
 }
 
@@ -52,7 +55,8 @@ struct NotificationConfiguration: Encodable {
         let general = GeneralNotificationConfiguration(
             marketArea: setting.marketArea,
             tax: true,
-            baseFee: setting.baseFeePrice
+            baseFee: setting.totalPriceAddOn,
+            percentageAddOn: setting.percentagePriceAddOn
         )
         let priceBelowNotification = PriceBelowNotificationNotificationConfiguration(
             active: setting.priceDropsBelowEnabled, belowValue: Int(setting.priceDropsBelowThreshold)

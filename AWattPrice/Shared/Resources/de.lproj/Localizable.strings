@@ -47,10 +47,10 @@
 "cheapestPriceResultPage.cheapestTimeErrorOccurred" = "Es ist ein Fehler aufgetreten.\nBitte versuchen Sie es später noch einmal.";
 
 /* (No Comment) */
-"cheapestPriceResultPage.priceWithoutVatNote" = "(Preis ohne MwSt., änderbar in Einstellungen)";
+"cheapestPriceResultPage.priceWithoutVatNote" = "(Marktpreis ohne konfigurierte Preisaufschläge)";
 
 /* (No Comment) */
-"cheapestPriceResultPage.priceWithVatNote" = "(Preis mit MwSt., änderbar in Einstellungen)";
+"cheapestPriceResultPage.priceWithVatNote" = "(Preis mit MwSt. und konfigurierten Preisaufschlägen)";
 "Best Window" = "Bestes Zeitfenster";
 "Best Window Today" = "Bestes Zeitfenster heute";
 "Best Window Tomorrow" = "Bestes Zeitfenster morgen";
@@ -191,10 +191,7 @@
 "Settings" = "Einstellungen";
 
 /* Settings Page and Help & Suggestions page localizations */
-"settingsPage.regionToGetPrices" = "Wählen Sie die Marktzone aus, für die Sie Strompreise erhalten möchten.";
-"settingsPage.marketArea.apiLoaded" = "Kartendaten wurden aus der neuen API geladen.";
-"settingsPage.marketArea.fallbackLoaded" = "Es werden eingebaute Marktzonen verwendet, bis die neue API live ist.";
-
+"settingsPage.regionToGetPrices" = "Strom Marktzone";
 /* No comment provided by engineer. */
 "Setup finished" = "Einrichtung abgeschlossen";
 
@@ -236,11 +233,23 @@
 /* No comment provided by engineer. */
 "Wish Price:" = "Wunschpreis:";
 
-"baseFee.infoText" = "Die Grundgebühr wird auf jeden Strompreis innerhalb der gesamten App addiert. Diese Gebühr hängt von Ihrem Stromvertrag ab.";
+"baseFee.infoText" = "Die konfigurierten Preisaufschläge werden auf jeden Strompreis innerhalb der gesamten App addiert. Diese Werte hängen von Ihrem Stromvertrag ab.";
 
 "baseFee.priceGuardActivatedInfo" = "Der Preiswächter ist eingeschaltet. Denken Sie daran den Wunschpreis ggf. anzupassen, wenn Sie den Wert unten ändern.";
 
 "Base Fee" = "Grundgebühr";
+"Price Add-ons" = "Preisaufschläge";
+"Fixed Add-on" = "Fixe Zusatzkosten";
+"Generic extra costs per consumed kWh." = "Allgemeine Zusatzkosten pro verbrauchter kWh.";
+"Percentage Add-on" = "Prozentualer Aufschlag";
+"A contract markup based on the current price." = "Ein Aufschlag, der vom aktuellen Preis abhaengt.";
+"Monthly Fixed Cost" = "Monatliche Fixkosten";
+"Standing charge or basic supplier fee." = "Grundpreis oder monatliche Anbietergebühr.";
+"Annual Consumption" = "Jahresverbrauch";
+"Used to spread fixed monthly costs over each kWh." = "Damit werden monatliche Fixkosten auf jede kWh umgelegt.";
+"Final price =" = "Endpreis =";
+"Market price with VAT * (1 + percentage add-on / 100) + fixed add-ons" = "Marktpreis mit MwSt. * (1 + prozentualer Aufschlag / 100) + fixe Zusatzkosten";
+"Fixed add-ons include the monthly fixed cost allocation." = "Fixe Zusatzkosten enthalten die umgelegten monatlichen Fixkosten.";
 "Austria" = "Österreich";
 "Germany" = "Deutschland";
 "Germany / Luxembourg" = "Deutschland / Luxemburg";

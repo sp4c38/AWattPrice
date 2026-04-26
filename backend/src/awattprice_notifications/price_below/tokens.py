@@ -17,6 +17,11 @@ from sqlalchemy.sql.elements import BooleanClauseList
 from awattprice_notifications.price_below.prices import DetailedPriceData
 
 
+def final_price_clause(marketprice):
+    """Apply the token's percent and fixed add-ons to a market price expression."""
+    return marketprice * (1 + Token.percentage_add_on / 100) + Token.base_fee
+
+
 def get_below_value_checks(areas_data: dict[str, DetailedPriceData]) -> list[BooleanClauseList]:
     """Get sqlalchemy and_ clauses which check if the price data drops below or on the users below value.
 
@@ -29,7 +34,7 @@ def get_below_value_checks(areas_data: dict[str, DetailedPriceData]) -> list[Boo
         lowest_marketprice_untaxed = lowest_marketprice.subunit_kwh(taxed=False, round_=True)
         if area.tax_multiplier is None:
             below_value_checks.append(
-                and_(Token.area == area_key, Token.base_fee + lowest_marketprice_untaxed <= PriceBelowNotification.below_value)
+                and_(Token.area == area_key, final_price_clause(lowest_marketprice_untaxed) <= PriceBelowNotification.below_value)
             )
         else:
             lowest_marketprice_taxed = lowest_marketprice.subunit_kwh(taxed=True, round_=True)
@@ -39,11 +44,11 @@ def get_below_value_checks(areas_data: dict[str, DetailedPriceData]) -> list[Boo
                     or_(
                         and_(
                             Token.tax == True,
-                            Token.base_fee + lowest_marketprice_taxed <= PriceBelowNotification.below_value,
+                            final_price_clause(lowest_marketprice_taxed) <= PriceBelowNotification.below_value,
                         ),
                         and_(
                             Token.tax == False,
-                            Token.base_fee + lowest_marketprice_untaxed <= PriceBelowNotification.below_value,
+                            final_price_clause(lowest_marketprice_untaxed) <= PriceBelowNotification.below_value,
                         ),
                     ),
                 )

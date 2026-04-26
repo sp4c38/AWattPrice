@@ -88,7 +88,8 @@ struct EnergyData: Decodable {
             {
                 currentPrices[i].marketprice *= taxMultiplier
             }
-            currentPrices[i].marketprice += pricingConfiguration.baseFeePrice
+            currentPrices[i].marketprice *= 1 + pricingConfiguration.percentagePriceAddOn / 100
+            currentPrices[i].marketprice += pricingConfiguration.fixedPriceAddOn
         }
 
         minCostPricePoint = currentPrices.min(by: EnergyPricePoint.marketpricesAreInIncreasingOrder)

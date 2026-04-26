@@ -7,7 +7,7 @@
 */
 
 // Welcome Splash Screen localizations
-"splashScreen.start.notAffiliatedNote" = "Please note that AWattPrice is an independent app and energy prices depend on your selected market area and tariff.";
+"splashScreen.start.notAffiliatedNote" = "Please note that AWattPrice is an independent app and final energy prices depend on the contract with your energy provider.";
 
 "whatsNew.widgets.subTitle" = "Sparks fly as we unveil our electrifying update: introducing the AWattPrice iOS widget!";
 "whatsNew.widgets.tipText" = "Ready to bring the power to your Home Screen? Simply long-press on your screen, tap the '+' icon in the top-left corner, find AWattPrice in the widget gallery, and zap it right onto your Home Screen.";
@@ -23,8 +23,8 @@
 
 // Cheapest Price Result page localizations
 "cheapestPriceResultPage.cheapestTimeErrorOccurred" = "An error occurred.\nPlease try again later.";
-"cheapestPriceResultPage.priceWithVatNote" = "(price with VAT, changeable in settings)";
-"cheapestPriceResultPage.priceWithoutVatNote" = "(price without VAT, changeable in settings)";
+"cheapestPriceResultPage.priceWithVatNote" = "(price with VAT and configured add-ons)";
+"cheapestPriceResultPage.priceWithoutVatNote" = "(market price without configured add-ons)";
 "Best Window" = "Best Window";
 "Best Window Today" = "Best Window Today";
 "Best Window Tomorrow" = "Best Window Tomorrow";
@@ -43,8 +43,6 @@
 
 // Settings Page and Help & Suggestions page localizations
 "settingsPage.regionToGetPrices" = "Select the market area for which you would like to get electricity prices.";
-"settingsPage.marketArea.apiLoaded" = "Map data loaded from the new API.";
-"settingsPage.marketArea.fallbackLoaded" = "Using built-in map areas until the new API is live.";
 
 // Notification Page Setting localizations
 "notificationPage.noNotificationAccessInfo" = "Please allow AWattPrice notifications in the Settings App.";
@@ -69,7 +67,7 @@
 "notifications.price_drops_below.body.sing" = "Tomorrow, electricity prices drop below %2$@ ct %1$@ time. Cheapest hour at %3$@ with %4$@ ct.";
 "notifications.price_drops_below.body.mult" = "Tomorrow, electricity prices drop below %2$@ ct %1$@ times. Cheapest hour at %3$@ with %4$@ ct.";
 
-"baseFee.infoText" = "The base fee is added on top of each electricity price within the entire app. This fee depends on your electricity contract.";
+"baseFee.infoText" = "Configured add-ons are added on top of each electricity price within the entire app. These values depend on your electricity contract.";
 "baseFee.priceGuardActivatedInfo" = "The price guard is turned on. Remember to adjust the wish price if necessary when you change the value below.";
 
 "Austria" = "Austria";
@@ -89,6 +87,18 @@
 "Not configured" = "Not configured";
 "Value" = "Value";
 "Used in Price Guard" = "Used in Price Guard";
+"Price Add-ons" = "Price Add-ons";
+"Fixed Add-on" = "Fixed Add-on";
+"Generic extra costs per consumed kWh." = "Generic extra costs per consumed kWh.";
+"Percentage Add-on" = "Percentage Add-on";
+"A contract markup based on the current price." = "A contract markup based on the current price.";
+"Monthly Fixed Cost" = "Monthly Fixed Cost";
+"Standing charge or basic supplier fee." = "Standing charge or basic supplier fee.";
+"Annual Consumption" = "Annual Consumption";
+"Used to spread fixed monthly costs over each kWh." = "Used to spread fixed monthly costs over each kWh.";
+"Final price =" = "Final price =";
+"Market price with VAT * (1 + percentage add-on / 100) + fixed add-ons" = "Market price with VAT * (1 + percentage add-on / 100) + fixed add-ons";
+"Fixed add-ons include the monthly fixed cost allocation." = "Fixed add-ons include the monthly fixed cost allocation.";
 "Ready" = "Ready";
 "Notifications Off" = "Notifications Off";
 "Checking" = "Checking";

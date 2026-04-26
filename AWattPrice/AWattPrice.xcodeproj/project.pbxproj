@@ -13,7 +13,7 @@
 		1CCDA78DC9491A406AB24B42 /* EasyIntervalPickerRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C5F824C94B9912B11853532 /* EasyIntervalPickerRepresentable.swift */; };
 		1F050059A5AEEA309F5EF60A /* SplashScreenFeaturesAndConsent.swift in Sources */ = {isa = PBXBuildFile; fileRef = F532255ECC882E59C9739E19 /* SplashScreenFeaturesAndConsent.swift */; };
 		1FF85FE467F2EBD6F0165295 /* TotalTimeFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2BCED411DC7AD4E79FC22B9 /* TotalTimeFormatter.swift */; };
-		23D11D519B8DC7A7F5DA54BA /* BaseFeeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51649CD95D1B046EA6D3FF0F /* BaseFeeView.swift */; };
+		23D11D519B8DC7A7F5DA54BA /* PriceAddOnsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51649CD95D1B046EA6D3FF0F /* PriceAddOnsView.swift */; };
 		268ABCBD2289736785AE38B3 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13637B90539D4C9A8BB48CC0 /* APIClient.swift */; };
 		2AB8E54B3F4BB4E1E64CA519 /* Font.swift in Sources */ = {isa = PBXBuildFile; fileRef = D22CD9B053C7AA6D5411FFE0 /* Font.swift */; };
 		3764069C227C8A20FD65EB7C /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0D566683455A9834699592 /* String.swift */; };
@@ -113,7 +113,7 @@
 		404CC5EAC0C3630A020070B0 /* InputFieldStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputFieldStyles.swift; sourceTree = "<group>"; };
 		4CAEECA30ABDB0DF6C9DB6DA /* EnergyPriceGraph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnergyPriceGraph.swift; sourceTree = "<group>"; };
 		4D92DAF6062C9BB0CC3973F3 /* AWattPrice.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AWattPrice.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		51649CD95D1B046EA6D3FF0F /* BaseFeeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseFeeView.swift; sourceTree = "<group>"; };
+		51649CD95D1B046EA6D3FF0F /* PriceAddOnsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceAddOnsView.swift; sourceTree = "<group>"; };
 		52A4CD1362317193ABA4A25D /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
 		52D6D993DB3CE3CBB4B1E644 /* Region.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Region.swift; sourceTree = "<group>"; };
 		546D5FA692CB5FFBAF81B22A /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
@@ -183,7 +183,7 @@
 		17D5F87782364637F81836D0 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
-				51649CD95D1B046EA6D3FF0F /* BaseFeeView.swift */,
+				51649CD95D1B046EA6D3FF0F /* PriceAddOnsView.swift */,
 				6EEAB0C5FE21817587BFCFEB /* RegionTaxSelection.swift */,
 				5CF596453B643BA753483A2C /* SettingsPageView.swift */,
 				ECEA22B6555DDB72F1DC0E8A /* Help and Suggestion */,
@@ -605,7 +605,7 @@
 				268ABCBD2289736785AE38B3 /* APIClient.swift in Sources */,
 				C0067869CF8C26D9F619B651 /* AWattPriceApp.swift in Sources */,
 				7806C62BA8F28AC26C3C88B7 /* AppDelegate.swift in Sources */,
-				23D11D519B8DC7A7F5DA54BA /* BaseFeeView.swift in Sources */,
+				23D11D519B8DC7A7F5DA54BA /* PriceAddOnsView.swift in Sources */,
 				A64044376124E697D0D7D6EB /* ButtonStyles.swift in Sources */,
 				B511AB77AED338BC7FD96786 /* Extensions.swift in Sources */,
 				5968D801ED3B64E9059A3555 /* CheapestHourManager.swift in Sources */,

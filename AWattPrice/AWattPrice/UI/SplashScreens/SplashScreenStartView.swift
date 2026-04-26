@@ -51,9 +51,6 @@ struct SplashScreenStartView: View {
                     .frame(width: 0, height: 0)
                     .hidden()
 
-                NotAffiliatedView(setFixedSize: true, showGrayedOut: false)
-                    .padding(.bottom, 20)
-
                 Button(action: {
                     redirectToNextSplashScreen = 1
                 }) {

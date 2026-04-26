@@ -269,14 +269,6 @@ struct RegionTaxSelectionView: View {
                     Text("\(viewModel.selectedMarketArea.settingsFlag) \(viewModel.selectedMarketArea.localizedDisplayName)")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
-
-                    Text(
-                        viewModel.marketAreaDataSource == .remote
-                            ? "settingsPage.marketArea.apiLoaded".localized()
-                            : "settingsPage.marketArea.fallbackLoaded".localized()
-                    )
-                        .font(.caption)
-                        .foregroundStyle(.tertiary)
                 }
 
                 Spacer()
@@ -360,14 +352,6 @@ private struct MarketAreaSelectionPage: View {
                 VStack(alignment: .leading, spacing: 6) {
                     Text("settingsPage.regionToGetPrices".localized())
                         .font(.system(.title2, design: .rounded).weight(.bold))
-
-                    Text(
-                        viewModel.marketAreaDataSource == .remote
-                            ? "settingsPage.marketArea.apiLoaded".localized()
-                            : "settingsPage.marketArea.fallbackLoaded".localized()
-                    )
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
                 }
 
                 MarketAreaMapSelectionView(viewModel: viewModel, height: 420)

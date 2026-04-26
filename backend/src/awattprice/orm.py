@@ -57,6 +57,7 @@ class Token(Base):
     area = Column(String, nullable=False)
     tax = Column(Boolean, default=False, nullable=False)
     base_fee = Column(DatabaseDecimalType, default=0, nullable=False)
+    percentage_add_on = Column(DatabaseDecimalType, default=0, nullable=False)
 
     price_below = relationship(
         PriceBelowNotification, back_populates="token", cascade="all, delete-orphan", uselist=False

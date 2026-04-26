@@ -50,6 +50,7 @@ async def save_notification_configuration(db_engine: AsyncEngine, configuration:
 			token.area = configuration.general.area
 			token.tax = configuration.general.tax
 			token.base_fee = configuration.general.base_fee
+			token.percentage_add_on = configuration.general.percentage_add_on
 
 			if token.price_below:
 				logger.debug("Updating existing price below notification configuration.")
@@ -59,7 +60,8 @@ async def save_notification_configuration(db_engine: AsyncEngine, configuration:
 			logger.debug("Creating new token entry.")
 			new_token = Token(
 				token=configuration.token, area=configuration.general.area, tax=configuration.general.tax,
-				base_fee=configuration.general.base_fee
+				base_fee=configuration.general.base_fee,
+				percentage_add_on=configuration.general.percentage_add_on,
 			)
 			session.add(new_token)
 
@@ -101,5 +103,9 @@ def parse_notification_configuration_body(configuration: Box) -> Optional[Box]:
 		configuration.general.base_fee = Decimal(str(configuration.general.base_fee))
 	else:
 		configuration.general.base_fee = Decimal("0")
+	if "percentage_add_on" in configuration.general:
+		configuration.general.percentage_add_on = Decimal(str(configuration.general.percentage_add_on))
+	else:
+		configuration.general.percentage_add_on = Decimal("0")
 
 	return configuration

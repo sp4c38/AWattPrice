@@ -69,7 +69,8 @@ NOTIFICATION_CONFIGURATION_SCHEMA = {
             "properties": {
                 "area": {"enum": supported_market_area_keys},
                 "tax": {"type": "boolean"},
-                "base_fee": {"type": "number"}
+                "base_fee": {"type": "number"},
+                "percentage_add_on": {"type": "number"}
             },
             "required": ["area", "tax"],
             "additionalProperties": False

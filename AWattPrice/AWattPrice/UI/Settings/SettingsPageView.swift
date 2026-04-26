@@ -181,7 +181,7 @@ private struct SettingsActionRow: View {
 
 private struct SettingsHeaderCard: View {
     let regionText: String
-    let baseFeeText: String
+    let priceAddOnText: String
 
     var body: some View {
         SettingsCard {
@@ -191,7 +191,7 @@ private struct SettingsHeaderCard: View {
 
                 HStack(spacing: 10) {
                     SettingsBadge(text: regionText, tint: .orange)
-                    SettingsBadge(text: baseFeeText, tint: .green)
+                    SettingsBadge(text: priceAddOnText, tint: .green)
                 }
             }
         }
@@ -259,8 +259,8 @@ struct SettingsPageView: View {
         "\(settingsManager.setting.marketArea.settingsFlag) \(settingsManager.setting.marketArea.settingsLabel)"
     }
 
-    private var baseFeeSummary: String {
-        settingsManager.setting.baseFeePrice.settingsCentText
+    private var priceAddOnSummary: String {
+        settingsManager.setting.totalPriceAddOn.settingsCentText
     }
 
     private var priceGuardSubtitle: String {
@@ -288,7 +288,7 @@ struct SettingsPageView: View {
                     VStack(alignment: .leading, spacing: 18) {
                         SettingsHeaderCard(
                             regionText: regionSummary,
-                            baseFeeText: baseFeeSummary
+                            priceAddOnText: priceAddOnSummary
                         )
 
                         SettingsSectionLabel(
@@ -314,12 +314,12 @@ struct SettingsPageView: View {
                                 Divider()
 
                                 SettingsDestinationRow(
-                                    title: "Base Fee".localized(),
+                                    title: "Price Add-ons".localized(),
                                     subtitle: nil,
-                                    systemImage: "eurosign.circle.fill",
+                                    systemImage: "sum",
                                     tint: .green
                                 ) {
-                                    BaseFeeView()
+                                    PriceAddOnsView()
                                 }
                             }
                         }

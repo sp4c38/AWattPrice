@@ -1,0 +1,37 @@
+services:
+  api:
+    image: ${AWATTPRICE_IMAGE:-awattprice-backend:v3}
+    container_name: ${AWATTPRICE_API_CONTAINER:-awattprice-backend-v3}
+    restart: unless-stopped
+    command:
+      - gunicorn
+      - --workers
+      - "1"
+      - --access-logfile
+      - "-"
+      - --bind
+      - 0.0.0.0:8000
+      - -k
+      - uvicorn.workers.UvicornWorker
+      - awattprice.api:app
+    ports:
+      - "127.0.0.1:${AWATTPRICE_HOST_PORT:-8003}:8000"
+    volumes:
+      - "${AWATTPRICE_HOST_ROOT:-/etc/awattprice-v3}/app_data:/etc/awattprice/app_data"
+      - "${AWATTPRICE_HOST_ROOT:-/etc/awattprice-v3}/config.ini:/etc/awattprice/config.ini:ro"
+      - "${AWATTPRICE_HOST_ROOT:-/etc/awattprice-v3}/entsoe-token.txt:/etc/awattprice-v3/entsoe-token.txt:ro"
+
+  price-below:
+    image: ${AWATTPRICE_IMAGE:-awattprice-backend:v3}
+    container_name: ${AWATTPRICE_WORKER_CONTAINER:-awattprice-price-below-v3}
+    restart: unless-stopped
+    profiles:
+      - worker
+    command:
+      - /bin/sh
+      - -c
+      - while true; do python /usr/src/awattprice/src/awattprice_notifications/price_below/service.py; sleep 600; done
+    volumes:
+      - "${AWATTPRICE_HOST_ROOT:-/etc/awattprice-v3}/app_data:/etc/awattprice/app_data"
+      - "${AWATTPRICE_HOST_ROOT:-/etc/awattprice-v3}/config.ini:/etc/awattprice/config.ini:ro"
+      - "${AWATTPRICE_HOST_ROOT:-/etc/awattprice-v3}/entsoe-token.txt:/etc/awattprice-v3/entsoe-token.txt:ro"

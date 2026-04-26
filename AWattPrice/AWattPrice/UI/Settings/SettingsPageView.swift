@@ -17,33 +17,6 @@ private extension Double {
     }
 }
 
-private struct SettingsPageBackground: View {
-    var body: some View {
-        LinearGradient(
-            colors: [
-                Color(red: 0.97, green: 0.95, blue: 0.92),
-                Color(red: 0.95, green: 0.97, blue: 0.99),
-                Color.white,
-            ],
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
-        )
-        .overlay(alignment: .topTrailing) {
-            Circle()
-                .fill(Color.orange.opacity(0.12))
-                .frame(width: 220, height: 220)
-                .offset(x: 70, y: -80)
-        }
-        .overlay(alignment: .bottomLeading) {
-            Circle()
-                .fill(Color.blue.opacity(0.08))
-                .frame(width: 240, height: 240)
-                .offset(x: -90, y: 120)
-        }
-        .ignoresSafeArea()
-    }
-}
-
 private struct SettingsCard<Content: View>: View {
     @ViewBuilder let content: Content
 
@@ -61,20 +34,6 @@ private struct SettingsCard<Content: View>: View {
                 )
         )
         .shadow(color: Color.black.opacity(0.04), radius: 20, y: 8)
-    }
-}
-
-private struct SettingsBadge: View {
-    let text: String
-    let tint: Color
-
-    var body: some View {
-        Text(text)
-            .font(.caption.weight(.semibold))
-            .foregroundStyle(tint)
-            .padding(.horizontal, 10)
-            .padding(.vertical, 6)
-            .background(tint.opacity(0.12), in: Capsule())
     }
 }
 
@@ -110,47 +69,6 @@ private struct SettingsDestinationRow<Destination: View>: View {
                 Spacer()
 
                 Image(systemName: "chevron.right")
-                    .font(.footnote.weight(.semibold))
-                    .foregroundStyle(.tertiary)
-            }
-            .contentShape(Rectangle())
-        }
-        .buttonStyle(.plain)
-    }
-}
-
-private struct SettingsActionRow: View {
-    let title: String
-    let subtitle: String?
-    let systemImage: String
-    let tint: Color
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            HStack(spacing: 14) {
-                Image(systemName: systemImage)
-                    .font(.system(size: 18, weight: .semibold))
-                    .foregroundStyle(tint)
-                    .frame(width: 40, height: 40)
-                    .background(tint.opacity(0.12), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(title)
-                        .font(.headline)
-                        .foregroundStyle(.primary)
-
-                    if let subtitle {
-                        Text(subtitle)
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                            .multilineTextAlignment(.leading)
-                    }
-                }
-
-                Spacer()
-
-                Image(systemName: "arrow.up.right")
                     .font(.footnote.weight(.semibold))
                     .foregroundStyle(.tertiary)
             }
@@ -234,7 +152,7 @@ struct SettingsPageView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                SettingsPageBackground()
+                Color.white.ignoresSafeArea()
 
                 ScrollView {
                     VStack(alignment: .leading, spacing: 18) {
@@ -305,7 +223,7 @@ struct SettingsPageView: View {
                 }
             }
             .navigationTitle("Settings")
-            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarTitleDisplayMode(.large)
         }
     }
 }

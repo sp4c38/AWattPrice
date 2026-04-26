@@ -1,123 +1,97 @@
 # AWattPrice Backend
 
-The backend serves the AWattPrice iOS app. It fetches current electricity prices from the [ENTSO-E Transparency Platform](https://transparency.entsoe.eu/), caches them locally to avoid unnecessary upstream traffic, stores notification settings, and sends "price below" push notifications.
+FastAPI backend for AWattPrice. It serves ENTSO-E electricity prices, caches them locally, and stores notification settings.
 
-This is backend-developer documentation, not a public API guide. The backend is meant to be used by the app.
+## Local Debug
 
-## Structure
+```sh
+./run-local.sh
+```
+
+## First Server Setup
+
+NGINX must already proxy `/api/v3/` to `http://127.0.0.1:8003/`.
+
+The v3 deploy uses separate defaults so it does not touch the existing v2 server:
 
 ```text
-src/
-├── awattprice/
-└── awattprice_notifications/
+/etc/awattprice-v3
+/srv/awattprice-v3/compose.yaml
+awattprice-backend-v3
+127.0.0.1:8003
 ```
 
-- `awattprice`: main FastAPI application, price handling, config, database access, and shared backend logic.
-- `awattprice_notifications`: notification services. `price_below/` contains the current notification workflow.
-
-If code is shared across packages and there is no obvious home for it, prefer `src/awattprice/`.
-
-## Data and Configuration
-
-The backend stores cached price data, notification data, logs, APNs data, and other runtime files on disk. Paths come from `config.ini` and default to `~/awattprice/...`.
-
-Config lookup starts with:
-
-- `/etc/awattprice/config.ini`
-- `~/.config/awattprice/config.ini`
-
-## Local Setup
-
-The backend uses `uv`.
-
-- Create or update the local environment: `uv sync`
-- Run commands inside that environment: `uv run ...`
-- Refresh the lockfile after dependency changes: `uv lock`
-
-To run the API locally for debugging:
+Create the required server paths:
 
 ```sh
-PYTHONPATH=src uv run uvicorn awattprice.api:app --host 0.0.0.0 --port 8000 --reload
+sudo mkdir -p /etc/awattprice-v3/app_data/{data,logs,apns}
+sudo mkdir -p /srv/awattprice-v3
+sudo chown "$USER:$USER" /srv/awattprice-v3
+sudo nano /etc/awattprice-v3/config.ini
+sudo nano /etc/awattprice-v3/entsoe-token.txt
 ```
 
-This exposes the API at `http://127.0.0.1:8000/api/v3/` for the iOS simulator and at `http://<your-mac-ip>:8000/api/v3/` for a real device on the same network.
+Optional for Price Guard push notifications:
 
-## Price Data Flow
-
-The backend caches ENTSO-E prices locally and only refreshes when needed.
-
-1. Read the stored price data and last update time.
-2. Refresh only if it is past the configured update hour, prices do not yet reach the next midnight, and the last update time allows another fetch.
-3. If no refresh is needed, return cached data.
-4. If a refresh is needed, acquire a refresh lock so only one request updates prices at a time.
-5. Download the latest data.
-6. Store it only if it contains new price points.
-7. Return the current data in response format.
-
-If lock acquisition times out, the backend falls back to stored data when possible and otherwise returns an error.
-
-## Notification Configuration Tasks
-
-Requests to `POST /notifications/save_configuration/` must include:
-
-- `token`
-- `general.area`
-- `general.tax`
-- optional `general.base_fee`
-- `notifications.price_below.active`
-- `notifications.price_below.below_value`
-
-## Price Below Service
-
-The price-below service is a periodic worker. In Docker it runs as its own service and sleeps 10 minutes between runs. Running it more often during the usual ENTSO-E update window around 13:00 to 15:00 makes sense; outside that window it can run less often.
-
-Each run:
-
-1. Collects current prices for all supported market areas.
-2. Checks whether the underlying price data changed since the previous run.
-3. Loads matching users from the backend database.
-4. Filters users whose configured threshold is met.
-5. Sends notifications.
-6. Stores the identifiers/end times used for that run.
-
-If no area changed, the service exits without sending anything.
-
-## Docker
-
-The Docker setup is intended mainly for production, not debugging.
-
-Files:
-
-- `backend/Dockerfile`: shared image for the API and worker.
-- `backend/compose.yaml`: runs the web API and the price-below worker as separate services.
-- `backend/uv.lock`: lock the Python dependencies used by `uv`.
-
-1. Pull `leonbecker1/awattprice-backend:latest`.
-2. Create `/etc/awattprice/` with `app_data/` and `socket/`.
-3. Copy `logs/`, `apns/`, and `data/` into `/etc/awattprice/app_data/`.
-4. Put `config.ini` at `/etc/awattprice/config.ini` and make sure its paths match the mounted directories.
-5. Start it with `docker compose -f backend/compose.yaml up -d`.
-
-For staging, reuse the same compose file with different environment variables instead of keeping a second compose file:
-
-- `AWATTPRICE_IMAGE=leonbecker1/awattprice-backend:pre_release`
-- `AWATTPRICE_HOST_ROOT=/etc/staging_awattprice`
-
-Example:
-
-```sh
-AWATTPRICE_IMAGE=leonbecker1/awattprice-backend:pre_release \
-AWATTPRICE_HOST_ROOT=/etc/staging_awattprice \
-docker compose -f backend/compose.yaml up -d
+```text
+/etc/awattprice-v3/app_data/apns/encryption_key.p8
+/etc/awattprice-v3/config.ini with apns.team_id and apns.key_id
 ```
 
-This starts:
+The deploy script only checks these files. It does not create config on the server.
+It stores the Docker Compose file at `/srv/awattprice-v3/compose.yaml`.
 
-- `awattprice`: the FastAPI web service
-- `price-below`: the notification worker loop
+## Deploy
 
-To build locally from the project root:
+Default deploy uploads the backend source and builds the Docker image on the server. This is much faster than uploading the full image each time.
 
 ```sh
-docker build -t leonbecker1/awattprice-backend:latest ./backend
+./deploy.v3.sh user@server
+```
+
+If building on Apple Silicon for an x86 server:
+
+```sh
+AWATTPRICE_DOCKER_PLATFORM=linux/amd64 ./deploy.v3.sh user@server
+```
+
+To also run the Price Guard worker:
+
+```sh
+AWATTPRICE_RUN_WORKER=1 ./deploy.v3.sh user@server
+```
+
+Fallback to local image build/upload:
+
+```sh
+AWATTPRICE_DEPLOY_MODE=image ./deploy.v3.sh user@server
+```
+
+The SSH user must be able to run Docker on the server. If you need a custom remote Docker command:
+
+```sh
+AWATTPRICE_REMOTE_DOCKER="sudo docker" ./deploy.v3.sh user@server
+```
+
+Override defaults if needed:
+
+```sh
+AWATTPRICE_HOST_PORT=8013 AWATTPRICE_HOST_ROOT=/etc/my-v3-root ./deploy.v3.sh user@server
+```
+
+Manage the container on the server:
+
+```sh
+cd /srv/awattprice-v3
+docker compose ps
+docker compose logs -f
+docker compose restart
+docker compose down
+```
+
+Smoke test:
+
+```sh
+curl https://awattprice.space8.me/api/v3/areas/
+curl https://awattprice.space8.me/api/v3/prices/DE-LU
 ```

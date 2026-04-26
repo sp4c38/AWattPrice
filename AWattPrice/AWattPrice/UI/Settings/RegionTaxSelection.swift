@@ -139,14 +139,22 @@ class MarketAreaTaxSelectionViewModel: ObservableObject {
         MarketAreaMapCatalog.coordinate(for: marketArea)
     }
 
-    func focusSelectedArea() {
+    func focusSelectedArea(animated: Bool = false) {
         guard let coordinate = coordinate(for: selectedMarketArea) else { return }
-        mapCameraPosition = .region(
+        let focusedPosition = MapCameraPosition.region(
             MKCoordinateRegion(
                 center: coordinate,
                 span: MKCoordinateSpan(latitudeDelta: 6, longitudeDelta: 8)
             )
         )
+
+        if animated {
+            withAnimation(.easeInOut(duration: 0.55)) {
+                mapCameraPosition = focusedPosition
+            }
+        } else {
+            mapCameraPosition = focusedPosition
+        }
     }
 
     func loadAreasIfNeeded() {
@@ -188,7 +196,7 @@ class MarketAreaTaxSelectionViewModel: ObservableObject {
         var notificationConfiguration = NotificationConfiguration.create(nil, settingsManager.setting)
         notificationConfiguration.general.marketArea = newMarketArea
 
-        focusSelectedArea()
+        focusSelectedArea(animated: true)
         
         do {
             await MainActor.run { isLoading = true }
@@ -212,7 +220,7 @@ class MarketAreaTaxSelectionViewModel: ObservableObject {
 
 }
 
-struct RegionTaxSelectionView: View {
+struct RegionView: View {
     @EnvironmentObject var settingsManager: SettingsManager
     @EnvironmentObject var notificationService: NotificationService
     @EnvironmentObject var energyDataService: EnergyDataService
@@ -262,7 +270,7 @@ struct RegionTaxSelectionView: View {
                     .background(Color.orange.opacity(0.12), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("settingsPage.regionToGetPrices".localized())
+                    Text("Market area".localized())
                         .font(.headline)
                         .foregroundStyle(.primary)
 
@@ -293,7 +301,7 @@ struct RegionTaxSelectionView: View {
     }
 }
 
-private struct MarketAreaMapSelectionView: View {
+struct MarketAreaMapSelectionView: View {
     @ObservedObject var viewModel: MarketAreaTaxSelectionViewModel
     let height: CGFloat
 
@@ -347,39 +355,14 @@ private struct MarketAreaSelectionPage: View {
     @ObservedObject var viewModel: MarketAreaTaxSelectionViewModel
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
-                VStack(alignment: .leading, spacing: 6) {
-                    Text("settingsPage.regionToGetPrices".localized())
-                        .font(.system(.title2, design: .rounded).weight(.bold))
-                }
-
-                MarketAreaMapSelectionView(viewModel: viewModel, height: 420)
-
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 8) {
-                        ForEach(viewModel.availableMarketAreas) { marketArea in
-                            Button {
-                                viewModel.selectedMarketAreaKey = marketArea.key
-                            } label: {
-                                Text("\(marketArea.settingsFlag) \(marketArea.localizedDisplayName)")
-                                    .font(.caption.weight(.semibold))
-                                    .foregroundStyle(viewModel.selectedMarketAreaKey == marketArea.key ? .white : .primary)
-                                    .padding(.horizontal, 12)
-                                    .padding(.vertical, 8)
-                                    .background(
-                                        Capsule()
-                                            .fill(viewModel.selectedMarketAreaKey == marketArea.key ? Color.orange : Color.orange.opacity(0.12))
-                                    )
-                            }
-                            .buttonStyle(.plain)
-                        }
-                    }
-                }
-            }
+        GeometryReader { geometry in
+            MarketAreaMapSelectionView(
+                viewModel: viewModel,
+                height: max(420, geometry.size.height - 32)
+            )
             .padding(16)
         }
-        .navigationTitle("Market Area")
+        .navigationTitle("Select your electricity price market area")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             viewModel.loadAreasIfNeeded()
@@ -388,9 +371,9 @@ private struct MarketAreaSelectionPage: View {
     }
 }
 
-struct RegionTaxSelection_Previews: PreviewProvider {
+struct RegionView_Previews: PreviewProvider {
     static var previews: some View {
-        RegionTaxSelectionView()
+        RegionView()
             .environmentObject(NotificationService())
             .environmentObject(EnergyDataService())
     }

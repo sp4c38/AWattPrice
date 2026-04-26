@@ -7,7 +7,7 @@
 */
 
 // Welcome Splash Screen localizations
-"splashScreen.start.notAffiliatedNote" = "Please note that AWattPrice is an independent app and final energy prices depend on the contract with your energy provider.";
+"splashScreen.start.notAffiliatedNote" = "AWattPrice is an independent app; displayed prices are not guaranteed and depend on your provider.";
 
 "whatsNew.widgets.subTitle" = "Sparks fly as we unveil our electrifying update: introducing the AWattPrice iOS widget!";
 "whatsNew.widgets.tipText" = "Ready to bring the power to your Home Screen? Simply long-press on your screen, tap the '+' icon in the top-left corner, find AWattPrice in the widget gallery, and zap it right onto your Home Screen.";
@@ -42,6 +42,7 @@
 "Constrain the search window to the hours that actually work for you." = "Constrain the search window to the hours that actually work for you.";
 
 // Settings Page and Help & Suggestions page localizations
+"Select your electricity price market area" = "Select your electricity price market area";
 "settingsPage.regionToGetPrices" = "Select the market area for which you would like to get electricity prices.";
 
 // Notification Page Setting localizations
@@ -75,8 +76,10 @@
 "Germany / Luxembourg" = "Germany / Luxembourg";
 "VAT On" = "VAT On";
 "VAT Off" = "VAT Off";
+"Electricity Price" = "Electricity Price";
 "Energy Setup" = "Energy Setup";
 "Live Price Source" = "Live Price Source";
+"Market area" = "Market area";
 "Alerts & Help" = "Alerts & Help";
 "Legal & About" = "Legal & About";
 "Terms of Use" = "Terms of Use";

@@ -44,25 +44,6 @@ private struct SettingsPageBackground: View {
     }
 }
 
-private struct SettingsSectionLabel: View {
-    let title: String
-    let subtitle: String?
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(title)
-                .font(.system(.title3, design: .rounded).weight(.bold))
-
-            if let subtitle {
-                Text(subtitle)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-            }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-    }
-}
-
 private struct SettingsCard<Content: View>: View {
     @ViewBuilder let content: Content
 
@@ -179,25 +160,6 @@ private struct SettingsActionRow: View {
     }
 }
 
-private struct SettingsHeaderCard: View {
-    let regionText: String
-    let priceAddOnText: String
-
-    var body: some View {
-        SettingsCard {
-            VStack(alignment: .leading, spacing: 16) {
-                Text("Settings")
-                    .font(.system(size: 38, weight: .bold, design: .rounded))
-
-                HStack(spacing: 10) {
-                    SettingsBadge(text: regionText, tint: .orange)
-                    SettingsBadge(text: priceAddOnText, tint: .green)
-                }
-            }
-        }
-    }
-}
-
 private struct SettingsAppVersionView: View {
     var body: some View {
         HStack(spacing: 14) {
@@ -222,46 +184,36 @@ private struct SettingsAppVersionView: View {
     }
 }
 
-struct NotAffiliatedView: View {
-    let setFixedSize: Bool
-    let showGrayedOut: Bool
-
-    init(setFixedSize: Bool = false, showGrayedOut: Bool) {
-        self.setFixedSize = setFixedSize
-        self.showGrayedOut = showGrayedOut
-    }
-
+private struct SettingsLegalLinksView: View {
     var body: some View {
-        HStack(alignment: .top, spacing: 10) {
-            Image(systemName: "info.circle")
-                .font(.fSubHeadline)
-                .foregroundColor(Color.blue)
+        HStack(spacing: 12) {
+            Button("Terms of Use".localized()) {
+                openAgreementLink((
+                    "https://awattprice.space8.me/terms_of_use/german.html",
+                    "https://awattprice.space8.me/terms_of_use/english.html"
+                ))
+            }
 
-            Text("splashScreen.start.notAffiliatedNote")
-                .font(setFixedSize ? .fSubHeadline : .subheadline)
-                .foregroundColor(showGrayedOut ? Color.gray : nil)
-                .fixedSize(horizontal: false, vertical: true)
+            Text("·")
+                .foregroundStyle(.tertiary)
+
+            Button("Privacy Policy".localized()) {
+                openAgreementLink((
+                    "https://awattprice.space8.me/privacy_policy/german.html",
+                    "https://awattprice.space8.me/privacy_policy/english.html"
+                ))
+            }
         }
-    }
-}
-
-private struct SettingsNotAffiliatedView: View {
-    var body: some View {
-        NotAffiliatedView(showGrayedOut: true)
+        .font(.caption)
+        .foregroundStyle(.secondary)
+        .buttonStyle(.plain)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
 struct SettingsPageView: View {
     @EnvironmentObject private var settingsManager: SettingsManager
     @EnvironmentObject private var notificationService: NotificationService
-
-    private var regionSummary: String {
-        "\(settingsManager.setting.marketArea.settingsFlag) \(settingsManager.setting.marketArea.settingsLabel)"
-    }
-
-    private var priceAddOnSummary: String {
-        settingsManager.setting.totalPriceAddOn.settingsCentText
-    }
 
     private var priceGuardSubtitle: String {
         if settingsManager.setting.priceDropsBelowEnabled {
@@ -286,30 +238,12 @@ struct SettingsPageView: View {
 
                 ScrollView {
                     VStack(alignment: .leading, spacing: 18) {
-                        SettingsHeaderCard(
-                            regionText: regionSummary,
-                            priceAddOnText: priceAddOnSummary
-                        )
-
-                        SettingsSectionLabel(
-                            title: "Energy Setup".localized(),
-                            subtitle: nil
-                        )
+                        Text("Electricity Price".localized())
+                            .font(.system(.title3, design: .rounded).weight(.bold))
 
                         SettingsCard {
                             VStack(alignment: .leading, spacing: 14) {
-                                HStack(alignment: .center) {
-                                    VStack(alignment: .leading, spacing: 4) {
-                                        Text("Live Price Source")
-                                            .font(.headline)
-                                    }
-
-                                    Spacer()
-
-                                    SettingsBadge(text: regionSummary, tint: .orange)
-                                }
-
-                                RegionTaxSelectionView()
+                                RegionView()
 
                                 Divider()
 
@@ -324,10 +258,8 @@ struct SettingsPageView: View {
                             }
                         }
 
-                        SettingsSectionLabel(
-                            title: "Alerts & Help".localized(),
-                            subtitle: nil
-                        )
+                        Text("Alerts & Help".localized())
+                            .font(.system(.title3, design: .rounded).weight(.bold))
 
                         SettingsCard {
                             VStack(spacing: 16) {
@@ -353,46 +285,17 @@ struct SettingsPageView: View {
                             }
                         }
 
-                        SettingsSectionLabel(
-                            title: "Legal & About".localized(),
-                            subtitle: nil
-                        )
-
-                        SettingsCard {
-                            VStack(spacing: 16) {
-                                SettingsActionRow(
-                                    title: "Terms of Use".localized(),
-                                    subtitle: nil,
-                                    systemImage: "doc.text.fill",
-                                    tint: .indigo
-                                ) {
-                                    openAgreementLink((
-                                        "https://awattprice.space8.me/terms_of_use/german.html",
-                                        "https://awattprice.space8.me/terms_of_use/english.html"
-                                    ))
-                                }
-
-                                Divider()
-
-                                SettingsActionRow(
-                                    title: "Privacy Policy".localized(),
-                                    subtitle: nil,
-                                    systemImage: "hand.raised.fill",
-                                    tint: .teal
-                                ) {
-                                    openAgreementLink((
-                                        "https://awattprice.space8.me/privacy_policy/german.html",
-                                        "https://awattprice.space8.me/privacy_policy/english.html"
-                                    ))
-                                }
-                            }
-                        }
-
                         SettingsCard {
                             VStack(alignment: .leading, spacing: 18) {
                                 SettingsAppVersionView()
+
+                                Text("splashScreen.start.notAffiliatedNote")
+                                    .font(.subheadline)
+                                    .foregroundColor(Color.gray)
+                                    .fixedSize(horizontal: false, vertical: true)
+
                                 Divider()
-                                SettingsNotAffiliatedView()
+                                SettingsLegalLinksView()
                             }
                         }
                     }

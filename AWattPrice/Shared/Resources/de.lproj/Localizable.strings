@@ -191,10 +191,8 @@
 "Settings" = "Einstellungen";
 
 /* Settings Page and Help & Suggestions page localizations */
+"Select your electricity price market area" = "Wähle deine Strompreis-Marktzone";
 "settingsPage.regionToGetPrices" = "Strom Marktzone";
-/* No comment provided by engineer. */
-"Setup finished" = "Einrichtung abgeschlossen";
-
 /* (No Comment) */
 "splashScreen.featuresAndConsent.comparePrices.info" = "Finden Sie die preislich günstigsten Stunden für Ihren Stromverbrauch.";
 
@@ -202,7 +200,7 @@
 "splashScreen.featuresAndConsent.viewPrices.info" = "Sehen Sie sich die aktuellen Strompreise für jede Stunde des Tages an.";
 
 /* Welcome Splash Screen localizations */
-"splashScreen.start.notAffiliatedNote" = "Bitte beachten Sie, dass AWattPrice eine unabhängige App ist und die Strompreise von Ihrer gewählten Marktzone und Ihrem Tarif abhängen.";
+"splashScreen.start.notAffiliatedNote" = "AWattPrice ist eine unabhängige App; angezeigte Preise sind nicht garantiert und hängen von deinem Anbieter ab.";
 
 /* No comment provided by engineer. */
 "Suggestions" = "Vorschläge";
@@ -255,8 +253,10 @@
 "Germany / Luxembourg" = "Deutschland / Luxemburg";
 "VAT On" = "MwSt. an";
 "VAT Off" = "MwSt. aus";
+"Electricity Price" = "Strompreis";
 "Energy Setup" = "Energie";
 "Live Price Source" = "Preisquelle";
+"Market area" = "Marktzone";
 "Alerts & Help" = "Hinweise & Hilfe";
 "Legal & About" = "Rechtliches & Info";
 "Terms of Use" = "Nutzungsbedingungen";

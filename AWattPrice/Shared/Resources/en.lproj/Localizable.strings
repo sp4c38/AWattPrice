@@ -57,6 +57,14 @@
 "notificationPage.notification.priceDropsBelowValue.description.firstLine.pt7" = "your wish price.";
 
 // Data error localizations
+"dataError.connection.title" = "No Internet Connection";
+"dataError.connection.message" = "AWattPrice needs a connection to load the latest electricity prices.";
+"dataError.connection.retryDisabled" = "Retry is available once you are back online.";
+"dataError.download.title" = "Prices couldn't be loaded";
+"dataError.download.message" = "Please try again in a moment.";
+"dataError.noData.title" = "No prices available";
+"dataError.noData.message" = "There is currently no electricity price data for this market area.";
+"dataError.settings.title" = "Couldn't load settings.";
 "dataError.settings.settingsLoadingError" = "Settings couldn't be loaded\nPlease try again later";
 
 // Update Data Time Formatter localizations

@@ -12,12 +12,18 @@ class NetworkManager: ObservableObject {
     @Published var networkStatus = NWPath.Status.unsatisfied
     var monitorer: NWPathMonitor
 
+    var isOffline: Bool {
+        networkStatus != .satisfied
+    }
+
     init(waitUntilFirstStatusWasRetrieved: Bool = false) {
         let semaphore = DispatchSemaphore(value: 0)
         
         monitorer = NWPathMonitor()
         monitorer.pathUpdateHandler = { path in
-            self.networkStatus = path.status
+            DispatchQueue.main.async {
+                self.networkStatus = path.status
+            }
             semaphore.signal()
         }
         monitorer.start(queue: DispatchQueue(label: "NetworkMonitorer"))

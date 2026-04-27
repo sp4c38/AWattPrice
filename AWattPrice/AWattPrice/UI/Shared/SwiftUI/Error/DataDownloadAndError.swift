@@ -20,108 +20,153 @@ struct DataRetrievalLoadingView: View {
 }
 
 struct DataRetrievalError: View {
-    @Environment(\.colorScheme) var colorScheme
+    @ObservedObject var networkManager: NetworkManager
 
     @EnvironmentObject var energyDataService: EnergyDataService
     @EnvironmentObject var settingsManager: SettingsManager
 
     var body: some View {
-        VStack(alignment: .center) {
-            Spacer()
+        DataUnavailableStateView(
+            content: networkManager.isOffline ? .offline : .downloadFailed,
+            retryDisabled: networkManager.isOffline,
+            retryAction: retryDownload
+        )
+    }
 
-            VStack(spacing: 30) {
-                Image(systemName: "exclamationmark.triangle")
-                    .foregroundColor(Color.orange)
-                    .font(.system(size: 60, weight: .light))
-
-                Text("Please try again later")
-                    .font(.title3)
-                    .multilineTextAlignment(.center)
-
-                Button(action: {
-                    energyDataService.download(setting: settingsManager.setting)
-                }) {
-                    Text("Retry")
-                }.buttonStyle(RetryButtonStyle())
-            }
-            .padding(25)
-            .background(
-                RoundedRectangle(cornerRadius: 20)
-                    .stroke(colorScheme == .light ? Color(hue: 0.0000, saturation: 0.0000, brightness: 0.9137) : Color(hue: 0.0000, saturation: 0.0000, brightness: 0.2446), lineWidth: 5)
-            )
-
-            Spacer()
-        }
+    private func retryDownload() {
+        energyDataService.download(setting: settingsManager.setting)
     }
 }
 
-struct CurrentlyNoData: View {
-    @Environment(\.colorScheme) var colorScheme
-    @Environment(\.networkManager) var networkManager
-
+struct CurrentDataUnavailable: View {
     @EnvironmentObject var energyDataService: EnergyDataService
     @EnvironmentObject var settingsManager: SettingsManager
 
     var body: some View {
-        VStack(alignment: .center) {
+        DataUnavailableStateView(
+            content: .noData,
+            retryAction: retryDownload
+        )
+    }
+
+    private func retryDownload() {
+        energyDataService.download(setting: settingsManager.setting)
+    }
+}
+
+private struct DataUnavailableContent {
+    let iconName: String
+    let iconColor: Color
+    let title: LocalizedStringKey
+    let message: LocalizedStringKey?
+
+    static let offline = DataUnavailableContent(
+        iconName: "wifi.slash",
+        iconColor: Color(red: 0.87, green: 0.35, blue: 0.26),
+        title: "dataError.connection.title",
+        message: "dataError.connection.message"
+    )
+
+    static let downloadFailed = DataUnavailableContent(
+        iconName: "exclamationmark.triangle",
+        iconColor: .orange,
+        title: "dataError.download.title",
+        message: "dataError.download.message"
+    )
+
+    static let noData = DataUnavailableContent(
+        iconName: "rectangle.slash.fill",
+        iconColor: Color(red: 0.99, green: 0.74, blue: 0.04),
+        title: "dataError.noData.title",
+        message: "dataError.noData.message"
+    )
+
+    static let settingsFailed = DataUnavailableContent(
+        iconName: "gear",
+        iconColor: .orange,
+        title: "dataError.settings.title",
+        message: nil
+    )
+}
+
+private struct DataUnavailableStateView: View {
+    @Environment(\.colorScheme) private var colorScheme
+
+    let content: DataUnavailableContent
+    var retryDisabled = false
+    var retryAction: (() -> Void)?
+
+    var body: some View {
+        VStack {
             Spacer()
 
-            VStack(spacing: 30) {
-                Image(systemName: "rectangle.slash.fill")
-                    .foregroundColor(Color(red: 0.99, green: 0.74, blue: 0.04, opacity: 1.0))
-                    .font(.system(size: 60, weight: .light))
+            VStack(spacing: 18) {
+                ZStack {
+                    Circle()
+                        .fill(content.iconColor.opacity(colorScheme == .light ? 0.14 : 0.22))
+                        .frame(width: 92, height: 92)
 
-                Text("No data available\nPlease try again later")
-                    .font(.title3)
-                    .multilineTextAlignment(.center)
+                    Image(systemName: content.iconName)
+                        .foregroundStyle(content.iconColor)
+                        .font(.system(size: 42, weight: .semibold))
+                }
+                .accessibilityHidden(true)
 
-                Button(action: {
-                    energyDataService.download(setting: settingsManager.setting)
-                }) {
-                    Text("Retry")
-                }.buttonStyle(RetryButtonStyle())
+                VStack(spacing: 8) {
+                    Text(content.title)
+                        .font(.title3.weight(.semibold))
+                        .multilineTextAlignment(.center)
+
+                    if let message = content.message {
+                        Text(message)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .multilineTextAlignment(.center)
+                    }
+                }
+
+                if let retryAction {
+                    Button(action: retryAction) {
+                        Label("Retry", systemImage: "arrow.clockwise")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.large)
+                    .disabled(retryDisabled)
+
+                    if retryDisabled {
+                        Label("dataError.connection.retryDisabled", systemImage: "info.circle")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.center)
+                    }
+                }
             }
-            .padding(25)
+            .padding(24)
+            .frame(maxWidth: 360)
             .background(
-                RoundedRectangle(cornerRadius: 20)
-                    .stroke(colorScheme == .light ? Color(hue: 0.0000, saturation: 0.0000, brightness: 0.9137) : Color(hue: 0.0000, saturation: 0.0000, brightness: 0.2446), lineWidth: 5)
+                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                    .fill(colorScheme == .light ? Color.white : Color(.secondarySystemBackground))
             )
+            .overlay(
+                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                    .stroke(borderColor, lineWidth: 1)
+            )
+            .shadow(color: Color.black.opacity(colorScheme == .light ? 0.08 : 0), radius: 18, x: 0, y: 10)
 
             Spacer()
         }
     }
-}
 
-struct SettingLoadingError: View {
-    @Environment(\.colorScheme) var colorScheme
-
-    var body: some View {
-        VStack(alignment: .center) {
-            Spacer()
-
-            VStack(spacing: 30) {
-                Image(systemName: "gear")
-                    .foregroundColor(Color.red)
-                    .font(.system(size: 60, weight: .light))
-
-                Text("dataError.settings.settingsLoadingError")
-                    .foregroundColor(Color.red)
-                    .font(.title3)
-                    .multilineTextAlignment(.center)
-            }
-            .padding(25)
-            .background(
-                RoundedRectangle(cornerRadius: 20)
-                    .stroke(Color.red, lineWidth: 5)
-            )
-
-            Spacer()
-        }
+    private var borderColor: Color {
+        colorScheme == .light ? Color.black.opacity(0.08) : Color.white.opacity(0.10)
     }
 }
 
 /// Classify network errors
 struct DataDownloadAndError: View {
+    @Environment(\.networkManager) var networkManager
     @EnvironmentObject var energyDataService: EnergyDataService
 
     var body: some View {
@@ -129,10 +174,9 @@ struct DataDownloadAndError: View {
             if case .downloading = energyDataService.downloadState  {
                 DataRetrievalLoadingView()
             } else if case .failed = energyDataService.downloadState {
-                DataRetrievalError()
+                DataRetrievalError(networkManager: networkManager)
             } else if let energyData = energyDataService.energyData, energyData.currentPrices.isEmpty == true {
-                CurrentlyNoData()
-                    .transition(.opacity)
+                CurrentDataUnavailable()
             }
         }
         .padding()
@@ -142,12 +186,10 @@ struct DataDownloadAndError: View {
 struct NetworkConnectionErrorView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
-            DataRetrievalError()
-                .preferredColorScheme(.dark)
-            CurrentlyNoData()
-                .preferredColorScheme(.dark)
-            SettingLoadingError()
-                .preferredColorScheme(.dark)
+            DataRetrievalLoadingView()
+            DataRetrievalError(networkManager: NetworkManager())
+                .preferredColorScheme(.light)
+            CurrentDataUnavailable()
         }
     }
 }

@@ -1,7 +1,7 @@
 services:
   api:
     image: ${AWATTPRICE_IMAGE:-awattprice-backend:v3}
-    container_name: ${AWATTPRICE_API_CONTAINER:-awattprice-backend-v3}
+    container_name: awattprice-backend-v3
     restart: unless-stopped
     command:
       - gunicorn
@@ -15,7 +15,7 @@ services:
       - uvicorn.workers.UvicornWorker
       - awattprice.api:app
     ports:
-      - "127.0.0.1:${AWATTPRICE_HOST_PORT:-8003}:8000"
+      - "127.0.0.1:8003:8000"
     volumes:
       - "${AWATTPRICE_HOST_ROOT:-/etc/awattprice-v3}/app_data:/etc/awattprice/app_data"
       - "${AWATTPRICE_HOST_ROOT:-/etc/awattprice-v3}/config.ini:/etc/awattprice/config.ini:ro"
@@ -23,7 +23,7 @@ services:
 
   price-below:
     image: ${AWATTPRICE_IMAGE:-awattprice-backend:v3}
-    container_name: ${AWATTPRICE_WORKER_CONTAINER:-awattprice-price-below-v3}
+    container_name: awattprice-price-below-v3
     restart: unless-stopped
     profiles:
       - worker

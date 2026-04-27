@@ -17,6 +17,20 @@ from sqlalchemy.sql.elements import BooleanClauseList
 from awattprice_notifications.price_below.prices import DetailedPriceData
 
 
+async def collect_active_areas(engine: AsyncEngine) -> list[str]:
+    """Collect areas that have active Price Guard subscriptions."""
+    async with AsyncSession(engine) as session:
+        active_areas_stmt = (
+            select(Token.area)
+            .join(Token.price_below)
+            .where(PriceBelowNotification.active == True)
+            .distinct()
+        )
+        active_areas = await session.execute(active_areas_stmt)
+
+    return list(active_areas.scalars().all())
+
+
 def final_price_clause(marketprice):
     """Apply the token's percent and fixed add-ons to a market price expression."""
     return marketprice * (1 + Token.percentage_add_on / 100) + Token.base_fee

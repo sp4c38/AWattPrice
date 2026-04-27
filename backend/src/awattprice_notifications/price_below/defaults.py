@@ -4,13 +4,9 @@ from typing import Optional
 import arrow
 
 from arrow import Arrow
-from awattprice import defaults as awattprice_defaults
 from awattprice import prices as awattprice_prices
 from box import Box
 from loguru import logger
-
-# Areas for which to send price below notifications.
-MARKET_AREAS_TO_SEND = list(awattprice_defaults.SUPPORTED_MARKET_AREAS.keys())
 
 LAST_UPDATED_ENDTIME_FILE_NAME = "last-updated-{}-endtime.pickle"
 

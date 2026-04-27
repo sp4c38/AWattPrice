@@ -26,7 +26,12 @@ async def main():
         logger.exception(exc)
         sys.exit(1)
 
-    areas_prices = await prices.collect_areas_prices(config, defaults.MARKET_AREAS_TO_SEND)
+    active_areas = await tokens.collect_active_areas(engine)
+    if len(active_areas) == 0:
+        logger.debug("No active Price Guard subscriptions.")
+        sys.exit(0)
+
+    areas_prices = await prices.collect_areas_prices(config, active_areas)
     if len(areas_prices) == 0:
         logger.warning("No current price data for all checked areas.")
         sys.exit(0)

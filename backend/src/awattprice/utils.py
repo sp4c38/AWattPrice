@@ -27,8 +27,10 @@ class ExtendedFileLock(FileLock):
         """
         if acquire:
             self.acquire()
-        yield
-        self.release()
+        try:
+            yield
+        finally:
+            self.release()
 
 
 def async_wrap(func: Callable):

@@ -62,13 +62,6 @@
             ReferencedContainer = "container:AWattPrice.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
-      <EnvironmentVariables>
-         <EnvironmentVariable
-            key = "AWATTPRICE_API_BASE_URL"
-            value = "http://192.168.1.237:8000"
-            isEnabled = "YES">
-         </EnvironmentVariable>
-      </EnvironmentVariables>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"

@@ -171,7 +171,7 @@
 "dataError.connection.message" = "AWattPrice benötigt eine Verbindung, um die aktuellen Strompreise zu laden.";
 "dataError.connection.retryDisabled" = "Erneut versuchen ist verfügbar, sobald Sie wieder online sind.";
 "dataError.download.title" = "Preise konnten nicht geladen werden";
-"dataError.download.message" = "Bitte versuchen Sie es gleich noch einmal.";
+"dataError.download.message" = "Bitte versuchen Sie es später noch einmal.";
 "dataError.noData.title" = "Keine Preise verfügbar";
 "dataError.noData.message" = "Für dieses Marktgebiet sind aktuell keine Strompreisdaten verfügbar.";
 "dataError.settings.title" = "Einstellungen konnten nicht geladen werden.";

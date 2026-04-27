@@ -376,5 +376,6 @@ struct RegionView_Previews: PreviewProvider {
         RegionView()
             .environmentObject(NotificationService())
             .environmentObject(EnergyDataService())
+            .environmentObject(SettingsManager.shared)
     }
 }

@@ -116,7 +116,13 @@ DEFAULT_MARKET_AREA_KEY = "DE-LU"
 
 def normalize_market_area_key(value: str) -> str:
     """Normalize external market-area keys."""
-    return value.strip().upper().replace("_", "-")
+    normalized_value = value.strip().replace("_", "-")
+    upper_normalized_value = normalized_value.upper()
+    for area_key in SUPPORTED_MARKET_AREAS:
+        if area_key.upper() == upper_normalized_value:
+            return area_key
+
+    return upper_normalized_value
 
 
 def get_market_area(area_key: str) -> MarketArea:

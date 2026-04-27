@@ -10,10 +10,14 @@ import SwiftUI
 struct PricesView: View {
     @EnvironmentObject private var energyDataService: EnergyDataService
 
+    private var hasCurrentPriceData: Bool {
+        energyDataService.energyData?.currentPrices.isEmpty == false
+    }
+
     var body: some View {
         NavigationView {
             Group {
-                if energyDataService.energyData != nil {
+                if hasCurrentPriceData {
                     VStack(spacing: 12) {
                         VStack(spacing: 8) {
                             UpdatedDataView()

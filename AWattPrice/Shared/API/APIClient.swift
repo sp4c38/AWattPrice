@@ -71,7 +71,7 @@ class APIClient {
         let urlRequest = URLRequest(
             url: requestURL,
             cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,
-            timeoutInterval: 30
+            timeoutInterval: 90
         )
         let decoder = EnergyData.jsonDecoder()
         return ResponseRequest(urlRequest: urlRequest, decoder: decoder)

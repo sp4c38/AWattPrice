@@ -138,10 +138,15 @@ class EnergyDataService: ObservableObject {
     
     func download(setting: Setting) {
         let pricingConfiguration = setting.pricingConfiguration
+        let requestedMarketAreaKey = pricingConfiguration.marketArea.key
 
         // Cancel any existing task first
         cancelDownloads()
         downloadState = .downloading
+
+        if energyData?.area != requestedMarketAreaKey {
+            energyData = nil
+        }
         
         currentDownloadTask = Task {
             do {

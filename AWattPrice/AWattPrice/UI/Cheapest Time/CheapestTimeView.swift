@@ -143,10 +143,14 @@ struct CheapestTimeView: View {
 
     @State private var navigateToResults = false
 
+    private var hasCurrentPriceData: Bool {
+        energyDataService.energyData?.currentPrices.isEmpty == false
+    }
+
     var body: some View {
         NavigationStack {
             Group {
-                if energyDataService.energyData != nil {
+                if hasCurrentPriceData {
                     ScrollView {
                         VStack(alignment: .leading, spacing: 18) {
                             CheapestTimeDurationSection()
@@ -165,7 +169,7 @@ struct CheapestTimeView: View {
             }
             .navigationTitle("Cheapest Time")
             .safeAreaInset(edge: .bottom) {
-                if energyDataService.energyData != nil {
+                if hasCurrentPriceData {
                     VStack(spacing: 0) {
                         Divider()
                             .overlay(Color.primary.opacity(0.08))

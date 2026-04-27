@@ -111,6 +111,9 @@ async def get_stored_data(area_key: str, config: Config) -> Optional[Box]:
         return None
 
     data = pickle.loads(unpickled_data)
+    if len(data.prices) == 0:
+        logger.debug(f"Stored {area_key} price data found, but includes no prices.")
+        return None
 
     return data
 
@@ -145,8 +148,13 @@ def check_update_data(data: Optional[Box], last_update_time: Optional[Arrow], ar
     """
     if data is None:
         return True
+    if len(data.prices) == 0:
+        return True
 
     now_local = arrow.now(area.timezone)
+    if not has_current_price_points(data, area):
+        logger.debug(f"Stored {area.key} data has no current prices.")
+        return True
 
     if last_update_time is not None:
         next_update_time = last_update_time.shift(seconds=defaults.ENTSOE_COOLDOWN_INTERVAL)
@@ -170,6 +178,15 @@ def check_update_data(data: Optional[Box], last_update_time: Optional[Arrow], ar
         return False
 
     return True
+
+
+def has_current_price_points(data: Optional[Box], area: MarketArea) -> bool:
+    """Check if cached data contains prices the app can still display."""
+    if data is None:
+        return False
+
+    now_local = arrow.now(area.timezone)
+    return any(price_point.end_timestamp > now_local for price_point in data.prices)
 
 
 def get_data_refresh_lock(area_key: str, config: Config) -> ExtendedFileLock:
@@ -366,6 +383,8 @@ def parse_downloaded_data(area: MarketArea, xml_content: bytes) -> Box:
 
     new_data.resolution = selected_resolution
     new_data.prices = BoxList(sorted(new_data.prices, key=lambda point: point.start_timestamp))
+    if len(new_data.prices) == 0:
+        raise ValueError(f"No usable ENTSO-E price points found for {area.key}.")
 
     return new_data
 
@@ -373,6 +392,8 @@ def parse_downloaded_data(area: MarketArea, xml_content: bytes) -> Box:
 def check_data_new(old_data: Optional[Box], new_data: Box) -> bool:
     """Check if new price points were added relative to the max price point of the old price data."""
     if old_data is None:
+        return True
+    if len(old_data.prices) == 0:
         return True
 
     max_end_compare_key = lambda point: point.end_timestamp
@@ -484,7 +505,8 @@ async def get_current_prices(
     :param fall_back: If true function will fall back to the stored data in certain situations when an
         error retrieving the actual current prices occurrs. If false none will be returned in such cases.
     :param background_refresh: If true stale cached data is returned immediately and refresh is scheduled
-        in the background. If no cached data exists yet, the refresh still happens synchronously.
+        in the background, but only when the cached data still contains currently displayable prices.
+        If no usable cached data exists yet, the refresh still happens synchronously.
     """
     area = defaults.get_market_area(area_key)
     stored_data, last_update_time = await asyncio.gather(
@@ -504,9 +526,12 @@ async def get_current_prices(
     do_update_data = check_update_data(stored_data, last_update_time, area)
     price_data = None
     if do_update_data:
-        if background_refresh and stored_data is not None:
+        if background_refresh and has_current_price_points(stored_data, area):
             schedule_background_refresh(stored_data, area_key, config)
             return stored_data
+
+        if background_refresh and stored_data is not None:
+            logger.debug(f"Stored {area.key} data has no current prices; waiting for refresh.")
 
         try:
             price_data = await get_latest_new_prices(stored_data, area_key, config)
@@ -514,13 +539,13 @@ async def get_current_prices(
             logger.exception(f"Couldn't get latest new {area.key} prices: {exc}.")
             if not fall_back:
                 return None
-            price_data = stored_data
+            price_data = stored_data if has_current_price_points(stored_data, area) else None
         else:
             if price_data is None:
                 logger.debug(f"No latest new price data for area {area.key}.")
                 if not fall_back:
                     return None
-                price_data = stored_data
+                price_data = stored_data if has_current_price_points(stored_data, area) else None
     else:
         logger.debug(f"Local {area.key} prices still up to date.")
         price_data = stored_data

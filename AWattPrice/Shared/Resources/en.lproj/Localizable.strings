@@ -43,6 +43,7 @@
 
 // Settings Page and Help & Suggestions page localizations
 "Select your electricity price market area" = "Select your electricity price market area";
+"Select price market area" = "Select price market area";
 "settingsPage.regionToGetPrices" = "Select the market area for which you would like to get electricity prices.";
 
 // Notification Page Setting localizations

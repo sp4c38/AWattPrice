@@ -362,7 +362,7 @@ private struct MarketAreaSelectionPage: View {
             )
             .padding(16)
         }
-        .navigationTitle("Select your electricity price market area")
+        .navigationTitle("Select price market area")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             viewModel.loadAreasIfNeeded()

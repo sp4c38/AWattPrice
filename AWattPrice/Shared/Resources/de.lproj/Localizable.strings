@@ -202,6 +202,7 @@
 
 /* Settings Page and Help & Suggestions page localizations */
 "Select your electricity price market area" = "Wähle deine Strompreis-Marktzone";
+"Select price market area" = "Marktzone auswählen";
 "settingsPage.regionToGetPrices" = "Strom Marktzone";
 /* (No Comment) */
 "splashScreen.featuresAndConsent.comparePrices.info" = "Finden Sie die preislich günstigsten Stunden für Ihren Stromverbrauch.";

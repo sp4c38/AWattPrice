@@ -11,5 +11,5 @@ if [ ! -f "$HOME/.config/awattprice/entsoe-token.txt" ]; then
   exit 1
 fi
 
-PYTHONPATH=src uv run python misc/generate_database.py
+PYTHONPATH=src uv run python -c "from awattprice import configurator, database, orm; c=configurator.get_config(); e=database.get_awattprice_engine(c, ignore_database_not_found=True); orm.metadata.create_all(bind=e, checkfirst=True)"
 PYTHONPATH=src exec uv run uvicorn awattprice.api:app --host 0.0.0.0 --port 8000 --reload

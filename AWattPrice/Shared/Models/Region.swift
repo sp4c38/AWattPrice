@@ -15,6 +15,15 @@ struct MarketArea: Codable, Hashable, Identifiable {
     let currency: String
     let taxMultiplier: Double?
 
+    enum CodingKeys: String, CodingKey {
+        case key
+        case displayName = "display_name"
+        case countryCode = "country_code"
+        case timezone
+        case currency
+        case taxMultiplier = "tax_multiplier"
+    }
+
     var id: String { key }
 
     var localizedDisplayName: String {

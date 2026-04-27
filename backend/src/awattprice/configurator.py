@@ -133,6 +133,6 @@ def configure_loguru(service_name: str, config: Config):
         enqueue=True,  # This makes log calls non-blocking.
         colorize=True,
         backtrace=True,
-        diagnose=config.general.staging,
+        diagnose=False,
         rotation="1 week",
     )

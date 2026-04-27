@@ -18,14 +18,9 @@ from tenacity import (
 from awattprice_notifications import defaults
 
 
-async def send_notification(
-    client: httpx.AsyncClient, token: Token, headers: Box, notification: Box, use_sandbox=False
-) -> httpx.Response:
+async def send_notification(client: httpx.AsyncClient, token: Token, headers: Box, notification: Box) -> httpx.Response:
     """Send a single notification."""
-    if use_sandbox is True:
-        origin = defaults.APNS_URL.origin.sandbox
-    else:
-        origin = defaults.APNS_URL.origin.production
+    origin = defaults.APNS_URL.origin
     path = defaults.APNS_URL.path
     path = path.format(token.token)
 

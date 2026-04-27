@@ -29,7 +29,7 @@ def format_price_timestamp(price_timestamp, resolution: str) -> str:
     return price_timestamp.format("H:mm")
 
 
-def construct_notification_headers(apns_authorization: str, prices_below: list[Box], use_sandbox: bool) -> Box:
+def construct_notification_headers(apns_authorization: str, prices_below: list[Box]) -> Box:
     """Construct the headers for a token when sending a price below notification."""
     latest_price_below = max(prices_below, key=lambda price_point: price_point.start_timestamp)
 
@@ -38,10 +38,7 @@ def construct_notification_headers(apns_authorization: str, prices_below: list[B
     headers["apns-push-type"] = defaults.NOTIFICATION.push_type
     headers["apns-priority"] = str(defaults.NOTIFICATION.priority)
     headers["apns-collapse-id"] = defaults.NOTIFICATION.collapse_id
-    if use_sandbox is False:
-        headers["apns-topic"] = awattprice_defaults.APP_BUNDLE_ID.production
-    else:
-        headers["apns-topic"] = awattprice_defaults.APP_BUNDLE_ID.staging
+    headers["apns-topic"] = awattprice_defaults.APP_BUNDLE_ID.production
     headers["apns-expiration"] = str(latest_price_below.start_timestamp.int_timestamp)
 
     return headers
@@ -150,7 +147,7 @@ async def deliver_notifications(
                 below_value, token.base_fee, token.percentage_add_on, token.tax
             )
 
-            headers = construct_notification_headers(apns_authorization, prices_below, config.general.staging)
+            headers = construct_notification_headers(apns_authorization, prices_below)
             notification = construct_notification(token, prices_below, notifiable_prices)
 
             notification_info = Box(token=token, headers=headers, notification=notification)
@@ -159,9 +156,7 @@ async def deliver_notifications(
     async with httpx.AsyncClient(http2=True) as client:
         send_tasks = []
         for info in notifications_infos:
-            send_tasks.append(
-                send_notification(client, info.token, info.headers, info.notification, config.general.staging)
-            )
+            send_tasks.append(send_notification(client, info.token, info.headers, info.notification))
         logger.info(f"Sending {len(send_tasks)} notification(s).")
         responses = await asyncio.gather(*send_tasks, return_exceptions=True)
 

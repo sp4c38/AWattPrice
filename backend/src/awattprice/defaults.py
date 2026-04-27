@@ -13,11 +13,9 @@ from awattprice.market_areas import normalize_market_area_key
 AWATTPRICE_SERVICE_NAME = "awattprice"
 APP_BUNDLE_ID = Box()
 APP_BUNDLE_ID.production = "me.space8.AWattPrice"
-APP_BUNDLE_ID.staging = "me.space8.AWattPrice.staging"
 
 DEFAULT_CONFIG = """\
 [general]
-staging = true
 # Log level name (Severity): TRACE (5), DEBUG (10), INFO (20), SUCCESS (25), WARNING (30), ERROR (40), CRITICAL (50)
 log_level = DEBUG
 

@@ -17,9 +17,11 @@ services:
     ports:
       - "127.0.0.1:8003:8000"
     volumes:
+      # Config paths must use the container paths below, not the host paths.
+      # Example: data_dir=/etc/awattprice/app_data/data, not /etc/awattprice-v3/app_data/data.
       - "${AWATTPRICE_HOST_ROOT:-/etc/awattprice-v3}/app_data:/etc/awattprice/app_data"
       - "${AWATTPRICE_HOST_ROOT:-/etc/awattprice-v3}/config.ini:/etc/awattprice/config.ini:ro"
-      - "${AWATTPRICE_HOST_ROOT:-/etc/awattprice-v3}/entsoe-token.txt:/etc/awattprice-v3/entsoe-token.txt:ro"
+      - "${AWATTPRICE_HOST_ROOT:-/etc/awattprice-v3}/entsoe-token.txt:/etc/awattprice/entsoe-token.txt:ro"
 
   price-below:
     image: ${AWATTPRICE_IMAGE:-awattprice-backend:v3}
@@ -32,6 +34,7 @@ services:
       - -c
       - while true; do python /usr/src/awattprice/src/awattprice_notifications/price_below/service.py; sleep 600; done
     volumes:
+      # Keep these mount targets aligned with paths configured in /etc/awattprice/config.ini.
       - "${AWATTPRICE_HOST_ROOT:-/etc/awattprice-v3}/app_data:/etc/awattprice/app_data"
       - "${AWATTPRICE_HOST_ROOT:-/etc/awattprice-v3}/config.ini:/etc/awattprice/config.ini:ro"
-      - "${AWATTPRICE_HOST_ROOT:-/etc/awattprice-v3}/entsoe-token.txt:/etc/awattprice-v3/entsoe-token.txt:ro"
+      - "${AWATTPRICE_HOST_ROOT:-/etc/awattprice-v3}/entsoe-token.txt:/etc/awattprice/entsoe-token.txt:ro"

@@ -21,9 +21,14 @@ log_level = DEBUG
 
 [entsoe]
 url = https://web-api.tp.entsoe.eu/api
+# When running in Docker, use the container path mounted by compose.v3.yaml.
+# Do not use the host path such as /etc/awattprice-v3/entsoe-token.txt here.
 token_file = ~/awattprice/entsoe-token.txt
 
 [paths]
+# When running in Docker, these must be container paths mounted by compose.v3.yaml.
+# For v3 deploys use /etc/awattprice/app_data/... inside this config, even though
+# the host stores the files below /etc/awattprice-v3/app_data.
 log_dir = ~/awattprice/logs/
 data_dir = ~/awattprice/data/
 apns_dir = ~/awattprice/apns/

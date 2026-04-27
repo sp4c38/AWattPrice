@@ -21,7 +21,7 @@ log_level = DEBUG
 
 [entsoe]
 url = https://web-api.tp.entsoe.eu/api
-token_file = ~/.config/awattprice/entsoe-token.txt
+token_file = ~/awattprice/entsoe-token.txt
 
 [paths]
 log_dir = ~/awattprice/logs/

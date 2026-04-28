@@ -118,19 +118,25 @@ struct ContentView: View {
         .ignoresSafeArea(.keyboard)
         .onChange(of: scenePhase) { _, newPhase in
             guard newPhase == .active else { return }
-            
-            // Reset badge number
-            UNUserNotificationCenter.current().setBadgeCount(0)
-            
-            Task {
-                await notificationService.updateAccessStates()
-            }
-            
-            energyDataService.download(setting: settingsManager.setting)
+            refreshAppData()
         }
         .onAppear {
             // Check if we should show what's new screen
             shouldShowWhatsNew = AppContext.shared.checkShowWhatsNewScreen()
+            refreshAppData()
         }
+    }
+
+    private func refreshAppData() {
+        guard settingsManager.setting.onboarded else { return }
+
+        // Reset badge number
+        UNUserNotificationCenter.current().setBadgeCount(0)
+
+        Task {
+            await notificationService.updateAccessStates()
+        }
+
+        energyDataService.download(setting: settingsManager.setting)
     }
 }

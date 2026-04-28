@@ -72,6 +72,8 @@
 "updateDataTimeFormatter.lessThanOneMinuteAgo" = "Updated less than a minute ago";
 "updateDataTimeFormatter.moreThanMMAgoSingular" = "Updated %@ minute ago";
 "updateDataTimeFormatter.moreThanMMAgoPlural" = "Updated %@ minutes ago";
+"Refreshing prices" = "Refreshing prices";
+"Prices loaded" = "Prices loaded";
 
 // Notification localizations
 "notifications.price_drops_below.body.sing" = "Tomorrow, electricity prices drop below %2$@ ct %1$@ time. Cheapest hour at %3$@ with %4$@ ct.";

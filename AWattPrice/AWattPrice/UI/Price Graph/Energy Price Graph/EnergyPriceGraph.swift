@@ -123,16 +123,9 @@ private struct EnergyPriceGraphAxis: View {
     let plotWidth: CGFloat
 
     var body: some View {
-        let zeroX = metrics.xPosition(for: 0, width: plotWidth)
-
         ZStack(alignment: .topLeading) {
             Color.clear
                 .frame(width: plotWidth, height: EnergyPriceGraphLayout.axisHeight)
-
-            Rectangle()
-                .fill(.secondary.opacity(0.28))
-                .frame(width: 1)
-                .offset(x: zeroX)
 
             ForEach(metrics.axisTicks, id: \.self) { tick in
                 Text(tickText(for: tick))
@@ -169,6 +162,12 @@ private struct EnergyPriceBarRow: View {
         pricePoint.startTime.formatted(.dateTime.hour(.twoDigits(amPM: .omitted)).minute(.twoDigits))
     }
 
+    private var timeRangeText: String {
+        let startHour = pricePoint.startTime.formatted(.dateTime.hour(.twoDigits(amPM: .omitted)).minute(.twoDigits))
+        let endHour = pricePoint.endTime.formatted(.dateTime.hour(.twoDigits(amPM: .omitted)).minute(.twoDigits))
+        return "\(startHour)-\(endHour)"
+    }
+
     private var priceText: String {
         let formattedPrice = pricePoint.marketprice.priceString.flatMap { $0.isEmpty ? nil : $0 } ?? "0.00"
         return "\(formattedPrice) ct"
@@ -178,47 +177,64 @@ private struct EnergyPriceBarRow: View {
         pricePoint.startTime.formatted(.dateTime.weekday(.abbreviated).day())
     }
 
-    private var barFill: Color {
-        if isSelected {
-            return .primary
-        }
+    private var positiveGradient: LinearGradient {
+        LinearGradient(
+            colors: [
+                Color(red: 1.00, green: 0.76, blue: 0.31),
+                Color(red: 0.88, green: 0.38, blue: 0.25),
+            ],
+            startPoint: .leading,
+            endPoint: .trailing
+        )
+    }
 
-        if pricePoint.marketprice < 0 {
-            return Color(red: 0.25, green: 0.69, blue: 0.43)
-        }
-
-        if pricePoint.marketprice >= metrics.upperBound * 0.8 {
-            return Color(red: 0.88, green: 0.38, blue: 0.25)
-        }
-
-        return Color(red: 0.88, green: 0.58, blue: 0.28)
+    private var negativeFill: Color {
+        Color(red: 0.25, green: 0.69, blue: 0.43)
     }
 
     var body: some View {
         let trackHeight = max((rowHeight - 1) * trackHeightFactor, 3)
-        let zeroX = metrics.xPosition(for: 0, width: plotWidth)
         let barFrame = metrics.barFrame(for: pricePoint.marketprice, width: plotWidth)
+        let zeroX = metrics.xPosition(for: 0, width: plotWidth)
+        let positiveGradientWidth = max(metrics.xPosition(for: metrics.upperBound, width: plotWidth) - zeroX, 1)
 
         ZStack(alignment: .leading) {
             Color.clear
                 .frame(width: plotWidth, height: rowHeight)
 
-            Rectangle()
-                .fill(.secondary.opacity(0.24))
-                .frame(width: 1)
-                .offset(x: zeroX)
-
             if barFrame.width > 0 {
-                RoundedRectangle(cornerRadius: min(trackHeight * 0.35, 4), style: .continuous)
-                    .fill(barFill)
-                    .frame(width: barFrame.width, height: trackHeight)
-                    .offset(x: barFrame.x)
+                if pricePoint.marketprice >= 0 {
+                    ZStack(alignment: .leading) {
+                        Color.clear
+                            .frame(width: plotWidth, height: rowHeight)
+
+                        positiveGradient
+                            .frame(width: positiveGradientWidth, height: trackHeight)
+                            .offset(x: zeroX)
+                    }
+                    .mask {
+                        ZStack(alignment: .leading) {
+                            Color.clear
+                                .frame(width: plotWidth, height: rowHeight)
+
+                            RoundedRectangle(cornerRadius: min(trackHeight * 0.35, 4), style: .continuous)
+                                .frame(width: barFrame.width, height: trackHeight)
+                                .offset(x: barFrame.x)
+                        }
+                    }
+                    .frame(width: plotWidth, height: rowHeight, alignment: .leading)
+                } else {
+                    RoundedRectangle(cornerRadius: min(trackHeight * 0.35, 4), style: .continuous)
+                        .fill(negativeFill)
+                        .frame(width: barFrame.width, height: trackHeight)
+                        .offset(x: barFrame.x)
+                }
             }
 
             HStack(spacing: 8) {
                 HStack(spacing: 4) {
                     if isSelected || hourLabel != nil {
-                        Text(isSelected ? hourText : (hourLabel ?? ""))
+                        Text(isSelected ? timeRangeText : (hourLabel ?? ""))
                             .font(.system(size: 11, weight: .semibold, design: .rounded))
                             .monospacedDigit()
                             .fixedSize(horizontal: true, vertical: false)
@@ -257,41 +273,11 @@ private struct EnergyPriceBarRow: View {
     }
 }
 
-private struct EnergyPriceGraphTooltip: View {
-    let pricePoint: EnergyPricePoint
-
-    private var timeRangeText: String {
-        let startHour = pricePoint.startTime.formatted(.dateTime.hour(.twoDigits(amPM: .omitted)).minute(.twoDigits))
-        let endHour = pricePoint.endTime.formatted(.dateTime.hour(.twoDigits(amPM: .omitted)).minute(.twoDigits))
-        return "\(startHour)-\(endHour)"
-    }
-
-    private var priceText: String {
-        let formattedPrice = pricePoint.marketprice.priceString.flatMap { $0.isEmpty ? nil : $0 } ?? "0.00"
-        return "\(formattedPrice) ct/kWh"
-    }
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 2) {
-            Text(timeRangeText)
-            Text(priceText)
-        }
-        .font(.system(size: 12, weight: .semibold, design: .rounded))
-        .monospacedDigit()
-        .foregroundStyle(.primary)
-        .padding(.horizontal, 10)
-        .padding(.vertical, 7)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
-        .shadow(color: .black.opacity(0.12), radius: 10, x: 0, y: 4)
-    }
-}
-
 /// The graph drawn on the prices screen displaying the price for each upcoming hour.
 struct EnergyPriceGraph: View {
     @EnvironmentObject private var energyDataService: EnergyDataService
 
     @State private var selectedIndex: Int?
-    @State private var touchLocation: CGPoint?
     @State private var feedbackGenerator = UISelectionFeedbackGenerator()
 
     private var currentPrices: [EnergyPricePoint] {
@@ -308,17 +294,6 @@ struct EnergyPriceGraph: View {
     private func showsDayChange(at index: Int, prices: [EnergyPricePoint]) -> Bool {
         guard index > 0 else { return false }
         return Calendar.current.isDate(prices[index - 1].startTime, inSameDayAs: prices[index].startTime) == false
-    }
-
-    private func tooltipPosition(for index: Int, layout: EnergyPriceGraphLayout, width: CGFloat) -> CGPoint {
-        let rowPitch = layout.rowHeight + EnergyPriceGraphLayout.rowSpacing
-        let rowCenterY = EnergyPriceGraphLayout.axisHeight + CGFloat(index) * rowPitch + layout.rowHeight / 2
-        let location = touchLocation ?? CGPoint(x: width / 2, y: rowCenterY)
-
-        return CGPoint(
-            x: min(max(location.x, 78), max(width - 78, 78)),
-            y: max(location.y - 42, EnergyPriceGraphLayout.axisHeight + 10)
-        )
     }
 
     private func updateSelection(to newIndex: Int?, prices: [EnergyPricePoint]) {
@@ -362,12 +337,6 @@ struct EnergyPriceGraph: View {
                     }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-
-                if let selectedIndex, prices.indices.contains(selectedIndex) {
-                    EnergyPriceGraphTooltip(pricePoint: prices[selectedIndex])
-                        .position(tooltipPosition(for: selectedIndex, layout: layout, width: geometry.size.width))
-                        .transition(.opacity.combined(with: .scale(scale: 0.98)))
-                }
             }
             .animation(.easeOut(duration: 0.12), value: selectedIndex)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
@@ -375,11 +344,9 @@ struct EnergyPriceGraph: View {
             .gesture(
                 DragGesture(minimumDistance: 0)
                     .onChanged { value in
-                        touchLocation = value.location
                         updateSelection(to: layout.index(at: value.location.y), prices: prices)
                     }
                     .onEnded { _ in
-                        touchLocation = nil
                         updateSelection(to: nil, prices: prices)
                     }
             )

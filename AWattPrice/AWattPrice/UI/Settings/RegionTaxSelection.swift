@@ -302,8 +302,14 @@ struct RegionView: View {
 }
 
 struct MarketAreaMapSelectionView: View {
+    @Environment(\.colorScheme) private var colorScheme
+
     @ObservedObject var viewModel: MarketAreaTaxSelectionViewModel
     let height: CGFloat
+
+    private var unselectedPinFill: Color {
+        colorScheme == .dark ? Color(uiColor: .secondarySystemGroupedBackground) : .white
+    }
 
     var body: some View {
         MapReader { proxy in
@@ -318,7 +324,7 @@ struct MarketAreaMapSelectionView: View {
                                     .frame(width: 30, height: 30)
                                     .background(
                                         Circle()
-                                            .fill(viewModel.selectedMarketAreaKey == marketArea.key ? Color.orange : Color.white)
+                                            .fill(viewModel.selectedMarketAreaKey == marketArea.key ? Color.orange : unselectedPinFill)
                                     )
                                     .overlay(
                                         Circle()

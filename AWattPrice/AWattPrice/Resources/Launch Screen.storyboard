@@ -17,14 +17,15 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tabBar contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Y5j-wm-g5U">
-                                <rect key="frame" x="0.0" y="607" width="375" height="60"/>
+                                <rect key="frame" x="0.0" y="583" width="375" height="84"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="60" id="RzH-yg-tS5"/>
+                                    <constraint firstAttribute="height" constant="84" id="RzH-yg-tS5"/>
                                 </constraints>
                                 <items>
                                     <tabBarItem title="" image="gear" catalog="system" id="CPt-0z-6Up"/>
                                     <tabBarItem title="" image="bolt" catalog="system" id="biv-9M-kPh"/>
+                                    <tabBarItem title="" image="chart.bar.xaxis" catalog="system" id="d6x-vm-Sig"/>
                                     <tabBarItem title="" image="rectangle.and.text.magnifyingglass" catalog="system" id="gqa-oq-9lL"/>
                                 </items>
                             </tabBar>
@@ -46,6 +47,7 @@
     </scenes>
     <resources>
         <image name="bolt" catalog="system" width="101" height="128"/>
+        <image name="chart.bar.xaxis" catalog="system" width="128" height="97"/>
         <image name="gear" catalog="system" width="128" height="119"/>
         <image name="rectangle.and.text.magnifyingglass" catalog="system" width="128" height="95"/>
         <systemColor name="systemBackgroundColor">

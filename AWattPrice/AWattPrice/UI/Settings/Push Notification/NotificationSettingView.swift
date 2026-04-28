@@ -9,21 +9,23 @@ import SwiftUI
 
 private struct NotificationSettingsBackground: View {
     var body: some View {
-        LinearGradient(
-            colors: [
-                Color(red: 0.97, green: 0.95, blue: 0.92),
-                Color(red: 0.95, green: 0.97, blue: 0.99),
-                Color.white,
-            ],
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
-        )
+        Color(uiColor: .systemGroupedBackground)
         .ignoresSafeArea()
     }
 }
 
 private struct NotificationSettingsCard<Content: View>: View {
+    @Environment(\.colorScheme) private var colorScheme
+
     @ViewBuilder let content: Content
+
+    private var strokeColor: Color {
+        colorScheme == .dark ? Color.white.opacity(0.08) : Color.black.opacity(0.06)
+    }
+
+    private var shadowColor: Color {
+        colorScheme == .dark ? Color.black.opacity(0.24) : Color.black.opacity(0.04)
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -35,10 +37,10 @@ private struct NotificationSettingsCard<Content: View>: View {
                 .fill(.ultraThinMaterial)
                 .overlay(
                     RoundedRectangle(cornerRadius: 28, style: .continuous)
-                        .stroke(Color.white.opacity(0.55), lineWidth: 1)
+                        .stroke(strokeColor, lineWidth: 1)
                 )
         )
-        .shadow(color: Color.black.opacity(0.04), radius: 20, y: 8)
+        .shadow(color: shadowColor, radius: 20, y: 8)
     }
 }
 

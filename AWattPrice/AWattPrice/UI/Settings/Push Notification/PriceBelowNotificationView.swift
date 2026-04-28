@@ -113,6 +113,7 @@ class PriceBelowNotificationViewModel: ObservableObject {
 }
 
 struct PriceBelowNotificationView: View {
+    @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject private var settingsManager: SettingsManager
     @EnvironmentObject private var notificationService: NotificationService
 
@@ -136,6 +137,14 @@ struct PriceBelowNotificationView: View {
     private var currentThresholdText: String {
         let value = viewModel.priceBelowValue.isEmpty ? "0" : viewModel.priceBelowValue
         return "\(value) ct/kWh"
+    }
+
+    private var inputFill: Color {
+        colorScheme == .dark ? Color.white.opacity(0.08) : Color.white.opacity(0.72)
+    }
+
+    private var inputStroke: Color {
+        colorScheme == .dark ? Color.white.opacity(0.10) : Color.black.opacity(0.08)
     }
 
     var body: some View {
@@ -189,10 +198,10 @@ struct PriceBelowNotificationView: View {
                         .padding(.vertical, 12)
                         .background(
                             RoundedRectangle(cornerRadius: 18, style: .continuous)
-                                .fill(Color.white.opacity(0.72))
+                                .fill(inputFill)
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 18, style: .continuous)
-                                        .stroke(Color.black.opacity(0.08), lineWidth: 1)
+                                        .stroke(inputStroke, lineWidth: 1)
                                 )
                         )
                     }

@@ -101,6 +101,7 @@ struct UpdatedDataView: View {
 
             Text(statusText)
                 .foregroundStyle(statusColor)
+                .lineLimit(1)
                 .transition(.opacity)
 
             Spacer()

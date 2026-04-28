@@ -8,21 +8,6 @@
 import SwiftUI
 import UIKit
 
-struct GraphHeader: View {
-    var body: some View {
-        HStack {
-            Text("Time")
-
-            Spacer()
-
-            Text("ct/kWh")
-        }
-        .font(.footnote.weight(.semibold))
-        .foregroundStyle(.secondary)
-        .textCase(.uppercase)
-    }
-}
-
 private struct EnergyPriceGraphMetrics {
     let lowerBound: Double
     let upperBound: Double
@@ -90,7 +75,7 @@ private struct EnergyPriceGraphMetrics {
 }
 
 private struct EnergyPriceGraphLayout {
-    static let axisHeight: CGFloat = 24
+    static let axisHeight: CGFloat = 18
     static let overlayHorizontalPadding: CGFloat = 6
     static let rowSpacing: CGFloat = 0.1
 
@@ -147,6 +132,29 @@ private struct EnergyPriceGraphAxis: View {
     }
 }
 
+private struct EnergyPriceValueText: View {
+    let value: String
+
+    var body: some View {
+        HStack(alignment: .firstTextBaseline, spacing: 1) {
+            Text(value)
+                .font(.system(size: 11, weight: .semibold, design: .rounded))
+                .monospacedDigit()
+                .padding(.trailing, 1)
+
+            Text("ct")
+                .font(.system(size: 8, weight: .semibold, design: .rounded))
+
+            Text("/")
+                .font(.system(size: 9, weight: .semibold, design: .rounded))
+                .padding(.horizontal, -1)
+
+            Text("kWh")
+                .font(.system(size: 8, weight: .semibold, design: .rounded))
+        }
+    }
+}
+
 private struct EnergyPriceBarRow: View {
     let pricePoint: EnergyPricePoint
     let metrics: EnergyPriceGraphMetrics
@@ -169,8 +177,7 @@ private struct EnergyPriceBarRow: View {
     }
 
     private var priceText: String {
-        let formattedPrice = pricePoint.marketprice.priceString.flatMap { $0.isEmpty ? nil : $0 } ?? "0.00"
-        return "\(formattedPrice) ct"
+        pricePoint.marketprice.priceString.flatMap { $0.isEmpty ? nil : $0 } ?? "0.00"
     }
 
     private var dayBadgeText: String {
@@ -190,6 +197,10 @@ private struct EnergyPriceBarRow: View {
 
     private var negativeFill: Color {
         Color(red: 0.25, green: 0.69, blue: 0.43)
+    }
+
+    private var selectedFill: Color {
+        Color(red: 0.82, green: 0.28, blue: 0.20)
     }
 
     var body: some View {
@@ -231,6 +242,13 @@ private struct EnergyPriceBarRow: View {
                 }
             }
 
+            if isSelected, barFrame.width > 0 {
+                RoundedRectangle(cornerRadius: min(trackHeight * 0.35, 4), style: .continuous)
+                    .fill(selectedFill.opacity(0.82))
+                    .frame(width: barFrame.width, height: trackHeight)
+                    .offset(x: barFrame.x)
+            }
+
             HStack(spacing: 8) {
                 HStack(spacing: 4) {
                     if isSelected || hourLabel != nil {
@@ -256,9 +274,7 @@ private struct EnergyPriceBarRow: View {
 
                 Spacer(minLength: 8)
 
-                Text(priceText)
-                    .font(.system(size: 11, weight: .semibold, design: .rounded))
-                    .monospacedDigit()
+                EnergyPriceValueText(value: priceText)
                     .foregroundStyle(.primary)
                     .fixedSize(horizontal: true, vertical: false)
                     .padding(.horizontal, 6)

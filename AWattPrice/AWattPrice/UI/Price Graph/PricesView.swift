@@ -18,18 +18,12 @@ struct PricesView: View {
         NavigationView {
             Group {
                 if hasCurrentPriceData {
-                    VStack(spacing: 12) {
-                        VStack(spacing: 8) {
-                            UpdatedDataView()
-                            GraphHeader()
-                        }
-                        .padding(.horizontal, 16)
-                        .padding(.top, 8)
-
+                    VStack(spacing: 6) {
                         EnergyPriceGraph()
                             .padding(.leading, 10)
                             .padding(.trailing, 16)
                             .padding(.bottom, 16)
+                            .padding(.top, 2)
                     }
                 } else {
                     DataDownloadAndError()
@@ -37,6 +31,12 @@ struct PricesView: View {
             }
             .navigationTitle("Electricity Prices")
             .navigationBarTitleDisplayMode(.large)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    UpdatedDataView()
+                        .frame(width: 150)
+                }
+            }
         }
         .navigationViewStyle(StackNavigationViewStyle())
     }

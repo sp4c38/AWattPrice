@@ -51,21 +51,27 @@
 
 /* (No Comment) */
 "cheapestPriceResultPage.priceWithVatNote" = "(Preis mit MwSt. und konfigurierten Preisaufschlägen)";
-"Best Window" = "Bestes Zeitfenster";
-"Best Window Today" = "Bestes Zeitfenster heute";
-"Best Window Tomorrow" = "Bestes Zeitfenster morgen";
+"Best Time Window" = "Bestes Zeitfenster";
+"Best Time Window Today" = "Bestes Zeitfenster heute";
+"Best Time Window Tomorrow" = "Bestes Zeitfenster morgen";
 "Average Price" = "Durchschnittspreis";
 "Covered Hours" = "Abgedeckte Stunden";
 "Timeline" = "Ablauf";
 "Recommended start" = "Empfohlener Start";
 "Hourly slot" = "Stundenslot";
-"The highlighted window gives you the lowest average price within your selected range." = "Das hervorgehobene Zeitfenster bietet den niedrigsten Durchschnittspreis innerhalb Ihres gewählten Bereichs.";
+"The highlighted time window gives you the lowest average price within your selected range." = "Das hervorgehobene Zeitfenster bietet den niedrigsten Durchschnittspreis innerhalb Ihres gewählten Bereichs.";
 "No Result Found" = "Kein Ergebnis gefunden";
-"Finding best window..." = "Bestes Zeitfenster wird gesucht...";
+"Finding best time window..." = "Bestes Zeitfenster wird gesucht...";
 "Show Result" = "Ergebnis anzeigen";
-"Pick how long your device should run, then limit the search window below." = "Wählen Sie aus, wie lange Ihr Gerät laufen soll, und begrenzen Sie darunter das Suchfenster.";
-"selected" = "ausgewählt";
-"Constrain the search window to the hours that actually work for you." = "Begrenzen Sie das Suchfenster auf die Stunden, die für Sie wirklich passen.";
+"Runtime" = "Laufzeit";
+"Available Time Window" = "Mögliches Zeitfenster";
+"Find the cheapest time to use electricity within a certain time window." = "Findet die günstigste Zeit für Stromverbrauch in einem bestimmten Zeitfenster.";
+"Tonight" = "Heute Nacht";
+"Next 3 hours" = "Nächste 3 Std.";
+"Next 12 hours" = "Nächste 12 Std.";
+"All available" = "Alles Verfügbare";
+"Earliest start" = "Frühester Start";
+"Latest finish" = "Spätestes Ende";
 
 /* No comment provided by engineer. */
 "Continue" = "Weiter";

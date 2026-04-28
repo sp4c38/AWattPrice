@@ -83,18 +83,18 @@ private struct CheapestTimeResultContent: View {
     let result: HourPair
 
     private var heroTitle: String {
-        guard let startDate = result.startDate else { return "Best Window".localized() }
+        guard let startDate = result.startDate else { return "Best Time Window".localized() }
 
         let calendar = Calendar.current
         if calendar.isDateInToday(startDate) {
-            return "Best Window Today".localized()
+            return "Best Time Window Today".localized()
         }
 
         if calendar.isDateInTomorrow(startDate) {
-            return "Best Window Tomorrow".localized()
+            return "Best Time Window Tomorrow".localized()
         }
 
-        return "Best Window".localized()
+        return "Best Time Window".localized()
     }
 
     private var windowText: String {
@@ -132,7 +132,7 @@ private struct CheapestTimeResultContent: View {
                         .font(.system(size: 30, weight: .semibold, design: .rounded))
                         .foregroundStyle(.primary)
 
-                    Text("The highlighted window gives you the lowest average price within your selected range.".localized())
+                    Text("The highlighted time window gives you the lowest average price within your selected range.".localized())
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
@@ -187,13 +187,13 @@ struct CheapestTimeResultView: View {
             } else {
                 VStack(spacing: 16) {
                     ProgressView()
-                    Text("Finding best window...".localized())
+                    Text("Finding best time window...".localized())
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
             }
         }
-        .navigationTitle("Result")
+        .navigationTitle("Results")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             if let energyData = energyDataService.energyData {

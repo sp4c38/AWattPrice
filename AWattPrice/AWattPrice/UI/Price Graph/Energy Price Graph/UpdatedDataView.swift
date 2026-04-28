@@ -45,7 +45,7 @@ struct UpdatedDataView: View {
 
     private let dateFormatter = UpdatedDataTimeFormatter()
     private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-    private let minimumDownloadingDisplayDuration: TimeInterval = 1.5
+    private let minimumDownloadingDisplayDuration: TimeInterval = 0.8
 
     private var actualDownloadStateKey: Int {
         downloadStateKey(for: energyDataService.downloadState)

@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 
 private enum TimeRangeQuickPreset: CaseIterable, Identifiable {
     case tonight
@@ -18,13 +19,13 @@ private enum TimeRangeQuickPreset: CaseIterable, Identifiable {
     var title: String {
         switch self {
         case .tonight:
-            return "night"
+            return "Tonight"
         case .next3Hours:
-            return "3h"
+            return "Next 3 hours"
         case .next12Hours:
-            return "12h"
+            return "Next 12 hours"
         case .fullRange:
-            return "max."
+            return "All available"
         }
     }
 
@@ -58,11 +59,14 @@ private struct TimeRangePresetButton: View {
                 Text(preset.title.localized())
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(.primary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.85)
 
                 Spacer(minLength: 0)
             }
             .padding(.horizontal, 14)
             .padding(.vertical, 12)
+            .frame(minHeight: 44)
             .frame(maxWidth: .infinity)
             .background(
                 RoundedRectangle(cornerRadius: 18, style: .continuous)
@@ -129,17 +133,14 @@ struct TimeRangeInputField: View {
     @EnvironmentObject private var cheapestHourManager: CheapestHourManager
 
     @State var inputDateRange: ClosedRange<Date> = Date() ... Date()
+    @State private var observedCurrentMinute = currentMinuteStart()
+
+    private let minuteTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
-            VStack(alignment: .leading, spacing: 8) {
-                Label("Time Range", systemImage: "calendar.badge.clock")
-                    .font(.headline)
-
-                Text("Constrain the search window to the hours that actually work for you.".localized())
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-            }
+            Label("Time window", systemImage: "calendar.badge.clock")
+                .font(.headline)
 
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 140), spacing: 12)], spacing: 12) {
                 ForEach(TimeRangeQuickPreset.allCases) { preset in
@@ -152,14 +153,14 @@ struct TimeRangeInputField: View {
             VStack(alignment: .leading, spacing: 12) {
                 TimeRangeInputFieldSelectionPart(
                     partSelection: $cheapestHourManager.startDate,
-                    name: "from",
+                    name: "Earliest start",
                     systemImage: "arrow.forward.circle.fill",
                     range: inputDateRange
                 )
 
                 TimeRangeInputFieldSelectionPart(
                     partSelection: $cheapestHourManager.endDate,
-                    name: "to",
+                    name: "Latest finish",
                     systemImage: "flag.circle.fill",
                     range: inputDateRange
                 )
@@ -182,6 +183,12 @@ struct TimeRangeInputField: View {
         .onReceive(energyDataService.$energyData) { _ in
             setTimeIntervalValues()
         }
+        .onAppear {
+            updateStartDateMinimum(Date())
+        }
+        .onReceive(minuteTimer) { now in
+            updateStartDateMinimumOnMinuteChange(now)
+        }
         .onChange(of: cheapestHourManager.startDate) {
             cheapestHourManager.resetTransientState()
         }
@@ -193,6 +200,26 @@ struct TimeRangeInputField: View {
 
 extension TimeRangeInputField {
     // Helper functions
+
+    private static func currentMinuteStart(for date: Date = Date()) -> Date {
+        Calendar.current.dateInterval(of: .minute, for: date)?.start ?? date
+    }
+
+    private func updateStartDateMinimumOnMinuteChange(_ now: Date) {
+        let newCurrentMinute = Self.currentMinuteStart(for: now)
+        guard newCurrentMinute != observedCurrentMinute else { return }
+
+        observedCurrentMinute = newCurrentMinute
+        updateStartDateMinimum(newCurrentMinute)
+    }
+
+    private func updateStartDateMinimum(_ now: Date) {
+        let currentMinute = Self.currentMinuteStart(for: now)
+        let selectedStartMinute = Self.currentMinuteStart(for: cheapestHourManager.startDate)
+        guard selectedStartMinute < currentMinute else { return }
+        guard inputDateRange.contains(currentMinute) else { return }
+        cheapestHourManager.startDate = currentMinute
+    }
 
     /// Set the max upper and lower bound for the time range input
     func setTimeIntervalValues() {

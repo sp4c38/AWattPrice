@@ -50,6 +50,7 @@ struct CheapestTimeViewBodyPicker: View {
                 setMaxTimeInterval()
             }
         }
+        .frame(maxWidth: .infinity, alignment: .center)
     }
 }
 
@@ -98,34 +99,11 @@ extension View {
 private struct CheapestTimeDurationSection: View {
     @EnvironmentObject private var cheapestHourManager: CheapestHourManager
 
-    private var selectedDurationText: String {
-        let interval = max(Int(cheapestHourManager.timeOfUsageInterval), 0)
-        let hours = interval / 3600
-        let minutes = (interval % 3600) / 60
-        return TotalTimeFormatter().string(hour: hours, minute: minutes)
-    }
-
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
-            VStack(alignment: .leading, spacing: 8) {
-                Label("Duration", systemImage: "timer")
-                    .font(.headline)
-                    .foregroundStyle(.primary)
-
-                Text("Pick how long your device should run, then limit the search window below.".localized())
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-            }
-
-            HStack(alignment: .firstTextBaseline, spacing: 10) {
-                Text(selectedDurationText)
-                    .font(.system(.title2, design: .rounded).weight(.semibold))
-                    .contentTransition(.numericText())
-
-                Text("selected".localized())
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-            }
+            Label("Runtime", systemImage: "timer")
+                .font(.headline)
+                .foregroundStyle(.primary)
 
             CheapestTimeViewBodyPicker()
         }
@@ -133,6 +111,28 @@ private struct CheapestTimeDurationSection: View {
         .onChange(of: cheapestHourManager.timeOfUsageInterval) {
             cheapestHourManager.resetTransientState()
         }
+    }
+}
+
+private struct CheapestTimeResultButton: View {
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 10) {
+                Text("Show Results".localized())
+                Image(systemName: "arrow.right")
+            }
+            .font(.headline)
+            .foregroundStyle(.white)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 16)
+            .background(
+                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                    .fill(cheapestTimeAccent)
+            )
+        }
+        .buttonStyle(.plain)
     }
 }
 
@@ -153,12 +153,23 @@ struct CheapestTimeView: View {
                 if hasCurrentPriceData {
                     ScrollView {
                         VStack(alignment: .leading, spacing: 18) {
+                            Text("Find the cheapest time to use electricity within a certain time window.".localized())
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                                .padding(.horizontal, 4)
+
                             CheapestTimeDurationSection()
                             TimeRangeInputField()
+                            CheapestTimeResultButton {
+                                cheapestHourManager.validateInputs()
+                                if cheapestHourManager.hasValidInput {
+                                    navigateToResults = true
+                                }
+                            }
                         }
                         .padding(.horizontal, 16)
                         .padding(.top, 14)
-                        .padding(.bottom, 120)
+                        .padding(.bottom, 28)
                     }
                     .navigationDestination(isPresented: $navigateToResults) {
                         CheapestTimeResultView()
@@ -168,39 +179,6 @@ struct CheapestTimeView: View {
                 }
             }
             .navigationTitle("Cheapest Time")
-            .safeAreaInset(edge: .bottom) {
-                if hasCurrentPriceData {
-                    VStack(spacing: 0) {
-                        Divider()
-                            .overlay(Color.primary.opacity(0.08))
-
-                        Button(action: {
-                            cheapestHourManager.validateInputs()
-                            if cheapestHourManager.hasValidInput {
-                                navigateToResults = true
-                            }
-                        }) {
-                            HStack(spacing: 10) {
-                                Text("Show Result".localized())
-                                Image(systemName: "arrow.right")
-                            }
-                            .font(.headline)
-                            .foregroundStyle(.white)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 16)
-                            .background(
-                                RoundedRectangle(cornerRadius: 18, style: .continuous)
-                                    .fill(cheapestTimeAccent)
-                            )
-                        }
-                        .buttonStyle(.plain)
-                        .padding(.horizontal, 16)
-                        .padding(.top, 12)
-                        .padding(.bottom, 8)
-                    }
-                    .background(.ultraThinMaterial)
-                }
-            }
         }
     }
 }

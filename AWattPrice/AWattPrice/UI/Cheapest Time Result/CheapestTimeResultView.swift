@@ -96,7 +96,7 @@ private struct CheapestTimeResultContent: View {
 
         let calendar = Calendar.current
         if calendar.isDateInToday(startDate) {
-            return "Best Time Window Today".localized()
+            return "Cheapest Time Window".localized()
         }
 
         if calendar.isDateInTomorrow(startDate) {
@@ -157,10 +157,6 @@ private struct CheapestTimeResultContent: View {
                     Text(windowText)
                         .font(.system(size: 30, weight: .semibold, design: .rounded))
                         .foregroundStyle(.primary)
-
-                    Text("The highlighted time window gives you the lowest average price within your selected range.".localized())
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
                 }
                 .cheapestTimeCardStyle()
 
@@ -201,9 +197,12 @@ struct CheapestTimeResultView: View {
     @EnvironmentObject private var energyDataService: EnergyDataService
     @EnvironmentObject private var cheapestHourManager: CheapestHourManager
 
+    @State private var displayedResult: HourPair?
+    @State private var didStartCalculation = false
+
     var body: some View {
         Group {
-            if let result = cheapestHourManager.result {
+            if let result = displayedResult {
                 CheapestTimeResultContent(result: result)
             } else if cheapestHourManager.failedToFindResult {
                 ContentUnavailableView(
@@ -223,9 +222,16 @@ struct CheapestTimeResultView: View {
         .navigationTitle("Results")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
+            guard !didStartCalculation else { return }
+            didStartCalculation = true
+
             if let energyData = energyDataService.energyData {
                 cheapestHourManager.calculateCheapestHours(energyData: energyData)
             }
+        }
+        .onReceive(cheapestHourManager.$result) { result in
+            guard displayedResult == nil else { return }
+            displayedResult = result
         }
     }
 }

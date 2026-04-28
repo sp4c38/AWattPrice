@@ -27,7 +27,8 @@ struct PricesView: View {
                         .padding(.top, 8)
 
                         EnergyPriceGraph()
-                            .padding(.horizontal, 16)
+                            .padding(.leading, 10)
+                            .padding(.trailing, 16)
                             .padding(.bottom, 16)
                     }
                 } else {

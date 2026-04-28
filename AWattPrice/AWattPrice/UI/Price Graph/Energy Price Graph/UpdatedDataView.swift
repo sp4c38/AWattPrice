@@ -187,7 +187,7 @@ private struct StatusIndicator: View {
 }
 
 private struct PulsingStatusDot: View {
-    private let pulseDuration: TimeInterval = 2.3
+    private let pulseDuration: TimeInterval = 2.1
 
     var body: some View {
         TimelineView(.animation) { context in
@@ -196,7 +196,7 @@ private struct PulsingStatusDot: View {
 
             ZStack {
                 Circle()
-                    .fill(Color.green.opacity(0.55 * (1 - progress)))
+                    .fill(Color.green.opacity(0.65 * (1 - progress)))
                     .frame(width: 8 + (12 * progress), height: 8 + (12 * progress))
 
                 Circle()

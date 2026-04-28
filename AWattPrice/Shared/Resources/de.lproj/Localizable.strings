@@ -54,6 +54,8 @@
 "Best Time Window" = "Bestes Zeitfenster";
 "Best Time Window Today" = "Bestes Zeitfenster heute";
 "Best Time Window Tomorrow" = "Bestes Zeitfenster morgen";
+"Today" = "Heute";
+"Tomorrow" = "Morgen";
 "Average Price" = "Durchschnittspreis";
 "Covered Hours" = "Abgedeckte Stunden";
 "Timeline" = "Ablauf";

@@ -92,30 +92,35 @@ private struct CheapestTimeResultContent: View {
     let result: HourPair
 
     private var heroTitle: String {
-        guard let startDate = result.startDate else { return "Best Time Window".localized() }
+        "Best Time Window".localized()
+    }
 
-        let calendar = Calendar.current
-        if calendar.isDateInToday(startDate) {
-            return "Cheapest Time Window".localized()
-        }
-
-        if calendar.isDateInTomorrow(startDate) {
-            return "Best Time Window Tomorrow".localized()
-        }
-
-        return "Best Time Window".localized()
+    private var weekdayText: String {
+        guard let startDate = result.startDate else { return "" }
+        let weekdayFormatter = DateFormatter()
+        weekdayFormatter.dateFormat = "EEEE"
+        return weekdayFormatter.string(from: startDate)
     }
 
     private var windowText: String {
         guard let startDate = result.startDate, let endDate = result.endDate else { return "" }
 
-        let startFormatter = DateFormatter()
-        startFormatter.dateFormat = "EEE, d MMM  HH:mm"
+        let timeFormatter = DateFormatter()
+        timeFormatter.dateFormat = "HH:mm"
 
-        let endFormatter = DateFormatter()
-        endFormatter.dateFormat = "HH:mm"
+        let calendar = Calendar.current
+        let relativeDay: String
+        if calendar.isDateInToday(startDate) {
+            relativeDay = "Today".localized()
+        } else if calendar.isDateInTomorrow(startDate) {
+            relativeDay = "Tomorrow".localized()
+        } else {
+            relativeDay = ""
+        }
 
-        return "\(startFormatter.string(from: startDate)) - \(endFormatter.string(from: endDate))"
+        let prefix = relativeDay.isEmpty ? weekdayText : relativeDay
+
+        return "\(prefix) \(timeFormatter.string(from: startDate)) - \(timeFormatter.string(from: endDate))"
     }
 
     private var durationText: String {
@@ -152,6 +157,10 @@ private struct CheapestTimeResultContent: View {
                 VStack(alignment: .leading, spacing: 14) {
                     Text(heroTitle)
                         .font(.headline)
+                        .foregroundStyle(.secondary)
+
+                    Text(weekdayText)
+                        .font(.subheadline.weight(.semibold))
                         .foregroundStyle(.secondary)
 
                     Text(windowText)

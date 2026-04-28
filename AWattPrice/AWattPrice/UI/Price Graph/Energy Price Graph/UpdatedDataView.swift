@@ -13,7 +13,7 @@ final class UpdatedDataTimeFormatter {
         let timeIntervalBetween = startDate.timeIntervalSince(endDate)
 
         if timeIntervalBetween < 60 {
-            return "updateDataTimeFormatter.lessThanOneMinuteAgo".localized()
+            return "Updated just now".localized()
         } else {
             // More than one minute ago
             let numberFormatter = NumberFormatter()
@@ -187,7 +187,7 @@ private struct StatusIndicator: View {
 }
 
 private struct PulsingStatusDot: View {
-    private let pulseDuration: TimeInterval = 1.6
+    private let pulseDuration: TimeInterval = 2.3
 
     var body: some View {
         TimelineView(.animation) { context in
@@ -196,12 +196,12 @@ private struct PulsingStatusDot: View {
 
             ZStack {
                 Circle()
-                    .fill(Color.green.opacity(0.34 * (1 - progress)))
-                    .frame(width: 7 + (7 * progress), height: 7 + (7 * progress))
+                    .fill(Color.green.opacity(0.55 * (1 - progress)))
+                    .frame(width: 8 + (12 * progress), height: 8 + (12 * progress))
 
                 Circle()
                     .fill(Color.green)
-                    .frame(width: 7, height: 7)
+                    .frame(width: 8, height: 8)
             }
         }
     }

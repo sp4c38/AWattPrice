@@ -37,6 +37,8 @@ struct UpdatedDataView: View {
     @EnvironmentObject var energyDataService: EnergyDataService
     @EnvironmentObject var settingsManager: SettingsManager
 
+    private let fillsAvailableWidth: Bool
+
     @State private var now = Date()
     @State private var lastSuccessfulUpdate: Date?
     @State private var displayedDownloadState = EnergyDataService.DownloadState.idle
@@ -46,6 +48,10 @@ struct UpdatedDataView: View {
     private let dateFormatter = UpdatedDataTimeFormatter()
     private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     private let minimumDownloadingDisplayDuration: TimeInterval = 0.8
+
+    init(fillsAvailableWidth: Bool = true) {
+        self.fillsAvailableWidth = fillsAvailableWidth
+    }
 
     private var actualDownloadStateKey: Int {
         downloadStateKey(for: energyDataService.downloadState)
@@ -96,7 +102,7 @@ struct UpdatedDataView: View {
     }
     
     var body: some View {
-        HStack(spacing: 10) {
+        HStack(spacing: 7) {
             StatusIndicator(downloadState: displayedDownloadState)
 
             Text(statusText)
@@ -104,9 +110,12 @@ struct UpdatedDataView: View {
                 .lineLimit(1)
                 .transition(.opacity)
 
-            Spacer()
+            if fillsAvailableWidth {
+                Spacer()
+            }
         }
         .font(.fCaption)
+        .fixedSize(horizontal: fillsAvailableWidth == false, vertical: false)
         .animation(.easeInOut, value: displayedDownloadStateKey)
         .accessibilityElement(children: .combine)
         .accessibilityLabel(statusText)

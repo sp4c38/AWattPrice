@@ -32,8 +32,10 @@ private struct CheapestTimeMetricCard: View {
 }
 
 private struct CheapestTimeTimelineRow: View {
-    let pricePoint: EnergyPricePoint
-    let isFirst: Bool
+    let startTime: Date
+    let endTime: Date
+    let priceText: String
+    let note: String?
     let isLast: Bool
 
     private var timeFormatter: DateFormatter {
@@ -42,41 +44,48 @@ private struct CheapestTimeTimelineRow: View {
         return formatter
     }
 
-    private var priceText: String {
-        "\(pricePoint.marketprice.priceString ?? "-") ct/kWh"
-    }
-
     var body: some View {
-        HStack(spacing: 14) {
-            VStack(spacing: 0) {
-                Circle()
-                    .fill(cheapestTimeAccent)
-                    .frame(width: 10, height: 10)
-
+        HStack(alignment: .top, spacing: 14) {
+            ZStack(alignment: .top) {
                 if !isLast {
                     Rectangle()
                         .fill(cheapestTimeAccent.opacity(0.22))
                         .frame(width: 2)
+                        .padding(.top, 5)
                 }
+
+                Circle()
+                    .fill(cheapestTimeAccent)
+                    .frame(width: 10, height: 10)
             }
-            .frame(width: 10)
+            .frame(width: 10, height: 36)
 
             VStack(alignment: .leading, spacing: 4) {
-                Text("\(timeFormatter.string(from: pricePoint.startTime)) - \(timeFormatter.string(from: pricePoint.endTime))")
+                Text("\(timeFormatter.string(from: startTime)) - \(timeFormatter.string(from: endTime))")
                     .font(.headline)
 
-                Text(isFirst ? "Recommended start".localized() : "Hourly slot".localized())
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                if let note {
+                    Text(note.localized())
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
             }
 
             Spacer()
 
             Text(priceText)
                 .font(.subheadline.weight(.semibold))
-                .foregroundStyle(isFirst ? cheapestTimeAccent : .primary)
+                .foregroundStyle(.primary)
         }
+        .padding(.bottom, note == nil ? 0 : 8)
     }
+}
+
+private struct CheapestTimeTimelineEntry: Identifiable {
+    let id: Int
+    let startTime: Date
+    let endTime: Date
+    let priceText: String
 }
 
 private struct CheapestTimeResultContent: View {
@@ -120,6 +129,23 @@ private struct CheapestTimeResultContent: View {
         "\(result.averagePrice.priceString ?? "-") ct/kWh"
     }
 
+    private var timelineEntries: [CheapestTimeTimelineEntry] {
+        guard let resultStart = result.startDate, let resultEnd = result.endDate else { return [] }
+
+        return result.associatedPricePoints.enumerated().compactMap { index, pricePoint in
+            let displayStart = max(pricePoint.startTime, resultStart)
+            let displayEnd = min(pricePoint.endTime, resultEnd)
+            guard displayStart < displayEnd else { return nil }
+
+            return CheapestTimeTimelineEntry(
+                id: index,
+                startTime: displayStart,
+                endTime: displayEnd,
+                priceText: "\(pricePoint.marketprice.priceString ?? "-") ct/kWh"
+            )
+        }
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 18) {
@@ -143,22 +169,23 @@ private struct CheapestTimeResultContent: View {
                     CheapestTimeMetricCard(title: "Average Price", value: averagePriceText, systemImage: "bolt.fill")
                 }
 
-                CheapestTimeMetricCard(
-                    title: "Covered Hours",
-                    value: "\(result.slotCount)",
-                    systemImage: "calendar.badge.clock"
-                )
-
-                VStack(alignment: .leading, spacing: 16) {
+                VStack(alignment: .leading, spacing: 14) {
                     Label("Timeline", systemImage: "list.bullet.rectangle.portrait")
                         .font(.headline)
 
-                    ForEach(Array(result.associatedPricePoints.enumerated()), id: \.offset) { index, pricePoint in
-                        CheapestTimeTimelineRow(
-                            pricePoint: pricePoint,
-                            isFirst: index == 0,
-                            isLast: index == result.associatedPricePoints.count - 1
-                        )
+                    VStack(alignment: .leading, spacing: 0) {
+                        ForEach(Array(timelineEntries.enumerated()), id: \.element.id) { index, entry in
+                            let isFirst = index == 0
+                            let isLast = index == timelineEntries.count - 1
+
+                            CheapestTimeTimelineRow(
+                                startTime: entry.startTime,
+                                endTime: entry.endTime,
+                                priceText: entry.priceText,
+                                note: isFirst ? "Recommended start" : (isLast ? "Recommended end" : nil),
+                                isLast: isLast
+                            )
+                        }
                     }
                 }
                 .cheapestTimeCardStyle()

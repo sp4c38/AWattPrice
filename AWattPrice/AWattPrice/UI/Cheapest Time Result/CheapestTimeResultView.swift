@@ -92,18 +92,14 @@ private struct CheapestTimeResultContent: View {
     let result: HourPair
 
     private var heroTitle: String {
-        "Best Time Window".localized()
-    }
-
-    private var weekdayText: String {
-        guard let startDate = result.startDate else { return "" }
-        let weekdayFormatter = DateFormatter()
-        weekdayFormatter.dateFormat = "EEEE"
-        return weekdayFormatter.string(from: startDate)
+        "Cheapest Time Window".localized()
     }
 
     private var windowText: String {
         guard let startDate = result.startDate, let endDate = result.endDate else { return "" }
+
+        let weekdayFormatter = DateFormatter()
+        weekdayFormatter.dateFormat = "EEE"
 
         let timeFormatter = DateFormatter()
         timeFormatter.dateFormat = "HH:mm"
@@ -118,7 +114,8 @@ private struct CheapestTimeResultContent: View {
             relativeDay = ""
         }
 
-        let prefix = relativeDay.isEmpty ? weekdayText : relativeDay
+        let weekday = weekdayFormatter.string(from: startDate)
+        let prefix = relativeDay.isEmpty ? weekday : "\(relativeDay), \(weekday)"
 
         return "\(prefix) \(timeFormatter.string(from: startDate)) - \(timeFormatter.string(from: endDate))"
     }
@@ -157,10 +154,6 @@ private struct CheapestTimeResultContent: View {
                 VStack(alignment: .leading, spacing: 14) {
                     Text(heroTitle)
                         .font(.headline)
-                        .foregroundStyle(.secondary)
-
-                    Text(weekdayText)
-                        .font(.subheadline.weight(.semibold))
                         .foregroundStyle(.secondary)
 
                     Text(windowText)

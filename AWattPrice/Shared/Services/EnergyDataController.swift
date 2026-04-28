@@ -160,6 +160,11 @@ class EnergyDataService: ObservableObject {
                 }
             } catch {
                 await MainActor.run {
+                    guard !Self.isCancellation(error) else {
+                        print("Energy data download cancelled.")
+                        return
+                    }
+
                     print("Energy data download failed: \(error).")
                     self.downloadState = .failed(error: error)
                 }
@@ -174,5 +179,17 @@ class EnergyDataService: ObservableObject {
         if case .downloading = downloadState {
             downloadState = .idle
         }
+    }
+
+    private static func isCancellation(_ error: Error) -> Bool {
+        if error is CancellationError {
+            return true
+        }
+
+        if let urlError = error as? URLError, urlError.code == .cancelled {
+            return true
+        }
+
+        return (error as NSError).code == NSURLErrorCancelled
     }
 }

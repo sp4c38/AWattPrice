@@ -177,6 +177,8 @@ struct DataDownloadAndError: View {
                 DataRetrievalError(networkManager: networkManager)
             } else if let energyData = energyDataService.energyData, energyData.currentPrices.isEmpty == true {
                 CurrentDataUnavailable()
+            } else if energyDataService.energyData == nil {
+                DataRetrievalLoadingView()
             }
         }
         .padding()

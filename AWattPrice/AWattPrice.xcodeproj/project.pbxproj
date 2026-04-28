@@ -11,6 +11,7 @@
 		0E3EB76E159021A4574B6416 /* EasyIntervalPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6AD0D0B3D95E6C7BB20D726 /* EasyIntervalPicker.swift */; };
 		0F40C45BA00F72E80C519F96 /* PricesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E9C4F8C140D86F7F4233532 /* PricesView.swift */; };
 		1CCDA78DC9491A406AB24B42 /* EasyIntervalPickerRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C5F824C94B9912B11853532 /* EasyIntervalPickerRepresentable.swift */; };
+		1D6A3E2B9C4F4185A2B7D930 /* InsightsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A93F0D1C8B24D479E5A0123 /* InsightsView.swift */; };
 		1F050059A5AEEA309F5EF60A /* SplashScreenFeaturesAndConsent.swift in Sources */ = {isa = PBXBuildFile; fileRef = F532255ECC882E59C9739E19 /* SplashScreenFeaturesAndConsent.swift */; };
 		1FF85FE467F2EBD6F0165295 /* TotalTimeFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2BCED411DC7AD4E79FC22B9 /* TotalTimeFormatter.swift */; };
 		23D11D519B8DC7A7F5DA54BA /* PriceAddOnsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51649CD95D1B046EA6D3FF0F /* PriceAddOnsView.swift */; };
@@ -118,6 +119,7 @@
 		546D5FA692CB5FFBAF81B22A /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		59B5203B024111C62B8F9D80 /* DataDownloadAndError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataDownloadAndError.swift; sourceTree = "<group>"; };
 		5CF596453B643BA753483A2C /* SettingsPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPageView.swift; sourceTree = "<group>"; };
+		6A93F0D1C8B24D479E5A0123 /* InsightsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsightsView.swift; sourceTree = "<group>"; };
 		5E69EEB1FA019DD2F16C2815 /* AWattPriceWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AWattPriceWidgetExtension.entitlements; sourceTree = "<group>"; };
 		60087A5B0602E5789304BDF1 /* ButtonStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonStyles.swift; sourceTree = "<group>"; };
 		61541BE12A548F4D00822908 /* AWattPriceWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AWattPriceWidgetExtension.entitlements; sourceTree = "<group>"; };
@@ -206,6 +208,7 @@
 			children = (
 				7801BE2B0DD9E7E0CDF28180 /* Cheapest Time */,
 				A8F7E90E8F3E09B2D1CA9070 /* Cheapest Time Result */,
+				9B8C7D6E5F4A3210B1C2D3E4 /* Insights */,
 				9317E581B0A34BC59EC62502 /* Shared */,
 				AAFDE64BA82300805406C499 /* Price Graph */,
 				17D5F87782364637F81836D0 /* Settings */,
@@ -430,6 +433,14 @@
 			path = "Price Graph";
 			sourceTree = "<group>";
 		};
+		9B8C7D6E5F4A3210B1C2D3E4 /* Insights */ = {
+			isa = PBXGroup;
+			children = (
+				6A93F0D1C8B24D479E5A0123 /* InsightsView.swift */,
+			);
+			path = Insights;
+			sourceTree = "<group>";
+		};
 		D6A2D1CC2D8B5A7C0013028D /* Services */ = {
 			isa = PBXGroup;
 			children = (
@@ -611,6 +622,7 @@
 				D0B5F4C57BCEA12626689AA2 /* DataDownloadAndError.swift in Sources */,
 				0E3EB76E159021A4574B6416 /* EasyIntervalPicker.swift in Sources */,
 				1CCDA78DC9491A406AB24B42 /* EasyIntervalPickerRepresentable.swift in Sources */,
+				1D6A3E2B9C4F4185A2B7D930 /* InsightsView.swift in Sources */,
 				D6A2D1C12D8B2AC00013028D /* SwiftDataService.swift in Sources */,
 				8E8FDA62E4A1CECC1E57FFE3 /* EnergyDataController.swift in Sources */,
 				DA697D947FD57718F9F2ADAC /* EnergyDataPreviewContent.swift in Sources */,

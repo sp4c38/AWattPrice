@@ -224,7 +224,7 @@ async def acquire_refresh_lock_immediate(
     try:
         await async_acquire(timeout=timeout)
     except filelock.Timeout as exc:
-        logger.exception(f"Lock couldn't be acquired at all: {exc}.")
+        logger.warning(f"Lock couldn't be acquired within {timeout}s: {exc}.")
         raise
     else:
         logger.debug("Lock acquired after waiting.")

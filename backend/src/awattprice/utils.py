@@ -19,9 +19,15 @@ from awattprice import defaults
 
 
 class ExtendedFileLock(FileLock):
+    def __init__(self, *args, **kwargs):
+        # Acquires happen in an executor thread, releases on the event-loop thread.
+        # filelock defaults to thread-local state, which can leave the OS lock held.
+        kwargs.setdefault("thread_local", False)
+        super().__init__(*args, **kwargs)
+
     @contextmanager
     def context(self, acquire=True):
-        """Bettern context manager.
+        """Better context manager.
 
         :param acquire: If true the lock will be acquired on context enter, else won't be acquired.
         """

@@ -57,7 +57,7 @@ ENTSOE_UPDATE_HOUR = 13
 
 PRICE_DATA_FILE_NAME = "price-data-{}.pickle"
 PRICE_DATA_SUBDIR_NAME = "price_data"
-PRICE_DATA_REFRESH_LOCK_TIMEOUT = 10
+PRICE_DATA_REFRESH_LOCK_TIMEOUT = 75
 PRICE_DATA_UPDATE_TS_FILE_NAME = "update-ts-{}.info"
 
 supported_market_area_keys = list(SUPPORTED_MARKET_AREAS.keys())

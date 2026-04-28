@@ -57,7 +57,7 @@ private enum MarketAreaMapCatalog {
     ]
 
     static let areaCoordinates: [String: CLLocationCoordinate2D] = [
-        "DE-LU": CLLocationCoordinate2D(latitude: 50.9, longitude: 8.9),
+        "DE-LU": CLLocationCoordinate2D(latitude: 51.2, longitude: 10.1),
         "AT": CLLocationCoordinate2D(latitude: 47.6, longitude: 14.3),
         "DK1": CLLocationCoordinate2D(latitude: 56.2, longitude: 9.0),
         "DK2": CLLocationCoordinate2D(latitude: 55.6, longitude: 12.4),
@@ -144,7 +144,7 @@ class MarketAreaTaxSelectionViewModel: ObservableObject {
         let focusedPosition = MapCameraPosition.region(
             MKCoordinateRegion(
                 center: coordinate,
-                span: MKCoordinateSpan(latitudeDelta: 6, longitudeDelta: 8)
+                span: MKCoordinateSpan(latitudeDelta: 10, longitudeDelta: 14)
             )
         )
 
@@ -306,13 +306,11 @@ struct MarketAreaMapSelectionView: View {
     let height: CGFloat
 
     var body: some View {
-        Map(position: $viewModel.mapCameraPosition, interactionModes: [.pan, .zoom]) {
-            ForEach(viewModel.mappableMarketAreas) { marketArea in
-                if let coordinate = viewModel.coordinate(for: marketArea) {
-                    Annotation(marketArea.localizedDisplayName, coordinate: coordinate) {
-                        Button {
-                            viewModel.selectedMarketAreaKey = marketArea.key
-                        } label: {
+        MapReader { proxy in
+            Map(position: $viewModel.mapCameraPosition, interactionModes: [.pan, .zoom]) {
+                ForEach(viewModel.mappableMarketAreas) { marketArea in
+                    if let coordinate = viewModel.coordinate(for: marketArea) {
+                        Annotation(marketArea.localizedDisplayName, coordinate: coordinate) {
                             VStack(spacing: 6) {
                                 Text(marketArea.settingsFlag)
                                     .font(.caption2.weight(.bold))
@@ -327,20 +325,21 @@ struct MarketAreaMapSelectionView: View {
                                             .stroke(Color.orange, lineWidth: 2)
                                     )
                                     .shadow(color: Color.black.opacity(0.12), radius: 6, y: 3)
-
-                                if viewModel.selectedMarketAreaKey == marketArea.key {
-                                    Text(marketArea.localizedDisplayName)
-                                        .font(.caption2.weight(.semibold))
-                                        .padding(.horizontal, 8)
-                                        .padding(.vertical, 5)
-                                        .background(.thinMaterial, in: Capsule())
-                                }
                             }
+                            .accessibilityLabel(marketArea.localizedDisplayName)
+                            .allowsHitTesting(false)
                         }
-                        .buttonStyle(.plain)
                     }
                 }
             }
+            .simultaneousGesture(
+                SpatialTapGesture()
+                    .onEnded { value in
+                        if let marketArea = marketArea(near: value.location, in: proxy) {
+                            viewModel.selectedMarketAreaKey = marketArea.key
+                        }
+                    }
+            )
         }
         .frame(height: height)
         .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
@@ -348,6 +347,25 @@ struct MarketAreaMapSelectionView: View {
             RoundedRectangle(cornerRadius: 18, style: .continuous)
                 .stroke(Color.orange.opacity(0.2), lineWidth: 1)
         )
+    }
+
+    private func marketArea(near location: CGPoint, in proxy: MapProxy) -> MarketArea? {
+        let hitRadius: CGFloat = 28
+
+        return viewModel.mappableMarketAreas
+            .compactMap { marketArea -> (marketArea: MarketArea, distance: CGFloat)? in
+                guard
+                    let coordinate = viewModel.coordinate(for: marketArea),
+                    let markerLocation = proxy.convert(coordinate, to: .local)
+                else {
+                    return nil
+                }
+
+                let distance = hypot(markerLocation.x - location.x, markerLocation.y - location.y)
+                return distance <= hitRadius ? (marketArea, distance) : nil
+            }
+            .min { $0.distance < $1.distance }?
+            .marketArea
     }
 }
 

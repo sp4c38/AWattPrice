@@ -119,7 +119,7 @@ private struct EnergyPriceGraphAxis: View {
                     .foregroundStyle(tick == 0 ? .primary : .secondary)
                     .fixedSize()
                     .position(
-                        x: metrics.xPosition(for: tick, width: plotWidth),
+                        x: clampedXPosition(for: tick),
                         y: 8
                     )
             }
@@ -129,6 +129,12 @@ private struct EnergyPriceGraphAxis: View {
 
     private func tickText(for tick: Double) -> String {
         tick == 0 ? "0" : String(format: "%.0f", tick)
+    }
+
+    private func clampedXPosition(for tick: Double) -> CGFloat {
+        let rawPosition = metrics.xPosition(for: tick, width: plotWidth)
+        let inset = min(PricesLayout.axisLabelSideInset, plotWidth / 2)
+        return min(max(rawPosition, inset), max(plotWidth - inset, inset))
     }
 }
 
@@ -352,7 +358,7 @@ struct EnergyPriceGraph: View {
                         }
                     }
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                .frame(width: plotWidth, height: geometry.size.height, alignment: .topLeading)
             }
             .animation(.easeOut(duration: 0.12), value: selectedIndex)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)

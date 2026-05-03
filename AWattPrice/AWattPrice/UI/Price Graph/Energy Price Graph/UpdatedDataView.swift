@@ -101,7 +101,36 @@ struct UpdatedDataView: View {
         }
     }
     
+    private var isDownloading: Bool {
+        if case .downloading = energyDataService.downloadState {
+            return true
+        }
+
+        return false
+    }
+
     var body: some View {
+        Button(action: refreshData) {
+            statusContent
+        }
+        .buttonStyle(.plain)
+        .disabled(isDownloading)
+        .animation(.easeInOut, value: displayedDownloadStateKey)
+        .accessibilityLabel(statusText)
+        .onAppear {
+            updateLastSuccessfulDownload(from: energyDataService.downloadState)
+            applyDownloadState(energyDataService.downloadState)
+        }
+        .onChange(of: actualDownloadStateKey) { _, _ in
+            updateLastSuccessfulDownload(from: energyDataService.downloadState)
+            applyDownloadState(energyDataService.downloadState)
+        }
+        .onReceive(timer) { date in
+            now = date
+        }
+    }
+
+    private var statusContent: some View {
         HStack(spacing: 7) {
             StatusIndicator(downloadState: displayedDownloadState)
 
@@ -116,24 +145,12 @@ struct UpdatedDataView: View {
         }
         .font(.fCaption)
         .fixedSize(horizontal: fillsAvailableWidth == false, vertical: false)
-        .animation(.easeInOut, value: displayedDownloadStateKey)
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel(statusText)
-        .onAppear {
-            updateLastSuccessfulDownload(from: energyDataService.downloadState)
-            applyDownloadState(energyDataService.downloadState)
-        }
-        .onChange(of: actualDownloadStateKey) { _, _ in
-            updateLastSuccessfulDownload(from: energyDataService.downloadState)
-            applyDownloadState(energyDataService.downloadState)
-        }
-        .onReceive(timer) { date in
-            now = date
-        }
         .contentShape(Rectangle())
-        .onTapGesture {
-            energyDataService.download(setting: settingsManager.setting)
-        }
+    }
+
+    private func refreshData() {
+        guard isDownloading == false else { return }
+        energyDataService.download(setting: settingsManager.setting)
     }
 
     private func updateLastSuccessfulDownload(from downloadState: EnergyDataService.DownloadState) {
@@ -191,7 +208,7 @@ private struct StatusIndicator: View {
                 PulsingStatusDot()
             }
         }
-        .frame(width: 14, height: 14)
+        .frame(width: PricesLayout.statusIndicatorWidth, height: PricesLayout.statusIndicatorWidth)
         .accessibilityHidden(true)
     }
 }
@@ -221,5 +238,6 @@ struct UpdatedDataView_Previews: PreviewProvider {
     static var previews: some View {
         UpdatedDataView()
             .environmentObject(EnergyDataService())
+            .environmentObject(SettingsManager.shared)
     }
 }

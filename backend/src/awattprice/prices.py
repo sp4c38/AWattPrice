@@ -259,13 +259,13 @@ def get_matching_time_series(root: ET.Element, area: MarketArea) -> list[ET.Elem
     return matching_series
 
 
-def select_time_series(area: MarketArea, time_series_list: list[ET.Element]) -> ET.Element:
+def select_time_series(area: MarketArea, time_series_list: list[ET.Element]) -> list[ET.Element]:
     """Select the ENTSO-E time series to use for the area."""
     if len(time_series_list) == 0:
         raise ValueError(f"No ENTSO-E price series found for {area.key}.")
 
     if len(time_series_list) == 1:
-        return time_series_list[0]
+        return time_series_list
 
     if area.preferred_price_sequence is not None:
         preferred_time_series = [
@@ -274,23 +274,23 @@ def select_time_series(area: MarketArea, time_series_list: list[ET.Element]) -> 
             if time_series.findtext("{*}classificationSequence_AttributeInstanceComponent.position")
             == str(area.preferred_price_sequence)
         ]
-        if len(preferred_time_series) == 1:
+        if len(preferred_time_series) > 0:
             logger.debug(
                 f"Selected ENTSO-E sequence {area.preferred_price_sequence} for {area.key}."
             )
-            return preferred_time_series[0]
+            return preferred_time_series
 
     sequence_one_series = [
         time_series
         for time_series in time_series_list
         if time_series.findtext("{*}classificationSequence_AttributeInstanceComponent.position") == "1"
     ]
-    if len(sequence_one_series) == 1:
+    if len(sequence_one_series) > 0:
         logger.warning(f"Falling back to ENTSO-E sequence 1 for {area.key}.")
-        return sequence_one_series[0]
+        return sequence_one_series
 
     logger.warning(f"Multiple ENTSO-E series found for {area.key}. Falling back to the first one.")
-    return time_series_list[0]
+    return [time_series_list[0]]
 
 
 async def download_data(area: MarketArea, config: Config) -> Optional[bytes]:
@@ -342,7 +342,8 @@ def parse_downloaded_data(area: MarketArea, xml_content: bytes) -> Box:
         raise ValueError(reason)
 
     matching_time_series = get_matching_time_series(root, area)
-    selected_time_series = select_time_series(area, matching_time_series)
+    selected_time_series_list = select_time_series(area, matching_time_series)
+    first_selected_time_series = selected_time_series_list[0]
 
     selected_resolution = None
     new_data = Box()
@@ -351,35 +352,36 @@ def parse_downloaded_data(area: MarketArea, xml_content: bytes) -> Box:
     new_data.display_name = area.display_name
     new_data.entsoe_domain = area.entsoe_domain
     new_data.timezone = area.timezone
-    new_data.currency = selected_time_series.findtext("{*}currency_Unit.name") or area.currency
-    new_data.sequence_position = selected_time_series.findtext(
+    new_data.currency = first_selected_time_series.findtext("{*}currency_Unit.name") or area.currency
+    new_data.sequence_position = first_selected_time_series.findtext(
         "{*}classificationSequence_AttributeInstanceComponent.position"
     )
     new_data.prices = BoxList()
-    for period in selected_time_series.findall("{*}Period"):
-        resolution = period.findtext("{*}resolution")
-        if resolution is None:
-            continue
-        if selected_resolution is None:
-            selected_resolution = resolution
-        elif selected_resolution != resolution:
-            raise ValueError(f"Mixed ENTSO-E resolutions for {area.key}: {selected_resolution} and {resolution}.")
-
-        interval_seconds = resolution_to_seconds(resolution)
-        period_start = arrow.get(period.findtext("{*}timeInterval/{*}start")).to(area.timezone)
-
-        for point in period.findall("{*}Point"):
-            position_text = point.findtext("{*}position")
-            price_text = point.findtext("{*}price.amount")
-            if position_text is None or price_text is None:
+    for selected_time_series in selected_time_series_list:
+        for period in selected_time_series.findall("{*}Period"):
+            resolution = period.findtext("{*}resolution")
+            if resolution is None:
                 continue
+            if selected_resolution is None:
+                selected_resolution = resolution
+            elif selected_resolution != resolution:
+                raise ValueError(f"Mixed ENTSO-E resolutions for {area.key}: {selected_resolution} and {resolution}.")
 
-            new_point = Box()
-            position = int(position_text)
-            new_point.start_timestamp = period_start.shift(seconds=interval_seconds * (position - 1))
-            new_point.end_timestamp = new_point.start_timestamp.shift(seconds=interval_seconds)
-            new_point.marketprice = MarketPrice(Decimal(str(price_text)), area)
-            new_data.prices.append(new_point)
+            interval_seconds = resolution_to_seconds(resolution)
+            period_start = arrow.get(period.findtext("{*}timeInterval/{*}start")).to(area.timezone)
+
+            for point in period.findall("{*}Point"):
+                position_text = point.findtext("{*}position")
+                price_text = point.findtext("{*}price.amount")
+                if position_text is None or price_text is None:
+                    continue
+
+                new_point = Box()
+                position = int(position_text)
+                new_point.start_timestamp = period_start.shift(seconds=interval_seconds * (position - 1))
+                new_point.end_timestamp = new_point.start_timestamp.shift(seconds=interval_seconds)
+                new_point.marketprice = MarketPrice(Decimal(str(price_text)), area)
+                new_data.prices.append(new_point)
 
     new_data.resolution = selected_resolution
     new_data.prices = BoxList(sorted(new_data.prices, key=lambda point: point.start_timestamp))

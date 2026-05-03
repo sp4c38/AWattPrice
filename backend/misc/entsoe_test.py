@@ -13,7 +13,7 @@ from xml.etree import ElementTree as ET
 from zoneinfo import ZoneInfo
 
 
-TOKEN_PATH = Path("/Users/lbecker/.config/awattprice/entsoe-token.txt")
+TOKEN_PATH = Path("/Users/lbecker/awattprice/entsoe-token.txt")
 API_URL = "https://web-api.tp.entsoe.eu/api"
 GERMANY_DOMAIN_CANDIDATES = [
     ("BZN|DE-LU", "10Y1001A1001A82H"),

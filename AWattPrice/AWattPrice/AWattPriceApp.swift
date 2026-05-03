@@ -108,10 +108,6 @@ struct ContentView: View {
                     InsightsView()
                         .tag(2)
                         .tabItem { Label("Insights", systemImage: "chart.bar.xaxis") }
-
-                    CheapestTimeView()
-                        .tag(3)
-                        .tabItem { Label("Cheapest Time", systemImage: "rectangle.and.text.magnifyingglass") }
                 }
                 .tint(Color(red: 0.87, green: 0.35, blue: 0.26))
                 .sheet(isPresented: $shouldShowWhatsNew) { WhatsNewPage() }

@@ -101,7 +101,7 @@ private struct CheapestTimeDurationSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
-            Label("Runtime", systemImage: "timer")
+            Label("Duration", systemImage: "timer")
                 .font(.headline)
                 .foregroundStyle(.primary)
 
@@ -120,7 +120,7 @@ private struct CheapestTimeResultButton: View {
     var body: some View {
         Button(action: action) {
             HStack(spacing: 10) {
-                Text("Show Results".localized())
+                Text("Calculate results")
                 Image(systemName: "arrow.right")
             }
             .font(.headline)
@@ -148,37 +148,35 @@ struct CheapestTimeView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            Group {
-                if hasCurrentPriceData {
-                    ScrollView {
-                        VStack(alignment: .leading, spacing: 18) {
-                            Text("Find the cheapest time to use electricity within a certain time window.".localized())
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                                .padding(.horizontal, 4)
+        Group {
+            if hasCurrentPriceData {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 18) {
+                        Text("Find the cheapest time for a selected duration within a time range.".localized())
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                            .padding(.horizontal, 4)
 
-                            CheapestTimeDurationSection()
-                            TimeRangeInputField()
-                            CheapestTimeResultButton {
-                                cheapestHourManager.validateInputs()
-                                if cheapestHourManager.hasValidInput {
-                                    navigateToResults = true
-                                }
+                        CheapestTimeDurationSection()
+                        TimeRangeInputField()
+                        CheapestTimeResultButton {
+                            cheapestHourManager.validateInputs()
+                            if cheapestHourManager.hasValidInput {
+                                navigateToResults = true
                             }
                         }
-                        .padding(.horizontal, 16)
-                        .padding(.top, 14)
-                        .padding(.bottom, 28)
                     }
-                    .navigationDestination(isPresented: $navigateToResults) {
-                        CheapestTimeResultView()
-                    }
-                } else {
-                    DataDownloadAndError()
+                    .padding(.horizontal, 16)
+                    .padding(.top, 14)
+                    .padding(.bottom, 28)
                 }
+            } else {
+                DataDownloadAndError()
             }
-            .navigationTitle("Cheapest Time")
+        }
+        .navigationTitle("Cheapest Time")
+        .navigationDestination(isPresented: $navigateToResults) {
+            CheapestTimeResultView()
         }
     }
 }
@@ -187,9 +185,11 @@ struct CheapestTimeView_Previews: PreviewProvider {
     static let energyDataService = EnergyDataService()
 
     static var previews: some View {
-        CheapestTimeView()
-            .environmentObject(energyDataService)
-            .environmentObject(CheapestHourManager())
-            .onAppear { energyDataService.download(setting: SettingsManager.shared.setting) }
+        NavigationStack {
+            CheapestTimeView()
+                .environmentObject(energyDataService)
+                .environmentObject(CheapestHourManager())
+                .onAppear { energyDataService.download(setting: SettingsManager.shared.setting) }
+        }
     }
 }

@@ -92,7 +92,7 @@ private struct CheapestTimeResultContent: View {
     let result: HourPair
 
     private var heroTitle: String {
-        "Cheapest Time Window".localized()
+        "Cheapest Time".localized()
     }
 
     private var windowText: String {
@@ -215,13 +215,13 @@ struct CheapestTimeResultView: View {
             } else {
                 VStack(spacing: 16) {
                     ProgressView()
-                    Text("Finding best time window...".localized())
+                    Text("Finding cheapest time...".localized())
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
             }
         }
-        .navigationTitle("Results")
+        .navigationTitle("Cheapest Time")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             guard !didStartCalculation else { return }

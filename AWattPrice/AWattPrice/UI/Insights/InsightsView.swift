@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+private let insightsAccent = Color(red: 0.87, green: 0.35, blue: 0.26)
+
 private struct PriceWindow: Identifiable {
     let id = UUID()
     let title: String
@@ -162,7 +164,13 @@ private struct InsightsModel {
 }
 
 private struct InsightsCard<Content: View>: View {
+    let tint: Color?
     @ViewBuilder let content: Content
+
+    init(tint: Color? = nil, @ViewBuilder content: () -> Content) {
+        self.tint = tint
+        self.content = content()
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -174,6 +182,22 @@ private struct InsightsCard<Content: View>: View {
     }
 }
 
+private struct InsightsSectionTitle: View {
+    let title: String
+    let systemImage: String
+    let tint: Color
+
+    var body: some View {
+        Label {
+            Text(title)
+        } icon: {
+            Image(systemName: systemImage)
+                .foregroundStyle(tint)
+        }
+        .font(.headline)
+    }
+}
+
 private struct InsightMetricCard: View {
     let title: String
     let value: String
@@ -182,7 +206,7 @@ private struct InsightMetricCard: View {
     let tint: Color
 
     var body: some View {
-        InsightsCard {
+        InsightsCard(tint: tint) {
             HStack(spacing: 10) {
                 Image(systemName: systemImage)
                     .font(.system(size: 15, weight: .semibold))
@@ -214,9 +238,14 @@ private struct InsightMetricCard: View {
 
 private struct PriceWindowRow: View {
     let window: PriceWindow
+    let tint: Color
 
     var body: some View {
-        HStack {
+        HStack(spacing: 10) {
+            Capsule()
+                .fill(tint.opacity(0.75))
+                .frame(width: 4, height: 28)
+
             VStack(alignment: .leading, spacing: 2) {
                 Text(window.title)
                     .font(.subheadline.weight(.semibold))
@@ -247,6 +276,10 @@ private struct PriceBandRow: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack {
+                Circle()
+                    .fill(band.tint)
+                    .frame(width: 8, height: 8)
+
                 Text(band.title)
                     .font(.caption.weight(.semibold))
 
@@ -295,17 +328,19 @@ struct InsightsView: View {
     }
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             Group {
                 if prices.isEmpty {
                     DataDownloadAndError()
                 } else {
                     ScrollView {
                         VStack(alignment: .leading, spacing: 14) {
-                            InsightsCard {
-                                Label("Right now", systemImage: "bolt.fill")
-                                    .font(.headline)
-                                    .foregroundStyle(Color(red: 0.87, green: 0.35, blue: 0.26))
+                            InsightsCard(tint: insightsAccent) {
+                                InsightsSectionTitle(
+                                    title: "Right now",
+                                    systemImage: "bolt.fill",
+                                    tint: insightsAccent
+                                )
 
                                 Text(model.nowContextText)
                                     .font(.subheadline)
@@ -347,18 +382,43 @@ struct InsightsView: View {
 
                             }
 
-                            InsightsCard {
-                                Label("Cheapest windows", systemImage: "timer")
-                                    .font(.headline)
+                            InsightsCard(tint: .green) {
+                                HStack {
+                                    InsightsSectionTitle(
+                                        title: "Cheapest times",
+                                        systemImage: "timer",
+                                        tint: .green
+                                    )
+
+                                    Spacer()
+
+                                    NavigationLink {
+                                        CheapestTimeView()
+                                    } label: {
+                                        HStack(spacing: 4) {
+                                            Text("Custom")
+                                            Image(systemName: "chevron.right")
+                                                .font(.caption2.weight(.bold))
+                                        }
+                                            .font(.caption.weight(.semibold))
+                                            .foregroundStyle(.blue)
+                                            .lineLimit(1)
+                                    }
+                                    .buttonStyle(.plain)
+                                    .accessibilityLabel("Open Cheapest Time")
+                                }
 
                                 ForEach(model.cheapestWindows) { window in
-                                    PriceWindowRow(window: window)
+                                    PriceWindowRow(window: window, tint: .green)
                                 }
                             }
 
-                            InsightsCard {
-                                Label("Distribution", systemImage: "chart.bar.fill")
-                                    .font(.headline)
+                            InsightsCard(tint: .orange) {
+                                InsightsSectionTitle(
+                                    title: "Distribution",
+                                    systemImage: "chart.bar.fill",
+                                    tint: .orange
+                                )
 
                                 ForEach(model.priceBands) { band in
                                     PriceBandRow(band: band, totalCount: prices.count)
@@ -374,7 +434,6 @@ struct InsightsView: View {
             .navigationTitle("Insights")
             .navigationBarTitleDisplayMode(.large)
         }
-        .navigationViewStyle(StackNavigationViewStyle())
     }
 }
 

@@ -139,7 +139,7 @@ struct TimeRangeInputField: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
-            Label("Time window", systemImage: "calendar.badge.clock")
+            Label("Time range", systemImage: "calendar.badge.clock")
                 .font(.headline)
 
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 140), spacing: 12)], spacing: 12) {

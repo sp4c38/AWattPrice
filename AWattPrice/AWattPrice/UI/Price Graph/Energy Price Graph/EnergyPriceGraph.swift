@@ -195,6 +195,7 @@ private struct EnergyPriceGraphLayout {
 private struct EnergyPriceGraphAxis: View {
     let metrics: EnergyPriceGraphMetrics
     let plotWidth: CGFloat
+    private static let unitReservedWidth: CGFloat = 42
 
     var body: some View {
         ZStack(alignment: .topLeading) {
@@ -212,6 +213,15 @@ private struct EnergyPriceGraphAxis: View {
                         y: 8
                     )
             }
+
+            Text("ct/kWh")
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .fixedSize()
+                .position(
+                    x: max(plotWidth - 21, 21),
+                    y: 8
+                )
         }
         .frame(width: plotWidth, height: EnergyPriceGraphLayout.axisHeight, alignment: .topLeading)
     }
@@ -224,7 +234,8 @@ private struct EnergyPriceGraphAxis: View {
         let rawPosition = metrics.xPosition(for: tick, width: plotWidth)
         let inset = min(PricesLayout.axisLabelSideInset, plotWidth / 2)
         let leadingInset = tick == 0 ? min(4, plotWidth / 2) : inset
-        return min(max(rawPosition, leadingInset), max(plotWidth - inset, leadingInset))
+        let trailingInset = min(inset + Self.unitReservedWidth, plotWidth / 2)
+        return min(max(rawPosition, leadingInset), max(plotWidth - trailingInset, leadingInset))
     }
 }
 
@@ -236,31 +247,10 @@ private struct EnergyPriceValueText: View {
         isFocused ? 13 : 11
     }
 
-    private var unitFontSize: CGFloat {
-        isFocused ? 9 : 8
-    }
-
-    private var slashFontSize: CGFloat {
-        isFocused ? 10 : 9
-    }
-
     var body: some View {
-        HStack(alignment: .firstTextBaseline, spacing: 1) {
-            Text(value)
-                .font(.system(size: valueFontSize, weight: .semibold, design: .rounded))
-                .monospacedDigit()
-                .padding(.trailing, 1)
-
-            Text("ct")
-                .font(.system(size: unitFontSize, weight: .semibold, design: .rounded))
-
-            Text("/")
-                .font(.system(size: slashFontSize, weight: .semibold, design: .rounded))
-                .padding(.horizontal, -1)
-
-            Text("kWh")
-                .font(.system(size: unitFontSize, weight: .semibold, design: .rounded))
-        }
+        Text(value)
+            .font(.system(size: valueFontSize, weight: .semibold, design: .rounded))
+            .monospacedDigit()
     }
 }
 
@@ -366,7 +356,7 @@ private struct EnergyPriceBarRow: View {
                     .fixedSize(horizontal: true, vertical: false)
                     .padding(.horizontal, 6)
                     .padding(.vertical, 2)
-                    .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 5, style: .continuous))
+                    .background(.thickMaterial, in: RoundedRectangle(cornerRadius: 5, style: .continuous))
                     .opacity(row.showsPrice ? 1 : 0)
             }
             .padding(.horizontal, EnergyPriceGraphLayout.overlayHorizontalPadding)

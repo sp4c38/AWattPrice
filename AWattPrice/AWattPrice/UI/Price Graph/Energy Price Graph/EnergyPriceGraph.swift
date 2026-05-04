@@ -150,6 +150,8 @@ private struct EnergyPriceGraphLayout {
     static let rowSpacing: CGFloat = 0.1
     static let focusedRowWeight: CGFloat = 2.8
     static let adjacentFocusedRowWeight: CGFloat = 1.65
+    static let focusedHourlyRowWeight: CGFloat = 1.35
+    static let adjacentFocusedHourlyRowWeight: CGFloat = 1.13
 
     let plotHeight: CGFloat
     let rowHeights: [CGFloat]
@@ -564,20 +566,37 @@ struct EnergyPriceGraph: View {
     }
 
     private func rowWeight(for row: EnergyPriceGraphDisplayRow, at index: Int, rows: [EnergyPriceGraphDisplayRow]) -> CGFloat {
-        guard displayInterval == .fifteenMinutes,
-              let focusedIndex = rows.firstIndex(where: \.isFocused) else {
+        guard let selectedGroupIndex else {
             return 1
         }
 
-        if index == focusedIndex {
-            return EnergyPriceGraphLayout.focusedRowWeight
-        }
+        switch displayInterval {
+        case .fifteenMinutes:
+            guard let focusedIndex = rows.firstIndex(where: \.isFocused) else {
+                return 1
+            }
 
-        if abs(index - focusedIndex) == 1 {
-            return EnergyPriceGraphLayout.adjacentFocusedRowWeight
-        }
+            if index == focusedIndex {
+                return EnergyPriceGraphLayout.focusedRowWeight
+            }
 
-        return 1
+            if abs(index - focusedIndex) == 1 {
+                return EnergyPriceGraphLayout.adjacentFocusedRowWeight
+            }
+
+            return 1
+
+        case .sixtyMinutes:
+            if row.groupIndex == selectedGroupIndex {
+                return EnergyPriceGraphLayout.focusedHourlyRowWeight
+            }
+
+            if abs(row.groupIndex - selectedGroupIndex) == 1, row.isExpandedInterval == false {
+                return EnergyPriceGraphLayout.adjacentFocusedHourlyRowWeight
+            }
+
+            return 1
+        }
     }
 
     var body: some View {

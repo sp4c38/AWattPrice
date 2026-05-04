@@ -25,7 +25,7 @@ enum PricesLayout {
 struct PricesView: View {
     @EnvironmentObject private var energyDataService: EnergyDataService
 
-    @AppStorage("priceGraphDisplayInterval") private var storedDisplayInterval = PriceGraphDisplayInterval.sixtyMinutes.rawValue
+    @AppStorage("priceGraphDisplayInterval") private var storedDisplayInterval = PriceGraphDisplayInterval.defaultInterval.rawValue
     @State private var showsDisplayIntervalInfo = false
 
     private var hasCurrentPriceData: Bool {
@@ -47,7 +47,7 @@ struct PricesView: View {
     }
 
     private var displayInterval: PriceGraphDisplayInterval {
-        PriceGraphDisplayInterval(rawValue: storedDisplayInterval) ?? .sixtyMinutes
+        PriceGraphDisplayInterval(rawValue: storedDisplayInterval) ?? .defaultInterval
     }
 
     private var displayIntervalBinding: Binding<PriceGraphDisplayInterval> {
@@ -113,7 +113,7 @@ struct PricesView: View {
         .alert("", isPresented: $showsDisplayIntervalInfo) {
             Button("OK", role: .cancel) {}
         } message: {
-            Text("15m shows every price point. 60m averages each hour and lets you press an hour to see its 15-minute prices.")
+            Text("60m (recommended): Better readability showing the hourly averages. Tap an hour for 15-min prices.\n\n15m: See all price points directly.")
         }
     }
 

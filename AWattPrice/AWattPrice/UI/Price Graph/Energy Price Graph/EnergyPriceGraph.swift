@@ -12,6 +12,8 @@ enum PriceGraphDisplayInterval: String, CaseIterable, Identifiable {
     case fifteenMinutes
     case sixtyMinutes
 
+    static let defaultInterval: PriceGraphDisplayInterval = .sixtyMinutes
+
     var id: Self { self }
 
     var title: String {
@@ -197,9 +199,9 @@ private struct EnergyPriceGraphAxis: View {
 
             ForEach(metrics.axisTicks, id: \.self) { tick in
                 Text(tickText(for: tick))
-                    .font(.caption2.weight(tick == 0 ? .bold : .medium))
+                    .font(.caption2.weight(.bold))
                     .monospacedDigit()
-                    .foregroundStyle(tick == 0 ? .primary : .secondary)
+                    .foregroundStyle(.primary)
                     .fixedSize()
                     .position(
                         x: clampedXPosition(for: tick),
@@ -217,7 +219,8 @@ private struct EnergyPriceGraphAxis: View {
     private func clampedXPosition(for tick: Double) -> CGFloat {
         let rawPosition = metrics.xPosition(for: tick, width: plotWidth)
         let inset = min(PricesLayout.axisLabelSideInset, plotWidth / 2)
-        return min(max(rawPosition, inset), max(plotWidth - inset, inset))
+        let leadingInset = tick == 0 ? min(4, plotWidth / 2) : inset
+        return min(max(rawPosition, leadingInset), max(plotWidth - inset, leadingInset))
     }
 }
 
@@ -538,6 +541,22 @@ struct EnergyPriceGraph: View {
         return .opacity
     }
 
+    private func rowZIndex(for row: EnergyPriceGraphDisplayRow) -> Double {
+        if row.showsPrice {
+            return 3
+        }
+
+        if row.showsTimeLabel || row.showsDayChange {
+            return 2
+        }
+
+        if row.isExpandedInterval {
+            return 1
+        }
+
+        return 0
+    }
+
     var body: some View {
         GeometryReader { geometry in
             let prices = currentPrices
@@ -566,7 +585,7 @@ struct EnergyPriceGraph: View {
                                 plotWidth: plotWidth
                             )
                             .transition(rowTransition(for: row))
-                            .zIndex(row.isExpandedInterval ? 1 : 0)
+                            .zIndex(rowZIndex(for: row))
                         }
                     }
                 }

@@ -161,78 +161,74 @@ struct SettingsPageView: View {
 
     var body: some View {
         NavigationStack {
-            ZStack {
-                Color(uiColor: .systemGroupedBackground)
-                    .ignoresSafeArea()
+            ScrollView {
+                VStack(alignment: .leading, spacing: 18) {
+                    Text("Electricity Price".localized())
+                        .font(.system(.title3, design: .rounded).weight(.bold))
 
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 18) {
-                        Text("Electricity Price".localized())
-                            .font(.system(.title3, design: .rounded).weight(.bold))
+                    SettingsCard {
+                        VStack(alignment: .leading, spacing: 14) {
+                            RegionView()
 
-                        SettingsCard {
-                            VStack(alignment: .leading, spacing: 14) {
-                                RegionView()
+                            Divider()
 
-                                Divider()
-
-                                SettingsDestinationRow(
-                                    title: "Price Add-ons".localized(),
-                                    subtitle: nil,
-                                    systemImage: "sum",
-                                    tint: .green
-                                ) {
-                                    PriceAddOnsView()
-                                }
-                            }
-                        }
-
-                        Text("Alerts & Help".localized())
-                            .font(.system(.title3, design: .rounded).weight(.bold))
-
-                        SettingsCard {
-                            VStack(spacing: 16) {
-                                SettingsDestinationRow(
-                                    title: "Price Guard".localized(),
-                                    subtitle: priceGuardSubtitle,
-                                    systemImage: "bell.badge.fill",
-                                    tint: .red
-                                ) {
-                                    NotificationSettingView()
-                                }
-
-                                Divider()
-
-                                SettingsDestinationRow(
-                                    title: "Help & Suggestions".localized(),
-                                    subtitle: nil,
-                                    systemImage: "questionmark.bubble.fill",
-                                    tint: .blue
-                                ) {
-                                    HelpAndSuggestionView()
-                                }
-                            }
-                        }
-
-                        SettingsCard {
-                            VStack(alignment: .leading, spacing: 18) {
-                                SettingsAppVersionView()
-
-                                Text("splashScreen.start.notAffiliatedNote")
-                                    .font(.subheadline)
-                                    .foregroundStyle(.secondary)
-                                    .fixedSize(horizontal: false, vertical: true)
-
-                                Divider()
-                                SettingsLegalLinksView()
+                            SettingsDestinationRow(
+                                title: "Price Add-ons".localized(),
+                                subtitle: nil,
+                                systemImage: "sum",
+                                tint: .green
+                            ) {
+                                PriceAddOnsView()
                             }
                         }
                     }
-                    .padding(.horizontal, 16)
-                    .padding(.top, 14)
-                    .padding(.bottom, 28)
+
+                    Text("Alerts & Help".localized())
+                        .font(.system(.title3, design: .rounded).weight(.bold))
+
+                    SettingsCard {
+                        VStack(spacing: 16) {
+                            SettingsDestinationRow(
+                                title: "Price Guard".localized(),
+                                subtitle: priceGuardSubtitle,
+                                systemImage: "bell.badge.fill",
+                                tint: .red
+                            ) {
+                                NotificationSettingView()
+                            }
+
+                            Divider()
+
+                            SettingsDestinationRow(
+                                title: "Help & Suggestions".localized(),
+                                subtitle: nil,
+                                systemImage: "questionmark.bubble.fill",
+                                tint: .blue
+                            ) {
+                                HelpAndSuggestionView()
+                            }
+                        }
+                    }
+
+                    SettingsCard {
+                        VStack(alignment: .leading, spacing: 18) {
+                            SettingsAppVersionView()
+
+                            Text("splashScreen.start.notAffiliatedNote")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                                .fixedSize(horizontal: false, vertical: true)
+
+                            Divider()
+                            SettingsLegalLinksView()
+                        }
+                    }
                 }
+                .padding(.horizontal, 16)
+                .padding(.top, 14)
+                .padding(.bottom, 28)
             }
+            .appScreenBackground()
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.large)
         }

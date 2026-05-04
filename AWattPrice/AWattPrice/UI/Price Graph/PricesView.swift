@@ -46,6 +46,7 @@ struct PricesView: View {
                     DataDownloadAndError()
                 }
             }
+            .appScreenBackground()
             .navigationBarTitleDisplayMode(.inline)
             .toolbar(.hidden, for: .navigationBar)
         }

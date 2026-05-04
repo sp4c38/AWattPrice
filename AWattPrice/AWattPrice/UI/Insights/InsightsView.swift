@@ -431,6 +431,7 @@ struct InsightsView: View {
                     }
                 }
             }
+            .appScreenBackground()
             .navigationTitle("Insights")
             .navigationBarTitleDisplayMode(.large)
         }

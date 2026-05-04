@@ -59,3 +59,17 @@ extension EnvironmentValues {
         set {}
     }
 }
+
+private struct AppScreenBackground: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color(uiColor: .systemGroupedBackground).ignoresSafeArea())
+    }
+}
+
+extension View {
+    func appScreenBackground() -> some View {
+        modifier(AppScreenBackground())
+    }
+}

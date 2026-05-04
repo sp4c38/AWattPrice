@@ -93,7 +93,7 @@ struct UpdatedDataView: View {
     private var statusColor: Color {
         switch displayedDownloadState {
         case .downloading:
-            return AppTheme.accent
+            return .secondary
         case .failed:
             return AppTheme.error
         case .idle, .finished:
@@ -200,7 +200,7 @@ private struct StatusIndicator: View {
                 ProgressView()
                     .frame(width: 13, height: 13)
                     .scaleEffect(0.7, anchor: .center)
-                    .progressViewStyle(CircularProgressViewStyle(tint: AppTheme.accent))
+                    .progressViewStyle(CircularProgressViewStyle(tint: .secondary))
             case .failed:
                 Image(systemName: "exclamationmark.circle.fill")
                     .foregroundStyle(AppTheme.error)

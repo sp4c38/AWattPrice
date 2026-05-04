@@ -8,7 +8,7 @@
 import SwiftUI
 
 enum AppTheme {
-    static let accent = Color(red: 0.20, green: 0.62, blue: 0.25)
+    static let accent = Color.orange
     static let success = Color(red: 0.20, green: 0.62, blue: 0.25)
     static let warning = Color.orange
     static let error = Color.red

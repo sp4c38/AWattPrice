@@ -76,6 +76,7 @@ struct PricesView: View {
     private var statusRow: some View {
         HStack {
             UpdatedDataView(fillsAvailableWidth: false)
+                .padding(.leading, 2)
             
             Spacer(minLength: 8)
 
@@ -97,7 +98,7 @@ struct PricesView: View {
         .padding(.trailing, PricesLayout.graphTrailingPadding)
         .padding(.top, PricesLayout.statusTopPadding)
         .padding(.bottom, PricesLayout.statusBottomPadding)
-        .alert("Price intervals", isPresented: $showsDisplayIntervalInfo) {
+        .alert("", isPresented: $showsDisplayIntervalInfo) {
             Button("OK", role: .cancel) {}
         } message: {
             Text("15m shows every price point. 60m averages each hour and lets you press an hour to see its 15-minute prices.")

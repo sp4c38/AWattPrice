@@ -123,7 +123,6 @@ private struct EnergyPriceGraphDisplayRow: Identifiable {
     let showsDayChange: Bool
     let isExpandedInterval: Bool
     let showsPrice: Bool
-    let morphID: String?
 
     var timeLabel: String {
         if isExpandedInterval || showsPrice {
@@ -230,7 +229,6 @@ private struct EnergyPriceBarRow: View {
     let metrics: EnergyPriceGraphMetrics
     let rowHeight: CGFloat
     let plotWidth: CGFloat
-    let namespace: Namespace.ID
 
     private let trackHeightFactor: CGFloat = 0.95
 
@@ -288,8 +286,7 @@ private struct EnergyPriceBarRow: View {
                 barFill(
                     trackHeight: trackHeight,
                     barFrame: barFrame,
-                    fill: selectedFill.opacity(0.82),
-                    usesMorph: false
+                    fill: selectedFill.opacity(0.82)
                 )
             }
 
@@ -346,42 +343,19 @@ private struct EnergyPriceBarRow: View {
             .frame(width: barFrame.width, height: trackHeight)
             .offset(x: barFrame.x)
 
-        if let morphID = row.morphID {
-            bar.matchedGeometryEffect(
-                id: morphID,
-                in: namespace,
-                properties: .frame,
-                anchor: .center,
-                isSource: row.isExpandedInterval == false
-            )
-        } else {
-            bar
-        }
+        bar
     }
 
     @ViewBuilder
     private func barFill(
         trackHeight: CGFloat,
         barFrame: (x: CGFloat, width: CGFloat),
-        fill: Color,
-        usesMorph: Bool = true
+        fill: Color
     ) -> some View {
-        let shape = RoundedRectangle(cornerRadius: min(trackHeight * 0.35, 4), style: .continuous)
+        RoundedRectangle(cornerRadius: min(trackHeight * 0.35, 4), style: .continuous)
             .fill(fill)
             .frame(width: barFrame.width, height: trackHeight)
             .offset(x: barFrame.x)
-
-        if usesMorph, let morphID = row.morphID {
-            shape.matchedGeometryEffect(
-                id: morphID,
-                in: namespace,
-                properties: .frame,
-                anchor: .center,
-                isSource: row.isExpandedInterval == false
-            )
-        } else {
-            shape
-        }
     }
 }
 
@@ -394,7 +368,6 @@ struct EnergyPriceGraph: View {
 
     @State private var selectedGroupIndex: Int?
     @State private var feedbackGenerator = UISelectionFeedbackGenerator()
-    @Namespace private var morphNamespace
 
     private var currentPrices: [EnergyPricePoint] {
         energyDataService.energyData?.currentPrices ?? []
@@ -435,8 +408,7 @@ struct EnergyPriceGraph: View {
                     price: pricePoint.marketprice,
                     showsDayChange: showsDayChange(at: index, prices: prices),
                     isExpandedInterval: false,
-                    showsPrice: selectedGroupIndex == index,
-                    morphID: nil
+                    showsPrice: selectedGroupIndex == index
                 )
             }
 
@@ -460,8 +432,7 @@ struct EnergyPriceGraph: View {
                         price: pricePoint.marketprice,
                         showsDayChange: groupShowsDayChange && intervalIndex == group.pricePoints.startIndex,
                         isExpandedInterval: true,
-                        showsPrice: true,
-                        morphID: intervalIndex == group.pricePoints.startIndex ? "hour-\(groupIndex)" : nil
+                        showsPrice: true
                     )
                 }
             }
@@ -475,8 +446,7 @@ struct EnergyPriceGraph: View {
                     price: group.averagePrice,
                     showsDayChange: groupShowsDayChange,
                     isExpandedInterval: false,
-                    showsPrice: selectedGroupIndex == groupIndex && expandsToIntervals == false,
-                    morphID: expandsToIntervals ? "hour-\(groupIndex)" : nil
+                    showsPrice: selectedGroupIndex == groupIndex && expandsToIntervals == false
                 ),
             ]
         }
@@ -537,8 +507,7 @@ struct EnergyPriceGraph: View {
                                 row: row,
                                 metrics: metrics,
                                 rowHeight: layout.rowHeight,
-                                plotWidth: plotWidth,
-                                namespace: morphNamespace
+                                plotWidth: plotWidth
                             )
                             .transition(rowTransition(for: row))
                             .zIndex(row.isExpandedInterval ? 1 : 0)

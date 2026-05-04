@@ -91,18 +91,20 @@ private struct EnergyPriceGraphMetrics {
 }
 
 private struct EnergyPriceHourGroup: Identifiable {
+    let hourStartTime: Date
     let startTime: Date
     let endTime: Date
     let pricePoints: [EnergyPricePoint]
     let averagePrice: Double
 
-    var id: Date { startTime }
+    var id: Date { hourStartTime }
 
-    init(startTime: Date, pricePoints: [EnergyPricePoint]) {
+    init(hourStartTime: Date, pricePoints: [EnergyPricePoint]) {
         let sortedPricePoints = pricePoints.sorted { $0.startTime < $1.startTime }
 
-        self.startTime = startTime
-        self.endTime = sortedPricePoints.last?.endTime ?? startTime
+        self.hourStartTime = hourStartTime
+        self.startTime = sortedPricePoints.first?.startTime ?? hourStartTime
+        self.endTime = sortedPricePoints.last?.endTime ?? hourStartTime
         self.pricePoints = sortedPricePoints
 
         if sortedPricePoints.isEmpty {
@@ -380,7 +382,7 @@ struct EnergyPriceGraph: View {
 
         return groupedPrices.keys.sorted().map { startTime in
             EnergyPriceHourGroup(
-                startTime: startTime,
+                hourStartTime: startTime,
                 pricePoints: groupedPrices[startTime] ?? []
             )
         }
@@ -425,7 +427,7 @@ struct EnergyPriceGraph: View {
             if selectedGroupIndex == groupIndex, expandsToIntervals {
                 return group.pricePoints.enumerated().map { intervalIndex, pricePoint in
                     EnergyPriceGraphDisplayRow(
-                        id: "interval-\(group.startTime.timeIntervalSinceReferenceDate)-\(pricePoint.startTime.timeIntervalSinceReferenceDate)",
+                        id: "interval-\(group.hourStartTime.timeIntervalSinceReferenceDate)-\(pricePoint.startTime.timeIntervalSinceReferenceDate)",
                         groupIndex: groupIndex,
                         startTime: pricePoint.startTime,
                         endTime: pricePoint.endTime,
@@ -439,7 +441,7 @@ struct EnergyPriceGraph: View {
 
             return [
                 EnergyPriceGraphDisplayRow(
-                    id: "hour-\(group.startTime.timeIntervalSinceReferenceDate)",
+                    id: "hour-\(group.hourStartTime.timeIntervalSinceReferenceDate)",
                     groupIndex: groupIndex,
                     startTime: group.startTime,
                     endTime: group.endTime,

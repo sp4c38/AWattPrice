@@ -18,7 +18,7 @@ struct AppIconImage: View {
                     colorScheme == .dark
                     ? Color(red: 0.40, green: 0.40, blue: 0.42, opacity: 1.0)
                     : Color(red: 0.83, green: 0.83, blue: 0.84, opacity: 1.0),
-                    lineWidth: 0.8
+                    lineWidth: 1
                 )
 
             if let image {

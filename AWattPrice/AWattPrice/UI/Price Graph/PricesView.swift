@@ -25,8 +25,25 @@ enum PricesLayout {
 struct PricesView: View {
     @EnvironmentObject private var energyDataService: EnergyDataService
 
+    @State private var displayInterval = PriceGraphDisplayInterval.sixtyMinutes
+    @State private var showsDisplayIntervalInfo = false
+
     private var hasCurrentPriceData: Bool {
         energyDataService.energyData?.currentPrices.isEmpty == false
+    }
+
+    private var currentPrices: [EnergyPricePoint] {
+        energyDataService.energyData?.currentPrices ?? []
+    }
+
+    private var hasFifteenMinutePriceIntervals: Bool {
+        currentPrices.contains { pricePoint in
+            abs(pricePoint.endTime.timeIntervalSince(pricePoint.startTime) - TimeInterval(15 * 60)) < 1
+        }
+    }
+
+    private var effectiveDisplayInterval: PriceGraphDisplayInterval {
+        hasFifteenMinutePriceIntervals ? displayInterval : .sixtyMinutes
     }
 
     var body: some View {
@@ -36,7 +53,10 @@ struct PricesView: View {
                     VStack(spacing: 0) {
                         statusRow
 
-                        EnergyPriceGraph()
+                        EnergyPriceGraph(
+                            displayInterval: effectiveDisplayInterval,
+                            allowsHourlyExpansion: hasFifteenMinutePriceIntervals
+                        )
                             .padding(.leading, PricesLayout.graphLeadingPadding)
                             .padding(.trailing, PricesLayout.graphTrailingPadding)
                             .padding(.bottom, PricesLayout.graphBottomPadding)
@@ -58,11 +78,41 @@ struct PricesView: View {
             UpdatedDataView(fillsAvailableWidth: false)
             
             Spacer(minLength: 8)
+
+            if hasFifteenMinutePriceIntervals {
+                intervalPicker
+
+                Button {
+                    showsDisplayIntervalInfo = true
+                } label: {
+                    Image(systemName: "info.circle")
+                        .imageScale(.medium)
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(.secondary)
+                .accessibilityLabel("Price graph interval info")
+            }
         }
         .padding(.leading, PricesLayout.statusLeadingPadding)
         .padding(.trailing, PricesLayout.graphTrailingPadding)
         .padding(.top, PricesLayout.statusTopPadding)
         .padding(.bottom, PricesLayout.statusBottomPadding)
+        .alert("Price intervals", isPresented: $showsDisplayIntervalInfo) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("15m shows every price point. 60m averages each hour and lets you press an hour to see its 15-minute prices.")
+        }
+    }
+
+    private var intervalPicker: some View {
+        Picker("Price graph interval", selection: $displayInterval) {
+            ForEach(PriceGraphDisplayInterval.allCases) { interval in
+                Text(interval.title)
+                    .tag(interval)
+            }
+        }
+        .pickerStyle(.segmented)
+        .frame(width: 104)
     }
 }
 

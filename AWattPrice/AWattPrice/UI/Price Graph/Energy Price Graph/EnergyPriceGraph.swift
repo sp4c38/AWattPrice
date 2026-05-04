@@ -8,6 +8,22 @@
 import SwiftUI
 import UIKit
 
+enum PriceGraphDisplayInterval: String, CaseIterable, Identifiable {
+    case fifteenMinutes
+    case sixtyMinutes
+
+    var id: Self { self }
+
+    var title: String {
+        switch self {
+        case .fifteenMinutes:
+            return "15m"
+        case .sixtyMinutes:
+            return "60m"
+        }
+    }
+}
+
 private struct EnergyPriceGraphMetrics {
     let lowerBound: Double
     let upperBound: Double
@@ -71,6 +87,54 @@ private struct EnergyPriceGraphMetrics {
 
         let valueX = xPosition(for: price, width: width)
         return (min(zeroX, valueX), max(abs(valueX - zeroX), 2))
+    }
+}
+
+private struct EnergyPriceHourGroup: Identifiable {
+    let startTime: Date
+    let endTime: Date
+    let pricePoints: [EnergyPricePoint]
+    let averagePrice: Double
+
+    var id: Date { startTime }
+
+    init(startTime: Date, pricePoints: [EnergyPricePoint]) {
+        let sortedPricePoints = pricePoints.sorted { $0.startTime < $1.startTime }
+
+        self.startTime = startTime
+        self.endTime = sortedPricePoints.last?.endTime ?? startTime
+        self.pricePoints = sortedPricePoints
+
+        if sortedPricePoints.isEmpty {
+            averagePrice = 0
+        } else {
+            let priceSum = sortedPricePoints.reduce(0) { $0 + $1.marketprice }
+            averagePrice = priceSum / Double(sortedPricePoints.count)
+        }
+    }
+}
+
+private struct EnergyPriceGraphDisplayRow: Identifiable {
+    let id: String
+    let groupIndex: Int
+    let startTime: Date
+    let endTime: Date
+    let price: Double
+    let showsDayChange: Bool
+    let isExpandedInterval: Bool
+    let showsPrice: Bool
+    let morphID: String?
+
+    var timeLabel: String {
+        if isExpandedInterval || showsPrice {
+            return "\(formattedTime(startTime))-\(formattedTime(endTime))"
+        }
+
+        return formattedTime(startTime)
+    }
+
+    private func formattedTime(_ date: Date) -> String {
+        date.formatted(.dateTime.hour(.twoDigits(amPM: .omitted)).minute(.twoDigits))
     }
 }
 
@@ -162,32 +226,20 @@ private struct EnergyPriceValueText: View {
 }
 
 private struct EnergyPriceBarRow: View {
-    let pricePoint: EnergyPricePoint
+    let row: EnergyPriceGraphDisplayRow
     let metrics: EnergyPriceGraphMetrics
     let rowHeight: CGFloat
     let plotWidth: CGFloat
-    let hourLabel: String?
-    let isSelected: Bool
-    let showsDayChange: Bool
+    let namespace: Namespace.ID
 
     private let trackHeightFactor: CGFloat = 0.95
 
-    private var hourText: String {
-        pricePoint.startTime.formatted(.dateTime.hour(.twoDigits(amPM: .omitted)).minute(.twoDigits))
-    }
-
-    private var timeRangeText: String {
-        let startHour = pricePoint.startTime.formatted(.dateTime.hour(.twoDigits(amPM: .omitted)).minute(.twoDigits))
-        let endHour = pricePoint.endTime.formatted(.dateTime.hour(.twoDigits(amPM: .omitted)).minute(.twoDigits))
-        return "\(startHour)-\(endHour)"
-    }
-
     private var priceText: String {
-        pricePoint.marketprice.priceString.flatMap { $0.isEmpty ? nil : $0 } ?? "0.00"
+        row.price.priceString.flatMap { $0.isEmpty ? nil : $0 } ?? "0.00"
     }
 
     private var dayBadgeText: String {
-        pricePoint.startTime.formatted(.dateTime.weekday(.abbreviated).day())
+        row.startTime.formatted(.dateTime.weekday(.abbreviated).day())
     }
 
     private var positiveGradient: LinearGradient {
@@ -211,7 +263,7 @@ private struct EnergyPriceBarRow: View {
 
     var body: some View {
         let trackHeight = max((rowHeight - 1) * trackHeightFactor, 3)
-        let barFrame = metrics.barFrame(for: pricePoint.marketprice, width: plotWidth)
+        let barFrame = metrics.barFrame(for: row.price, width: plotWidth)
         let zeroX = metrics.xPosition(for: 0, width: plotWidth)
         let positiveGradientWidth = max(metrics.xPosition(for: metrics.upperBound, width: plotWidth) - zeroX, 1)
 
@@ -220,54 +272,38 @@ private struct EnergyPriceBarRow: View {
                 .frame(width: plotWidth, height: rowHeight)
 
             if barFrame.width > 0 {
-                if pricePoint.marketprice >= 0 {
-                    ZStack(alignment: .leading) {
-                        Color.clear
-                            .frame(width: plotWidth, height: rowHeight)
-
-                        positiveGradient
-                            .frame(width: positiveGradientWidth, height: trackHeight)
-                            .offset(x: zeroX)
-                    }
-                    .mask {
-                        ZStack(alignment: .leading) {
-                            Color.clear
-                                .frame(width: plotWidth, height: rowHeight)
-
-                            RoundedRectangle(cornerRadius: min(trackHeight * 0.35, 4), style: .continuous)
-                                .frame(width: barFrame.width, height: trackHeight)
-                                .offset(x: barFrame.x)
-                        }
-                    }
-                    .frame(width: plotWidth, height: rowHeight, alignment: .leading)
+                if row.price >= 0 {
+                    positiveBar(
+                        trackHeight: trackHeight,
+                        barFrame: barFrame,
+                        positiveGradientWidth: positiveGradientWidth,
+                        zeroX: zeroX
+                    )
                 } else {
-                    RoundedRectangle(cornerRadius: min(trackHeight * 0.35, 4), style: .continuous)
-                        .fill(negativeFill)
-                        .frame(width: barFrame.width, height: trackHeight)
-                        .offset(x: barFrame.x)
+                    barFill(trackHeight: trackHeight, barFrame: barFrame, fill: negativeFill)
                 }
             }
 
-            if isSelected, barFrame.width > 0 {
-                RoundedRectangle(cornerRadius: min(trackHeight * 0.35, 4), style: .continuous)
-                    .fill(selectedFill.opacity(0.82))
-                    .frame(width: barFrame.width, height: trackHeight)
-                    .offset(x: barFrame.x)
+            if row.showsPrice, barFrame.width > 0 {
+                barFill(
+                    trackHeight: trackHeight,
+                    barFrame: barFrame,
+                    fill: selectedFill.opacity(0.82),
+                    usesMorph: false
+                )
             }
 
             HStack(spacing: 8) {
                 HStack(spacing: 4) {
-                    if isSelected || hourLabel != nil {
-                        Text(isSelected ? timeRangeText : (hourLabel ?? ""))
-                            .font(.system(size: 11, weight: .semibold, design: .rounded))
-                            .monospacedDigit()
-                            .fixedSize(horizontal: true, vertical: false)
-                            .padding(.horizontal, 5)
-                            .padding(.vertical, 2)
-                            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 5, style: .continuous))
-                    }
+                    Text(row.timeLabel)
+                        .font(.system(size: 11, weight: .semibold, design: .rounded))
+                        .monospacedDigit()
+                        .fixedSize(horizontal: true, vertical: false)
+                        .padding(.horizontal, 5)
+                        .padding(.vertical, 2)
+                        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 5, style: .continuous))
 
-                    if showsDayChange {
+                    if row.showsDayChange {
                         Text(dayBadgeText)
                             .font(.caption2.weight(.semibold))
                             .foregroundStyle(.secondary)
@@ -286,12 +322,66 @@ private struct EnergyPriceBarRow: View {
                     .padding(.horizontal, 6)
                     .padding(.vertical, 2)
                     .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 5, style: .continuous))
-                    .opacity(isSelected ? 1 : 0)
+                    .opacity(row.showsPrice ? 1 : 0)
             }
             .padding(.horizontal, EnergyPriceGraphLayout.overlayHorizontalPadding)
             .frame(width: plotWidth, height: rowHeight)
         }
         .frame(width: plotWidth, height: rowHeight, alignment: .leading)
+    }
+
+    @ViewBuilder
+    private func positiveBar(
+        trackHeight: CGFloat,
+        barFrame: (x: CGFloat, width: CGFloat),
+        positiveGradientWidth: CGFloat,
+        zeroX: CGFloat
+    ) -> some View {
+        let cornerRadius = min(trackHeight * 0.35, 4)
+        let bar = positiveGradient
+            .frame(width: positiveGradientWidth, height: trackHeight)
+            .offset(x: zeroX - barFrame.x)
+            .frame(width: barFrame.width, height: trackHeight, alignment: .leading)
+            .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+            .frame(width: barFrame.width, height: trackHeight)
+            .offset(x: barFrame.x)
+
+        if let morphID = row.morphID {
+            bar.matchedGeometryEffect(
+                id: morphID,
+                in: namespace,
+                properties: .frame,
+                anchor: .center,
+                isSource: row.isExpandedInterval == false
+            )
+        } else {
+            bar
+        }
+    }
+
+    @ViewBuilder
+    private func barFill(
+        trackHeight: CGFloat,
+        barFrame: (x: CGFloat, width: CGFloat),
+        fill: Color,
+        usesMorph: Bool = true
+    ) -> some View {
+        let shape = RoundedRectangle(cornerRadius: min(trackHeight * 0.35, 4), style: .continuous)
+            .fill(fill)
+            .frame(width: barFrame.width, height: trackHeight)
+            .offset(x: barFrame.x)
+
+        if usesMorph, let morphID = row.morphID {
+            shape.matchedGeometryEffect(
+                id: morphID,
+                in: namespace,
+                properties: .frame,
+                anchor: .center,
+                isSource: row.isExpandedInterval == false
+            )
+        } else {
+            shape
+        }
     }
 }
 
@@ -299,18 +389,28 @@ private struct EnergyPriceBarRow: View {
 struct EnergyPriceGraph: View {
     @EnvironmentObject private var energyDataService: EnergyDataService
 
-    @State private var selectedIndex: Int?
+    let displayInterval: PriceGraphDisplayInterval
+    let allowsHourlyExpansion: Bool
+
+    @State private var selectedGroupIndex: Int?
     @State private var feedbackGenerator = UISelectionFeedbackGenerator()
+    @Namespace private var morphNamespace
 
     private var currentPrices: [EnergyPricePoint] {
         energyDataService.energyData?.currentPrices ?? []
     }
 
-    private func hourLabel(for pricePoint: EnergyPricePoint) -> String? {
-        let minute = Calendar.current.component(.minute, from: pricePoint.startTime)
-        guard minute == 0 else { return nil }
+    private var hourlyPriceGroups: [EnergyPriceHourGroup] {
+        let groupedPrices = Dictionary(grouping: currentPrices) { pricePoint in
+            Calendar.current.startOfHour(for: pricePoint.startTime)
+        }
 
-        return pricePoint.startTime.formatted(.dateTime.hour(.twoDigits(amPM: .omitted)).minute(.twoDigits))
+        return groupedPrices.keys.sorted().map { startTime in
+            EnergyPriceHourGroup(
+                startTime: startTime,
+                pricePoints: groupedPrices[startTime] ?? []
+            )
+        }
     }
 
     private func showsDayChange(at index: Int, prices: [EnergyPricePoint]) -> Bool {
@@ -318,23 +418,110 @@ struct EnergyPriceGraph: View {
         return Calendar.current.isDate(prices[index - 1].startTime, inSameDayAs: prices[index].startTime) == false
     }
 
-    private func updateSelection(to newIndex: Int?, prices: [EnergyPricePoint]) {
-        let boundedIndex = newIndex.flatMap { prices.indices.contains($0) ? $0 : nil }
-        guard selectedIndex != boundedIndex else { return }
+    private func showsDayChange(at index: Int, groups: [EnergyPriceHourGroup]) -> Bool {
+        guard index > 0 else { return false }
+        return Calendar.current.isDate(groups[index - 1].startTime, inSameDayAs: groups[index].startTime) == false
+    }
 
-        if boundedIndex != nil {
+    private func displayRows(for prices: [EnergyPricePoint], groups: [EnergyPriceHourGroup]) -> [EnergyPriceGraphDisplayRow] {
+        switch displayInterval {
+        case .fifteenMinutes:
+            return prices.enumerated().map { index, pricePoint in
+                EnergyPriceGraphDisplayRow(
+                    id: "interval-\(pricePoint.startTime.timeIntervalSinceReferenceDate)",
+                    groupIndex: index,
+                    startTime: pricePoint.startTime,
+                    endTime: pricePoint.endTime,
+                    price: pricePoint.marketprice,
+                    showsDayChange: showsDayChange(at: index, prices: prices),
+                    isExpandedInterval: false,
+                    showsPrice: selectedGroupIndex == index,
+                    morphID: nil
+                )
+            }
+
+        case .sixtyMinutes:
+            return hourlyDisplayRows(for: groups)
+        }
+    }
+
+    private func hourlyDisplayRows(for groups: [EnergyPriceHourGroup]) -> [EnergyPriceGraphDisplayRow] {
+        groups.enumerated().flatMap { groupIndex, group in
+            let groupShowsDayChange = showsDayChange(at: groupIndex, groups: groups)
+            let expandsToIntervals = allowsHourlyExpansion && group.pricePoints.count > 1
+
+            if selectedGroupIndex == groupIndex, expandsToIntervals {
+                return group.pricePoints.enumerated().map { intervalIndex, pricePoint in
+                    EnergyPriceGraphDisplayRow(
+                        id: "interval-\(group.startTime.timeIntervalSinceReferenceDate)-\(pricePoint.startTime.timeIntervalSinceReferenceDate)",
+                        groupIndex: groupIndex,
+                        startTime: pricePoint.startTime,
+                        endTime: pricePoint.endTime,
+                        price: pricePoint.marketprice,
+                        showsDayChange: groupShowsDayChange && intervalIndex == group.pricePoints.startIndex,
+                        isExpandedInterval: true,
+                        showsPrice: true,
+                        morphID: intervalIndex == group.pricePoints.startIndex ? "hour-\(groupIndex)" : nil
+                    )
+                }
+            }
+
+            return [
+                EnergyPriceGraphDisplayRow(
+                    id: "hour-\(group.startTime.timeIntervalSinceReferenceDate)",
+                    groupIndex: groupIndex,
+                    startTime: group.startTime,
+                    endTime: group.endTime,
+                    price: group.averagePrice,
+                    showsDayChange: groupShowsDayChange,
+                    isExpandedInterval: false,
+                    showsPrice: selectedGroupIndex == groupIndex && expandsToIntervals == false,
+                    morphID: expandsToIntervals ? "hour-\(groupIndex)" : nil
+                ),
+            ]
+        }
+    }
+
+    private func updateSelection(to rowIndex: Int?, rows: [EnergyPriceGraphDisplayRow]) {
+        let boundedGroupIndex = rowIndex.flatMap { rows.indices.contains($0) ? rows[$0].groupIndex : nil }
+        guard selectedGroupIndex != boundedGroupIndex else { return }
+
+        if boundedGroupIndex != nil {
             feedbackGenerator.selectionChanged()
             feedbackGenerator.prepare()
         }
 
-        selectedIndex = boundedIndex
+        selectedGroupIndex = boundedGroupIndex
+    }
+
+    private var selectionAnimation: Animation {
+        switch displayInterval {
+        case .fifteenMinutes:
+            return .easeOut(duration: 0.12)
+        case .sixtyMinutes:
+            guard allowsHourlyExpansion else {
+                return .easeOut(duration: 0.12)
+            }
+
+            return .spring(response: 0.34, dampingFraction: 0.82, blendDuration: 0.08)
+        }
+    }
+
+    private func rowTransition(for row: EnergyPriceGraphDisplayRow) -> AnyTransition {
+        guard displayInterval == .sixtyMinutes, row.isExpandedInterval else {
+            return .opacity
+        }
+
+        return .opacity
     }
 
     var body: some View {
         GeometryReader { geometry in
             let prices = currentPrices
+            let groups = hourlyPriceGroups
+            let rows = displayRows(for: prices, groups: groups)
             let layout = EnergyPriceGraphLayout(
-                count: prices.count,
+                count: rows.count,
                 availableHeight: geometry.size.height
             )
             let metrics = EnergyPriceGraphMetrics(prices: prices)
@@ -345,36 +532,39 @@ struct EnergyPriceGraph: View {
                     EnergyPriceGraphAxis(metrics: metrics, plotWidth: plotWidth)
 
                     VStack(spacing: EnergyPriceGraphLayout.rowSpacing) {
-                        ForEach(Array(prices.enumerated()), id: \.offset) { index, pricePoint in
+                        ForEach(rows) { row in
                             EnergyPriceBarRow(
-                                pricePoint: pricePoint,
+                                row: row,
                                 metrics: metrics,
                                 rowHeight: layout.rowHeight,
                                 plotWidth: plotWidth,
-                                hourLabel: hourLabel(for: pricePoint),
-                                isSelected: selectedIndex == index,
-                                showsDayChange: showsDayChange(at: index, prices: prices)
+                                namespace: morphNamespace
                             )
+                            .transition(rowTransition(for: row))
+                            .zIndex(row.isExpandedInterval ? 1 : 0)
                         }
                     }
                 }
                 .frame(width: plotWidth, height: geometry.size.height, alignment: .topLeading)
             }
-            .animation(.easeOut(duration: 0.12), value: selectedIndex)
+            .animation(selectionAnimation, value: selectedGroupIndex)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .contentShape(Rectangle())
             .gesture(
                 DragGesture(minimumDistance: 0)
                     .onChanged { value in
-                        updateSelection(to: layout.index(at: value.location.y), prices: prices)
+                        updateSelection(to: layout.index(at: value.location.y), rows: rows)
                     }
                     .onEnded { _ in
-                        updateSelection(to: nil, prices: prices)
+                        updateSelection(to: nil, rows: rows)
                     }
             )
         }
         .onAppear {
             feedbackGenerator.prepare()
+        }
+        .onChange(of: displayInterval) { _, _ in
+            selectedGroupIndex = nil
         }
     }
 }

@@ -25,7 +25,7 @@ enum PricesLayout {
 struct PricesView: View {
     @EnvironmentObject private var energyDataService: EnergyDataService
 
-    @State private var displayInterval = PriceGraphDisplayInterval.sixtyMinutes
+    @AppStorage("priceGraphDisplayInterval") private var storedDisplayInterval = PriceGraphDisplayInterval.sixtyMinutes.rawValue
     @State private var showsDisplayIntervalInfo = false
 
     private var hasCurrentPriceData: Bool {
@@ -44,6 +44,18 @@ struct PricesView: View {
 
     private var effectiveDisplayInterval: PriceGraphDisplayInterval {
         hasFifteenMinutePriceIntervals ? displayInterval : .sixtyMinutes
+    }
+
+    private var displayInterval: PriceGraphDisplayInterval {
+        PriceGraphDisplayInterval(rawValue: storedDisplayInterval) ?? .sixtyMinutes
+    }
+
+    private var displayIntervalBinding: Binding<PriceGraphDisplayInterval> {
+        Binding {
+            displayInterval
+        } set: { newValue in
+            storedDisplayInterval = newValue.rawValue
+        }
     }
 
     var body: some View {
@@ -106,7 +118,7 @@ struct PricesView: View {
     }
 
     private var intervalPicker: some View {
-        Picker("Price graph interval", selection: $displayInterval) {
+        Picker("Price graph interval", selection: displayIntervalBinding) {
             ForEach(PriceGraphDisplayInterval.allCases) { interval in
                 Text(interval.title)
                     .tag(interval)

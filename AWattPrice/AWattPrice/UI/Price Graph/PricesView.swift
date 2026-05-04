@@ -9,13 +9,13 @@ import SwiftUI
 
 enum PricesLayout {
     static let graphTrailingPadding: CGFloat = 16
-    static let graphTopPadding: CGFloat = 2
+    static let graphTopPadding: CGFloat = 4
     static let graphBottomPadding: CGFloat = 6
     static let graphLeadingPadding: CGFloat = 7
     static let axisLabelSideInset: CGFloat = 8
     static let statusIndicatorWidth: CGFloat = 14
-    static let statusTopPadding: CGFloat = 10
-    static let statusBottomPadding: CGFloat = 6
+    static let statusTopPadding: CGFloat = 0
+    static let statusBottomPadding: CGFloat = 4
 
     static var statusLeadingPadding: CGFloat {
         graphLeadingPadding + axisLabelSideInset - (statusIndicatorWidth / 2)

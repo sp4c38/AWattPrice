@@ -129,9 +129,10 @@ private struct EnergyPriceGraphDisplayRow: Identifiable {
     let isExpandedInterval: Bool
     let isFocused: Bool
     let showsPrice: Bool
+    let showsSelectedOverlay: Bool
 
     var timeLabel: String {
-        if isExpandedInterval || showsPrice {
+        if isExpandedInterval || isFocused {
             return "\(formattedTime(startTime))-\(formattedTime(endTime))"
         }
 
@@ -148,6 +149,7 @@ private struct EnergyPriceGraphLayout {
     static let overlayHorizontalPadding: CGFloat = 6
     static let rowSpacing: CGFloat = 0.1
     static let focusedRowWeight: CGFloat = 2.8
+    static let adjacentFocusedRowWeight: CGFloat = 1.65
 
     let plotHeight: CGFloat
     let rowHeights: [CGFloat]
@@ -322,7 +324,7 @@ private struct EnergyPriceBarRow: View {
                 }
             }
 
-            if row.showsPrice, barFrame.width > 0 {
+            if row.showsSelectedOverlay, barFrame.width > 0 {
                 barFill(
                     trackHeight: trackHeight,
                     barFrame: barFrame,
@@ -449,6 +451,7 @@ struct EnergyPriceGraph: View {
         case .fifteenMinutes:
             return prices.enumerated().map { index, pricePoint in
                 let isSelected = selectedGroupIndex == index
+                let isFullHour = startsOnFullHour(pricePoint.startTime)
 
                 return EnergyPriceGraphDisplayRow(
                     id: "interval-\(pricePoint.startTime.timeIntervalSinceReferenceDate)",
@@ -457,10 +460,11 @@ struct EnergyPriceGraph: View {
                     endTime: pricePoint.endTime,
                     price: pricePoint.marketprice,
                     showsDayChange: showsDayChange(at: index, prices: prices),
-                    showsTimeLabel: startsOnFullHour(pricePoint.startTime) || isSelected,
+                    showsTimeLabel: isFullHour || isSelected,
                     isExpandedInterval: false,
                     isFocused: isSelected,
-                    showsPrice: isSelected
+                    showsPrice: isFullHour || isSelected,
+                    showsSelectedOverlay: isSelected
                 )
             }
 
@@ -486,7 +490,8 @@ struct EnergyPriceGraph: View {
                         showsTimeLabel: true,
                         isExpandedInterval: true,
                         isFocused: false,
-                        showsPrice: true
+                        showsPrice: true,
+                        showsSelectedOverlay: true
                     )
                 }
             }
@@ -502,7 +507,8 @@ struct EnergyPriceGraph: View {
                     showsTimeLabel: true,
                     isExpandedInterval: false,
                     isFocused: false,
-                    showsPrice: selectedGroupIndex == groupIndex && expandsToIntervals == false
+                    showsPrice: true,
+                    showsSelectedOverlay: selectedGroupIndex == groupIndex && expandsToIntervals == false
                 ),
             ]
         }
@@ -542,11 +548,11 @@ struct EnergyPriceGraph: View {
     }
 
     private func rowZIndex(for row: EnergyPriceGraphDisplayRow) -> Double {
-        if row.showsPrice {
+        if row.showsSelectedOverlay {
             return 3
         }
 
-        if row.showsTimeLabel || row.showsDayChange {
+        if row.showsPrice || row.showsTimeLabel || row.showsDayChange {
             return 2
         }
 
@@ -557,13 +563,30 @@ struct EnergyPriceGraph: View {
         return 0
     }
 
+    private func rowWeight(for row: EnergyPriceGraphDisplayRow, at index: Int, rows: [EnergyPriceGraphDisplayRow]) -> CGFloat {
+        guard displayInterval == .fifteenMinutes,
+              let focusedIndex = rows.firstIndex(where: \.isFocused) else {
+            return 1
+        }
+
+        if index == focusedIndex {
+            return EnergyPriceGraphLayout.focusedRowWeight
+        }
+
+        if abs(index - focusedIndex) == 1 {
+            return EnergyPriceGraphLayout.adjacentFocusedRowWeight
+        }
+
+        return 1
+    }
+
     var body: some View {
         GeometryReader { geometry in
             let prices = currentPrices
             let groups = hourlyPriceGroups
             let rows = displayRows(for: prices, groups: groups)
-            let rowWeights = rows.map { row in
-                row.isFocused ? EnergyPriceGraphLayout.focusedRowWeight : 1
+            let rowWeights = rows.enumerated().map { index, row in
+                rowWeight(for: row, at: index, rows: rows)
             }
             let layout = EnergyPriceGraphLayout(
                 rowWeights: rowWeights,

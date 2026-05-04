@@ -109,7 +109,7 @@ struct ContentView: View {
                         .tag(2)
                         .tabItem { Label("Insights", systemImage: "chart.bar.xaxis") }
                 }
-                .tint(Color(red: 0.87, green: 0.35, blue: 0.26))
+                .tint(AppTheme.accent)
                 .sheet(isPresented: $shouldShowWhatsNew) { WhatsNewPage() }
             } else {
                 SplashScreenStartView()

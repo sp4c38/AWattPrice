@@ -27,39 +27,21 @@ private extension Double {
 }
 
 private struct PriceAddOnsBackground: View {
+    @Environment(\.colorScheme) private var colorScheme
+
     var body: some View {
-        Color(uiColor: .systemGroupedBackground)
-        .ignoresSafeArea()
+        AppTheme.screenBackground(for: colorScheme)
+            .ignoresSafeArea()
     }
 }
 
 private struct PriceAddOnsCard<Content: View>: View {
-    @Environment(\.colorScheme) private var colorScheme
-
     @ViewBuilder let content: Content
 
-    private var strokeColor: Color {
-        colorScheme == .dark ? Color.white.opacity(0.08) : Color.black.opacity(0.06)
-    }
-
-    private var shadowColor: Color {
-        colorScheme == .dark ? Color.black.opacity(0.24) : Color.black.opacity(0.04)
-    }
-
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        AppCard(cornerRadius: 20, padding: 18, spacing: 16) {
             content
         }
-        .padding(18)
-        .background(
-            RoundedRectangle(cornerRadius: 28, style: .continuous)
-                .fill(.ultraThinMaterial)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 28, style: .continuous)
-                        .stroke(strokeColor, lineWidth: 1)
-                )
-        )
-        .shadow(color: shadowColor, radius: 20, y: 8)
     }
 }
 
@@ -159,11 +141,11 @@ private struct PriceModelInputRow: View {
     let isInputActive: FocusState<Bool>.Binding
 
     private var inputFill: Color {
-        colorScheme == .dark ? Color.white.opacity(0.08) : Color.white.opacity(0.72)
+        AppTheme.fieldBackground(for: colorScheme)
     }
 
     private var inputStroke: Color {
-        colorScheme == .dark ? Color.white.opacity(0.10) : Color.black.opacity(0.08)
+        AppTheme.cardStroke(for: colorScheme)
     }
 
     var body: some View {
@@ -245,12 +227,12 @@ struct PriceAddOnsView: View {
                                 .foregroundStyle(.secondary)
 
                             HStack(spacing: 8) {
-                                PriceAddOnsBadge(text: "+ \(viewModel.percentagePriceAddOn.percentageText)", tint: .blue)
-                                PriceAddOnsBadge(text: "+ \(viewModel.totalPriceAddOn.priceAddOnSummaryText)", tint: .green)
+                                PriceAddOnsBadge(text: "+ \(viewModel.percentagePriceAddOn.percentageText)", tint: AppTheme.accent)
+                                PriceAddOnsBadge(text: "+ \(viewModel.totalPriceAddOn.priceAddOnSummaryText)", tint: AppTheme.success)
                             }
 
                             if viewModel.settingsManager.setting.priceDropsBelowEnabled {
-                                PriceAddOnsBadge(text: "Used in Price Guard", tint: .green)
+                                PriceAddOnsBadge(text: "Used in Price Guard", tint: AppTheme.success)
                             }
                         }
                     }

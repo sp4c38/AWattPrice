@@ -14,7 +14,7 @@ struct ActionButtonStyle: ButtonStyle {
             .foregroundColor(Color.white)
             .frame(maxWidth: .infinity)
             .padding()
-            .background(Color.blue)
+            .background(AppTheme.accent)
             .cornerRadius(10)
             .opacity(configuration.isPressed ? 0.6 : 1.0)
             .animation(.easeInOut)
@@ -28,7 +28,7 @@ struct ContinueButtonStyle: ButtonStyle {
             .foregroundColor(Color.white)
             .frame(maxWidth: .infinity)
             .padding()
-            .background(Color.blue)
+            .background(AppTheme.accent)
             .cornerRadius(11)
     }
 }
@@ -41,7 +41,7 @@ struct TimeRangeButtonStyle: ButtonStyle {
             .padding([.top, .bottom], 5)
             .padding([.leading, .trailing], 10)
             .foregroundColor(Color.white)
-            .background(Color.blue)
+            .background(AppTheme.accent)
             .cornerRadius(10)
             .opacity(configuration.isPressed ? 0.6 : 1.0)
             .animation(configuration.isPressed ? .easeInOut(duration: 0.1) : nil, value: configuration.isPressed)
@@ -51,12 +51,12 @@ struct TimeRangeButtonStyle: ButtonStyle {
 struct RetryButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .foregroundColor(configuration.isPressed ? Color.blue : Color.gray)
+            .foregroundColor(configuration.isPressed ? AppTheme.accent : Color.gray)
             .padding([.top, .bottom], 5)
             .padding([.leading, .trailing], 40)
             .overlay(
                 RoundedRectangle(cornerRadius: 10)
-                    .stroke(configuration.isPressed ? Color.blue : Color.gray)
+                    .stroke(configuration.isPressed ? AppTheme.accent : Color.gray)
             )
             .animation(.easeInOut(duration: 0.1))
     }

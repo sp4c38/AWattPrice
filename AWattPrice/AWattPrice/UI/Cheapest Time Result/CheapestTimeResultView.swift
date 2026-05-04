@@ -8,6 +8,8 @@
 import SwiftUI
 
 private struct CheapestTimeMetricCard: View {
+    @Environment(\.colorScheme) private var colorScheme
+
     let title: LocalizedStringKey
     let value: String
     let systemImage: String
@@ -26,7 +28,7 @@ private struct CheapestTimeMetricCard: View {
         .padding(16)
         .background(
             RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .fill(Color.primary.opacity(0.05))
+                .fill(AppTheme.fieldBackground(for: colorScheme))
         )
     }
 }
@@ -221,6 +223,7 @@ struct CheapestTimeResultView: View {
                 }
             }
         }
+        .appScreenBackground()
         .navigationTitle("Cheapest Time")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {

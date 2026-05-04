@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-let cheapestTimeAccent = Color(red: 0.87, green: 0.35, blue: 0.26)
+let cheapestTimeAccent = AppTheme.accent
 
 struct CheapestTimeViewBodyPicker: View {
     @EnvironmentObject var energyDataService: EnergyDataService
@@ -55,38 +55,11 @@ struct CheapestTimeViewBodyPicker: View {
 }
 
 struct CheapestTimeCardModifier: ViewModifier {
-    @Environment(\.colorScheme) private var colorScheme
-
     func body(content: Content) -> some View {
         content
             .padding(20)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(
-                RoundedRectangle(cornerRadius: 26, style: .continuous)
-                    .fill(
-                        LinearGradient(
-                            colors: colorScheme == .light
-                                ? [Color.white, Color(red: 0.98, green: 0.97, blue: 0.95)]
-                                : [Color(red: 0.13, green: 0.13, blue: 0.15), Color(red: 0.09, green: 0.09, blue: 0.11)],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 26, style: .continuous)
-                    .strokeBorder(
-                        colorScheme == .light
-                            ? Color.black.opacity(0.05)
-                            : Color.white.opacity(0.08),
-                        lineWidth: 1
-                    )
-            )
-            .shadow(
-                color: colorScheme == .light ? Color.black.opacity(0.06) : Color.black.opacity(0.25),
-                radius: 16,
-                y: 8
-            )
+            .appCardStyle(cornerRadius: 20, padding: 0)
     }
 }
 
@@ -174,6 +147,7 @@ struct CheapestTimeView: View {
                 DataDownloadAndError()
             }
         }
+        .appScreenBackground()
         .navigationTitle("Cheapest Time")
         .navigationDestination(isPresented: $navigateToResults) {
             CheapestTimeResultView()

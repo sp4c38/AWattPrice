@@ -221,6 +221,7 @@ class MarketAreaTaxSelectionViewModel: ObservableObject {
 }
 
 struct RegionView: View {
+    @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject var settingsManager: SettingsManager
     @EnvironmentObject var notificationService: NotificationService
     @EnvironmentObject var energyDataService: EnergyDataService
@@ -265,9 +266,9 @@ struct RegionView: View {
             HStack(spacing: 14) {
                 Image(systemName: "globe.europe.africa.fill")
                     .font(.system(size: 18, weight: .semibold))
-                    .foregroundStyle(.orange)
+                    .foregroundStyle(AppTheme.accent)
                     .frame(width: 40, height: 40)
-                    .background(Color.orange.opacity(0.12), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                    .background(AppTheme.subtleFill(AppTheme.accent, for: colorScheme), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Market area".localized())
@@ -308,7 +309,7 @@ struct MarketAreaMapSelectionView: View {
     let height: CGFloat
 
     private var unselectedPinFill: Color {
-        colorScheme == .dark ? Color(uiColor: .secondarySystemGroupedBackground) : .white
+        AppTheme.cardBackground(for: colorScheme)
     }
 
     var body: some View {
@@ -320,15 +321,15 @@ struct MarketAreaMapSelectionView: View {
                             VStack(spacing: 6) {
                                 Text(marketArea.settingsFlag)
                                     .font(.caption2.weight(.bold))
-                                    .foregroundStyle(viewModel.selectedMarketAreaKey == marketArea.key ? .white : .orange)
+                                    .foregroundStyle(viewModel.selectedMarketAreaKey == marketArea.key ? .white : AppTheme.accent)
                                     .frame(width: 30, height: 30)
                                     .background(
                                         Circle()
-                                            .fill(viewModel.selectedMarketAreaKey == marketArea.key ? Color.orange : unselectedPinFill)
+                                            .fill(viewModel.selectedMarketAreaKey == marketArea.key ? AppTheme.accent : unselectedPinFill)
                                     )
                                     .overlay(
                                         Circle()
-                                            .stroke(Color.orange, lineWidth: 2)
+                                            .stroke(AppTheme.accent, lineWidth: 2)
                                     )
                                     .shadow(color: Color.black.opacity(0.12), radius: 6, y: 3)
                             }
@@ -351,7 +352,7 @@ struct MarketAreaMapSelectionView: View {
         .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .stroke(Color.orange.opacity(0.2), lineWidth: 1)
+                .stroke(AppTheme.accent.opacity(0.2), lineWidth: 1)
         )
     }
 

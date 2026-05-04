@@ -116,11 +116,7 @@ private struct TimeRangeInputFieldSelectionPart: View {
         .padding(16)
         .background(
             RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .fill(
-                    colorScheme == .light
-                        ? Color.black.opacity(0.03)
-                        : Color.white.opacity(0.05)
-                )
+                .fill(AppTheme.fieldBackground(for: colorScheme))
         )
     }
 }
@@ -168,12 +164,12 @@ struct TimeRangeInputField: View {
                 if cheapestHourManager.showsTimeRangeError {
                     Label(getMinRangeNeededString(), systemImage: "exclamationmark.triangle.fill")
                         .font(.caption.weight(.medium))
-                        .foregroundStyle(Color.red)
+                        .foregroundStyle(AppTheme.error)
                         .padding(12)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .background(
                             RoundedRectangle(cornerRadius: 16, style: .continuous)
-                                .fill(Color.red.opacity(colorScheme == .light ? 0.08 : 0.18))
+                                .fill(AppTheme.subtleFill(AppTheme.error, for: colorScheme))
                         )
                         .id("TimeRangeInputFieldErrorText" + getMinRangeNeededString())
                 }

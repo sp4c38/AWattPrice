@@ -140,11 +140,11 @@ struct PriceBelowNotificationView: View {
     }
 
     private var inputFill: Color {
-        colorScheme == .dark ? Color.white.opacity(0.08) : Color.white.opacity(0.72)
+        AppTheme.fieldBackground(for: colorScheme)
     }
 
     private var inputStroke: Color {
-        colorScheme == .dark ? Color.white.opacity(0.10) : Color.black.opacity(0.08)
+        AppTheme.cardStroke(for: colorScheme)
     }
 
     var body: some View {
@@ -159,7 +159,7 @@ struct PriceBelowNotificationView: View {
 
                         PriceGuardBadge(
                             text: statusText,
-                            tint: viewModel.notificationIsEnabled ? .green : .secondary
+                            tint: viewModel.notificationIsEnabled ? AppTheme.success : .secondary
                         )
                     }
                 }
@@ -176,7 +176,7 @@ struct PriceBelowNotificationView: View {
 
                             Spacer()
 
-                            PriceGuardBadge(text: currentThresholdText, tint: .orange)
+                            PriceGuardBadge(text: currentThresholdText, tint: AppTheme.accent)
                         }
 
                         HStack(spacing: 12) {

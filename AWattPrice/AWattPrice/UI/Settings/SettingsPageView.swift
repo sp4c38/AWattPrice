@@ -18,32 +18,12 @@ private extension Double {
 }
 
 private struct SettingsCard<Content: View>: View {
-    @Environment(\.colorScheme) private var colorScheme
-
     @ViewBuilder let content: Content
 
-    private var strokeColor: Color {
-        colorScheme == .dark ? Color.white.opacity(0.08) : Color.black.opacity(0.06)
-    }
-
-    private var shadowColor: Color {
-        colorScheme == .dark ? Color.black.opacity(0.24) : Color.black.opacity(0.04)
-    }
-
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        AppCard(cornerRadius: 20, padding: 18, spacing: 16) {
             content
         }
-        .padding(18)
-        .background(
-            RoundedRectangle(cornerRadius: 28, style: .continuous)
-                .fill(.ultraThinMaterial)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 28, style: .continuous)
-                        .stroke(strokeColor, lineWidth: 1)
-                )
-        )
-        .shadow(color: shadowColor, radius: 20, y: 8)
     }
 }
 
@@ -176,7 +156,7 @@ struct SettingsPageView: View {
                                 title: "Price Add-ons".localized(),
                                 subtitle: nil,
                                 systemImage: "sum",
-                                tint: .green
+                                tint: AppTheme.accent
                             ) {
                                 PriceAddOnsView()
                             }
@@ -192,7 +172,7 @@ struct SettingsPageView: View {
                                 title: "Price Guard".localized(),
                                 subtitle: priceGuardSubtitle,
                                 systemImage: "bell.badge.fill",
-                                tint: .red
+                                tint: AppTheme.error
                             ) {
                                 NotificationSettingView()
                             }
@@ -203,7 +183,7 @@ struct SettingsPageView: View {
                                 title: "Help & Suggestions".localized(),
                                 subtitle: nil,
                                 systemImage: "questionmark.bubble.fill",
-                                tint: .blue
+                                tint: AppTheme.accent
                             ) {
                                 HelpAndSuggestionView()
                             }

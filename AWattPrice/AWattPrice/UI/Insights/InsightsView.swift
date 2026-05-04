@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-private let insightsAccent = Color(red: 0.87, green: 0.35, blue: 0.26)
+private let insightsAccent = AppTheme.accent
 
 private struct PriceWindow: Identifiable {
     let id = UUID()
@@ -178,7 +178,7 @@ private struct InsightsCard<Content: View>: View {
         }
         .padding(14)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .appCardStyle(cornerRadius: 16, padding: 0)
     }
 }
 
@@ -353,7 +353,7 @@ struct InsightsView: View {
                                     value: priceText(model.currentPrice?.marketprice),
                                     subtitle: model.currentPrice.map { timeRangeText(from: $0.startTime, to: $0.endTime) },
                                     systemImage: "clock",
-                                    tint: .blue
+                                    tint: AppTheme.accent
                                 )
 
                                 InsightMetricCard(
@@ -361,7 +361,7 @@ struct InsightsView: View {
                                     value: priceText(model.averagePrice),
                                     subtitle: "Upcoming",
                                     systemImage: "chart.line.uptrend.xyaxis",
-                                    tint: .orange
+                                    tint: Color.secondary
                                 )
 
                                 InsightMetricCard(
@@ -369,7 +369,7 @@ struct InsightsView: View {
                                     value: priceText(model.minPrice?.marketprice),
                                     subtitle: model.minPrice.map { timeRangeText(from: $0.startTime, to: $0.endTime) },
                                     systemImage: "arrow.down.circle.fill",
-                                    tint: .green
+                                    tint: AppTheme.success
                                 )
 
                                 InsightMetricCard(
@@ -377,17 +377,17 @@ struct InsightsView: View {
                                     value: priceText(model.maxPrice?.marketprice),
                                     subtitle: model.maxPrice.map { timeRangeText(from: $0.startTime, to: $0.endTime) },
                                     systemImage: "arrow.up.circle.fill",
-                                    tint: .red
+                                    tint: AppTheme.error
                                 )
 
                             }
 
-                            InsightsCard(tint: .green) {
+                            InsightsCard(tint: AppTheme.success) {
                                 HStack {
                                     InsightsSectionTitle(
                                         title: "Cheapest times",
                                         systemImage: "timer",
-                                        tint: .green
+                                        tint: AppTheme.success
                                     )
 
                                     Spacer()
@@ -401,7 +401,7 @@ struct InsightsView: View {
                                                 .font(.caption2.weight(.bold))
                                         }
                                             .font(.caption.weight(.semibold))
-                                            .foregroundStyle(.blue)
+                                            .foregroundStyle(AppTheme.accent)
                                             .lineLimit(1)
                                     }
                                     .buttonStyle(.plain)
@@ -409,15 +409,15 @@ struct InsightsView: View {
                                 }
 
                                 ForEach(model.cheapestWindows) { window in
-                                    PriceWindowRow(window: window, tint: .green)
+                                    PriceWindowRow(window: window, tint: AppTheme.success)
                                 }
                             }
 
-                            InsightsCard(tint: .orange) {
+                            InsightsCard(tint: AppTheme.accent) {
                                 InsightsSectionTitle(
                                     title: "Distribution",
                                     systemImage: "chart.bar.fill",
-                                    tint: .orange
+                                    tint: AppTheme.accent
                                 )
 
                                 ForEach(model.priceBands) { band in

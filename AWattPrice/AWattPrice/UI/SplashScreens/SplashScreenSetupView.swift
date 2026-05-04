@@ -67,7 +67,7 @@ private struct AnimatingCheckmark: View {
                 .frame(width: checkmarkWidth, height: checkmarkWidth)
                 .position(x: width / 2, y: checkmarkStartHeight + (checkmarkWidth / 2))
         }
-        .foregroundColor(Color.green)
+        .foregroundColor(AppTheme.success)
         .onAppear {
             firstLineStartPoint = CGPoint(x: 0.294 * checkmarkWidth + checkmarkStartWidth, y: 0.530 * checkmarkWidth + checkmarkStartHeight)
 
@@ -98,10 +98,12 @@ private struct AnimatingCheckmark: View {
 }
 
 private struct SetupCompleteOverlay: View {
+    @Environment(\.colorScheme) private var colorScheme
+
     var body: some View {
         ZStack {
             Rectangle()
-                .fill(.ultraThinMaterial)
+                .fill(AppTheme.screenBackground(for: colorScheme).opacity(0.96))
                 .ignoresSafeArea()
 
             AnimatingCheckmark()
@@ -157,7 +159,7 @@ struct SplashScreenSetupView: View {
                 ProgressView()
                     .progressViewStyle(CircularProgressViewStyle())
                     .padding(16)
-                    .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+                    .appCardStyle(cornerRadius: 18, padding: 0)
             }
 
             if showCompletionOverlay {
@@ -167,7 +169,7 @@ struct SplashScreenSetupView: View {
         .opacity(fadeOutSetup ? 0 : 1)
         .ignoresSafeArea(.keyboard)
         .navigationTitle("Setup")
-        .background((colorScheme == .light ? Color(red: 0.95, green: 0.95, blue: 0.97) : Color.black).ignoresSafeArea(.all))
+        .background(AppTheme.screenBackground(for: colorScheme).ignoresSafeArea(.all))
         .onAppear {
             viewModel.settingsManager = settingsManager
             viewModel.notificationService = notificationService

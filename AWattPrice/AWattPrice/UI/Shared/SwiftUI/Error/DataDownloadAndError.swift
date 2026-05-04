@@ -62,14 +62,14 @@ private struct DataUnavailableContent {
 
     static let offline = DataUnavailableContent(
         iconName: "wifi.slash",
-        iconColor: Color(red: 0.87, green: 0.35, blue: 0.26),
+        iconColor: AppTheme.accent,
         title: "dataError.connection.title",
         message: "dataError.connection.message"
     )
 
     static let downloadFailed = DataUnavailableContent(
         iconName: "exclamationmark.triangle",
-        iconColor: .orange,
+        iconColor: AppTheme.warning,
         title: "dataError.download.title",
         message: "dataError.download.message"
     )
@@ -83,7 +83,7 @@ private struct DataUnavailableContent {
 
     static let settingsFailed = DataUnavailableContent(
         iconName: "gear",
-        iconColor: .orange,
+        iconColor: AppTheme.warning,
         title: "dataError.settings.title",
         message: nil
     )
@@ -133,6 +133,7 @@ private struct DataUnavailableStateView: View {
                     }
                     .buttonStyle(.borderedProminent)
                     .controlSize(.large)
+                    .tint(AppTheme.accent)
                     .disabled(retryDisabled)
 
                     if retryDisabled {
@@ -147,7 +148,7 @@ private struct DataUnavailableStateView: View {
             .frame(maxWidth: 360)
             .background(
                 RoundedRectangle(cornerRadius: 18, style: .continuous)
-                    .fill(colorScheme == .light ? Color.white : Color(.secondarySystemBackground))
+                    .fill(AppTheme.cardBackground(for: colorScheme))
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 18, style: .continuous)
@@ -160,7 +161,7 @@ private struct DataUnavailableStateView: View {
     }
 
     private var borderColor: Color {
-        colorScheme == .light ? Color.black.opacity(0.08) : Color.white.opacity(0.10)
+        AppTheme.cardStroke(for: colorScheme)
     }
 }
 

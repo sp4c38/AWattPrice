@@ -8,39 +8,21 @@
 import SwiftUI
 
 private struct NotificationSettingsBackground: View {
+    @Environment(\.colorScheme) private var colorScheme
+
     var body: some View {
-        Color(uiColor: .systemGroupedBackground)
-        .ignoresSafeArea()
+        AppTheme.screenBackground(for: colorScheme)
+            .ignoresSafeArea()
     }
 }
 
 private struct NotificationSettingsCard<Content: View>: View {
-    @Environment(\.colorScheme) private var colorScheme
-
     @ViewBuilder let content: Content
 
-    private var strokeColor: Color {
-        colorScheme == .dark ? Color.white.opacity(0.08) : Color.black.opacity(0.06)
-    }
-
-    private var shadowColor: Color {
-        colorScheme == .dark ? Color.black.opacity(0.24) : Color.black.opacity(0.04)
-    }
-
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        AppCard(cornerRadius: 20, padding: 18, spacing: 16) {
             content
         }
-        .padding(18)
-        .background(
-            RoundedRectangle(cornerRadius: 28, style: .continuous)
-                .fill(.ultraThinMaterial)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 28, style: .continuous)
-                        .stroke(strokeColor, lineWidth: 1)
-                )
-        )
-        .shadow(color: shadowColor, radius: 20, y: 8)
     }
 }
 
@@ -79,11 +61,11 @@ struct NotificationSettingView: View {
     private var statusBadge: (String, Color) {
         switch viewModel.notificationService.accessState {
         case .granted:
-            return ("Ready", .green)
+            return ("Ready", AppTheme.success)
         case .rejected:
-            return ("Notifications Off", .red)
+            return ("Notifications Off", AppTheme.error)
         case .notAsked:
-            return ("Not Configured", .orange)
+            return ("Not Configured", AppTheme.warning)
         case .unknown:
             return ("Checking", .secondary)
         }
@@ -149,7 +131,7 @@ struct NoNotificationAccessView: View {
                 }
             }
             .buttonStyle(.borderedProminent)
-            .tint(.blue)
+            .tint(AppTheme.accent)
         }
     }
 }

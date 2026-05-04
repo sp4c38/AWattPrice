@@ -24,7 +24,7 @@ struct SettingsUploadErrorView: View {
         .foregroundColor(.white)
         .padding([.top, .bottom], 8)
         .padding([.leading, .trailing], 16)
-        .background(Color.red)
+        .background(AppTheme.error)
         .cornerRadius(10)
     }
 }

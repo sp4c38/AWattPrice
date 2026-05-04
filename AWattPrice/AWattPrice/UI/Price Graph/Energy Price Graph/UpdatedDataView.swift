@@ -93,9 +93,9 @@ struct UpdatedDataView: View {
     private var statusColor: Color {
         switch displayedDownloadState {
         case .downloading:
-            return .blue
+            return AppTheme.accent
         case .failed:
-            return .red
+            return AppTheme.error
         case .idle, .finished:
             return .secondary
         }
@@ -200,10 +200,10 @@ private struct StatusIndicator: View {
                 ProgressView()
                     .frame(width: 13, height: 13)
                     .scaleEffect(0.7, anchor: .center)
-                    .progressViewStyle(CircularProgressViewStyle(tint: .blue))
+                    .progressViewStyle(CircularProgressViewStyle(tint: AppTheme.accent))
             case .failed:
                 Image(systemName: "exclamationmark.circle.fill")
-                    .foregroundStyle(.red)
+                    .foregroundStyle(AppTheme.error)
             case .idle, .finished:
                 PulsingStatusDot()
             }
@@ -223,11 +223,11 @@ private struct PulsingStatusDot: View {
 
             ZStack {
                 Circle()
-                    .fill(Color.green.opacity(0.65 * (1 - progress)))
+                    .fill(AppTheme.success.opacity(0.65 * (1 - progress)))
                     .frame(width: 8 + (12 * progress), height: 8 + (12 * progress))
 
                 Circle()
-                    .fill(Color.green)
+                    .fill(AppTheme.success)
                     .frame(width: 8, height: 8)
             }
         }

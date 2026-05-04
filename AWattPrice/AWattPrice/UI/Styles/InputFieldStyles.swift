@@ -17,15 +17,9 @@ struct GeneralInputView: ViewModifier {
 
     func getBorderColor() -> Color {
         if markedRed {
-            return Color.red
+            return AppTheme.error
         } else {
-            if colorScheme == .light {
-                return
-                    Color(hue: 0.0000, saturation: 0.0000, brightness: 0.8706)
-            } else {
-                return
-                    Color(hue: 0.0000, saturation: 0.0000, brightness: 0.3706)
-            }
+            return AppTheme.cardStroke(for: colorScheme)
         }
     }
 

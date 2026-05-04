@@ -71,8 +71,7 @@ private struct SettingsDestinationRow<Destination: View>: View {
 private struct SettingsAppVersionView: View {
     var body: some View {
         HStack(spacing: 14) {
-            Image("BigAppIcon")
-                .resizable()
+            AppIconImage()
                 .frame(width: 54, height: 54)
                 .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
 

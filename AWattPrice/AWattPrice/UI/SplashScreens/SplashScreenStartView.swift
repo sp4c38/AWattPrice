@@ -11,8 +11,7 @@ import SwiftUI
 struct SplashScreenStartViewTitle: View {
     var body: some View {
         VStack(spacing: 15) {
-            Image("BigAppIcon")
-                .resizable()
+            AppIconImage()
                 .frame(width: 220, height: 220)
 
             VStack(spacing: 5) {

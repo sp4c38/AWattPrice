@@ -14,6 +14,7 @@
 		1D6A3E2B9C4F4185A2B7D930 /* InsightsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A93F0D1C8B24D479E5A0123 /* InsightsView.swift */; };
 		1F050059A5AEEA309F5EF60A /* SplashScreenFeaturesAndConsent.swift in Sources */ = {isa = PBXBuildFile; fileRef = F532255ECC882E59C9739E19 /* SplashScreenFeaturesAndConsent.swift */; };
 		1FF85FE467F2EBD6F0165295 /* TotalTimeFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2BCED411DC7AD4E79FC22B9 /* TotalTimeFormatter.swift */; };
+		22A1A4D72FBA5D1100E57A2B /* AppIconImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A1A4D62FBA5D1100E57A2B /* AppIconImage.swift */; };
 		23D11D519B8DC7A7F5DA54BA /* PriceAddOnsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51649CD95D1B046EA6D3FF0F /* PriceAddOnsView.swift */; };
 		268ABCBD2289736785AE38B3 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13637B90539D4C9A8BB48CC0 /* APIClient.swift */; };
 		2AB8E54B3F4BB4E1E64CA519 /* Font.swift in Sources */ = {isa = PBXBuildFile; fileRef = D22CD9B053C7AA6D5411FFE0 /* Font.swift */; };
@@ -52,6 +53,7 @@
 		D0B5F4C57BCEA12626689AA2 /* DataDownloadAndError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59B5203B024111C62B8F9D80 /* DataDownloadAndError.swift */; };
 		D19754BAE15970139A862323 /* Region.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52D6D993DB3CE3CBB4B1E644 /* Region.swift */; };
 		D48854808F7F125401420348 /* CheapestTimeResultView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6047C9B5C250D36D898FE1F /* CheapestTimeResultView.swift */; };
+		D4E7A0102FBA4D9A8C0D4E10 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = D4E7A00F2FBA4D9A8C0D4E10 /* AppIcon.icon */; };
 		D6A2D1C12D8B2AC00013028D /* SwiftDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6A2D1C02D8B2AC00013028D /* SwiftDataService.swift */; };
 		D6A2D1C22D8B2AC00013028D /* SwiftDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6A2D1C02D8B2AC00013028D /* SwiftDataService.swift */; };
 		D6A2D1CA2D8B3BE40013028D /* Setting.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6A2D1BF2D8B29A40013028D /* Setting.swift */; };
@@ -104,6 +106,7 @@
 		13637B90539D4C9A8BB48CC0 /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
 		147B08A0FC4429D5BA97DFA2 /* EnergyDataPreviewContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnergyDataPreviewContent.swift; sourceTree = "<group>"; };
 		22523FA7380336A83DEE1624 /* Environment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Environment.swift; sourceTree = "<group>"; };
+		22A1A4D62FBA5D1100E57A2B /* AppIconImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIconImage.swift; sourceTree = "<group>"; };
 		2C75B85698299C6281666C42 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3459FFEC069D6C1D4DA27E5E /* PreviewEnergyData.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = PreviewEnergyData.json; sourceTree = "<group>"; };
 		3986605FAA7AF18D5AF2CB37 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -148,6 +151,7 @@
 		CF85B2B08E53E158A7DE4DFC /* NumberField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberField.swift; sourceTree = "<group>"; };
 		D22CD9B053C7AA6D5411FFE0 /* Font.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Font.swift; sourceTree = "<group>"; };
 		D6047C9B5C250D36D898FE1F /* CheapestTimeResultView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheapestTimeResultView.swift; sourceTree = "<group>"; };
+		D4E7A00F2FBA4D9A8C0D4E10 /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = AppIcon.icon; sourceTree = "<group>"; };
 		D62C2B2A2D81CAC000FA294C /* AWattPriceWidgetExtension-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "AWattPriceWidgetExtension-Info.plist"; sourceTree = "<group>"; };
 		D6A2D1BF2D8B29A40013028D /* Setting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Setting.swift; sourceTree = "<group>"; };
 		D6A2D1C02D8B2AC00013028D /* SwiftDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataService.swift; sourceTree = "<group>"; };
@@ -195,6 +199,7 @@
 		18C2A8C64DF1B7502F7FE301 /* SwiftUI */ = {
 			isa = PBXGroup;
 			children = (
+				22A1A4D62FBA5D1100E57A2B /* AppIconImage.swift */,
 				0128DEB3ECF3622979FBC803 /* LazyNavigationDestination.swift */,
 				CF85B2B08E53E158A7DE4DFC /* NumberField.swift */,
 				EA7DB5F6099D4A679E460B0E /* EasyTimeIntervalPicker */,
@@ -495,6 +500,7 @@
 			isa = PBXGroup;
 			children = (
 				61541BE12A548F4D00822908 /* AWattPriceWidgetExtension.entitlements */,
+				D4E7A00F2FBA4D9A8C0D4E10 /* AppIcon.icon */,
 				61635B412A4834D20099F5AD /* Shared */,
 				E18353461A3EAEA81012197F /* AWattPrice */,
 				61635B2A2A482E690099F5AD /* AWattPriceWidget */,
@@ -597,6 +603,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DBA5B1FE42B492B0CB2D8D35 /* Assets.xcassets in Resources */,
+				D4E7A0102FBA4D9A8C0D4E10 /* AppIcon.icon in Resources */,
 				D8CFCC7C18D97EA76DB02E08 /* Launch Screen.storyboard in Resources */,
 				59BDBAACA1BB8316305D917B /* Localizable.strings in Resources */,
 				F1212CD12690C400EAB49863 /* PreviewEnergyData.json in Resources */,
@@ -612,6 +619,7 @@
 			files = (
 				268ABCBD2289736785AE38B3 /* APIClient.swift in Sources */,
 				C0067869CF8C26D9F619B651 /* AWattPriceApp.swift in Sources */,
+				22A1A4D72FBA5D1100E57A2B /* AppIconImage.swift in Sources */,
 				7806C62BA8F28AC26C3C88B7 /* AppDelegate.swift in Sources */,
 				23D11D519B8DC7A7F5DA54BA /* PriceAddOnsView.swift in Sources */,
 				A64044376124E697D0D7D6EB /* ButtonStyles.swift in Sources */,

@@ -7,20 +7,54 @@ import SwiftUI
 import UIKit
 
 struct AppIconImage: View {
-    private let image: UIImage?
-
-    init() {
-        image = Self.primaryAppIcon()
-    }
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
-        if let image {
-            Image(uiImage: image)
-                .resizable()
-        } else {
-            Image(systemName: "app")
-                .resizable()
+        let image = Self.appIcon(for: colorScheme)
+
+        ZStack {
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .strokeBorder(
+                    colorScheme == .dark
+                    ? Color(red: 0.40, green: 0.40, blue: 0.42, opacity: 1.0)
+                    : Color(red: 0.83, green: 0.83, blue: 0.84, opacity: 1.0),
+                    lineWidth: 0.8
+                )
+
+            if let image {
+                Image(uiImage: image)
+                    .resizable()
+            } else {
+                Image(systemName: "app")
+                    .resizable()
+                    .padding()
+                    .foregroundStyle(.secondary)
+            }
         }
+    }
+
+    private static func appIcon(for colorScheme: ColorScheme) -> UIImage? {
+        imageFromIconComposerSource(for: colorScheme) ?? primaryAppIcon()
+    }
+
+    private static func imageFromIconComposerSource(for colorScheme: ColorScheme) -> UIImage? {
+        let imageName = colorScheme == .dark ? "App Icon v3 Dark" : "App Icon v3"
+
+        if let image = UIImage(named: imageName) {
+            return image
+        }
+
+        guard
+            let imageURL = Bundle.main.url(
+                forResource: imageName,
+                withExtension: "png",
+                subdirectory: "AppIcon.icon/Assets"
+            )
+        else {
+            return nil
+        }
+
+        return UIImage(contentsOfFile: imageURL.path)
     }
 
     private static func primaryAppIcon() -> UIImage? {

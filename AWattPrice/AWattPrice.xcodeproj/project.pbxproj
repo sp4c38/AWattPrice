@@ -16,6 +16,8 @@
 		1FF85FE467F2EBD6F0165295 /* TotalTimeFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2BCED411DC7AD4E79FC22B9 /* TotalTimeFormatter.swift */; };
 		22A1A4D72FBA5D1100E57A2B /* AppIconImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A1A4D62FBA5D1100E57A2B /* AppIconImage.swift */; };
 		23D11D519B8DC7A7F5DA54BA /* PriceAddOnsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51649CD95D1B046EA6D3FF0F /* PriceAddOnsView.swift */; };
+		25A41E112FBA629C00A685EF /* App Icon v3 Dark.png in Resources */ = {isa = PBXBuildFile; fileRef = 25A41E102FBA629C00A685EF /* App Icon v3 Dark.png */; };
+		25A41E132FBA629C00A685EF /* App Icon v3.png in Resources */ = {isa = PBXBuildFile; fileRef = 25A41E122FBA629C00A685EF /* App Icon v3.png */; };
 		268ABCBD2289736785AE38B3 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13637B90539D4C9A8BB48CC0 /* APIClient.swift */; };
 		2AB8E54B3F4BB4E1E64CA519 /* Font.swift in Sources */ = {isa = PBXBuildFile; fileRef = D22CD9B053C7AA6D5411FFE0 /* Font.swift */; };
 		3764069C227C8A20FD65EB7C /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0D566683455A9834699592 /* String.swift */; };
@@ -107,6 +109,8 @@
 		147B08A0FC4429D5BA97DFA2 /* EnergyDataPreviewContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnergyDataPreviewContent.swift; sourceTree = "<group>"; };
 		22523FA7380336A83DEE1624 /* Environment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Environment.swift; sourceTree = "<group>"; };
 		22A1A4D62FBA5D1100E57A2B /* AppIconImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIconImage.swift; sourceTree = "<group>"; };
+		25A41E102FBA629C00A685EF /* App Icon v3 Dark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "AppIcon.icon/Assets/App Icon v3 Dark.png"; sourceTree = "<group>"; };
+		25A41E122FBA629C00A685EF /* App Icon v3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "AppIcon.icon/Assets/App Icon v3.png"; sourceTree = "<group>"; };
 		2C75B85698299C6281666C42 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3459FFEC069D6C1D4DA27E5E /* PreviewEnergyData.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = PreviewEnergyData.json; sourceTree = "<group>"; };
 		3986605FAA7AF18D5AF2CB37 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -501,6 +505,8 @@
 			children = (
 				61541BE12A548F4D00822908 /* AWattPriceWidgetExtension.entitlements */,
 				D4E7A00F2FBA4D9A8C0D4E10 /* AppIcon.icon */,
+				25A41E102FBA629C00A685EF /* App Icon v3 Dark.png */,
+				25A41E122FBA629C00A685EF /* App Icon v3.png */,
 				61635B412A4834D20099F5AD /* Shared */,
 				E18353461A3EAEA81012197F /* AWattPrice */,
 				61635B2A2A482E690099F5AD /* AWattPriceWidget */,
@@ -603,6 +609,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				DBA5B1FE42B492B0CB2D8D35 /* Assets.xcassets in Resources */,
+				25A41E112FBA629C00A685EF /* App Icon v3 Dark.png in Resources */,
+				25A41E132FBA629C00A685EF /* App Icon v3.png in Resources */,
 				D4E7A0102FBA4D9A8C0D4E10 /* AppIcon.icon in Resources */,
 				D8CFCC7C18D97EA76DB02E08 /* Launch Screen.storyboard in Resources */,
 				59BDBAACA1BB8316305D917B /* Localizable.strings in Resources */,

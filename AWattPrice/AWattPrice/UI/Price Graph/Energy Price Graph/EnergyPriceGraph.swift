@@ -123,7 +123,9 @@ private struct EnergyPriceGraphDisplayRow: Identifiable {
     let endTime: Date
     let price: Double
     let showsDayChange: Bool
+    let showsTimeLabel: Bool
     let isExpandedInterval: Bool
+    let isFocused: Bool
     let showsPrice: Bool
 
     var timeLabel: String {
@@ -143,28 +145,44 @@ private struct EnergyPriceGraphLayout {
     static let axisHeight: CGFloat = 18
     static let overlayHorizontalPadding: CGFloat = 6
     static let rowSpacing: CGFloat = 0.1
+    static let focusedRowWeight: CGFloat = 2.8
 
     let plotHeight: CGFloat
-    let rowHeight: CGFloat
+    let rowHeights: [CGFloat]
 
-    init(count: Int, availableHeight: CGFloat) {
+    init(rowWeights: [CGFloat], availableHeight: CGFloat) {
         let localPlotHeight = max(availableHeight - Self.axisHeight, 0)
-        let totalSpacing = Self.rowSpacing * CGFloat(max(count - 1, 0))
+        let totalSpacing = Self.rowSpacing * CGFloat(max(rowWeights.count - 1, 0))
+        let availableRowsHeight = max(localPlotHeight - totalSpacing, 0)
+        let totalWeight = rowWeights.reduce(0, +)
 
         plotHeight = localPlotHeight
-        rowHeight = count == 0 ? 0 : max((localPlotHeight - totalSpacing) / CGFloat(count), 0)
+        rowHeights = totalWeight > 0 ? rowWeights.map { availableRowsHeight * $0 / totalWeight } : []
+    }
+
+    func rowHeight(at index: Int) -> CGFloat {
+        guard rowHeights.indices.contains(index) else { return 0 }
+        return rowHeights[index]
     }
 
     func index(at locationY: CGFloat) -> Int? {
         let plotY = locationY - Self.axisHeight
-        guard rowHeight > 0, plotY >= 0, plotY <= plotHeight else { return nil }
+        guard plotY >= 0, plotY <= plotHeight else { return nil }
 
-        let rowPitch = rowHeight + Self.rowSpacing
-        let index = Int(plotY / rowPitch)
-        guard index >= 0 else { return nil }
+        var rowMinY: CGFloat = 0
 
-        let rowMinY = CGFloat(index) * rowPitch
-        return plotY <= rowMinY + rowHeight ? index : nil
+        for index in rowHeights.indices {
+            let rowHeight = rowHeights[index]
+            let rowMaxY = rowMinY + rowHeight
+
+            if plotY >= rowMinY, plotY <= rowMaxY {
+                return index
+            }
+
+            rowMinY = rowMaxY + Self.rowSpacing
+        }
+
+        return nil
     }
 }
 
@@ -205,23 +223,36 @@ private struct EnergyPriceGraphAxis: View {
 
 private struct EnergyPriceValueText: View {
     let value: String
+    let isFocused: Bool
+
+    private var valueFontSize: CGFloat {
+        isFocused ? 13 : 11
+    }
+
+    private var unitFontSize: CGFloat {
+        isFocused ? 9 : 8
+    }
+
+    private var slashFontSize: CGFloat {
+        isFocused ? 10 : 9
+    }
 
     var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: 1) {
             Text(value)
-                .font(.system(size: 11, weight: .semibold, design: .rounded))
+                .font(.system(size: valueFontSize, weight: .semibold, design: .rounded))
                 .monospacedDigit()
                 .padding(.trailing, 1)
 
             Text("ct")
-                .font(.system(size: 8, weight: .semibold, design: .rounded))
+                .font(.system(size: unitFontSize, weight: .semibold, design: .rounded))
 
             Text("/")
-                .font(.system(size: 9, weight: .semibold, design: .rounded))
+                .font(.system(size: slashFontSize, weight: .semibold, design: .rounded))
                 .padding(.horizontal, -1)
 
             Text("kWh")
-                .font(.system(size: 8, weight: .semibold, design: .rounded))
+                .font(.system(size: unitFontSize, weight: .semibold, design: .rounded))
         }
     }
 }
@@ -261,6 +292,10 @@ private struct EnergyPriceBarRow: View {
         Color(red: 0.82, green: 0.28, blue: 0.20)
     }
 
+    private var timeLabelFontSize: CGFloat {
+        row.isFocused ? 13 : 11
+    }
+
     var body: some View {
         let trackHeight = max((rowHeight - 1) * trackHeightFactor, 3)
         let barFrame = metrics.barFrame(for: row.price, width: plotWidth)
@@ -293,29 +328,33 @@ private struct EnergyPriceBarRow: View {
             }
 
             HStack(spacing: 8) {
-                HStack(spacing: 4) {
-                    Text(row.timeLabel)
-                        .font(.system(size: 11, weight: .semibold, design: .rounded))
-                        .monospacedDigit()
-                        .fixedSize(horizontal: true, vertical: false)
-                        .padding(.horizontal, 5)
-                        .padding(.vertical, 2)
-                        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 5, style: .continuous))
+                if row.showsTimeLabel || row.showsDayChange {
+                    HStack(spacing: 4) {
+                        if row.showsTimeLabel {
+                            Text(row.timeLabel)
+                                .font(.system(size: timeLabelFontSize, weight: .semibold, design: .rounded))
+                                .monospacedDigit()
+                                .fixedSize(horizontal: true, vertical: false)
+                                .padding(.horizontal, 5)
+                                .padding(.vertical, 2)
+                                .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 5, style: .continuous))
+                        }
 
-                    if row.showsDayChange {
-                        Text(dayBadgeText)
-                            .font(.caption2.weight(.semibold))
-                            .foregroundStyle(.secondary)
-                            .fixedSize()
-                            .padding(.horizontal, 5)
-                            .padding(.vertical, 2)
-                            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 5, style: .continuous))
+                        if row.showsDayChange {
+                            Text(dayBadgeText)
+                                .font(.caption2.weight(.semibold))
+                                .foregroundStyle(.secondary)
+                                .fixedSize()
+                                .padding(.horizontal, 5)
+                                .padding(.vertical, 2)
+                                .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 5, style: .continuous))
+                        }
                     }
                 }
 
                 Spacer(minLength: 8)
 
-                EnergyPriceValueText(value: priceText)
+                EnergyPriceValueText(value: priceText, isFocused: row.isFocused)
                     .foregroundStyle(.primary)
                     .fixedSize(horizontal: true, vertical: false)
                     .padding(.horizontal, 6)
@@ -388,6 +427,10 @@ struct EnergyPriceGraph: View {
         }
     }
 
+    private func startsOnFullHour(_ date: Date) -> Bool {
+        Calendar.current.component(.minute, from: date) == 0
+    }
+
     private func showsDayChange(at index: Int, prices: [EnergyPricePoint]) -> Bool {
         guard index > 0 else { return false }
         return Calendar.current.isDate(prices[index - 1].startTime, inSameDayAs: prices[index].startTime) == false
@@ -402,15 +445,19 @@ struct EnergyPriceGraph: View {
         switch displayInterval {
         case .fifteenMinutes:
             return prices.enumerated().map { index, pricePoint in
-                EnergyPriceGraphDisplayRow(
+                let isSelected = selectedGroupIndex == index
+
+                return EnergyPriceGraphDisplayRow(
                     id: "interval-\(pricePoint.startTime.timeIntervalSinceReferenceDate)",
                     groupIndex: index,
                     startTime: pricePoint.startTime,
                     endTime: pricePoint.endTime,
                     price: pricePoint.marketprice,
                     showsDayChange: showsDayChange(at: index, prices: prices),
+                    showsTimeLabel: startsOnFullHour(pricePoint.startTime) || isSelected,
                     isExpandedInterval: false,
-                    showsPrice: selectedGroupIndex == index
+                    isFocused: isSelected,
+                    showsPrice: isSelected
                 )
             }
 
@@ -433,7 +480,9 @@ struct EnergyPriceGraph: View {
                         endTime: pricePoint.endTime,
                         price: pricePoint.marketprice,
                         showsDayChange: groupShowsDayChange && intervalIndex == group.pricePoints.startIndex,
+                        showsTimeLabel: true,
                         isExpandedInterval: true,
+                        isFocused: false,
                         showsPrice: true
                     )
                 }
@@ -447,7 +496,9 @@ struct EnergyPriceGraph: View {
                     endTime: group.endTime,
                     price: group.averagePrice,
                     showsDayChange: groupShowsDayChange,
+                    showsTimeLabel: true,
                     isExpandedInterval: false,
+                    isFocused: false,
                     showsPrice: selectedGroupIndex == groupIndex && expandsToIntervals == false
                 ),
             ]
@@ -469,7 +520,7 @@ struct EnergyPriceGraph: View {
     private var selectionAnimation: Animation {
         switch displayInterval {
         case .fifteenMinutes:
-            return .easeOut(duration: 0.12)
+            return .spring(response: 0.22, dampingFraction: 0.84, blendDuration: 0.04)
         case .sixtyMinutes:
             guard allowsHourlyExpansion else {
                 return .easeOut(duration: 0.12)
@@ -492,8 +543,11 @@ struct EnergyPriceGraph: View {
             let prices = currentPrices
             let groups = hourlyPriceGroups
             let rows = displayRows(for: prices, groups: groups)
+            let rowWeights = rows.map { row in
+                row.isFocused ? EnergyPriceGraphLayout.focusedRowWeight : 1
+            }
             let layout = EnergyPriceGraphLayout(
-                count: rows.count,
+                rowWeights: rowWeights,
                 availableHeight: geometry.size.height
             )
             let metrics = EnergyPriceGraphMetrics(prices: prices)
@@ -504,11 +558,11 @@ struct EnergyPriceGraph: View {
                     EnergyPriceGraphAxis(metrics: metrics, plotWidth: plotWidth)
 
                     VStack(spacing: EnergyPriceGraphLayout.rowSpacing) {
-                        ForEach(rows) { row in
+                        ForEach(Array(rows.enumerated()), id: \.element.id) { index, row in
                             EnergyPriceBarRow(
                                 row: row,
                                 metrics: metrics,
-                                rowHeight: layout.rowHeight,
+                                rowHeight: layout.rowHeight(at: index),
                                 plotWidth: plotWidth
                             )
                             .transition(rowTransition(for: row))

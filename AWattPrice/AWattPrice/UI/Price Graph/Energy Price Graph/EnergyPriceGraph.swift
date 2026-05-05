@@ -446,6 +446,7 @@ struct EnergyPriceGraph: View {
     let allowsHourlyExpansion: Bool
 
     @State private var selectedGroupIndex: Int?
+    @State private var fadesExpandedIntervalTransition = false
     @State private var feedbackGenerator = UISelectionFeedbackGenerator()
 
     private var currentPrices: [EnergyPricePoint] {
@@ -550,6 +551,10 @@ struct EnergyPriceGraph: View {
     private func updateSelection(to rowIndex: Int?, rows: [EnergyPriceGraphDisplayRow]) {
         let boundedGroupIndex = rowIndex.flatMap { rows.indices.contains($0) ? rows[$0].groupIndex : nil }
         guard selectedGroupIndex != boundedGroupIndex else { return }
+        let currentlyShowsExpandedIntervals = selectedGroupIndex.map { selectedGroupIndex in
+            rows.contains { $0.groupIndex == selectedGroupIndex && $0.isExpandedInterval }
+        } ?? false
+        fadesExpandedIntervalTransition = currentlyShowsExpandedIntervals && boundedGroupIndex != nil
 
         if boundedGroupIndex != nil {
             feedbackGenerator.selectionChanged()
@@ -574,6 +579,10 @@ struct EnergyPriceGraph: View {
 
     private func rowTransition(for row: EnergyPriceGraphDisplayRow, collapsedOffsetY: CGFloat) -> AnyTransition {
         guard displayInterval == .sixtyMinutes, row.isExpandedInterval else {
+            return .opacity
+        }
+
+        if fadesExpandedIntervalTransition {
             return .opacity
         }
 
@@ -716,6 +725,7 @@ struct EnergyPriceGraph: View {
             feedbackGenerator.prepare()
         }
         .onChange(of: displayInterval) { _, _ in
+            fadesExpandedIntervalTransition = false
             selectedGroupIndex = nil
         }
     }

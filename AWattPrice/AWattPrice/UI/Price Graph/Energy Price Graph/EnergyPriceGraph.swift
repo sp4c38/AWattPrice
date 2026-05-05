@@ -171,6 +171,14 @@ private struct EnergyPriceGraphLayout {
         return rowHeights[index]
     }
 
+    func rowCenterY(at index: Int) -> CGFloat {
+        guard rowHeights.indices.contains(index) else { return 0 }
+
+        let precedingRowsHeight = rowHeights.prefix(index).reduce(0, +)
+        let precedingSpacing = Self.rowSpacing * CGFloat(index)
+        return precedingRowsHeight + precedingSpacing + (rowHeights[index] / 2)
+    }
+
     func index(at locationY: CGFloat) -> Int? {
         let plotY = locationY - Self.axisHeight
         guard plotY >= 0, plotY <= plotHeight else { return nil }
@@ -397,6 +405,39 @@ private struct EnergyPriceBarRow: View {
     }
 }
 
+private struct ExpandedIntervalTransitionModifier: ViewModifier, Animatable {
+    let collapsedOffsetY: CGFloat
+    var positionProgress: CGFloat
+    var revealProgress: CGFloat
+    var opacity: CGFloat
+
+    var animatableData: AnimatablePair<CGFloat, AnimatablePair<CGFloat, CGFloat>> {
+        get {
+            AnimatablePair(
+                positionProgress,
+                AnimatablePair(revealProgress, opacity)
+            )
+        }
+        set {
+            positionProgress = newValue.first
+            revealProgress = newValue.second.first
+            opacity = newValue.second.second
+        }
+    }
+
+    func body(content: Content) -> some View {
+        let scaleY = 0.08 + (0.92 * revealProgress)
+
+        content
+            .mask(
+                Rectangle()
+                    .scaleEffect(x: 1, y: scaleY, anchor: .center)
+            )
+            .offset(y: collapsedOffsetY * (1 - positionProgress))
+            .opacity(opacity)
+    }
+}
+
 /// The graph drawn on the prices screen displaying the price for each upcoming hour.
 struct EnergyPriceGraph: View {
     @EnvironmentObject private var energyDataService: EnergyDataService
@@ -531,12 +572,41 @@ struct EnergyPriceGraph: View {
         }
     }
 
-    private func rowTransition(for row: EnergyPriceGraphDisplayRow) -> AnyTransition {
+    private func rowTransition(for row: EnergyPriceGraphDisplayRow, collapsedOffsetY: CGFloat) -> AnyTransition {
         guard displayInterval == .sixtyMinutes, row.isExpandedInterval else {
             return .opacity
         }
 
-        return .opacity
+        return .asymmetric(
+            insertion: .modifier(
+                active: ExpandedIntervalTransitionModifier(
+                    collapsedOffsetY: collapsedOffsetY,
+                    positionProgress: 0,
+                    revealProgress: 0.22,
+                    opacity: 0.82
+                ),
+                identity: ExpandedIntervalTransitionModifier(
+                    collapsedOffsetY: collapsedOffsetY,
+                    positionProgress: 1,
+                    revealProgress: 1,
+                    opacity: 1
+                )
+            ),
+            removal: .modifier(
+                active: ExpandedIntervalTransitionModifier(
+                    collapsedOffsetY: collapsedOffsetY,
+                    positionProgress: 0,
+                    revealProgress: 0.08,
+                    opacity: 0
+                ),
+                identity: ExpandedIntervalTransitionModifier(
+                    collapsedOffsetY: collapsedOffsetY,
+                    positionProgress: 1,
+                    revealProgress: 1,
+                    opacity: 1
+                )
+            )
+        )
     }
 
     private func rowZIndex(for row: EnergyPriceGraphDisplayRow) -> Double {
@@ -601,6 +671,10 @@ struct EnergyPriceGraph: View {
                 rowWeights: rowWeights,
                 availableHeight: geometry.size.height
             )
+            let collapsedHourlyLayout = EnergyPriceGraphLayout(
+                rowWeights: Array(repeating: 1, count: groups.count),
+                availableHeight: geometry.size.height
+            )
             let metrics = EnergyPriceGraphMetrics(prices: prices)
             let plotWidth = max(geometry.size.width, 0)
 
@@ -610,13 +684,15 @@ struct EnergyPriceGraph: View {
 
                     VStack(spacing: EnergyPriceGraphLayout.rowSpacing) {
                         ForEach(Array(rows.enumerated()), id: \.element.id) { index, row in
+                            let collapsedOffsetY = collapsedHourlyLayout.rowCenterY(at: row.groupIndex) - layout.rowCenterY(at: index)
+
                             EnergyPriceBarRow(
                                 row: row,
                                 metrics: metrics,
                                 rowHeight: layout.rowHeight(at: index),
                                 plotWidth: plotWidth
                             )
-                            .transition(rowTransition(for: row))
+                            .transition(rowTransition(for: row, collapsedOffsetY: collapsedOffsetY))
                             .zIndex(rowZIndex(for: row))
                         }
                     }

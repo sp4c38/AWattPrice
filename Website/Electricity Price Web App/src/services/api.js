@@ -1,18 +1,19 @@
 import axios from 'axios';
 
-// Use relative URL for development, which will be handled by Vite's proxy
-// In production, the server's nginx config handles this forwarding
-const BASE_URL = '/api/v2/data';
+// Use a relative URL so local Vite and production nginx can proxy to the API host.
+const BASE_URL = '/api/v3/prices';
 
 export const COUNTRIES = {
   DE: {
     code: 'DE',
+    areaKey: 'DE-LU',
     name: 'Deutschland',
     flag: '🇩🇪',
     taxMultiplier: 1.19
   },
   AT: {
     code: 'AT',
+    areaKey: 'AT',
     name: 'Österreich',
     flag: '🇦🇹',
     taxMultiplier: 1.20
@@ -27,7 +28,8 @@ const convertPrice = (priceInEuroPerMWh) => {
 
 export const fetchPriceData = async (country) => {
   try {
-    const response = await axios.get(`${BASE_URL}/${country}`);
+    const areaKey = COUNTRIES[country].areaKey;
+    const response = await axios.get(`${BASE_URL}/${areaKey}`);
     
     if (!response.data || !Array.isArray(response.data.prices)) {
       throw new Error('Invalid API response format');

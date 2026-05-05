@@ -10,7 +10,7 @@ FastAPI backend for AWattPrice. It serves ENTSO-E electricity prices, caches the
 
 ## First Server Setup
 
-NGINX must already proxy `/api/v3/` to `http://127.0.0.1:8003/`.
+NGINX must already proxy `/v3/` on `api.awattprice.com` to `http://127.0.0.1:8003/`.
 
 The v3 deploy uses separate defaults so it does not touch the existing v2 server:
 
@@ -92,6 +92,6 @@ docker compose down
 Smoke test:
 
 ```sh
-curl https://awattprice.space8.me/api/v3/areas/
-curl https://awattprice.space8.me/api/v3/prices/DE-LU
+curl https://api.awattprice.com/v3/areas/
+curl https://api.awattprice.com/v3/prices/DE-LU
 ```

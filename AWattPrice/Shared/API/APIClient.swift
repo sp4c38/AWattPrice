@@ -32,7 +32,7 @@ class APIClient {
     
     // MARK: - API Configuration
 
-    private static let productionAPIURL = URL(string: "https://awattprice.space8.me/api/v3/")!
+    private static let productionAPIURL = URL(string: "https://api.awattprice.com/v3/")!
 
     static var apiURL: URL {
         if let overrideURL = debugOverrideAPIURL {

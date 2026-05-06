@@ -22,9 +22,6 @@
           "glass" : false,
           "hidden-specializations" : [
             {
-              "value" : false
-            },
-            {
               "appearance" : "dark",
               "value" : true
             },

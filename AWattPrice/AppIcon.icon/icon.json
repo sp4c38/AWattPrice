@@ -34,14 +34,7 @@
             }
           ],
           "image-name" : "App Icon v3.png",
-          "name" : "App Icon v3",
-          "position" : {
-            "scale" : 1,
-            "translation-in-points" : [
-              0,
-              0
-            ]
-          }
+          "name" : "App Icon v3"
         }
       ],
       "shadow" : {

@@ -20,16 +20,7 @@
       "layers" : [
         {
           "glass" : false,
-          "hidden-specializations" : [
-            {
-              "appearance" : "dark",
-              "value" : true
-            },
-            {
-              "appearance" : "tinted",
-              "value" : true
-            }
-          ],
+          "hidden" : false,
           "image-name" : "App Icon v3.png",
           "name" : "App Icon v3"
         }

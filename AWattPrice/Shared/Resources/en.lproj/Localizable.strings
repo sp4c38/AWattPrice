@@ -88,6 +88,9 @@
 "notifications.price_drops_below.body.sing" = "Tomorrow, electricity prices drop below %2$@ ct %1$@ time. Cheapest hour at %3$@ with %4$@ ct.";
 "notifications.price_drops_below.body.mult" = "Tomorrow, electricity prices drop below %2$@ ct %1$@ times. Cheapest hour at %3$@ with %4$@ ct.";
 "general.priceGuard" = "AWattPrice";
+"notifications.price_below.title" = "Price Below Alert";
+"notifications.price_above.title" = "Price Above Alert";
+"notifications.daily_summary.title" = "Daily Summary";
 "notifications.price_below.body.single" = "Tomorrow, electricity prices drop below %2$@ ct %1$@ time. Cheapest hour at %3$@ with %4$@ ct.";
 "notifications.price_below.body.multiple" = "Tomorrow, electricity prices drop below %2$@ ct %1$@ times. Cheapest hour at %3$@ with %4$@ ct.";
 "notifications.price_above.body.single" = "Tomorrow, electricity prices rise above %2$@ ct %1$@ time. Most expensive hour at %3$@ with %4$@ ct.";
@@ -152,7 +155,9 @@
 "Daily Summary" = "Daily Summary";
 "See Example" = "See Example";
 "Example" = "Example";
-"No example available" = "No example available";
+"Send Example" = "Send Example";
+"Sent" = "Sent";
+"Focus modes may silence example notifications." = "Focus modes may silence example notifications.";
 "With the current prices and threshold, this notification would not be sent." = "With the current prices and threshold, this notification would not be sent.";
 "Notification example could not be loaded." = "Notification example could not be loaded.";
 "Sent when new prices for tomorrow are available." = "Sent when new prices for tomorrow are available.";

@@ -115,6 +115,20 @@ struct NotificationConfiguration: Encodable {
     }
 }
 
+struct NotificationExampleRequest: Encodable {
+    var force: Bool
+    var token: String?
+    var general: GeneralNotificationConfiguration
+    var rules: NotificationRulesConfiguration
+
+    init(force: Bool, configuration: NotificationConfiguration) {
+        self.force = force
+        self.token = configuration.token
+        self.general = configuration.general
+        self.rules = configuration.rules
+    }
+}
+
 enum NotificationRuleType: String {
     case priceBelow = "price_below"
     case priceAbove = "price_above"

@@ -20,7 +20,11 @@ NOTIFICATION = Box(
             "price_above": "price-above-notification",
             "daily_summary": "daily-summary-notification",
         },
-        "title_loc_key": "general.priceGuard",
+        "title_loc_keys": {
+            "price_below": "notifications.price_below.title",
+            "price_above": "notifications.price_above.title",
+            "daily_summary": "notifications.daily_summary.title",
+        },
         "loc_keys": {
             "price_below_single": "notifications.price_below.body.single",
             "price_below_multiple": "notifications.price_below.body.multiple",

@@ -75,14 +75,12 @@ struct NotificationDraft: Equatable {
     }
 }
 
-struct NotificationExamplePreview: Identifiable {
-    let id = UUID()
-    let title: String
-    let body: String
-}
-
 @MainActor
 class NotificationSettingViewModel: ObservableObject {
+    private enum Timing {
+        static let temporaryBannerApproximationNanoseconds: UInt64 = 8_200_000_000
+    }
+
     var settingsManager: SettingsManager
     var notificationService: NotificationService
 
@@ -90,8 +88,10 @@ class NotificationSettingViewModel: ObservableObject {
     @Published private(set) var savedDraft: NotificationDraft
     @Published var isSaving = false
     @Published var uploadFailed = false
-    @Published var examplePreview: NotificationExamplePreview?
+    @Published var exampleMessage: String?
+    @Published var exampleMessageIsError = false
     @Published var exampleLoadingRule: NotificationRuleType?
+    @Published var sentExampleRule: NotificationRuleType?
 
     init(settingsManager: SettingsManager, notificationService: NotificationService) {
         self.settingsManager = settingsManager
@@ -193,32 +193,40 @@ class NotificationSettingViewModel: ObservableObject {
                 notificationConfiguration: notificationConfiguration(forExample: ruleType)
             )
 
-            if let response, response.wouldSend {
-                examplePreview = NotificationExamplePreview(
-                    title: localizedNotificationText(
-                        key: response.titleLocKey,
-                        arguments: []
-                    ),
-                    body: localizedNotificationText(
-                        key: response.bodyLocKey,
-                        arguments: response.locArgs
-                    )
-                )
+            if let response, try await notificationService.presentNotificationExample(response) {
+                sentExampleRule = ruleType
+                exampleMessage = "Focus modes may silence example notifications.".localized()
+                exampleMessageIsError = false
+                clearInformationalExampleMessageLater()
             } else {
-                examplePreview = NotificationExamplePreview(
-                    title: "No example available".localized(),
-                    body: "With the current prices and threshold, this notification would not be sent.".localized()
-                )
+                exampleMessage = "With the current prices and threshold, this notification would not be sent.".localized()
+                exampleMessageIsError = true
             }
         } catch {
             print("Failed to load notification example: \(error)")
-            examplePreview = NotificationExamplePreview(
-                title: "No example available".localized(),
-                body: "Notification example could not be loaded.".localized()
-            )
+            exampleMessage = "Notification example could not be loaded.".localized()
+            exampleMessageIsError = true
         }
 
         exampleLoadingRule = nil
+
+        if sentExampleRule == ruleType {
+            Task {
+                try? await Task.sleep(nanoseconds: 2_000_000_000)
+                if self.sentExampleRule == ruleType {
+                    self.sentExampleRule = nil
+                }
+            }
+        }
+    }
+
+    private func clearInformationalExampleMessageLater() {
+        Task {
+            try? await Task.sleep(nanoseconds: Timing.temporaryBannerApproximationNanoseconds)
+            if self.exampleMessageIsError == false {
+                self.exampleMessage = nil
+            }
+        }
     }
 
     func canRequestExample(for ruleType: NotificationRuleType) -> Bool {
@@ -274,11 +282,6 @@ class NotificationSettingViewModel: ObservableObject {
         return NotificationConfiguration(token: token, general: general, rules: rules)
     }
 
-    private func localizedNotificationText(key: String?, arguments: [String]) -> String {
-        guard let key else { return "" }
-        let format = key.localized()
-        return String(format: format, arguments: arguments.map { $0 as CVarArg })
-    }
 }
 
 private struct NotificationRuleCard<Content: View>: View {
@@ -288,6 +291,7 @@ private struct NotificationRuleCard<Content: View>: View {
     let tint: Color
     let ruleType: NotificationRuleType
     let exampleLoadingRule: NotificationRuleType?
+    let sentExampleRule: NotificationRuleType?
     let canShowExample: Bool
     let onExample: () -> Void
     @Binding var isEnabled: Bool
@@ -328,15 +332,26 @@ private struct NotificationRuleCard<Content: View>: View {
                         onExample()
                     } label: {
                         HStack(spacing: 4) {
-                            Text("Example".localized())
-                                .font(.caption.weight(.semibold))
+                            ZStack(alignment: .trailing) {
+                                Text("Send example".localized())
+                                    .font(.caption.weight(.semibold))
+                                    .opacity(sentExampleRule == ruleType ? 0 : 1)
+                                    .offset(y: sentExampleRule == ruleType ? -4 : 0)
+
+                                Text("Sent".localized())
+                                    .font(.caption.weight(.semibold))
+                                    .opacity(sentExampleRule == ruleType ? 1 : 0)
+                                    .offset(y: sentExampleRule == ruleType ? 0 : 4)
+                            }
+                            .animation(.easeInOut(duration: 0.18), value: sentExampleRule)
+
                             Image(systemName: "chevron.right")
                                 .font(.caption.weight(.semibold))
                         }
                         .foregroundStyle(.secondary)
                     }
                     .buttonStyle(.plain)
-                    .disabled(exampleLoadingRule != nil || canShowExample == false)
+                    .disabled(exampleLoadingRule == ruleType || canShowExample == false)
                     .opacity(canShowExample ? 1 : 0.45)
 
                     Toggle(title.localized(), isOn: animatedIsEnabled)
@@ -349,37 +364,6 @@ private struct NotificationRuleCard<Content: View>: View {
                     .transition(.opacity.combined(with: .move(edge: .top)))
             }
         }
-    }
-}
-
-private struct NotificationExampleSheet: View {
-    let preview: NotificationExamplePreview
-
-    var body: some View {
-        VStack(spacing: 18) {
-            HStack(alignment: .top, spacing: 12) {
-                Image(systemName: "bell.badge.fill")
-                    .font(.title3.weight(.semibold))
-                    .foregroundStyle(AppTheme.accent)
-                    .frame(width: 34, height: 34)
-                    .background(AppTheme.accent.opacity(0.12), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
-
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(preview.title)
-                        .font(.headline)
-                    Text(preview.body)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-
-                Spacer(minLength: 0)
-            }
-            .padding(16)
-            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
-        }
-        .padding(24)
-        .presentationDetents([.height(190), .medium])
     }
 }
 
@@ -476,6 +460,13 @@ struct NotificationSettingView: View {
                         }
                     }
 
+                    if let exampleMessage = viewModel.exampleMessage {
+                        Text(exampleMessage)
+                            .font(.footnote.weight(.semibold))
+                            .foregroundStyle(viewModel.exampleMessageIsError ? AppTheme.error : Color.blue)
+                            .transition(.opacity.combined(with: .move(edge: .top)))
+                    }
+                    
                     NotificationSettingsCard {
                         NotificationRuleCard(
                             title: "Price Below",
@@ -484,6 +475,7 @@ struct NotificationSettingView: View {
                             tint: AppTheme.success,
                             ruleType: .priceBelow,
                             exampleLoadingRule: viewModel.exampleLoadingRule,
+                            sentExampleRule: viewModel.sentExampleRule,
                             canShowExample: viewModel.canRequestExample(for: .priceBelow),
                             onExample: { Task { await viewModel.showExample(for: .priceBelow) } },
                             isEnabled: $viewModel.draft.priceBelowEnabled
@@ -500,6 +492,7 @@ struct NotificationSettingView: View {
                             tint: AppTheme.error,
                             ruleType: .priceAbove,
                             exampleLoadingRule: viewModel.exampleLoadingRule,
+                            sentExampleRule: viewModel.sentExampleRule,
                             canShowExample: viewModel.canRequestExample(for: .priceAbove),
                             onExample: { Task { await viewModel.showExample(for: .priceAbove) } },
                             isEnabled: $viewModel.draft.priceAboveEnabled
@@ -516,6 +509,7 @@ struct NotificationSettingView: View {
                             tint: AppTheme.accent,
                             ruleType: .dailySummary,
                             exampleLoadingRule: viewModel.exampleLoadingRule,
+                            sentExampleRule: viewModel.sentExampleRule,
                             canShowExample: viewModel.canRequestExample(for: .dailySummary),
                             onExample: { Task { await viewModel.showExample(for: .dailySummary) } },
                             isEnabled: $viewModel.draft.dailySummaryEnabled
@@ -534,11 +528,9 @@ struct NotificationSettingView: View {
                 .padding(.bottom, 28)
             }
         }
+        .animation(.easeInOut(duration: 0.2), value: viewModel.exampleMessage)
         .navigationTitle("Notifications")
         .navigationBarTitleDisplayMode(.inline)
-        .sheet(item: $viewModel.examplePreview) { preview in
-            NotificationExampleSheet(preview: preview)
-        }
         .task {
             viewModel.settingsManager = settingsManager
             viewModel.notificationService = notificationService

@@ -116,7 +116,10 @@ async def get_notification_example(rule_type: str, request: Request):
         logger.warning(f"Couldn't decode notification example profile {repr(body_raw)} as json: {exc}.")
         raise HTTPException(400)
 
-    profile = notification_profiles.parse_notification_profile_body(Box(body_json))
+    body = Box(body_json)
+    force = bool(body.pop("force", False))
+
+    profile = notification_profiles.parse_notification_profile_body(body)
     if profile is None:
         raise HTTPException(400)
 
@@ -137,7 +140,11 @@ async def get_notification_example(rule_type: str, request: Request):
         profile, rule_type, notifiable_prices[profile.general.area]
     )
     if not selected_prices:
-        return {"would_send": False}
+        if not force:
+            return {"would_send": False}
+        profile, selected_prices = notification_payloads.forced_example_for_rule(
+            profile, rule_type, notifiable_prices[profile.general.area]
+        )
 
     notification = notification_payloads.construct_notification(
         profile,
@@ -149,6 +156,7 @@ async def get_notification_example(rule_type: str, request: Request):
 
     return {
         "would_send": True,
+        "forced": force,
         "title_loc_key": alert["title-loc-key"],
         "body_loc_key": alert["loc-key"],
         "loc_args": alert["loc-args"],

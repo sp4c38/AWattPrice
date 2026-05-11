@@ -54,6 +54,15 @@ def stringify_adjusted_price(price_point: Box, profile: Box) -> str:
     return awattprice_notification_utils.stringify_price(price_value, area)
 
 
+def copy_profile_with_rule_threshold(profile: Box, rule_type: str, threshold: Decimal) -> Box:
+    """Return a shallow profile copy with one threshold replaced for example construction."""
+    updated_profile = Box(profile.to_dict())
+    updated_profile.general.base_fee = Decimal(str(updated_profile.general.base_fee))
+    updated_profile.general.percentage_add_on = Decimal(str(updated_profile.general.percentage_add_on))
+    updated_profile.rules[rule_type].threshold = threshold
+    return updated_profile
+
+
 def construct_notification(profile: Box, rule_type: str, selected_prices: list[Box], notifiable_prices: NotifiableDetailedPriceData) -> Box:
     """Construct the APNs payload for a notification rule."""
     if len(selected_prices) == 0:
@@ -65,7 +74,7 @@ def construct_notification(profile: Box, rule_type: str, selected_prices: list[B
     notification.aps["sound"] = defaults.NOTIFICATION.sound
     notification.aps["content-available"] = 0
     notification.aps["alert"] = {}
-    notification.aps["alert"]["title-loc-key"] = defaults.NOTIFICATION.title_loc_key
+    notification.aps["alert"]["title-loc-key"] = defaults.NOTIFICATION.title_loc_keys[rule_type]
 
     if rule_type == "price_below":
         threshold = round_subunitkwh(Decimal(str(profile.rules.price_below.threshold)))
@@ -155,6 +164,26 @@ def selected_prices_for_rule(profile: Box, rule_type: str, notifiable_prices: No
             price_point for price_point in notifiable_prices.data.prices
             if adjusted_price(price_point, profile) >= threshold
         ]
+
+    raise ValueError(f"Unknown notification rule type: {rule_type}.")
+
+
+def forced_example_for_rule(
+    profile: Box, rule_type: str, notifiable_prices: NotifiableDetailedPriceData
+) -> tuple[Box, list[Box]]:
+    """Return a profile and selected prices that force a representative rule example."""
+    if rule_type == "daily_summary":
+        return profile, selected_prices_for_rule(profile, rule_type, notifiable_prices)
+
+    if rule_type == "price_below":
+        best_price = min(notifiable_prices.data.prices, key=lambda price_point: adjusted_price(price_point, profile))
+        threshold = round_subunitkwh(adjusted_price(best_price, profile))
+        return copy_profile_with_rule_threshold(profile, rule_type, threshold), [best_price]
+
+    if rule_type == "price_above":
+        worst_price = max(notifiable_prices.data.prices, key=lambda price_point: adjusted_price(price_point, profile))
+        threshold = round_subunitkwh(adjusted_price(worst_price, profile))
+        return copy_profile_with_rule_threshold(profile, rule_type, threshold), [worst_price]
 
     raise ValueError(f"Unknown notification rule type: {rule_type}.")
 

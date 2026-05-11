@@ -162,6 +162,23 @@ class NotificationMatchingTests(unittest.TestCase):
         self.assertEqual(below_payload.aps.alert["loc-key"], "notifications.price_below.body.single")
         self.assertEqual(above_payload.aps.alert["loc-key"], "notifications.price_above.body.single")
         self.assertEqual(summary_payload.aps.alert["loc-key"], "notifications.daily_summary.body")
+        self.assertEqual(below_payload.aps.alert["title-loc-key"], "notifications.price_below.title")
+        self.assertEqual(above_payload.aps.alert["title-loc-key"], "notifications.price_above.title")
+        self.assertEqual(summary_payload.aps.alert["title-loc-key"], "notifications.daily_summary.title")
+
+    def test_forced_examples_pick_representative_price_and_threshold(self):
+        parsed_profile = notification_profiles.parse_notification_profile_body(profile())
+        parsed_profile.rules.price_below.threshold = -100
+        parsed_profile.rules.price_above.threshold = 1000
+        prices = notifiable_prices()
+
+        forced_below_profile, below_prices = notifications.forced_example_for_rule(parsed_profile, "price_below", prices)
+        forced_above_profile, above_prices = notifications.forced_example_for_rule(parsed_profile, "price_above", prices)
+
+        self.assertEqual([item.start_timestamp.hour for item in below_prices], [1])
+        self.assertEqual([item.start_timestamp.hour for item in above_prices], [3])
+        self.assertEqual(forced_below_profile.rules.price_below.threshold, Decimal("15.09"))
+        self.assertEqual(forced_above_profile.rules.price_above.threshold, Decimal("60.90"))
 
     def test_get_notifiable_prices_uses_market_area_metadata(self):
         prices = Box(

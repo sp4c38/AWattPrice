@@ -58,6 +58,30 @@ class NotificationService: ObservableObject {
 
         return try await APIClient().request(to: apiRequest)
     }
+
+    func presentNotificationExample(_ response: NotificationExampleResponse) async throws -> Bool {
+        guard response.wouldSend else { return false }
+        guard await ensureAccess(ensurePushAccess: false) else { return false }
+
+        let content = UNMutableNotificationContent()
+        content.title = localizedNotificationText(key: response.titleLocKey, arguments: [])
+        content.body = localizedNotificationText(key: response.bodyLocKey, arguments: response.locArgs)
+        content.sound = .default
+
+        let request = UNNotificationRequest(
+            identifier: "notification-example-\(UUID().uuidString)",
+            content: content,
+            trigger: nil
+        )
+
+        try await UNUserNotificationCenter.current().add(request)
+        return true
+    }
+
+    private func localizedNotificationText(key: String?, arguments: [String]) -> String {
+        guard let key else { return "" }
+        return String(format: key.localized(), arguments: arguments.map { $0 as CVarArg })
+    }
     
     func wantToReceiveAnyNotification(setting: Setting) -> Bool {
         setting.priceDropsBelowEnabled || setting.priceRisesAboveEnabled || setting.dailySummaryEnabled

@@ -132,7 +132,8 @@ class APIClient {
         let encoder = JSONEncoder()
         let encodedConfiguration: Data
         do {
-            encodedConfiguration = try encoder.encode(exampleConfiguration)
+            let exampleRequest = NotificationExampleRequest(force: true, configuration: exampleConfiguration)
+            encodedConfiguration = try encoder.encode(exampleRequest)
         } catch {
             print("Couldn't encode notification example configuration: \(error).")
             return nil

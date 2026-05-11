@@ -170,6 +170,9 @@
 "notifications.price_drops_below.body.sing" = "Morgen fallen die Strompreise %1$@ Mal unter %2$@ ct. Günstigster Preis um %3$@ Uhr mit %4$@ ct.";
 
 "general.priceGuard" = "AWattPrice";
+"notifications.price_below.title" = "Preis darunter";
+"notifications.price_above.title" = "Preis darüber";
+"notifications.daily_summary.title" = "Tägliche Übersicht";
 "notifications.price_below.body.single" = "Morgen fallen die Strompreise %1$@ Mal unter %2$@ ct. Günstigster Preis um %3$@ Uhr mit %4$@ ct.";
 "notifications.price_below.body.multiple" = "Morgen fallen die Strompreise %1$@ Mal unter %2$@ ct. Günstigster Preis um %3$@ Uhr mit %4$@ ct.";
 "notifications.price_above.body.single" = "Morgen steigen die Strompreise %1$@ Mal über %2$@ ct. Teuerster Preis um %3$@ Uhr mit %4$@ ct.";
@@ -321,7 +324,9 @@
 "Daily Summary" = "Tägliche Übersicht";
 "See Example" = "Beispiel ansehen";
 "Example" = "Beispiel";
-"No example available" = "Kein Beispiel verfügbar";
+"Send Example" = "Beispiel senden";
+"Sent" = "Gesendet";
+"Focus modes may silence example notifications." = "Fokusmodi können Beispiel-Benachrichtigungen stummschalten.";
 "With the current prices and threshold, this notification would not be sent." = "Mit den aktuellen Preisen und diesem Grenzwert würde diese Benachrichtigung nicht gesendet.";
 "Notification example could not be loaded." = "Das Benachrichtigungsbeispiel konnte nicht geladen werden.";
 "Sent when new prices for tomorrow are available." = "Wird gesendet, sobald neue Preise für morgen verfügbar sind.";

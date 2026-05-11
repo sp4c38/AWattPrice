@@ -327,17 +327,13 @@ private struct NotificationRuleCard<Content: View>: View {
                     Button {
                         onExample()
                     } label: {
-                        Group {
-                            if exampleLoadingRule == ruleType {
-                                ProgressView()
-                                    .controlSize(.mini)
-                            } else {
-                                Text("Example".localized())
-                                    .font(.caption.weight(.semibold))
-                                    .underline()
-                            }
+                        HStack(spacing: 4) {
+                            Text("Example".localized())
+                                .font(.caption.weight(.semibold))
+                            Image(systemName: "chevron.right")
+                                .font(.caption.weight(.semibold))
                         }
-                        .foregroundStyle(AppTheme.accent)
+                        .foregroundStyle(.secondary)
                     }
                     .buttonStyle(.plain)
                     .disabled(exampleLoadingRule != nil || canShowExample == false)
@@ -483,7 +479,7 @@ struct NotificationSettingView: View {
                     NotificationSettingsCard {
                         NotificationRuleCard(
                             title: "Price Below",
-                            subtitle: "Get notified when tomorrow has cheap hours.",
+                            subtitle: "Cheap hours tomorrow.",
                             systemImage: "bell.badge.fill",
                             tint: AppTheme.success,
                             ruleType: .priceBelow,
@@ -499,7 +495,7 @@ struct NotificationSettingView: View {
                     NotificationSettingsCard {
                         NotificationRuleCard(
                             title: "Price Above",
-                            subtitle: "Warn me when tomorrow has expensive hours.",
+                            subtitle: "Expensive hours tomorrow.",
                             systemImage: "exclamationmark.triangle.fill",
                             tint: AppTheme.error,
                             ruleType: .priceAbove,
@@ -515,7 +511,7 @@ struct NotificationSettingView: View {
                     NotificationSettingsCard {
                         NotificationRuleCard(
                             title: "Daily Summary",
-                            subtitle: "Summarize tomorrow's cheapest and most expensive hours.",
+                            subtitle: "Tomorrow's price summary.",
                             systemImage: "list.bullet.rectangle.fill",
                             tint: AppTheme.accent,
                             ruleType: .dailySummary,

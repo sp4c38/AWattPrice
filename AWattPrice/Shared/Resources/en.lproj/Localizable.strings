@@ -142,9 +142,9 @@
 "No alerts active" = "No alerts active";
 "1 alert active" = "1 alert active";
 "%@ alerts active" = "%@ alerts active";
-"Get notified when tomorrow has cheap hours." = "Get notified when tomorrow has cheap hours.";
-"Warn me when tomorrow has expensive hours." = "Warn me when tomorrow has expensive hours.";
-"Summarize tomorrow's cheapest and most expensive hours." = "Summarize tomorrow's cheapest and most expensive hours.";
+"Cheap hours tomorrow." = "Cheap hours tomorrow.";
+"Expensive hours tomorrow." = "Expensive hours tomorrow.";
+"Tomorrow's price summary." = "Tomorrow's price summary.";
 "Alert below" = "Alert below";
 "Warn above" = "Warn above";
 "Price Below" = "Price Below";

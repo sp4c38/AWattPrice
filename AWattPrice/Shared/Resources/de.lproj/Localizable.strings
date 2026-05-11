@@ -311,9 +311,9 @@
 "No alerts active" = "Keine Hinweise aktiv";
 "1 alert active" = "1 Hinweis aktiv";
 "%@ alerts active" = "%@ Hinweise aktiv";
-"Get notified when tomorrow has cheap hours." = "Benachrichtigung, wenn es morgen günstige Stunden gibt.";
-"Warn me when tomorrow has expensive hours." = "Warnung, wenn es morgen teure Stunden gibt.";
-"Summarize tomorrow's cheapest and most expensive hours." = "Zusammenfassung der günstigsten und teuersten Stunden für morgen.";
+"Cheap hours tomorrow." = "Günstige Stunden morgen.";
+"Expensive hours tomorrow." = "Teure Stunden morgen.";
+"Tomorrow's price summary." = "Preisübersicht für morgen.";
 "Alert below" = "Hinweis unter";
 "Warn above" = "Warnung über";
 "Price Below" = "Preis darunter";

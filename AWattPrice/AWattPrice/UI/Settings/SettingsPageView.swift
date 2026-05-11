@@ -119,25 +119,6 @@ private struct SettingsLegalLinksView: View {
 }
 
 struct SettingsPageView: View {
-    @EnvironmentObject private var settingsManager: SettingsManager
-    @EnvironmentObject private var notificationService: NotificationService
-
-    private var priceGuardSubtitle: String {
-        if settingsManager.setting.priceDropsBelowEnabled {
-            let threshold = settingsManager.setting.priceDropsBelowThreshold.priceString ?? "0"
-            return String(format: "Below %@ ct/kWh".localized(), threshold)
-        }
-
-        switch notificationService.accessState {
-        case .granted:
-            return "Set alert threshold".localized()
-        case .rejected:
-            return "Notifications off".localized()
-        default:
-            return "Not configured".localized()
-        }
-    }
-
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -167,17 +148,6 @@ struct SettingsPageView: View {
 
                     SettingsCard {
                         VStack(spacing: 16) {
-                            SettingsDestinationRow(
-                                title: "Price Guard".localized(),
-                                subtitle: priceGuardSubtitle,
-                                systemImage: "bell.badge.fill",
-                                tint: AppTheme.error
-                            ) {
-                                NotificationSettingView()
-                            }
-
-                            Divider()
-
                             SettingsDestinationRow(
                                 title: "Help & Suggestions".localized(),
                                 subtitle: nil,

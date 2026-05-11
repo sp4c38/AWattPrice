@@ -107,16 +107,51 @@ class APIClient {
         
         let requestURL = APIClient.apiURL
             .appendingPathComponent("notifications", isDirectory: true)
-            .appendingPathComponent("save_configuration", isDirectory: true)
+            .appendingPathComponent("device", isDirectory: true)
+        var urlRequest = URLRequest(
+            url: requestURL,
+            cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,
+            timeoutInterval: 30
+        )
+        urlRequest.httpMethod = "PUT"
+        urlRequest.httpBody = encodedTasks
+        urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        return PlainRequest(urlRequest: urlRequest)
+    }
+
+    static func createNotificationExampleRequest(
+        ruleType: NotificationRuleType,
+        notificationConfiguration: NotificationConfiguration
+    ) -> ResponseRequest<NotificationExampleResponse>? {
+        var exampleConfiguration = notificationConfiguration
+        if exampleConfiguration.token == nil {
+            exampleConfiguration.token = "example"
+        }
+
+        let encoder = JSONEncoder()
+        let encodedConfiguration: Data
+        do {
+            encodedConfiguration = try encoder.encode(exampleConfiguration)
+        } catch {
+            print("Couldn't encode notification example configuration: \(error).")
+            return nil
+        }
+
+        let requestURL = APIClient.apiURL
+            .appendingPathComponent("notifications", isDirectory: true)
+            .appendingPathComponent("examples", isDirectory: true)
+            .appendingPathComponent(ruleType.rawValue, isDirectory: true)
         var urlRequest = URLRequest(
             url: requestURL,
             cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,
             timeoutInterval: 30
         )
         urlRequest.httpMethod = "POST"
-        urlRequest.httpBody = encodedTasks
-        
-        return PlainRequest(urlRequest: urlRequest)
+        urlRequest.httpBody = encodedConfiguration
+        urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        return ResponseRequest(urlRequest: urlRequest, decoder: JSONDecoder())
     }
     
     // MARK: - Request Execution
@@ -141,8 +176,8 @@ class APIClient {
             throw URLError(.badServerResponse)
         }
         
-        guard httpResponse.statusCode == 200 else {
-            print("URL response from server has status code \(httpResponse.statusCode), expected 200")
+        guard (200..<300).contains(httpResponse.statusCode) else {
+            print("URL response from server has status code \(httpResponse.statusCode), expected 2xx")
             throw URLError(.badServerResponse)
         }
         

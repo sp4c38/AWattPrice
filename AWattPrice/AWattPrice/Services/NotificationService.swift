@@ -33,8 +33,6 @@ class NotificationService: ObservableObject {
     
     /// Try to receive the required notification access permissions and send the notification request.
     private func sendNotificationConfiguration(_ notificationConfiguration: NotificationConfiguration) async throws -> (data: Data, response: URLResponse)? {
-        guard accessState == .granted, pushState == .apnsRegistrationSuccessful else { return nil }
-        
         guard let apiRequest = APIClient.createNotificationRequest(notificationConfiguration) else { return nil }
         
         do {
@@ -46,13 +44,23 @@ class NotificationService: ObservableObject {
             throw error
         }
     }
+
+    func notificationExample(
+        for ruleType: NotificationRuleType,
+        notificationConfiguration: NotificationConfiguration
+    ) async throws -> NotificationExampleResponse? {
+        guard let apiRequest = APIClient.createNotificationExampleRequest(
+            ruleType: ruleType,
+            notificationConfiguration: notificationConfiguration
+        ) else {
+            return nil
+        }
+
+        return try await APIClient().request(to: apiRequest)
+    }
     
     func wantToReceiveAnyNotification(setting: Setting) -> Bool {
-        if setting.priceDropsBelowEnabled == true {
-            return true
-        } else {
-            return false
-        }
+        setting.priceDropsBelowEnabled || setting.priceRisesAboveEnabled || setting.dailySummaryEnabled
     }
     
     /// Configure notifications with the provided configuration
@@ -60,21 +68,30 @@ class NotificationService: ObservableObject {
     func changeNotificationConfiguration(_ notificationConfiguration: NotificationConfiguration, _ setting: Setting) async throws -> (data: Data, response: URLResponse)? {
         var notificationConfiguration = notificationConfiguration
         
-        if !wantToReceiveAnyNotification(setting: setting) {
-            print("User doesn't want to receive any notifications and thus don't need to upload.")
-            return nil
+        let wantsNotifications = wantToReceiveAnyNotification(setting: setting)
+
+        if wantsNotifications {
+            guard await ensureAccess(), let token = self.token else {
+                print("Didn't get notification access.")
+                return nil
+            }
+
+            if notificationConfiguration.token == nil {
+                notificationConfiguration.token = token
+            }
+        } else {
+            guard let existingToken = notificationConfiguration.token ?? self.token ?? setting.pushToken else {
+                print("User disabled notifications and no token exists to update remotely.")
+                return nil
+            }
+            notificationConfiguration.token = existingToken
         }
-        
-        guard await ensureAccess(), let token = self.token else {
+
+        guard notificationConfiguration.token != nil else {
             print("Didn't get notification access.")
             return nil
         }
-        
-        // Set token if needed
-        if notificationConfiguration.token == nil {
-            notificationConfiguration.token = token
-        }
-        
+
         // Try to send the configuration
         do {
             return try await sendNotificationConfiguration(notificationConfiguration)

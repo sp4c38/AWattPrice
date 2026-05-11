@@ -87,6 +87,12 @@
 // Notification localizations
 "notifications.price_drops_below.body.sing" = "Tomorrow, electricity prices drop below %2$@ ct %1$@ time. Cheapest hour at %3$@ with %4$@ ct.";
 "notifications.price_drops_below.body.mult" = "Tomorrow, electricity prices drop below %2$@ ct %1$@ times. Cheapest hour at %3$@ with %4$@ ct.";
+"general.priceGuard" = "AWattPrice";
+"notifications.price_below.body.single" = "Tomorrow, electricity prices drop below %2$@ ct %1$@ time. Cheapest hour at %3$@ with %4$@ ct.";
+"notifications.price_below.body.multiple" = "Tomorrow, electricity prices drop below %2$@ ct %1$@ times. Cheapest hour at %3$@ with %4$@ ct.";
+"notifications.price_above.body.single" = "Tomorrow, electricity prices rise above %2$@ ct %1$@ time. Most expensive hour at %3$@ with %4$@ ct.";
+"notifications.price_above.body.multiple" = "Tomorrow, electricity prices rise above %2$@ ct %1$@ times. Most expensive hour at %3$@ with %4$@ ct.";
+"notifications.daily_summary.body" = "Tomorrow's cheapest hour is %@ at %@ ct. Most expensive hour is %@ at %@ ct.";
 
 "baseFee.infoText" = "Configured add-ons are added on top of each electricity price within the entire app. These values depend on your electricity contract.";
 "baseFee.priceGuardActivatedInfo" = "The price guard is turned on. Remember to adjust the wish price if necessary when you change the value below.";
@@ -110,6 +116,7 @@
 "Not configured" = "Not configured";
 "Value" = "Value";
 "Used in Price Guard" = "Used in Price Guard";
+"Used in Notifications" = "Used in Notifications";
 "Price Add-ons" = "Price Add-ons";
 "Fixed Add-on" = "Fixed Add-on";
 "Generic extra costs per consumed kWh." = "Generic extra costs per consumed kWh.";
@@ -130,6 +137,26 @@
 "Threshold" = "Threshold";
 "On" = "On";
 "Off" = "Off";
+"Unsaved" = "Unsaved";
+"Saving" = "Saving";
+"No alerts active" = "No alerts active";
+"1 alert active" = "1 alert active";
+"%@ alerts active" = "%@ alerts active";
+"Get notified when tomorrow has cheap hours." = "Get notified when tomorrow has cheap hours.";
+"Warn me when tomorrow has expensive hours." = "Warn me when tomorrow has expensive hours.";
+"Summarize tomorrow's cheapest and most expensive hours." = "Summarize tomorrow's cheapest and most expensive hours.";
+"Alert below" = "Alert below";
+"Warn above" = "Warn above";
+"Price Below" = "Price Below";
+"Price Above" = "Price Above";
+"Daily Summary" = "Daily Summary";
+"See Example" = "See Example";
+"Example" = "Example";
+"No example available" = "No example available";
+"With the current prices and threshold, this notification would not be sent." = "With the current prices and threshold, this notification would not be sent.";
+"Notification example could not be loaded." = "Notification example could not be loaded.";
+"Sent when new prices for tomorrow are available." = "Sent when new prices for tomorrow are available.";
+"Notification settings could not be saved." = "Notification settings could not be saved.";
 "Get Help" = "Get Help";
 "Send Suggestion" = "Send Suggestion";
 

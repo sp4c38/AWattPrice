@@ -99,3 +99,56 @@ NOTIFICATION_CONFIGURATION_SCHEMA = {
     "required": ["token", "general", "notifications"],
     "additionalProperties": False
 }
+
+NOTIFICATION_PROFILE_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "token": {"type": "string", "minLength": 1},
+        "general": {
+            "type": "object",
+            "properties": {
+                "area": {"enum": supported_market_area_keys},
+                "tax": {"type": "boolean"},
+                "base_fee": {"type": "number"},
+                "percentage_add_on": {"type": "number"},
+            },
+            "required": ["area", "tax", "base_fee", "percentage_add_on"],
+            "additionalProperties": False,
+        },
+        "rules": {
+            "type": "object",
+            "properties": {
+                "price_below": {
+                    "type": "object",
+                    "properties": {
+                        "active": {"type": "boolean"},
+                        "threshold": {"type": ["number", "null"]},
+                    },
+                    "required": ["active", "threshold"],
+                    "additionalProperties": False,
+                },
+                "price_above": {
+                    "type": "object",
+                    "properties": {
+                        "active": {"type": "boolean"},
+                        "threshold": {"type": ["number", "null"]},
+                    },
+                    "required": ["active", "threshold"],
+                    "additionalProperties": False,
+                },
+                "daily_summary": {
+                    "type": "object",
+                    "properties": {
+                        "active": {"type": "boolean"},
+                    },
+                    "required": ["active"],
+                    "additionalProperties": False,
+                },
+            },
+            "required": ["price_below", "price_above", "daily_summary"],
+            "additionalProperties": False,
+        },
+    },
+    "required": ["token", "general", "rules"],
+    "additionalProperties": False,
+}

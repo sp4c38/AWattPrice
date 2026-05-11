@@ -1,6 +1,4 @@
 """Define the urls and their tasks handled by the API."""
-import sys
-
 from json import JSONDecodeError
 
 from box import Box
@@ -8,27 +6,20 @@ from fastapi import FastAPI
 from fastapi import HTTPException
 from fastapi import Request
 from loguru import logger
+from starlette.responses import Response
 from starlette.responses import RedirectResponse
 
 from awattprice import configurator
-from awattprice import database
 from awattprice import defaults
-from awattprice import notifications
-from awattprice import orm
+from awattprice import notification_profiles
 from awattprice import prices
+from awattprice_notifications.price_below import defaults as notification_defaults
+from awattprice_notifications.price_below import notifications as notification_payloads
+from awattprice_notifications.price_below import prices as notification_prices
 
 config = configurator.get_config()
 configurator.configure_loguru(defaults.AWATTPRICE_SERVICE_NAME, config)
-
-try:
-    database_engine = database.get_awattprice_engine(config, async_=True)
-except FileNotFoundError as exc:
-    logger.exception(exc)
-    sys.exit(1)
-orm.metadata.bind = database_engine
-
-# Uncomment to create all database tables inside the database. An empty sqlite database must already exist and async_ must be set to false upon engine creation. 
-# orm.Base.metadata.create_all()
+profile_store = notification_profiles.NotificationProfileStore(notification_profiles.get_store_path(config))
 
 app = FastAPI()
 
@@ -91,20 +82,74 @@ async def get_default_area_prices():
 
 
 @logger.catch
-@app.post("/notifications/save_configuration/")
-async def handle_notification_configuration(request: Request):
-    """Runs one or multiple notification setting update tasks for a token."""
+@app.put("/notifications/device/")
+async def put_notification_profile(request: Request):
+    """Replace the notification profile for a device token."""
     try:
         body_json = await request.json()
     except JSONDecodeError as exc:
         body_raw = await request.body()
-        logger.warning(f"Couldn't decode notification tasks {repr(body_raw)} as json: {exc}.")
+        logger.warning(f"Couldn't decode notification profile {repr(body_raw)} as json: {exc}.")
         raise HTTPException(400)
 
-    raw_configuration = Box(body_json)
+    raw_profile = Box(body_json)
 
-    configuration = notifications.parse_notification_configuration_body(raw_configuration)
-    if configuration is None:
+    profile = notification_profiles.parse_notification_profile_body(raw_profile)
+    if profile is None:
         raise HTTPException(400)
 
-    await notifications.save_notification_configuration(database_engine, configuration)
+    profile_store.save_profile(profile)
+    return Response(status_code=204)
+
+
+@logger.catch
+@app.post("/notifications/examples/{rule_type}/")
+async def get_notification_example(rule_type: str, request: Request):
+    """Return the localized APNs alert payload for an example notification rule."""
+    if rule_type not in notification_defaults.NOTIFICATION.collapse_ids:
+        raise HTTPException(404)
+
+    try:
+        body_json = await request.json()
+    except JSONDecodeError as exc:
+        body_raw = await request.body()
+        logger.warning(f"Couldn't decode notification example profile {repr(body_raw)} as json: {exc}.")
+        raise HTTPException(400)
+
+    profile = notification_profiles.parse_notification_profile_body(Box(body_json))
+    if profile is None:
+        raise HTTPException(400)
+
+    price_data = await prices.get_current_prices(
+        profile.general.area,
+        config,
+        fall_back=True,
+        background_refresh=True,
+    )
+    if price_data is None:
+        raise HTTPException(503)
+
+    notifiable_prices = notification_prices.get_notifiable_areas_prices(Box({profile.general.area: price_data}))
+    if profile.general.area not in notifiable_prices:
+        return {"would_send": False}
+
+    selected_prices = notification_payloads.selected_prices_for_rule(
+        profile, rule_type, notifiable_prices[profile.general.area]
+    )
+    if not selected_prices:
+        return {"would_send": False}
+
+    notification = notification_payloads.construct_notification(
+        profile,
+        rule_type,
+        selected_prices,
+        notifiable_prices[profile.general.area],
+    )
+    alert = notification.aps.alert
+
+    return {
+        "would_send": True,
+        "title_loc_key": alert["title-loc-key"],
+        "body_loc_key": alert["loc-key"],
+        "loc_args": alert["loc-args"],
+    }

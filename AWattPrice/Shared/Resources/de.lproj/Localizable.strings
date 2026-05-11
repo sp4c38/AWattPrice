@@ -169,6 +169,13 @@
 /* Title managed by general.priceGuard */
 "notifications.price_drops_below.body.sing" = "Morgen fallen die Strompreise %1$@ Mal unter %2$@ ct. Günstigster Preis um %3$@ Uhr mit %4$@ ct.";
 
+"general.priceGuard" = "AWattPrice";
+"notifications.price_below.body.single" = "Morgen fallen die Strompreise %1$@ Mal unter %2$@ ct. Günstigster Preis um %3$@ Uhr mit %4$@ ct.";
+"notifications.price_below.body.multiple" = "Morgen fallen die Strompreise %1$@ Mal unter %2$@ ct. Günstigster Preis um %3$@ Uhr mit %4$@ ct.";
+"notifications.price_above.body.single" = "Morgen steigen die Strompreise %1$@ Mal über %2$@ ct. Teuerster Preis um %3$@ Uhr mit %4$@ ct.";
+"notifications.price_above.body.multiple" = "Morgen steigen die Strompreise %1$@ Mal über %2$@ ct. Teuerster Preis um %3$@ Uhr mit %4$@ ct.";
+"notifications.daily_summary.body" = "Morgen ist die günstigste Stunde um %@ Uhr mit %@ ct. Die teuerste Stunde ist um %@ Uhr mit %@ ct.";
+
 /* No comment provided by engineer. */
 "on" = "am";
 
@@ -292,12 +299,33 @@
 "Used in Price Guard" = "Im Preiswächter aktiv";
 "Ready" = "Bereit";
 "Notifications Off" = "Benachrichtigungen aus";
-"Checking" = "Wird geprueft";
+"Checking" = "Wird geprüft";
 "Notifications are disabled." = "Benachrichtigungen sind deaktiviert.";
 "Notify me" = "Benachrichtigen";
 "Threshold" = "Grenzwert";
 "On" = "An";
 "Off" = "Aus";
+"Used in Notifications" = "In Benachrichtigungen aktiv";
+"Unsaved" = "Ungespeichert";
+"Saving" = "Speichert";
+"No alerts active" = "Keine Hinweise aktiv";
+"1 alert active" = "1 Hinweis aktiv";
+"%@ alerts active" = "%@ Hinweise aktiv";
+"Get notified when tomorrow has cheap hours." = "Benachrichtigung, wenn es morgen günstige Stunden gibt.";
+"Warn me when tomorrow has expensive hours." = "Warnung, wenn es morgen teure Stunden gibt.";
+"Summarize tomorrow's cheapest and most expensive hours." = "Zusammenfassung der günstigsten und teuersten Stunden für morgen.";
+"Alert below" = "Hinweis unter";
+"Warn above" = "Warnung über";
+"Price Below" = "Preis darunter";
+"Price Above" = "Preis darüber";
+"Daily Summary" = "Tägliche Übersicht";
+"See Example" = "Beispiel ansehen";
+"Example" = "Beispiel";
+"No example available" = "Kein Beispiel verfügbar";
+"With the current prices and threshold, this notification would not be sent." = "Mit den aktuellen Preisen und diesem Grenzwert würde diese Benachrichtigung nicht gesendet.";
+"Notification example could not be loaded." = "Das Benachrichtigungsbeispiel konnte nicht geladen werden.";
+"Sent when new prices for tomorrow are available." = "Wird gesendet, sobald neue Preise für morgen verfügbar sind.";
+"Notification settings could not be saved." = "Benachrichtigungen konnten nicht gespeichert werden.";
 "Get Help" = "Hilfe erhalten";
 "Send Suggestion" = "Vorschlag senden";
 

@@ -30,26 +30,39 @@ struct GeneralNotificationConfiguration: Encodable {
 
 struct PriceBelowNotificationNotificationConfiguration: Encodable {
     var active: Bool
-    var belowValue: Int
+    var threshold: Int?
     
     enum CodingKeys: String, CodingKey {
         case active
-        case belowValue = "below_value"
+        case threshold
     }
 }
 
-struct NotificationsNotificationConfiguration: Encodable {
+struct PriceAboveNotificationConfiguration: Encodable {
+    var active: Bool
+    var threshold: Int?
+}
+
+struct DailySummaryNotificationConfiguration: Encodable {
+    var active: Bool
+}
+
+struct NotificationRulesConfiguration: Encodable {
     var priceBelow: PriceBelowNotificationNotificationConfiguration
-    
+    var priceAbove: PriceAboveNotificationConfiguration
+    var dailySummary: DailySummaryNotificationConfiguration
+
     enum CodingKeys: String, CodingKey {
         case priceBelow = "price_below"
+        case priceAbove = "price_above"
+        case dailySummary = "daily_summary"
     }
 }
 
 struct NotificationConfiguration: Encodable {
     var token: String?
     var general: GeneralNotificationConfiguration
-    var notifications: NotificationsNotificationConfiguration
+    var rules: NotificationRulesConfiguration
     
     static func create(_ token: String?, _ setting: Setting) -> NotificationConfiguration {
         let general = GeneralNotificationConfiguration(
@@ -59,10 +72,48 @@ struct NotificationConfiguration: Encodable {
             percentageAddOn: setting.percentagePriceAddOn
         )
         let priceBelowNotification = PriceBelowNotificationNotificationConfiguration(
-            active: setting.priceDropsBelowEnabled, belowValue: Int(setting.priceDropsBelowThreshold)
+            active: setting.priceDropsBelowEnabled,
+            threshold: setting.priceDropsBelowEnabled ? Int(setting.priceDropsBelowThreshold) : nil
         )
-        let notifications = NotificationsNotificationConfiguration(priceBelow: priceBelowNotification)
+        let priceAboveNotification = PriceAboveNotificationConfiguration(
+            active: setting.priceRisesAboveEnabled,
+            threshold: setting.priceRisesAboveEnabled ? Int(setting.priceRisesAboveThreshold) : nil
+        )
+        let dailySummaryNotification = DailySummaryNotificationConfiguration(active: setting.dailySummaryEnabled)
+        let rules = NotificationRulesConfiguration(
+            priceBelow: priceBelowNotification,
+            priceAbove: priceAboveNotification,
+            dailySummary: dailySummaryNotification
+        )
         
-        return NotificationConfiguration(token: token, general: general, notifications: notifications)
+        return NotificationConfiguration(token: token, general: general, rules: rules)
+    }
+}
+
+enum NotificationRuleType: String {
+    case priceBelow = "price_below"
+    case priceAbove = "price_above"
+    case dailySummary = "daily_summary"
+}
+
+struct NotificationExampleResponse: Decodable {
+    let wouldSend: Bool
+    let titleLocKey: String?
+    let bodyLocKey: String?
+    let locArgs: [String]
+
+    enum CodingKeys: String, CodingKey {
+        case wouldSend = "would_send"
+        case titleLocKey = "title_loc_key"
+        case bodyLocKey = "body_loc_key"
+        case locArgs = "loc_args"
+    }
+
+    init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        wouldSend = try values.decode(Bool.self, forKey: .wouldSend)
+        titleLocKey = try values.decodeIfPresent(String.self, forKey: .titleLocKey)
+        bodyLocKey = try values.decodeIfPresent(String.self, forKey: .bodyLocKey)
+        locArgs = try values.decodeIfPresent([String].self, forKey: .locArgs) ?? []
     }
 }

@@ -14,11 +14,18 @@ NOTIFICATION = Box(
     {
         "push_type": "alert",
         "priority": 5,
-        "collapse_id": "price-below-notification",
+        "collapse_ids": {
+            "price_below": "price-below-notification",
+            "price_above": "price-above-notification",
+            "daily_summary": "daily-summary-notification",
+        },
         "title_loc_key": "general.priceGuard",
         "loc_keys": {
-            "single_price": "notifications.price_drops_below.body.sing",
-            "multiple_prices": "notifications.price_drops_below.body.mult",
+            "price_below_single": "notifications.price_below.body.single",
+            "price_below_multiple": "notifications.price_below.body.multiple",
+            "price_above_single": "notifications.price_above.body.single",
+            "price_above_multiple": "notifications.price_above.body.multiple",
+            "daily_summary": "notifications.daily_summary.body",
         },
         "sound": "default",
     }

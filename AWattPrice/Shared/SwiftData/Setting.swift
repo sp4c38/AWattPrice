@@ -31,6 +31,9 @@ public class Setting {
     var pushToken: String?
     var priceDropsBelowThreshold: Int = 0
     var priceDropsBelowEnabled: Bool = false
+    var priceRisesAboveThreshold: Int = 0
+    var priceRisesAboveEnabled: Bool = false
+    var dailySummaryEnabled: Bool = false
     
     
     public init() {
@@ -57,5 +60,15 @@ public class Setting {
             percentagePriceAddOn: percentagePriceAddOn,
             marketArea: marketArea
         )
+    }
+}
+
+extension Setting {
+    var activeNotificationRuleCount: Int {
+        var count = 0
+        if priceDropsBelowEnabled { count += 1 }
+        if priceRisesAboveEnabled { count += 1 }
+        if dailySummaryEnabled { count += 1 }
+        return count
     }
 }

@@ -108,6 +108,12 @@ struct ContentView: View {
                     InsightsView()
                         .tag(2)
                         .tabItem { Label("Insights", systemImage: "chart.bar.xaxis") }
+
+                    NavigationStack {
+                        NotificationSettingView()
+                    }
+                    .tag(3)
+                    .tabItem { Label("Notifications", systemImage: "bell.badge") }
                 }
                 .tint(AppTheme.accent)
                 .sheet(isPresented: $shouldShowWhatsNew) { WhatsNewPage() }

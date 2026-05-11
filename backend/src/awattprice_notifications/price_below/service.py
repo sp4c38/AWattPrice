@@ -4,14 +4,23 @@ import asyncio
 import sys
 
 from awattprice import configurator
-from awattprice import database
+from awattprice import notification_profiles
 from loguru import logger
 
 from awattprice_notifications import defaults as notification_defaults
-from awattprice_notifications.price_below import defaults
 from awattprice_notifications.price_below import notifications
 from awattprice_notifications.price_below import prices
-from awattprice_notifications.price_below import tokens
+from box import Box
+
+
+def collect_active_profiles(profile_store: notification_profiles.NotificationProfileStore) -> Box[str, list[Box]]:
+    """Collect active notification profiles grouped by market area."""
+    area_profiles = Box()
+    for profile in profile_store.list_profiles():
+        if not notifications.active_rule_types(profile):
+            continue
+        area_profiles.setdefault(profile.general.area, []).append(profile)
+    return area_profiles
 
 
 async def main():
@@ -20,15 +29,12 @@ async def main():
     price_below_service_name = notification_defaults.PRICE_BELOW_SERVICE_NAME
     configurator.configure_loguru(price_below_service_name, config)
 
-    try:
-        engine = database.get_awattprice_engine(config, async_=True)
-    except FileNotFoundError as exc:
-        logger.exception(exc)
-        sys.exit(1)
+    profile_store = notification_profiles.NotificationProfileStore(notification_profiles.get_store_path(config))
 
-    active_areas = await tokens.collect_active_areas(engine)
+    active_area_profiles = collect_active_profiles(profile_store)
+    active_areas = list(active_area_profiles.keys())
     if len(active_areas) == 0:
-        logger.debug("No active Price Guard subscriptions.")
+        logger.debug("No active notification subscriptions.")
         sys.exit(0)
 
     areas_prices = await prices.collect_areas_prices(config, active_areas)
@@ -50,10 +56,16 @@ async def main():
 
     updated_notifiable_areas_prices = {area_key: notifiable_areas_prices[area_key] for area_key in updated_areas}
 
-    applying_areas_tokens = await tokens.collect_applying_tokens(engine, updated_notifiable_areas_prices)
+    updated_active_area_profiles = Box(
+        {
+            area_key: active_area_profiles[area_key]
+            for area_key in updated_notifiable_areas_prices.keys()
+            if area_key in active_area_profiles
+        }
+    )
 
     await notifications.deliver_notifications(
-        engine, config, applying_areas_tokens, updated_notifiable_areas_prices
+        profile_store, config, updated_active_area_profiles, updated_notifiable_areas_prices
     )
 
     await prices.write_updated_areas_endtimes(config, areas_prices, updated_areas)

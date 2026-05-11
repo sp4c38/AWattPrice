@@ -102,6 +102,7 @@ class PriceAddOnsViewModel: ObservableObject {
     func priceAddOnsChanges() async {
         var notificationConfiguration = NotificationConfiguration.create(nil, settingsManager.setting)
         notificationConfiguration.general.baseFee = totalPriceAddOn
+        notificationConfiguration.general.percentageAddOn = percentagePriceAddOn
 
         isUploading = true
         showUploadIndicators = true
@@ -231,8 +232,8 @@ struct PriceAddOnsView: View {
                                 PriceAddOnsBadge(text: "+ \(viewModel.totalPriceAddOn.priceAddOnSummaryText)", tint: AppTheme.success)
                             }
 
-                            if viewModel.settingsManager.setting.priceDropsBelowEnabled {
-                                PriceAddOnsBadge(text: "Used in Price Guard", tint: AppTheme.success)
+                            if viewModel.settingsManager.setting.activeNotificationRuleCount > 0 {
+                                PriceAddOnsBadge(text: "Used in Notifications", tint: AppTheme.success)
                             }
                         }
                     }

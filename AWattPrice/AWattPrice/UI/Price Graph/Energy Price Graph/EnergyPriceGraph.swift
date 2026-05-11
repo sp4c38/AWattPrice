@@ -446,7 +446,7 @@ struct EnergyPriceGraph: View {
     let allowsHourlyExpansion: Bool
 
     @State private var selectedGroupIndex: Int?
-    @State private var fadesExpandedIntervalTransition = false
+    @State private var expandedIntervalSwitchDirection: Int?
     @State private var feedbackGenerator = UISelectionFeedbackGenerator()
 
     private var currentPrices: [EnergyPricePoint] {
@@ -554,7 +554,15 @@ struct EnergyPriceGraph: View {
         let currentlyShowsExpandedIntervals = selectedGroupIndex.map { selectedGroupIndex in
             rows.contains { $0.groupIndex == selectedGroupIndex && $0.isExpandedInterval }
         } ?? false
-        fadesExpandedIntervalTransition = currentlyShowsExpandedIntervals && boundedGroupIndex != nil
+        expandedIntervalSwitchDirection = if
+            currentlyShowsExpandedIntervals,
+            let selectedGroupIndex,
+            let boundedGroupIndex
+        {
+            boundedGroupIndex > selectedGroupIndex ? 1 : -1
+        } else {
+            nil
+        }
 
         if boundedGroupIndex != nil {
             feedbackGenerator.selectionChanged()
@@ -577,13 +585,16 @@ struct EnergyPriceGraph: View {
         }
     }
 
-    private func rowTransition(for row: EnergyPriceGraphDisplayRow, collapsedOffsetY: CGFloat) -> AnyTransition {
+    private func rowTransition(
+        for row: EnergyPriceGraphDisplayRow,
+        collapsedOffsetY: CGFloat
+    ) -> AnyTransition {
         guard displayInterval == .sixtyMinutes, row.isExpandedInterval else {
             return .opacity
         }
 
-        if fadesExpandedIntervalTransition {
-            return .opacity
+        if let expandedIntervalSwitchDirection {
+            return .push(from: expandedIntervalSwitchDirection > 0 ? .bottom : .top)
         }
 
         return .asymmetric(
@@ -701,10 +712,14 @@ struct EnergyPriceGraph: View {
                                 rowHeight: layout.rowHeight(at: index),
                                 plotWidth: plotWidth
                             )
-                            .transition(rowTransition(for: row, collapsedOffsetY: collapsedOffsetY))
+                            .transition(rowTransition(
+                                for: row,
+                                collapsedOffsetY: collapsedOffsetY
+                            ))
                             .zIndex(rowZIndex(for: row))
                         }
                     }
+                    .clipped()
                 }
                 .frame(width: plotWidth, height: geometry.size.height, alignment: .topLeading)
             }
@@ -725,7 +740,7 @@ struct EnergyPriceGraph: View {
             feedbackGenerator.prepare()
         }
         .onChange(of: displayInterval) { _, _ in
-            fadesExpandedIntervalTransition = false
+            expandedIntervalSwitchDirection = nil
             selectedGroupIndex = nil
         }
     }

@@ -30,15 +30,29 @@ private struct NotificationSettingsCard<Content: View>: View {
 private struct NotificationSettingsBadge: View {
     let text: String
     let tint: Color
+    let isLoading: Bool
 
     var body: some View {
-        Text(text.localized())
-            .font(.caption.weight(.semibold))
-            .foregroundStyle(tint)
-            .padding(.horizontal, 10)
-            .padding(.vertical, 6)
-            .background(tint.opacity(0.12), in: Capsule())
+        HStack(spacing: 6) {
+            if isLoading {
+                ProgressView()
+                    .controlSize(.mini)
+            }
+
+            Text(text.localized())
+                .font(.caption.weight(.semibold))
+        }
+        .foregroundStyle(tint)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
+        .background(tint.opacity(0.12), in: Capsule())
+        .animation(.easeInOut(duration: 0.18), value: isLoading)
     }
+}
+
+private enum NotificationThresholdField: Hashable {
+    case priceBelow
+    case priceAbove
 }
 
 struct NotificationDraft: Equatable {
@@ -77,12 +91,16 @@ struct NotificationDraft: Equatable {
 
 @MainActor
 class NotificationSettingViewModel: ObservableObject {
-    private enum Timing {
+    enum Timing {
         static let temporaryBannerApproximationNanoseconds: UInt64 = 8_200_000_000
+        static let minimumUploadingNanoseconds: UInt64 = 1_600_000_000
+        static let uploadIndicatorDelayNanoseconds: UInt64 = 450_000_000
     }
 
     var settingsManager: SettingsManager
     var notificationService: NotificationService
+    private var uploadIndicatorStart: Date?
+    private var isUploadRequestInFlight = false
 
     @Published var draft: NotificationDraft
     @Published private(set) var savedDraft: NotificationDraft
@@ -105,38 +123,6 @@ class NotificationSettingViewModel: ObservableObject {
         draft != savedDraft
     }
 
-    var statusBadge: (String, Color) {
-        if isSaving {
-            return ("Saving", .secondary)
-        }
-
-        if hasUnsavedChanges {
-            return ("Unsaved", AppTheme.warning)
-        }
-
-        switch notificationService.accessState {
-        case .granted:
-            return draft.hasAnyActiveRule ? ("Ready", AppTheme.success) : ("Notifications off", .secondary)
-        case .rejected:
-            return ("Notifications Off", AppTheme.error)
-        case .notAsked:
-            return ("Not configured", AppTheme.warning)
-        case .unknown:
-            return ("Checking", .secondary)
-        }
-    }
-
-    var activeRulesText: String {
-        switch draft.activeRuleCount {
-        case 0:
-            return "No alerts active".localized()
-        case 1:
-            return "1 alert active".localized()
-        default:
-            return String(format: "%@ alerts active".localized(), String(draft.activeRuleCount))
-        }
-    }
-
     func refreshAccessState() async {
         await notificationService.updateAccessStates()
     }
@@ -146,13 +132,27 @@ class NotificationSettingViewModel: ObservableObject {
         draft = currentDraft
         savedDraft = currentDraft
         uploadFailed = false
+        uploadIndicatorStart = nil
+        isUploadRequestInFlight = false
+        isSaving = false
+    }
+
+    func beginUploadFeedback() {
+        if isSaving == false {
+            uploadIndicatorStart = Date()
+            isSaving = true
+        }
+
+        uploadFailed = false
     }
 
     func save() async {
-        guard draft.canSave, isSaving == false else { return }
+        guard draft.canSave, isUploadRequestInFlight == false else { return }
 
         let draftToSave = draft
         let previousValues = NotificationDraft(setting: settingsManager.setting)
+        let uploadStart = uploadIndicatorStart ?? Date()
+        isUploadRequestInFlight = true
 
         settingsManager.setting.priceDropsBelowEnabled = draftToSave.priceBelowEnabled
         settingsManager.setting.priceDropsBelowThreshold = draftToSave.priceBelowThreshold.integerValue ?? 0
@@ -167,19 +167,33 @@ class NotificationSettingViewModel: ObservableObject {
 
         do {
             _ = try await notificationService.changeNotificationConfiguration(configuration, settingsManager.setting)
+            await waitForMinimumUploadingTime(since: uploadStart)
             settingsManager.saveChanges()
             savedDraft = draftToSave
+            isUploadRequestInFlight = false
+            uploadIndicatorStart = nil
             isSaving = false
         } catch {
             print("Failed to update notification profile: \(error)")
+            await waitForMinimumUploadingTime(since: uploadStart)
             settingsManager.setting.priceDropsBelowEnabled = previousValues.priceBelowEnabled
             settingsManager.setting.priceDropsBelowThreshold = previousValues.priceBelowThreshold.integerValue ?? 0
             settingsManager.setting.priceRisesAboveEnabled = previousValues.priceAboveEnabled
             settingsManager.setting.priceRisesAboveThreshold = previousValues.priceAboveThreshold.integerValue ?? 0
             settingsManager.setting.dailySummaryEnabled = previousValues.dailySummaryEnabled
+            isUploadRequestInFlight = false
+            uploadIndicatorStart = nil
             isSaving = false
             uploadFailed = true
         }
+    }
+
+    private func waitForMinimumUploadingTime(since startDate: Date) async {
+        let elapsed = Date().timeIntervalSince(startDate)
+        let minimum = Double(Timing.minimumUploadingNanoseconds) / 1_000_000_000
+        guard elapsed < minimum else { return }
+        let remaining = UInt64((minimum - elapsed) * 1_000_000_000)
+        try? await Task.sleep(nanoseconds: remaining)
     }
 
     func showExample(for ruleType: NotificationRuleType) async {
@@ -371,7 +385,9 @@ private struct ThresholdInput: View {
     @Environment(\.colorScheme) private var colorScheme
 
     let label: String
+    let field: NotificationThresholdField
     @Binding var value: String
+    let focusedField: FocusState<NotificationThresholdField?>.Binding
 
     private var inputFill: Color {
         AppTheme.fieldBackground(for: colorScheme)
@@ -379,6 +395,23 @@ private struct ThresholdInput: View {
 
     private var inputStroke: Color {
         AppTheme.cardStroke(for: colorScheme)
+    }
+
+    private func integerText(from input: String) -> String {
+        var output = ""
+        var canAddMinus = true
+
+        for character in input {
+            if character == "-", canAddMinus, output.isEmpty {
+                output.append(character)
+                canAddMinus = false
+            } else if character.isNumber {
+                output.append(character)
+                canAddMinus = false
+            }
+        }
+
+        return output
     }
 
     var body: some View {
@@ -389,13 +422,17 @@ private struct ThresholdInput: View {
                 .textCase(.uppercase)
 
             HStack(spacing: 12) {
-                NumberField(
-                    text: $value,
-                    placeholder: "0",
-                    plusMinusButton: false,
-                    withDecimalSeperator: false
-                )
-                .frame(height: 24)
+                TextField("0", text: $value)
+                    .keyboardType(.numbersAndPunctuation)
+                    .focused(focusedField, equals: field)
+                    .font(.system(size: 22, weight: .semibold, design: .rounded))
+                    .monospacedDigit()
+                    .onChange(of: value) { _, newValue in
+                        let sanitizedValue = integerText(from: newValue)
+                        if sanitizedValue != newValue {
+                            value = sanitizedValue
+                        }
+                    }
 
                 Spacer(minLength: 0)
 
@@ -413,6 +450,10 @@ private struct ThresholdInput: View {
                             .stroke(inputStroke, lineWidth: 1)
                     )
             )
+            .contentShape(Rectangle())
+            .onTapGesture {
+                focusedField.wrappedValue = field
+            }
         }
     }
 }
@@ -422,6 +463,8 @@ struct NotificationSettingView: View {
     @EnvironmentObject private var settingsManager: SettingsManager
     @EnvironmentObject private var notificationService: NotificationService
     @State private var autoSaveTask: Task<Void, Never>?
+    @State private var uploadFeedbackTask: Task<Void, Never>?
+    @FocusState private var focusedThresholdField: NotificationThresholdField?
     @StateObject private var viewModel = NotificationSettingViewModel(
         settingsManager: SettingsManager.shared,
         notificationService: NotificationService()
@@ -433,25 +476,17 @@ struct NotificationSettingView: View {
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
-                    NotificationSettingsCard {
-                        HStack(alignment: .top) {
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text("Notifications")
-                                    .font(.system(size: 34, weight: .bold, design: .rounded))
-
-                                Text(viewModel.activeRulesText)
-                                    .font(.subheadline)
-                                    .foregroundStyle(.secondary)
-
-                                NotificationSettingsBadge(text: viewModel.statusBadge.0, tint: viewModel.statusBadge.1)
-                            }
-
+                    if viewModel.isSaving {
+                        HStack {
+                            NotificationSettingsBadge(
+                                text: "Uploading",
+                                tint: AppTheme.accent,
+                                isLoading: true
+                            )
+                            
                             Spacer()
-
-                            if viewModel.isSaving {
-                                ProgressView()
-                            }
                         }
+                        .transition(.opacity.combined(with: .move(edge: .top)))
                     }
 
                     if notificationService.accessState == .rejected {
@@ -480,7 +515,12 @@ struct NotificationSettingView: View {
                             onExample: { Task { await viewModel.showExample(for: .priceBelow) } },
                             isEnabled: $viewModel.draft.priceBelowEnabled
                         ) {
-                            ThresholdInput(label: "Alert below", value: $viewModel.draft.priceBelowThreshold)
+                            ThresholdInput(
+                                label: "Alert below",
+                                field: .priceBelow,
+                                value: $viewModel.draft.priceBelowThreshold,
+                                focusedField: $focusedThresholdField
+                            )
                         }
                     }
 
@@ -497,7 +537,12 @@ struct NotificationSettingView: View {
                             onExample: { Task { await viewModel.showExample(for: .priceAbove) } },
                             isEnabled: $viewModel.draft.priceAboveEnabled
                         ) {
-                            ThresholdInput(label: "Warn above", value: $viewModel.draft.priceAboveThreshold)
+                            ThresholdInput(
+                                label: "Warn above",
+                                field: .priceAbove,
+                                value: $viewModel.draft.priceAboveThreshold,
+                                focusedField: $focusedThresholdField
+                            )
                         }
                     }
 
@@ -528,9 +573,19 @@ struct NotificationSettingView: View {
                 .padding(.bottom, 28)
             }
         }
+        .animation(.easeInOut(duration: 0.18), value: viewModel.isSaving)
         .animation(.easeInOut(duration: 0.2), value: viewModel.exampleMessage)
         .navigationTitle("Notifications")
-        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarTitleDisplayMode(.large)
+        .toolbar {
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                Button("Done") {
+                    focusedThresholdField = nil
+                }
+                .bold()
+            }
+        }
         .task {
             viewModel.settingsManager = settingsManager
             viewModel.notificationService = notificationService
@@ -552,12 +607,22 @@ struct NotificationSettingView: View {
         }
         .onDisappear {
             autoSaveTask?.cancel()
+            uploadFeedbackTask?.cancel()
         }
     }
 
     private func scheduleAutoSave() {
         autoSaveTask?.cancel()
+        uploadFeedbackTask?.cancel()
         guard viewModel.hasUnsavedChanges, viewModel.draft.canSave else { return }
+
+        uploadFeedbackTask = Task {
+            try? await Task.sleep(nanoseconds: NotificationSettingViewModel.Timing.uploadIndicatorDelayNanoseconds)
+            guard Task.isCancelled == false else { return }
+            await MainActor.run {
+                viewModel.beginUploadFeedback()
+            }
+        }
 
         autoSaveTask = Task {
             try? await Task.sleep(nanoseconds: 800_000_000)

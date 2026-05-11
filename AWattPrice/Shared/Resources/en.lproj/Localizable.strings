@@ -141,7 +141,7 @@
 "On" = "On";
 "Off" = "Off";
 "Unsaved" = "Unsaved";
-"Saving" = "Saving";
+"Uploading" = "Uploading";
 "No alerts active" = "No alerts active";
 "1 alert active" = "1 alert active";
 "%@ alerts active" = "%@ alerts active";

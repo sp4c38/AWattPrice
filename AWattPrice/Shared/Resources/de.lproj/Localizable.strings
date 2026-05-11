@@ -310,7 +310,7 @@
 "Off" = "Aus";
 "Used in Notifications" = "In Benachrichtigungen aktiv";
 "Unsaved" = "Ungespeichert";
-"Saving" = "Speichert";
+"Uploading" = "Lädt hoch";
 "No alerts active" = "Keine Hinweise aktiv";
 "1 alert active" = "1 Hinweis aktiv";
 "%@ alerts active" = "%@ Hinweise aktiv";

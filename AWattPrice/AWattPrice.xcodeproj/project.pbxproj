@@ -28,7 +28,6 @@
 		593C14ACDA8A7823983C839A /* PriceBelowNotificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5A96314B5FDFB69823B75C9 /* PriceBelowNotificationView.swift */; };
 		5968D801ED3B64E9059A3555 /* CheapestHourManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2EFEC10A5ED85CC875CFCF7 /* CheapestHourManager.swift */; };
 		59BDBAACA1BB8316305D917B /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 95BD95FD492B1F960E9F23C4 /* Localizable.strings */; };
-		5DC2B66E8217B30642162424 /* NumberField.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF85B2B08E53E158A7DE4DFC /* NumberField.swift */; };
 		612286822A56E39700FA0F9C /* AWattPriceWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 61635B242A482E690099F5AD /* AWattPriceWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		61635B2C2A482E690099F5AD /* AWattPriceWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61635B2B2A482E690099F5AD /* AWattPriceWidgetBundle.swift */; };
 		61635B2E2A482E690099F5AD /* PricesWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61635B2D2A482E690099F5AD /* PricesWidget.swift */; };
@@ -152,7 +151,6 @@
 		A97A562A68DEF8AD1937E4EE /* NotificationSettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSettingView.swift; sourceTree = "<group>"; };
 		B6AD0D0B3D95E6C7BB20D726 /* EasyIntervalPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EasyIntervalPicker.swift; sourceTree = "<group>"; };
 		B8FC646AC0ECA7024DB8607C /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
-		CF85B2B08E53E158A7DE4DFC /* NumberField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberField.swift; sourceTree = "<group>"; };
 		D22CD9B053C7AA6D5411FFE0 /* Font.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Font.swift; sourceTree = "<group>"; };
 		D6047C9B5C250D36D898FE1F /* CheapestTimeResultView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheapestTimeResultView.swift; sourceTree = "<group>"; };
 		D4E7A00F2FBA4D9A8C0D4E10 /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = AppIcon.icon; sourceTree = "<group>"; };
@@ -205,7 +203,6 @@
 			children = (
 				22A1A4D62FBA5D1100E57A2B /* AppIconImage.swift */,
 				0128DEB3ECF3622979FBC803 /* LazyNavigationDestination.swift */,
-				CF85B2B08E53E158A7DE4DFC /* NumberField.swift */,
 				EA7DB5F6099D4A679E460B0E /* EasyTimeIntervalPicker */,
 				A6D0D313BAC302D5406BE832 /* Error */,
 			);
@@ -657,7 +654,6 @@
 				4190E3BB83AC5F034211C2B9 /* NotificationService+Access.swift in Sources */,
 				02A564EE1DBA47DCD13CE399 /* NotificationService.swift in Sources */,
 				471979041724562B571FA8D2 /* NotificationSettingView.swift in Sources */,
-				5DC2B66E8217B30642162424 /* NumberField.swift in Sources */,
 				593C14ACDA8A7823983C839A /* PriceBelowNotificationView.swift in Sources */,
 				D19754BAE15970139A862323 /* Region.swift in Sources */,
 				8CF83B7D4714ABE33B8964AD /* RegionTaxSelection.swift in Sources */,

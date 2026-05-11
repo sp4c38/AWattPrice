@@ -7,6 +7,7 @@ from pathlib import Path
 from box import Box
 
 from awattprice import notification_profiles
+from awattprice_notifications.price_below import defaults
 from awattprice_notifications.price_below import notifications
 
 
@@ -80,6 +81,18 @@ class NotificationProfileTests(unittest.TestCase):
 
         self.assertIsNone(notification_profiles.parse_notification_profile_body(raw_profile))
 
+    def test_parse_accepts_missing_inactive_threshold(self):
+        raw_profile = profile(active_below=False, active_above=False, active_summary=True)
+        del raw_profile.rules.price_below["threshold"]
+        del raw_profile.rules.price_above["threshold"]
+
+        parsed = notification_profiles.parse_notification_profile_body(raw_profile)
+
+        self.assertIsNotNone(parsed)
+        self.assertIsNone(parsed.rules.price_below.threshold)
+        self.assertIsNone(parsed.rules.price_above.threshold)
+        self.assertTrue(parsed.rules.daily_summary.active)
+
     def test_store_creates_replaces_and_persists_disabled_rules(self):
         with tempfile.TemporaryDirectory() as directory:
             store = notification_profiles.NotificationProfileStore(Path(directory) / "profiles.json")
@@ -149,6 +162,17 @@ class NotificationMatchingTests(unittest.TestCase):
         self.assertEqual(below_payload.aps.alert["loc-key"], "notifications.price_below.body.single")
         self.assertEqual(above_payload.aps.alert["loc-key"], "notifications.price_above.body.single")
         self.assertEqual(summary_payload.aps.alert["loc-key"], "notifications.daily_summary.body")
+
+    def test_get_notifiable_prices_uses_market_area_metadata(self):
+        prices = Box(
+            {
+                "area": "DE-LU",
+                "resolution": "PT60M",
+                "prices": [],
+            }
+        )
+
+        self.assertIsNone(defaults.get_notifiable_prices(prices))
 
 
 if __name__ == "__main__":

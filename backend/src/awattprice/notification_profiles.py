@@ -48,6 +48,8 @@ def parse_notification_profile_body(profile: Box) -> Optional[Box]:
 
     for rule_name in ("price_below", "price_above"):
         rule = profile.rules[rule_name]
+        if "threshold" not in rule:
+            rule.threshold = None
         if rule.active is True and rule.threshold is None:
             logger.warning(f"Notification rule {rule_name} is active but has no threshold.")
             return None

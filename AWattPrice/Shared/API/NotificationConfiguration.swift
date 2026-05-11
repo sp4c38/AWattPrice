@@ -36,11 +36,36 @@ struct PriceBelowNotificationNotificationConfiguration: Encodable {
         case active
         case threshold
     }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(active, forKey: .active)
+        if let threshold {
+            try container.encode(threshold, forKey: .threshold)
+        } else {
+            try container.encodeNil(forKey: .threshold)
+        }
+    }
 }
 
 struct PriceAboveNotificationConfiguration: Encodable {
     var active: Bool
     var threshold: Int?
+
+    enum CodingKeys: String, CodingKey {
+        case active
+        case threshold
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(active, forKey: .active)
+        if let threshold {
+            try container.encode(threshold, forKey: .threshold)
+        } else {
+            try container.encodeNil(forKey: .threshold)
+        }
+    }
 }
 
 struct DailySummaryNotificationConfiguration: Encodable {

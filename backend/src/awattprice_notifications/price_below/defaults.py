@@ -4,6 +4,7 @@ from typing import Optional
 import arrow
 
 from arrow import Arrow
+from awattprice import defaults as awattprice_defaults
 from awattprice import prices as awattprice_prices
 from box import Box
 from loguru import logger

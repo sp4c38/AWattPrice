@@ -123,7 +123,7 @@ NOTIFICATION_PROFILE_SCHEMA = {
                         "active": {"type": "boolean"},
                         "threshold": {"type": ["number", "null"]},
                     },
-                    "required": ["active", "threshold"],
+                    "required": ["active"],
                     "additionalProperties": False,
                 },
                 "price_above": {
@@ -132,7 +132,7 @@ NOTIFICATION_PROFILE_SCHEMA = {
                         "active": {"type": "boolean"},
                         "threshold": {"type": ["number", "null"]},
                     },
-                    "required": ["active", "threshold"],
+                    "required": ["active"],
                     "additionalProperties": False,
                 },
                 "daily_summary": {

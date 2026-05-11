@@ -32,6 +32,11 @@ def _is_missing_config_value(config_value: ConfigValue) -> bool:
     return config_value.__class__.__name__ == "Nothing"
 
 
+def _is_empty_or_missing_config_value(config_value: ConfigValue) -> bool:
+    """Check whether a config value is missing or empty."""
+    return _is_missing_config_value(config_value) or _check_config_none(config_value) is None
+
+
 def _fill_missing_config_values(config: Config):
     """Fill missing config values with the defaults shipped by the backend."""
     default_config = Config(defaults.DEFAULT_CONFIG)
@@ -64,7 +69,11 @@ def _transform_config(config: Config):
     config.paths.log_dir = Path(config.paths.log_dir).expanduser()
     config.paths.data_dir = Path(config.paths.data_dir).expanduser()
     config.paths.price_data_dir = config.paths.data_dir / defaults.PRICE_DATA_SUBDIR_NAME
-    config.paths.apns_dir = Path(config.paths.apns_dir).expanduser()
+
+    apns_key_file = config.apns.key_file
+    if _is_empty_or_missing_config_value(apns_key_file):
+        apns_key_file = Config(defaults.DEFAULT_CONFIG).apns.key_file
+    config.apns.key_file = Path(apns_key_file).expanduser()
 
 def _ensure_dir(path: Path):
     """Ensure that the dir at the parsed path is a directory and exists.
@@ -87,7 +96,6 @@ def _ensure_config_dirs(config: Config):
     _ensure_dir(config.paths.log_dir)
     _ensure_dir(config.paths.data_dir)
     _ensure_dir(config.paths.price_data_dir)
-    _ensure_dir(config.paths.apns_dir)
 
 
 def get_config() -> Config:

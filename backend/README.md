@@ -12,84 +12,20 @@ FastAPI backend for AWattPrice. It serves ENTSO-E electricity prices, caches the
 
 NGINX must already proxy `/v3/` on `api.awattprice.com` to `http://127.0.0.1:8003/`.
 
-The v3 deploy uses separate defaults so it does not touch the existing v2 server:
+The v3 deploy uses separate defaults so it does not touch the existing v2 server. Required runtime files live directly under `/etc/awattprice-v3`, and the deployed Compose file is stored under `/srv/awattprice-v3`.
+
+Inside the container, configure paths as `/etc/awattprice/data`, `/etc/awattprice/logs`, and `apns.key_file=/etc/awattprice/encryption_key.p8`. Docker Compose maps those to `/etc/awattprice-v3/data`, `/etc/awattprice-v3/logs`, and `/etc/awattprice-v3/encryption_key.p8` on the host.
+
+Optional for push notifications:
 
 ```text
-/etc/awattprice-v3
-/srv/awattprice-v3/compose.yaml
-awattprice-backend-v3
-127.0.0.1:8003
+/etc/awattprice-v3/encryption_key.p8
+/etc/awattprice-v3/config.ini with apns.team_id, apns.key_id, and apns.key_file
 ```
-
-Create the required server paths:
-
-```sh
-sudo mkdir -p /etc/awattprice-v3/app_data/{data,logs,apns}
-sudo mkdir -p /srv/awattprice-v3
-sudo chown "$USER:$USER" /srv/awattprice-v3
-sudo nano /etc/awattprice-v3/config.ini
-sudo nano /etc/awattprice-v3/entsoe-token.txt
-```
-
-Optional for Price Guard push notifications:
-
-```text
-/etc/awattprice-v3/app_data/apns/encryption_key.p8
-/etc/awattprice-v3/config.ini with apns.team_id and apns.key_id
-```
-
-The deploy script only checks these files. It does not create config on the server.
-It stores the Docker Compose file at `/srv/awattprice-v3/compose.yaml`.
 
 ## Deploy
 
-Default deploy uploads the backend source and builds the Docker image on the server. This is much faster than uploading the full image each time.
-
-```sh
-./deploy.v3.sh user@server
-```
-
-If building on Apple Silicon for an x86 server:
-
-```sh
-AWATTPRICE_DOCKER_PLATFORM=linux/amd64 ./deploy.v3.sh user@server
-```
-
-To also run the Price Guard worker:
-
-```sh
-AWATTPRICE_RUN_WORKER=1 ./deploy.v3.sh user@server
-```
-
-Fallback to local image build/upload:
-
-```sh
-AWATTPRICE_DEPLOY_MODE=image ./deploy.v3.sh user@server
-```
-
-The SSH user must be able to run Docker on the server. If you need a custom remote Docker command:
-
-```sh
-AWATTPRICE_REMOTE_DOCKER="sudo docker" ./deploy.v3.sh user@server
-```
-
-Override defaults if needed:
-
-```sh
-AWATTPRICE_HOST_PORT=8013 AWATTPRICE_HOST_ROOT=/etc/my-v3-root ./deploy.v3.sh user@server
-```
-
-Manage the container on the server:
-
-```sh
-cd /srv/awattprice-v3
-docker compose ps
-docker compose logs -f
-docker compose restart
-docker compose down
-```
-
-Smoke test:
+Use `deploy.v3.sh` for deployment. Smoke test after deploy:
 
 ```sh
 curl https://api.awattprice.com/v3/areas/

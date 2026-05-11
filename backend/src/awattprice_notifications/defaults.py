@@ -4,7 +4,6 @@ from box import Box
 PRICE_BELOW_SERVICE_NAME = "price_below"
 
 APNS_ENCRYPTION_ALGORITHM = "ES256"
-APNS_ENCRYPTION_KEY_FILE_NAME = "encryption_key.p8"
 APNS_URL = Box()
 APNS_URL.origin = "https://api.push.apple.com:443"
 APNS_URL.path = "/3/device/{}"

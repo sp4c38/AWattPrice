@@ -26,16 +26,15 @@ url = https://web-api.tp.entsoe.eu/api
 token_file = ~/awattprice/entsoe-token.txt
 
 [paths]
-# When running in Docker, these must be container paths mounted by compose.v3.yaml.
-# For v3 deploys use /etc/awattprice/app_data/... inside this config, even though
-# the host stores the files below /etc/awattprice-v3/app_data.
+# When running in Docker, use the container paths mounted by compose.v3.yaml:
+# /etc/awattprice/data, /etc/awattprice/logs, and /etc/awattprice/encryption_key.p8.
 log_dir = ~/awattprice/logs/
 data_dir = ~/awattprice/data/
-apns_dir = ~/awattprice/apns/
 
 [apns]
 team_id = 
 key_id = 
+key_file = ~/awattprice/encryption_key.p8
 """
 
 ORM_TABLE_NAMES = Box(

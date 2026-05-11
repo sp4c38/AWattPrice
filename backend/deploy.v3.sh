@@ -52,19 +52,7 @@ if [ ! -f "$HOST_ROOT/entsoe-token.txt" ]; then
   exit 1
 fi
 
-if [ ! -d "$HOST_ROOT/app_data/data" ]; then
-  echo "Missing data directory: $HOST_ROOT/app_data/data" >&2
-  exit 1
-fi
-
-# Run DB migrations (create_all is a no-op if tables already exist)
-$REMOTE_DOCKER run --rm \
-  -v "$HOST_ROOT/app_data:/etc/awattprice/app_data" \
-  -v "$HOST_ROOT/config.ini:/etc/awattprice/config.ini:ro" \
-  -v "$HOST_ROOT/entsoe-token.txt:/etc/awattprice-v3/entsoe-token.txt:ro" \
-  "$IMAGE" \
-  python -c "from awattprice import configurator, database, orm; c=configurator.get_config(); e=database.get_awattprice_engine(c, ignore_database_not_found=True); orm.metadata.create_all(bind=e, checkfirst=True)" \
-  2> >(grep -v "^INFO:" >&2)
+mkdir -p "$HOST_ROOT/data" "$HOST_ROOT/logs"
 
 cd "$COMPOSE_ROOT"
 AWATTPRICE_IMAGE="$IMAGE" \

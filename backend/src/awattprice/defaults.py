@@ -14,6 +14,11 @@ AWATTPRICE_SERVICE_NAME = "awattprice"
 APP_BUNDLE_ID = Box()
 APP_BUNDLE_ID.production = "me.space8.AWattPrice"
 
+DEFAULT_ENTSOE_TOKEN_FILE = "/etc/awattprice/entsoe-token.txt"
+DEFAULT_LOG_DIR = "/etc/awattprice/logs/"
+DEFAULT_DATA_DIR = "/etc/awattprice/data/"
+DEFAULT_APNS_KEY_FILE = "/etc/awattprice/encryption_key.p8"
+
 DEFAULT_CONFIG = """\
 [general]
 # Log level name (Severity): TRACE (5), DEBUG (10), INFO (20), SUCCESS (25), WARNING (30), ERROR (40), CRITICAL (50)
@@ -21,20 +26,10 @@ log_level = DEBUG
 
 [entsoe]
 url = https://web-api.tp.entsoe.eu/api
-# When running in Docker, use the container path mounted by compose.v3.yaml.
-# Do not use the host path such as /etc/awattprice-v3/entsoe-token.txt here.
-token_file = ~/awattprice/entsoe-token.txt
-
-[paths]
-# When running in Docker, use the container paths mounted by compose.v3.yaml:
-# /etc/awattprice/data, /etc/awattprice/logs, and /etc/awattprice/encryption_key.p8.
-log_dir = ~/awattprice/logs/
-data_dir = ~/awattprice/data/
 
 [apns]
 team_id = 
 key_id = 
-key_file = ~/awattprice/encryption_key.p8
 """
 
 ORM_TABLE_NAMES = Box(

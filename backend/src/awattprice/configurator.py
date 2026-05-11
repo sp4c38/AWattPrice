@@ -64,15 +64,25 @@ def _transform_config(config: Config):
 
     config.general.log_level = config.general.log_level.upper()
 
-    config.entsoe.token_file = Path(config.entsoe.token_file).expanduser()
+    token_file = _check_config_none(config.entsoe.token_file)
+    if _is_missing_config_value(token_file) or token_file is None:
+        token_file = defaults.DEFAULT_ENTSOE_TOKEN_FILE
+    config.entsoe.token_file = Path(token_file).expanduser()
 
-    config.paths.log_dir = Path(config.paths.log_dir).expanduser()
-    config.paths.data_dir = Path(config.paths.data_dir).expanduser()
+    log_dir = _check_config_none(config.paths.log_dir)
+    if _is_missing_config_value(log_dir) or log_dir is None:
+        log_dir = defaults.DEFAULT_LOG_DIR
+    config.paths.log_dir = Path(log_dir).expanduser()
+
+    data_dir = _check_config_none(config.paths.data_dir)
+    if _is_missing_config_value(data_dir) or data_dir is None:
+        data_dir = defaults.DEFAULT_DATA_DIR
+    config.paths.data_dir = Path(data_dir).expanduser()
     config.paths.price_data_dir = config.paths.data_dir / defaults.PRICE_DATA_SUBDIR_NAME
 
     apns_key_file = config.apns.key_file
     if _is_empty_or_missing_config_value(apns_key_file):
-        apns_key_file = Config(defaults.DEFAULT_CONFIG).apns.key_file
+        apns_key_file = defaults.DEFAULT_APNS_KEY_FILE
     config.apns.key_file = Path(apns_key_file).expanduser()
 
 def _ensure_dir(path: Path):

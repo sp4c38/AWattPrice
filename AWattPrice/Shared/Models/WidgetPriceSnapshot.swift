@@ -87,6 +87,14 @@ struct WidgetPriceSnapshot: Codable {
         hourlyForecastPoints.max { $0.marketprice < $1.marketprice }
     }
 
+    var currentHourlyForecastPrice: WidgetPricePoint? {
+        guard let currentPrice else { return hourlyForecastPoints.first }
+
+        return hourlyForecastPoints.first { point in
+            point.startTime <= currentPrice.startTime && point.endTime > currentPrice.startTime
+        } ?? hourlyForecastPoints.first
+    }
+
     var nextPriceBoundary: Date? {
         let now = Date()
         return points.first { $0.endTime > now }?.endTime

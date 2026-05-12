@@ -364,10 +364,12 @@
 "widget.forecast.next24h" = "Nächste 24h";
 "widget.forecast.lowest" = "Tiefstwert";
 "widget.forecast.average" = "Durchschnitt";
+"widget.forecast.current" = "Aktuell";
 "widget.forecast.highest" = "Höchstwert";
 "widget.cheapest.displayName" = "Günstigste Zeiten";
 "widget.cheapest.description" = "Zeigt die günstigsten kommenden Strom-Zeitfenster.";
 "widget.cheapest.title" = "Günstigste";
+"widget.cheapest.usageDuration" = "%@ Nutzung";
 "widget.cheapest.noWindow" = "Kein vollständiges Zeitfenster verfügbar.";
 "widget.unavailable.title" = "Preise nicht verfügbar";
 "widget.unavailable.short" = "Nicht verfügbar";

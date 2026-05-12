@@ -10,19 +10,14 @@ struct CheapestTimesWidget: Widget {
         }
         .configurationDisplayName("widget.cheapest.displayName")
         .description("widget.cheapest.description")
-        .supportedFamilies([.systemSmall, .systemMedium])
+        .supportedFamilies([.systemSmall])
         .contentMarginsDisabled()
     }
 }
 
 struct CheapestTimesWidget_Previews: PreviewProvider {
     static var previews: some View {
-        Group {
-            CheapestTimesWidgetView(entry: .preview)
-                .previewContext(WidgetPreviewContext(family: .systemSmall))
-
-            CheapestTimesWidgetView(entry: .preview)
-                .previewContext(WidgetPreviewContext(family: .systemMedium))
-        }
+        CheapestTimesWidgetView(entry: .preview)
+            .previewContext(WidgetPreviewContext(family: .systemSmall))
     }
 }

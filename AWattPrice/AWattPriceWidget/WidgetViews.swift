@@ -12,8 +12,8 @@ enum WidgetStyle {
     static let low = Color(red: 0.20, green: 0.62, blue: 0.25)
     static let high = Color.red
     static let neutral = Color.secondary
-    static let smallPadding: CGFloat = 12
-    static let regularPadding: CGFloat = 14
+    static let smallPadding: CGFloat = 15
+    static let regularPadding: CGFloat = 18
 
     static func color(for price: Double, average: Double?) -> Color {
         if price < 0 {
@@ -54,6 +54,10 @@ enum WidgetText {
     static func duration(_ duration: TimeInterval) -> String {
         let hours = Int(duration / 3600)
         return "\(hours)h"
+    }
+
+    static func usageDuration(_ timeInterval: TimeInterval) -> String {
+        String(format: NSLocalizedString("widget.cheapest.usageDuration", comment: ""), duration(timeInterval))
     }
 
     static func updated(_ date: Date) -> String {
@@ -197,8 +201,6 @@ struct ForecastWidgetView: View {
             WidgetUnavailableView(snapshot: entry.snapshot, route: WidgetRoute.prices)
         } else {
             VStack(alignment: .leading, spacing: 8) {
-                header
-
                 PriceForecastChart(
                     points: entry.snapshot.hourlyForecastPoints,
                     averagePrice: entry.snapshot.hourlyForecastAveragePrice,
@@ -215,42 +217,10 @@ struct ForecastWidgetView: View {
         }
     }
 
-    private var header: some View {
-        HStack(alignment: .firstTextBaseline) {
-            VStack(alignment: .leading, spacing: 2) {
-                Text("widget.forecast.title")
-                    .font(.headline)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.82)
-
-                HStack(spacing: 6) {
-                    Text(entry.snapshot.marketAreaName)
-                        .lineLimit(1)
-
-                    Text("widget.forecast.next24h")
-                        .lineLimit(1)
-                }
-                .font(.caption2)
-                .foregroundStyle(.secondary)
-            }
-
-            Spacer(minLength: 8)
-
-            VStack(alignment: .trailing, spacing: 2) {
-                Text(WidgetText.price(entry.snapshot.currentPrice?.marketprice))
-                    .font(.subheadline.weight(.bold))
-                    .monospacedDigit()
-                    .lineLimit(1)
-
-                WidgetStatusBadge(entry: entry)
-            }
-        }
-    }
-
     private var largeSummary: some View {
         HStack(spacing: 10) {
             ForecastSummaryItem(title: "widget.forecast.lowest", point: entry.snapshot.hourlyForecastMinPrice, tint: WidgetStyle.low)
-            ForecastSummaryItem(title: "widget.forecast.average", value: entry.snapshot.hourlyForecastAveragePrice, tint: WidgetStyle.neutral)
+            ForecastSummaryItem(title: "widget.forecast.current", point: entry.snapshot.currentHourlyForecastPrice, tint: WidgetStyle.accent)
             ForecastSummaryItem(title: "widget.forecast.highest", point: entry.snapshot.hourlyForecastMaxPrice, tint: WidgetStyle.high)
         }
     }
@@ -306,32 +276,83 @@ struct PriceForecastChart: View {
     let currentPrice: WidgetPricePoint?
 
     var body: some View {
-        GeometryReader { geometry in
-            let metrics = WidgetChartMetrics(points: points, size: geometry.size)
+        VStack(spacing: 4) {
+            GeometryReader { geometry in
+                let metrics = WidgetChartMetrics(points: points, size: geometry.size)
 
-            ZStack(alignment: .topLeading) {
-                Rectangle()
-                    .fill(.secondary.opacity(0.18))
-                    .frame(height: 1)
-                    .position(x: geometry.size.width / 2, y: metrics.yPosition(for: 0))
+                ZStack(alignment: .topLeading) {
+                    Rectangle()
+                        .fill(.secondary.opacity(0.18))
+                        .frame(height: 1)
+                        .position(x: geometry.size.width / 2, y: metrics.yPosition(for: 0))
 
-                ForEach(Array(points.enumerated()), id: \.element.startTime) { index, point in
-                    let frame = metrics.barFrame(for: point.marketprice, index: index)
+                    ForEach(Array(points.enumerated()), id: \.element.startTime) { index, point in
+                        let frame = metrics.barFrame(for: point.marketprice, index: index)
 
-                    RoundedRectangle(cornerRadius: 2, style: .continuous)
-                        .fill(WidgetStyle.color(for: point.marketprice, average: averagePrice))
-                        .frame(width: frame.width, height: frame.height)
-                        .position(x: frame.midX, y: frame.midY)
-                        .opacity(isCurrentHour(point) ? 1 : 0.72)
+                        RoundedRectangle(cornerRadius: 2, style: .continuous)
+                            .fill(WidgetStyle.color(for: point.marketprice, average: averagePrice))
+                            .frame(width: frame.width, height: frame.height)
+                            .position(x: frame.midX, y: frame.midY)
+                            .opacity(isCurrentHour(point) ? 1 : 0.72)
+                    }
                 }
             }
+            .frame(maxWidth: .infinity, minHeight: 72)
+
+            ForecastHourAxis(points: points)
         }
-        .frame(maxWidth: .infinity, minHeight: 80)
     }
 
     private func isCurrentHour(_ point: WidgetPricePoint) -> Bool {
         guard let currentPrice else { return false }
         return point.startTime <= currentPrice.startTime && point.endTime > currentPrice.startTime
+    }
+}
+
+struct ForecastHourAxis: View {
+    let points: [WidgetPricePoint]
+
+    private var labelIndexes: [Int] {
+        guard points.isEmpty == false else { return [] }
+
+        var indexes = Array(stride(from: 0, to: points.count, by: 6))
+        let lastIndex = points.count - 1
+
+        if indexes.contains(lastIndex) == false {
+            indexes.append(lastIndex)
+        }
+
+        return indexes
+    }
+
+    var body: some View {
+        GeometryReader { geometry in
+            ZStack(alignment: .topLeading) {
+                ForEach(labelIndexes, id: \.self) { index in
+                    if points.indices.contains(index) {
+                        Text(WidgetText.time(points[index].startTime))
+                            .font(.caption2.weight(.semibold))
+                            .monospacedDigit()
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
+                            .fixedSize()
+                            .position(
+                                x: xPosition(for: index, width: geometry.size.width),
+                                y: 7
+                            )
+                    }
+                }
+            }
+        }
+        .frame(height: 14)
+    }
+
+    private func xPosition(for index: Int, width: CGFloat) -> CGFloat {
+        guard points.count > 1 else { return width / 2 }
+
+        let fraction = CGFloat(index) / CGFloat(points.count - 1)
+        let inset: CGFloat = 16
+        return min(max(width * fraction, inset), max(width - inset, inset))
     }
 }
 
@@ -381,8 +402,6 @@ struct WidgetChartMetrics {
 }
 
 struct CheapestTimesWidgetView: View {
-    @Environment(\.widgetFamily) private var family
-
     let entry: WidgetPriceEntry
 
     var body: some View {
@@ -395,7 +414,7 @@ struct CheapestTimesWidgetView: View {
                         Image(systemName: "timer")
                         Text("widget.cheapest.title")
                     }
-                    .font(.subheadline.weight(.bold))
+                    .font(.headline.weight(.bold))
                     .lineLimit(1)
                     .minimumScaleFactor(0.76)
 
@@ -403,11 +422,7 @@ struct CheapestTimesWidgetView: View {
                     WidgetStatusBadge(entry: entry)
                 }
 
-                if family == .systemSmall {
-                    bestWindow
-                } else {
-                    windowsList
-                }
+                cheapestWindowsList
             }
             .padding(WidgetStyle.smallPadding)
             .awattWidgetBackground()
@@ -415,56 +430,74 @@ struct CheapestTimesWidgetView: View {
         }
     }
 
-    private var bestWindow: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            if let window = entry.snapshot.cheapestWindows.first {
-                Text(WidgetText.duration(window.duration))
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.secondary)
-
-                Text(WidgetText.timeRange(from: window.startTime, to: window.endTime))
-                    .font(.system(size: 22, weight: .bold, design: .rounded))
-                    .monospacedDigit()
-                    .minimumScaleFactor(0.7)
-                    .lineLimit(1)
-
-                Text(WidgetText.price(window.averagePrice))
-                    .font(.subheadline.weight(.semibold))
-                    .monospacedDigit()
-                    .foregroundStyle(WidgetStyle.low)
-            } else {
+    private var cheapestWindowsList: some View {
+        VStack(spacing: 2) {
+            if entry.snapshot.cheapestWindows.isEmpty {
                 Text("widget.cheapest.noWindow")
                     .font(.caption)
                     .foregroundStyle(.secondary)
-            }
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
-    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+            } else {
+                let windows = Array(entry.snapshot.cheapestWindows.prefix(3))
 
-    private var windowsList: some View {
-        VStack(spacing: 8) {
-            ForEach(entry.snapshot.cheapestWindows) { window in
-                HStack(spacing: 8) {
-                    Text(WidgetText.duration(window.duration))
-                        .font(.caption.weight(.bold))
-                        .foregroundStyle(WidgetStyle.low)
-                        .frame(width: 28, alignment: .leading)
+                if windows.indices.contains(0) {
+                    CheapestWindowCompactRow(window: windows[0])
+                }
 
-                    VStack(alignment: .leading, spacing: 1) {
-                        Text(WidgetText.timeRange(from: window.startTime, to: window.endTime))
-                            .font(.subheadline.weight(.semibold))
-                            .monospacedDigit()
-                            .lineLimit(1)
+                if windows.indices.contains(1) {
+                    CheapestWindowDivider()
+                    CheapestWindowCompactRow(window: windows[1])
+                }
 
-                        Text(WidgetText.price(window.averagePrice))
-                            .font(.caption2)
-                            .monospacedDigit()
-                            .foregroundStyle(.secondary)
-                    }
-
-                    Spacer(minLength: 0)
+                if windows.indices.contains(2) {
+                    CheapestWindowDivider()
+                    CheapestWindowCompactRow(window: windows[2])
                 }
             }
         }
+        .padding(.horizontal, 3)
+        .padding(.vertical, 4)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+    }
+}
+
+private struct CheapestWindowDivider: View {
+    var body: some View {
+        Rectangle()
+            .fill(.secondary.opacity(0.24))
+            .frame(maxWidth: .infinity)
+            .frame(height: 1)
+            .fixedSize(horizontal: false, vertical: true)
+    }
+}
+
+private struct CheapestWindowCompactRow: View {
+    let window: WidgetPriceWindow
+
+    var body: some View {
+        HStack(spacing: 5) {
+            VStack(alignment: .leading, spacing: 0) {
+                Text(WidgetText.duration(window.duration))
+                    .font(.system(size: 16, weight: .bold, design: .rounded))
+                    .lineLimit(1)
+
+                Text(WidgetText.timeRange(from: window.startTime, to: window.endTime))
+                    .font(.system(size: 10, weight: .semibold, design: .rounded))
+                    .monospacedDigit()
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+
+            Text(WidgetText.price(window.averagePrice))
+                .font(.system(size: 16, weight: .bold, design: .rounded))
+                .monospacedDigit()
+                .foregroundStyle(WidgetStyle.low)
+                .lineLimit(1)
+                .minimumScaleFactor(0.72)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(height: 36)
     }
 }

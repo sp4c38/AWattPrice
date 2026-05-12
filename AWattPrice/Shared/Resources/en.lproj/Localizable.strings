@@ -164,6 +164,7 @@
 "Notification example could not be loaded." = "Notification example could not be loaded.";
 "Sent when new prices for tomorrow are available." = "Sent when new prices for tomorrow are available.";
 "Notification settings could not be saved." = "Notification settings could not be saved.";
+"Notification settings could not be saved to the server. Your previous settings were restored." = "Notification settings could not be saved to the server. Your previous settings were restored.";
 "Get Help" = "Get Help";
 "Send Suggestion" = "Send Suggestion";
 

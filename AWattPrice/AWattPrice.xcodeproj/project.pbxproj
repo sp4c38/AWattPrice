@@ -16,8 +16,8 @@
 		1FF85FE467F2EBD6F0165295 /* TotalTimeFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2BCED411DC7AD4E79FC22B9 /* TotalTimeFormatter.swift */; };
 		22A1A4D72FBA5D1100E57A2B /* AppIconImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A1A4D62FBA5D1100E57A2B /* AppIconImage.swift */; };
 		23D11D519B8DC7A7F5DA54BA /* PriceAddOnsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51649CD95D1B046EA6D3FF0F /* PriceAddOnsView.swift */; };
-		25A41E112FBA629C00A685EF /* App Icon v3 Dark.png in Resources */ = {isa = PBXBuildFile; fileRef = 25A41E102FBA629C00A685EF /* App Icon v3 Dark.png */; };
-		25A41E132FBA629C00A685EF /* App Icon v3.png in Resources */ = {isa = PBXBuildFile; fileRef = 25A41E122FBA629C00A685EF /* App Icon v3.png */; };
+		25A41E112FBA629C00A685EF /* AppIcon.icon/Assets/App Icon v3 Dark.png in Resources */ = {isa = PBXBuildFile; fileRef = 25A41E102FBA629C00A685EF /* AppIcon.icon/Assets/App Icon v3 Dark.png */; };
+		25A41E132FBA629C00A685EF /* AppIcon.icon/Assets/App Icon v3.png in Resources */ = {isa = PBXBuildFile; fileRef = 25A41E122FBA629C00A685EF /* AppIcon.icon/Assets/App Icon v3.png */; };
 		268ABCBD2289736785AE38B3 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13637B90539D4C9A8BB48CC0 /* APIClient.swift */; };
 		2AB8E54B3F4BB4E1E64CA519 /* Font.swift in Sources */ = {isa = PBXBuildFile; fileRef = D22CD9B053C7AA6D5411FFE0 /* Font.swift */; };
 		3764069C227C8A20FD65EB7C /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0D566683455A9834699592 /* String.swift */; };
@@ -108,8 +108,8 @@
 		147B08A0FC4429D5BA97DFA2 /* EnergyDataPreviewContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnergyDataPreviewContent.swift; sourceTree = "<group>"; };
 		22523FA7380336A83DEE1624 /* Environment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Environment.swift; sourceTree = "<group>"; };
 		22A1A4D62FBA5D1100E57A2B /* AppIconImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIconImage.swift; sourceTree = "<group>"; };
-		25A41E102FBA629C00A685EF /* App Icon v3 Dark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "AppIcon.icon/Assets/App Icon v3 Dark.png"; sourceTree = "<group>"; };
-		25A41E122FBA629C00A685EF /* App Icon v3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "AppIcon.icon/Assets/App Icon v3.png"; sourceTree = "<group>"; };
+		25A41E102FBA629C00A685EF /* AppIcon.icon/Assets/App Icon v3 Dark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "AppIcon.icon/Assets/App Icon v3 Dark.png"; sourceTree = "<group>"; };
+		25A41E122FBA629C00A685EF /* AppIcon.icon/Assets/App Icon v3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "AppIcon.icon/Assets/App Icon v3.png"; sourceTree = "<group>"; };
 		2C75B85698299C6281666C42 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3459FFEC069D6C1D4DA27E5E /* PreviewEnergyData.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = PreviewEnergyData.json; sourceTree = "<group>"; };
 		3986605FAA7AF18D5AF2CB37 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -125,7 +125,6 @@
 		546D5FA692CB5FFBAF81B22A /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		59B5203B024111C62B8F9D80 /* DataDownloadAndError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataDownloadAndError.swift; sourceTree = "<group>"; };
 		5CF596453B643BA753483A2C /* SettingsPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPageView.swift; sourceTree = "<group>"; };
-		6A93F0D1C8B24D479E5A0123 /* InsightsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsightsView.swift; sourceTree = "<group>"; };
 		5E69EEB1FA019DD2F16C2815 /* AWattPriceWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AWattPriceWidgetExtension.entitlements; sourceTree = "<group>"; };
 		60087A5B0602E5789304BDF1 /* ButtonStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonStyles.swift; sourceTree = "<group>"; };
 		61541BE12A548F4D00822908 /* AWattPriceWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AWattPriceWidgetExtension.entitlements; sourceTree = "<group>"; };
@@ -136,6 +135,7 @@
 		61635B2F2A482E6A0099F5AD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		61635B3D2A4833730099F5AD /* PricesPreviewContent.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = PricesPreviewContent.json; sourceTree = "<group>"; };
 		6A5CE8C0A77D6361AD5B708C /* KeyboardObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardObserver.swift; sourceTree = "<group>"; };
+		6A93F0D1C8B24D479E5A0123 /* InsightsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsightsView.swift; sourceTree = "<group>"; };
 		6C06F1B5903714FE38928934 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		6EEAB0C5FE21817587BFCFEB /* RegionTaxSelection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegionTaxSelection.swift; sourceTree = "<group>"; };
 		7312444A00735A79F3140BF9 /* SettingsUploadErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsUploadErrorView.swift; sourceTree = "<group>"; };
@@ -152,8 +152,8 @@
 		B6AD0D0B3D95E6C7BB20D726 /* EasyIntervalPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EasyIntervalPicker.swift; sourceTree = "<group>"; };
 		B8FC646AC0ECA7024DB8607C /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
 		D22CD9B053C7AA6D5411FFE0 /* Font.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Font.swift; sourceTree = "<group>"; };
-		D6047C9B5C250D36D898FE1F /* CheapestTimeResultView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheapestTimeResultView.swift; sourceTree = "<group>"; };
 		D4E7A00F2FBA4D9A8C0D4E10 /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = AppIcon.icon; sourceTree = "<group>"; };
+		D6047C9B5C250D36D898FE1F /* CheapestTimeResultView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheapestTimeResultView.swift; sourceTree = "<group>"; };
 		D62C2B2A2D81CAC000FA294C /* AWattPriceWidgetExtension-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "AWattPriceWidgetExtension-Info.plist"; sourceTree = "<group>"; };
 		D6A2D1BF2D8B29A40013028D /* Setting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Setting.swift; sourceTree = "<group>"; };
 		D6A2D1C02D8B2AC00013028D /* SwiftDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataService.swift; sourceTree = "<group>"; };
@@ -392,6 +392,14 @@
 			path = Services;
 			sourceTree = "<group>";
 		};
+		9B8C7D6E5F4A3210B1C2D3E4 /* Insights */ = {
+			isa = PBXGroup;
+			children = (
+				6A93F0D1C8B24D479E5A0123 /* InsightsView.swift */,
+			);
+			path = Insights;
+			sourceTree = "<group>";
+		};
 		9F3CD26A7BD9992AE1BA052B /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
@@ -437,14 +445,6 @@
 				A0EEAF1E35084AD2316B5129 /* Energy Price Graph */,
 			);
 			path = "Price Graph";
-			sourceTree = "<group>";
-		};
-		9B8C7D6E5F4A3210B1C2D3E4 /* Insights */ = {
-			isa = PBXGroup;
-			children = (
-				6A93F0D1C8B24D479E5A0123 /* InsightsView.swift */,
-			);
-			path = Insights;
 			sourceTree = "<group>";
 		};
 		D6A2D1CC2D8B5A7C0013028D /* Services */ = {
@@ -502,8 +502,8 @@
 			children = (
 				61541BE12A548F4D00822908 /* AWattPriceWidgetExtension.entitlements */,
 				D4E7A00F2FBA4D9A8C0D4E10 /* AppIcon.icon */,
-				25A41E102FBA629C00A685EF /* App Icon v3 Dark.png */,
-				25A41E122FBA629C00A685EF /* App Icon v3.png */,
+				25A41E102FBA629C00A685EF /* AppIcon.icon/Assets/App Icon v3 Dark.png */,
+				25A41E122FBA629C00A685EF /* AppIcon.icon/Assets/App Icon v3.png */,
 				61635B412A4834D20099F5AD /* Shared */,
 				E18353461A3EAEA81012197F /* AWattPrice */,
 				61635B2A2A482E690099F5AD /* AWattPriceWidget */,
@@ -606,8 +606,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				DBA5B1FE42B492B0CB2D8D35 /* Assets.xcassets in Resources */,
-				25A41E112FBA629C00A685EF /* App Icon v3 Dark.png in Resources */,
-				25A41E132FBA629C00A685EF /* App Icon v3.png in Resources */,
+				25A41E112FBA629C00A685EF /* AppIcon.icon/Assets/App Icon v3 Dark.png in Resources */,
+				25A41E132FBA629C00A685EF /* AppIcon.icon/Assets/App Icon v3.png in Resources */,
 				D4E7A0102FBA4D9A8C0D4E10 /* AppIcon.icon in Resources */,
 				D8CFCC7C18D97EA76DB02E08 /* Launch Screen.storyboard in Resources */,
 				59BDBAACA1BB8316305D917B /* Localizable.strings in Resources */,

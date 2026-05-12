@@ -191,6 +191,7 @@ class NotificationSettingViewModel: ObservableObject {
             settingsManager.setting.priceRisesAboveEnabled = previousValues.priceAboveEnabled
             settingsManager.setting.priceRisesAboveThreshold = previousValues.priceAboveThreshold.integerValue ?? 0
             settingsManager.setting.dailySummaryEnabled = previousValues.dailySummaryEnabled
+            draft = savedDraft
             isUploadRequestInFlight = false
             uploadIndicatorStart = nil
             isSaving = false
@@ -528,6 +529,12 @@ struct NotificationSettingView: View {
                             .transition(.opacity.combined(with: .move(edge: .top)))
                     }
                     
+                    if viewModel.uploadFailed {
+                        Text("Notification settings could not be saved to the server. Your previous settings were restored.".localized())
+                            .font(.footnote.weight(.semibold))
+                            .foregroundStyle(AppTheme.error)
+                    }
+                    
                     NotificationSettingsCard {
                         NotificationRuleCard(
                             title: "Price Below",
@@ -586,12 +593,6 @@ struct NotificationSettingView: View {
                             isEnabled: $viewModel.draft.dailySummaryEnabled
                         ) {
                         }
-                    }
-
-                    if viewModel.uploadFailed {
-                        Text("Notification settings could not be saved.".localized())
-                            .font(.footnote.weight(.semibold))
-                            .foregroundStyle(AppTheme.error)
                     }
                 }
                 .padding(.horizontal, 16)

@@ -1,7 +1,7 @@
 """Default values and models public for all awattprice notification services."""
 from box import Box
 
-PRICE_BELOW_SERVICE_NAME = "price_below"
+NOTIFICATIONS_SERVICE_NAME = "notifications"
 
 APNS_ENCRYPTION_ALGORITHM = "ES256"
 APNS_URL = Box()

@@ -32,7 +32,6 @@ team_id =
 key_id = 
 
 [cronitor]
-enabled = false
 api_key =
 monitor_key =
 environment = production

@@ -13,9 +13,9 @@ from box import Box
 from liteconfig import Config
 from loguru import logger
 
-from awattprice_notifications.price_below import defaults
-from awattprice_notifications.price_below.defaults import check_area_updated
-from awattprice_notifications.price_below.defaults import get_notifiable_prices
+from awattprice_notifications.worker import defaults
+from awattprice_notifications.worker.defaults import check_area_updated
+from awattprice_notifications.worker.defaults import get_notifiable_prices
 
 
 class DetailedPriceData:

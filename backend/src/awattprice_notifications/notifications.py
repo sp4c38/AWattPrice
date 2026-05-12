@@ -1,7 +1,6 @@
 """Send notifications."""
 import httpx
 
-from awattprice.orm import Token
 from awattprice import utils as awattprice_utils
 from box import Box
 from loguru import logger
@@ -18,7 +17,7 @@ from tenacity import (
 from awattprice_notifications import defaults
 
 
-async def send_notification(client: httpx.AsyncClient, token: Token, headers: Box, notification: Box) -> httpx.Response:
+async def send_notification(client: httpx.AsyncClient, token: Box, headers: Box, notification: Box) -> httpx.Response:
     """Send a single notification."""
     origin = defaults.APNS_URL.origin
     path = defaults.APNS_URL.path

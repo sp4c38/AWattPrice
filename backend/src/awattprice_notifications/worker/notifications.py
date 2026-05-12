@@ -15,8 +15,8 @@ from loguru import logger
 
 from awattprice_notifications.apns import get_apns_authorization
 from awattprice_notifications.notifications import send_notification
-from awattprice_notifications.price_below import defaults
-from awattprice_notifications.price_below.prices import NotifiableDetailedPriceData
+from awattprice_notifications.worker import defaults
+from awattprice_notifications.worker.prices import NotifiableDetailedPriceData
 
 
 def format_price_timestamp(price_timestamp, resolution: str) -> str:
@@ -250,7 +250,7 @@ async def deliver_notifications(
     config: Config,
     areas_profiles: Box[str, list[Box]],
     notifiable_areas_prices: Box[str, NotifiableDetailedPriceData],
-):
+) -> tuple[int, int]:
     """Send notifications for profiles grouped by area.
 
     :param areas_profiles, notifiable_areas_prices: Each area with profiles *must* also be present in the price data.
@@ -284,9 +284,13 @@ async def deliver_notifications(
         responses = await asyncio.gather(*send_tasks, return_exceptions=True)
 
     handle_response_tasks = []
+    error_count = 0
     for info, response in zip(notifications_infos, responses):
         if isinstance(response, Exception) is True:
             logger.warning(f"Couldn't send notification: {response}.")
+            error_count += 1
             continue
         handle_response_tasks.append(handle_apns_response(profile_store, info.profile, response))
     await asyncio.gather(*handle_response_tasks)
+
+    return len(send_tasks), error_count

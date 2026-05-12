@@ -1,4 +1,4 @@
-"""Default values and models for the price below notification service."""
+"""Default values and models for the notification worker."""
 from typing import Optional
 
 import arrow
@@ -16,9 +16,9 @@ NOTIFICATION = Box(
         "push_type": "alert",
         "priority": 5,
         "collapse_ids": {
-            "price_below": "price-below-notification",
-            "price_above": "price-above-notification",
-            "daily_summary": "daily-summary-notification",
+            "price_below": "awattprice_notifications_price_below",
+            "price_above": "awattprice_notifications_price_above",
+            "daily_summary": "awattprice_notifications_daily_summary",
         },
         "title_loc_keys": {
             "price_below": "notifications.price_below.title",

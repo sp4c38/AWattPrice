@@ -30,6 +30,11 @@ data_dir = $DATA_DIR/data
 team_id =
 key_id =
 key_file = $DATA_DIR/encryption_key.p8
+
+[cronitor]
+api_key =
+monitor_key =
+environment = local
 EOF
 fi
 

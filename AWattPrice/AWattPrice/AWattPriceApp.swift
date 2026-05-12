@@ -47,6 +47,27 @@ class AppContext {
     }
 }
 
+enum AppDeepLinkDestination: String {
+    case prices
+    case insights
+    case cheapestTime = "cheapest-time"
+
+    init?(url: URL) {
+        let route = url.host ?? url.pathComponents.dropFirst().first
+
+        switch route {
+        case Self.prices.rawValue:
+            self = .prices
+        case Self.insights.rawValue:
+            self = .insights
+        case Self.cheapestTime.rawValue:
+            self = .cheapestTime
+        default:
+            return nil
+        }
+    }
+}
+
 @main
 struct AWattPriceApp: App {
     // Get the shared SwiftData service
@@ -92,6 +113,7 @@ struct ContentView: View {
 
     @State var selectedTab = 1
     @State var shouldShowWhatsNew = false
+    @AppStorage("pendingDeepLinkDestination") private var pendingDeepLinkDestination = ""
     
     var body: some View {
         VStack(spacing: 0) {
@@ -131,6 +153,9 @@ struct ContentView: View {
             shouldShowWhatsNew = AppContext.shared.checkShowWhatsNewScreen()
             refreshAppData()
         }
+        .onOpenURL { url in
+            handleDeepLink(url)
+        }
     }
 
     private func refreshAppData() {
@@ -144,5 +169,19 @@ struct ContentView: View {
         }
 
         energyDataService.download(setting: settingsManager.setting)
+    }
+
+    private func handleDeepLink(_ url: URL) {
+        guard let destination = AppDeepLinkDestination(url: url) else { return }
+
+        switch destination {
+        case .prices:
+            selectedTab = 1
+        case .insights:
+            selectedTab = 2
+        case .cheapestTime:
+            pendingDeepLinkDestination = destination.rawValue
+            selectedTab = 2
+        }
     }
 }

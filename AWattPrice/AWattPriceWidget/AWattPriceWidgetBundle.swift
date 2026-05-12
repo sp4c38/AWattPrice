@@ -11,6 +11,8 @@ import SwiftUI
 @main
 struct AWattPriceWidgetBundle: WidgetBundle {
     var body: some Widget {
+        CurrentPriceWidget()
         PricesWidget()
+        CheapestTimesWidget()
     }
 }

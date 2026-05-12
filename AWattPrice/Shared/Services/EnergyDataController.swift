@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import WidgetKit
 
 struct EnergyPricePoint: Decodable {
     var startTime: Date
@@ -139,6 +140,7 @@ class EnergyDataService: ObservableObject {
     func download(setting: Setting) {
         let pricingConfiguration = setting.pricingConfiguration
         let requestedMarketAreaKey = pricingConfiguration.marketArea.key
+        let marketAreaName = pricingConfiguration.marketArea.localizedDisplayName
 
         // Cancel any existing task first
         cancelDownloads()
@@ -150,11 +152,19 @@ class EnergyDataService: ObservableObject {
         
         currentDownloadTask = Task {
             do {
-                let newEnergyData = try await EnergyData.download(marketArea: pricingConfiguration.marketArea)
+                var newEnergyData = try await EnergyData.download(marketArea: pricingConfiguration.marketArea)
+                newEnergyData.computeValues(with: pricingConfiguration)
+                let processedEnergyData = newEnergyData
+                let widgetSnapshot = WidgetPriceSnapshot(
+                    createdAt: Date(),
+                    marketAreaName: marketAreaName,
+                    points: processedEnergyData.currentPrices.map(WidgetPricePoint.init(pricePoint:))
+                )
                 
                 await MainActor.run {
-                    self.energyData = newEnergyData
-                    self.energyData?.computeValues(with: pricingConfiguration)
+                    self.energyData = processedEnergyData
+                    widgetSnapshot.cache()
+                    AWattPriceWidgetTimelines.reloadAll()
                     print("Energy data download completed.")
                     self.downloadState = .finished(time: Date())
                 }

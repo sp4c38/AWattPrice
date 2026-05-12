@@ -311,6 +311,8 @@ private struct PriceBandRow: View {
 
 struct InsightsView: View {
     @EnvironmentObject private var energyDataService: EnergyDataService
+    @AppStorage("pendingDeepLinkDestination") private var pendingDeepLinkDestination = ""
+    @State private var navigateToCheapestTime = false
 
     private var prices: [EnergyPricePoint] {
         energyDataService.energyData?.currentPrices ?? []
@@ -432,7 +434,21 @@ struct InsightsView: View {
             .appScreenBackground()
             .navigationTitle("Insights")
             .navigationBarTitleDisplayMode(.large)
+            .navigationDestination(isPresented: $navigateToCheapestTime) {
+                CheapestTimeView()
+            }
+            .onAppear(perform: handlePendingDeepLink)
+            .onChange(of: pendingDeepLinkDestination) {
+                handlePendingDeepLink()
+            }
         }
+    }
+
+    private func handlePendingDeepLink() {
+        guard pendingDeepLinkDestination == AppDeepLinkDestination.cheapestTime.rawValue else { return }
+
+        pendingDeepLinkDestination = ""
+        navigateToCheapestTime = true
     }
 }
 

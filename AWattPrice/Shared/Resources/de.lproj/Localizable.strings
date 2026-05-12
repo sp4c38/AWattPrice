@@ -351,3 +351,24 @@
 "Next 24h" = "Folgende 24h";
 
 "price in ct" = "Preis in ct";
+"widget.current.displayName" = "Aktueller Preis";
+"widget.current.description" = "Zeigt den aktuellen Strompreis und den Vergleich zum kommenden Durchschnitt.";
+"widget.current.title" = "Jetzt";
+"widget.current.negative" = "Der Preis ist gerade negativ.";
+"widget.current.available" = "Aktueller Strompreis.";
+"widget.current.belowAverage" = "Unter Durchschnitt.";
+"widget.current.aboveAverage" = "Über Durchschnitt.";
+"widget.forecast.displayName" = "Preisverlauf";
+"widget.forecast.description" = "Zeigt die Strompreise der nächsten 24 Stunden.";
+"widget.forecast.title" = "Nächste Preise";
+"widget.forecast.next24h" = "Nächste 24h";
+"widget.forecast.lowest" = "Tiefstwert";
+"widget.forecast.average" = "Durchschnitt";
+"widget.forecast.highest" = "Höchstwert";
+"widget.cheapest.displayName" = "Günstigste Zeiten";
+"widget.cheapest.description" = "Zeigt die günstigsten kommenden Strom-Zeitfenster.";
+"widget.cheapest.title" = "Günstigste";
+"widget.cheapest.noWindow" = "Kein vollständiges Zeitfenster verfügbar.";
+"widget.unavailable.title" = "Preise nicht verfügbar";
+"widget.unavailable.short" = "Nicht verfügbar";
+"widget.cached" = "Gecacht";

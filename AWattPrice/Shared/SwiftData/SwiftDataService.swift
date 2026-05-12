@@ -3,8 +3,23 @@ import SwiftData
 import WidgetKit
 
 // Constants used across app and widget
-let internalAppGroupIdentifier = "group.me.space8.AWattPrice"
+let internalAppGroupIdentifier = "group.me.space8.AWattPrice.internal"
+let currentPriceWidgetKind = "me.space8.AWattPrice.currentPrice"
 let pricesWidgetKind = "me.space8.AWattPrice.prices"
+let cheapestTimesWidgetKind = "me.space8.AWattPrice.cheapestTimes"
+let allWidgetKinds = [
+    currentPriceWidgetKind,
+    pricesWidgetKind,
+    cheapestTimesWidgetKind,
+]
+
+enum AWattPriceWidgetTimelines {
+    static func reloadAll() {
+        allWidgetKinds.forEach { kind in
+            WidgetCenter.shared.reloadTimelines(ofKind: kind)
+        }
+    }
+}
 
 /// A minimal service that configures SwiftData with app group sharing for widget compatibility
 class SwiftDataService {
@@ -123,7 +138,7 @@ class SettingsManager: ObservableObject {
     func saveChanges() {
         try? context.save()
         
-        WidgetCenter.shared.reloadTimelines(ofKind: pricesWidgetKind)
+        AWattPriceWidgetTimelines.reloadAll()
     }
 }
 
@@ -146,6 +161,11 @@ class WidgetSettingsProvider {
         
         // Load settings (or create defaults)
         loadSettings()
+    }
+
+    func reloadSetting() -> Setting {
+        loadSettings()
+        return setting
     }
     
     private func loadSettings() {

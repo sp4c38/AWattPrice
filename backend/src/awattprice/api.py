@@ -13,9 +13,9 @@ from awattprice import configurator
 from awattprice import defaults
 from awattprice import notification_profiles
 from awattprice import prices
-from awattprice_notifications.worker import defaults as notification_defaults
-from awattprice_notifications.worker import notifications as notification_payloads
-from awattprice_notifications.worker import prices as notification_prices
+from awattprice_notifications import rules as notification_defaults
+from awattprice_notifications import payloads as notification_payloads
+from awattprice_notifications import prices as notification_prices
 
 config = configurator.get_config()
 configurator.configure_loguru(defaults.AWATTPRICE_SERVICE_NAME, config)

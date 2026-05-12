@@ -7,8 +7,8 @@ from pathlib import Path
 from box import Box
 
 from awattprice import notification_profiles
-from awattprice_notifications.worker import defaults
-from awattprice_notifications.worker import notifications
+from awattprice_notifications import rules as defaults
+from awattprice_notifications import payloads as notifications
 
 
 class FakeTimestamp:

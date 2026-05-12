@@ -32,7 +32,7 @@ services:
     command:
       - /bin/sh
       - -c
-      - while true; do python /usr/src/awattprice/src/awattprice_notifications/worker/service.py; sleep 600; done
+      - while true; do python /usr/src/awattprice/src/awattprice_notifications/service.py; sleep 600; done
     volumes:
       - "${AWATTPRICE_HOST_ROOT:-/etc/awattprice-v3}/data:/etc/awattprice/data"
       - "${AWATTPRICE_HOST_ROOT:-/etc/awattprice-v3}/logs:/etc/awattprice/logs"

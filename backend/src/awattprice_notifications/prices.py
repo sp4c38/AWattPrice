@@ -13,9 +13,9 @@ from box import Box
 from liteconfig import Config
 from loguru import logger
 
-from awattprice_notifications.worker import defaults
-from awattprice_notifications.worker.defaults import check_area_updated
-from awattprice_notifications.worker.defaults import get_notifiable_prices
+from awattprice_notifications import rules
+from awattprice_notifications.rules import check_area_updated
+from awattprice_notifications.rules import get_notifiable_prices
 
 
 class DetailedPriceData:
@@ -74,7 +74,7 @@ async def collect_areas_prices(config: Config, area_keys: list[str]) -> Box:
 
 async def read_last_updated_endtime(config: Config, area_key: str) -> Optional[Arrow]:
     """Get the end time of the latest price point when the price data was updated last for the certain area."""
-    file_name = defaults.LAST_UPDATED_ENDTIME_FILE_NAME.format(area_key.lower())
+    file_name = rules.LAST_UPDATED_ENDTIME_FILE_NAME.format(area_key.lower())
     file_path = config.paths.price_data_dir / file_name
     try:
         async with async_open(file_path, "rb") as file:
@@ -131,7 +131,7 @@ async def write_updated_areas_endtimes(
         endtime = get_current_endtime(prices)
         pickled_endtime = pickle.dumps(endtime)
 
-        file_name = defaults.LAST_UPDATED_ENDTIME_FILE_NAME.format(area_key.lower())
+        file_name = rules.LAST_UPDATED_ENDTIME_FILE_NAME.format(area_key.lower())
         file_path = config.paths.price_data_dir / file_name
         try:
             async with async_open(file_path, "wb") as file:

@@ -6,7 +6,7 @@ from pathlib import Path
 from awattprice import configurator
 from awattprice import defaults
 from awattprice_notifications import cronitor
-from awattprice_notifications.worker import service
+from awattprice_notifications import service
 
 
 def cronitor_config():

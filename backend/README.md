@@ -14,7 +14,7 @@ NGINX must already proxy `/v3/` on `api.awattprice.com` to `http://127.0.0.1:800
 
 The v3 deploy uses separate defaults so it does not touch the existing v2 server. Required runtime files live directly under `/etc/awattprice-v3`, and the deployed Compose file is stored under `/srv/awattprice-v3`.
 
-Docker Compose is the only place that maps host paths to container paths. For normal Docker deployment, `config.ini` should not set file or directory paths. The backend defaults to these container paths:
+Docker Compose is the only place that maps host paths to container paths. The backend defaults to these container paths:
 
 ```text
 /etc/awattprice/entsoe-token.txt

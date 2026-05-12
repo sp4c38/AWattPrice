@@ -5,7 +5,7 @@ from aiofile import async_open
 from box import Box
 from liteconfig import Config
 
-from awattprice_notifications import defaults
+from awattprice_notifications import apns_defaults
 
 
 async def get_apns_authorization(config: Config) -> str:
@@ -24,7 +24,7 @@ async def get_apns_authorization(config: Config) -> str:
     authorization = jwt.encode(
         auth_jwt_body,
         encryption_key,
-        algorithm=defaults.APNS_ENCRYPTION_ALGORITHM,
+        algorithm=apns_defaults.APNS_ENCRYPTION_ALGORITHM,
         headers=auth_jwt_headers,
     )
 

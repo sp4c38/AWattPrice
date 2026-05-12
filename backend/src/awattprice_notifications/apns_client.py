@@ -14,20 +14,20 @@ from tenacity import (
     wait_fixed,
 )
 
-from awattprice_notifications import defaults
+from awattprice_notifications import apns_defaults
 
 
 async def send_notification(client: httpx.AsyncClient, token: Box, headers: Box, notification: Box) -> httpx.Response:
     """Send a single notification."""
-    origin = defaults.APNS_URL.origin
-    path = defaults.APNS_URL.path
+    origin = apns_defaults.APNS_URL.origin
+    path = apns_defaults.APNS_URL.path
     path = path.format(token.token)
 
     url = origin + path
 
-    timeout = defaults.APNS_TIMEOUT
-    attempts = defaults.APNS_ATTEMPTS
-    stop_delay = defaults.APNS_STOP_DELAY
+    timeout = apns_defaults.APNS_TIMEOUT
+    attempts = apns_defaults.APNS_ATTEMPTS
+    stop_delay = apns_defaults.APNS_STOP_DELAY
     async for attempt in AsyncRetrying(
         before=awattprice_utils.log_attempts(logger.debug, "send notification"),
         retry=retry_if_exception_type(

@@ -14,9 +14,9 @@ from liteconfig import Config
 from loguru import logger
 
 from awattprice_notifications.apns import get_apns_authorization
-from awattprice_notifications.notifications import send_notification
-from awattprice_notifications.worker import defaults
-from awattprice_notifications.worker.prices import NotifiableDetailedPriceData
+from awattprice_notifications.apns_client import send_notification
+from awattprice_notifications import rules
+from awattprice_notifications.prices import NotifiableDetailedPriceData
 
 
 def format_price_timestamp(price_timestamp, resolution: str) -> str:
@@ -32,9 +32,9 @@ def construct_notification_headers(apns_authorization: str, selected_prices: lis
 
     headers = Box()
     headers["authorization"] = f"bearer {apns_authorization}"
-    headers["apns-push-type"] = defaults.NOTIFICATION.push_type
-    headers["apns-priority"] = str(defaults.NOTIFICATION.priority)
-    headers["apns-collapse-id"] = defaults.NOTIFICATION.collapse_ids[rule_type]
+    headers["apns-push-type"] = rules.NOTIFICATION.push_type
+    headers["apns-priority"] = str(rules.NOTIFICATION.priority)
+    headers["apns-collapse-id"] = rules.NOTIFICATION.collapse_ids[rule_type]
     headers["apns-topic"] = awattprice_defaults.APP_BUNDLE_ID.production
     headers["apns-expiration"] = str(latest_price.start_timestamp.int_timestamp)
 
@@ -71,10 +71,10 @@ def construct_notification(profile: Box, rule_type: str, selected_prices: list[B
     notification = Box()
     notification.aps = {}
     notification.aps["badge"] = 0
-    notification.aps["sound"] = defaults.NOTIFICATION.sound
+    notification.aps["sound"] = rules.NOTIFICATION.sound
     notification.aps["content-available"] = 0
     notification.aps["alert"] = {}
-    notification.aps["alert"]["title-loc-key"] = defaults.NOTIFICATION.title_loc_keys[rule_type]
+    notification.aps["alert"]["title-loc-key"] = rules.NOTIFICATION.title_loc_keys[rule_type]
 
     if rule_type == "price_below":
         threshold = round_subunitkwh(Decimal(str(profile.rules.price_below.threshold)))
@@ -84,9 +84,9 @@ def construct_notification(profile: Box, rule_type: str, selected_prices: list[B
         )
         best_time = format_price_timestamp(best_price.start_timestamp, notifiable_prices.data.resolution)
         best_price_str = stringify_adjusted_price(best_price, profile)
-        loc_key = defaults.NOTIFICATION.loc_keys.price_below_single
+        loc_key = rules.NOTIFICATION.loc_keys.price_below_single
         if len(selected_prices) > 1:
-            loc_key = defaults.NOTIFICATION.loc_keys.price_below_multiple
+            loc_key = rules.NOTIFICATION.loc_keys.price_below_multiple
         notification.aps["alert"]["loc-key"] = loc_key
         notification.aps["alert"]["loc-args"] = [str(len(selected_prices)), threshold_str, best_time, best_price_str]
     elif rule_type == "price_above":
@@ -97,15 +97,15 @@ def construct_notification(profile: Box, rule_type: str, selected_prices: list[B
         )
         worst_time = format_price_timestamp(worst_price.start_timestamp, notifiable_prices.data.resolution)
         worst_price_str = stringify_adjusted_price(worst_price, profile)
-        loc_key = defaults.NOTIFICATION.loc_keys.price_above_single
+        loc_key = rules.NOTIFICATION.loc_keys.price_above_single
         if len(selected_prices) > 1:
-            loc_key = defaults.NOTIFICATION.loc_keys.price_above_multiple
+            loc_key = rules.NOTIFICATION.loc_keys.price_above_multiple
         notification.aps["alert"]["loc-key"] = loc_key
         notification.aps["alert"]["loc-args"] = [str(len(selected_prices)), threshold_str, worst_time, worst_price_str]
     elif rule_type == "daily_summary":
         best_price = min(notifiable_prices.data.prices, key=lambda price_point: adjusted_price(price_point, profile))
         worst_price = max(notifiable_prices.data.prices, key=lambda price_point: adjusted_price(price_point, profile))
-        notification.aps["alert"]["loc-key"] = defaults.NOTIFICATION.loc_keys.daily_summary
+        notification.aps["alert"]["loc-key"] = rules.NOTIFICATION.loc_keys.daily_summary
         notification.aps["alert"]["loc-args"] = [
             format_price_timestamp(best_price.start_timestamp, notifiable_prices.data.resolution),
             stringify_adjusted_price(best_price, profile),
@@ -135,16 +135,16 @@ def example_prices_from_available_data(price_data: Box) -> NotifiableDetailedPri
 def synthetic_example_alert(rule_type: str) -> Box:
     """Return a standard example alert when no price data is available."""
     alert = Box()
-    alert["title-loc-key"] = defaults.NOTIFICATION.title_loc_keys[rule_type]
+    alert["title-loc-key"] = rules.NOTIFICATION.title_loc_keys[rule_type]
 
     if rule_type == "price_below":
-        alert["loc-key"] = defaults.NOTIFICATION.example_loc_keys.price_below
+        alert["loc-key"] = rules.NOTIFICATION.example_loc_keys.price_below
         alert["loc-args"] = ["20", "14", "18"]
     elif rule_type == "price_above":
-        alert["loc-key"] = defaults.NOTIFICATION.example_loc_keys.price_above
+        alert["loc-key"] = rules.NOTIFICATION.example_loc_keys.price_above
         alert["loc-args"] = ["40", "18", "45"]
     elif rule_type == "daily_summary":
-        alert["loc-key"] = defaults.NOTIFICATION.example_loc_keys.daily_summary
+        alert["loc-key"] = rules.NOTIFICATION.example_loc_keys.daily_summary
         alert["loc-args"] = ["14", "18", "18", "45"]
     else:
         raise ValueError(f"Unknown notification rule type: {rule_type}.")

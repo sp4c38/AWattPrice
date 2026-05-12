@@ -30,16 +30,13 @@ url = https://web-api.tp.entsoe.eu/api
 [apns]
 team_id = 
 key_id = 
+
+[cronitor]
+enabled = false
+api_key =
+monitor_key =
+environment = production
 """
-
-ORM_TABLE_NAMES = Box(
-    {
-        "token_table": "token",
-        "price_below_table": "price_below_notification",
-    }
-)
-
-DATABASE_FILE_NAME = "database.sqlite3"  # End with '.sqlite3'
 
 PRICE_SUBUNIT_ROUNDING_PLACES = 2
 
@@ -55,44 +52,6 @@ PRICE_DATA_REFRESH_LOCK_TIMEOUT = 75
 PRICE_DATA_UPDATE_TS_FILE_NAME = "update-ts-{}.info"
 
 supported_market_area_keys = list(SUPPORTED_MARKET_AREAS.keys())
-
-NOTIFICATION_CONFIGURATION_SCHEMA = {
-    "type": "object",
-    "properties": {
-        "token": {"type": "string", "minLength": 1},
-
-        "general": {
-            "type": "object",
-            "properties": {
-                "area": {"enum": supported_market_area_keys},
-                "tax": {"type": "boolean"},
-                "base_fee": {"type": "number"},
-                "percentage_add_on": {"type": "number"}
-            },
-            "required": ["area", "tax"],
-            "additionalProperties": False
-        },
-
-        "notifications": {
-            "type": "object",
-            "properties": {
-                "price_below": {
-                    "type": "object",
-                    "properties": {
-                        "active": {"type": "boolean"},
-                        "below_value": {"type": "number"}
-                    },
-                    "required": ["active", "below_value"],
-                    "additionalProperties": False
-                }
-            },
-            "required": ["price_below"],
-            "additionalProperties": False
-        }
-    },
-    "required": ["token", "general", "notifications"],
-    "additionalProperties": False
-}
 
 NOTIFICATION_PROFILE_SCHEMA = {
     "type": "object",

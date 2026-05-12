@@ -37,11 +37,20 @@ def _is_empty_or_missing_config_value(config_value: ConfigValue) -> bool:
     return _is_missing_config_value(config_value) or _check_config_none(config_value) is None
 
 
+def _coerce_bool(config_value: ConfigValue) -> bool:
+    """Coerce common config boolean representations to a bool."""
+    if isinstance(config_value, bool):
+        return config_value
+    if _is_empty_or_missing_config_value(config_value):
+        return False
+    return str(config_value).strip().lower() in ("1", "true", "yes", "on")
+
+
 def _fill_missing_config_values(config: Config):
     """Fill missing config values with the defaults shipped by the backend."""
     default_config = Config(defaults.DEFAULT_CONFIG)
 
-    for section_name in ("general", "entsoe", "paths", "apns"):
+    for section_name in ("general", "entsoe", "paths", "apns", "cronitor"):
         current_section = getattr(config, section_name)
         default_section = getattr(default_config, section_name)
 
@@ -84,6 +93,11 @@ def _transform_config(config: Config):
     if _is_empty_or_missing_config_value(apns_key_file):
         apns_key_file = defaults.DEFAULT_APNS_KEY_FILE
     config.apns.key_file = Path(apns_key_file).expanduser()
+
+    config.cronitor.enabled = _coerce_bool(config.cronitor.enabled)
+    config.cronitor.api_key = _check_config_none(config.cronitor.api_key)
+    config.cronitor.monitor_key = _check_config_none(config.cronitor.monitor_key)
+    config.cronitor.environment = _check_config_none(config.cronitor.environment)
 
 def _ensure_dir(path: Path):
     """Ensure that the dir at the parsed path is a directory and exists.

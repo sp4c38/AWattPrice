@@ -141,6 +141,13 @@ struct NotificationExampleResponse: Decodable {
     let bodyLocKey: String?
     let locArgs: [String]
 
+    init(wouldSend: Bool, titleLocKey: String?, bodyLocKey: String?, locArgs: [String]) {
+        self.wouldSend = wouldSend
+        self.titleLocKey = titleLocKey
+        self.bodyLocKey = bodyLocKey
+        self.locArgs = locArgs
+    }
+
     enum CodingKeys: String, CodingKey {
         case wouldSend = "would_send"
         case titleLocKey = "title_loc_key"

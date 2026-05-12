@@ -118,6 +118,51 @@ def construct_notification(profile: Box, rule_type: str, selected_prices: list[B
     return notification
 
 
+def example_prices_from_available_data(price_data: Box) -> NotifiableDetailedPriceData | None:
+    """Return available prices for example notifications when tomorrow prices are not complete yet."""
+    if "prices" not in price_data or len(price_data.prices) == 0:
+        return None
+
+    example_data = Box()
+    for key, value in price_data.items():
+        if key == "prices":
+            continue
+        example_data[key] = value
+    example_data.prices = list(price_data.prices)
+    return NotifiableDetailedPriceData(example_data)
+
+
+def synthetic_example_alert(rule_type: str) -> Box:
+    """Return a standard example alert when no price data is available."""
+    alert = Box()
+    alert["title-loc-key"] = defaults.NOTIFICATION.title_loc_keys[rule_type]
+
+    if rule_type == "price_below":
+        alert["loc-key"] = defaults.NOTIFICATION.example_loc_keys.price_below
+        alert["loc-args"] = ["20", "14", "18"]
+    elif rule_type == "price_above":
+        alert["loc-key"] = defaults.NOTIFICATION.example_loc_keys.price_above
+        alert["loc-args"] = ["40", "18", "45"]
+    elif rule_type == "daily_summary":
+        alert["loc-key"] = defaults.NOTIFICATION.example_loc_keys.daily_summary
+        alert["loc-args"] = ["14", "18", "18", "45"]
+    else:
+        raise ValueError(f"Unknown notification rule type: {rule_type}.")
+
+    return alert
+
+
+def example_alert_response(alert: Box, force: bool) -> dict:
+    """Return the API response shape for an example alert."""
+    return {
+        "would_send": True,
+        "forced": force,
+        "title_loc_key": alert["title-loc-key"],
+        "body_loc_key": alert["loc-key"],
+        "loc_args": alert["loc-args"],
+    }
+
+
 async def handle_apns_response(profile_store, profile: Box, response: httpx.Response):
     """Handle an APNs response for a notification."""
     status_code = response.status_code

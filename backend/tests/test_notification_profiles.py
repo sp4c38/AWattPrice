@@ -66,6 +66,10 @@ def notifiable_prices():
     return Box({"data": {"resolution": "PT60M", "prices": [price(1, 10), price(2, 30), price(3, 45)]}})
 
 
+def current_price_data():
+    return Box({"area": "DE-LU", "resolution": "PT60M", "prices": [price(4, 20), price(5, 35)]})
+
+
 class NotificationProfileTests(unittest.TestCase):
     def test_parse_profile_normalizes_decimals(self):
         parsed = notification_profiles.parse_notification_profile_body(profile())
@@ -179,6 +183,23 @@ class NotificationMatchingTests(unittest.TestCase):
         self.assertEqual([item.start_timestamp.hour for item in above_prices], [3])
         self.assertEqual(forced_below_profile.rules.price_below.threshold, Decimal("15.09"))
         self.assertEqual(forced_above_profile.rules.price_above.threshold, Decimal("60.90"))
+
+    def test_example_prices_can_use_available_current_data(self):
+        example_prices = notifications.example_prices_from_available_data(current_price_data())
+
+        self.assertIsNotNone(example_prices)
+        self.assertEqual(example_prices.data.resolution, "PT60M")
+        self.assertEqual([item.start_timestamp.hour for item in example_prices.data.prices], [4, 5])
+
+    def test_synthetic_example_alerts_are_sendable_for_all_rules(self):
+        below_alert = notifications.synthetic_example_alert("price_below")
+        above_alert = notifications.synthetic_example_alert("price_above")
+        summary_alert = notifications.synthetic_example_alert("daily_summary")
+
+        self.assertEqual(below_alert["title-loc-key"], "notifications.price_below.title")
+        self.assertEqual(above_alert["loc-key"], "notifications.price_above.body.example")
+        self.assertEqual(summary_alert["loc-key"], "notifications.daily_summary.body.example")
+        self.assertEqual(notifications.example_alert_response(below_alert, True)["would_send"], True)
 
     def test_get_notifiable_prices_uses_market_area_metadata(self):
         prices = Box(

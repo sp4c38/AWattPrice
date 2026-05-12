@@ -60,7 +60,7 @@ class NotificationService: ObservableObject {
     }
 
     func presentNotificationExample(_ response: NotificationExampleResponse) async throws -> Bool {
-        guard response.wouldSend else { return false }
+        guard response.wouldSend, response.bodyLocKey != nil else { return false }
         guard await ensureAccess(ensurePushAccess: false) else { return false }
 
         let content = UNMutableNotificationContent()
@@ -76,6 +76,32 @@ class NotificationService: ObservableObject {
 
         try await UNUserNotificationCenter.current().add(request)
         return true
+    }
+
+    func fallbackNotificationExample(for ruleType: NotificationRuleType) -> NotificationExampleResponse {
+        switch ruleType {
+        case .priceBelow:
+            return NotificationExampleResponse(
+                wouldSend: true,
+                titleLocKey: "notifications.price_below.title",
+                bodyLocKey: "notifications.price_below.body.example",
+                locArgs: ["20", "14", "18"]
+            )
+        case .priceAbove:
+            return NotificationExampleResponse(
+                wouldSend: true,
+                titleLocKey: "notifications.price_above.title",
+                bodyLocKey: "notifications.price_above.body.example",
+                locArgs: ["40", "18", "45"]
+            )
+        case .dailySummary:
+            return NotificationExampleResponse(
+                wouldSend: true,
+                titleLocKey: "notifications.daily_summary.title",
+                bodyLocKey: "notifications.daily_summary.body.example",
+                locArgs: ["14", "18", "18", "45"]
+            )
+        }
     }
 
     private func localizedNotificationText(key: String?, arguments: [String]) -> String {

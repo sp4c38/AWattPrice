@@ -178,6 +178,9 @@
 "notifications.price_above.body.single" = "Morgen steigen die Strompreise %1$@ Mal über %2$@ ct. Teuerster Preis um %3$@ Uhr mit %4$@ ct.";
 "notifications.price_above.body.multiple" = "Morgen steigen die Strompreise %1$@ Mal über %2$@ ct. Teuerster Preis um %3$@ Uhr mit %4$@ ct.";
 "notifications.daily_summary.body" = "Morgen ist die günstigste Stunde um %@ Uhr mit %@ ct. Die teuerste Stunde ist um %@ Uhr mit %@ ct.";
+"notifications.price_below.body.example" = "Die Strompreise fallen unter %@ ct. Günstigste Stunde um %@ Uhr mit %@ ct. [Beispieldaten]";
+"notifications.price_above.body.example" = "Die Strompreise steigen über %@ ct. Teuerste Stunde um %@ Uhr mit %@ ct. [Beispieldaten]";
+"notifications.daily_summary.body.example" = "Die günstigste Stunde ist um %@ Uhr mit %@ ct. Die teuerste Stunde ist um %@ Uhr mit %@ ct. [Beispieldaten]";
 
 /* No comment provided by engineer. */
 "on" = "am";
@@ -327,7 +330,6 @@
 "Send Example" = "Beispiel senden";
 "Sent" = "Gesendet";
 "Focus modes may silence example notifications." = "Fokusmodi können Beispiel-Benachrichtigungen stummschalten.";
-"With the current prices and threshold, this notification would not be sent." = "Mit den aktuellen Preisen und diesem Grenzwert würde diese Benachrichtigung nicht gesendet.";
 "Notification example could not be loaded." = "Das Benachrichtigungsbeispiel konnte nicht geladen werden.";
 "Sent when new prices for tomorrow are available." = "Wird gesendet, sobald neue Preise für morgen verfügbar sind.";
 "Notification settings could not be saved." = "Benachrichtigungen konnten nicht gespeichert werden.";

@@ -32,6 +32,11 @@ NOTIFICATION = Box(
             "price_above_multiple": "notifications.price_above.body.multiple",
             "daily_summary": "notifications.daily_summary.body",
         },
+        "example_loc_keys": {
+            "price_below": "notifications.price_below.body.example",
+            "price_above": "notifications.price_above.body.example",
+            "daily_summary": "notifications.daily_summary.body.example",
+        },
         "sound": "default",
     }
 )

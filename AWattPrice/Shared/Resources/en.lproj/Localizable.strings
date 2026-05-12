@@ -96,6 +96,9 @@
 "notifications.price_above.body.single" = "Tomorrow, electricity prices rise above %2$@ ct %1$@ time. Most expensive hour at %3$@ with %4$@ ct.";
 "notifications.price_above.body.multiple" = "Tomorrow, electricity prices rise above %2$@ ct %1$@ times. Most expensive hour at %3$@ with %4$@ ct.";
 "notifications.daily_summary.body" = "Tomorrow's cheapest hour is %@ at %@ ct. Most expensive hour is %@ at %@ ct.";
+"notifications.price_below.body.example" = "Electricity prices drop below %@ ct. Cheapest hour at %@ with %@ ct. [Example data]";
+"notifications.price_above.body.example" = "Electricity prices rise above %@ ct. Most expensive hour at %@ with %@ ct. [Example data]";
+"notifications.daily_summary.body.example" = "Cheapest hour is %@ at %@ ct. Most expensive hour is %@ at %@ ct. [Example data]";
 
 "baseFee.infoText" = "Configured add-ons are added on top of each electricity price within the entire app. These values depend on your electricity contract.";
 "baseFee.priceGuardActivatedInfo" = "The price guard is turned on. Remember to adjust the wish price if necessary when you change the value below.";
@@ -158,7 +161,6 @@
 "Send Example" = "Send Example";
 "Sent" = "Sent";
 "Focus modes may silence example notifications." = "Focus modes may silence example notifications.";
-"With the current prices and threshold, this notification would not be sent." = "With the current prices and threshold, this notification would not be sent.";
 "Notification example could not be loaded." = "Notification example could not be loaded.";
 "Sent when new prices for tomorrow are available." = "Sent when new prices for tomorrow are available.";
 "Notification settings could not be saved." = "Notification settings could not be saved.";

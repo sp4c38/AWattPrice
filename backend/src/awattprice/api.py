@@ -130,34 +130,60 @@ async def get_notification_example(rule_type: str, request: Request):
         background_refresh=True,
     )
     if price_data is None:
-        raise HTTPException(503)
+        if not force:
+            raise HTTPException(503)
+        alert = notification_payloads.synthetic_example_alert(rule_type)
+        return notification_payloads.example_alert_response(alert, force)
 
     notifiable_prices = notification_prices.get_notifiable_areas_prices(Box({profile.general.area: price_data}))
-    if profile.general.area not in notifiable_prices:
-        return {"would_send": False}
+    example_prices = notifiable_prices.get(profile.general.area)
+    use_example_data_copy = False
+    if example_prices is None:
+        if not force:
+            return {"would_send": False}
+        example_prices = notification_payloads.example_prices_from_available_data(price_data)
+        use_example_data_copy = True
+
+    if example_prices is None:
+        alert = notification_payloads.synthetic_example_alert(rule_type)
+        return notification_payloads.example_alert_response(alert, force)
 
     selected_prices = notification_payloads.selected_prices_for_rule(
-        profile, rule_type, notifiable_prices[profile.general.area]
+        profile, rule_type, example_prices
     )
     if not selected_prices:
         if not force:
             return {"would_send": False}
         profile, selected_prices = notification_payloads.forced_example_for_rule(
-            profile, rule_type, notifiable_prices[profile.general.area]
+            profile, rule_type, example_prices
         )
 
-    notification = notification_payloads.construct_notification(
-        profile,
-        rule_type,
-        selected_prices,
-        notifiable_prices[profile.general.area],
-    )
-    alert = notification.aps.alert
+    if use_example_data_copy:
+        alert = notification_payloads.synthetic_example_alert(rule_type)
+        if rule_type == "price_below":
+            best_price = min(selected_prices, key=lambda price_point: notification_payloads.adjusted_price(price_point, profile))
+            alert["loc-args"] = [
+                notification_payloads.stringify_adjusted_price(best_price, profile),
+                notification_payloads.format_price_timestamp(best_price.start_timestamp, example_prices.data.resolution),
+                notification_payloads.stringify_adjusted_price(best_price, profile),
+            ]
+        elif rule_type == "price_above":
+            worst_price = max(selected_prices, key=lambda price_point: notification_payloads.adjusted_price(price_point, profile))
+            alert["loc-args"] = [
+                notification_payloads.stringify_adjusted_price(worst_price, profile),
+                notification_payloads.format_price_timestamp(worst_price.start_timestamp, example_prices.data.resolution),
+                notification_payloads.stringify_adjusted_price(worst_price, profile),
+            ]
+        elif rule_type == "daily_summary":
+            best_price = min(example_prices.data.prices, key=lambda price_point: notification_payloads.adjusted_price(price_point, profile))
+            worst_price = max(example_prices.data.prices, key=lambda price_point: notification_payloads.adjusted_price(price_point, profile))
+            alert["loc-args"] = [
+                notification_payloads.format_price_timestamp(best_price.start_timestamp, example_prices.data.resolution),
+                notification_payloads.stringify_adjusted_price(best_price, profile),
+                notification_payloads.format_price_timestamp(worst_price.start_timestamp, example_prices.data.resolution),
+                notification_payloads.stringify_adjusted_price(worst_price, profile),
+            ]
+        return notification_payloads.example_alert_response(alert, force)
 
-    return {
-        "would_send": True,
-        "forced": force,
-        "title_loc_key": alert["title-loc-key"],
-        "body_loc_key": alert["loc-key"],
-        "loc_args": alert["loc-args"],
-    }
+    notification = notification_payloads.construct_notification(profile, rule_type, selected_prices, example_prices)
+    return notification_payloads.example_alert_response(notification.aps.alert, force)

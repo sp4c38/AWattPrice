@@ -213,13 +213,16 @@ class NotificationSettingViewModel: ObservableObject {
                 exampleMessageIsError = false
                 clearInformationalExampleMessageLater()
             } else {
-                exampleMessage = "With the current prices and threshold, this notification would not be sent.".localized()
-                exampleMessageIsError = true
+                try await presentFallbackExample(for: ruleType)
             }
         } catch {
             print("Failed to load notification example: \(error)")
-            exampleMessage = "Notification example could not be loaded.".localized()
-            exampleMessageIsError = true
+            do {
+                try await presentFallbackExample(for: ruleType)
+            } catch {
+                exampleMessage = "Notification example could not be loaded.".localized()
+                exampleMessageIsError = true
+            }
         }
 
         exampleLoadingRule = nil
@@ -231,6 +234,19 @@ class NotificationSettingViewModel: ObservableObject {
                     self.sentExampleRule = nil
                 }
             }
+        }
+    }
+
+    private func presentFallbackExample(for ruleType: NotificationRuleType) async throws {
+        let fallbackResponse = notificationService.fallbackNotificationExample(for: ruleType)
+        if try await notificationService.presentNotificationExample(fallbackResponse) {
+            sentExampleRule = ruleType
+            exampleMessage = "Focus modes may silence example notifications.".localized()
+            exampleMessageIsError = false
+            clearInformationalExampleMessageLater()
+        } else {
+            exampleMessage = "Notification example could not be loaded.".localized()
+            exampleMessageIsError = true
         }
     }
 
@@ -334,7 +350,7 @@ private struct NotificationRuleCard<Content: View>: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(title.localized())
                         .font(.headline)
-                    Text(subtitle.localized())
+                    Text((try? AttributedString(markdown: subtitle.localized())) ?? AttributedString(subtitle.localized()))
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
@@ -348,7 +364,7 @@ private struct NotificationRuleCard<Content: View>: View {
                         HStack(spacing: 4) {
                             ZStack(alignment: .trailing) {
                                 Text("Send example".localized())
-                                    .font(.caption.weight(.semibold))
+                                    .font(.caption)
                                     .opacity(sentExampleRule == ruleType ? 0 : 1)
                                     .offset(y: sentExampleRule == ruleType ? -4 : 0)
 
@@ -479,7 +495,7 @@ struct NotificationSettingView: View {
                     if viewModel.isSaving {
                         HStack {
                             NotificationSettingsBadge(
-                                text: "Uploading",
+                                text: "Saving to server",
                                 tint: AppTheme.accent,
                                 isLoading: true
                             )
@@ -505,7 +521,7 @@ struct NotificationSettingView: View {
                     NotificationSettingsCard {
                         NotificationRuleCard(
                             title: "Price Below",
-                            subtitle: "Cheap hours tomorrow.",
+                            subtitle: "Cheap hours **tomorrow**.",
                             systemImage: "bell.badge.fill",
                             tint: AppTheme.success,
                             ruleType: .priceBelow,
@@ -527,7 +543,7 @@ struct NotificationSettingView: View {
                     NotificationSettingsCard {
                         NotificationRuleCard(
                             title: "Price Above",
-                            subtitle: "Expensive hours tomorrow.",
+                            subtitle: "Expensive hours **tomorrow**.",
                             systemImage: "exclamationmark.triangle.fill",
                             tint: AppTheme.error,
                             ruleType: .priceAbove,

@@ -565,7 +565,7 @@ struct NotificationSettingView: View {
                     NotificationSettingsCard {
                         NotificationRuleCard(
                             title: "Daily Summary",
-                            subtitle: "Tomorrow's price summary.",
+                            subtitle: "**Tomorrow's** price summary.",
                             systemImage: "list.bullet.rectangle.fill",
                             tint: AppTheme.accent,
                             ruleType: .dailySummary,

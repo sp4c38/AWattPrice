@@ -18,7 +18,7 @@ def collect_active_profiles(profile_store: notification_profiles.NotificationPro
     """Collect active notification profiles grouped by market area."""
     area_profiles = Box()
     for profile in profile_store.list_profiles():
-        if not notifications.active_rule_types(profile):
+        if not payloads.active_rule_types(profile):
             continue
         area_profiles.setdefault(profile.general.area, []).append(profile)
     return area_profiles
@@ -70,7 +70,7 @@ async def run_worker_cycle(config, profile_store: notification_profiles.Notifica
         profile_store, config, updated_active_area_profiles, updated_notifiable_areas_prices
     )
 
-    await prices.write_updated_areas_endtimes(config, areas_prices, updated_areas)
+    await prices.write_updated_areas_endtimes(config, areas_prices, list(updated_notifiable_areas_prices.keys()))
 
     return {
         "reason": "delivered",

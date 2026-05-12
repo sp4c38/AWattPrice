@@ -1,4 +1,5 @@
 """Best-effort Cronitor telemetry for notification worker runs."""
+import asyncio
 import socket
 from typing import Optional
 
@@ -8,6 +9,8 @@ from loguru import logger
 
 TELEMETRY_URL_TEMPLATE = "https://cronitor.link/p/{api_key}/{monitor_key}"
 TIMEOUT = 5
+ATTEMPTS = 3
+RETRY_DELAY = 1
 
 
 def is_enabled(config: Config) -> bool:
@@ -82,11 +85,16 @@ async def send_event(
         status_code=status_code,
     )
 
-    try:
-        async with httpx.AsyncClient(timeout=TIMEOUT) as client:
-            await client.get(url, params=params)
-    except Exception as exc:
-        logger.warning(f"Couldn't send Cronitor {state} event: {exc}.")
-        return False
+    for attempt in range(1, ATTEMPTS + 1):
+        try:
+            async with httpx.AsyncClient(timeout=TIMEOUT) as client:
+                response = await client.get(url, params=params)
+                response.raise_for_status()
+            return True
+        except Exception as exc:
+            if attempt == ATTEMPTS:
+                logger.warning(f"Couldn't send Cronitor {state} event: {exc}.")
+                return False
+            await asyncio.sleep(RETRY_DELAY)
 
-    return True
+    return False

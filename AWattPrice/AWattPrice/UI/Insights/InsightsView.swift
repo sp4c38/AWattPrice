@@ -336,15 +336,13 @@ struct InsightsView: View {
                     ScrollView {
                         VStack(alignment: .leading, spacing: 14) {
                             InsightsCard(tint: insightsAccent) {
-                                InsightsSectionTitle(
-                                    title: "Right now",
-                                    systemImage: "bolt.fill",
-                                    tint: insightsAccent
-                                )
-
-                                Text(model.nowContextText)
-                                    .font(.subheadline)
-                                    .foregroundStyle(.secondary)
+                                HStack(spacing: 5) {
+                                    Image(systemName: "bolt.fill")
+                                        .foregroundStyle(insightsAccent)
+                                    
+                                    Text(model.nowContextText)
+                                        .font(.subheadline)
+                                }
                             }
 
                             LazyVGrid(columns: metricColumns, spacing: 10) {
@@ -359,7 +357,7 @@ struct InsightsView: View {
                                 InsightMetricCard(
                                     title: "Average",
                                     value: priceText(model.averagePrice),
-                                    subtitle: "Upcoming",
+                                    subtitle: "",
                                     systemImage: "chart.line.uptrend.xyaxis",
                                     tint: Color.secondary
                                 )

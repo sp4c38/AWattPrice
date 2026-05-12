@@ -8,7 +8,7 @@ from box import Box
 
 from awattprice import notification_profiles
 from awattprice_notifications import rules as defaults
-from awattprice_notifications import payloads as notifications
+from awattprice_notifications import payloads
 
 
 class FakeTimestamp:
@@ -134,8 +134,8 @@ class NotificationMatchingTests(unittest.TestCase):
         parsed_profile = notification_profiles.parse_notification_profile_body(profile())
         prices = notifiable_prices()
 
-        below_prices = notifications.selected_prices_for_rule(parsed_profile, "price_below", prices)
-        above_prices = notifications.selected_prices_for_rule(parsed_profile, "price_above", prices)
+        below_prices = payloads.selected_prices_for_rule(parsed_profile, "price_below", prices)
+        above_prices = payloads.selected_prices_for_rule(parsed_profile, "price_above", prices)
 
         self.assertEqual([item.start_timestamp.hour for item in below_prices], [1])
         self.assertEqual([item.start_timestamp.hour for item in above_prices], [3])
@@ -144,22 +144,22 @@ class NotificationMatchingTests(unittest.TestCase):
         parsed_profile = notification_profiles.parse_notification_profile_body(profile())
         prices = notifiable_prices()
 
-        below_payload = notifications.construct_notification(
+        below_payload = payloads.construct_notification(
             parsed_profile,
             "price_below",
-            notifications.selected_prices_for_rule(parsed_profile, "price_below", prices),
+            payloads.selected_prices_for_rule(parsed_profile, "price_below", prices),
             prices,
         )
-        above_payload = notifications.construct_notification(
+        above_payload = payloads.construct_notification(
             parsed_profile,
             "price_above",
-            notifications.selected_prices_for_rule(parsed_profile, "price_above", prices),
+            payloads.selected_prices_for_rule(parsed_profile, "price_above", prices),
             prices,
         )
-        summary_payload = notifications.construct_notification(
+        summary_payload = payloads.construct_notification(
             parsed_profile,
             "daily_summary",
-            notifications.selected_prices_for_rule(parsed_profile, "daily_summary", prices),
+            payloads.selected_prices_for_rule(parsed_profile, "daily_summary", prices),
             prices,
         )
 
@@ -176,8 +176,8 @@ class NotificationMatchingTests(unittest.TestCase):
         parsed_profile.rules.price_above.threshold = 1000
         prices = notifiable_prices()
 
-        forced_below_profile, below_prices = notifications.forced_example_for_rule(parsed_profile, "price_below", prices)
-        forced_above_profile, above_prices = notifications.forced_example_for_rule(parsed_profile, "price_above", prices)
+        forced_below_profile, below_prices = payloads.forced_example_for_rule(parsed_profile, "price_below", prices)
+        forced_above_profile, above_prices = payloads.forced_example_for_rule(parsed_profile, "price_above", prices)
 
         self.assertEqual([item.start_timestamp.hour for item in below_prices], [1])
         self.assertEqual([item.start_timestamp.hour for item in above_prices], [3])
@@ -185,21 +185,21 @@ class NotificationMatchingTests(unittest.TestCase):
         self.assertEqual(forced_above_profile.rules.price_above.threshold, Decimal("60.90"))
 
     def test_example_prices_can_use_available_current_data(self):
-        example_prices = notifications.example_prices_from_available_data(current_price_data())
+        example_prices = payloads.example_prices_from_available_data(current_price_data())
 
         self.assertIsNotNone(example_prices)
         self.assertEqual(example_prices.data.resolution, "PT60M")
         self.assertEqual([item.start_timestamp.hour for item in example_prices.data.prices], [4, 5])
 
     def test_synthetic_example_alerts_are_sendable_for_all_rules(self):
-        below_alert = notifications.synthetic_example_alert("price_below")
-        above_alert = notifications.synthetic_example_alert("price_above")
-        summary_alert = notifications.synthetic_example_alert("daily_summary")
+        below_alert = payloads.synthetic_example_alert("price_below")
+        above_alert = payloads.synthetic_example_alert("price_above")
+        summary_alert = payloads.synthetic_example_alert("daily_summary")
 
         self.assertEqual(below_alert["title-loc-key"], "notifications.price_below.title")
         self.assertEqual(above_alert["loc-key"], "notifications.price_above.body.example")
         self.assertEqual(summary_alert["loc-key"], "notifications.daily_summary.body.example")
-        self.assertEqual(notifications.example_alert_response(below_alert, True)["would_send"], True)
+        self.assertEqual(payloads.example_alert_response(below_alert, True)["would_send"], True)
 
     def test_get_notifiable_prices_uses_market_area_metadata(self):
         prices = Box(

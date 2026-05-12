@@ -1,5 +1,6 @@
 """Manage and handle price data from the main awattprice package."""
 import asyncio
+import os
 import pickle
 import sys
 
@@ -126,6 +127,8 @@ async def write_updated_areas_endtimes(
 
     :param areas_prices, updated_areas: All updated areas must be present in the area prices.
     """
+    config.paths.price_data_dir.mkdir(parents=True, exist_ok=True)
+
     for area_key in updated_areas:
         prices = areas_prices[area_key]
         endtime = get_current_endtime(prices)
@@ -133,12 +136,12 @@ async def write_updated_areas_endtimes(
 
         file_name = rules.LAST_UPDATED_ENDTIME_FILE_NAME.format(area_key.lower())
         file_path = config.paths.price_data_dir / file_name
-        try:
-            async with async_open(file_path, "wb") as file:
-                await file.write(pickled_endtime)
-            logger.debug(f"Wrote new endtime for area {area_key}.")
-        except Exception as exc:
-            logger.exception(f"Couldn't write endtime for area {area_key.lower()}: {exc}.")
+        temp_file_path = file_path.with_suffix(file_path.suffix + ".tmp")
+
+        async with async_open(temp_file_path, "wb") as file:
+            await file.write(pickled_endtime)
+        os.replace(temp_file_path, file_path)
+        logger.debug(f"Wrote new endtime for area {area_key}.")
 
 
 def get_notifiable_areas_prices(areas_prices: Box) -> Box[str, NotifiableDetailedPriceData]:

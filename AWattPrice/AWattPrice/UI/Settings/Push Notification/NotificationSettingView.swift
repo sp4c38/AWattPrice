@@ -146,8 +146,18 @@ class NotificationSettingViewModel: ObservableObject {
         uploadFailed = false
     }
 
+    func cancelPendingUploadFeedback() {
+        guard isUploadRequestInFlight == false else { return }
+        uploadIndicatorStart = nil
+        isSaving = false
+    }
+
     func save() async {
-        guard draft.canSave, isUploadRequestInFlight == false else { return }
+        guard draft.canSave else {
+            cancelPendingUploadFeedback()
+            return
+        }
+        guard isUploadRequestInFlight == false else { return }
 
         let draftToSave = draft
         let previousValues = NotificationDraft(setting: settingsManager.setting)
@@ -624,13 +634,17 @@ struct NotificationSettingView: View {
         .onDisappear {
             autoSaveTask?.cancel()
             uploadFeedbackTask?.cancel()
+            viewModel.cancelPendingUploadFeedback()
         }
     }
 
     private func scheduleAutoSave() {
         autoSaveTask?.cancel()
         uploadFeedbackTask?.cancel()
-        guard viewModel.hasUnsavedChanges, viewModel.draft.canSave else { return }
+        guard viewModel.hasUnsavedChanges, viewModel.draft.canSave else {
+            viewModel.cancelPendingUploadFeedback()
+            return
+        }
 
         uploadFeedbackTask = Task {
             try? await Task.sleep(nanoseconds: NotificationSettingViewModel.Timing.uploadIndicatorDelayNanoseconds)

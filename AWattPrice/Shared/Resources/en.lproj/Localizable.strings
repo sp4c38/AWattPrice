@@ -179,6 +179,10 @@
 "Lowest" = "Lowest";
 "Highest" = "Highest";
 "Cheapest times" = "Cheapest times";
+"Most expensive times" = "Most expensive times";
+"1h usage" = "1h usage";
+"2h usage" = "2h usage";
+"4h usage" = "4h usage";
 "Custom" = "Custom";
 "Open Cheapest Time" = "Open Cheapest Time";
 "Distribution" = "Distribution";

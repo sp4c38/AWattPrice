@@ -348,6 +348,10 @@
 "Lowest" = "Tiefstwert";
 "Highest" = "Höchstwert";
 "Cheapest times" = "Günstigste Zeiten";
+"Most expensive times" = "Teuerste Zeiten";
+"1h usage" = "1 Std. Nutzung";
+"2h usage" = "2 Std. Nutzung";
+"4h usage" = "4 Std. Nutzung";
 "Custom" = "Eigene Suche";
 "Open Cheapest Time" = "Günstigste Zeit öffnen";
 "Distribution" = "Verteilung";

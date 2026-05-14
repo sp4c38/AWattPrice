@@ -50,9 +50,18 @@ private struct InsightsModel {
 
     var cheapestWindows: [PriceWindow] {
         [
-            cheapestWindow(duration: 60 * 60, title: "1h usage"),
-            cheapestWindow(duration: 2 * 60 * 60, title: "2h usage"),
-            cheapestWindow(duration: 4 * 60 * 60, title: "4h usage"),
+            priceWindow(duration: 60 * 60, title: "1h usage", prefersLowerAverage: true),
+            priceWindow(duration: 2 * 60 * 60, title: "2h usage", prefersLowerAverage: true),
+            priceWindow(duration: 4 * 60 * 60, title: "4h usage", prefersLowerAverage: true),
+        ]
+        .compactMap { $0 }
+    }
+
+    var mostExpensiveWindows: [PriceWindow] {
+        [
+            priceWindow(duration: 60 * 60, title: "1h usage", prefersLowerAverage: false),
+            priceWindow(duration: 2 * 60 * 60, title: "2h usage", prefersLowerAverage: false),
+            priceWindow(duration: 4 * 60 * 60, title: "4h usage", prefersLowerAverage: false),
         ]
         .compactMap { $0 }
     }
@@ -68,10 +77,10 @@ private struct InsightsModel {
         return CGFloat((price - priceRange.lowerBound) / (priceRange.upperBound - priceRange.lowerBound))
     }
 
-    private func cheapestWindow(duration: TimeInterval, title: String) -> PriceWindow? {
+    private func priceWindow(duration: TimeInterval, title: String, prefersLowerAverage: Bool) -> PriceWindow? {
         guard prices.isEmpty == false else { return nil }
 
-        var bestWindow: PriceWindow?
+        var selectedWindow: PriceWindow?
 
         for startIndex in prices.indices {
             var selectedPrices: [EnergyPricePoint] = []
@@ -99,12 +108,15 @@ private struct InsightsModel {
                 averagePrice: averagePrice
             )
 
-            if bestWindow == nil || window.averagePrice < bestWindow!.averagePrice {
-                bestWindow = window
+            if selectedWindow == nil ||
+                (prefersLowerAverage && window.averagePrice < selectedWindow!.averagePrice) ||
+                (!prefersLowerAverage && window.averagePrice > selectedWindow!.averagePrice)
+            {
+                selectedWindow = window
             }
         }
 
-        return bestWindow
+        return selectedWindow
     }
 
     private func weightedAverage(for prices: [EnergyPricePoint]) -> Double? {
@@ -176,6 +188,7 @@ private struct PriceWindowRow: View {
 
                 Text(timeRangeText(from: window.startTime, to: window.endTime))
                     .font(.caption)
+                    .bold()
                     .foregroundStyle(.secondary)
             }
 
@@ -434,18 +447,6 @@ struct InsightsView: View {
                 } else {
                     ScrollView {
                         VStack(alignment: .leading, spacing: 14) {
-                            InsightsCard(tint: AppTheme.accent) {
-                                VStack(alignment: .leading, spacing: 17) {
-                                    InsightsSectionTitle(
-                                        title: "Price range",
-                                        systemImage: "chart.bar.fill",
-                                        tint: AppTheme.accent
-                                    )
-                                    
-                                    PriceRangeGraph(model: model)
-                                }
-                            }
-
                             InsightsCard(tint: AppTheme.success) {
                                 HStack {
                                     InsightsSectionTitle(
@@ -477,6 +478,29 @@ struct InsightsView: View {
                                 }
                             }
 
+                            InsightsCard(tint: AppTheme.error) {
+                                InsightsSectionTitle(
+                                    title: "Most expensive times",
+                                    systemImage: "exclamationmark.triangle.fill",
+                                    tint: AppTheme.error
+                                )
+
+                                ForEach(model.mostExpensiveWindows) { window in
+                                    PriceWindowRow(window: window, tint: AppTheme.error)
+                                }
+                            }
+                            
+                            InsightsCard(tint: AppTheme.accent) {
+                                VStack(alignment: .leading, spacing: 17) {
+                                    InsightsSectionTitle(
+                                        title: "Price range",
+                                        systemImage: "chart.bar.fill",
+                                        tint: AppTheme.accent
+                                    )
+                                    
+                                    PriceRangeGraph(model: model)
+                                }
+                            }
                         }
                         .padding(.horizontal, 16)
                         .padding(.vertical, 12)

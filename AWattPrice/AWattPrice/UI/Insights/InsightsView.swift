@@ -502,12 +502,14 @@ private enum GenerationMixHistoryLoadState {
 }
 
 private struct GenerationMixHistoryView: View {
-    @EnvironmentObject private var settingsManager: SettingsManager
-    @State private var loadState: GenerationMixHistoryLoadState = .loading
+       @EnvironmentObject private var energyDataService: EnergyDataService
+       @EnvironmentObject private var settingsManager: SettingsManager
 
     private var marketArea: MarketArea {
         settingsManager.setting.marketArea
-    }
+        }
+
+    @State private var loadState: GenerationMixHistoryLoadState = .loading
 
     var body: some View {
         Group {
@@ -515,52 +517,56 @@ private struct GenerationMixHistoryView: View {
             case .loading:
                 VStack(spacing: 12) {
                     ProgressView()
-                        .tint(AppTheme.success)
+                         .tint(AppTheme.success)
 
                     Text("Loading generation mix")
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(.secondary)
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                         .font(.subheadline.weight(.semibold))
+                         .foregroundStyle(.secondary)
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
             case .loaded(let history):
                 GenerationMixHistoryContent(history: history)
             case .failed:
                 VStack(spacing: 14) {
                     Image(systemName: "leaf")
-                        .font(.largeTitle)
-                        .foregroundStyle(AppTheme.success)
+                         .font(.largeTitle)
+                         .foregroundStyle(AppTheme.success)
 
                     Text("Generation mix unavailable")
-                        .font(.headline)
+                         .font(.headline)
 
                     Button("Try Again") {
                         Task { await loadHistory() }
+                      }
+                      .buttonStyle(.bordered)
                     }
-                    .buttonStyle(.bordered)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                 }
+              }
+              .appScreenBackground()
+              .navigationTitle("Last 24h")
+              .navigationBarTitleDisplayMode(.large)
+              .task(id: marketArea.key) {
+                 await loadHistory()
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-            }
-        }
-        .appScreenBackground()
-        .navigationTitle("Last 24h")
-        .navigationBarTitleDisplayMode(.large)
-        .task(id: marketArea.key) {
-            await loadHistory()
-        }
-    }
+              }
 
     private func loadHistory() async {
         loadState = .loading
 
+        if let cached = energyDataService.generationMixHistoryData {
+            loadState = .loaded(cached)
+          }
+
         do {
             let history = try await GenerationMixHistoryData.download(marketArea: marketArea)
+            energyDataService.generationMixHistoryData = history
             loadState = .loaded(history)
-        } catch {
-            print("Generation mix history download failed: \(error).")
-            loadState = .failed
-        }
-    }
-}
+           } catch {
+               print("Generation mix history download failed: \(error).")
+            }
+         }
+     }
 
 private struct GenerationMixHistoryContent: View {
     let history: GenerationMixHistoryData
@@ -822,40 +828,45 @@ private struct GenerationMixCategoryLabel: View {
 }
 
 struct InsightsView: View {
-    @EnvironmentObject private var energyDataService: EnergyDataService
-    @AppStorage("pendingDeepLinkDestination") private var pendingDeepLinkDestination = ""
-    @State private var navigateToCheapestTime = false
+     @EnvironmentObject private var energyDataService: EnergyDataService
+     @EnvironmentObject private var settingsManager: SettingsManager
+     @AppStorage("pendingDeepLinkDestination") private var pendingDeepLinkDestination = ""
+     @State private var navigateToCheapestTime = false
 
     private var prices: [EnergyPricePoint] {
         energyDataService.energyData?.currentPrices ?? []
-    }
+      }
 
     private var model: InsightsModel {
         InsightsModel(prices: prices)
-    }
+      }
 
     private var generationMix: GenerationMixData? {
         energyDataService.generationMixData
-    }
+      }
 
-    @ViewBuilder
+    private var cachedHistory: GenerationMixHistoryData? {
+        energyDataService.generationMixHistoryData
+      }
+
+     @ViewBuilder
     private var generationMixSection: some View {
         if let generationMix {
             GenerationMixCard(generationMix: generationMix)
-                .transition(.opacity.combined(with: .scale(scale: 0.98, anchor: .top)))
-        } else {
+                 .transition(.opacity.combined(with: .scale(scale: 0.98, anchor: .top)))
+          } else {
             switch energyDataService.generationMixDownloadState {
             case .downloading:
                 GenerationMixLoadingCard()
-                    .transition(.opacity)
+                     .transition(.opacity)
             case .failed:
                 GenerationMixUnavailableCard()
-                    .transition(.opacity)
+                     .transition(.opacity)
             case .idle, .finished:
                 EmptyView()
-            }
-        }
-    }
+              }
+          }
+      }
 
     var body: some View {
         NavigationStack {

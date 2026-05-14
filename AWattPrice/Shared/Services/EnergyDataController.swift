@@ -336,9 +336,10 @@ class EnergyDataService: ObservableObject {
     @Published var downloadState: DownloadState = .idle
     @Published var energyData: EnergyData? = nil
     @Published var generationMixData: GenerationMixData? = nil
-    @Published var generationMixDownloadState: GenerationMixDownloadState = .idle
-    
-    func download(setting: Setting) {
+      @Published var generationMixDownloadState: GenerationMixDownloadState = .idle
+      @Published var generationMixHistoryData: GenerationMixHistoryData? = nil
+      
+      func download(setting: Setting) {
         let pricingConfiguration = setting.pricingConfiguration
         let requestedMarketAreaKey = pricingConfiguration.marketArea.key
         let marketAreaName = pricingConfiguration.marketArea.localizedDisplayName
@@ -378,17 +379,29 @@ class EnergyDataService: ObservableObject {
                         guard self.energyData?.area == requestedMarketAreaKey else { return }
                         self.generationMixData = generationMixData
                         self.generationMixDownloadState = .finished
-                        print("Generation mix download completed.")
-                    }
-                } catch {
-                    await MainActor.run {
-                        guard !Self.isCancellation(error) else { return }
-                        self.generationMixData = nil
-                        self.generationMixDownloadState = .failed
-                        print("Generation mix download failed: \(error).")
-                    }
-                }
-            } catch {
+                         print("Generation mix download completed.")
+                      }
+                   } catch {
+                      await MainActor.run {
+                         guard !Self.isCancellation(error) else { return }
+                         self.generationMixData = nil
+                         self.generationMixDownloadState = .failed
+                         print("Generation mix download failed: \(error).")
+                      }
+                   }
+
+                  Task {
+                     let pricingConfig = pricingConfiguration
+                     do {
+                        let history = try await GenerationMixHistoryData.download(marketArea: pricingConfig.marketArea)
+                        await MainActor.run {
+                           self.generationMixHistoryData = history
+                        }
+                     } catch {
+                        print("Generation mix history download failed: \(error).")
+                     }
+                  }
+               } catch {
                 await MainActor.run {
                     guard !Self.isCancellation(error) else {
                         print("Energy data download cancelled.")

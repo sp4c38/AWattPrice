@@ -77,6 +77,11 @@ class CronitorSendTests(unittest.IsolatedAsyncioTestCase):
 
             async def get(self, url, params):
                 calls.append((url, params, self.timeout))
+                return FakeResponse()
+
+        class FakeResponse:
+            def raise_for_status(self):
+                pass
 
         try:
             cronitor.httpx.AsyncClient = FakeClient

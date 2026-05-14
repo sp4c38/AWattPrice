@@ -79,6 +79,7 @@ def _transform_config(config: Config):
         data_dir = defaults.DEFAULT_DATA_DIR
     config.paths.data_dir = Path(data_dir).expanduser()
     config.paths.price_data_dir = config.paths.data_dir / defaults.PRICE_DATA_SUBDIR_NAME
+    config.paths.generation_data_dir = config.paths.data_dir / defaults.GENERATION_DATA_SUBDIR_NAME
 
     apns_key_file = config.apns.key_file
     if _is_empty_or_missing_config_value(apns_key_file):
@@ -110,6 +111,7 @@ def _ensure_config_dirs(config: Config):
     _ensure_dir(config.paths.log_dir)
     _ensure_dir(config.paths.data_dir)
     _ensure_dir(config.paths.price_data_dir)
+    _ensure_dir(config.paths.generation_data_dir)
 
 
 def get_config() -> Config:

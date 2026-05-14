@@ -11,6 +11,7 @@ from starlette.responses import RedirectResponse
 
 from awattprice import configurator
 from awattprice import defaults
+from awattprice import generation_mix
 from awattprice import notification_profiles
 from awattprice import prices
 from awattprice_notifications import rules as notification_defaults
@@ -79,6 +80,36 @@ async def get_default_area_prices():
     This will respond with a temporary redirect to the default market area price endpoint.
     """
     return RedirectResponse(url=f"/prices/{defaults.DEFAULT_MARKET_AREA_KEY}")
+
+
+@logger.catch
+@app.get("/generation-mix/{area_key}")
+async def get_area_generation_mix(area_key: str):
+    """Get current generation mix data for a market area."""
+    try:
+        normalized_area_key = defaults.normalize_market_area_key(area_key)
+        defaults.get_market_area(normalized_area_key)
+    except KeyError:
+        raise HTTPException(404)
+
+    generation_data = await generation_mix.get_current_generation_mix(
+        normalized_area_key,
+        config,
+        fall_back=True,
+    )
+
+    if generation_data is None:
+        logger.warning(f"Couldn't get current generation mix data for area {normalized_area_key}.")
+        raise HTTPException(503)
+
+    return generation_mix.parse_to_response_data(generation_data)
+
+
+@logger.catch
+@app.get("/generation-mix/")
+async def get_default_area_generation_mix():
+    """Get current generation mix data for the default market area."""
+    return RedirectResponse(url=f"/generation-mix/{defaults.DEFAULT_MARKET_AREA_KEY}")
 
 
 @logger.catch

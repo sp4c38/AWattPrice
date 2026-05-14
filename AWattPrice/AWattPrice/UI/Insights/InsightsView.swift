@@ -426,6 +426,167 @@ private struct RangeValueLabel: View {
     }
 }
 
+private struct GenerationMixCard: View {
+    let generationMix: GenerationMixData
+
+    private var visibleCategories: [GenerationMixCategory] {
+        generationMix.visibleCategories
+    }
+
+    var body: some View {
+        InsightsCard(tint: AppTheme.success) {
+            VStack(alignment: .leading, spacing: 14) {
+                InsightsSectionTitle(
+                    title: "Renewable mix",
+                    systemImage: "leaf.fill",
+                    tint: AppTheme.success
+                )
+
+                HStack(alignment: .firstTextBaseline, spacing: 8) {
+                    Text(percentText(generationMix.renewableShare))
+                        .font(.system(.largeTitle, design: .rounded).weight(.bold))
+                        .monospacedDigit()
+
+                    Text("renewable")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.secondary)
+
+                    Spacer()
+                }
+
+                GenerationMixBar(categories: visibleCategories)
+
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Generation mix")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+
+                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 118), spacing: 10)], alignment: .leading, spacing: 8) {
+                        ForEach(visibleCategories) { category in
+                            GenerationMixCategoryLabel(category: category)
+                        }
+                    }
+                }
+
+                Text(generationMixFreshnessText(generationMix.endTime))
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
+        }
+    }
+}
+
+private struct GenerationMixLoadingCard: View {
+    var body: some View {
+        InsightsCard(tint: AppTheme.success) {
+            VStack(alignment: .leading, spacing: 14) {
+                InsightsSectionTitle(
+                    title: "Renewable mix",
+                    systemImage: "leaf.fill",
+                    tint: AppTheme.success
+                )
+
+                HStack(spacing: 10) {
+                    ProgressView()
+                        .tint(AppTheme.success)
+
+                    Text("Loading generation mix")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                }
+
+                GenerationMixPlaceholderBar()
+            }
+        }
+    }
+}
+
+private struct GenerationMixUnavailableCard: View {
+    var body: some View {
+        InsightsCard(tint: AppTheme.success) {
+            VStack(alignment: .leading, spacing: 10) {
+                InsightsSectionTitle(
+                    title: "Renewable mix",
+                    systemImage: "leaf.fill",
+                    tint: AppTheme.success
+                )
+
+                Text("Generation mix unavailable")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.secondary)
+            }
+        }
+    }
+}
+
+private struct GenerationMixPlaceholderBar: View {
+    var body: some View {
+        HStack(spacing: 2) {
+            RoundedRectangle(cornerRadius: 3, style: .continuous)
+                .fill(AppTheme.success.opacity(0.22))
+                .frame(maxWidth: .infinity)
+            RoundedRectangle(cornerRadius: 3, style: .continuous)
+                .fill(AppTheme.accent.opacity(0.18))
+                .frame(maxWidth: .infinity)
+            RoundedRectangle(cornerRadius: 3, style: .continuous)
+                .fill(Color.secondary.opacity(0.14))
+                .frame(maxWidth: .infinity)
+        }
+        .frame(height: 16)
+        .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+        .accessibilityHidden(true)
+    }
+}
+
+private struct GenerationMixBar: View {
+    let categories: [GenerationMixCategory]
+    private let segmentSpacing: CGFloat = 2
+
+    var body: some View {
+        GeometryReader { geometry in
+            let availableWidth = max(geometry.size.width - segmentSpacing * CGFloat(max(categories.count - 1, 0)), 0)
+
+            HStack(spacing: segmentSpacing) {
+                ForEach(categories) { category in
+                    RoundedRectangle(cornerRadius: 3, style: .continuous)
+                        .fill(generationMixColor(for: category.category))
+                        .frame(width: availableWidth * CGFloat(category.share / 100))
+                }
+            }
+        }
+        .frame(height: 16)
+        .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Generation mix")
+    }
+}
+
+private struct GenerationMixCategoryLabel: View {
+    let category: GenerationMixCategory
+
+    var body: some View {
+        HStack(spacing: 6) {
+            Circle()
+                .fill(generationMixColor(for: category.category))
+                .frame(width: 7, height: 7)
+
+            VStack(alignment: .leading, spacing: 1) {
+                Text(generationMixTitle(for: category.category))
+                    .font(.caption.weight(.semibold))
+                    .lineLimit(1)
+
+                Text("\(percentText(category.share)) · \(megawattText(category.generationMW))")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .monospacedDigit()
+                    .lineLimit(1)
+            }
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(generationMixAccessibilityText(category))
+    }
+}
+
 struct InsightsView: View {
     @EnvironmentObject private var energyDataService: EnergyDataService
     @AppStorage("pendingDeepLinkDestination") private var pendingDeepLinkDestination = ""
@@ -439,6 +600,29 @@ struct InsightsView: View {
         InsightsModel(prices: prices)
     }
 
+    private var generationMix: GenerationMixData? {
+        energyDataService.generationMixData
+    }
+
+    @ViewBuilder
+    private var generationMixSection: some View {
+        if let generationMix {
+            GenerationMixCard(generationMix: generationMix)
+                .transition(.opacity.combined(with: .scale(scale: 0.98, anchor: .top)))
+        } else {
+            switch energyDataService.generationMixDownloadState {
+            case .downloading:
+                GenerationMixLoadingCard()
+                    .transition(.opacity)
+            case .failed:
+                GenerationMixUnavailableCard()
+                    .transition(.opacity)
+            case .idle, .finished:
+                EmptyView()
+            }
+        }
+    }
+
     var body: some View {
         NavigationStack {
             Group {
@@ -447,6 +631,20 @@ struct InsightsView: View {
                 } else {
                     ScrollView {
                         VStack(alignment: .leading, spacing: 14) {
+                            InsightsCard(tint: AppTheme.accent) {
+                                VStack(alignment: .leading, spacing: 17) {
+                                    InsightsSectionTitle(
+                                        title: "Price range",
+                                        systemImage: "chart.bar.fill",
+                                        tint: AppTheme.accent
+                                    )
+                                    
+                                    PriceRangeGraph(model: model)
+                                }
+                            }
+
+                            generationMixSection
+
                             InsightsCard(tint: AppTheme.success) {
                                 HStack {
                                     InsightsSectionTitle(
@@ -489,21 +687,11 @@ struct InsightsView: View {
                                     PriceWindowRow(window: window, tint: AppTheme.error)
                                 }
                             }
-                            
-                            InsightsCard(tint: AppTheme.accent) {
-                                VStack(alignment: .leading, spacing: 17) {
-                                    InsightsSectionTitle(
-                                        title: "Price range",
-                                        systemImage: "chart.bar.fill",
-                                        tint: AppTheme.accent
-                                    )
-                                    
-                                    PriceRangeGraph(model: model)
-                                }
-                            }
                         }
                         .padding(.horizontal, 16)
                         .padding(.vertical, 12)
+                        .animation(.easeInOut(duration: 0.2), value: generationMix != nil)
+                        .animation(.easeInOut(duration: 0.2), value: generationMixStateAnimationValue)
                     }
                 }
             }
@@ -526,6 +714,19 @@ struct InsightsView: View {
         pendingDeepLinkDestination = ""
         navigateToCheapestTime = true
     }
+
+    private var generationMixStateAnimationValue: String {
+        switch energyDataService.generationMixDownloadState {
+        case .idle:
+            return "idle"
+        case .downloading:
+            return "downloading"
+        case .failed:
+            return "failed"
+        case .finished:
+            return "finished"
+        }
+    }
 }
 
 private func priceText(_ price: Double?) -> String {
@@ -534,8 +735,88 @@ private func priceText(_ price: Double?) -> String {
     return "\(formattedPrice) ct"
 }
 
+private func percentText(_ value: Double) -> String {
+    (value / 100).formatted(.percent.precision(.fractionLength(0)))
+}
+
+private func megawattText(_ value: Double) -> String {
+    "\(value.formatted(.number.precision(.fractionLength(0)))) MW"
+}
+
+private func timeText(_ date: Date) -> String {
+    date.formatted(.dateTime.hour(.twoDigits(amPM: .omitted)).minute(.twoDigits))
+}
+
+private func generationMixFreshnessText(_ date: Date) -> String {
+    String.localizedStringWithFormat(
+        NSLocalizedString("Data until %@", comment: "Freshness text for generation mix data"),
+        timeText(date)
+    )
+}
+
+private func generationMixAccessibilityText(_ category: GenerationMixCategory) -> String {
+    "\(generationMixLocalizedTitle(for: category.category)), \(percentText(category.share)), \(megawattText(category.generationMW))"
+}
+
 private func timeRangeText(from startTime: Date, to endTime: Date) -> String {
     let start = startTime.formatted(.dateTime.hour(.twoDigits(amPM: .omitted)).minute(.twoDigits))
     let end = endTime.formatted(.dateTime.hour(.twoDigits(amPM: .omitted)).minute(.twoDigits))
     return "\(start)-\(end)"
+}
+
+private func generationMixTitle(for category: String) -> LocalizedStringKey {
+    switch category {
+    case "solar":
+        return "Solar"
+    case "wind":
+        return "Wind"
+    case "hydro":
+        return "Hydro"
+    case "biomass":
+        return "Biomass"
+    case "fossil":
+        return "Fossil"
+    case "nuclear":
+        return "Nuclear"
+    default:
+        return "Other"
+    }
+}
+
+private func generationMixLocalizedTitle(for category: String) -> String {
+    switch category {
+    case "solar":
+        return NSLocalizedString("Solar", comment: "Generation mix category")
+    case "wind":
+        return NSLocalizedString("Wind", comment: "Generation mix category")
+    case "hydro":
+        return NSLocalizedString("Hydro", comment: "Generation mix category")
+    case "biomass":
+        return NSLocalizedString("Biomass", comment: "Generation mix category")
+    case "fossil":
+        return NSLocalizedString("Fossil", comment: "Generation mix category")
+    case "nuclear":
+        return NSLocalizedString("Nuclear", comment: "Generation mix category")
+    default:
+        return NSLocalizedString("Other", comment: "Generation mix category")
+    }
+}
+
+private func generationMixColor(for category: String) -> Color {
+    switch category {
+    case "solar":
+        return Color(red: 0.95, green: 0.67, blue: 0.18)
+    case "wind":
+        return Color(red: 0.28, green: 0.60, blue: 0.86)
+    case "hydro":
+        return Color(red: 0.12, green: 0.48, blue: 0.78)
+    case "biomass":
+        return Color(red: 0.30, green: 0.62, blue: 0.28)
+    case "fossil":
+        return Color(red: 0.50, green: 0.44, blue: 0.39)
+    case "nuclear":
+        return Color(red: 0.58, green: 0.44, blue: 0.78)
+    default:
+        return Color.secondary
+    }
 }

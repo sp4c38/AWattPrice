@@ -121,6 +121,63 @@ struct EnergyData: Decodable {
     }
 }
 
+struct GenerationMixCategory: Decodable, Identifiable {
+    let category: String
+    let generationMW: Double
+    let share: Double
+    let isRenewable: Bool
+
+    var id: String { category }
+
+    enum CodingKeys: String, CodingKey {
+        case category
+        case generationMW = "generation_mw"
+        case share
+        case isRenewable = "is_renewable"
+    }
+}
+
+struct GenerationMixData: Decodable {
+    let area: String?
+    let resolution: String?
+    let updatedAt: Date
+    let startTime: Date
+    let endTime: Date
+    let totalGenerationMW: Double
+    let renewableGenerationMW: Double
+    let renewableShare: Double
+    let categories: [GenerationMixCategory]
+
+    var visibleCategories: [GenerationMixCategory] {
+        categories
+            .filter { $0.generationMW > 0 }
+            .sorted { $0.share > $1.share }
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case area
+        case resolution
+        case updatedAt = "updated_at"
+        case startTime = "start_timestamp"
+        case endTime = "end_timestamp"
+        case totalGenerationMW = "total_generation_mw"
+        case renewableGenerationMW = "renewable_generation_mw"
+        case renewableShare = "renewable_share"
+        case categories
+    }
+
+    static func jsonDecoder() -> JSONDecoder {
+        let jsonDecoder = JSONDecoder()
+        jsonDecoder.dateDecodingStrategy = .secondsSince1970
+        return jsonDecoder
+    }
+
+    static func download(marketArea: MarketArea) async throws -> GenerationMixData {
+        let request = APIClient.createGenerationMixRequest(marketArea: marketArea)
+        return try await APIClient().request(to: request)
+    }
+}
+
 
 
 /// Service responsible for managing energy data throughout the application
@@ -131,11 +188,20 @@ class EnergyDataService: ObservableObject {
         case failed(error: Error)
         case finished(time: Date)
     }
+
+    enum GenerationMixDownloadState {
+        case idle
+        case downloading
+        case failed
+        case finished
+    }
     
     private var currentDownloadTask: Task<Void, Never>?
     
     @Published var downloadState: DownloadState = .idle
     @Published var energyData: EnergyData? = nil
+    @Published var generationMixData: GenerationMixData? = nil
+    @Published var generationMixDownloadState: GenerationMixDownloadState = .idle
     
     func download(setting: Setting) {
         let pricingConfiguration = setting.pricingConfiguration
@@ -148,7 +214,9 @@ class EnergyDataService: ObservableObject {
 
         if energyData?.area != requestedMarketAreaKey {
             energyData = nil
+            generationMixData = nil
         }
+        generationMixDownloadState = .downloading
         
         currentDownloadTask = Task {
             do {
@@ -168,6 +236,23 @@ class EnergyDataService: ObservableObject {
                     print("Energy data download completed.")
                     self.downloadState = .finished(time: Date())
                 }
+
+                do {
+                    let generationMixData = try await GenerationMixData.download(marketArea: pricingConfiguration.marketArea)
+                    await MainActor.run {
+                        guard self.energyData?.area == requestedMarketAreaKey else { return }
+                        self.generationMixData = generationMixData
+                        self.generationMixDownloadState = .finished
+                        print("Generation mix download completed.")
+                    }
+                } catch {
+                    await MainActor.run {
+                        guard !Self.isCancellation(error) else { return }
+                        self.generationMixData = nil
+                        self.generationMixDownloadState = .failed
+                        print("Generation mix download failed: \(error).")
+                    }
+                }
             } catch {
                 await MainActor.run {
                     guard !Self.isCancellation(error) else {
@@ -176,6 +261,7 @@ class EnergyDataService: ObservableObject {
                     }
 
                     print("Energy data download failed: \(error).")
+                    self.generationMixDownloadState = .idle
                     self.downloadState = .failed(error: error)
                 }
             }
@@ -188,6 +274,9 @@ class EnergyDataService: ObservableObject {
         currentDownloadTask = nil
         if case .downloading = downloadState {
             downloadState = .idle
+        }
+        if case .downloading = generationMixDownloadState {
+            generationMixDownloadState = .idle
         }
     }
 

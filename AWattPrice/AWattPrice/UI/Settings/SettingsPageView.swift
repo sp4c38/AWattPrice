@@ -204,6 +204,17 @@ struct SettingsPageView: View {
                             Divider()
 
                             SettingsDestinationRow(
+                                title: "AWattPrice Pro Supporter".localized(),
+                                subtitle: "Support the app and unlock notifications and advanced insights.".localized(),
+                                systemImage: "bolt.heart.fill",
+                                tint: AppTheme.accent
+                            ) {
+                                ProSupporterPaywallView(context: .settings)
+                            }
+
+                            Divider()
+
+                            SettingsDestinationRow(
                                 title: "Help & Suggestions".localized(),
                                 subtitle: nil,
                                 systemImage: "questionmark.bubble.fill",
@@ -247,4 +258,5 @@ struct SettingsPageView: View {
         .environmentObject(SettingsManager.shared)
         .environmentObject(NotificationService())
         .environmentObject(EnergyDataService())
+        .environmentObject(ProSupporterStore())
 }

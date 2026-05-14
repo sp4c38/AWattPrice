@@ -8,10 +8,6 @@
 
 // Welcome Splash Screen localizations
 "splashScreen.start.notAffiliatedNote" = "AWattPrice is an independent app. Prices may vary depending on your provider and are not guaranteed.";
-
-"whatsNew.widgets.subTitle" = "Sparks fly as we unveil our electrifying update: introducing the AWattPrice iOS widget!";
-"whatsNew.widgets.tipText" = "Ready to bring the power to your Home Screen? Simply long-press on your screen, tap the '+' icon in the top-left corner, find AWattPrice in the widget gallery, and zap it right onto your Home Screen.";
-
 // Features and Consent Splash Screen localizations
 "splashScreen.featuresAndConsent.viewPrices.info" = "Check the current electricity prices for each hour throughout the day.";
 "splashScreen.featuresAndConsent.comparePrices.info" = "Find the cheapest hours for your electricity consumption.";

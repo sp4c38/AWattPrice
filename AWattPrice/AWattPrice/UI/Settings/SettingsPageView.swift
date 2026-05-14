@@ -110,7 +110,7 @@ private struct SettingsAppVersionView: View {
                     .font(.headline)
 
                 if let currentBuild = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String {
-                    Text("\("Version".localized()) \(AppContext.shared.currentAppVersion) (\(currentBuild))")
+                    Text("\("Version".localized()) \("\("Version".localized()) \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as! String)) (\(currentBuild))")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }

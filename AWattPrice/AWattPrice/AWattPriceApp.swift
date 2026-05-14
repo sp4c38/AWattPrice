@@ -10,43 +10,6 @@ import SwiftUI
 import SwiftData
 import UserNotifications
 
-class AppContext {
-    static var shared = AppContext()
-    
-    var currentAppVersion: String {
-        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as! String
-    }
-    
-    func checkShowWhatsNewScreen() -> Bool {
-        let savedVersion = UserDefaults.standard.string(forKey: "whatsNewScreenSavedAppVersion")
-        let shouldShow = shouldShowWhatsNew(savedVersion: savedVersion)
-        
-        // Always save current version after check
-        UserDefaults.standard.set(currentAppVersion, forKey: "whatsNewScreenSavedAppVersion")
-        return shouldShow
-    }
-    
-    private func shouldShowWhatsNew(savedVersion: String?) -> Bool {
-        // No need to show if version hasn't changed
-        guard savedVersion != currentAppVersion else {
-            print("App version unchanged: \(currentAppVersion)")
-            return false
-        }
-        
-        // Show for version 2.0 or for 2.0.1 if coming from a version before 2.0
-        let isTargetVersion = currentAppVersion == "2.0"
-        let isUpdateToVersion = currentAppVersion == "2.0.1" && savedVersion != "2.0"
-        
-        if isTargetVersion || isUpdateToVersion {
-            print("Showing 'What's New?' for update from \(savedVersion ?? "nil") to \(currentAppVersion)")
-            return true
-        }
-        
-        print("Version change doesn't qualify for 'What's New?' screen: \(savedVersion ?? "nil") to \(currentAppVersion)")
-        return false
-    }
-}
-
 enum AppDeepLinkDestination: String {
     case prices
     case insights
@@ -112,7 +75,6 @@ struct ContentView: View {
     @EnvironmentObject var energyDataService: EnergyDataService
 
     @State var selectedTab = 1
-    @State var shouldShowWhatsNew = false
     @AppStorage("pendingDeepLinkDestination") private var pendingDeepLinkDestination = ""
     
     var body: some View {
@@ -137,8 +99,7 @@ struct ContentView: View {
                     .tag(3)
                     .tabItem { Label("Notifications", systemImage: "bell.badge") }
                 }
-                .tint(AppTheme.accent)
-                .sheet(isPresented: $shouldShowWhatsNew) { WhatsNewPage() }
+.tint(AppTheme.accent)
             } else {
                 SplashScreenStartView()
             }
@@ -148,11 +109,9 @@ struct ContentView: View {
             guard newPhase == .active else { return }
             refreshAppData()
         }
-        .onAppear {
-            // Check if we should show what's new screen
-            shouldShowWhatsNew = AppContext.shared.checkShowWhatsNewScreen()
-            refreshAppData()
-        }
+.onAppear {
+        refreshAppData()
+    }
         .onOpenURL { url in
             handleDeepLink(url)
         }

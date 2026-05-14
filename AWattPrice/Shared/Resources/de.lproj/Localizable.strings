@@ -390,8 +390,10 @@
 "%@, %@ of upcoming prices" = "%@, %@ der kommenden Preise";
 "Price range from %@ to %@, average %@" = "Preisspanne von %@ bis %@, Durchschnitt %@";
 "History" = "Historie";
+"Current prices · Tap for history" = "Aktuelle Preise · Verlauf anzeigen";
 "Yesterday" = "Gestern";
 "Historical prices" = "Historische Preise";
+"Refresh" = "Aktualisieren";
 "Loading history" = "Lade Historie";
 "Couldn't get history" = "Historie konnte nicht geladen werden";
 "Couldn't get history. Tap to retry." = "Historie konnte nicht geladen werden. Zum Wiederholen tippen.";

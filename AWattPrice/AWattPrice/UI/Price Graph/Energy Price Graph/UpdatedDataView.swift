@@ -38,6 +38,9 @@ struct UpdatedDataView: View {
     @EnvironmentObject var settingsManager: SettingsManager
 
     private let fillsAvailableWidth: Bool
+    private let refreshEnabled: Bool
+    private let statusPrefix: String?
+    private let statusOverride: String?
 
     @State private var now = Date()
     @State private var lastSuccessfulUpdate: Date?
@@ -49,8 +52,16 @@ struct UpdatedDataView: View {
     private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     private let minimumDownloadingDisplayDuration: TimeInterval = 0.8
 
-    init(fillsAvailableWidth: Bool = true) {
+    init(
+        fillsAvailableWidth: Bool = true,
+        refreshEnabled: Bool = true,
+        statusPrefix: String? = nil,
+        statusOverride: String? = nil
+    ) {
         self.fillsAvailableWidth = fillsAvailableWidth
+        self.refreshEnabled = refreshEnabled
+        self.statusPrefix = statusPrefix
+        self.statusOverride = statusOverride
     }
 
     private var actualDownloadStateKey: Int {
@@ -100,6 +111,12 @@ struct UpdatedDataView: View {
             return .secondary
         }
     }
+
+    private var displayedStatusText: String {
+        if let statusOverride { return statusOverride }
+        guard let statusPrefix else { return statusText }
+        return "\(statusPrefix) · \(statusText)"
+    }
     
     private var isDownloading: Bool {
         if case .downloading = energyDataService.downloadState {
@@ -110,13 +127,19 @@ struct UpdatedDataView: View {
     }
 
     var body: some View {
-        Button(action: refreshData) {
-            statusContent
+        Group {
+            if refreshEnabled {
+                Button(action: refreshData) {
+                    statusContent
+                }
+                .buttonStyle(.plain)
+                .disabled(isDownloading)
+            } else {
+                statusContent
+            }
         }
-        .buttonStyle(.plain)
-        .disabled(isDownloading)
         .animation(.easeInOut, value: displayedDownloadStateKey)
-        .accessibilityLabel(statusText)
+        .accessibilityLabel(displayedStatusText)
         .onAppear {
             updateLastSuccessfulDownload(from: energyDataService.downloadState)
             applyDownloadState(energyDataService.downloadState)
@@ -134,7 +157,7 @@ struct UpdatedDataView: View {
         HStack(spacing: 7) {
             StatusIndicator(downloadState: displayedDownloadState)
 
-            Text(statusText)
+            Text(displayedStatusText)
                 .foregroundStyle(statusColor)
                 .lineLimit(1)
                 .transition(.opacity)

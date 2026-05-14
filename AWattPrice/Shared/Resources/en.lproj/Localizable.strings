@@ -217,8 +217,10 @@
 "%@, %@ of upcoming prices" = "%@, %@ of upcoming prices";
 "Price range from %@ to %@, average %@" = "Price range from %@ to %@, average %@";
 "History" = "History";
+"Current prices · Tap for history" = "Current prices · Tap for history";
 "Yesterday" = "Yesterday";
 "Historical prices" = "Historical prices";
+"Refresh" = "Refresh";
 "Loading history" = "Loading history";
 "Couldn't get history" = "Couldn't get history";
 "Couldn't get history. Tap to retry." = "Couldn't get history. Tap to retry.";

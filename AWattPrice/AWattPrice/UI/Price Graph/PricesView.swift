@@ -171,15 +171,13 @@ struct PricesView: View {
     private var statusRow: some View {
         HStack {
             if dataMode == .current {
-                UpdatedDataView(fillsAvailableWidth: false)
+                dataSelectionMenu
                     .padding(.leading, 2)
             } else {
-                historyStatus
+                historyControls
             }
             
             Spacer(minLength: 8)
-
-            dataSelectionMenu
 
             if hasFifteenMinutePriceIntervals {
                 intervalPicker
@@ -206,7 +204,109 @@ struct PricesView: View {
         }
     }
 
+    private var historyControls: some View {
+        historySelectionMenu {
+            HStack(spacing: 4) {
+                historyModeIcon
+
+                selectedHistoryDateLabel
+            }
+            .padding(.vertical, 8)
+            .padding(.trailing, 10)
+            .contentShape(Rectangle())
+            .transaction { transaction in
+                transaction.animation = nil
+            }
+        }
+        .buttonStyle(.plain)
+        .foregroundStyle(historyDownloadFailed ? AppTheme.error : .secondary)
+            .accessibilityLabel("Select history date")
+        .font(.fCaption)
+        .fixedSize(horizontal: true, vertical: false)
+    }
+
+    private var selectedHistoryDateLabel: some View {
+        ZStack(alignment: .leading) {
+            Text(widestHistoryDateTitle)
+                .font(.fCaption)
+                .lineLimit(1)
+                .fixedSize(horizontal: true, vertical: false)
+                .hidden()
+
+            Text(selectedHistoryDateTitle)
+                .font(.fCaption)
+                .lineLimit(1)
+                .fixedSize(horizontal: true, vertical: false)
+        }
+    }
+
+    @ViewBuilder
+    private var historyModeIcon: some View {
+        if isDownloadingHistory {
+            ProgressView()
+                .frame(width: PricesLayout.statusIndicatorWidth, height: PricesLayout.statusIndicatorWidth)
+                .scaleEffect(0.7, anchor: .center)
+                .progressViewStyle(CircularProgressViewStyle(tint: .secondary))
+        } else if historyDownloadFailed {
+            Image(systemName: "exclamationmark.circle.fill")
+                .imageScale(.medium)
+                .frame(width: PricesLayout.statusIndicatorWidth, height: PricesLayout.statusIndicatorWidth)
+        } else {
+            Image(systemName: "clock.arrow.circlepath")
+                .imageScale(.medium)
+                .frame(width: PricesLayout.statusIndicatorWidth, height: PricesLayout.statusIndicatorWidth)
+        }
+    }
+
     private var dataSelectionMenu: some View {
+        Menu {
+            Button {
+                energyDataService.download(setting: settingsManager.setting)
+            } label: {
+                Label("Refresh".localized(), systemImage: "arrow.clockwise")
+            }
+
+            Divider()
+
+            Button {
+                isDownloadingHistory = false
+                dataMode = .current
+            } label: {
+                Label("Current".localized(), systemImage: "bolt")
+            }
+
+            Divider()
+
+            ForEach(historyDates, id: \.self) { date in
+                Button {
+                    if dataMode == .current {
+                        historyData = nil
+                    }
+                    selectedHistoryDate = date
+                    isDownloadingHistory = true
+                    historyDownloadFailed = false
+                    dataMode = .history
+                } label: {
+                    Label(
+                        PriceHistoryDateOptions.title(for: date, marketArea: pricingConfiguration.marketArea),
+                        systemImage: "calendar"
+                    )
+                }
+            }
+        } label: {
+            dataSelectionLabel
+                .padding(.vertical, 8)
+                .padding(.trailing, 10)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .foregroundStyle(.secondary)
+        .accessibilityLabel("Price data selection")
+    }
+
+    private func historySelectionMenu<LabelContent: View>(
+        @ViewBuilder label: () -> LabelContent
+    ) -> some View {
         Menu {
             Button {
                 isDownloadingHistory = false
@@ -219,15 +319,10 @@ struct PricesView: View {
 
             ForEach(historyDates, id: \.self) { date in
                 Button {
-                    withAnimation(.spring(response: 0.32, dampingFraction: 0.9, blendDuration: 0.04)) {
-                        if dataMode == .current {
-                            historyData = nil
-                        }
-                        selectedHistoryDate = date
-                        isDownloadingHistory = true
-                        historyDownloadFailed = false
-                        dataMode = .history
-                    }
+                    selectedHistoryDate = date
+                    isDownloadingHistory = true
+                    historyDownloadFailed = false
+                    dataMode = .history
                 } label: {
                     Label(
                         PriceHistoryDateOptions.title(for: date, marketArea: pricingConfiguration.marketArea),
@@ -236,57 +331,32 @@ struct PricesView: View {
                 }
             }
         } label: {
-            Label(dataSelectionTitle, systemImage: dataMode == .current ? "bolt" : "calendar")
-                .font(.fCaption)
-                .lineLimit(1)
+            label()
         }
-        .buttonStyle(.plain)
-        .foregroundStyle(.secondary)
-        .accessibilityLabel("Price data selection")
     }
 
-    private var dataSelectionTitle: String {
+    private var selectedHistoryDateTitle: String {
+        PriceHistoryDateOptions.title(for: selectedHistoryDate, marketArea: pricingConfiguration.marketArea)
+    }
+
+    private var widestHistoryDateTitle: String {
+        historyDates
+            .map { PriceHistoryDateOptions.title(for: $0, marketArea: pricingConfiguration.marketArea) }
+            .max { $0.count < $1.count } ?? selectedHistoryDateTitle
+    }
+
+    @ViewBuilder
+    private var dataSelectionLabel: some View {
         switch dataMode {
         case .current:
-            return "Current".localized()
+            UpdatedDataView(
+                fillsAvailableWidth: false,
+                refreshEnabled: false,
+                statusOverride: "Current prices · Tap for history".localized()
+            )
         case .history:
-            return PriceHistoryDateOptions.title(for: selectedHistoryDate, marketArea: pricingConfiguration.marketArea)
+            EmptyView()
         }
-    }
-
-    private var historyStatus: some View {
-        HStack(spacing: 7) {
-            if isDownloadingHistory {
-                ProgressView()
-                    .frame(width: 13, height: 13)
-                    .scaleEffect(0.7, anchor: .center)
-                    .progressViewStyle(CircularProgressViewStyle(tint: .secondary))
-            } else if historyDownloadFailed {
-                Image(systemName: "exclamationmark.circle.fill")
-                    .foregroundStyle(AppTheme.error)
-            } else {
-                Image(systemName: "clock.arrow.circlepath")
-                    .foregroundStyle(.secondary)
-            }
-
-            Text(historyStatusText)
-                .foregroundStyle(historyDownloadFailed ? AppTheme.error : .secondary)
-                .lineLimit(1)
-        }
-        .font(.fCaption)
-        .fixedSize(horizontal: true, vertical: false)
-    }
-
-    private var historyStatusText: String {
-        if isDownloadingHistory {
-            return "Loading history".localized()
-        }
-
-        if historyDownloadFailed {
-            return "Couldn't get history".localized()
-        }
-
-        return "Historical prices".localized()
     }
 
     private var historyUnavailableView: some View {

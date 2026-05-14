@@ -113,6 +113,7 @@
 "Live Price Source" = "Live Price Source";
 "Market area" = "Market area";
 "Alerts & Help" = "Alerts & Help";
+"Extras & Help" = "Extras & Help";
 "Legal & About" = "Legal & About";
 "Terms of Use" = "Terms of Use";
 "Privacy Policy" = "Privacy Policy";
@@ -168,6 +169,8 @@
 "Get Help" = "Get Help";
 "Send Suggestion" = "Send Suggestion";
 "Made in Dresden for renewable energy" = "Made in Dresden for renewable energy";
+"Widgets" = "Widgets";
+"Add AWattPrice widgets to your Home Screen for quick price updates." = "Add AWattPrice widgets to your Home Screen for quick price updates.";
 
 // Insights localizations
 "Insights" = "Insights";

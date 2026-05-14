@@ -68,6 +68,36 @@ private struct SettingsDestinationRow<Destination: View>: View {
     }
 }
 
+private struct SettingsInfoRow: View {
+    let title: String
+    let subtitle: String
+    let systemImage: String
+    let tint: Color
+
+    var body: some View {
+        HStack(spacing: 14) {
+            Image(systemName: systemImage)
+                .font(.system(size: 18, weight: .semibold))
+                .foregroundStyle(tint)
+                .frame(width: 40, height: 40)
+                .background(tint.opacity(0.12), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(.headline)
+                    .foregroundStyle(.primary)
+
+                Text(subtitle)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.leading)
+            }
+
+            Spacer()
+        }
+    }
+}
+
 private struct SettingsAppVersionView: View {
     var body: some View {
         HStack(spacing: 14) {
@@ -96,8 +126,8 @@ private struct SettingsLegalLinksView: View {
         HStack(spacing: 12) {
             Button("Terms of Use".localized()) {
                 openAgreementLink((
-                    "https://awattprice.space8.me/terms_of_use/german.html",
-                    "https://awattprice.space8.me/terms_of_use/english.html"
+                    "https://www.awattprice.com/terms_of_use/german.html",
+                    "https://www.awattprice.com/terms_of_use/english.html"
                 ))
             }
 
@@ -106,8 +136,8 @@ private struct SettingsLegalLinksView: View {
 
             Button("Privacy Policy".localized()) {
                 openAgreementLink((
-                    "https://awattprice.space8.me/privacy_policy/german.html",
-                    "https://awattprice.space8.me/privacy_policy/english.html"
+                    "https://www.awattprice.com/privacy_policy/german.html",
+                    "https://www.awattprice.com/privacy_policy/english.html"
                 ))
             }
         }
@@ -159,11 +189,20 @@ struct SettingsPageView: View {
                         }
                     }
 
-                    Text("Alerts & Help".localized())
+                    Text("Extras & Help".localized())
                         .font(.system(.title3, design: .rounded).weight(.bold))
 
                     SettingsCard {
                         VStack(spacing: 16) {
+                            SettingsInfoRow(
+                                title: "Widgets".localized(),
+                                subtitle: "Add our widgets to your Home Screen for quick price updates.".localized(),
+                                systemImage: "square.grid.2x2.fill",
+                                tint: AppTheme.accent
+                            )
+
+                            Divider()
+
                             SettingsDestinationRow(
                                 title: "Help & Suggestions".localized(),
                                 subtitle: nil,

@@ -435,13 +435,15 @@ struct InsightsView: View {
                     ScrollView {
                         VStack(alignment: .leading, spacing: 14) {
                             InsightsCard(tint: AppTheme.accent) {
-                                InsightsSectionTitle(
-                                    title: "Price range",
-                                    systemImage: "chart.bar.fill",
-                                    tint: AppTheme.accent
-                                )
-
-                                PriceRangeGraph(model: model)
+                                VStack(alignment: .leading, spacing: 17) {
+                                    InsightsSectionTitle(
+                                        title: "Price range",
+                                        systemImage: "chart.bar.fill",
+                                        tint: AppTheme.accent
+                                    )
+                                    
+                                    PriceRangeGraph(model: model)
+                                }
                             }
 
                             InsightsCard(tint: AppTheme.success) {

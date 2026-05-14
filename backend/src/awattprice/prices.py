@@ -3,6 +3,7 @@ import asyncio
 import pickle
 import xml.etree.ElementTree as ET
 
+from datetime import date
 from decimal import Decimal
 from typing import Optional
 
@@ -78,6 +79,11 @@ class MarketPrice:
 def area_file_key(area_key: str) -> str:
     """Get a filesystem-friendly area key."""
     return defaults.normalize_market_area_key(area_key).lower()
+
+
+def history_date_file_key(day: date) -> str:
+    """Get a filesystem-friendly history date key."""
+    return day.isoformat()
 
 
 def resolution_to_seconds(resolution: str) -> int:
@@ -231,19 +237,37 @@ async def acquire_refresh_lock_immediate(
         return False
 
 
-def get_entsoe_query_params(area: MarketArea) -> dict[str, str]:
-    """Build ENTSO-E query parameters for an area."""
-    now_local = arrow.now(area.timezone)
-    today_start_local = now_local.floor("day")
-    tomorrow_end_local = today_start_local.shift(days=+2)
+def get_entsoe_query_params(
+    area: MarketArea,
+    period_start_local: Optional[Arrow] = None,
+    period_end_local: Optional[Arrow] = None,
+) -> dict[str, str]:
+    """Build ENTSO-E query parameters for an area and local period."""
+    if period_start_local is None or period_end_local is None:
+        now_local = arrow.now(area.timezone)
+        period_start_local = now_local.floor("day")
+        period_end_local = period_start_local.shift(days=+2)
 
     return {
         "documentType": "A44",
         "in_Domain": area.entsoe_domain,
         "out_Domain": area.entsoe_domain,
-        "periodStart": today_start_local.to("UTC").format("YYYYMMDDHHmm"),
-        "periodEnd": tomorrow_end_local.to("UTC").format("YYYYMMDDHHmm"),
+        "periodStart": period_start_local.to("UTC").format("YYYYMMDDHHmm"),
+        "periodEnd": period_end_local.to("UTC").format("YYYYMMDDHHmm"),
     }
+
+
+def get_history_period(area: MarketArea, day: date) -> tuple[Arrow, Arrow]:
+    """Get the local start and end for a historical market-area day."""
+    period_start = arrow.get(day.isoformat(), "YYYY-MM-DD", tzinfo=area.timezone)
+    return period_start, period_start.shift(days=+1)
+
+
+def validate_history_date(area: MarketArea, day: date) -> bool:
+    """Return true when day is in the supported historical lookup range."""
+    yesterday = arrow.now(area.timezone).floor("day").shift(days=-1).date()
+    earliest = arrow.now(area.timezone).floor("day").shift(days=-defaults.PRICE_HISTORY_DAYS).date()
+    return earliest <= day <= yesterday
 
 
 def get_matching_time_series(root: ET.Element, area: MarketArea) -> list[ET.Element]:
@@ -293,11 +317,16 @@ def select_time_series(area: MarketArea, time_series_list: list[ET.Element]) -> 
     return [time_series_list[0]]
 
 
-async def download_data(area: MarketArea, config: Config) -> Optional[bytes]:
+async def download_data(
+    area: MarketArea,
+    config: Config,
+    period_start_local: Optional[Arrow] = None,
+    period_end_local: Optional[Arrow] = None,
+) -> Optional[bytes]:
     """Download price data from the ENTSO-E API."""
     url = config.entsoe.url
     token = config.entsoe.token_file.read_text().strip()
-    query_params = get_entsoe_query_params(area)
+    query_params = get_entsoe_query_params(area, period_start_local, period_end_local)
     query_params["securityToken"] = token
     logger.info(f"Polling {area.key} price data from ENTSO-E.")
 
@@ -419,6 +448,59 @@ async def store_data(data: Box, area_key: str, config: Config):
     logger.info(f"Storing ENTSO-E {area_key} price data to {file_path}.")
     async with async_open(file_path, "wb") as file:
         await file.write(pickled_data)
+
+
+def get_history_data_dir(config: Config):
+    """Get the directory used for immutable historical price caches."""
+    return config.paths.price_data_dir / defaults.PRICE_HISTORY_DATA_SUBDIR_NAME
+
+
+def get_history_data_path(area_key: str, day: date, config: Config):
+    """Get the cache path for one market area and historical day."""
+    file_name = defaults.PRICE_DATA_FILE_NAME.format(
+        f"{area_file_key(area_key)}-{history_date_file_key(day)}"
+    )
+    return get_history_data_dir(config) / file_name
+
+
+async def get_stored_history_data(area_key: str, day: date, config: Config) -> Optional[Box]:
+    """Get cached historical price data."""
+    file_path = get_history_data_path(area_key, day, config)
+
+    try:
+        async with async_open(file_path, "rb") as file:
+            unpickled_data = await file.read()
+    except FileNotFoundError as exc:
+        logger.debug(f"No stored historical price data found: {exc}.")
+        return None
+
+    if len(unpickled_data) == 0:
+        return None
+
+    data = pickle.loads(unpickled_data)
+    if len(data.prices) == 0:
+        return None
+
+    return data
+
+
+async def store_history_data(data: Box, area_key: str, day: date, config: Config):
+    """Store immutable historical price data to the filesystem."""
+    store_dir = get_history_data_dir(config)
+    store_dir.mkdir(parents=True, exist_ok=True)
+    file_path = get_history_data_path(area_key, day, config)
+
+    pickled_data = pickle.dumps(data)
+
+    logger.info(f"Storing ENTSO-E {area_key} historical price data for {day} to {file_path}.")
+    async with async_open(file_path, "wb") as file:
+        await file.write(pickled_data)
+
+
+def get_history_data_refresh_lock(area_key: str, day: date, config: Config) -> ExtendedFileLock:
+    """Get file lock used when downloading one historical day."""
+    lock_file_path = get_history_data_path(area_key, day, config).with_suffix(".pickle.lock")
+    return ExtendedFileLock(lock_file_path)
 
 
 async def get_latest_new_prices(
@@ -553,6 +635,40 @@ async def get_current_prices(
         price_data = stored_data
 
     return price_data
+
+
+async def get_history_prices(area_key: str, day: date, config: Config) -> Optional[Box]:
+    """Get cached or downloaded price data for a historical local day."""
+    area = defaults.get_market_area(area_key)
+    stored_data = await get_stored_history_data(area_key, day, config)
+    if stored_data is not None:
+        return stored_data
+
+    get_history_data_dir(config).mkdir(parents=True, exist_ok=True)
+    refresh_lock = get_history_data_refresh_lock(area_key, day, config)
+    try:
+        could_acquire_immediately = await acquire_refresh_lock_immediate(refresh_lock)
+    except filelock.Timeout:
+        logger.debug(f"Skipping history refresh for {area.key} {day} because another refresh is already running.")
+        return await get_stored_history_data(area_key, day, config)
+
+    if could_acquire_immediately:
+        with refresh_lock.context(acquire=False):
+            stored_data = await get_stored_history_data(area_key, day, config)
+            if stored_data is not None:
+                return stored_data
+
+            period_start_local, period_end_local = get_history_period(area, day)
+            downloaded_data = await download_data(area, config, period_start_local, period_end_local)
+            if downloaded_data is None:
+                return None
+
+            new_data = parse_downloaded_data(area, downloaded_data)
+            await store_history_data(new_data, area_key, day, config)
+            return new_data
+
+    refresh_lock.release()
+    return await get_stored_history_data(area_key, day, config)
 
 
 def parse_to_response_data(price_data: Box) -> Box:

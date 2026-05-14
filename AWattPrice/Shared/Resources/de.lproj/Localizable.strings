@@ -389,6 +389,13 @@
 "%@ price band, %@ hours" = "Preisbereich %@, %@ Stunden";
 "%@, %@ of upcoming prices" = "%@, %@ der kommenden Preise";
 "Price range from %@ to %@, average %@" = "Preisspanne von %@ bis %@, Durchschnitt %@";
+"History" = "Historie";
+"Yesterday" = "Gestern";
+"Historical prices" = "Historische Preise";
+"Loading history" = "Lade Historie";
+"Couldn't get history" = "Historie konnte nicht geladen werden";
+"Couldn't get history. Tap to retry." = "Historie konnte nicht geladen werden. Zum Wiederholen tippen.";
+"No history data available" = "Keine historischen Daten verfügbar";
 
 "Base fee (incl. VAT):" = "Grundgebühr (inkl. MwSt.):";
 

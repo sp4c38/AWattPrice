@@ -1,4 +1,5 @@
 """Define the urls and their tasks handled by the API."""
+from datetime import date
 from json import JSONDecodeError
 
 from box import Box
@@ -70,6 +71,28 @@ async def get_area_prices(area_key: str):
     response_price_data = prices.parse_to_response_data(price_data)
 
     return response_price_data
+
+
+@logger.catch
+@app.get("/prices/{area_key}/history/{history_date}")
+async def get_area_price_history(area_key: str, history_date: date):
+    """Get historical price data for a market area and local date."""
+    try:
+        normalized_area_key = defaults.normalize_market_area_key(area_key)
+        area = defaults.get_market_area(normalized_area_key)
+    except KeyError:
+        raise HTTPException(404)
+
+    if not prices.validate_history_date(area, history_date):
+        raise HTTPException(400)
+
+    price_data = await prices.get_history_prices(normalized_area_key, history_date, config)
+
+    if price_data is None:
+        logger.warning(f"Couldn't get historical price data for area {normalized_area_key} and date {history_date}.")
+        raise HTTPException(503)
+
+    return prices.parse_to_response_data(price_data)
 
 
 @logger.catch

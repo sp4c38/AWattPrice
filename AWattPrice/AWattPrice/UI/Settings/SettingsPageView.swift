@@ -155,7 +155,7 @@ private struct SettingsMadeWithLoveView: View {
                 .font(.caption2.weight(.semibold))
                 .foregroundStyle(.secondary)
             
-            Text("Made with love in Dresden for a renewable future")
+            Text("Made with love in Dresden for a renewable energy future.")
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }

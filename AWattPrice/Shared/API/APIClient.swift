@@ -60,6 +60,15 @@ class APIClient {
         let normalizedValue = trimmedValue.hasSuffix("/") ? trimmedValue : "\(trimmedValue)/"
         return URL(string: normalizedValue)
     }
+
+    private static func historyDateString(from date: Date, marketArea: MarketArea) -> String {
+        let formatter = DateFormatter()
+        formatter.calendar = Calendar(identifier: .gregorian)
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = TimeZone(identifier: marketArea.timezone)
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter.string(from: date)
+    }
     
     // MARK: - Request Creation
     
@@ -68,6 +77,21 @@ class APIClient {
         let requestURL = APIClient.apiURL
             .appendingPathComponent("prices", isDirectory: true)
             .appendingPathComponent(marketArea.key)
+        let urlRequest = URLRequest(
+            url: requestURL,
+            cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,
+            timeoutInterval: 90
+        )
+        let decoder = EnergyData.jsonDecoder()
+        return ResponseRequest(urlRequest: urlRequest, decoder: decoder)
+    }
+
+    static func createEnergyPriceHistoryRequest(marketArea: MarketArea, date: Date) -> ResponseRequest<EnergyData> {
+        let requestURL = APIClient.apiURL
+            .appendingPathComponent("prices", isDirectory: true)
+            .appendingPathComponent(marketArea.key, isDirectory: true)
+            .appendingPathComponent("history", isDirectory: true)
+            .appendingPathComponent(historyDateString(from: date, marketArea: marketArea))
         let urlRequest = URLRequest(
             url: requestURL,
             cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,

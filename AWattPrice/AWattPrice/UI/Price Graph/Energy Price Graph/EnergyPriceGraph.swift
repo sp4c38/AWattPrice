@@ -442,15 +442,39 @@ private struct ExpandedIntervalTransitionModifier: ViewModifier, Animatable {
 struct EnergyPriceGraph: View {
     @EnvironmentObject private var energyDataService: EnergyDataService
 
+    let prices: [EnergyPricePoint]?
     let displayInterval: PriceGraphDisplayInterval
     let allowsHourlyExpansion: Bool
+
+    init(
+        prices: [EnergyPricePoint]? = nil,
+        displayInterval: PriceGraphDisplayInterval,
+        allowsHourlyExpansion: Bool
+    ) {
+        self.prices = prices
+        self.displayInterval = displayInterval
+        self.allowsHourlyExpansion = allowsHourlyExpansion
+    }
 
     @State private var selectedGroupIndex: Int?
     @State private var expandedIntervalSwitchDirection: Int?
     @State private var feedbackGenerator = UISelectionFeedbackGenerator()
+    @State private var minimumAnimatedRowCount = 0
+    @State private var lastDisplayRowCount = 0
+    @State private var rowCollapseTask: Task<Void, Never>?
 
     private var currentPrices: [EnergyPricePoint] {
-        energyDataService.energyData?.currentPrices ?? []
+        prices ?? energyDataService.energyData?.currentPrices ?? []
+    }
+
+    private var dataAnimationKey: String {
+        currentPrices.map { pricePoint in
+            let start = Int(pricePoint.startTime.timeIntervalSinceReferenceDate)
+            let end = Int(pricePoint.endTime.timeIntervalSinceReferenceDate)
+            let price = Int((pricePoint.marketprice * 100).rounded())
+            return "\(start)-\(end)-\(price)"
+        }
+        .joined(separator: "|")
     }
 
     private var hourlyPriceGroups: [EnergyPriceHourGroup] {
@@ -488,7 +512,7 @@ struct EnergyPriceGraph: View {
                 let isFullHour = startsOnFullHour(pricePoint.startTime)
 
                 return EnergyPriceGraphDisplayRow(
-                    id: "interval-\(pricePoint.startTime.timeIntervalSinceReferenceDate)",
+                    id: "interval-\(index)",
                     groupIndex: index,
                     startTime: pricePoint.startTime,
                     endTime: pricePoint.endTime,
@@ -515,7 +539,7 @@ struct EnergyPriceGraph: View {
             if selectedGroupIndex == groupIndex, expandsToIntervals {
                 return group.pricePoints.enumerated().map { intervalIndex, pricePoint in
                     EnergyPriceGraphDisplayRow(
-                        id: "interval-\(group.hourStartTime.timeIntervalSinceReferenceDate)-\(pricePoint.startTime.timeIntervalSinceReferenceDate)",
+                        id: "interval-\(groupIndex)-\(intervalIndex)",
                         groupIndex: groupIndex,
                         startTime: pricePoint.startTime,
                         endTime: pricePoint.endTime,
@@ -532,7 +556,7 @@ struct EnergyPriceGraph: View {
 
             return [
                 EnergyPriceGraphDisplayRow(
-                    id: "hour-\(group.hourStartTime.timeIntervalSinceReferenceDate)",
+                    id: "hour-\(groupIndex)",
                     groupIndex: groupIndex,
                     startTime: group.startTime,
                     endTime: group.endTime,
@@ -582,6 +606,44 @@ struct EnergyPriceGraph: View {
             }
 
             return .spring(response: 0.34, dampingFraction: 0.82, blendDuration: 0.08)
+        }
+    }
+
+    private var dataChangeAnimation: Animation {
+        .spring(response: 0.42, dampingFraction: 0.86, blendDuration: 0.08)
+    }
+
+    private var rowCollapseAnimation: Animation {
+        .spring(response: 0.36, dampingFraction: 0.9, blendDuration: 0.04)
+    }
+
+    private func paddedRows(_ rows: [EnergyPriceGraphDisplayRow]) -> [EnergyPriceGraphDisplayRow] {
+        guard minimumAnimatedRowCount > rows.count else { return rows }
+
+        let placeholders = rows.count..<minimumAnimatedRowCount
+        return rows + placeholders.map { index in
+            EnergyPriceGraphDisplayRow(
+                id: placeholderRowID(at: index),
+                groupIndex: index,
+                startTime: Date(timeIntervalSinceReferenceDate: TimeInterval(index)),
+                endTime: Date(timeIntervalSinceReferenceDate: TimeInterval(index + 1)),
+                price: 0,
+                showsDayChange: false,
+                showsTimeLabel: false,
+                isExpandedInterval: false,
+                isFocused: false,
+                showsPrice: false,
+                showsSelectedOverlay: false
+            )
+        }
+    }
+
+    private func placeholderRowID(at index: Int) -> String {
+        switch displayInterval {
+        case .fifteenMinutes:
+            return "interval-\(index)"
+        case .sixtyMinutes:
+            return "hour-\(index)"
         }
     }
 
@@ -683,7 +745,7 @@ struct EnergyPriceGraph: View {
         GeometryReader { geometry in
             let prices = currentPrices
             let groups = hourlyPriceGroups
-            let rows = displayRows(for: prices, groups: groups)
+            let rows = paddedRows(displayRows(for: prices, groups: groups))
             let rowWeights = rows.enumerated().map { index, row in
                 rowWeight(for: row, at: index, rows: rows)
             }
@@ -724,6 +786,7 @@ struct EnergyPriceGraph: View {
                 .frame(width: plotWidth, height: geometry.size.height, alignment: .topLeading)
             }
             .animation(selectionAnimation, value: selectedGroupIndex)
+            .animation(dataChangeAnimation, value: dataAnimationKey)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .contentShape(Rectangle())
             .gesture(
@@ -738,8 +801,31 @@ struct EnergyPriceGraph: View {
         }
         .onAppear {
             feedbackGenerator.prepare()
+            lastDisplayRowCount = displayRows(for: currentPrices, groups: hourlyPriceGroups).count
         }
         .onChange(of: displayInterval) { _, _ in
+            expandedIntervalSwitchDirection = nil
+            selectedGroupIndex = nil
+            lastDisplayRowCount = displayRows(for: currentPrices, groups: hourlyPriceGroups).count
+        }
+        .onChange(of: dataAnimationKey) { _, _ in
+            let newDisplayRowCount = displayRows(for: currentPrices, groups: hourlyPriceGroups).count
+            let outgoingDisplayRowCount = lastDisplayRowCount
+            withAnimation(dataChangeAnimation) {
+                minimumAnimatedRowCount = max(outgoingDisplayRowCount, newDisplayRowCount)
+            }
+            lastDisplayRowCount = newDisplayRowCount
+
+            rowCollapseTask?.cancel()
+            rowCollapseTask = Task { @MainActor in
+                try? await Task.sleep(nanoseconds: 420_000_000)
+                guard !Task.isCancelled else { return }
+
+                withAnimation(rowCollapseAnimation) {
+                    minimumAnimatedRowCount = 0
+                }
+            }
+
             expandedIntervalSwitchDirection = nil
             selectedGroupIndex = nil
         }

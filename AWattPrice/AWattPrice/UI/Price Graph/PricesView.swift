@@ -22,22 +22,65 @@ enum PricesLayout {
     }
 }
 
+private enum PricesDataMode: String, CaseIterable, Identifiable {
+    case current
+    case history
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .current:
+            return "Current".localized()
+        case .history:
+            return "History".localized()
+        }
+    }
+}
+
+private struct PriceHistoryRequestKey: Hashable {
+    let mode: PricesDataMode
+    let areaKey: String
+    let selectedDate: Date
+    let fixedPriceAddOn: Double
+    let percentagePriceAddOn: Double
+}
+
 struct PricesView: View {
     @EnvironmentObject private var energyDataService: EnergyDataService
+    @EnvironmentObject private var settingsManager: SettingsManager
 
     @AppStorage("priceGraphDisplayInterval") private var storedDisplayInterval = PriceGraphDisplayInterval.defaultInterval.rawValue
+    @State private var dataMode = PricesDataMode.current
+    @State private var selectedHistoryDate = PriceHistoryDateOptions.defaultDate
+    @State private var historyData: EnergyData?
+    @State private var historyDownloadFailed = false
+    @State private var isDownloadingHistory = false
     @State private var showsDisplayIntervalInfo = false
 
-    private var hasCurrentPriceData: Bool {
-        energyDataService.energyData?.currentPrices.isEmpty == false
+    private var pricingConfiguration: PricingConfiguration {
+        settingsManager.setting.pricingConfiguration
     }
 
-    private var currentPrices: [EnergyPricePoint] {
-        energyDataService.energyData?.currentPrices ?? []
+    private var visiblePrices: [EnergyPricePoint] {
+        switch dataMode {
+        case .current:
+            return energyDataService.energyData?.currentPrices ?? []
+        case .history:
+            if historyData == nil, isDownloadingHistory {
+                return energyDataService.energyData?.currentPrices ?? []
+            }
+
+            return historyData?.currentPrices ?? []
+        }
+    }
+
+    private var hasVisiblePriceData: Bool {
+        visiblePrices.isEmpty == false
     }
 
     private var hasFifteenMinutePriceIntervals: Bool {
-        currentPrices.contains { pricePoint in
+        visiblePrices.contains { pricePoint in
             abs(pricePoint.endTime.timeIntervalSince(pricePoint.startTime) - TimeInterval(15 * 60)) < 1
         }
     }
@@ -58,22 +101,35 @@ struct PricesView: View {
         }
     }
 
+    private var historyDates: [Date] {
+        PriceHistoryDateOptions.dates(for: pricingConfiguration.marketArea)
+    }
+
+    private var historyRequestKey: PriceHistoryRequestKey {
+        PriceHistoryRequestKey(
+            mode: dataMode,
+            areaKey: pricingConfiguration.marketArea.key,
+            selectedDate: selectedHistoryDate,
+            fixedPriceAddOn: pricingConfiguration.fixedPriceAddOn,
+            percentagePriceAddOn: pricingConfiguration.percentagePriceAddOn
+        )
+    }
+
     var body: some View {
         NavigationView {
-            Group {
-                if hasCurrentPriceData {
-                    VStack(spacing: 0) {
-                        statusRow
+            VStack(spacing: 0) {
+                if dataMode == .history {
+                    statusRow
 
-                        EnergyPriceGraph(
-                            displayInterval: effectiveDisplayInterval,
-                            allowsHourlyExpansion: hasFifteenMinutePriceIntervals
-                        )
-                            .padding(.leading, PricesLayout.graphLeadingPadding)
-                            .padding(.trailing, PricesLayout.graphTrailingPadding)
-                            .padding(.bottom, PricesLayout.graphBottomPadding)
-                            .padding(.top, PricesLayout.graphTopPadding)
+                    if hasVisiblePriceData {
+                        graph
+                    } else {
+                        historyUnavailableView
                     }
+                } else if hasVisiblePriceData {
+                    statusRow
+
+                    graph
                 } else {
                     DataDownloadAndError()
                 }
@@ -83,14 +139,35 @@ struct PricesView: View {
             .toolbar(.hidden, for: .navigationBar)
         }
         .navigationViewStyle(StackNavigationViewStyle())
+        .task(id: historyRequestKey) {
+            await loadHistoryIfNeeded()
+        }
+    }
+
+    private var graph: some View {
+        EnergyPriceGraph(
+            prices: visiblePrices,
+            displayInterval: effectiveDisplayInterval,
+            allowsHourlyExpansion: hasFifteenMinutePriceIntervals
+        )
+            .padding(.leading, PricesLayout.graphLeadingPadding)
+            .padding(.trailing, PricesLayout.graphTrailingPadding)
+            .padding(.bottom, PricesLayout.graphBottomPadding)
+            .padding(.top, PricesLayout.graphTopPadding)
     }
 
     private var statusRow: some View {
         HStack {
-            UpdatedDataView(fillsAvailableWidth: false)
-                .padding(.leading, 2)
+            if dataMode == .current {
+                UpdatedDataView(fillsAvailableWidth: false)
+                    .padding(.leading, 2)
+            } else {
+                historyStatus
+            }
             
             Spacer(minLength: 8)
+
+            dataSelectionMenu
 
             if hasFifteenMinutePriceIntervals {
                 intervalPicker
@@ -117,6 +194,118 @@ struct PricesView: View {
         }
     }
 
+    private var dataSelectionMenu: some View {
+        Menu {
+            Button {
+                isDownloadingHistory = false
+                dataMode = .current
+            } label: {
+                Label("Current".localized(), systemImage: "bolt")
+            }
+
+            Divider()
+
+            ForEach(historyDates, id: \.self) { date in
+                Button {
+                    withAnimation(.spring(response: 0.32, dampingFraction: 0.9, blendDuration: 0.04)) {
+                        if dataMode == .current {
+                            historyData = nil
+                        }
+                        selectedHistoryDate = date
+                        isDownloadingHistory = true
+                        historyDownloadFailed = false
+                        dataMode = .history
+                    }
+                } label: {
+                    Label(
+                        PriceHistoryDateOptions.title(for: date, marketArea: pricingConfiguration.marketArea),
+                        systemImage: "calendar"
+                    )
+                }
+            }
+        } label: {
+            Label(dataSelectionTitle, systemImage: dataMode == .current ? "bolt" : "calendar")
+                .font(.fCaption)
+                .lineLimit(1)
+        }
+        .buttonStyle(.plain)
+        .foregroundStyle(.secondary)
+        .accessibilityLabel("Price data selection")
+    }
+
+    private var dataSelectionTitle: String {
+        switch dataMode {
+        case .current:
+            return "Current".localized()
+        case .history:
+            return PriceHistoryDateOptions.title(for: selectedHistoryDate, marketArea: pricingConfiguration.marketArea)
+        }
+    }
+
+    private var historyStatus: some View {
+        HStack(spacing: 7) {
+            if isDownloadingHistory {
+                ProgressView()
+                    .frame(width: 13, height: 13)
+                    .scaleEffect(0.7, anchor: .center)
+                    .progressViewStyle(CircularProgressViewStyle(tint: .secondary))
+            } else if historyDownloadFailed {
+                Image(systemName: "exclamationmark.circle.fill")
+                    .foregroundStyle(AppTheme.error)
+            } else {
+                Image(systemName: "clock.arrow.circlepath")
+                    .foregroundStyle(.secondary)
+            }
+
+            Text(historyStatusText)
+                .foregroundStyle(historyDownloadFailed ? AppTheme.error : .secondary)
+                .lineLimit(1)
+        }
+        .font(.fCaption)
+        .fixedSize(horizontal: true, vertical: false)
+    }
+
+    private var historyStatusText: String {
+        if isDownloadingHistory {
+            return "Loading history".localized()
+        }
+
+        if historyDownloadFailed {
+            return "Couldn't get history".localized()
+        }
+
+        return "Historical prices".localized()
+    }
+
+    private var historyUnavailableView: some View {
+        VStack(spacing: 18) {
+            Spacer()
+
+            if isDownloadingHistory {
+                ProgressView("Loading history".localized())
+            } else {
+                Image(systemName: "clock.arrow.circlepath")
+                    .font(.system(size: 42, weight: .semibold))
+                    .foregroundStyle(historyDownloadFailed ? AppTheme.error : AppTheme.accent)
+
+                Text(historyDownloadFailed ? "Couldn't get history".localized() : "No history data available".localized())
+                    .font(.title3.weight(.semibold))
+                    .multilineTextAlignment(.center)
+
+                Button {
+                    Task { await loadHistory(force: true) }
+                } label: {
+                    Label("Retry".localized(), systemImage: "arrow.clockwise")
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(AppTheme.accent)
+            }
+
+            Spacer()
+        }
+        .padding()
+    }
+
     private var intervalPicker: some View {
         Picker("Price graph interval", selection: displayIntervalBinding) {
             ForEach(PriceGraphDisplayInterval.allCases) { interval in
@@ -126,6 +315,115 @@ struct PricesView: View {
         }
         .pickerStyle(.segmented)
         .frame(width: 104)
+    }
+
+    @MainActor
+    private func loadHistoryIfNeeded() async {
+        guard dataMode == .history else { return }
+        await loadHistory(force: false)
+    }
+
+    @MainActor
+    private func loadHistory(force: Bool) async {
+        guard dataMode == .history else { return }
+
+        if
+            !force,
+            var existingHistoryData = historyData,
+            existingHistoryData.area == pricingConfiguration.marketArea.key
+        {
+            let containsSelectedDate = existingHistoryData.currentPrices.contains { pricePoint in
+                PriceHistoryDateOptions.isSameDay(
+                    pricePoint.startTime,
+                    selectedHistoryDate,
+                    marketArea: pricingConfiguration.marketArea
+                )
+            }
+            if containsSelectedDate {
+                existingHistoryData.computeValues(
+                    with: pricingConfiguration,
+                    includesPastPrices: true
+                )
+                historyData = existingHistoryData
+                isDownloadingHistory = false
+                return
+            }
+        }
+
+        isDownloadingHistory = true
+        historyDownloadFailed = false
+        defer {
+            isDownloadingHistory = false
+        }
+
+        do {
+            var downloadedHistoryData = try await EnergyData.downloadHistory(
+                marketArea: pricingConfiguration.marketArea,
+                date: selectedHistoryDate
+            )
+            downloadedHistoryData.computeValues(
+                with: pricingConfiguration,
+                includesPastPrices: true
+            )
+            historyData = downloadedHistoryData
+        } catch {
+            guard !Self.isCancellation(error) else { return }
+            historyData = nil
+            historyDownloadFailed = true
+        }
+    }
+
+    private static func isCancellation(_ error: Error) -> Bool {
+        if error is CancellationError {
+            return true
+        }
+
+        if let urlError = error as? URLError, urlError.code == .cancelled {
+            return true
+        }
+
+        return (error as NSError).code == NSURLErrorCancelled
+    }
+}
+
+private enum PriceHistoryDateOptions {
+    static var defaultDate: Date {
+        Calendar.current.startOfDay(for: Date()).addingTimeInterval(-24 * 60 * 60)
+    }
+
+    static func dates(for marketArea: MarketArea) -> [Date] {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(identifier: marketArea.timezone) ?? .current
+        let today = calendar.startOfDay(for: Date())
+
+        return (1...14).compactMap { dayOffset in
+            calendar.date(byAdding: .day, value: -dayOffset, to: today)
+        }
+    }
+
+    static func isSameDay(_ lhs: Date, _ rhs: Date, marketArea: MarketArea) -> Bool {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(identifier: marketArea.timezone) ?? .current
+        return calendar.isDate(lhs, inSameDayAs: rhs)
+    }
+
+    static func title(for date: Date, marketArea: MarketArea) -> String {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(identifier: marketArea.timezone) ?? .current
+
+        if
+            let yesterday = calendar.date(byAdding: .day, value: -1, to: calendar.startOfDay(for: Date())),
+            calendar.isDate(date, inSameDayAs: yesterday)
+        {
+            return "Yesterday".localized()
+        }
+
+        let formatter = DateFormatter()
+        formatter.calendar = calendar
+        formatter.timeZone = calendar.timeZone
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .none
+        return formatter.string(from: date)
     }
 }
 

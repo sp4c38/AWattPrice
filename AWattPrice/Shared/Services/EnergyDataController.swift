@@ -43,7 +43,7 @@ struct EnergyData: Decodable {
     let resolution: String?
     let prices: [EnergyPricePoint]
     
-    /// Prices that are still active or upcoming.
+    /// Prices that are still active or upcoming, or all selected points for historical data.
     var currentPrices: [EnergyPricePoint] = []
     
     var minCostPricePoint: EnergyPricePoint?
@@ -75,23 +75,17 @@ struct EnergyData: Decodable {
         return 60 * 60
     }
     
-    mutating func computeValues(with pricingConfiguration: PricingConfiguration) {
+    mutating func computeValues(with pricingConfiguration: PricingConfiguration, includesPastPrices: Bool = false) {
         let now = Date()
         
-        currentPrices = prices
-            .filter { $0.endTime > now }
-            .sorted { $0.startTime < $1.startTime }
-        
-        for i in currentPrices.indices {
-            if
-                currentPrices[i].marketprice > 0,
-                let taxMultiplier = pricingConfiguration.marketArea.taxMultiplier
-            {
-                currentPrices[i].marketprice *= taxMultiplier
-            }
-            currentPrices[i].marketprice *= 1 + pricingConfiguration.percentagePriceAddOn / 100
-            currentPrices[i].marketprice += pricingConfiguration.fixedPriceAddOn
-        }
+        let selectedPrices = includesPastPrices
+            ? prices
+            : prices.filter { $0.endTime > now }
+
+        currentPrices = Self.adjustedPrices(
+            selectedPrices.sorted { $0.startTime < $1.startTime },
+            with: pricingConfiguration
+        )
 
         minCostPricePoint = currentPrices.min(by: EnergyPricePoint.marketpricesAreInIncreasingOrder)
         maxCostPricePoint = currentPrices.max(by: EnergyPricePoint.marketpricesAreInIncreasingOrder)
@@ -101,6 +95,26 @@ struct EnergyData: Decodable {
                 firstPrice.startTime...lastPrice.endTime
             }
         }
+    }
+
+    private static func adjustedPrices(
+        _ pricePoints: [EnergyPricePoint],
+        with pricingConfiguration: PricingConfiguration
+    ) -> [EnergyPricePoint] {
+        var adjustedPricePoints = pricePoints
+
+        for i in adjustedPricePoints.indices {
+            if
+                adjustedPricePoints[i].marketprice > 0,
+                let taxMultiplier = pricingConfiguration.marketArea.taxMultiplier
+            {
+                adjustedPricePoints[i].marketprice *= taxMultiplier
+            }
+            adjustedPricePoints[i].marketprice *= 1 + pricingConfiguration.percentagePriceAddOn / 100
+            adjustedPricePoints[i].marketprice += pricingConfiguration.fixedPriceAddOn
+        }
+
+        return adjustedPricePoints
     }
     
     /// Creates and returns a JSONDecoder configured with appropriate date decoding strategy
@@ -117,6 +131,11 @@ struct EnergyData: Decodable {
     /// - Throws: Error if the download or decoding fails
     static func download(marketArea: MarketArea) async throws -> EnergyData {
         let request = APIClient.createEnergyDataRequest(marketArea: marketArea)
+        return try await APIClient().request(to: request)
+    }
+
+    static func downloadHistory(marketArea: MarketArea, date: Date) async throws -> EnergyData {
+        let request = APIClient.createEnergyPriceHistoryRequest(marketArea: marketArea, date: date)
         return try await APIClient().request(to: request)
     }
 }

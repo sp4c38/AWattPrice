@@ -184,14 +184,14 @@ private struct PriceWindowRow: View {
                 .frame(width: 4, height: 28)
 
             VStack(alignment: .leading, spacing: 2) {
-                Text(window.title)
-                    .font(.subheadline.weight(.semibold))
-
                 Text(timeRangeText(from: window.startTime, to: window.endTime))
-                    .font(.caption)
-                    .bold()
-                    .foregroundStyle(.secondary)
-            }
+                      .font(.subheadline.weight(.semibold))
+
+                Text(window.title)
+                      .font(.caption)
+                      .bold()
+                      .foregroundStyle(.secondary)
+              }
 
             Spacer()
 

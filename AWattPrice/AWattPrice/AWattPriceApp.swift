@@ -41,6 +41,7 @@ struct AWattPriceApp: App {
     @StateObject private var notificationService = NotificationService()
     @StateObject private var cheapestHourManager = CheapestHourManager()
     @StateObject private var settingsManager = SettingsManager.shared
+    @StateObject private var proSupporterStore = ProSupporterStore()
     
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
@@ -51,8 +52,10 @@ struct AWattPriceApp: App {
                 .environmentObject(notificationService)
                 .environmentObject(cheapestHourManager)
                 .environmentObject(settingsManager)
+                .environmentObject(proSupporterStore)
                 .onAppear {
                     configureApp()
+                    proSupporterStore.start()
                 }
                 .modelContainer(swiftDataService.modelContainer)
         }
@@ -73,6 +76,7 @@ struct ContentView: View {
     @EnvironmentObject var settingsManager: SettingsManager
     @EnvironmentObject var notificationService: NotificationService
     @EnvironmentObject var energyDataService: EnergyDataService
+    @EnvironmentObject var proSupporterStore: ProSupporterStore
 
     @State var selectedTab = 1
     @AppStorage("pendingDeepLinkDestination") private var pendingDeepLinkDestination = ""
@@ -89,17 +93,27 @@ struct ContentView: View {
                         .tag(1)
                         .tabItem { Label("Prices", systemImage: "bolt") }
 
-                    InsightsView()
+                    proSupporterView {
+                        InsightsView()
+                    } paywall: {
+                        NavigationStack {
+                            ProSupporterPaywallView(context: .insights)
+                        }
+                    }
                         .tag(2)
                         .tabItem { Label("Insights", systemImage: "chart.bar.xaxis") }
 
                     NavigationStack {
-                        NotificationSettingView()
+                        proSupporterView {
+                            NotificationSettingView()
+                        } paywall: {
+                            ProSupporterPaywallView(context: .notifications)
+                        }
                     }
                     .tag(3)
                     .tabItem { Label("Notifications", systemImage: "bell.badge") }
                 }
-.tint(AppTheme.accent)
+                .tint(AppTheme.accent)
             } else {
                 SplashScreenStartView()
             }
@@ -109,9 +123,9 @@ struct ContentView: View {
             guard newPhase == .active else { return }
             refreshAppData()
         }
-.onAppear {
-        refreshAppData()
-    }
+        .onAppear {
+            refreshAppData()
+        }
         .onOpenURL { url in
             handleDeepLink(url)
         }
@@ -141,6 +155,18 @@ struct ContentView: View {
         case .cheapestTime:
             pendingDeepLinkDestination = destination.rawValue
             selectedTab = 2
+        }
+    }
+
+    @ViewBuilder
+    private func proSupporterView<Content: View, Paywall: View>(
+        @ViewBuilder content: () -> Content,
+        @ViewBuilder paywall: () -> Paywall
+    ) -> some View {
+        if proSupporterStore.hasPro {
+            content()
+        } else {
+            paywall()
         }
     }
 }

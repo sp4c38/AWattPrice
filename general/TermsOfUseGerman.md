@@ -1,6 +1,6 @@
 # NUTZUNGSBEDINGUNGEN
 
-##### Zuletzt aktualisiert am 16.12.2020
+##### Zuletzt aktualisiert am 14.05.2026
 
 AWattPrice wird Ihnen (Endnutzer) von Frank Becker (im Folgenden: Lizenzgeber) ausschließlich zur Nutzung unter den Bedingungen dieser Lizenzvereinbarung lizenziert.
 
@@ -27,6 +27,14 @@ Der Lizenzgeber behält sich das Recht vor, die Bedingungen der Lizenzierung zu 
 ### 4. WARTUNG UND SUPPORT
 
 Frank Becker und der Endnutzer erkennen an, dass Apple keinerlei Verpflichtung zur Erbringung von Wartungs- und Supportleistungen in Bezug auf die App hat.
+
+### 4A. AWATTPRICE PRO SUPPORTER
+
+AWattPrice kann eine optionale AWattPrice Pro Supporter-Berechtigung über Apples In-App-Kauf-System anbieten. AWattPrice Pro Supporter kann als automatisch verlängerndes monatliches Abonnement, als automatisch verlängerndes jährliches Abonnement oder als einmaliger Lifetime-Kauf erworben werden.
+
+Monatliche und jährliche Abonnements verlängern sich automatisch, sofern sie nicht mindestens 24 Stunden vor Ablauf des aktuellen Abrechnungszeitraums in den Apple Account-Einstellungen des Endnutzers gekündigt werden. Abrechnung, Kündigung, Rückerstattung und Zahlungsverwaltung werden von Apple abgewickelt. Der Lifetime-Kauf ist ein nicht verbrauchbarer In-App-Kauf, der nicht abläuft.
+
+AWattPrice Pro Supporter enthält keinen kostenlosen Testzeitraum. Die Pro-Berechtigung schaltet dieselben Pro-Funktionen für aktive monatliche Abonnenten, aktive jährliche Abonnenten und Lifetime-Käufer frei. Berechtigte Käufe können innerhalb der Anwendung wiederhergestellt werden.
 
 ### 5. NUTZUNG VON DATEN
 

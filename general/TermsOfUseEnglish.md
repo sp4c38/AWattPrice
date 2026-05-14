@@ -1,6 +1,6 @@
 # TERMS OF USE
 
-##### Last updated 16.12.2020
+##### Last updated 14.05.2026
 
 AWattPrice is licensed to You (End-User) by Frank Becker (hereinafter: Licensor), for use only under the terms of this License Agreement.
 
@@ -27,6 +27,14 @@ Licensor reserves the right to modify the terms and conditions of licensing.
 ### 4. MAINTENANCE AND SUPPORT
 
 Frank Becker and the End-User acknowledge that Apple has no obligation whatsoever to furnish any maintenance and support services with respect to the Application.
+
+### 4A. AWATTPRICE PRO SUPPORTER
+
+AWattPrice may offer an optional AWattPrice Pro Supporter entitlement through Apple's In-App Purchase system. AWattPrice Pro Supporter can be purchased as an auto-renewable monthly subscription, an auto-renewable yearly subscription, or a one-time lifetime unlock.
+
+Monthly and yearly subscriptions renew automatically unless they are canceled in the End-User's Apple Account settings at least 24 hours before the end of the current billing period. Subscription billing, cancellation, refunds, and payment management are handled by Apple. The lifetime unlock is a non-consumable In-App Purchase that does not expire.
+
+AWattPrice Pro Supporter does not include a free trial. The Pro entitlement unlocks the same Pro features for active monthly subscribers, active yearly subscribers, and lifetime purchasers. End-Users can restore eligible purchases within the Application.
 
 
 ### 5. USE OF DATA

@@ -865,20 +865,6 @@ struct InsightsView: View {
                 } else {
                     ScrollView {
                         VStack(alignment: .leading, spacing: 14) {
-                            InsightsCard(tint: AppTheme.accent) {
-                                VStack(alignment: .leading, spacing: 17) {
-                                    InsightsSectionTitle(
-                                        title: "Price range",
-                                        systemImage: "chart.bar.fill",
-                                        tint: AppTheme.accent
-                                    )
-                                    
-                                    PriceRangeGraph(model: model)
-                                }
-                            }
-
-                            generationMixSection
-
                             InsightsCard(tint: AppTheme.success) {
                                 HStack {
                                     InsightsSectionTitle(
@@ -921,6 +907,20 @@ struct InsightsView: View {
                                     PriceWindowRow(window: window, tint: AppTheme.error)
                                 }
                             }
+                            
+                            InsightsCard(tint: AppTheme.accent) {
+                                VStack(alignment: .leading, spacing: 17) {
+                                    InsightsSectionTitle(
+                                        title: "Price range",
+                                        systemImage: "chart.bar.fill",
+                                        tint: AppTheme.accent
+                                    )
+                                    
+                                    PriceRangeGraph(model: model)
+                                }
+                            }
+
+                            generationMixSection
                         }
                         .padding(.horizontal, 16)
                         .padding(.vertical, 12)

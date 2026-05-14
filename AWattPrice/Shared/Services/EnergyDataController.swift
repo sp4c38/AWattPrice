@@ -135,6 +135,25 @@ struct GenerationMixCategory: Decodable, Identifiable {
         case share
         case isRenewable = "is_renewable"
     }
+
+    var displayOrder: Int {
+        switch category {
+        case "solar":
+            return 0
+        case "wind":
+            return 1
+        case "hydro":
+            return 2
+        case "biomass":
+            return 3
+        case "fossil":
+            return 4
+        case "nuclear":
+            return 5
+        default:
+            return 6
+        }
+    }
 }
 
 struct GenerationMixData: Decodable {
@@ -151,7 +170,19 @@ struct GenerationMixData: Decodable {
     var visibleCategories: [GenerationMixCategory] {
         categories
             .filter { $0.generationMW > 0 }
-            .sorted { $0.share > $1.share }
+            .sorted {
+                if $0.share == $1.share {
+                    return $0.displayOrder < $1.displayOrder
+                }
+
+                return $0.share > $1.share
+            }
+    }
+
+    var orderedCategories: [GenerationMixCategory] {
+        categories
+            .filter { $0.generationMW > 0 }
+            .sorted { $0.displayOrder < $1.displayOrder }
     }
 
     enum CodingKeys: String, CodingKey {
@@ -174,6 +205,91 @@ struct GenerationMixData: Decodable {
 
     static func download(marketArea: MarketArea) async throws -> GenerationMixData {
         let request = APIClient.createGenerationMixRequest(marketArea: marketArea)
+        return try await APIClient().request(to: request)
+    }
+}
+
+struct GenerationMixInterval: Decodable, Identifiable {
+    let startTime: Date
+    let endTime: Date
+    let totalGenerationMW: Double
+    let renewableGenerationMW: Double
+    let renewableShare: Double
+    let categories: [GenerationMixCategory]
+
+    var id: Date { startTime }
+
+    var visibleCategories: [GenerationMixCategory] {
+        categories
+            .filter { $0.generationMW > 0 }
+            .sorted { $0.displayOrder < $1.displayOrder }
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case startTime = "start_timestamp"
+        case endTime = "end_timestamp"
+        case totalGenerationMW = "total_generation_mw"
+        case renewableGenerationMW = "renewable_generation_mw"
+        case renewableShare = "renewable_share"
+        case categories
+    }
+}
+
+struct GenerationMixHistoryData: Decodable {
+    let area: String?
+    let resolution: String?
+    let updatedAt: Date
+    let startTime: Date
+    let endTime: Date
+    let totalGenerationMW: Double
+    let renewableGenerationMW: Double
+    let renewableShare: Double
+    let categories: [GenerationMixCategory]
+    let intervals: [GenerationMixInterval]
+
+    var visibleCategories: [GenerationMixCategory] {
+        categories
+            .filter { $0.generationMW > 0 }
+            .sorted {
+                if $0.share == $1.share {
+                    return $0.displayOrder < $1.displayOrder
+                }
+
+                return $0.share > $1.share
+            }
+    }
+
+    var orderedCategories: [GenerationMixCategory] {
+        categories
+            .filter { $0.generationMW > 0 }
+            .sorted { $0.displayOrder < $1.displayOrder }
+    }
+
+    var sortedIntervals: [GenerationMixInterval] {
+        intervals.sorted { $0.startTime < $1.startTime }
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case area
+        case resolution
+        case updatedAt = "updated_at"
+        case startTime = "start_timestamp"
+        case endTime = "end_timestamp"
+        case totalGenerationMW = "total_generation_mw"
+        case renewableGenerationMW = "renewable_generation_mw"
+        case renewableShare = "renewable_share"
+        case categories
+        case intervals
+    }
+
+    static func jsonDecoder() -> JSONDecoder {
+        let jsonDecoder = JSONDecoder()
+        jsonDecoder.dateDecodingStrategy = .secondsSince1970
+        return jsonDecoder
+    }
+
+    static func download(marketArea: MarketArea) async throws -> GenerationMixHistoryData {
+        let request = APIClient.createGenerationMixHistoryRequest(marketArea: marketArea)
         return try await APIClient().request(to: request)
     }
 }

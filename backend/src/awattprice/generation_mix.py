@@ -3,6 +3,7 @@ import asyncio
 import pickle
 import xml.etree.ElementTree as ET
 
+from math import ceil
 from decimal import Decimal
 from typing import Optional
 
@@ -346,30 +347,38 @@ async def get_current_generation_mix(area_key: str, config: Config, fall_back: b
     return stored_data
 
 
-def latest_interval_points(generation_data: Box) -> BoxList:
-    """Return generation points for the latest interval with a representative production mix."""
+def representative_interval_points(generation_data: Box) -> list[BoxList]:
+    """Return intervals with the most complete available production mix."""
     points_by_end = {}
     for point in generation_data.generation_points:
-        points_by_end.setdefault(point.end_timestamp, BoxList()).append(point)
+        points_by_end.setdefault(point.end_timestamp.int_timestamp, BoxList()).append(point)
 
-    best_production_type_count = max(
+    production_type_counts = [
         len({point.raw_production_type for point in points if point.raw_production_type is not None})
         for points in points_by_end.values()
-    )
+    ]
+    best_production_type_count = max(production_type_counts)
+    minimum_representative_count = max(1, ceil(best_production_type_count * Decimal("0.7")))
 
-    usable_end_times = [
+    representative_end_times = [
         end_timestamp
         for end_timestamp, points in points_by_end.items()
         if len({point.raw_production_type for point in points if point.raw_production_type is not None})
-        == best_production_type_count
+        >= minimum_representative_count
     ]
-    latest_usable_end = max(usable_end_times)
-    return points_by_end[latest_usable_end]
+    return [
+        points_by_end[end_timestamp_key]
+        for end_timestamp_key in sorted(representative_end_times)
+    ]
 
 
-def parse_to_response_data(generation_data: Box) -> Box:
-    """Parse cached generation data to the narrow app response."""
-    points = latest_interval_points(generation_data)
+def latest_interval_points(generation_data: Box) -> BoxList:
+    """Return generation points for the latest interval with a representative production mix."""
+    return representative_interval_points(generation_data)[-1]
+
+
+def category_values_for_points(points: BoxList) -> tuple[dict[str, Decimal], Decimal, Decimal]:
+    """Group one interval's generation points into app categories."""
     categories = {category: Decimal("0") for category in GENERATION_CATEGORIES}
     for point in points:
         quantity_mw = max(point.quantity_mw, Decimal("0"))
@@ -377,6 +386,40 @@ def parse_to_response_data(generation_data: Box) -> Box:
 
     total_mw = sum(categories.values(), Decimal("0"))
     renewable_mw = sum(max(point.quantity_mw, Decimal("0")) for point in points if point.is_renewable)
+    return categories, total_mw, renewable_mw
+
+
+def category_response(category: str, quantity_mw: Decimal, total_mw: Decimal) -> Box:
+    """Create the shared response model for one generation category."""
+    response = Box()
+    response.category = category
+    response.generation_mw = float(quantity_mw)
+    response.share = float((quantity_mw / total_mw) * 100) if total_mw > 0 else 0.0
+    response.is_renewable = category in RENEWABLE_CATEGORIES
+    return response
+
+
+def interval_response(points: BoxList) -> Box:
+    """Create a grouped app response for one generation interval."""
+    categories, total_mw, renewable_mw = category_values_for_points(points)
+
+    response = Box()
+    response.start_timestamp = min(point.start_timestamp for point in points).int_timestamp
+    response.end_timestamp = max(point.end_timestamp for point in points).int_timestamp
+    response.total_generation_mw = float(total_mw)
+    response.renewable_generation_mw = float(renewable_mw)
+    response.renewable_share = float((renewable_mw / total_mw) * 100) if total_mw > 0 else 0.0
+    response.categories = [
+        category_response(category, categories[category], total_mw)
+        for category in GENERATION_CATEGORIES
+    ]
+    return response
+
+
+def parse_to_response_data(generation_data: Box) -> Box:
+    """Parse cached generation data to the narrow app response."""
+    points = latest_interval_points(generation_data)
+    interval = interval_response(points)
 
     response = Box()
     response.source = generation_data.source
@@ -386,20 +429,55 @@ def parse_to_response_data(generation_data: Box) -> Box:
     response.timezone = generation_data.timezone
     response.resolution = generation_data.resolution
     response.updated_at = generation_data.updated_at.int_timestamp
-    response.start_timestamp = min(point.start_timestamp for point in points).int_timestamp
-    response.end_timestamp = max(point.end_timestamp for point in points).int_timestamp
+    response.start_timestamp = interval.start_timestamp
+    response.end_timestamp = interval.end_timestamp
+    response.total_generation_mw = interval.total_generation_mw
+    response.renewable_generation_mw = interval.renewable_generation_mw
+    response.renewable_share = interval.renewable_share
+    response.categories = interval.categories
+
+    return response
+
+
+def parse_to_history_response_data(generation_data: Box) -> Box:
+    """Parse cached generation data to grouped app history for the last 24 hours."""
+    representative_intervals = representative_interval_points(generation_data)
+    latest_end = max(point.end_timestamp for point in representative_intervals[-1])
+    cutoff = latest_end.shift(hours=-24)
+    interval_points = [
+        points
+        for points in representative_intervals
+        if max(point.end_timestamp for point in points) > cutoff
+    ]
+    interval_responses = BoxList([interval_response(points) for points in interval_points])
+
+    categories = {category: Decimal("0") for category in GENERATION_CATEGORIES}
+    total_mw = Decimal("0")
+    renewable_mw = Decimal("0")
+    for points in interval_points:
+        interval_categories, interval_total_mw, interval_renewable_mw = category_values_for_points(points)
+        total_mw += interval_total_mw
+        renewable_mw += interval_renewable_mw
+        for category, quantity_mw in interval_categories.items():
+            categories[category] += quantity_mw
+
+    response = Box()
+    response.source = generation_data.source
+    response.area = generation_data.area
+    response.display_name = generation_data.display_name
+    response.entsoe_domain = generation_data.entsoe_domain
+    response.timezone = generation_data.timezone
+    response.resolution = generation_data.resolution
+    response.updated_at = generation_data.updated_at.int_timestamp
+    response.start_timestamp = min(interval.start_timestamp for interval in interval_responses)
+    response.end_timestamp = max(interval.end_timestamp for interval in interval_responses)
     response.total_generation_mw = float(total_mw)
     response.renewable_generation_mw = float(renewable_mw)
     response.renewable_share = float((renewable_mw / total_mw) * 100) if total_mw > 0 else 0.0
-    response.categories = []
-
-    for category in GENERATION_CATEGORIES:
-        quantity_mw = categories[category]
-        category_response = Box()
-        category_response.category = category
-        category_response.generation_mw = float(quantity_mw)
-        category_response.share = float((quantity_mw / total_mw) * 100) if total_mw > 0 else 0.0
-        category_response.is_renewable = category in RENEWABLE_CATEGORIES
-        response.categories.append(category_response)
+    response.categories = [
+        category_response(category, categories[category], total_mw)
+        for category in GENERATION_CATEGORIES
+    ]
+    response.intervals = interval_responses
 
     return response

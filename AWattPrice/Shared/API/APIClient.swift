@@ -90,6 +90,20 @@ class APIClient {
         return ResponseRequest(urlRequest: urlRequest, decoder: decoder)
     }
 
+    static func createGenerationMixHistoryRequest(marketArea: MarketArea) -> ResponseRequest<GenerationMixHistoryData> {
+        let requestURL = APIClient.apiURL
+            .appendingPathComponent("generation-mix", isDirectory: true)
+            .appendingPathComponent(marketArea.key, isDirectory: true)
+            .appendingPathComponent("last-24h")
+        let urlRequest = URLRequest(
+            url: requestURL,
+            cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,
+            timeoutInterval: 60
+        )
+        let decoder = GenerationMixHistoryData.jsonDecoder()
+        return ResponseRequest(urlRequest: urlRequest, decoder: decoder)
+    }
+
     static func createSupportedMarketAreasRequest() -> ResponseRequest<SupportedMarketAreasResponse> {
         let requestURL = APIClient.apiURL
             .appendingPathComponent("areas", isDirectory: true)

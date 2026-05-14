@@ -1,5 +1,9 @@
 import unittest
 
+from decimal import Decimal
+
+from box import Box
+
 from awattprice import generation_mix
 from awattprice.market_areas import create_market_area
 
@@ -131,3 +135,36 @@ class GenerationMixParsingTests(unittest.TestCase):
         self.assertEqual(response.total_generation_mw, 600.0)
         self.assertEqual(response.renewable_share, 50.0)
         self.assertEqual(categories["wind"].generation_mw, 180.0)
+
+    def test_history_response_groups_representative_intervals(self):
+        data = generation_mix.parse_downloaded_data(AREA, staggered_generation_xml())
+        response = generation_mix.parse_to_history_response_data(data)
+
+        categories = {category.category: category for category in response.categories}
+
+        self.assertEqual(len(response.intervals), 2)
+        self.assertEqual(response.total_generation_mw, 1200.0)
+        self.assertEqual(response.renewable_generation_mw, 600.0)
+        self.assertEqual(response.renewable_share, 50.0)
+        self.assertEqual(categories["solar"].generation_mw, 220.0)
+        self.assertEqual(categories["wind"].generation_mw, 380.0)
+        self.assertEqual(categories["fossil"].generation_mw, 600.0)
+
+    def test_history_keeps_near_complete_intervals(self):
+        data = generation_mix.parse_downloaded_data(AREA, generation_xml())
+        latest_point = data.generation_points[-1]
+
+        extra_point = Box()
+        extra_point.start_timestamp = latest_point.start_timestamp
+        extra_point.end_timestamp = latest_point.end_timestamp
+        extra_point.raw_production_type = "B17"
+        extra_point.raw_production_name = "Other"
+        extra_point.category = "other"
+        extra_point.quantity_mw = Decimal("10")
+        extra_point.is_renewable = False
+        data.generation_points.append(extra_point)
+
+        response = generation_mix.parse_to_history_response_data(data)
+
+        self.assertEqual(len(response.intervals), 2)
+        self.assertEqual(response.total_generation_mw, 1210.0)

@@ -83,6 +83,29 @@ async def get_default_area_prices():
 
 
 @logger.catch
+@app.get("/generation-mix/{area_key}/last-24h")
+async def get_area_generation_mix_history(area_key: str):
+    """Get grouped generation mix history for a market area."""
+    try:
+        normalized_area_key = defaults.normalize_market_area_key(area_key)
+        defaults.get_market_area(normalized_area_key)
+    except KeyError:
+        raise HTTPException(404)
+
+    generation_data = await generation_mix.get_current_generation_mix(
+        normalized_area_key,
+        config,
+        fall_back=True,
+    )
+
+    if generation_data is None:
+        logger.warning(f"Couldn't get generation mix history for area {normalized_area_key}.")
+        raise HTTPException(503)
+
+    return generation_mix.parse_to_history_response_data(generation_data)
+
+
+@logger.catch
 @app.get("/generation-mix/{area_key}")
 async def get_area_generation_mix(area_key: str):
     """Get current generation mix data for a market area."""

@@ -364,11 +364,16 @@
 "Generation mix" = "Erzeugungsmix";
 "Loading generation mix" = "Lade Erzeugungsmix";
 "Generation mix unavailable" = "Erzeugungsmix nicht verfügbar";
+"Last 24h" = "Letzte 24 h";
+"Data from %@ to %@" = "Daten von %@ bis %@";
+"%@, renewable mix %@" = "%@, erneuerbarer Mix %@";
+"Try Again" = "Erneut versuchen";
 "Data until %@" = "Daten bis %@";
 "Solar" = "Solar";
 "Wind" = "Wind";
 "Hydro" = "Wasser";
 "Biomass" = "Biomasse";
+"Bio" = "Bio";
 "Fossil" = "Fossil";
 "Nuclear" = "Kernkraft";
 "Other" = "Sonstige";

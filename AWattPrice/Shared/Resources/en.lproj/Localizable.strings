@@ -195,11 +195,16 @@
 "Generation mix" = "Generation mix";
 "Loading generation mix" = "Loading generation mix";
 "Generation mix unavailable" = "Generation mix unavailable";
+"Last 24h" = "Last 24h";
+"Data from %@ to %@" = "Data from %@ to %@";
+"%@, renewable mix %@" = "%@, renewable mix %@";
+"Try Again" = "Try Again";
 "Data until %@" = "Data until %@";
 "Solar" = "Solar";
 "Wind" = "Wind";
 "Hydro" = "Hydro";
 "Biomass" = "Biomass";
+"Bio" = "Bio";
 "Fossil" = "Fossil";
 "Nuclear" = "Nuclear";
 "Other" = "Other";

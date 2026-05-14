@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Charts
 
 private let insightsAccent = AppTheme.accent
 
@@ -436,11 +437,29 @@ private struct GenerationMixCard: View {
     var body: some View {
         InsightsCard(tint: AppTheme.success) {
             VStack(alignment: .leading, spacing: 14) {
-                InsightsSectionTitle(
-                    title: "Renewable mix",
-                    systemImage: "leaf.fill",
-                    tint: AppTheme.success
-                )
+                HStack {
+                    InsightsSectionTitle(
+                        title: "Renewable mix",
+                        systemImage: "leaf.fill",
+                        tint: AppTheme.success
+                    )
+
+                    Spacer()
+
+                    NavigationLink {
+                        GenerationMixHistoryView()
+                    } label: {
+                        HStack(spacing: 4) {
+                            Text("Last 24h")
+                            Image(systemName: "chevron.right")
+                                .font(.caption2.weight(.bold))
+                        }
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(AppTheme.accent)
+                        .lineLimit(1)
+                    }
+                    .buttonStyle(.plain)
+                }
 
                 HStack(alignment: .firstTextBaseline, spacing: 8) {
                     Text(percentText(generationMix.renewableShare))
@@ -472,6 +491,221 @@ private struct GenerationMixCard: View {
                     .font(.caption2)
                     .foregroundStyle(.secondary)
             }
+        }
+    }
+}
+
+private enum GenerationMixHistoryLoadState {
+    case loading
+    case loaded(GenerationMixHistoryData)
+    case failed
+}
+
+private struct GenerationMixHistoryView: View {
+    @EnvironmentObject private var settingsManager: SettingsManager
+    @State private var loadState: GenerationMixHistoryLoadState = .loading
+
+    private var marketArea: MarketArea {
+        settingsManager.setting.marketArea
+    }
+
+    var body: some View {
+        Group {
+            switch loadState {
+            case .loading:
+                VStack(spacing: 12) {
+                    ProgressView()
+                        .tint(AppTheme.success)
+
+                    Text("Loading generation mix")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            case .loaded(let history):
+                GenerationMixHistoryContent(history: history)
+            case .failed:
+                VStack(spacing: 14) {
+                    Image(systemName: "leaf")
+                        .font(.largeTitle)
+                        .foregroundStyle(AppTheme.success)
+
+                    Text("Generation mix unavailable")
+                        .font(.headline)
+
+                    Button("Try Again") {
+                        Task { await loadHistory() }
+                    }
+                    .buttonStyle(.bordered)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+        }
+        .appScreenBackground()
+        .navigationTitle("Last 24h")
+        .navigationBarTitleDisplayMode(.large)
+        .task(id: marketArea.key) {
+            await loadHistory()
+        }
+    }
+
+    private func loadHistory() async {
+        loadState = .loading
+
+        do {
+            let history = try await GenerationMixHistoryData.download(marketArea: marketArea)
+            loadState = .loaded(history)
+        } catch {
+            print("Generation mix history download failed: \(error).")
+            loadState = .failed
+        }
+    }
+}
+
+private struct GenerationMixHistoryContent: View {
+    let history: GenerationMixHistoryData
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 14) {
+                InsightsCard(tint: AppTheme.success) {
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text("Renewable mix")
+                            .font(.headline)
+
+                        HStack(alignment: .firstTextBaseline, spacing: 8) {
+                            Text(percentText(history.renewableShare))
+                                .font(.system(.largeTitle, design: .rounded).weight(.bold))
+                                .monospacedDigit()
+
+                            Text("renewable")
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(.secondary)
+                        }
+
+                        Text(historyRangeText(from: history.startTime, to: history.endTime))
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+
+                InsightsCard(tint: AppTheme.success) {
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Generation mix")
+                            .font(.headline)
+
+                        GenerationMixBar(categories: history.visibleCategories)
+
+                        LazyVGrid(columns: [GridItem(.adaptive(minimum: 118), spacing: 10)], alignment: .leading, spacing: 8) {
+                            ForEach(history.visibleCategories) { category in
+                                GenerationMixCategoryLabel(category: category)
+                            }
+                        }
+                    }
+                }
+
+                InsightsCard(tint: AppTheme.success) {
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Last 24h")
+                            .font(.headline)
+
+                        GenerationMixStackedAreaChart(history: history)
+                    }
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+        }
+    }
+}
+
+private struct GenerationMixChartPoint: Identifiable {
+    let id: String
+    let time: Date
+    let category: String
+    let generationMW: Double
+}
+
+private struct GenerationMixStackedAreaChart: View {
+    let history: GenerationMixHistoryData
+
+    private var chartPoints: [GenerationMixChartPoint] {
+        history.sortedIntervals.flatMap { interval in
+            history.orderedCategories.map { category in
+                let intervalCategory = interval.categories.first { $0.category == category.category }
+                return GenerationMixChartPoint(
+                    id: "\(interval.startTime.timeIntervalSince1970)-\(category.category)",
+                    time: interval.startTime,
+                    category: category.category,
+                    generationMW: intervalCategory?.generationMW ?? 0
+                )
+            }
+        }
+    }
+
+    private var categoryDomain: [String] {
+        history.orderedCategories.map(\.category)
+    }
+
+    private var categoryColors: [Color] {
+        categoryDomain.map(generationMixColor)
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Chart(chartPoints) { point in
+                AreaMark(
+                    x: .value("Time", point.time),
+                    y: .value("Generation", point.generationMW),
+                    stacking: .standard
+                )
+                .foregroundStyle(by: .value("Category", point.category))
+                .interpolationMethod(.linear)
+            }
+            .chartForegroundStyleScale(domain: categoryDomain, range: categoryColors)
+            .chartXAxis {
+                AxisMarks(values: .stride(by: .hour, count: 4)) { _ in
+                    AxisGridLine()
+                        .foregroundStyle(.secondary.opacity(0.14))
+                    AxisValueLabel(format: .dateTime.hour(.twoDigits(amPM: .omitted)))
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .chartYAxis {
+                AxisMarks(position: .leading, values: .automatic(desiredCount: 4)) { _ in
+                    AxisGridLine()
+                        .foregroundStyle(.secondary.opacity(0.14))
+                    AxisValueLabel()
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .chartLegend(.hidden)
+            .frame(height: 220)
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel("Generation mix")
+
+            LazyVGrid(columns: [GridItem(.adaptive(minimum: 92), spacing: 10)], alignment: .leading, spacing: 8) {
+                ForEach(history.orderedCategories) { category in
+                    GenerationMixCompactLegendItem(category: category)
+                }
+            }
+        }
+    }
+}
+
+private struct GenerationMixCompactLegendItem: View {
+    let category: GenerationMixCategory
+    
+    var body: some View {
+        HStack(spacing: 6) {
+            Circle()
+                .fill(generationMixColor(for: category.category))
+                .frame(width: 7, height: 7)
+
+            Text(shortGenerationMixTitle(for: category.category))
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
         }
     }
 }
@@ -754,8 +988,24 @@ private func generationMixFreshnessText(_ date: Date) -> String {
     )
 }
 
+private func historyRangeText(from startTime: Date, to endTime: Date) -> String {
+    String.localizedStringWithFormat(
+        NSLocalizedString("Data from %@ to %@", comment: "Time range text for generation mix history"),
+        timeText(startTime),
+        timeText(endTime)
+    )
+}
+
 private func generationMixAccessibilityText(_ category: GenerationMixCategory) -> String {
     "\(generationMixLocalizedTitle(for: category.category)), \(percentText(category.share)), \(megawattText(category.generationMW))"
+}
+
+private func historyIntervalAccessibilityText(_ interval: GenerationMixInterval) -> String {
+    String.localizedStringWithFormat(
+        NSLocalizedString("%@, renewable mix %@", comment: "Accessibility label for one generation mix history interval"),
+        timeRangeText(from: interval.startTime, to: interval.endTime),
+        percentText(interval.renewableShare)
+    )
 }
 
 private func timeRangeText(from startTime: Date, to endTime: Date) -> String {
@@ -774,6 +1024,25 @@ private func generationMixTitle(for category: String) -> LocalizedStringKey {
         return "Hydro"
     case "biomass":
         return "Biomass"
+    case "fossil":
+        return "Fossil"
+    case "nuclear":
+        return "Nuclear"
+    default:
+        return "Other"
+    }
+}
+
+private func shortGenerationMixTitle(for category: String) -> LocalizedStringKey {
+    switch category {
+    case "solar":
+        return "Solar"
+    case "wind":
+        return "Wind"
+    case "hydro":
+        return "Hydro"
+    case "biomass":
+        return "Bio"
     case "fossil":
         return "Fossil"
     case "nuclear":

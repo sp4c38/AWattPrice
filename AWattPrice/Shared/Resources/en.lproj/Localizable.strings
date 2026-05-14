@@ -168,6 +168,33 @@
 "Get Help" = "Get Help";
 "Send Suggestion" = "Send Suggestion";
 
+// Insights localizations
+"Insights" = "Insights";
+"Current" = "Current";
+"Average" = "Average";
+"Lowest" = "Lowest";
+"Highest" = "Highest";
+"Cheapest times" = "Cheapest times";
+"Custom" = "Custom";
+"Open Cheapest Time" = "Open Cheapest Time";
+"Distribution" = "Distribution";
+"Upcoming prices by band" = "Upcoming prices by band";
+"Price mix" = "Price mix";
+"%@ hours" = "%@ hours";
+"Price range" = "Price range";
+"Negative" = "Negative";
+"Low" = "Low";
+"Normal" = "Normal";
+"Moderate" = "Moderate";
+"Peak" = "Peak";
+"Waiting for price data." = "Waiting for price data.";
+"Prices are negative right now." = "Prices are negative right now.";
+"Current price is below the upcoming average." = "Current price is below the upcoming average.";
+"Current price is above the upcoming average." = "Current price is above the upcoming average.";
+"%@ price band, %@ hours" = "%@ price band, %@ hours";
+"%@, %@ of upcoming prices" = "%@, %@ of upcoming prices";
+"Price range from %@ to %@, average %@" = "Price range from %@ to %@, average %@";
+
 // Widget localizations
 "widget.pricesWidget.description" = "View electricity prices at a glance.";
 "widget.current.displayName" = "Current Price";

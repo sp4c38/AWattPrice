@@ -17,14 +17,6 @@ private struct PriceWindow: Identifiable {
     let averagePrice: Double
 }
 
-private struct PriceBand: Identifiable {
-    let id = UUID()
-    let title: String
-    let rangeText: String
-    let count: Int
-    let tint: Color
-}
-
 private struct InsightsModel {
     let prices: [EnergyPricePoint]
 
@@ -46,64 +38,34 @@ private struct InsightsModel {
         prices.max(by: EnergyPricePoint.marketpricesAreInIncreasingOrder)
     }
 
+    var priceRange: ClosedRange<Double>? {
+        guard let minPrice, let maxPrice else { return nil }
+        return minPrice.marketprice...maxPrice.marketprice
+    }
+
+    var averageTimeRange: (startTime: Date, endTime: Date)? {
+        guard let firstPrice = prices.first, let lastPrice = prices.last else { return nil }
+        return (firstPrice.startTime, lastPrice.endTime)
+    }
+
     var cheapestWindows: [PriceWindow] {
         [
-            cheapestWindow(duration: 60 * 60, title: "Cheapest 1h"),
-            cheapestWindow(duration: 2 * 60 * 60, title: "Cheapest 2h"),
-            cheapestWindow(duration: 4 * 60 * 60, title: "Cheapest 4h"),
+            cheapestWindow(duration: 60 * 60, title: "1h usage"),
+            cheapestWindow(duration: 2 * 60 * 60, title: "2h usage"),
+            cheapestWindow(duration: 4 * 60 * 60, title: "4h usage"),
         ]
         .compactMap { $0 }
     }
 
-    var priceBands: [PriceBand] {
-        [
-            PriceBand(
-                title: "Negative",
-                rangeText: "< 0 ct",
-                count: prices.filter { $0.marketprice < 0 }.count,
-                tint: Color(red: 0.25, green: 0.69, blue: 0.43)
-            ),
-            PriceBand(
-                title: "Low",
-                rangeText: "0-5 ct",
-                count: prices.filter { $0.marketprice >= 0 && $0.marketprice < 5 }.count,
-                tint: Color(red: 1.00, green: 0.76, blue: 0.31)
-            ),
-            PriceBand(
-                title: "Normal",
-                rangeText: "5-10 ct",
-                count: prices.filter { $0.marketprice >= 5 && $0.marketprice < 10 }.count,
-                tint: Color(red: 0.94, green: 0.55, blue: 0.26)
-            ),
-            PriceBand(
-                title: "Moderate",
-                rangeText: "10-15 ct",
-                count: prices.filter { $0.marketprice >= 10 && $0.marketprice < 15 }.count,
-                tint: Color(red: 0.90, green: 0.42, blue: 0.24)
-            ),
-            PriceBand(
-                title: "Peak",
-                rangeText: "> 15 ct",
-                count: prices.filter { $0.marketprice >= 15 }.count,
-                tint: Color(red: 0.82, green: 0.28, blue: 0.20)
-            ),
-        ]
-    }
-
-    var nowContextText: String {
-        guard let currentPrice, let averagePrice else {
-            return "Waiting for price data."
+    func rangePosition(for price: Double) -> CGFloat {
+        guard
+            let priceRange,
+            priceRange.upperBound > priceRange.lowerBound
+        else {
+            return 0.5
         }
 
-        if currentPrice.marketprice < 0 {
-            return "Prices are negative right now."
-        }
-
-        if currentPrice.marketprice < averagePrice {
-            return "Current price is below the upcoming average."
-        }
-
-        return "Current price is above the upcoming average."
+        return CGFloat((price - priceRange.lowerBound) / (priceRange.upperBound - priceRange.lowerBound))
     }
 
     private func cheapestWindow(duration: TimeInterval, title: String) -> PriceWindow? {
@@ -198,44 +160,6 @@ private struct InsightsSectionTitle: View {
     }
 }
 
-private struct InsightMetricCard: View {
-    let title: String
-    let value: String
-    let subtitle: String?
-    let systemImage: String
-    let tint: Color
-
-    var body: some View {
-        InsightsCard(tint: tint) {
-            HStack(spacing: 10) {
-                Image(systemName: systemImage)
-                    .font(.system(size: 15, weight: .semibold))
-                    .foregroundStyle(tint)
-                    .frame(width: 30, height: 30)
-                    .background(tint.opacity(0.12), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
-
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(title)
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.secondary)
-
-                    Text(value)
-                        .font(.headline)
-                        .monospacedDigit()
-                        .lineLimit(1)
-
-                    if let subtitle {
-                        Text(subtitle)
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
-                            .lineLimit(1)
-                    }
-                }
-            }
-        }
-    }
-}
-
 private struct PriceWindowRow: View {
     let window: PriceWindow
     let tint: Color
@@ -264,47 +188,227 @@ private struct PriceWindowRow: View {
     }
 }
 
-private struct PriceBandRow: View {
-    let band: PriceBand
-    let totalCount: Int
+private struct PriceRangeGraph: View {
+    let model: InsightsModel
 
-    private var progress: CGFloat {
-        guard totalCount > 0 else { return 0 }
-        return CGFloat(band.count) / CGFloat(totalCount)
-    }
+    private let railY: CGFloat = 52
+    private let currentLabelY: CGFloat = 27
+    private let currentLabelWidth: CGFloat = 112
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack {
-                Circle()
-                    .fill(band.tint)
-                    .frame(width: 8, height: 8)
-
-                Text(band.title)
-                    .font(.caption.weight(.semibold))
-
-                Text(band.rangeText)
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-
-                Spacer()
-
-                Text("\(band.count)")
-                    .font(.caption.weight(.semibold))
-                    .monospacedDigit()
-            }
-
+        VStack(alignment: .leading, spacing: 8) {
             GeometryReader { geometry in
                 ZStack(alignment: .leading) {
                     Capsule()
                         .fill(.secondary.opacity(0.12))
+                        .frame(height: 8)
+                        .position(x: geometry.size.width / 2, y: railY)
 
-                    Capsule()
-                        .fill(band.tint)
-                        .frame(width: geometry.size.width * progress)
+                    if let minPrice = model.minPrice {
+                        PriceRangeMarker(
+                            label: "Lowest",
+                            price: minPrice.marketprice,
+                            tint: AppTheme.success
+                        )
+                        .position(x: markerX(for: minPrice.marketprice, width: geometry.size.width), y: railY)
+                    }
+
+                    if let averagePrice = model.averagePrice {
+                        PriceRangeMarker(
+                            label: "Average",
+                            price: averagePrice,
+                            tint: Color.secondary
+                        )
+                        .position(x: markerX(for: averagePrice, width: geometry.size.width), y: railY)
+                    }
+
+                    if let maxPrice = model.maxPrice {
+                        PriceRangeMarker(
+                            label: "Highest",
+                            price: maxPrice.marketprice,
+                            tint: AppTheme.error
+                        )
+                        .position(x: markerX(for: maxPrice.marketprice, width: geometry.size.width), y: railY)
+                    }
+
+                    if let currentPrice = model.currentPrice {
+                        CurrentPriceRangeMarker(
+                            price: currentPrice.marketprice,
+                            tint: insightsAccent,
+                            connectorHeight: 14
+                        )
+                        .position(
+                            x: currentLabelX(for: currentPrice.marketprice, width: geometry.size.width),
+                            y: currentLabelY
+                        )
+                    }
                 }
             }
-            .frame(height: 6)
+            .frame(height: 68)
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(rangeAccessibilityLabel)
+
+            HStack(alignment: .top, spacing: 8) {
+                RangeValueLabel(
+                    title: "Lowest",
+                    value: model.minPrice?.marketprice,
+                    subtitle: model.minPrice.map { timeRangeText(from: $0.startTime, to: $0.endTime) },
+                    alignment: .leading,
+                    tint: AppTheme.success
+                )
+                Spacer()
+                RangeValueLabel(
+                    title: "Average",
+                    value: model.averagePrice,
+                    subtitle: nil,
+                    alignment: .center,
+                    tint: Color.secondary
+                )
+                Spacer()
+                RangeValueLabel(
+                    title: "Highest",
+                    value: model.maxPrice?.marketprice,
+                    subtitle: model.maxPrice.map { timeRangeText(from: $0.startTime, to: $0.endTime) },
+                    alignment: .trailing,
+                    tint: AppTheme.error
+                )
+            }
+        }
+    }
+
+    private var rangeAccessibilityLabel: String {
+        String.localizedStringWithFormat(
+            NSLocalizedString("Price range from %@ to %@, average %@", comment: "Accessibility label for the insights price range"),
+            priceText(model.minPrice?.marketprice),
+            priceText(model.maxPrice?.marketprice),
+            priceText(model.averagePrice)
+        )
+    }
+
+    private func markerX(for price: Double, width: CGFloat) -> CGFloat {
+        min(max(model.rangePosition(for: price) * width, 8), max(width - 8, 8))
+    }
+
+    private func currentLabelX(for price: Double, width: CGFloat) -> CGFloat {
+        let halfWidth = currentLabelWidth / 2
+        return min(
+            max(model.rangePosition(for: price) * width, halfWidth),
+            max(width - halfWidth, halfWidth)
+        )
+    }
+}
+
+private struct PriceRangeMarker: View {
+    let label: LocalizedStringKey
+    let price: Double
+    let tint: Color
+
+    var body: some View {
+        Circle()
+            .fill(tint)
+            .frame(width: 14, height: 14)
+            .overlay {
+                Circle()
+                    .stroke(.background, lineWidth: 3)
+            }
+            .shadow(color: tint.opacity(0.24), radius: 4, y: 2)
+            .accessibilityLabel(label)
+            .accessibilityValue(priceText(price))
+    }
+}
+
+private struct CurrentPriceRangeMarker: View {
+    let price: Double
+    let tint: Color
+    let connectorHeight: CGFloat
+
+    var body: some View {
+        VStack(spacing: 4) {
+            VStack(alignment: .center, spacing: 3) {
+                HStack(spacing: 4) {
+                    Circle()
+                        .fill(tint)
+                        .frame(width: 6, height: 6)
+
+                    Text("Current")
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                }
+
+                Text(priceText(price))
+                    .font(.caption.weight(.semibold))
+                    .monospacedDigit()
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.72)
+            }
+
+            Rectangle()
+                .fill(tint.opacity(0.45))
+                .frame(width: 2, height: connectorHeight)
+
+            Circle()
+                .fill(tint)
+                .frame(width: 14, height: 14)
+                .overlay {
+                    Circle()
+                        .stroke(.background, lineWidth: 3)
+                }
+                .shadow(color: tint.opacity(0.24), radius: 4, y: 2)
+        }
+        .frame(width: 112)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Current")
+        .accessibilityValue(priceText(price))
+    }
+}
+
+private struct RangeValueLabel: View {
+    let title: LocalizedStringKey
+    let value: Double?
+    let subtitle: String?
+    let alignment: HorizontalAlignment
+    let tint: Color
+
+    var body: some View {
+        VStack(alignment: alignment, spacing: 3) {
+            HStack(spacing: 4) {
+                Circle()
+                    .fill(tint)
+                    .frame(width: 6, height: 6)
+
+                Text(title)
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+            }
+
+            Text(priceText(value))
+                .font(.caption.weight(.semibold))
+                .monospacedDigit()
+                .lineLimit(1)
+                .minimumScaleFactor(0.72)
+                .multilineTextAlignment(textAlignment)
+
+            if let subtitle {
+                Text(subtitle)
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.72)
+                    .multilineTextAlignment(textAlignment)
+            }
+        }
+    }
+
+    private var textAlignment: TextAlignment {
+        switch alignment {
+        case .center:
+            return .center
+        case .trailing:
+            return .trailing
+        default:
+            return .leading
         }
     }
 }
@@ -322,13 +426,6 @@ struct InsightsView: View {
         InsightsModel(prices: prices)
     }
 
-    private var metricColumns: [GridItem] {
-        [
-            GridItem(.flexible(), spacing: 10),
-            GridItem(.flexible(), spacing: 10),
-        ]
-    }
-
     var body: some View {
         NavigationStack {
             Group {
@@ -337,49 +434,14 @@ struct InsightsView: View {
                 } else {
                     ScrollView {
                         VStack(alignment: .leading, spacing: 14) {
-                            InsightsCard(tint: insightsAccent) {
-                                HStack(spacing: 5) {
-                                    Image(systemName: "bolt.fill")
-                                        .foregroundStyle(insightsAccent)
-                                    
-                                    Text(model.nowContextText)
-                                        .font(.subheadline)
-                                }
-                            }
-
-                            LazyVGrid(columns: metricColumns, spacing: 10) {
-                                InsightMetricCard(
-                                    title: "Current",
-                                    value: priceText(model.currentPrice?.marketprice),
-                                    subtitle: model.currentPrice.map { timeRangeText(from: $0.startTime, to: $0.endTime) },
-                                    systemImage: "clock",
+                            InsightsCard(tint: AppTheme.accent) {
+                                InsightsSectionTitle(
+                                    title: "Price range",
+                                    systemImage: "chart.bar.fill",
                                     tint: AppTheme.accent
                                 )
 
-                                InsightMetricCard(
-                                    title: "Average",
-                                    value: priceText(model.averagePrice),
-                                    subtitle: "",
-                                    systemImage: "chart.line.uptrend.xyaxis",
-                                    tint: Color.secondary
-                                )
-
-                                InsightMetricCard(
-                                    title: "Lowest",
-                                    value: priceText(model.minPrice?.marketprice),
-                                    subtitle: model.minPrice.map { timeRangeText(from: $0.startTime, to: $0.endTime) },
-                                    systemImage: "arrow.down.circle.fill",
-                                    tint: AppTheme.success
-                                )
-
-                                InsightMetricCard(
-                                    title: "Highest",
-                                    value: priceText(model.maxPrice?.marketprice),
-                                    subtitle: model.maxPrice.map { timeRangeText(from: $0.startTime, to: $0.endTime) },
-                                    systemImage: "arrow.up.circle.fill",
-                                    tint: AppTheme.error
-                                )
-
+                                PriceRangeGraph(model: model)
                             }
 
                             InsightsCard(tint: AppTheme.success) {
@@ -410,18 +472,6 @@ struct InsightsView: View {
 
                                 ForEach(model.cheapestWindows) { window in
                                     PriceWindowRow(window: window, tint: AppTheme.success)
-                                }
-                            }
-
-                            InsightsCard(tint: AppTheme.accent) {
-                                InsightsSectionTitle(
-                                    title: "Distribution",
-                                    systemImage: "chart.bar.fill",
-                                    tint: AppTheme.accent
-                                )
-
-                                ForEach(model.priceBands) { band in
-                                    PriceBandRow(band: band, totalCount: prices.count)
                                 }
                             }
 

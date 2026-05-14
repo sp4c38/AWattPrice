@@ -276,7 +276,7 @@
 "Fixed Add-on" = "Fixe Zusatzkosten";
 "Generic extra costs per consumed kWh." = "Allgemeine Zusatzkosten pro verbrauchter kWh.";
 "Percentage Add-on" = "Prozentualer Aufschlag";
-"A contract markup based on the current price." = "Ein Aufschlag, der vom aktuellen Preis abhaengt.";
+"A contract markup based on the current price." = "Ein Aufschlag, der vom aktuellen Preis abhängt.";
 "Monthly Fixed Cost" = "Monatliche Fixkosten";
 "Standing charge or basic supplier fee." = "Grundpreis oder monatliche Anbietergebühr.";
 "Annual Consumption" = "Jahresverbrauch";
@@ -336,6 +336,33 @@
 "Notification settings could not be saved to the server. Your previous settings were restored." = "Benachrichtigungen konnten nicht auf dem Server gespeichert werden. Deine vorherigen Einstellungen wurden wiederhergestellt.";
 "Get Help" = "Hilfe erhalten";
 "Send Suggestion" = "Vorschlag senden";
+
+// Insights localizations
+"Insights" = "Einblicke";
+"Current" = "Aktuell";
+"Average" = "Durchschnitt";
+"Lowest" = "Tiefstwert";
+"Highest" = "Höchstwert";
+"Cheapest times" = "Günstigste Zeiten";
+"Custom" = "Eigene Suche";
+"Open Cheapest Time" = "Günstigste Zeit öffnen";
+"Distribution" = "Verteilung";
+"Upcoming prices by band" = "Kommende Preise nach Bereich";
+"Price mix" = "Preismix";
+"%@ hours" = "%@ Std.";
+"Price range" = "Preisspanne";
+"Negative" = "Negativ";
+"Low" = "Günstig";
+"Normal" = "Normal";
+"Moderate" = "Moderat";
+"Peak" = "Spitze";
+"Waiting for price data." = "Warte auf Preisdaten.";
+"Prices are negative right now." = "Die Preise sind gerade negativ.";
+"Current price is below the upcoming average." = "Der aktuelle Preis liegt unter dem kommenden Durchschnitt.";
+"Current price is above the upcoming average." = "Der aktuelle Preis liegt über dem kommenden Durchschnitt.";
+"%@ price band, %@ hours" = "Preisbereich %@, %@ Stunden";
+"%@, %@ of upcoming prices" = "%@, %@ der kommenden Preise";
+"Price range from %@ to %@, average %@" = "Preisspanne von %@ bis %@, Durchschnitt %@";
 
 "Base fee (incl. VAT):" = "Grundgebühr (inkl. MwSt.):";
 

@@ -118,6 +118,22 @@ private struct SettingsLegalLinksView: View {
     }
 }
 
+private struct SettingsMadeWithLoveView: View {
+    var body: some View {
+        HStack(spacing: 5) {
+            Image(systemName: "heart")
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(.secondary)
+            
+            Text("Made with love in Dresden for a renewable future")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .accessibilityElement(children: .combine)
+    }
+}
+
 struct SettingsPageView: View {
     var body: some View {
         NavigationStack {
@@ -160,16 +176,19 @@ struct SettingsPageView: View {
                     }
 
                     SettingsCard {
-                        VStack(alignment: .leading, spacing: 18) {
+                        VStack(alignment: .leading, spacing: 14) {
                             SettingsAppVersionView()
 
                             Text("splashScreen.start.notAffiliatedNote")
-                                .font(.subheadline)
+                                .font(.footnote)
                                 .foregroundStyle(.secondary)
                                 .fixedSize(horizontal: false, vertical: true)
-
+                            
                             Divider()
+                            
                             SettingsLegalLinksView()
+                            
+                            SettingsMadeWithLoveView()
                         }
                     }
                 }

@@ -7,7 +7,7 @@
 */
 
 // Welcome Splash Screen localizations
-"splashScreen.start.notAffiliatedNote" = "AWattPrice is an independent app; displayed prices are not guaranteed and depend on your provider.";
+"splashScreen.start.notAffiliatedNote" = "AWattPrice is an independent app. Prices may vary depending on your provider and are not guaranteed.";
 
 "whatsNew.widgets.subTitle" = "Sparks fly as we unveil our electrifying update: introducing the AWattPrice iOS widget!";
 "whatsNew.widgets.tipText" = "Ready to bring the power to your Home Screen? Simply long-press on your screen, tap the '+' icon in the top-left corner, find AWattPrice in the widget gallery, and zap it right onto your Home Screen.";
@@ -167,6 +167,7 @@
 "Notification settings could not be saved to the server. Your previous settings were restored." = "Notification settings could not be saved to the server. Your previous settings were restored.";
 "Get Help" = "Get Help";
 "Send Suggestion" = "Send Suggestion";
+"Made in Dresden for renewable energy" = "Made in Dresden for renewable energy";
 
 // Insights localizations
 "Insights" = "Insights";

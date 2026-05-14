@@ -115,6 +115,15 @@ struct PricesView: View {
         )
     }
 
+    private var graphIdentity: String {
+        switch dataMode {
+        case .current:
+            return "current"
+        case .history:
+            return historyData == nil && isDownloadingHistory ? "current" : "history"
+        }
+    }
+
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
@@ -137,6 +146,7 @@ struct PricesView: View {
             .appScreenBackground()
             .navigationBarTitleDisplayMode(.inline)
             .toolbar(.hidden, for: .navigationBar)
+            .animation(.easeInOut(duration: 0.22), value: graphIdentity)
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .task(id: historyRequestKey) {
@@ -150,6 +160,8 @@ struct PricesView: View {
             displayInterval: effectiveDisplayInterval,
             allowsHourlyExpansion: hasFifteenMinutePriceIntervals
         )
+            .id(graphIdentity)
+            .transition(.opacity)
             .padding(.leading, PricesLayout.graphLeadingPadding)
             .padding(.trailing, PricesLayout.graphTrailingPadding)
             .padding(.bottom, PricesLayout.graphBottomPadding)

@@ -459,9 +459,6 @@ struct EnergyPriceGraph: View {
     @State private var selectedGroupIndex: Int?
     @State private var expandedIntervalSwitchDirection: Int?
     @State private var feedbackGenerator = UISelectionFeedbackGenerator()
-    @State private var minimumAnimatedRowCount = 0
-    @State private var lastDisplayRowCount = 0
-    @State private var rowCollapseTask: Task<Void, Never>?
 
     private var currentPrices: [EnergyPricePoint] {
         prices ?? energyDataService.energyData?.currentPrices ?? []
@@ -613,40 +610,6 @@ struct EnergyPriceGraph: View {
         .spring(response: 0.42, dampingFraction: 0.86, blendDuration: 0.08)
     }
 
-    private var rowCollapseAnimation: Animation {
-        .spring(response: 0.36, dampingFraction: 0.9, blendDuration: 0.04)
-    }
-
-    private func paddedRows(_ rows: [EnergyPriceGraphDisplayRow]) -> [EnergyPriceGraphDisplayRow] {
-        guard minimumAnimatedRowCount > rows.count else { return rows }
-
-        let placeholders = rows.count..<minimumAnimatedRowCount
-        return rows + placeholders.map { index in
-            EnergyPriceGraphDisplayRow(
-                id: placeholderRowID(at: index),
-                groupIndex: index,
-                startTime: Date(timeIntervalSinceReferenceDate: TimeInterval(index)),
-                endTime: Date(timeIntervalSinceReferenceDate: TimeInterval(index + 1)),
-                price: 0,
-                showsDayChange: false,
-                showsTimeLabel: false,
-                isExpandedInterval: false,
-                isFocused: false,
-                showsPrice: false,
-                showsSelectedOverlay: false
-            )
-        }
-    }
-
-    private func placeholderRowID(at index: Int) -> String {
-        switch displayInterval {
-        case .fifteenMinutes:
-            return "interval-\(index)"
-        case .sixtyMinutes:
-            return "hour-\(index)"
-        }
-    }
-
     private func rowTransition(
         for row: EnergyPriceGraphDisplayRow,
         collapsedOffsetY: CGFloat
@@ -745,7 +708,7 @@ struct EnergyPriceGraph: View {
         GeometryReader { geometry in
             let prices = currentPrices
             let groups = hourlyPriceGroups
-            let rows = paddedRows(displayRows(for: prices, groups: groups))
+            let rows = displayRows(for: prices, groups: groups)
             let rowWeights = rows.enumerated().map { index, row in
                 rowWeight(for: row, at: index, rows: rows)
             }
@@ -801,31 +764,12 @@ struct EnergyPriceGraph: View {
         }
         .onAppear {
             feedbackGenerator.prepare()
-            lastDisplayRowCount = displayRows(for: currentPrices, groups: hourlyPriceGroups).count
         }
         .onChange(of: displayInterval) { _, _ in
             expandedIntervalSwitchDirection = nil
             selectedGroupIndex = nil
-            lastDisplayRowCount = displayRows(for: currentPrices, groups: hourlyPriceGroups).count
         }
         .onChange(of: dataAnimationKey) { _, _ in
-            let newDisplayRowCount = displayRows(for: currentPrices, groups: hourlyPriceGroups).count
-            let outgoingDisplayRowCount = lastDisplayRowCount
-            withAnimation(dataChangeAnimation) {
-                minimumAnimatedRowCount = max(outgoingDisplayRowCount, newDisplayRowCount)
-            }
-            lastDisplayRowCount = newDisplayRowCount
-
-            rowCollapseTask?.cancel()
-            rowCollapseTask = Task { @MainActor in
-                try? await Task.sleep(nanoseconds: 420_000_000)
-                guard !Task.isCancelled else { return }
-
-                withAnimation(rowCollapseAnimation) {
-                    minimumAnimatedRowCount = 0
-                }
-            }
-
             expandedIntervalSwitchDirection = nil
             selectedGroupIndex = nil
         }

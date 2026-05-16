@@ -17,7 +17,7 @@ struct ActionButtonStyle: ButtonStyle {
             .background(AppTheme.accent)
             .cornerRadius(10)
             .opacity(configuration.isPressed ? 0.6 : 1.0)
-            .animation(.easeInOut)
+            .animation(.easeInOut, value: configuration.isPressed)
     }
 }
 
@@ -58,7 +58,7 @@ struct RetryButtonStyle: ButtonStyle {
                 RoundedRectangle(cornerRadius: 10)
                     .stroke(configuration.isPressed ? AppTheme.accent : Color.gray)
             )
-            .animation(.easeInOut(duration: 0.1))
+            .animation(.easeInOut(duration: 0.1), value: configuration.isPressed)
     }
 }
 

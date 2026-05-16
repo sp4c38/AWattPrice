@@ -12,7 +12,7 @@ import SwiftUI
 func openAgreementLink(_ agreementLinks: (String, String)) {
     var agreementLink = URL(string: agreementLinks.0)
 
-    if Locale.current.languageCode == "en" {
+    if Locale.current.language.languageCode?.identifier == "en" {
         agreementLink = URL(string: agreementLinks.1)
     }
 
@@ -87,14 +87,10 @@ struct AppFeatureView: View {
  briefly before the user continues to setup.
  */
 struct SplashScreenFeaturesAndConsentView: View {
-    @State var redirectToNextSplashScreen: Int? = 0
+    @State private var showsSetup = false
 
     var body: some View {
         VStack(spacing: 0) {
-            NavigationLink("", destination: SplashScreenSetupView(), tag: 1, selection: $redirectToNextSplashScreen)
-                .frame(width: 0, height: 0)
-                .hidden()
-
             VStack(spacing: 15) {
                 AppFeatureView(
                     title: "View prices",
@@ -118,7 +114,7 @@ struct SplashScreenFeaturesAndConsentView: View {
             Spacer(minLength: 0)
 
             Button(action: {
-                redirectToNextSplashScreen = 1
+                showsSetup = true
             }) {
                 Text("Continue")
                     .font(.fBody)
@@ -129,6 +125,9 @@ struct SplashScreenFeaturesAndConsentView: View {
         .padding([.leading, .trailing], 20)
         .padding(.bottom, 16)
         .navigationBarTitle("Features")
+        .navigationDestination(isPresented: $showsSetup) {
+            SplashScreenSetupView()
+        }
     }
 }
 

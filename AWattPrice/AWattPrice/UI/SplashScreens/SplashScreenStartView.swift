@@ -34,10 +34,10 @@ struct SplashScreenStartViewTitle: View {
  Start of all splash screens. Presents and describes the main functionalities of the app briefly.
  */
 struct SplashScreenStartView: View {
-    @State var redirectToNextSplashScreen: Int? = 0
+    @State private var showsFeatures = false
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack {
                 Spacer(minLength: 5)
 
@@ -46,12 +46,8 @@ struct SplashScreenStartView: View {
                 Spacer(minLength: 5)
                 Spacer(minLength: 5)
 
-                NavigationLink("", destination: SplashScreenFeaturesAndConsentView(), tag: 1, selection: $redirectToNextSplashScreen)
-                    .frame(width: 0, height: 0)
-                    .hidden()
-
                 Button(action: {
-                    redirectToNextSplashScreen = 1
+                    showsFeatures = true
                 }) {
                     Text("Continue")
                 }
@@ -60,8 +56,10 @@ struct SplashScreenStartView: View {
             .padding([.leading, .trailing], 20)
             .padding(.bottom, 16)
             .navigationBarHidden(true)
+            .navigationDestination(isPresented: $showsFeatures) {
+                SplashScreenFeaturesAndConsentView()
+            }
         }
-        .navigationViewStyle(StackNavigationViewStyle())
     }
 }
 

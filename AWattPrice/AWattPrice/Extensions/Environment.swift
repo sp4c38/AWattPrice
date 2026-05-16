@@ -38,24 +38,22 @@ class DeviceOrientationManager: ObservableObject {
     @Published var deviceOrientation = UIInterfaceOrientation.portrait
 
     init() {
-        if let orientation = UIApplication.shared.windows.first?.windowScene?.interfaceOrientation {
-            deviceOrientation = orientation
-        } else {
-            deviceOrientation = UIInterfaceOrientation.portrait
-        }
+        deviceOrientation = Self.currentInterfaceOrientation()
 
         NotificationCenter.default.addObserver(
             forName: UIDevice.orientationDidChangeNotification,
             object: nil,
             queue: .main,
             using: { _ in
-                if let orientation = UIApplication.shared.windows.first?.windowScene?.interfaceOrientation {
-                    self.deviceOrientation = orientation
-                } else {
-                    self.deviceOrientation = UIInterfaceOrientation.portrait
-                }
+                self.deviceOrientation = Self.currentInterfaceOrientation()
             }
         )
+    }
+
+    private static func currentInterfaceOrientation() -> UIInterfaceOrientation {
+        let scenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
+        let foregroundScene = scenes.first { $0.activationState == .foregroundActive }
+        return (foregroundScene ?? scenes.first)?.effectiveGeometry.interfaceOrientation ?? .portrait
     }
 }
 

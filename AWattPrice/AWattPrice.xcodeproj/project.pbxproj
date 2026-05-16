@@ -27,6 +27,7 @@
 		555F47FC1D9F98F6114CFD89 /* SettingsUploadErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7312444A00735A79F3140BF9 /* SettingsUploadErrorView.swift */; };
 		593C14ACDA8A7823983C839A /* PriceBelowNotificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5A96314B5FDFB69823B75C9 /* PriceBelowNotificationView.swift */; };
 		5968D801ED3B64E9059A3555 /* CheapestHourManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2EFEC10A5ED85CC875CFCF7 /* CheapestHourManager.swift */; };
+		59BDBAACA1BB8316305D917B /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 95BD95FD492B1F960E9F23C4 /* Localizable.strings */; };
 		5A1000012FBE000100000001 /* CurrentPriceWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A1000062FBE000100000001 /* CurrentPriceWidget.swift */; };
 		5A1000022FBE000100000001 /* CheapestTimesWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A1000072FBE000100000001 /* CheapestTimesWidget.swift */; };
 		5A1000032FBE000100000001 /* WidgetPriceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A1000082FBE000100000001 /* WidgetPriceProvider.swift */; };
@@ -35,7 +36,6 @@
 		5A10000B2FBE000100000001 /* WidgetPriceSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A10000A2FBE000100000001 /* WidgetPriceSnapshot.swift */; };
 		5B0000012FBE100100000001 /* ProSupporterStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0000032FBE100100000001 /* ProSupporterStore.swift */; };
 		5B0000022FBE100100000001 /* ProSupporterPaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0000042FBE100100000001 /* ProSupporterPaywallView.swift */; };
-		59BDBAACA1BB8316305D917B /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 95BD95FD492B1F960E9F23C4 /* Localizable.strings */; };
 		612286822A56E39700FA0F9C /* AWattPriceWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 61635B242A482E690099F5AD /* AWattPriceWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		61635B2C2A482E690099F5AD /* AWattPriceWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61635B2B2A482E690099F5AD /* AWattPriceWidgetBundle.swift */; };
 		61635B2E2A482E690099F5AD /* PricesWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61635B2D2A482E690099F5AD /* PricesWidget.swift */; };
@@ -131,8 +131,6 @@
 		52D6D993DB3CE3CBB4B1E644 /* Region.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Region.swift; sourceTree = "<group>"; };
 		546D5FA692CB5FFBAF81B22A /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		59B5203B024111C62B8F9D80 /* DataDownloadAndError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataDownloadAndError.swift; sourceTree = "<group>"; };
-		5CF596453B643BA753483A2C /* SettingsPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPageView.swift; sourceTree = "<group>"; };
-		5E69EEB1FA019DD2F16C2815 /* AWattPriceWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AWattPriceWidgetExtension.entitlements; sourceTree = "<group>"; };
 		5A1000062FBE000100000001 /* CurrentPriceWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentPriceWidget.swift; sourceTree = "<group>"; };
 		5A1000072FBE000100000001 /* CheapestTimesWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheapestTimesWidget.swift; sourceTree = "<group>"; };
 		5A1000082FBE000100000001 /* WidgetPriceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetPriceProvider.swift; sourceTree = "<group>"; };
@@ -140,6 +138,8 @@
 		5A10000A2FBE000100000001 /* WidgetPriceSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetPriceSnapshot.swift; sourceTree = "<group>"; };
 		5B0000032FBE100100000001 /* ProSupporterStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProSupporterStore.swift; sourceTree = "<group>"; };
 		5B0000042FBE100100000001 /* ProSupporterPaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProSupporterPaywallView.swift; sourceTree = "<group>"; };
+		5CF596453B643BA753483A2C /* SettingsPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPageView.swift; sourceTree = "<group>"; };
+		5E69EEB1FA019DD2F16C2815 /* AWattPriceWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AWattPriceWidgetExtension.entitlements; sourceTree = "<group>"; };
 		60087A5B0602E5789304BDF1 /* ButtonStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonStyles.swift; sourceTree = "<group>"; };
 		61541BE12A548F4D00822908 /* AWattPriceWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AWattPriceWidgetExtension.entitlements; sourceTree = "<group>"; };
 		616111958CDF13E7ED308317 /* AWattPriceApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AWattPriceApp.swift; sourceTree = "<group>"; };
@@ -580,7 +580,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastSwiftUpdateCheck = 1430;
-				LastUpgradeCheck = 1620;
+				LastUpgradeCheck = 2650;
 				TargetAttributes = {
 					61635B232A482E690099F5AD = {
 						CreatedOnToolsVersion = 14.3.1;
@@ -754,14 +754,7 @@
 				DEVELOPMENT_TEAM = RC32A2AMHF;
 				INFOPLIST_FILE = "";
 				INFOPLIST_KEY_CFBundleDisplayName = AWattPrice;
-				INFOPLIST_KEY_CFBundleURLTypes = (
-					{
-						CFBundleURLName = me.space8.AWattPrice;
-						CFBundleURLSchemes = (
-							awattprice,
-						);
-					},
-				);
+				INFOPLIST_KEY_CFBundleURLTypes = "{\n    CFBundleURLName = \"me.space8.AWattPrice\";\n    CFBundleURLSchemes =     (\n        awattprice\n    );\n}";
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSAppTransportSecurity_NSAllowsArbitraryLoads = YES;
@@ -769,7 +762,6 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen";
 				INFOPLIST_KEY_UIRequiredDeviceCapabilities = armv7;
-				INFOPLIST_KEY_UIRequiresFullScreen = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
@@ -795,20 +787,12 @@
 				DEVELOPMENT_TEAM = RC32A2AMHF;
 				INFOPLIST_FILE = "";
 				INFOPLIST_KEY_CFBundleDisplayName = AWattPrice;
-				INFOPLIST_KEY_CFBundleURLTypes = (
-					{
-						CFBundleURLName = me.space8.AWattPrice;
-						CFBundleURLSchemes = (
-							awattprice,
-						);
-					},
-				);
+				INFOPLIST_KEY_CFBundleURLTypes = "{\n    CFBundleURLName = \"me.space8.AWattPrice\";\n    CFBundleURLSchemes =     (\n        awattprice\n    );\n}";
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen";
 				INFOPLIST_KEY_UIRequiredDeviceCapabilities = armv7;
-				INFOPLIST_KEY_UIRequiresFullScreen = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
@@ -885,6 +869,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 			};
@@ -1106,6 +1091,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;

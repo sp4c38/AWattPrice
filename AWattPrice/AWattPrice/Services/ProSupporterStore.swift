@@ -40,11 +40,11 @@ enum ProSupporterPlan: String, CaseIterable, Identifiable {
     var expectedPrice: String {
         switch self {
         case .monthly:
-            return "€0.99"
+            return "€1.29"
         case .yearly:
-            return "€8.99"
+            return "€9.99"
         case .lifetime:
-            return "€29.99"
+            return "€24.44"
         }
     }
 

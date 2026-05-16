@@ -31,6 +31,25 @@ enum AppDeepLinkDestination: String {
     }
 }
 
+private enum ProPaywallTrigger: String, Identifiable {
+    case insights
+    case notifications
+    case settings
+
+    var id: String { rawValue }
+
+    var context: ProSupporterPaywallContext {
+        switch self {
+        case .insights:
+            return .insights
+        case .notifications:
+            return .notifications
+        case .settings:
+            return .settings
+        }
+    }
+}
+
 @main
 struct AWattPriceApp: App {
     // Get the shared SwiftData service
@@ -79,13 +98,16 @@ struct ContentView: View {
     @EnvironmentObject var proSupporterStore: ProSupporterStore
 
     @State var selectedTab = 1
+    @State private var activeProPaywallTrigger: ProPaywallTrigger?
     @AppStorage("pendingDeepLinkDestination") private var pendingDeepLinkDestination = ""
     
     var body: some View {
         VStack(spacing: 0) {
             if settingsManager.setting.onboarded {
                 TabView(selection: $selectedTab) {
-                    SettingsPageView()
+                    SettingsPageView {
+                        activeProPaywallTrigger = .settings
+                    }
                         .tag(0)
                         .tabItem { Label("Settings", systemImage: "gear") }
 
@@ -97,7 +119,14 @@ struct ContentView: View {
                         InsightsView()
                     } paywall: {
                         NavigationStack {
-                            ProSupporterPaywallView(context: .insights)
+                            ProLockedFeatureView(
+                                title: "Insights",
+                                subtitle: "Advanced insights help you plan around cheap hours, expensive peaks, and renewable energy mix.",
+                                systemImage: "chart.bar.xaxis",
+                                actionTitle: "Unlock Pro"
+                            ) {
+                                activeProPaywallTrigger = .insights
+                            }
                         }
                     }
                         .tag(2)
@@ -107,7 +136,14 @@ struct ContentView: View {
                         proSupporterView {
                             NotificationSettingView()
                         } paywall: {
-                            ProSupporterPaywallView(context: .notifications)
+                            ProLockedFeatureView(
+                                title: "Notifications",
+                                subtitle: "Pro unlocks price alerts and daily summaries when new electricity prices are available.",
+                                systemImage: "bell.badge.fill",
+                                actionTitle: "Unlock Pro"
+                            ) {
+                                activeProPaywallTrigger = .notifications
+                            }
                         }
                     }
                     .tag(3)
@@ -128,6 +164,13 @@ struct ContentView: View {
         }
         .onOpenURL { url in
             handleDeepLink(url)
+        }
+        .sheet(item: $activeProPaywallTrigger) { trigger in
+            NavigationStack {
+                ProSupporterPaywallView(context: trigger.context)
+            }
+            .presentationDetents([.large])
+            .presentationDragIndicator(.visible)
         }
     }
 
@@ -168,5 +211,53 @@ struct ContentView: View {
         } else {
             paywall()
         }
+    }
+}
+
+private struct ProLockedFeatureView: View {
+    let title: String
+    let subtitle: String
+    let systemImage: String
+    let actionTitle: String
+    let action: () -> Void
+
+    var body: some View {
+        ScrollView {
+            AppCard(cornerRadius: 20, padding: 22, spacing: 18) {
+                VStack(spacing: 14) {
+                    Image(systemName: systemImage)
+                        .font(.system(size: 34, weight: .semibold))
+                        .foregroundStyle(AppTheme.accent)
+                        .frame(width: 72, height: 72)
+                        .background(AppTheme.accent.opacity(0.12), in: RoundedRectangle(cornerRadius: 22, style: .continuous))
+
+                    Text(subtitle.localized())
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .frame(maxWidth: .infinity)
+
+                Button(action: action) {
+                    Text(actionTitle.localized())
+                        .font(.headline)
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 14)
+                        .background(AppTheme.accent, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                }
+                .buttonStyle(.plain)
+            }
+            .frame(maxWidth: 520)
+            .frame(maxWidth: .infinity)
+            .padding(.horizontal, 16)
+            .padding(.top, 14)
+            .padding(.bottom, 28)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .appScreenBackground()
+        .navigationTitle(title.localized())
+        .navigationBarTitleDisplayMode(.large)
     }
 }

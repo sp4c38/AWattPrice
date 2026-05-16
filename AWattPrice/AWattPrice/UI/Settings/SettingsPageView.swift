@@ -68,6 +68,47 @@ private struct SettingsDestinationRow<Destination: View>: View {
     }
 }
 
+private struct SettingsActionRow: View {
+    let title: String
+    let subtitle: String?
+    let systemImage: String
+    let tint: Color
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 14) {
+                Image(systemName: systemImage)
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(tint)
+                    .frame(width: 40, height: 40)
+                    .background(tint.opacity(0.12), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(title)
+                        .font(.headline)
+                        .foregroundStyle(.primary)
+
+                    if let subtitle {
+                        Text(subtitle)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.leading)
+                    }
+                }
+
+                Spacer()
+
+                Image(systemName: "chevron.right")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(.tertiary)
+            }
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+    }
+}
+
 private struct SettingsInfoRow: View {
     let title: String
     let subtitle: String
@@ -165,6 +206,12 @@ private struct SettingsMadeWithLoveView: View {
 }
 
 struct SettingsPageView: View {
+    let onPresentProPaywall: () -> Void
+
+    init(onPresentProPaywall: @escaping () -> Void = {}) {
+        self.onPresentProPaywall = onPresentProPaywall
+    }
+
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -203,14 +250,13 @@ struct SettingsPageView: View {
 
                             Divider()
 
-                            SettingsDestinationRow(
+                            SettingsActionRow(
                                 title: "AWattPrice Pro Supporter".localized(),
                                 subtitle: "Support the app and unlock notifications and advanced insights.".localized(),
                                 systemImage: "bolt.heart.fill",
-                                tint: AppTheme.accent
-                            ) {
-                                ProSupporterPaywallView(context: .settings)
-                            }
+                                tint: AppTheme.accent,
+                                action: onPresentProPaywall
+                            )
 
                             Divider()
 

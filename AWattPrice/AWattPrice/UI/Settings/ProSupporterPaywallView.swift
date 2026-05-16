@@ -8,56 +8,50 @@
 import StoreKit
 import SwiftUI
 
-enum ProSupporterPaywallContext {
-    case insights
-    case notifications
-    case settings
-
-    var title: String {
-        switch self {
-        case .insights:
-            return "Unlock advanced insights"
-        case .notifications:
-            return "Unlock smart notifications"
-        case .settings:
-            return "AWattPrice Pro Supporter"
-        }
-    }
-
-    var subtitle: String {
-        switch self {
-        case .insights:
-            return "Pro unlocks the deeper planning tools behind Insights."
-        case .notifications:
-            return "Pro unlocks price alerts and daily summaries."
-        case .settings:
-            return "Support an independent student project and unlock AWattPrice Pro Supporter."
-        }
-    }
-}
-
 private struct ProBenefit: Identifiable {
     let id = UUID()
     let title: String
     let subtitle: String
     let systemImage: String
+    let tint: Color
 }
 
 private let proBenefits = [
     ProBenefit(
-        title: "Smart notifications",
-        subtitle: "Price alerts and daily summaries when new prices arrive.",
-        systemImage: "bell.badge.fill"
+        title: "Price history",
+        subtitle: "Look back at previous days directly in the price graph.",
+        systemImage: "clock.arrow.circlepath",
+        tint: .indigo
     ),
     ProBenefit(
         title: "Advanced insights",
-        subtitle: "Cheapest windows, expensive peaks, history, and renewable mix.",
-        systemImage: "chart.bar.xaxis"
+        subtitle: "Cheapest windows, expensive peaks, and renewable mix.",
+        systemImage: "chart.bar.xaxis",
+        tint: .blue
+    ),
+    ProBenefit(
+        title: "Smart notifications",
+        subtitle: "Price alerts and daily summaries when new prices arrive.",
+        systemImage: "bell.badge.fill",
+        tint: .teal
+    ),
+    ProBenefit(
+        title: "Price add-ons",
+        subtitle: "Include your personal markups in displayed prices.",
+        systemImage: "sum",
+        tint: .purple
+    ),
+    ProBenefit(
+        title: "Home Screen widgets",
+        subtitle: "Keep prices visible at a glance outside the app.",
+        systemImage: "square.grid.2x2.fill",
+        tint: .cyan
     ),
     ProBenefit(
         title: "Independent development",
         subtitle: "Helps keep AWattPrice maintained in my free time.",
-        systemImage: "heart.fill"
+        systemImage: "heart.fill",
+        tint: AppTheme.accent
     ),
 ]
 
@@ -66,19 +60,18 @@ struct ProSupporterPaywallView: View {
     @EnvironmentObject private var proStore: ProSupporterStore
     @State private var selectedPlan: ProSupporterPlan = .yearly
 
-    let context: ProSupporterPaywallContext
-
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 22) {
+            VStack(alignment: .leading, spacing: 18) {
                 header
 
                 if proStore.hasPro {
                     activeSupporterSection
                 } else {
+                    supporterNote
                     benefitsSection
                     productSection
-                    supporterNote
+                        .padding(.top, 10)
                 }
 
                 if let message = proStore.message {
@@ -92,7 +85,6 @@ struct ProSupporterPaywallView: View {
             .padding(.bottom, 28)
         }
         .background(AppTheme.screenBackground(for: .light).opacity(0.001))
-        .navigationTitle("AWattPrice Pro Supporter")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
@@ -107,36 +99,28 @@ struct ProSupporterPaywallView: View {
     }
 
     private var header: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack(spacing: 10) {
-                Image(systemName: proStore.hasPro ? "checkmark.seal.fill" : "bolt.heart.fill")
-                    .font(.title2.weight(.semibold))
-                    .foregroundStyle(AppTheme.accent)
+        HStack(spacing: 10) {
+            Image(systemName: proStore.hasPro ? "checkmark.seal.fill" : "heart.fill")
+                .font(.title2.weight(.semibold))
+                .foregroundStyle(proStore.hasPro ? AppTheme.success : AppTheme.accent)
 
-                Text(context.title.localized())
-                    .font(.system(.title2, design: .rounded).weight(.bold))
-                    .foregroundStyle(.primary)
-            }
-
-            Text(context.subtitle.localized())
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
+            Text("AWattPrice Pro Supporter".localized())
+                .font(.system(.title2, design: .rounded).weight(.bold))
+                .foregroundStyle(.primary)
         }
-        .padding(.top, 4)
     }
 
     private var activeSupporterSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Label {
-                Text("AWattPrice Pro Supporter is active".localized())
+                Text("Pro is active".localized())
                     .font(.headline)
             } icon: {
                 Image(systemName: "checkmark.circle.fill")
                     .foregroundStyle(AppTheme.success)
             }
 
-            Text("Thank you for supporting AWattPrice. Your AWattPrice Pro Supporter features are unlocked on this device.".localized())
+            Text("Thank you for supporting AWattPrice. Your Pro features are unlocked on this device.".localized())
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
@@ -149,12 +133,16 @@ struct ProSupporterPaywallView: View {
 
     private var benefitsSection: some View {
         VStack(alignment: .leading, spacing: 14) {
+            Text("What Pro Supporter unlocks for you".localized())
+                .font(.headline)
+
             ForEach(proBenefits) { benefit in
                 HStack(alignment: .top, spacing: 12) {
                     Image(systemName: benefit.systemImage)
                         .font(.system(size: 16, weight: .semibold))
-                        .foregroundStyle(AppTheme.accent)
-                        .frame(width: 28, height: 28)
+                        .foregroundStyle(benefit.tint)
+                        .frame(width: 30, height: 30)
+                        .background(benefit.tint.opacity(0.12), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
 
                     VStack(alignment: .leading, spacing: 3) {
                         Text(benefit.title.localized())
@@ -172,9 +160,6 @@ struct ProSupporterPaywallView: View {
 
     private var productSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Choose how you want to support AWattPrice.".localized())
-                .font(.headline)
-
             VStack(spacing: 9) {
                 ForEach(ProSupporterPlan.allCases) { plan in
                     ProSupporterPlanRow(
@@ -253,15 +238,18 @@ struct ProSupporterPaywallView: View {
     }
 
     private var supporterNote: some View {
-        VStack(alignment: .leading, spacing: 7) {
-            Text("A small note from the developer".localized())
+        VStack(alignment: .leading, spacing: 8) {
+            Text("A note from the developer".localized())
                 .font(.subheadline.weight(.semibold))
 
-            Text("AWattPrice is built by me as a student in my free time. Pro is a way to help cover costs and make future improvements easier to keep shipping.".localized())
+            Text("Hi! I’m a student and build AWattPrice in my free time to make dynamic electricity prices easier to follow. Pro helps cover server and license costs and keeps the app running. I hope you like AWattPrice!".localized())
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(14)
+        .background(Color.secondary.opacity(0.07), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
     }
 
     private var legalLinks: some View {
@@ -374,9 +362,16 @@ private struct ProSupporterPlanRow: View {
     }
 }
 
-#Preview {
+#Preview("Not subscribed") {
     NavigationStack {
-        ProSupporterPaywallView(context: .settings)
-            .environmentObject(ProSupporterStore())
+        ProSupporterPaywallView()
+            .environmentObject(ProSupporterStore.preview(hasPro: false))
+    }
+}
+
+#Preview("Subscribed") {
+    NavigationStack {
+        ProSupporterPaywallView()
+            .environmentObject(ProSupporterStore.preview(hasPro: true))
     }
 }

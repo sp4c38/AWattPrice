@@ -17,6 +17,13 @@ private extension Double {
     }
 }
 
+private enum SettingsPageStyle {
+    static let priceIconTint = Color.blue
+    static let widgetsIconTint = Color.indigo
+    static let proIconTint = AppTheme.accent
+    static let helpIconTint = Color.teal
+}
+
 private struct SettingsCard<Content: View>: View {
     @ViewBuilder let content: Content
 
@@ -206,6 +213,8 @@ private struct SettingsMadeWithLoveView: View {
 }
 
 struct SettingsPageView: View {
+    @EnvironmentObject private var proSupporterStore: ProSupporterStore
+
     let onPresentProPaywall: () -> Void
 
     init(onPresentProPaywall: @escaping () -> Void = {}) {
@@ -225,13 +234,23 @@ struct SettingsPageView: View {
 
                             Divider()
 
-                            SettingsDestinationRow(
-                                title: "Price Add-ons".localized(),
-                                subtitle: nil,
-                                systemImage: "sum",
-                                tint: AppTheme.accent
-                            ) {
-                                PriceAddOnsView()
+                            if proSupporterStore.hasPro {
+                                SettingsDestinationRow(
+                                    title: "Price Add-ons".localized(),
+                                    subtitle: nil,
+                                    systemImage: "sum",
+                                    tint: SettingsPageStyle.priceIconTint
+                                ) {
+                                    PriceAddOnsView()
+                                }
+                            } else {
+                                SettingsActionRow(
+                                    title: "Price Add-ons".localized(),
+                                    subtitle: "Pro unlocks custom price markups.".localized(),
+                                    systemImage: "sum",
+                                    tint: SettingsPageStyle.priceIconTint,
+                                    action: onPresentProPaywall
+                                )
                             }
                         }
                     }
@@ -241,20 +260,30 @@ struct SettingsPageView: View {
 
                     SettingsCard {
                         VStack(spacing: 16) {
-                            SettingsInfoRow(
-                                title: "Widgets".localized(),
-                                subtitle: "Add our widgets to your Home Screen for quick price updates.".localized(),
-                                systemImage: "square.grid.2x2.fill",
-                                tint: AppTheme.accent
-                            )
+                            if proSupporterStore.hasPro {
+                                SettingsInfoRow(
+                                    title: "Widgets".localized(),
+                                    subtitle: "Add our widgets to your Home Screen for quick price updates.".localized(),
+                                    systemImage: "square.grid.2x2.fill",
+                                    tint: SettingsPageStyle.widgetsIconTint
+                                )
+                            } else {
+                                SettingsActionRow(
+                                    title: "Widgets".localized(),
+                                    subtitle: nil,
+                                    systemImage: "square.grid.2x2.fill",
+                                    tint: SettingsPageStyle.widgetsIconTint,
+                                    action: onPresentProPaywall
+                                )
+                            }
 
                             Divider()
 
                             SettingsActionRow(
                                 title: "AWattPrice Pro Supporter".localized(),
                                 subtitle: "Support the app and unlock notifications and advanced insights.".localized(),
-                                systemImage: "bolt.heart.fill",
-                                tint: AppTheme.accent,
+                                systemImage: "heart.fill",
+                                tint: SettingsPageStyle.proIconTint,
                                 action: onPresentProPaywall
                             )
 
@@ -264,7 +293,7 @@ struct SettingsPageView: View {
                                 title: "Help & Suggestions".localized(),
                                 subtitle: nil,
                                 systemImage: "questionmark.bubble.fill",
-                                tint: AppTheme.accent
+                                tint: SettingsPageStyle.helpIconTint
                             ) {
                                 HelpAndSuggestionView()
                             }

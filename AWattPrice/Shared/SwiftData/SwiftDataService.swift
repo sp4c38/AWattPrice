@@ -21,6 +21,19 @@ enum AWattPriceWidgetTimelines {
     }
 }
 
+enum ProSupporterEntitlementStore {
+    private static let hasProKey = "AWattPrice.hasPro"
+
+    static var hasPro: Bool {
+        UserDefaults(suiteName: internalAppGroupIdentifier)?.bool(forKey: hasProKey) ?? false
+    }
+
+    static func setHasPro(_ hasPro: Bool) {
+        UserDefaults(suiteName: internalAppGroupIdentifier)?.set(hasPro, forKey: hasProKey)
+        AWattPriceWidgetTimelines.reloadAll()
+    }
+}
+
 /// A minimal service that configures SwiftData with app group sharing for widget compatibility
 class SwiftDataService {
     static let shared = SwiftDataService()

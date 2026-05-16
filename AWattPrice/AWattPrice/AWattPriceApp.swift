@@ -9,11 +9,13 @@ import os
 import SwiftUI
 import SwiftData
 import UserNotifications
+import UIKit
 
 enum AppDeepLinkDestination: String {
     case prices
     case insights
     case cheapestTime = "cheapest-time"
+    case pro
 
     init?(url: URL) {
         let route = url.host ?? url.pathComponents.dropFirst().first
@@ -25,6 +27,8 @@ enum AppDeepLinkDestination: String {
             self = .insights
         case Self.cheapestTime.rawValue:
             self = .cheapestTime
+        case Self.pro.rawValue:
+            self = .pro
         default:
             return nil
         }
@@ -37,16 +41,45 @@ private enum ProPaywallTrigger: String, Identifiable {
     case settings
 
     var id: String { rawValue }
+}
 
-    var context: ProSupporterPaywallContext {
-        switch self {
-        case .insights:
-            return .insights
-        case .notifications:
-            return .notifications
-        case .settings:
-            return .settings
+private enum AppTabBarAppearance {
+    static func apply() {
+        let appearance = makeAppearance()
+        UITabBar.appearance().standardAppearance = appearance
+        UITabBar.appearance().scrollEdgeAppearance = appearance
+        UITabBar.appearance().tintColor = UIColor.label
+        UITabBar.appearance().unselectedItemTintColor = UIColor.label
+    }
+
+    static func apply(to tabBar: UITabBar) {
+        let appearance = makeAppearance()
+        tabBar.standardAppearance = appearance
+        tabBar.scrollEdgeAppearance = appearance
+        tabBar.tintColor = UIColor.label
+        tabBar.unselectedItemTintColor = UIColor.label
+    }
+
+    private static func makeAppearance() -> UITabBarAppearance {
+        let appearance = UITabBarAppearance()
+        appearance.configureWithDefaultBackground()
+
+        let selectedColor = UIColor.label
+        let unselectedColor = UIColor.label
+        let itemAppearances = [
+            appearance.stackedLayoutAppearance,
+            appearance.inlineLayoutAppearance,
+            appearance.compactInlineLayoutAppearance,
+        ]
+
+        itemAppearances.forEach { itemAppearance in
+            itemAppearance.selected.iconColor = selectedColor
+            itemAppearance.selected.titleTextAttributes = [.foregroundColor: selectedColor]
+            itemAppearance.normal.iconColor = unselectedColor
+            itemAppearance.normal.titleTextAttributes = [.foregroundColor: unselectedColor]
         }
+
+        return appearance
     }
 }
 
@@ -81,6 +114,8 @@ struct AWattPriceApp: App {
     }
     
     private func configureApp() {
+        AppTabBarAppearance.apply()
+
         // Assign all dependencies to the AppDelegate
         appDelegate.notificationService = notificationService
         appDelegate.setting = settingsManager.setting
@@ -111,7 +146,9 @@ struct ContentView: View {
                         .tag(0)
                         .tabItem { Label("Settings", systemImage: "gear") }
 
-                    PricesView()
+                    PricesView {
+                        activeProPaywallTrigger = .settings
+                    }
                         .tag(1)
                         .tabItem { Label("Prices", systemImage: "bolt") }
 
@@ -123,6 +160,7 @@ struct ContentView: View {
                                 title: "Insights",
                                 subtitle: "Advanced insights help you plan around cheap hours, expensive peaks, and renewable energy mix.",
                                 systemImage: "chart.bar.xaxis",
+                                tint: .blue,
                                 actionTitle: "Unlock Pro"
                             ) {
                                 activeProPaywallTrigger = .insights
@@ -140,6 +178,7 @@ struct ContentView: View {
                                 title: "Notifications",
                                 subtitle: "Pro unlocks price alerts and daily summaries when new electricity prices are available.",
                                 systemImage: "bell.badge.fill",
+                                tint: .teal,
                                 actionTitle: "Unlock Pro"
                             ) {
                                 activeProPaywallTrigger = .notifications
@@ -149,7 +188,7 @@ struct ContentView: View {
                     .tag(3)
                     .tabItem { Label("Notifications", systemImage: "bell.badge") }
                 }
-                .tint(AppTheme.accent)
+                .tint(.primary)
             } else {
                 SplashScreenStartView()
             }
@@ -165,13 +204,36 @@ struct ContentView: View {
         .onOpenURL { url in
             handleDeepLink(url)
         }
-        .sheet(item: $activeProPaywallTrigger) { trigger in
+        .sheet(item: $activeProPaywallTrigger) { _ in
             NavigationStack {
-                ProSupporterPaywallView(context: trigger.context)
+                ProSupporterPaywallView()
             }
             .presentationDetents([.large])
             .presentationDragIndicator(.visible)
         }
+        .onChange(of: activeProPaywallTrigger) { _, newValue in
+            guard newValue == nil else { return }
+            restoreTabBarColors()
+        }
+    }
+
+    private func restoreTabBarColors() {
+        AppTabBarAppearance.apply()
+
+        UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .flatMap(\.windows)
+            .forEach { window in
+                updateTabBars(in: window)
+            }
+    }
+
+    private func updateTabBars(in view: UIView) {
+        if let tabBar = view as? UITabBar {
+            AppTabBarAppearance.apply(to: tabBar)
+        }
+
+        view.subviews.forEach(updateTabBars)
     }
 
     private func refreshAppData() {
@@ -198,6 +260,8 @@ struct ContentView: View {
         case .cheapestTime:
             pendingDeepLinkDestination = destination.rawValue
             selectedTab = 2
+        case .pro:
+            activeProPaywallTrigger = .settings
         }
     }
 
@@ -218,6 +282,7 @@ private struct ProLockedFeatureView: View {
     let title: String
     let subtitle: String
     let systemImage: String
+    let tint: Color
     let actionTitle: String
     let action: () -> Void
 
@@ -227,9 +292,9 @@ private struct ProLockedFeatureView: View {
                 VStack(spacing: 14) {
                     Image(systemName: systemImage)
                         .font(.system(size: 34, weight: .semibold))
-                        .foregroundStyle(AppTheme.accent)
+                        .foregroundStyle(tint)
                         .frame(width: 72, height: 72)
-                        .background(AppTheme.accent.opacity(0.12), in: RoundedRectangle(cornerRadius: 22, style: .continuous))
+                        .background(tint.opacity(0.12), in: RoundedRectangle(cornerRadius: 22, style: .continuous))
 
                     Text(subtitle.localized())
                         .font(.subheadline)

@@ -49,6 +49,9 @@ private struct PriceHistoryRequestKey: Hashable {
 struct PricesView: View {
     @EnvironmentObject private var energyDataService: EnergyDataService
     @EnvironmentObject private var settingsManager: SettingsManager
+    @EnvironmentObject private var proSupporterStore: ProSupporterStore
+
+    let onPresentProPaywall: () -> Void
 
     @AppStorage("priceGraphDisplayInterval") private var storedDisplayInterval = PriceGraphDisplayInterval.defaultInterval.rawValue
     @State private var dataMode = PricesDataMode.current
@@ -124,6 +127,10 @@ struct PricesView: View {
         }
     }
 
+    init(onPresentProPaywall: @escaping () -> Void = {}) {
+        self.onPresentProPaywall = onPresentProPaywall
+    }
+
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
@@ -151,6 +158,10 @@ struct PricesView: View {
         .navigationViewStyle(StackNavigationViewStyle())
         .task(id: historyRequestKey) {
             await loadHistoryIfNeeded()
+        }
+        .onChange(of: proSupporterStore.hasPro) { _, hasPro in
+            guard hasPro == false, dataMode == .history else { return }
+            resetToCurrentPrices()
         }
     }
 
@@ -272,24 +283,18 @@ struct PricesView: View {
                 isDownloadingHistory = false
                 dataMode = .current
             } label: {
-                Label("Current".localized(), systemImage: "bolt")
+                Label("Upcoming".localized(), systemImage: "bolt")
             }
 
             Divider()
 
             ForEach(historyDates, id: \.self) { date in
                 Button {
-                    if dataMode == .current {
-                        historyData = nil
-                    }
-                    selectedHistoryDate = date
-                    isDownloadingHistory = true
-                    historyDownloadFailed = false
-                    dataMode = .history
+                    selectHistoryDate(date)
                 } label: {
                     Label(
                         PriceHistoryDateOptions.title(for: date, marketArea: pricingConfiguration.marketArea),
-                        systemImage: "calendar"
+                        systemImage: proSupporterStore.hasPro ? "calendar" : "lock"
                     )
                 }
             }
@@ -319,14 +324,11 @@ struct PricesView: View {
 
             ForEach(historyDates, id: \.self) { date in
                 Button {
-                    selectedHistoryDate = date
-                    isDownloadingHistory = true
-                    historyDownloadFailed = false
-                    dataMode = .history
+                    selectHistoryDate(date)
                 } label: {
                     Label(
                         PriceHistoryDateOptions.title(for: date, marketArea: pricingConfiguration.marketArea),
-                        systemImage: "calendar"
+                        systemImage: proSupporterStore.hasPro ? "calendar" : "lock"
                     )
                 }
             }
@@ -401,13 +403,13 @@ struct PricesView: View {
 
     @MainActor
     private func loadHistoryIfNeeded() async {
-        guard dataMode == .history else { return }
+        guard dataMode == .history, proSupporterStore.hasPro else { return }
         await loadHistory(force: false)
     }
 
     @MainActor
     private func loadHistory(force: Bool) async {
-        guard dataMode == .history else { return }
+        guard dataMode == .history, proSupporterStore.hasPro else { return }
 
         if
             !force,
@@ -466,6 +468,29 @@ struct PricesView: View {
 
         return (error as NSError).code == NSURLErrorCancelled
     }
+
+    private func selectHistoryDate(_ date: Date) {
+        guard proSupporterStore.hasPro else {
+            onPresentProPaywall()
+            return
+        }
+
+        if dataMode == .current {
+            historyData = nil
+        }
+
+        selectedHistoryDate = date
+        isDownloadingHistory = true
+        historyDownloadFailed = false
+        dataMode = .history
+    }
+
+    private func resetToCurrentPrices() {
+        isDownloadingHistory = false
+        historyDownloadFailed = false
+        historyData = nil
+        dataMode = .current
+    }
 }
 
 private enum PriceHistoryDateOptions {
@@ -512,5 +537,8 @@ private enum PriceHistoryDateOptions {
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
         PricesView()
+            .environmentObject(EnergyDataService())
+            .environmentObject(SettingsManager.shared)
+            .environmentObject(ProSupporterStore.preview(hasPro: false))
     }
 }

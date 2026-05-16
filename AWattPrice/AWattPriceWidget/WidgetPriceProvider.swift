@@ -6,6 +6,7 @@ enum WidgetEntryState {
     case fresh
     case cached
     case unavailable
+    case lockedPro
 }
 
 struct WidgetPriceEntry: TimelineEntry {
@@ -33,6 +34,14 @@ struct WidgetPriceProvider: TimelineProvider {
             return
         }
 
+        guard ProSupporterEntitlementStore.hasPro else {
+            let snapshot = WidgetPriceSnapshot.cached() ?? WidgetPriceSnapshot.empty(
+                setting: WidgetSettingsProvider.shared.reloadSetting()
+            )
+            completion(WidgetPriceEntry(date: Date(), snapshot: snapshot, state: .lockedPro))
+            return
+        }
+
         let snapshot = WidgetPriceSnapshot.cached() ?? WidgetPriceSnapshot.empty(
             setting: WidgetSettingsProvider.shared.reloadSetting()
         )
@@ -42,6 +51,13 @@ struct WidgetPriceProvider: TimelineProvider {
     func getTimeline(in context: Context, completion: @escaping (Timeline<WidgetPriceEntry>) -> Void) {
         Task {
             let setting = WidgetSettingsProvider.shared.reloadSetting()
+
+            guard ProSupporterEntitlementStore.hasPro else {
+                let snapshot = WidgetPriceSnapshot.cached() ?? WidgetPriceSnapshot.empty(setting: setting)
+                let entry = WidgetPriceEntry(date: Date(), snapshot: snapshot, state: .lockedPro)
+                completion(Timeline(entries: [entry], policy: .after(nextRetryDate())))
+                return
+            }
 
             do {
                 let snapshot = try await downloadSnapshot(setting: setting)

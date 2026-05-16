@@ -5,6 +5,7 @@ enum WidgetRoute {
     static let prices = URL(string: "awattprice://prices")
     static let insights = URL(string: "awattprice://insights")
     static let cheapestTime = URL(string: "awattprice://cheapest-time")
+    static let pro = URL(string: "awattprice://pro")
 }
 
 enum WidgetStyle {
@@ -103,6 +104,29 @@ struct WidgetUnavailableView: View {
     }
 }
 
+struct WidgetProLockedView: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 7) {
+            Image(systemName: "lock.fill")
+                .font(.title3)
+                .foregroundStyle(WidgetStyle.accent)
+
+            Text("widget.pro.title")
+                .font(.headline)
+                .lineLimit(2)
+
+            Text("widget.pro.subtitle")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .lineLimit(3)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .padding(WidgetStyle.smallPadding)
+        .awattWidgetBackground()
+        .widgetURL(WidgetRoute.pro)
+    }
+}
+
 struct WidgetStatusBadge: View {
     let entry: WidgetPriceEntry
 
@@ -116,6 +140,10 @@ struct WidgetStatusBadge: View {
                 .foregroundStyle(.secondary)
         case .unavailable:
             Text("widget.unavailable.short")
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(.secondary)
+        case .lockedPro:
+            Text("Pro")
                 .font(.caption2.weight(.semibold))
                 .foregroundStyle(.secondary)
         }
@@ -146,7 +174,9 @@ struct CurrentPriceWidgetView: View {
     }
 
     var body: some View {
-        if entry.snapshot.hasPrices == false {
+        if entry.state == .lockedPro {
+            WidgetProLockedView()
+        } else if entry.snapshot.hasPrices == false {
             WidgetUnavailableView(snapshot: entry.snapshot, route: WidgetRoute.prices)
         } else {
             VStack(alignment: .leading, spacing: 8) {
@@ -197,7 +227,9 @@ struct ForecastWidgetView: View {
     let entry: WidgetPriceEntry
 
     var body: some View {
-        if entry.snapshot.hasPrices == false {
+        if entry.state == .lockedPro {
+            WidgetProLockedView()
+        } else if entry.snapshot.hasPrices == false {
             WidgetUnavailableView(snapshot: entry.snapshot, route: WidgetRoute.prices)
         } else {
             VStack(alignment: .leading, spacing: 8) {
@@ -405,7 +437,9 @@ struct CheapestTimesWidgetView: View {
     let entry: WidgetPriceEntry
 
     var body: some View {
-        if entry.snapshot.hasPrices == false {
+        if entry.state == .lockedPro {
+            WidgetProLockedView()
+        } else if entry.snapshot.hasPrices == false {
             WidgetUnavailableView(snapshot: entry.snapshot, route: WidgetRoute.cheapestTime)
         } else {
             VStack(alignment: .leading, spacing: 8) {

@@ -433,6 +433,8 @@
 "widget.unavailable.title" = "Preise nicht verfügbar";
 "widget.unavailable.short" = "Nicht verfügbar";
 "widget.cached" = "Gecacht";
+"widget.pro.title" = "Widgets sind Pro";
+"widget.pro.subtitle" = "Öffne AWattPrice, um Widgets freizuschalten.";
 
 // AWattPrice Pro Supporter localizations
 "AWattPrice Pro" = "AWattPrice Pro Supporter";
@@ -453,10 +455,17 @@
 "Support the app and unlock notifications and advanced insights." = "Unterstütze die App und schalte Benachrichtigungen und erweiterte Einblicke frei.";
 "Smart notifications" = "Smarte Benachrichtigungen";
 "Price alerts and daily summaries when new prices arrive." = "Preishinweise und tägliche Übersichten, sobald neue Preise ankommen.";
+"Price history" = "Preishistorie";
+"Look back at previous days directly in the price graph." = "Sieh vergangene Tage direkt im Preisdiagramm.";
+"Price add-ons" = "Preisaufschläge";
+"Include your personal markups in displayed prices." = "Beziehe deine persönlichen Aufschläge in angezeigte Preise ein.";
+"Home Screen widgets" = "Home-Bildschirm-Widgets";
+"Keep prices visible at a glance outside the app." = "Behalte Preise auch außerhalb der App schnell im Blick.";
 "Smart price notifications" = "Smarte Preishinweise";
 "Receive price-below, price-above, and daily summary alerts." = "Erhalte Hinweise für Preise darunter, Preise darüber und tägliche Übersichten.";
 "Advanced insights" = "Erweiterte Einblicke";
 "Cheapest windows, expensive peaks, history, and renewable mix." = "Günstigste Zeitfenster, teure Spitzen, Historie und erneuerbarer Mix.";
+"Cheapest windows, expensive peaks, and renewable mix." = "Günstigste Zeitfenster, teure Spitzen und erneuerbarer Mix.";
 "See cheapest and most expensive windows, price ranges, and renewable mix details." = "Sieh günstigste und teuerste Zeitfenster, Preisspannen und Details zum erneuerbaren Mix.";
 "Independent development" = "Unabhängige Entwicklung";
 "Helps keep AWattPrice maintained in my free time." = "Hilft, AWattPrice in meiner Freizeit weiter zu pflegen.";
@@ -478,6 +487,16 @@
 "Pro options unavailable" = "Pro-Optionen nicht verfügbar";
 "Loading Pro options" = "Pro-Optionen werden geladen";
 "Restore Purchases" = "Käufe wiederherstellen";
+"A note from the developer" = "Eine Notiz vom Entwickler";
+"AWattPrice is an independent app that I develop and maintain as a side project next to studying. Pro helps cover server and license costs and keeps the app up to date." = "AWattPrice ist eine unabhängige App, die ich neben dem Studium als Nebenprojekt entwickle und pflege. Pro hilft, Server- und Lizenzkosten zu decken und die App aktuell zu halten.";
+"What Pro unlocks" = "Was Pro freischaltet";
+"What Pro Supporter unlocks for you" = "Was Pro Supporter für dich freischaltet";
+"Monthly" = "Monatlich";
+"Yearly" = "Jährlich";
+"Lifetime" = "Lifetime";
+"A small monthly contribution." = "Ein kleiner monatlicher Beitrag.";
+"Best value for ongoing support." = "Bester Wert für laufende Unterstützung.";
+"Pay once, keep Pro." = "Einmal zahlen, Pro behalten.";
 "A small note from the developer" = "Eine kleine Notiz vom Entwickler";
 "AWattPrice is built by me as a student in my free time. Pro is a quiet way to help cover costs and make future improvements easier to keep shipping." = "AWattPrice wird von mir als Student in meiner Freizeit gebaut. Pro ist eine ruhige Möglichkeit, Kosten zu decken und zukünftige Verbesserungen leichter weiterzuliefern.";
 "Built by one student" = "Gebaut von einem Studenten";
@@ -488,9 +507,14 @@
 "Thank you for supporting AWattPrice. Your Pro features are unlocked on this device." = "Danke, dass du AWattPrice unterstützt. Deine AWattPrice Pro Supporter-Funktionen sind auf diesem Gerät freigeschaltet.";
 "Thank you for supporting AWattPrice. Your AWattPrice Pro Supporter features are unlocked on this device." = "Danke, dass du AWattPrice unterstützt. Deine AWattPrice Pro Supporter-Funktionen sind auf diesem Gerät freigeschaltet.";
 "AWattPrice Pro Supporter is active. Thank you for your support." = "AWattPrice Pro Supporter ist aktiv. Danke für deine Unterstützung.";
+"Pro is active" = "Pro ist aktiv";
+"Pro is active. Thank you for your support." = "Pro ist aktiv. Danke für deine Unterstützung.";
 "Pro products could not be loaded. Please try again in a moment." = "Die Pro-Produkte konnten nicht geladen werden. Bitte versuche es gleich noch einmal.";
 "The purchase could not be completed. Please try again." = "Der Kauf konnte nicht abgeschlossen werden. Bitte versuche es erneut.";
 "Your purchase is pending approval." = "Dein Kauf wartet auf Freigabe.";
 "No active AWattPrice Pro Supporter purchase was found." = "Es wurde kein aktiver AWattPrice Pro Supporter-Kauf gefunden.";
+"No active Pro purchase was found." = "Es wurde kein aktiver Pro-Kauf gefunden.";
 "Purchases could not be restored. Please try again." = "Käufe konnten nicht wiederhergestellt werden. Bitte versuche es erneut.";
 "The purchase could not be verified." = "Der Kauf konnte nicht verifiziert werden.";
+"Pro unlocks custom price markups." = "Pro schaltet eigene Preisaufschläge frei.";
+"Pro unlocks Home Screen widgets." = "Pro schaltet Home-Bildschirm-Widgets frei.";

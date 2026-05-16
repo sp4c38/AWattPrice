@@ -18,22 +18,22 @@ enum ProSupporterPlan: String, CaseIterable, Identifiable {
     var title: String {
         switch self {
         case .monthly:
-            return "Monthly Pro Supporter"
+            return "Monthly"
         case .yearly:
-            return "Yearly Pro Supporter"
+            return "Yearly"
         case .lifetime:
-            return "Lifetime Pro Supporter"
+            return "Lifetime"
         }
     }
 
     var subtitle: String {
         switch self {
         case .monthly:
-            return "Support AWattPrice month by month."
+            return "About the price of a donut."
         case .yearly:
-            return "Support AWattPrice for a full year."
+            return "The price of a phone case."
         case .lifetime:
-            return "Unlock AWattPrice Pro Supporter forever with one purchase."
+            return "Less than a dinner out."
         }
     }
 
@@ -44,7 +44,7 @@ enum ProSupporterPlan: String, CaseIterable, Identifiable {
         case .yearly:
             return "€9.99"
         case .lifetime:
-            return "€24.44"
+            return "€24.99"
         }
     }
 
@@ -78,14 +78,23 @@ enum ProSupporterStoreError: LocalizedError {
 @MainActor
 final class ProSupporterStore: ObservableObject {
     @Published private(set) var products: [Product] = []
-    @Published private(set) var purchasedProductIdentifiers: Set<String> = []
+    @Published private(set) var purchasedProductIdentifiers: Set<String> = [] {
+        didSet {
+            ProSupporterEntitlementStore.setHasPro(hasPro)
+        }
+    }
     @Published private(set) var isLoadingProducts = false
     @Published private(set) var isRestoringPurchases = false
     @Published var purchaseInProgressProductIdentifier: String?
     @Published var message: String?
     @Published var messageIsError = false
 
+    private let usesStoreKit: Bool
     private var transactionUpdatesTask: Task<Void, Never>?
+
+    init(usesStoreKit: Bool = true) {
+        self.usesStoreKit = usesStoreKit
+    }
 
     var hasPro: Bool {
         purchasedProductIdentifiers.isDisjoint(with: Set(ProSupporterPlan.productIdentifiers)) == false
@@ -96,6 +105,8 @@ final class ProSupporterStore: ObservableObject {
     }
 
     func start() {
+        guard usesStoreKit else { return }
+
         if transactionUpdatesTask == nil {
             transactionUpdatesTask = observeTransactionUpdates()
         }
@@ -147,7 +158,7 @@ final class ProSupporterStore: ObservableObject {
                 let transaction = try verifiedTransaction(from: verificationResult)
                 await transaction.finish()
                 await refreshPurchasedProducts()
-                message = "AWattPrice Pro Supporter is active. Thank you for your support.".localized()
+                message = "Pro is active. Thank you for your support.".localized()
                 messageIsError = false
             case .pending:
                 message = "Your purchase is pending approval.".localized()
@@ -177,10 +188,10 @@ final class ProSupporterStore: ObservableObject {
             await refreshPurchasedProducts()
 
             if hasPro {
-                message = "AWattPrice Pro Supporter is active. Thank you for your support.".localized()
+                message = "Pro is active. Thank you for your support.".localized()
                 messageIsError = false
             } else {
-                message = "No active AWattPrice Pro Supporter purchase was found.".localized()
+                message = "No active Pro purchase was found.".localized()
                 messageIsError = true
             }
         } catch {
@@ -235,5 +246,13 @@ final class ProSupporterStore: ObservableObject {
 
     private func productSortIndex(_ productIdentifier: String) -> Int {
         ProSupporterPlan.allCases.firstIndex { $0.rawValue == productIdentifier } ?? Int.max
+    }
+}
+
+extension ProSupporterStore {
+    static func preview(hasPro: Bool) -> ProSupporterStore {
+        let store = ProSupporterStore(usesStoreKit: false)
+        store.purchasedProductIdentifiers = hasPro ? [ProSupporterPlan.yearly.rawValue] : []
+        return store
     }
 }

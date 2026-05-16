@@ -251,6 +251,8 @@
 "widget.unavailable.title" = "Prices unavailable";
 "widget.unavailable.short" = "Unavailable";
 "widget.cached" = "Cached";
+"widget.pro.title" = "Widgets are Pro";
+"widget.pro.subtitle" = "Open AWattPrice to unlock widgets.";
 
 // AWattPrice Pro Supporter localizations
 "AWattPrice Pro" = "AWattPrice Pro Supporter";
@@ -271,10 +273,17 @@
 "Support the app and unlock notifications and advanced insights." = "Support the app and unlock notifications and advanced insights.";
 "Smart notifications" = "Smart notifications";
 "Price alerts and daily summaries when new prices arrive." = "Price alerts and daily summaries when new prices arrive.";
+"Price history" = "Price history";
+"Look back at previous days directly in the price graph." = "Look back at previous days directly in the price graph.";
+"Price add-ons" = "Price add-ons";
+"Include your personal markups in displayed prices." = "Include your personal markups in displayed prices.";
+"Home Screen widgets" = "Home Screen widgets";
+"Keep prices visible at a glance outside the app." = "Keep prices visible at a glance outside the app.";
 "Smart price notifications" = "Smart price notifications";
 "Receive price-below, price-above, and daily summary alerts." = "Receive price-below, price-above, and daily summary alerts.";
 "Advanced insights" = "Advanced insights";
 "Cheapest windows, expensive peaks, history, and renewable mix." = "Cheapest windows, expensive peaks, history, and renewable mix.";
+"Cheapest windows, expensive peaks, and renewable mix." = "Cheapest windows, expensive peaks, and renewable mix.";
 "See cheapest and most expensive windows, price ranges, and renewable mix details." = "See cheapest and most expensive windows, price ranges, and renewable mix details.";
 "Independent development" = "Independent development";
 "Helps keep AWattPrice maintained in my free time." = "Helps keep AWattPrice maintained in my free time.";
@@ -296,6 +305,16 @@
 "Pro options unavailable" = "Pro options unavailable";
 "Loading Pro options" = "Loading Pro options";
 "Restore Purchases" = "Restore Purchases";
+"A note from the developer" = "A note from the developer";
+"AWattPrice is an independent app that I develop and maintain as a side project next to studying. Pro helps cover server and license costs and keeps the app up to date." = "AWattPrice is an independent app that I develop and maintain as a side project next to studying. Pro helps cover server and license costs and keeps the app up to date.";
+"What Pro unlocks" = "What Pro unlocks";
+"What Pro Supporter unlocks for you" = "What Pro Supporter unlocks for you";
+"Monthly" = "Monthly";
+"Yearly" = "Yearly";
+"Lifetime" = "Lifetime";
+"A small monthly contribution." = "A small monthly contribution.";
+"Best value for ongoing support." = "Best value for ongoing support.";
+"Pay once, keep Pro." = "Pay once, keep Pro.";
 "A small note from the developer" = "A small note from the developer";
 "AWattPrice is built by me as a student in my free time. Pro is a quiet way to help cover costs and make future improvements easier to keep shipping." = "AWattPrice is built by me as a student in my free time. Pro is a quiet way to help cover costs and make future improvements easier to keep shipping.";
 "Built by one student" = "Built by one student";
@@ -306,9 +325,14 @@
 "Thank you for supporting AWattPrice. Your Pro features are unlocked on this device." = "Thank you for supporting AWattPrice. Your AWattPrice Pro Supporter features are unlocked on this device.";
 "Thank you for supporting AWattPrice. Your AWattPrice Pro Supporter features are unlocked on this device." = "Thank you for supporting AWattPrice. Your AWattPrice Pro Supporter features are unlocked on this device.";
 "AWattPrice Pro Supporter is active. Thank you for your support." = "AWattPrice Pro Supporter is active. Thank you for your support.";
+"Pro is active" = "Pro is active";
+"Pro is active. Thank you for your support." = "Pro is active. Thank you for your support.";
 "Pro products could not be loaded. Please try again in a moment." = "Pro products could not be loaded. Please try again in a moment.";
 "The purchase could not be completed. Please try again." = "The purchase could not be completed. Please try again.";
 "Your purchase is pending approval." = "Your purchase is pending approval.";
 "No active AWattPrice Pro Supporter purchase was found." = "No active AWattPrice Pro Supporter purchase was found.";
+"No active Pro purchase was found." = "No active Pro purchase was found.";
 "Purchases could not be restored. Please try again." = "Purchases could not be restored. Please try again.";
 "The purchase could not be verified." = "The purchase could not be verified.";
+"Pro unlocks custom price markups." = "Pro unlocks custom price markups.";
+"Pro unlocks Home Screen widgets." = "Pro unlocks Home Screen widgets.";

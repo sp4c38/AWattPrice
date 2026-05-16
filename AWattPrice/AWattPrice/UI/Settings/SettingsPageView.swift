@@ -20,7 +20,7 @@ private extension Double {
 private enum SettingsPageStyle {
     static let priceIconTint = Color.blue
     static let widgetsIconTint = Color.indigo
-    static let proIconTint = AppTheme.accent
+    static let proIconTint = Color.green
     static let helpIconTint = Color.teal
 }
 

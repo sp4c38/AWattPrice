@@ -51,7 +51,7 @@ private let proBenefits = [
         title: "Independent development",
         subtitle: "Helps keep AWattPrice maintained in my free time.",
         systemImage: "heart.fill",
-        tint: AppTheme.accent
+        tint: .green
     ),
 ]
 
@@ -102,7 +102,7 @@ struct ProSupporterPaywallView: View {
         HStack(spacing: 10) {
             Image(systemName: proStore.hasPro ? "checkmark.seal.fill" : "heart.fill")
                 .font(.title2.weight(.semibold))
-                .foregroundStyle(proStore.hasPro ? AppTheme.success : AppTheme.accent)
+                .foregroundStyle(proStore.hasPro ? AppTheme.success : .green)
 
             Text("AWattPrice Pro Supporter".localized())
                 .font(.system(.title2, design: .rounded).weight(.bold))
@@ -240,16 +240,21 @@ struct ProSupporterPaywallView: View {
     private var supporterNote: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("A note from the developer".localized())
-                .font(.subheadline.weight(.semibold))
-
-            Text("Hi! I’m a student and build AWattPrice in my free time to make dynamic electricity prices easier to follow. Pro helps cover server and license costs and keeps the app running. I hope you like AWattPrice!".localized())
-                .font(.caption)
+                .font(.headline)
+            
+            Text("Hi! I’m a student and developing AWattPrice in my free time to make dynamic electricity prices easier to follow. Pro helps cover server and license costs and keeps the app running. I hope you like the app!".localized())
+                .font(.subheadline)
                 .foregroundStyle(.secondary)
+                .lineSpacing(2)
                 .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(14)
-        .background(Color.secondary.opacity(0.07), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .padding(16)
+        .background(Color.blue.opacity(0.08), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .stroke(Color.blue.opacity(0.16), lineWidth: 1)
+        )
     }
 
     private var legalLinks: some View {

@@ -309,25 +309,6 @@ h1 {
   text-underline-offset: 3px;
 }
 
-.meta-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 24px;
-}
-
-.meta-chip {
-  display: inline-flex;
-  align-items: center;
-  min-height: 38px;
-  padding: 0 14px;
-  border-radius: 999px;
-  background: var(--orange-soft);
-  color: var(--orange-deep);
-  font-size: 0.94rem;
-  font-weight: 700;
-}
-
 .contact-panel {
   display: grid;
   gap: 8px;
@@ -341,6 +322,15 @@ h1 {
 .contact-panel strong {
   color: var(--ink);
   font-size: 1.05rem;
+}
+
+.legal-updated {
+  margin-top: clamp(32px, 5vw, 52px);
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+  color: var(--muted-2);
+  font-size: 0.92rem;
+  line-height: 1.4;
 }
 
 .site-footer {

@@ -253,14 +253,15 @@
 "widget.cached" = "Cached";
 
 // AWattPrice Pro Supporter localizations
-"AWattPrice Pro" = "AWattPrice Pro";
+"AWattPrice Pro" = "AWattPrice Pro Supporter";
 "AWattPrice Pro Supporter" = "AWattPrice Pro Supporter";
-"Support AWattPrice Pro" = "Support AWattPrice Pro";
+"Support AWattPrice Pro" = "AWattPrice Pro Supporter";
 "Unlock advanced insights" = "Unlock advanced insights";
 "Unlock smart notifications" = "Unlock smart notifications";
 "Pro unlocks the deeper planning tools behind Insights." = "Pro unlocks the deeper planning tools behind Insights.";
 "Pro unlocks price alerts and daily summaries." = "Pro unlocks price alerts and daily summaries.";
-"Support an independent student project and unlock Pro features." = "Support an independent student project and unlock Pro features.";
+"Support an independent student project and unlock Pro features." = "Support an independent student project and unlock AWattPrice Pro Supporter.";
+"Support an independent student project and unlock AWattPrice Pro Supporter." = "Support an independent student project and unlock AWattPrice Pro Supporter.";
 "Advanced insights help you plan around cheap hours, expensive peaks, and renewable energy mix." = "Advanced insights help you plan around cheap hours, expensive peaks, and renewable energy mix.";
 "Pro unlocks price alerts and daily summaries when new electricity prices are available." = "Pro unlocks price alerts and daily summaries when new electricity prices are available.";
 "Unlock Pro" = "Unlock Pro";
@@ -287,7 +288,8 @@
 "Lifetime Supporter" = "Lifetime Supporter";
 "Support AWattPrice month by month." = "Support AWattPrice month by month.";
 "Support AWattPrice for a full year." = "Support AWattPrice for a full year.";
-"Unlock Pro forever with one purchase." = "Unlock Pro forever with one purchase.";
+"Unlock Pro forever with one purchase." = "Unlock AWattPrice Pro Supporter forever with one purchase.";
+"Unlock AWattPrice Pro Supporter forever with one purchase." = "Unlock AWattPrice Pro Supporter forever with one purchase.";
 "Best value" = "Best value";
 "One-time" = "One-time";
 "Continue with %@" = "Continue with %@";
@@ -299,8 +301,10 @@
 "Built by one student" = "Built by one student";
 "AWattPrice is an independent side project built in free time. Pro helps cover running costs and makes future improvements easier to keep shipping." = "AWattPrice is an independent side project built in free time. Pro helps cover running costs and makes future improvements easier to keep shipping.";
 "Subscriptions renew automatically unless canceled in your Apple Account settings. Lifetime is a one-time purchase." = "Subscriptions renew automatically unless canceled in your Apple Account settings. Lifetime is a one-time purchase.";
-"Pro Supporter is active" = "Pro Supporter is active";
-"Thank you for supporting AWattPrice. Your Pro features are unlocked on this device." = "Thank you for supporting AWattPrice. Your Pro features are unlocked on this device.";
+"Pro Supporter is active" = "AWattPrice Pro Supporter is active";
+"AWattPrice Pro Supporter is active" = "AWattPrice Pro Supporter is active";
+"Thank you for supporting AWattPrice. Your Pro features are unlocked on this device." = "Thank you for supporting AWattPrice. Your AWattPrice Pro Supporter features are unlocked on this device.";
+"Thank you for supporting AWattPrice. Your AWattPrice Pro Supporter features are unlocked on this device." = "Thank you for supporting AWattPrice. Your AWattPrice Pro Supporter features are unlocked on this device.";
 "AWattPrice Pro Supporter is active. Thank you for your support." = "AWattPrice Pro Supporter is active. Thank you for your support.";
 "Pro products could not be loaded. Please try again in a moment." = "Pro products could not be loaded. Please try again in a moment.";
 "The purchase could not be completed. Please try again." = "The purchase could not be completed. Please try again.";

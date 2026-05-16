@@ -18,11 +18,11 @@ enum ProSupporterPlan: String, CaseIterable, Identifiable {
     var title: String {
         switch self {
         case .monthly:
-            return "Monthly Supporter"
+            return "Monthly Pro Supporter"
         case .yearly:
-            return "Yearly Supporter"
+            return "Yearly Pro Supporter"
         case .lifetime:
-            return "Lifetime Supporter"
+            return "Lifetime Pro Supporter"
         }
     }
 
@@ -33,7 +33,7 @@ enum ProSupporterPlan: String, CaseIterable, Identifiable {
         case .yearly:
             return "Support AWattPrice for a full year."
         case .lifetime:
-            return "Unlock Pro forever with one purchase."
+            return "Unlock AWattPrice Pro Supporter forever with one purchase."
         }
     }
 

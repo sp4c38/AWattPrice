@@ -20,7 +20,7 @@ enum ProSupporterPaywallContext {
         case .notifications:
             return "Unlock smart notifications"
         case .settings:
-            return "Support AWattPrice Pro"
+            return "AWattPrice Pro Supporter"
         }
     }
 
@@ -31,7 +31,7 @@ enum ProSupporterPaywallContext {
         case .notifications:
             return "Pro unlocks price alerts and daily summaries."
         case .settings:
-            return "Support an independent student project and unlock Pro features."
+            return "Support an independent student project and unlock AWattPrice Pro Supporter."
         }
     }
 }
@@ -92,7 +92,7 @@ struct ProSupporterPaywallView: View {
             .padding(.bottom, 28)
         }
         .background(AppTheme.screenBackground(for: .light).opacity(0.001))
-        .navigationTitle("AWattPrice Pro")
+        .navigationTitle("AWattPrice Pro Supporter")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
@@ -129,14 +129,14 @@ struct ProSupporterPaywallView: View {
     private var activeSupporterSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Label {
-                Text("Pro Supporter is active".localized())
+                Text("AWattPrice Pro Supporter is active".localized())
                     .font(.headline)
             } icon: {
                 Image(systemName: "checkmark.circle.fill")
                     .foregroundStyle(AppTheme.success)
             }
 
-            Text("Thank you for supporting AWattPrice. Your Pro features are unlocked on this device.".localized())
+            Text("Thank you for supporting AWattPrice. Your AWattPrice Pro Supporter features are unlocked on this device.".localized())
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
@@ -257,7 +257,7 @@ struct ProSupporterPaywallView: View {
             Text("A small note from the developer".localized())
                 .font(.subheadline.weight(.semibold))
 
-            Text("AWattPrice is built by me as a student in my free time. Pro is a quiet way to help cover costs and make future improvements easier to keep shipping.".localized())
+            Text("AWattPrice is built by me as a student in my free time. Pro is a way to help cover costs and make future improvements easier to keep shipping.".localized())
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
@@ -285,7 +285,7 @@ struct ProSupporterPaywallView: View {
                 }
             }
 
-            Text("Subscriptions renew automatically unless canceled in your Apple Account settings. Lifetime is a one-time purchase.".localized())
+            Text("Monthly and yearly plans renew automatically. Lifetime is a one-time purchase.".localized())
                 .font(.caption2)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)

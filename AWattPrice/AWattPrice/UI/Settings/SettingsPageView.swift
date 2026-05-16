@@ -167,8 +167,8 @@ private struct SettingsLegalLinksView: View {
         HStack(spacing: 12) {
             Button("Terms of Use".localized()) {
                 openAgreementLink((
-                    "https://www.awattprice.com/terms_of_use/german.html",
-                    "https://www.awattprice.com/terms_of_use/english.html"
+                    "https://www.awattprice.com/terms_of_use/?lang=de",
+                    "https://www.awattprice.com/terms_of_use/?lang=en"
                 ))
             }
 
@@ -177,8 +177,8 @@ private struct SettingsLegalLinksView: View {
 
             Button("Privacy Policy".localized()) {
                 openAgreementLink((
-                    "https://www.awattprice.com/privacy_policy/german.html",
-                    "https://www.awattprice.com/privacy_policy/english.html"
+                    "https://www.awattprice.com/privacy_policy/?lang=de",
+                    "https://www.awattprice.com/privacy_policy/?lang=en"
                 ))
             }
         }

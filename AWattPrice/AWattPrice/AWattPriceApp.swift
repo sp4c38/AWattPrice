@@ -132,7 +132,7 @@ struct ContentView: View {
     @EnvironmentObject var energyDataService: EnergyDataService
     @EnvironmentObject var proSupporterStore: ProSupporterStore
 
-    @State var selectedTab = 1
+    @State var selectedTab = 2
     @State private var activeProPaywallTrigger: ProPaywallTrigger?
     @AppStorage("pendingDeepLinkDestination") private var pendingDeepLinkDestination = ""
     
@@ -144,18 +144,36 @@ struct ContentView: View {
                         activeProPaywallTrigger = .settings
                     }
                         .tag(0)
-                        .tabItem { Label("Settings", systemImage: "gear") }
+                        .tabItem { Label("Settings", systemImage: "gearshape.fill") }
+
+                    NavigationStack {
+                        proSupporterView {
+                            NotificationSettingView()
+                        } paywall: {
+                            ProLockedFeatureView(
+                                title: "Notifications",
+                                subtitle: "Pro unlocks price alerts and daily summaries when new electricity prices are available.",
+                                systemImage: "bell.badge",
+                                tint: .teal,
+                                actionTitle: "Unlock Pro"
+                            ) {
+                                activeProPaywallTrigger = .notifications
+                            }
+                        }
+                    }
+                    .tag(1)
+                    .tabItem { Label("Notifications", systemImage: "bell.badge") }
 
                     PricesView {
                         activeProPaywallTrigger = .settings
                     }
-                        .tag(1)
+                        .tag(2)
                         .tabItem { Label("Prices", systemImage: "bolt") }
 
-                    proSupporterView {
-                        InsightsView()
-                    } paywall: {
-                        NavigationStack {
+                    NavigationStack {
+                        proSupporterView {
+                            InsightsView()
+                        } paywall: {
                             ProLockedFeatureView(
                                 title: "Insights",
                                 subtitle: "Advanced insights help you plan around cheap hours, expensive peaks, and renewable energy mix.",
@@ -167,26 +185,8 @@ struct ContentView: View {
                             }
                         }
                     }
-                        .tag(2)
-                        .tabItem { Label("Insights", systemImage: "chart.bar.xaxis") }
-
-                    NavigationStack {
-                        proSupporterView {
-                            NotificationSettingView()
-                        } paywall: {
-                            ProLockedFeatureView(
-                                title: "Notifications",
-                                subtitle: "Pro unlocks price alerts and daily summaries when new electricity prices are available.",
-                                systemImage: "bell.badge.fill",
-                                tint: .teal,
-                                actionTitle: "Unlock Pro"
-                            ) {
-                                activeProPaywallTrigger = .notifications
-                            }
-                        }
-                    }
                     .tag(3)
-                    .tabItem { Label("Notifications", systemImage: "bell.badge") }
+                    .tabItem { Label("Insights", systemImage: "chart.bar.xaxis") }
                 }
                 .tint(.primary)
             } else {
@@ -254,12 +254,12 @@ struct ContentView: View {
 
         switch destination {
         case .prices:
-            selectedTab = 1
-        case .insights:
             selectedTab = 2
+        case .insights:
+            selectedTab = 3
         case .cheapestTime:
             pendingDeepLinkDestination = destination.rawValue
-            selectedTab = 2
+            selectedTab = 3
         case .pro:
             activeProPaywallTrigger = .settings
         }

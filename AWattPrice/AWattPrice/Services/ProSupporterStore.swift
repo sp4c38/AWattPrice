@@ -31,7 +31,7 @@ enum ProSupporterPlan: String, CaseIterable, Identifiable {
         case .monthly:
             return "About the price of a donut."
         case .yearly:
-            return "The price of a phone case."
+            return "The price of a book."
         case .lifetime:
             return "Less than a dinner out."
         }
@@ -53,7 +53,7 @@ enum ProSupporterPlan: String, CaseIterable, Identifiable {
         case .monthly:
             return nil
         case .yearly:
-            return "Best value"
+            return "Most popular"
         case .lifetime:
             return "One-time"
         }

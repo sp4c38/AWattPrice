@@ -170,6 +170,7 @@
 		D62C2B2A2D81CAC000FA294C /* AWattPriceWidgetExtension-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "AWattPriceWidgetExtension-Info.plist"; sourceTree = "<group>"; };
 		D6A2D1BF2D8B29A40013028D /* Setting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Setting.swift; sourceTree = "<group>"; };
 		D6A2D1C02D8B2AC00013028D /* SwiftDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataService.swift; sourceTree = "<group>"; };
+		D6B5EC412FB8BB920073D82F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		D6FB7487869EADAEB411F1A7 /* Int.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Int.swift; sourceTree = "<group>"; };
 		E2BCED411DC7AD4E79FC22B9 /* TotalTimeFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TotalTimeFormatter.swift; sourceTree = "<group>"; };
 		EA5DF4BB1567348D207BC3BC /* HelpAndSuggestionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpAndSuggestionView.swift; sourceTree = "<group>"; };
@@ -486,6 +487,7 @@
 		E18353461A3EAEA81012197F /* AWattPrice */ = {
 			isa = PBXGroup;
 			children = (
+				D6B5EC412FB8BB920073D82F /* Info.plist */,
 				3986605FAA7AF18D5AF2CB37 /* AppDelegate.swift */,
 				EFB366C2E4BA54E151458B35 /* AWattPrice.entitlements */,
 				616111958CDF13E7ED308317 /* AWattPriceApp.swift */,
@@ -752,7 +754,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "AWattPrice/Resources/Preview\\ Content";
 				DEVELOPMENT_TEAM = RC32A2AMHF;
-				INFOPLIST_FILE = "";
+				INFOPLIST_FILE = AWattPrice/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = AWattPrice;
 				INFOPLIST_KEY_CFBundleURLTypes = "{\n    CFBundleURLName = \"me.space8.AWattPrice\";\n    CFBundleURLSchemes =     (\n        awattprice\n    );\n}";
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
@@ -785,7 +787,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "AWattPrice/Resources/Preview\\ Content";
 				DEVELOPMENT_TEAM = RC32A2AMHF;
-				INFOPLIST_FILE = "";
+				INFOPLIST_FILE = AWattPrice/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = AWattPrice;
 				INFOPLIST_KEY_CFBundleURLTypes = "{\n    CFBundleURLName = \"me.space8.AWattPrice\";\n    CFBundleURLSchemes =     (\n        awattprice\n    );\n}";
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;

@@ -63,6 +63,7 @@ struct ProSupporterPaywallView: View {
     @State private var selectedPlan: ProSupporterPlan = .yearly
     @State private var showsPurchaseConfetti = false
     @State private var purchaseConfettiID = 0
+    @State private var highlightedBenefitIndex: Int?
 
     var body: some View {
         ZStack {
@@ -154,7 +155,8 @@ struct ProSupporterPaywallView: View {
                     AnimatedBenefitIcon(
                         systemImage: benefit.systemImage,
                         tint: benefit.tint,
-                        index: index
+                        index: index,
+                        isActive: highlightedBenefitIndex == index
                     )
 
                     VStack(alignment: .leading, spacing: 3) {
@@ -168,6 +170,9 @@ struct ProSupporterPaywallView: View {
                     }
                 }
             }
+        }
+        .task(id: reduceMotion) {
+            await runBenefitHighlightAnimation()
         }
     }
 
@@ -258,7 +263,7 @@ struct ProSupporterPaywallView: View {
             Text("A note from the developer".localized())
                 .font(.headline)
             
-            Text("Hi! I’m a student and developing AWattPrice in my free time. The goal is to make dynamic electricity prices easier to follow. Pro helps cover server and license costs and keeps the app running. I hope you like the app!".localized())
+            Text("Hi! I’m a student and developing AWattPrice in my spare time. The goal is to make dynamic electricity prices easier to follow. Pro helps cover server and license costs and keeps the app running. I hope you like the app!".localized())
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .lineSpacing(2)
@@ -363,6 +368,27 @@ struct ProSupporterPaywallView: View {
         }
     }
 
+    @MainActor
+    private func runBenefitHighlightAnimation() async {
+        highlightedBenefitIndex = nil
+        guard reduceMotion == false else { return }
+
+        try? await Task.sleep(nanoseconds: 450_000_000)
+
+        while Task.isCancelled == false {
+            for index in proBenefits.indices {
+                guard Task.isCancelled == false else { return }
+                highlightedBenefitIndex = index
+                try? await Task.sleep(nanoseconds: 340_000_000)
+                guard Task.isCancelled == false else { return }
+                highlightedBenefitIndex = nil
+                try? await Task.sleep(nanoseconds: 110_000_000)
+            }
+
+            try? await Task.sleep(nanoseconds: 2_500_000_000)
+        }
+    }
+
     private func messageView(_ message: String, isError: Bool) -> some View {
         Text(message)
             .font(.subheadline.weight(.semibold))
@@ -401,11 +427,11 @@ private struct PurchaseConfettiOverlay: View {
 
 private struct AnimatedBenefitIcon: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var isActive = false
 
     let systemImage: String
     let tint: Color
     let index: Int
+    let isActive: Bool
 
     var body: some View {
         Image(systemName: systemImage)
@@ -422,20 +448,6 @@ private struct AnimatedBenefitIcon: View {
             .scaleEffect(isActive && reduceMotion == false ? 1.05 : 1)
             .animation(.spring(response: 0.28, dampingFraction: 0.58), value: isActive)
             .accessibilityHidden(true)
-            .task(id: reduceMotion) {
-                isActive = false
-                guard reduceMotion == false else { return }
-
-                let initialDelay = UInt64(450_000_000 * UInt64(index + 1))
-                try? await Task.sleep(nanoseconds: initialDelay)
-
-                while Task.isCancelled == false {
-                    isActive = true
-                    try? await Task.sleep(nanoseconds: 340_000_000)
-                    isActive = false
-                    try? await Task.sleep(nanoseconds: 5_200_000_000)
-                }
-            }
     }
 }
 

@@ -393,6 +393,9 @@
 "Current prices · Tap for history" = "Aktuelle Preise · Verlauf anzeigen";
 "Yesterday" = "Gestern";
 "Historical prices" = "Historische Preise";
+"Choose date" = "Datum auswählen";
+"Date" = "Datum";
+"Cancel" = "Abbrechen";
 "Refresh" = "Aktualisieren";
 "Loading history" = "Lade Historie";
 "Couldn't get history" = "Historie konnte nicht geladen werden";

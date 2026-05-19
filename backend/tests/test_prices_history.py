@@ -69,12 +69,12 @@ class PriceHistoryTests(unittest.TestCase):
         self.assertEqual(query_params["periodStart"], "202603282300")
         self.assertEqual(query_params["periodEnd"], "202603292200")
 
-    def test_history_date_validation_allows_last_fourteen_completed_days(self):
+    def test_history_date_validation_allows_any_completed_day(self):
         with patch("awattprice.prices.arrow.now", return_value=arrow.get("2026-05-14T12:00:00+02:00")):
             self.assertTrue(prices.validate_history_date(AREA, date(2026, 5, 13)))
-            self.assertTrue(prices.validate_history_date(AREA, date(2026, 4, 30)))
+            self.assertTrue(prices.validate_history_date(AREA, date(2020, 1, 1)))
             self.assertFalse(prices.validate_history_date(AREA, date(2026, 5, 14)))
-            self.assertFalse(prices.validate_history_date(AREA, date(2026, 4, 29)))
+            self.assertFalse(prices.validate_history_date(AREA, date(2026, 5, 15)))
 
     def test_history_cache_hit_does_not_download(self):
         async def run_test():

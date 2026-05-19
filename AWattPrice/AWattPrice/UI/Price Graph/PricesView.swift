@@ -59,6 +59,8 @@ struct PricesView: View {
     @State private var historyData: EnergyData?
     @State private var historyDownloadFailed = false
     @State private var isDownloadingHistory = false
+    @State private var showsHistoryDatePicker = false
+    @State private var datePickerHistoryDate = PriceHistoryDateOptions.defaultDate
     @State private var showsDisplayIntervalInfo = false
 
     private var pricingConfiguration: PricingConfiguration {
@@ -102,10 +104,6 @@ struct PricesView: View {
         } set: { newValue in
             storedDisplayInterval = newValue.rawValue
         }
-    }
-
-    private var historyDates: [Date] {
-        PriceHistoryDateOptions.dates(for: pricingConfiguration.marketArea)
     }
 
     private var historyRequestKey: PriceHistoryRequestKey {
@@ -162,6 +160,9 @@ struct PricesView: View {
         .onChange(of: proSupporterStore.hasPro) { _, hasPro in
             guard hasPro == false, dataMode == .history else { return }
             resetToCurrentPrices()
+        }
+        .sheet(isPresented: $showsHistoryDatePicker) {
+            historyDatePickerSheet
         }
     }
 
@@ -288,15 +289,10 @@ struct PricesView: View {
 
             Divider()
 
-            ForEach(historyDates, id: \.self) { date in
-                Button {
-                    selectHistoryDate(date)
-                } label: {
-                    Label(
-                        PriceHistoryDateOptions.title(for: date, marketArea: pricingConfiguration.marketArea),
-                        systemImage: proSupporterStore.hasPro ? "calendar" : "lock"
-                    )
-                }
+            Button {
+                presentHistoryDatePicker()
+            } label: {
+                Label("Choose date".localized(), systemImage: proSupporterStore.hasPro ? "calendar" : "lock")
             }
         } label: {
             dataSelectionLabel
@@ -322,15 +318,10 @@ struct PricesView: View {
 
             Divider()
 
-            ForEach(historyDates, id: \.self) { date in
-                Button {
-                    selectHistoryDate(date)
-                } label: {
-                    Label(
-                        PriceHistoryDateOptions.title(for: date, marketArea: pricingConfiguration.marketArea),
-                        systemImage: proSupporterStore.hasPro ? "calendar" : "lock"
-                    )
-                }
+            Button {
+                presentHistoryDatePicker()
+            } label: {
+                Label("Choose date".localized(), systemImage: proSupporterStore.hasPro ? "calendar" : "lock")
             }
         } label: {
             label()
@@ -342,9 +333,7 @@ struct PricesView: View {
     }
 
     private var widestHistoryDateTitle: String {
-        historyDates
-            .map { PriceHistoryDateOptions.title(for: $0, marketArea: pricingConfiguration.marketArea) }
-            .max { $0.count < $1.count } ?? selectedHistoryDateTitle
+        PriceHistoryDateOptions.widestTitle(for: pricingConfiguration.marketArea)
     }
 
     @ViewBuilder
@@ -399,6 +388,41 @@ struct PricesView: View {
         }
         .pickerStyle(.segmented)
         .frame(width: 104)
+    }
+
+    private var historyDatePickerSheet: some View {
+        NavigationView {
+            VStack {
+                DatePicker(
+                    "Date".localized(),
+                    selection: $datePickerHistoryDate,
+                    in: PriceHistoryDateOptions.selectableRange(for: pricingConfiguration.marketArea),
+                    displayedComponents: .date
+                )
+                .datePickerStyle(.wheel)
+                .labelsHidden()
+                .padding()
+
+                Spacer()
+            }
+            .navigationTitle("Historical prices".localized())
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel".localized()) {
+                        showsHistoryDatePicker = false
+                    }
+                }
+
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done".localized()) {
+                        selectHistoryDate(datePickerHistoryDate)
+                        showsHistoryDatePicker = false
+                    }
+                }
+            }
+        }
+        .presentationDetents([.height(300)])
     }
 
     @MainActor
@@ -485,6 +509,16 @@ struct PricesView: View {
         dataMode = .history
     }
 
+    private func presentHistoryDatePicker() {
+        guard proSupporterStore.hasPro else {
+            onPresentProPaywall()
+            return
+        }
+
+        datePickerHistoryDate = selectedHistoryDate
+        showsHistoryDatePicker = true
+    }
+
     private func resetToCurrentPrices() {
         isDownloadingHistory = false
         historyDownloadFailed = false
@@ -498,14 +532,16 @@ private enum PriceHistoryDateOptions {
         Calendar.current.startOfDay(for: Date()).addingTimeInterval(-24 * 60 * 60)
     }
 
-    static func dates(for marketArea: MarketArea) -> [Date] {
+    static func selectableRange(for marketArea: MarketArea) -> ClosedRange<Date> {
+        Date.distantPast...latestSelectableDate(for: marketArea)
+    }
+
+    static func latestSelectableDate(for marketArea: MarketArea) -> Date {
         var calendar = Calendar(identifier: .gregorian)
         calendar.timeZone = TimeZone(identifier: marketArea.timezone) ?? .current
         let today = calendar.startOfDay(for: Date())
 
-        return (1...14).compactMap { dayOffset in
-            calendar.date(byAdding: .day, value: -dayOffset, to: today)
-        }
+        return calendar.date(byAdding: .day, value: -1, to: today) ?? defaultDate
     }
 
     static func isSameDay(_ lhs: Date, _ rhs: Date, marketArea: MarketArea) -> Bool {
@@ -531,6 +567,12 @@ private enum PriceHistoryDateOptions {
         formatter.dateStyle = .medium
         formatter.timeStyle = .none
         return formatter.string(from: date)
+    }
+
+    static func widestTitle(for marketArea: MarketArea) -> String {
+        let sampleDate = Date(timeIntervalSinceReferenceDate: 0)
+        let sampleTitle = title(for: sampleDate, marketArea: marketArea)
+        return sampleTitle.count > "Yesterday".localized().count ? sampleTitle : "Yesterday".localized()
     }
 }
 

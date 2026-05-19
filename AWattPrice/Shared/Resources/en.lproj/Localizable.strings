@@ -220,6 +220,10 @@
 "Current prices · Tap for history" = "Current prices · Tap for history";
 "Yesterday" = "Yesterday";
 "Historical prices" = "Historical prices";
+"Choose date" = "Choose date";
+"Date" = "Date";
+"Cancel" = "Cancel";
+"Done" = "Done";
 "Refresh" = "Refresh";
 "Loading history" = "Loading history";
 "Couldn't get history" = "Couldn't get history";

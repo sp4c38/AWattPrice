@@ -264,10 +264,9 @@ def get_history_period(area: MarketArea, day: date) -> tuple[Arrow, Arrow]:
 
 
 def validate_history_date(area: MarketArea, day: date) -> bool:
-    """Return true when day is in the supported historical lookup range."""
+    """Return true when day is a completed historical local day."""
     yesterday = arrow.now(area.timezone).floor("day").shift(days=-1).date()
-    earliest = arrow.now(area.timezone).floor("day").shift(days=-defaults.PRICE_HISTORY_DAYS).date()
-    return earliest <= day <= yesterday
+    return day <= yesterday
 
 
 def get_matching_time_series(root: ET.Element, area: MarketArea) -> list[ET.Element]:

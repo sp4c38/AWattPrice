@@ -108,8 +108,14 @@ struct ProSupporterPaywallView: View {
             }
         }
         .task {
-            proStore.start()
+            if runsInPreview == false {
+                proStore.start()
+            }
         }
+    }
+
+    private var runsInPreview: Bool {
+        ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1"
     }
 
     private var header: some View {
@@ -178,15 +184,21 @@ struct ProSupporterPaywallView: View {
 
     private var productSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            VStack(spacing: 9) {
-                ForEach(ProSupporterPlan.allCases) { plan in
-                    ProSupporterPlanRow(
-                        plan: plan,
-                        product: proStore.product(for: plan),
-                        isSelected: selectedPlan == plan,
-                        isLoading: proStore.purchaseInProgressProductIdentifier == plan.rawValue
-                    ) {
-                        selectPlan(plan)
+            if proStore.availablePlans.isEmpty {
+                unavailableProductsView
+            } else {
+                VStack(spacing: 9) {
+                    ForEach(proStore.availablePlans) { plan in
+                        if let product = proStore.product(for: plan) {
+                            ProSupporterPlanRow(
+                                plan: plan,
+                                product: product,
+                                isSelected: selectedPlan == plan,
+                                isLoading: proStore.purchaseInProgressProductIdentifier == plan.rawValue
+                            ) {
+                                selectPlan(plan)
+                            }
+                        }
                     }
                 }
             }
@@ -204,12 +216,37 @@ struct ProSupporterPaywallView: View {
                 }
             }
         }
+        .onChange(of: proStore.availablePlans.map(\.id)) { _, _ in
+            selectAvailablePlanIfNeeded()
+        }
+    }
+
+    private var unavailableProductsView: some View {
+        Group {
+            if proStore.isLoadingProducts {
+                EmptyView()
+            } else if proStore.message != nil {
+                EmptyView()
+            } else {
+                HStack(spacing: 10) {
+                    Image(systemName: "exclamationmark.circle")
+                        .foregroundStyle(.secondary)
+                        .accessibilityHidden(true)
+
+                    Text("Pro options unavailable".localized())
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(13)
+                .background(Color.secondary.opacity(0.06), in: RoundedRectangle(cornerRadius: 15, style: .continuous))
+            }
+        }
     }
 
     private var purchaseButton: some View {
         Button {
-            guard let product = proStore.product(for: selectedPlan) else { return }
-            purchase(product)
+            purchase(selectedPlan)
         } label: {
             HStack(spacing: 8) {
                 if proStore.purchaseInProgressProductIdentifier == selectedPlan.rawValue {
@@ -299,7 +336,7 @@ struct ProSupporterPaywallView: View {
                 }
             }
 
-            Text("Monthly and yearly plans renew automatically. Lifetime is a one-time purchase. All purchase types include free family sharing.".localized())
+            Text(legalSummary.localized())
                 .font(.caption2)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
@@ -322,6 +359,14 @@ struct ProSupporterPaywallView: View {
         proStore.product(for: selectedPlan) == nil || proStore.isBusy
     }
 
+    private var legalSummary: String {
+        if proStore.product(for: .lifetime) != nil {
+            return "Monthly and yearly plans renew automatically. Lifetime is a one-time purchase. All purchase types include free family sharing."
+        }
+
+        return "Monthly and yearly plans renew automatically unless canceled in your Apple Account settings."
+    }
+
     private func selectPlan(_ plan: ProSupporterPlan) {
         guard selectedPlan != plan else { return }
 
@@ -334,11 +379,20 @@ struct ProSupporterPaywallView: View {
         }
     }
 
-    private func purchase(_ product: Product) {
+    private func selectAvailablePlanIfNeeded() {
+        guard proStore.product(for: selectedPlan) == nil,
+              let firstAvailablePlan = proStore.availablePlans.first else {
+            return
+        }
+
+        selectedPlan = firstAvailablePlan
+    }
+
+    private func purchase(_ plan: ProSupporterPlan) {
         Task { @MainActor in
             let hadProBeforePurchase = proStore.hasPro
 
-            await proStore.purchase(product)
+            await proStore.purchase(plan)
 
             guard hadProBeforePurchase == false,
                   proStore.hasPro,
@@ -497,7 +551,7 @@ private struct ProSupporterPlanRow: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     let plan: ProSupporterPlan
-    let product: Product?
+    let product: Product
     let isSelected: Bool
     let isLoading: Bool
     let action: () -> Void
@@ -536,7 +590,7 @@ private struct ProSupporterPlanRow: View {
                     ProgressView()
                         .controlSize(.small)
                 } else {
-                    Text(product?.displayPrice ?? plan.expectedPrice)
+                    Text(product.displayPrice)
                         .font(.subheadline.weight(.bold))
                         .foregroundStyle(.primary)
                         .monospacedDigit()

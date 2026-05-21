@@ -37,17 +37,6 @@ enum ProSupporterPlan: String, CaseIterable, Identifiable {
         }
     }
 
-    var expectedPrice: String {
-        switch self {
-        case .monthly:
-            return "€1.29"
-        case .yearly:
-            return "€9.99"
-        case .lifetime:
-            return "€24.99"
-        }
-    }
-
     var badge: String? {
         switch self {
         case .monthly:
@@ -89,12 +78,7 @@ final class ProSupporterStore: ObservableObject {
     @Published var message: String?
     @Published var messageIsError = false
 
-    private let usesStoreKit: Bool
     private var transactionUpdatesTask: Task<Void, Never>?
-
-    init(usesStoreKit: Bool = true) {
-        self.usesStoreKit = usesStoreKit
-    }
 
     var hasPro: Bool {
         purchasedProductIdentifiers.isDisjoint(with: Set(ProSupporterPlan.productIdentifiers)) == false
@@ -104,9 +88,11 @@ final class ProSupporterStore: ObservableObject {
         purchaseInProgressProductIdentifier != nil || isRestoringPurchases
     }
 
-    func start() {
-        guard usesStoreKit else { return }
+    var availablePlans: [ProSupporterPlan] {
+        ProSupporterPlan.allCases.filter { product(for: $0) != nil }
+    }
 
+    func start() {
         if transactionUpdatesTask == nil {
             transactionUpdatesTask = observeTransactionUpdates()
         }
@@ -143,8 +129,13 @@ final class ProSupporterStore: ObservableObject {
         }
     }
 
-    func purchase(_ product: Product) async {
+    func purchase(_ plan: ProSupporterPlan) async {
         guard purchaseInProgressProductIdentifier == nil else { return }
+        guard let product = product(for: plan) else {
+            message = "Pro options unavailable".localized()
+            messageIsError = true
+            return
+        }
 
         purchaseInProgressProductIdentifier = product.id
         message = nil
@@ -251,7 +242,7 @@ final class ProSupporterStore: ObservableObject {
 
 extension ProSupporterStore {
     static func preview(hasPro: Bool) -> ProSupporterStore {
-        let store = ProSupporterStore(usesStoreKit: false)
+        let store = ProSupporterStore()
         store.purchasedProductIdentifiers = hasPro ? [ProSupporterPlan.yearly.rawValue] : []
         return store
     }

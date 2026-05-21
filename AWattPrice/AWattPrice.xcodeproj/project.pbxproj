@@ -168,6 +168,7 @@
 		D4E7A00F2FBA4D9A8C0D4E10 /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = AppIcon.icon; sourceTree = "<group>"; };
 		D6047C9B5C250D36D898FE1F /* CheapestTimeResultView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheapestTimeResultView.swift; sourceTree = "<group>"; };
 		D62C2B2A2D81CAC000FA294C /* AWattPriceWidgetExtension-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "AWattPriceWidgetExtension-Info.plist"; sourceTree = "<group>"; };
+		D63A82962FBF588C00E63076 /* AWattPrice.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; name = AWattPrice.storekit; path = AWattPrice/AWattPrice.storekit; sourceTree = SOURCE_ROOT; };
 		D6A2D1BF2D8B29A40013028D /* Setting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Setting.swift; sourceTree = "<group>"; };
 		D6A2D1C02D8B2AC00013028D /* SwiftDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataService.swift; sourceTree = "<group>"; };
 		D6B5EC412FB8BB920073D82F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -521,6 +522,7 @@
 		FED1070106A78573488FD37A = {
 			isa = PBXGroup;
 			children = (
+				D63A82962FBF588C00E63076 /* AWattPrice.storekit */,
 				61541BE12A548F4D00822908 /* AWattPriceWidgetExtension.entitlements */,
 				D4E7A00F2FBA4D9A8C0D4E10 /* AppIcon.icon */,
 				25A41E102FBA629C00A685EF /* AppIcon.icon/Assets/App Icon v3 Dark.png */,

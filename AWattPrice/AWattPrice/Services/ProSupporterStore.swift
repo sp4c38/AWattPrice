@@ -9,9 +9,9 @@ import Foundation
 import StoreKit
 
 enum ProSupporterPlan: String, CaseIterable, Identifiable {
-    case monthly = "awattprice.pro.monthly"
-    case yearly = "awattprice.pro.yearly"
-    case lifetime = "awattprice.pro.lifetime"
+    case monthly = "awattprice.pro.supporter.monthly"
+    case yearly = "awattprice.pro.supporter.yearly"
+    case lifetime = "awattprice.pro.supporter.lifetime"
 
     var id: String { rawValue }
 

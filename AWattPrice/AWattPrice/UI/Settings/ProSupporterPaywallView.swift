@@ -299,7 +299,7 @@ struct ProSupporterPaywallView: View {
                 }
             }
 
-            Text("Monthly and yearly plans renew automatically. Lifetime is a one-time purchase.".localized())
+            Text("Monthly and yearly plans renew automatically. Lifetime is a one-time purchase. All purchase types include free family sharing.".localized())
                 .font(.caption2)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)

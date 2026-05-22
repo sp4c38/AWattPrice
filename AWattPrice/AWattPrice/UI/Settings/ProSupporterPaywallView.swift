@@ -7,7 +7,6 @@
 
 import StoreKit
 import SwiftUI
-import EffectsLibrary
 
 private struct ProBenefit: Identifiable {
     let id = UUID()
@@ -61,8 +60,8 @@ struct ProSupporterPaywallView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var proStore: ProSupporterStore
     @State private var selectedPlan: ProSupporterPlan = .yearly
-    @State private var showsPurchaseConfetti = false
-    @State private var purchaseConfettiID = 0
+    @State private var showsPurchaseCelebration = false
+    @State private var purchaseCelebrationID = 0
     @State private var highlightedBenefitIndex: Int?
 
     var body: some View {
@@ -72,7 +71,7 @@ struct ProSupporterPaywallView: View {
                     header
 
                     if proStore.hasPro {
-                        activeSupporterSection
+                        activeSupporterExperience
                     } else {
                         supporterNote
                         benefitsSection
@@ -90,14 +89,8 @@ struct ProSupporterPaywallView: View {
                 .padding(.top, 12)
                 .padding(.bottom, 28)
             }
-
-            if showsPurchaseConfetti && reduceMotion == false {
-                PurchaseConfettiOverlay()
-                    .transition(.opacity)
-                    .zIndex(1)
-            }
         }
-        .animation(.easeOut(duration: 0.2), value: showsPurchaseConfetti)
+        .animation(.easeOut(duration: 0.22), value: showsPurchaseCelebration)
         .background(AppTheme.screenBackground(for: .light).opacity(0.001))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -119,36 +112,65 @@ struct ProSupporterPaywallView: View {
     }
 
     private var header: some View {
-        HStack(spacing: 10) {
-            Image(systemName: proStore.hasPro ? "checkmark.seal.fill" : "heart.fill")
-                .font(.title2.weight(.semibold))
-                .foregroundStyle(proStore.hasPro ? AppTheme.success : .green)
+        HStack(alignment: .center, spacing: 12) {
+            headerIcon
 
-            Text("AWattPrice Pro Supporter".localized())
-                .font(.system(.title2, design: .rounded).weight(.bold))
-                .foregroundStyle(.primary)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(headerTitle.localized())
+                    .font(.system(.title2, design: .rounded).weight(.bold))
+                    .foregroundStyle(.primary)
+
+                if proStore.hasPro {
+                    Text("Thank you for supporting AWattPrice!".localized())
+                        .font(.subheadline)
+                }
+            }
+
+            Spacer(minLength: 0)
+        }
+        .padding(.horizontal, proStore.hasPro ? 14 : 0)
+        .padding(.vertical, proStore.hasPro ? 12 : 0)
+        .background {
+            if proStore.hasPro {
+                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                    .fill(AppTheme.success.opacity(0.12))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 18, style: .continuous)
+                            .stroke(AppTheme.success.opacity(0.25), lineWidth: 1)
+                    )
+            }
         }
     }
 
-    private var activeSupporterSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Label {
-                Text("Pro is active".localized())
-                    .font(.headline)
-            } icon: {
-                Image(systemName: "checkmark.circle.fill")
-                    .foregroundStyle(AppTheme.success)
-            }
+    @ViewBuilder
+    private var headerIcon: some View {
+        if proStore.hasPro {
+            Image(systemName: "checkmark.seal.fill")
+                .font(.title2.weight(.bold))
+                .foregroundStyle(AppTheme.success)
+                .symbolEffect(.bounce, options: .nonRepeating, value: purchaseCelebrationID)
+                .frame(width: 42, height: 42)
+                .accessibilityHidden(true)
+        } else {
+            Image(systemName: "heart.fill")
+                .font(.title2.weight(.semibold))
+                .foregroundStyle(.green)
+                .accessibilityHidden(true)
+        }
+    }
 
-            Text("Thank you for supporting AWattPrice. Your Pro features are unlocked on this device.".localized())
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
+    private var headerTitle: String {
+        proStore.hasPro ? "Pro is active" : "AWattPrice Pro Supporter"
+    }
 
+    private var activeSupporterExperience: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            ActiveSupporterBenefits(highlightedBenefitIndex: highlightedBenefitIndex)
             restoreButton
         }
-        .padding(16)
-        .background(Color.secondary.opacity(0.07), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .task(id: reduceMotion) {
+            await runBenefitHighlightAnimation()
+        }
     }
 
     private var benefitsSection: some View {
@@ -302,7 +324,6 @@ struct ProSupporterPaywallView: View {
             
             Text("Hi! I’m a student and developing AWattPrice in my spare time. The goal is to make dynamic electricity prices easier to follow. Pro helps cover server and license costs and keeps the app running. I hope you like the app!".localized())
                 .font(.subheadline)
-                .foregroundStyle(.secondary)
                 .lineSpacing(2)
                 .fixedSize(horizontal: false, vertical: true)
         }
@@ -336,7 +357,7 @@ struct ProSupporterPaywallView: View {
                 }
             }
 
-            Text(legalSummary.localized())
+            Text("Monthly and yearly plans renew automatically. Lifetime is a one-time purchase. All purchases include free family sharing.".localized())
                 .font(.caption2)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
@@ -357,14 +378,6 @@ struct ProSupporterPaywallView: View {
 
     private var purchaseButtonIsDisabled: Bool {
         proStore.product(for: selectedPlan) == nil || proStore.isBusy
-    }
-
-    private var legalSummary: String {
-        if proStore.product(for: .lifetime) != nil {
-            return "Monthly and yearly plans renew automatically. Lifetime is a one-time purchase. All purchase types include free family sharing."
-        }
-
-        return "Monthly and yearly plans renew automatically unless canceled in your Apple Account settings."
     }
 
     private func selectPlan(_ plan: ProSupporterPlan) {
@@ -400,24 +413,24 @@ struct ProSupporterPaywallView: View {
                 return
             }
 
-            showPurchaseConfetti()
+            showPurchaseCelebration()
         }
     }
 
-    private func showPurchaseConfetti() {
+    private func showPurchaseCelebration() {
         guard reduceMotion == false else { return }
 
-        purchaseConfettiID += 1
-        let currentConfettiID = purchaseConfettiID
+        purchaseCelebrationID += 1
+        let currentCelebrationID = purchaseCelebrationID
 
-        showsPurchaseConfetti = true
+        showsPurchaseCelebration = true
 
         Task {
-            try? await Task.sleep(nanoseconds: 1_800_000_000)
+            try? await Task.sleep(nanoseconds: 2_200_000_000)
 
             await MainActor.run {
-                guard purchaseConfettiID == currentConfettiID else { return }
-                showsPurchaseConfetti = false
+                guard purchaseCelebrationID == currentCelebrationID else { return }
+                showsPurchaseCelebration = false
             }
         }
     }
@@ -453,29 +466,68 @@ struct ProSupporterPaywallView: View {
     }
 }
 
-private struct PurchaseConfettiOverlay: View {
-    private let config = ConfettiConfig(
-        content: [
-            .shape(.circle, UIColor.systemOrange, 0.75),
-            .shape(.triangle, UIColor.systemGreen, 0.70),
-            .shape(.square, UIColor.systemCyan, 0.70),
-            .shape(.circle, UIColor.systemYellow, 0.65)
-        ],
-        intensity: .medium,
-        lifetime: .short,
-        initialVelocity: .medium,
-        fadeOut: .fast,
-        spreadRadius: .high,
-        emitterPosition: .top,
-        clipsToBounds: true,
-        fallDirection: .downwards
-    )
+private struct ActiveSupporterBenefits: View {
+    @Environment(\.colorScheme) private var colorScheme
+
+    let highlightedBenefitIndex: Int?
+
+    private let columns = [
+        GridItem(.adaptive(minimum: 145), spacing: 10, alignment: .top)
+    ]
 
     var body: some View {
-        ConfettiView(config: config)
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .allowsHitTesting(false)
-            .accessibilityHidden(true)
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Unlocked for you".localized())
+                .font(.headline)
+
+            LazyVGrid(columns: columns, alignment: .leading, spacing: 10) {
+                ForEach(Array(proBenefits.enumerated()), id: \.element.id) { index, benefit in
+                    ActiveBenefitTile(
+                        benefit: benefit,
+                        index: index,
+                        isActive: highlightedBenefitIndex == index
+                    )
+                }
+            }
+        }
+    }
+}
+
+private struct ActiveBenefitTile: View {
+    @Environment(\.colorScheme) private var colorScheme
+
+    let benefit: ProBenefit
+    let index: Int
+    let isActive: Bool
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 9) {
+            AnimatedBenefitIcon(
+                systemImage: benefit.systemImage,
+                tint: benefit.tint,
+                index: index,
+                isActive: isActive
+            )
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text(benefit.title.localized())
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.primary)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                Text(benefit.subtitle.localized())
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .frame(maxWidth: .infinity, minHeight: 132, alignment: .topLeading)
+        .padding(13)
+        .background(AppTheme.cardBackground(for: colorScheme), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .stroke(benefit.tint.opacity(isActive ? 0.30 : 0.12), lineWidth: 1)
+        }
     }
 }
 

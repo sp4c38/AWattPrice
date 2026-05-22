@@ -7,7 +7,7 @@
 */
 
 // Welcome Splash Screen localizations
-"splashScreen.start.notAffiliatedNote" = "AWattPrice is an independent app. Prices may vary depending on your provider and are not guaranteed.";
+"splashScreen.start.notAffiliatedNote" = "AWattPrice is an independent app. Prices are not guaranteed.";
 // Features and Consent Splash Screen localizations
 "splashScreen.featuresAndConsent.viewPrices.info" = "Check the current electricity prices for each hour throughout the day.";
 "splashScreen.featuresAndConsent.comparePrices.info" = "Find the cheapest hours for your electricity consumption.";
@@ -275,6 +275,7 @@
 "Get price alerts and daily summaries when new electricity prices are available." = "Get price alerts and daily summaries when new electricity prices are available.";
 "Support AWattPrice and unlock smarter planning, notifications, and advanced insights." = "Support AWattPrice and unlock smarter planning, notifications, and advanced insights.";
 "Support the app and unlock notifications and advanced insights." = "Support the app and unlock notifications and advanced insights.";
+"Unlocked" = "Unlocked";
 "Smart notifications" = "Smart notifications";
 "Price alerts and daily summaries when new prices arrive." = "Price alerts and daily summaries when new prices arrive.";
 "Price history" = "Price history";
@@ -328,11 +329,13 @@
 "Monthly and yearly plans renew automatically. Lifetime is a one-time purchase. All purchase types include free family sharing." = "Monthly and yearly plans renew automatically. Lifetime is a one-time purchase. All purchase types include free family sharing.";
 "Pro Supporter is active" = "AWattPrice Pro Supporter is active";
 "AWattPrice Pro Supporter is active" = "AWattPrice Pro Supporter is active";
+"Thank you for supporting AWattPrice." = "Thank you for supporting AWattPrice.";
 "Thank you for supporting AWattPrice. Your Pro features are unlocked on this device." = "Thank you for supporting AWattPrice. Your AWattPrice Pro Supporter features are unlocked on this device.";
 "Thank you for supporting AWattPrice. Your AWattPrice Pro Supporter features are unlocked on this device." = "Thank you for supporting AWattPrice. Your AWattPrice Pro Supporter features are unlocked on this device.";
 "AWattPrice Pro Supporter is active. Thank you for your support." = "AWattPrice Pro Supporter is active. Thank you for your support.";
 "Pro is active" = "Pro is active";
 "Pro is active. Thank you for your support." = "Pro is active. Thank you for your support.";
+"Unlocked for you" = "Unlocked for you";
 "Pro products could not be loaded. Please try again in a moment." = "Pro products could not be loaded. Please try again in a moment.";
 "The purchase could not be completed. Please try again." = "The purchase could not be completed. Please try again.";
 "Your purchase is pending approval." = "Your purchase is pending approval.";

@@ -281,7 +281,9 @@ struct SettingsPageView: View {
 
                             SettingsActionRow(
                                 title: "AWattPrice Pro Supporter".localized(),
-                                subtitle: "Support the app and unlock notifications and advanced insights.".localized(),
+                                subtitle: proSupporterStore.hasPro
+                                    ? "Unlocked".localized()
+                                    : "Support the app and unlock notifications and advanced insights.".localized(),
                                 systemImage: "heart.fill",
                                 tint: SettingsPageStyle.proIconTint,
                                 action: onPresentProPaywall

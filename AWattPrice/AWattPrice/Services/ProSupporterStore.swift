@@ -164,7 +164,7 @@ final class ProSupporterStore: ObservableObject {
                 print("[Pro Supporter Store] Purchase succeeded and was verified for \(transaction.productID).")
                 await transaction.finish()
                 await refreshPurchasedProducts()
-                message = "Pro is active. Thank you for your support.".localized()
+                message = nil
                 messageIsError = false
             case .pending:
                 print("[Pro Supporter Store] Purchase is pending for \(product.id).")

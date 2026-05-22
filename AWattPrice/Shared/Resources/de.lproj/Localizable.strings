@@ -456,6 +456,7 @@
 "Get price alerts and daily summaries when new electricity prices are available." = "Erhalte Preishinweise und tägliche Übersichten, sobald neue Strompreise verfügbar sind.";
 "Support AWattPrice and unlock smarter planning, notifications, and advanced insights." = "Unterstütze AWattPrice und schalte smartere Planung, Benachrichtigungen und erweiterte Einblicke frei.";
 "Support the app and unlock notifications and advanced insights." = "Unterstütze die App und schalte Benachrichtigungen und erweiterte Einblicke frei.";
+"Unlocked" = "Freigeschaltet";
 "Smart notifications" = "Smarte Benachrichtigungen";
 "Price alerts and daily summaries when new prices arrive." = "Preishinweise und tägliche Übersichten, sobald neue Preise ankommen.";
 "Price history" = "Preishistorie";
@@ -509,11 +510,13 @@
 "Monthly and yearly plans renew automatically. Lifetime is a one-time purchase. All purchase types include free family sharing." = "Monats- und Jahresabos verlängern sich automatisch. Lifetime ist ein einmaliger Kauf. Alle Kaufarten unterstützen die Familienfreigabe.";
 "Pro Supporter is active" = "AWattPrice Pro Supporter ist aktiv";
 "AWattPrice Pro Supporter is active" = "AWattPrice Pro Supporter ist aktiv";
+"Thank you for supporting AWattPrice." = "Danke, dass du AWattPrice unterstützt.";
 "Thank you for supporting AWattPrice. Your Pro features are unlocked on this device." = "Danke, dass du AWattPrice unterstützt. Deine AWattPrice Pro Supporter-Funktionen sind auf diesem Gerät freigeschaltet.";
 "Thank you for supporting AWattPrice. Your AWattPrice Pro Supporter features are unlocked on this device." = "Danke, dass du AWattPrice unterstützt. Deine AWattPrice Pro Supporter-Funktionen sind auf diesem Gerät freigeschaltet.";
 "AWattPrice Pro Supporter is active. Thank you for your support." = "AWattPrice Pro Supporter ist aktiv. Danke für deine Unterstützung.";
 "Pro is active" = "Pro ist aktiv";
 "Pro is active. Thank you for your support." = "Pro ist aktiv. Danke für deine Unterstützung.";
+"Unlocked for you" = "Für dich freigeschaltet";
 "Pro products could not be loaded. Please try again in a moment." = "Die Pro-Produkte konnten nicht geladen werden. Bitte versuche es gleich noch einmal.";
 "The purchase could not be completed. Please try again." = "Der Kauf konnte nicht abgeschlossen werden. Bitte versuche es erneut.";
 "Your purchase is pending approval." = "Dein Kauf wartet auf Freigabe.";

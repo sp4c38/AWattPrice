@@ -225,23 +225,13 @@ final class ProSupporterStore: ObservableObject {
                 print("[Pro Supporter Store] Ignored unverified entitlement.")
                 continue
             }
-            guard ProSupporterPlan.productIdentifiers.contains(transaction.productID) else {
-                print("[Pro Supporter Store] Ignored unrelated entitlement: \(transaction.productID).")
-                continue
-            }
-            guard transaction.revocationDate == nil else {
-                print("[Pro Supporter Store] Ignored revoked entitlement: \(transaction.productID).")
-                continue
-            }
+            guard let activeProductIdentifier = activeProProductIdentifier(from: transaction, source: "entitlement") else { continue }
 
-            if let expirationDate = transaction.expirationDate, expirationDate <= Date() {
-                print("[Pro Supporter Store] Ignored expired entitlement: \(transaction.productID).")
-                continue
-            }
-
-            print("[Pro Supporter Store] Found active entitlement: \(transaction.productID).")
-            purchasedIdentifiers.insert(transaction.productID)
+            print("[Pro Supporter Store] Found active entitlement: \(activeProductIdentifier).")
+            purchasedIdentifiers.insert(activeProductIdentifier)
         }
+
+        await addLatestActiveTransactions(to: &purchasedIdentifiers)
 
         purchasedProductIdentifiers = purchasedIdentifiers
         print("[Pro Supporter Store] Active Pro entitlement count: \(purchasedProductIdentifiers.count).")
@@ -273,6 +263,46 @@ final class ProSupporterStore: ObservableObject {
         case .unverified:
             throw ProSupporterStoreError.failedVerification
         }
+    }
+
+    private func addLatestActiveTransactions(to purchasedIdentifiers: inout Set<String>) async {
+        for productIdentifier in ProSupporterPlan.productIdentifiers {
+            guard purchasedIdentifiers.contains(productIdentifier) == false else { continue }
+
+            guard let result = await Transaction.latest(for: productIdentifier) else {
+                print("[Pro Supporter Store] No latest transaction found for \(productIdentifier).")
+                continue
+            }
+
+            guard let transaction = try? verifiedTransaction(from: result) else {
+                print("[Pro Supporter Store] Ignored unverified latest transaction for \(productIdentifier).")
+                continue
+            }
+
+            guard let activeProductIdentifier = activeProProductIdentifier(from: transaction, source: "latest transaction") else { continue }
+
+            print("[Pro Supporter Store] Found active latest transaction: \(activeProductIdentifier).")
+            purchasedIdentifiers.insert(activeProductIdentifier)
+        }
+    }
+
+    private func activeProProductIdentifier(from transaction: Transaction, source: String) -> String? {
+        guard ProSupporterPlan.productIdentifiers.contains(transaction.productID) else {
+            print("[Pro Supporter Store] Ignored unrelated \(source): \(transaction.productID).")
+            return nil
+        }
+
+        guard transaction.revocationDate == nil else {
+            print("[Pro Supporter Store] Ignored revoked \(source): \(transaction.productID).")
+            return nil
+        }
+
+        if let expirationDate = transaction.expirationDate, expirationDate <= Date() {
+            print("[Pro Supporter Store] Ignored expired \(source): \(transaction.productID).")
+            return nil
+        }
+
+        return transaction.productID
     }
 
     private func productSortIndex(_ productIdentifier: String) -> Int {

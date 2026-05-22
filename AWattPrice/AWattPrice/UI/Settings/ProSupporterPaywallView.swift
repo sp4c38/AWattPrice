@@ -7,6 +7,7 @@
 
 import StoreKit
 import SwiftUI
+import ConfettiSwiftUI
 
 private struct ProBenefit: Identifiable {
     let id = UUID()
@@ -60,7 +61,6 @@ struct ProSupporterPaywallView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var proStore: ProSupporterStore
     @State private var selectedPlan: ProSupporterPlan = .yearly
-    @State private var showsPurchaseCelebration = false
     @State private var purchaseCelebrationID = 0
     @State private var highlightedBenefitIndex: Int?
 
@@ -89,8 +89,9 @@ struct ProSupporterPaywallView: View {
                 .padding(.top, 12)
                 .padding(.bottom, 28)
             }
+
         }
-        .animation(.easeOut(duration: 0.22), value: showsPurchaseCelebration)
+        .proSupporterPurchaseConfetti(trigger: $purchaseCelebrationID)
         .background(AppTheme.screenBackground(for: .light).opacity(0.001))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -419,20 +420,7 @@ struct ProSupporterPaywallView: View {
 
     private func showPurchaseCelebration() {
         guard reduceMotion == false else { return }
-
         purchaseCelebrationID += 1
-        let currentCelebrationID = purchaseCelebrationID
-
-        showsPurchaseCelebration = true
-
-        Task {
-            try? await Task.sleep(nanoseconds: 2_200_000_000)
-
-            await MainActor.run {
-                guard purchaseCelebrationID == currentCelebrationID else { return }
-                showsPurchaseCelebration = false
-            }
-        }
     }
 
     @MainActor
@@ -463,6 +451,31 @@ struct ProSupporterPaywallView: View {
             .padding(12)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background((isError ? AppTheme.error : AppTheme.success).opacity(0.10), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+    }
+}
+
+private extension View {
+    func proSupporterPurchaseConfetti(trigger: Binding<Int>) -> some View {
+        confettiCannon(
+            trigger: trigger,
+            num: 150,
+            confettis: [
+                .text("❤️"),
+                .text("⚡️"),
+            ],
+            colors: [
+                AppTheme.accent,
+                AppTheme.success,
+                .yellow,
+                .cyan,
+                .teal
+            ],
+            fadesOut: true,
+            radius: 500,
+            repetitions: 7,
+            repetitionInterval: 0.3,
+            hapticFeedback: true,
+        )
     }
 }
 
@@ -673,6 +686,32 @@ private struct ProSupporterPlanRow: View {
     }
 }
 
+private struct ProSupporterConfettiPreviewHarness: View {
+    @State private var confettiTrigger = 0
+
+    var body: some View {
+        NavigationStack {
+            ProSupporterPaywallView()
+                .environmentObject(ProSupporterStore.preview(hasPro: true))
+        }
+        .safeAreaInset(edge: .bottom) {
+            Button {
+                confettiTrigger += 1
+            } label: {
+                Label("Play confetti", systemImage: "sparkles")
+                    .font(.subheadline.weight(.semibold))
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(AppTheme.accent)
+            .padding(.horizontal, 20)
+            .padding(.vertical, 10)
+            .background(.regularMaterial)
+        }
+        .proSupporterPurchaseConfetti(trigger: $confettiTrigger)
+    }
+}
+
 #Preview("Not subscribed") {
     NavigationStack {
         ProSupporterPaywallView()
@@ -685,4 +724,8 @@ private struct ProSupporterPlanRow: View {
         ProSupporterPaywallView()
             .environmentObject(ProSupporterStore.preview(hasPro: true))
     }
+}
+
+#Preview("Confetti animation") {
+    ProSupporterConfettiPreviewHarness()
 }

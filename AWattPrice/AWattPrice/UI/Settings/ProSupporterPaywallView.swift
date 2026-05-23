@@ -496,23 +496,23 @@ private struct ProSupporterCelebrationEmitter: UIViewRepresentable {
 }
 
 private struct ProSupporterCelebrationConfig {
-    let burstDuration: TimeInterval = 5
-    let cleanupDelay: TimeInterval = 9.3
+    let burstDuration: TimeInterval = 3.2
+    let cleanupDelay: TimeInterval = 6.8
     let emitterWidth: CGFloat = 420
     let emitterTopRatio: CGFloat = 0.18
     let minimumEmitterY: CGFloat = 120
     let maximumEmitterY: CGFloat = 220
     let spawnPointSpacing: CGFloat = 104
 
-    let heartBirthRate: Float = 34
-    let boltBirthRate: Float = 38
+    let heartBirthRate: Float = 30
+    let boltBirthRate: Float = 34
 
     let heartScale: CGFloat = 0.52
     let boltScale: CGFloat = 0.54
 
-    let emojiLifetime: Float = 5.8
-    let emojiVelocity: CGFloat = 285
-    let gravity: CGFloat = 225
+    let emojiLifetime: Float = 4.35
+    let emojiVelocity: CGFloat = 340
+    let gravity: CGFloat = 315
 }
 
 private final class ProSupporterCelebrationView: UIView {
@@ -648,19 +648,19 @@ private final class ProSupporterCelebrationView: UIView {
 
     private func celebrationCells() -> [CAEmitterCell] {
         [
-            emojiCell("❤️", color: .systemPink, birthRate: config.heartBirthRate, scale: config.heartScale),
-            emojiCell("⚡", color: .systemYellow, birthRate: config.boltBirthRate, scale: config.boltScale)
+            emojiCell("❤️", birthRate: config.heartBirthRate, scale: config.heartScale),
+            emojiCell("⚡️", birthRate: config.boltBirthRate, scale: config.boltScale)
         ]
     }
 
-    private func emojiCell(_ emoji: String, color: UIColor, birthRate: Float, scale: CGFloat) -> CAEmitterCell {
+    private func emojiCell(_ emoji: String, birthRate: Float, scale: CGFloat) -> CAEmitterCell {
         let cell = baseCell()
-        cell.contents = CelebrationParticleImage.emoji(emoji, color: color).cgImage
+        cell.contents = CelebrationParticleImage.image(for: emoji).cgImage
         cell.birthRate = birthRate
         cell.lifetime = config.emojiLifetime
-        cell.lifetimeRange = 0.35
+        cell.lifetimeRange = 0.25
         cell.velocity = config.emojiVelocity
-        cell.velocityRange = 155
+        cell.velocityRange = 140
         cell.scale = scale
         cell.scaleRange = 0.08
         cell.spin = 4.2
@@ -679,7 +679,14 @@ private final class ProSupporterCelebrationView: UIView {
 }
 
 private enum CelebrationParticleImage {
-    static func emoji(_ value: String, color: UIColor) -> UIImage {
+    private static let heart = emoji("❤️")
+    private static let bolt = emoji("⚡️")
+
+    static func image(for value: String) -> UIImage {
+        value == "❤️" ? heart : bolt
+    }
+
+    private static func emoji(_ value: String) -> UIImage {
         let format = UIGraphicsImageRendererFormat()
         format.scale = UIScreen.main.scale
         format.opaque = false
@@ -691,7 +698,6 @@ private enum CelebrationParticleImage {
 
             let attributes: [NSAttributedString.Key: Any] = [
                 .font: UIFont.systemFont(ofSize: 28, weight: .bold),
-                .foregroundColor: color,
                 .paragraphStyle: paragraphStyle
             ]
 

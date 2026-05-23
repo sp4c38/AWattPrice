@@ -360,6 +360,7 @@
 "%@ hours" = "%@ Std.";
 "Price range" = "Preisspanne";
 "Renewable mix" = "Erneuerbarer Mix";
+"Live" = "Live";
 "renewable" = "erneuerbar";
 "Generation mix" = "Erzeugungsmix";
 "Loading generation mix" = "Lade Erzeugungsmix";

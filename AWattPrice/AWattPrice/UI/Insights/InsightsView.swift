@@ -429,10 +429,14 @@ private struct GenerationMixCard: View {
         generationMix.visibleCategories
     }
 
+    private var isUpToDate: Bool {
+        generationMix.endTime > Date()
+    }
+
     var body: some View {
         InsightsCard(tint: AppTheme.success) {
             VStack(alignment: .leading, spacing: 14) {
-                HStack {
+                HStack(spacing: 10) {
                     InsightsSectionTitle(
                         title: "Renewable mix",
                         systemImage: "leaf.fill",
@@ -440,6 +444,8 @@ private struct GenerationMixCard: View {
                     )
 
                     Spacer()
+
+                    LiveGenerationMixBadge()
 
                     NavigationLink {
                         GenerationMixHistoryView()
@@ -482,11 +488,54 @@ private struct GenerationMixCard: View {
                     }
                 }
 
-                Text(generationMixFreshnessText(generationMix.endTime))
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
+                if isUpToDate == false {
+                    Text(generationMixFreshnessText(generationMix.endTime))
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
             }
         }
+    }
+}
+
+private struct LiveGenerationMixBadge: View {
+    var body: some View {
+        HStack(spacing: 5) {
+            InsightsLiveStatusDot()
+
+            Text("Live")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(AppTheme.success)
+                .lineLimit(1)
+        }
+        .padding(.horizontal, 8)
+        .padding(.vertical, 5)
+        .background(AppTheme.success.opacity(0.12), in: Capsule())
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Live")
+    }
+}
+
+private struct InsightsLiveStatusDot: View {
+    private let pulseDuration: TimeInterval = 2.1
+
+    var body: some View {
+        TimelineView(.animation) { context in
+            let progress = context.date.timeIntervalSinceReferenceDate
+                .truncatingRemainder(dividingBy: pulseDuration) / pulseDuration
+
+            ZStack {
+                Circle()
+                    .fill(AppTheme.success.opacity(0.65 * (1 - progress)))
+                    .frame(width: 6 + (9 * progress), height: 6 + (9 * progress))
+
+                Circle()
+                    .fill(AppTheme.success)
+                    .frame(width: 6, height: 6)
+            }
+            .frame(width: 15, height: 15)
+        }
+        .accessibilityHidden(true)
     }
 }
 

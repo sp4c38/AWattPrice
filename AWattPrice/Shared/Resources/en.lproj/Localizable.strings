@@ -187,6 +187,7 @@
 "%@ hours" = "%@ hours";
 "Price range" = "Price range";
 "Renewable mix" = "Renewable mix";
+"Live" = "Live";
 "renewable" = "renewable";
 "Generation mix" = "Generation mix";
 "Loading generation mix" = "Loading generation mix";

@@ -688,7 +688,6 @@ private enum CelebrationParticleImage {
 
     private static func emoji(_ value: String) -> UIImage {
         let format = UIGraphicsImageRendererFormat()
-        format.scale = UIScreen.main.scale
         format.opaque = false
 
         let size = CGSize(width: 40, height: 40)

@@ -36,7 +36,7 @@
 		5A10000B2FBE000100000001 /* WidgetPriceSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A10000A2FBE000100000001 /* WidgetPriceSnapshot.swift */; };
 		5B0000012FBE100100000001 /* ProSupporterStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0000032FBE100100000001 /* ProSupporterStore.swift */; };
 		5B0000022FBE100100000001 /* ProSupporterPaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0000042FBE100100000001 /* ProSupporterPaywallView.swift */; };
-		612286822A56E39700FA0F9C /* AWattPriceWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 61635B242A482E690099F5AD /* AWattPriceWidgetExtension.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		612286822A56E39700FA0F9C /* AWattPriceWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 61635B242A482E690099F5AD /* AWattPriceWidgetExtension.appex */; platformFilters = (ios, ); settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		61635B2C2A482E690099F5AD /* AWattPriceWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61635B2B2A482E690099F5AD /* AWattPriceWidgetBundle.swift */; };
 		61635B2E2A482E690099F5AD /* PricesWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61635B2D2A482E690099F5AD /* PricesWidget.swift */; };
 		61635B302A482E6A0099F5AD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 61635B2F2A482E6A0099F5AD /* Assets.xcassets */; };
@@ -731,6 +731,9 @@
 /* Begin PBXTargetDependency section */
 		612286842A56E39700FA0F9C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
+			platformFilters = (
+				ios,
+			);
 			target = 61635B232A482E690099F5AD /* AWattPriceWidgetExtension */;
 			targetProxy = 612286832A56E39700FA0F9C /* PBXContainerItemProxy */;
 		};
@@ -784,6 +787,7 @@
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = YES;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = YES;
 				TARGETED_DEVICE_FAMILY = "1,2,6";
 			};
 			name = Debug;
@@ -821,6 +825,7 @@
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = YES;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = YES;
 				TARGETED_DEVICE_FAMILY = "1,2,6";
 			};
 			name = Release;

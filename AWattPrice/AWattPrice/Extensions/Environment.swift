@@ -125,27 +125,6 @@ private struct AppCardModifier: ViewModifier {
     }
 }
 
-private struct ReadableContentModifier: ViewModifier {
-    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
-
-    let maxWidth: CGFloat
-    let alignment: Alignment
-
-    private var shouldConstrain: Bool {
-        AppPlatform.isMacCatalyst || horizontalSizeClass == .regular
-    }
-
-    func body(content: Content) -> some View {
-        if shouldConstrain {
-            content
-                .frame(maxWidth: maxWidth, alignment: alignment)
-                .frame(maxWidth: .infinity, alignment: .top)
-        } else {
-            content
-        }
-    }
-}
-
 struct AppCard<Content: View>: View {
     let cornerRadius: CGFloat
     let padding: CGFloat
@@ -180,9 +159,5 @@ extension View {
 
     func appCardStyle(cornerRadius: CGFloat = 20, padding: CGFloat = 18) -> some View {
         modifier(AppCardModifier(cornerRadius: cornerRadius, padding: padding))
-    }
-
-    func appReadableContent(maxWidth: CGFloat = 760, alignment: Alignment = .top) -> some View {
-        modifier(ReadableContentModifier(maxWidth: maxWidth, alignment: alignment))
     }
 }

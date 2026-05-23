@@ -598,7 +598,6 @@ struct NotificationSettingView: View {
                 .padding(.horizontal, 16)
                 .padding(.top, 14)
                 .padding(.bottom, 28)
-                .appReadableContent(maxWidth: 760)
             }
         }
         .animation(.easeInOut(duration: 0.18), value: viewModel.isSaving)

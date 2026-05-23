@@ -193,7 +193,6 @@ private struct CheapestTimeResultContent: View {
             .padding(.horizontal, 16)
             .padding(.top, 14)
             .padding(.bottom, 32)
-            .appReadableContent(maxWidth: 760)
         }
     }
 }

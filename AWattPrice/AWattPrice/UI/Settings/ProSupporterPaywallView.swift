@@ -62,32 +62,27 @@ struct ProSupporterPaywallView: View {
     @EnvironmentObject private var proStore: ProSupporterStore
     @State private var selectedPlan: ProSupporterPlan = .yearly
     @State private var purchaseCelebrationID = 0
+    @State private var displayedHasPro: Bool?
     @State private var highlightedBenefitIndex: Int?
 
     var body: some View {
         ZStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 18) {
-                    header
-
-                    if proStore.hasPro {
-                        activeSupporterExperience
-                    } else {
-                        supporterNote
-                        benefitsSection
-                        productSection
-                            .padding(.top, 10)
-                    }
-
-                    if let message = proStore.message {
-                        messageView(message, isError: proStore.messageIsError)
-                    }
-
-                    legalLinks
+            ZStack(alignment: .topLeading) {
+                if displayedProIsActive {
+                    paywallScrollView(hasPro: true)
+                        .transition(.opacity)
+                } else {
+                    paywallScrollView(hasPro: false)
+                        .transition(.opacity)
                 }
-                .padding(.horizontal, 20)
-                .padding(.top, 12)
-                .padding(.bottom, 28)
+            }
+            .onAppear {
+                displayedHasPro = proStore.hasPro
+            }
+            .onChange(of: proStore.hasPro) { _, hasPro in
+                withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.18)) {
+                    displayedHasPro = hasPro
+                }
             }
 
         }
@@ -115,16 +110,51 @@ struct ProSupporterPaywallView: View {
         ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1"
     }
 
-    private var header: some View {
+    private var displayedProIsActive: Bool {
+        displayedHasPro ?? proStore.hasPro
+    }
+
+    private func paywallScrollView(hasPro: Bool) -> some View {
+        ScrollView {
+            paywallContent(hasPro: hasPro)
+        }
+        .id(hasPro)
+    }
+
+    private func paywallContent(hasPro: Bool) -> some View {
+        VStack(alignment: .leading, spacing: 18) {
+            header(hasPro: hasPro)
+
+            if hasPro {
+                activeSupporterExperience
+            } else {
+                supporterNote
+                benefitsSection
+                productSection
+                    .padding(.top, 10)
+            }
+
+            if let message = proStore.message {
+                messageView(message, isError: proStore.messageIsError)
+            }
+
+            legalLinks
+        }
+        .padding(.horizontal, 20)
+        .padding(.top, 12)
+        .padding(.bottom, 28)
+    }
+
+    private func header(hasPro: Bool) -> some View {
         HStack(alignment: .center, spacing: 12) {
-            headerIcon
+            headerIcon(hasPro: hasPro)
 
             VStack(alignment: .leading, spacing: 2) {
-                Text(headerTitle.localized())
+                Text(headerTitle(hasPro: hasPro).localized())
                     .font(.system(.title2, design: .rounded).weight(.bold))
                     .foregroundStyle(.primary)
 
-                if proStore.hasPro {
+                if hasPro {
                     Text("Thank you for supporting AWattPrice!".localized())
                         .font(.subheadline)
                 }
@@ -132,10 +162,10 @@ struct ProSupporterPaywallView: View {
 
             Spacer(minLength: 0)
         }
-        .padding(.horizontal, proStore.hasPro ? 14 : 0)
-        .padding(.vertical, proStore.hasPro ? 12 : 0)
+        .padding(.horizontal, hasPro ? 14 : 0)
+        .padding(.vertical, hasPro ? 12 : 0)
         .background {
-            if proStore.hasPro {
+            if hasPro {
                 RoundedRectangle(cornerRadius: 18, style: .continuous)
                     .fill(AppTheme.success.opacity(0.12))
                     .overlay(
@@ -147,12 +177,12 @@ struct ProSupporterPaywallView: View {
     }
 
     @ViewBuilder
-    private var headerIcon: some View {
+    private func headerIcon(hasPro: Bool) -> some View {
         ZStack(alignment: .bottomTrailing) {
             ActiveProBoltIcon()
                 .frame(width: 42, height: 42)
 
-            if proStore.hasPro {
+            if hasPro {
                 Image(systemName: "checkmark.seal.fill")
                     .font(.system(size: 15, weight: .semibold))
                     .foregroundStyle(AppTheme.success)
@@ -164,8 +194,8 @@ struct ProSupporterPaywallView: View {
         .accessibilityHidden(true)
     }
 
-    private var headerTitle: String {
-        proStore.hasPro ? "Pro is active" : "AWattPrice Pro Supporter"
+    private func headerTitle(hasPro: Bool) -> String {
+        hasPro ? "Pro is active" : "AWattPrice Pro Supporter"
     }
 
     private var activeSupporterExperience: some View {

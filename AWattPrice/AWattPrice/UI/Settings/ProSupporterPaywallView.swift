@@ -305,6 +305,7 @@ struct ProSupporterPaywallView: View {
                 if proStore.isRestoringPurchases {
                     ProgressView()
                         .controlSize(.small)
+                        .tint(AppTheme.accent)
                 }
 
                 Text("Restore Purchases".localized())
@@ -465,6 +466,7 @@ private extension View {
 }
 
 private struct ProSupporterCelebrationEmitter: UIViewRepresentable {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Binding var trigger: Int
 
     func makeUIView(context: Context) -> ProSupporterCelebrationView {
@@ -475,8 +477,13 @@ private struct ProSupporterCelebrationEmitter: UIViewRepresentable {
         guard trigger != context.coordinator.lastTrigger else { return }
         context.coordinator.lastTrigger = trigger
 
-        guard trigger > 0 else { return }
-        view.play()
+        guard trigger > 0,
+              reduceMotion == false else {
+            view.cancel()
+            return
+        }
+
+        view.playWhenReady()
     }
 
     func makeCoordinator() -> Coordinator {
@@ -489,35 +496,32 @@ private struct ProSupporterCelebrationEmitter: UIViewRepresentable {
 }
 
 private struct ProSupporterCelebrationConfig {
-    let burstDuration: TimeInterval = 2.35
-    let cleanupDelay: TimeInterval = 5.8
-    let emitterWidth: CGFloat = 380
+    let burstDuration: TimeInterval = 5
+    let cleanupDelay: TimeInterval = 9.3
+    let emitterWidth: CGFloat = 420
     let emitterTopRatio: CGFloat = 0.18
     let minimumEmitterY: CGFloat = 120
     let maximumEmitterY: CGFloat = 220
+    let spawnPointSpacing: CGFloat = 104
 
-    let heartBirthRate: Float = 26
-    let boltBirthRate: Float = 30
-    let sparkBirthRate: Float = 24
+    let heartBirthRate: Float = 34
+    let boltBirthRate: Float = 38
 
-    let heartScale: CGFloat = 0.23
-    let boltScale: CGFloat = 0.25
-    let sparkScale: CGFloat = 0.075
-    let alternateSparkScale: CGFloat = 0.105
+    let heartScale: CGFloat = 0.52
+    let boltScale: CGFloat = 0.54
 
-    let emojiLifetime: Float = 3.2
-    let sparkLifetime: Float = 2.65
-    let emojiVelocity: CGFloat = 280
-    let sparkVelocity: CGFloat = 325
-    let gravity: CGFloat = 220
-    let fadeOutSpeed: Float = -0.30
+    let emojiLifetime: Float = 5.8
+    let emojiVelocity: CGFloat = 285
+    let gravity: CGFloat = 225
 }
 
 private final class ProSupporterCelebrationView: UIView {
     private let config = ProSupporterCelebrationConfig()
+    private var replicator: CAReplicatorLayer?
     private var emitter: CAEmitterLayer?
     private var stopWorkItem: DispatchWorkItem?
     private var cleanupWorkItem: DispatchWorkItem?
+    private var hasQueuedPlayback = false
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -529,29 +533,75 @@ private final class ProSupporterCelebrationView: UIView {
         return nil
     }
 
+    override func didMoveToWindow() {
+        super.didMoveToWindow()
+        playQueuedBurstIfReady()
+    }
+
     override func layoutSubviews() {
         super.layoutSubviews()
         positionEmitter()
+        playQueuedBurstIfReady()
     }
 
-    func play() {
+    func playWhenReady() {
+        cancel()
+
+        guard canPlayNow else {
+            hasQueuedPlayback = true
+            setNeedsLayout()
+
+            DispatchQueue.main.async { [weak self] in
+                self?.playQueuedBurstIfReady()
+            }
+            return
+        }
+
+        startBurst()
+    }
+
+    func cancel() {
+        hasQueuedPlayback = false
         stopWorkItem?.cancel()
         cleanupWorkItem?.cancel()
-        emitter?.removeFromSuperlayer()
+        replicator?.removeFromSuperlayer()
+        replicator = nil
+        emitter = nil
+    }
 
-        let emitter = CAEmitterLayer()
+    private var canPlayNow: Bool {
+        window != nil && bounds.width > 1 && bounds.height > 1
+    }
+
+    private func playQueuedBurstIfReady() {
+        guard hasQueuedPlayback,
+              canPlayNow else {
+            return
+        }
+
+        hasQueuedPlayback = false
+        startBurst()
+    }
+
+    private func startBurst() {
+        stopWorkItem?.cancel()
+        cleanupWorkItem?.cancel()
+        replicator?.removeFromSuperlayer()
+
+        let replicator = CAReplicatorLayer()
+        let emitter = makeEmitter()
+        self.replicator = replicator
         self.emitter = emitter
-        layer.addSublayer(emitter)
+
+        replicator.addSublayer(emitter)
+        layer.addSublayer(replicator)
         positionEmitter()
 
-        emitter.emitterShape = .point
-        emitter.emitterMode = .points
-        emitter.renderMode = .unordered
         emitter.emitterCells = celebrationCells()
         emitter.beginTime = CACurrentMediaTime()
         emitter.birthRate = 1
 
-        playHaptics()
+        ProSupporterCelebrationHaptics.play()
 
         let stopWorkItem = DispatchWorkItem { [weak emitter] in
             emitter?.birthRate = 0
@@ -559,78 +609,62 @@ private final class ProSupporterCelebrationView: UIView {
         self.stopWorkItem = stopWorkItem
         DispatchQueue.main.asyncAfter(deadline: .now() + config.burstDuration, execute: stopWorkItem)
 
-        let cleanupWorkItem = DispatchWorkItem { [weak self, weak emitter] in
-            guard self?.emitter === emitter else { return }
-            emitter?.removeFromSuperlayer()
-            self?.emitter = nil
+        let cleanupWorkItem = DispatchWorkItem { [weak self, weak replicator] in
+            guard let self,
+                  self.replicator === replicator else {
+                return
+            }
+
+            replicator?.removeFromSuperlayer()
+            self.replicator = nil
+            self.emitter = nil
         }
         self.cleanupWorkItem = cleanupWorkItem
         DispatchQueue.main.asyncAfter(deadline: .now() + config.cleanupDelay, execute: cleanupWorkItem)
     }
 
+    private func makeEmitter() -> CAEmitterLayer {
+        let emitter = CAEmitterLayer()
+        emitter.emitterShape = .point
+        emitter.emitterMode = .points
+        emitter.renderMode = .unordered
+        return emitter
+    }
+
     private func positionEmitter() {
-        guard let emitter else { return }
+        guard let replicator, let emitter else { return }
+
+        let y = min(max(bounds.height * config.emitterTopRatio, config.minimumEmitterY), config.maximumEmitterY)
+        let spacing = min(config.spawnPointSpacing, bounds.width * 0.38)
+
+        replicator.frame = bounds
+        replicator.instanceCount = 2
+        replicator.instanceTransform = CATransform3DMakeTranslation(spacing, 0, 0)
 
         emitter.frame = bounds
-        emitter.emitterPosition = CGPoint(
-            x: bounds.midX,
-            y: min(max(bounds.height * config.emitterTopRatio, config.minimumEmitterY), config.maximumEmitterY)
-        )
-        emitter.emitterSize = CGSize(width: min(bounds.width * 0.72, config.emitterWidth), height: 24)
+        emitter.emitterPosition = CGPoint(x: bounds.midX - spacing / 2, y: y)
+        emitter.emitterSize = CGSize(width: min(bounds.width * 0.76, config.emitterWidth), height: 26)
     }
 
     private func celebrationCells() -> [CAEmitterCell] {
-        let palette: [UIColor] = [
-            UIColor(AppTheme.accent),
-            UIColor(AppTheme.success),
-            .systemYellow,
-            .systemCyan,
-            .systemTeal
+        [
+            emojiCell("❤️", color: .systemPink, birthRate: config.heartBirthRate, scale: config.heartScale),
+            emojiCell("⚡", color: .systemYellow, birthRate: config.boltBirthRate, scale: config.boltScale)
         ]
-
-        let emojiCells = [
-            emojiCell("❤️", birthRate: config.heartBirthRate, scale: config.heartScale),
-            emojiCell("⚡️", birthRate: config.boltBirthRate, scale: config.boltScale)
-        ]
-
-        let sparkCells = palette.enumerated().map { index, color in
-            sparkCell(
-                color: color,
-                birthRate: config.sparkBirthRate,
-                scale: index.isMultiple(of: 2) ? config.alternateSparkScale : config.sparkScale
-            )
-        }
-
-        return emojiCells + sparkCells
     }
 
-    private func emojiCell(_ emoji: String, birthRate: Float, scale: CGFloat) -> CAEmitterCell {
+    private func emojiCell(_ emoji: String, color: UIColor, birthRate: Float, scale: CGFloat) -> CAEmitterCell {
         let cell = baseCell()
-        cell.contents = CelebrationParticleImage.emoji(emoji).cgImage
+        cell.contents = CelebrationParticleImage.emoji(emoji, color: color).cgImage
         cell.birthRate = birthRate
         cell.lifetime = config.emojiLifetime
-        cell.lifetimeRange = 0.8
+        cell.lifetimeRange = 0.35
         cell.velocity = config.emojiVelocity
-        cell.velocityRange = 150
+        cell.velocityRange = 155
         cell.scale = scale
         cell.scaleRange = 0.08
         cell.spin = 4.2
         cell.spinRange = 6
-        return cell
-    }
-
-    private func sparkCell(color: UIColor, birthRate: Float, scale: CGFloat) -> CAEmitterCell {
-        let cell = baseCell()
-        cell.contents = CelebrationParticleImage.spark(color: color).cgImage
-        cell.birthRate = birthRate
-        cell.lifetime = config.sparkLifetime
-        cell.lifetimeRange = 0.55
-        cell.velocity = config.sparkVelocity
-        cell.velocityRange = 180
-        cell.scale = scale
-        cell.scaleRange = 0.045
-        cell.spin = 2.5
-        cell.spinRange = 5
         return cell
     }
 
@@ -640,19 +674,12 @@ private final class ProSupporterCelebrationView: UIView {
         cell.emissionRange = .pi * 0.95
         cell.yAcceleration = config.gravity
         cell.xAcceleration = 0
-        cell.alphaRange = 0.35
-        cell.alphaSpeed = config.fadeOutSpeed
         return cell
-    }
-
-    private func playHaptics() {
-        UINotificationFeedbackGenerator().notificationOccurred(.success)
-        UIImpactFeedbackGenerator(style: .light).impactOccurred(intensity: 0.65)
     }
 }
 
 private enum CelebrationParticleImage {
-    static func emoji(_ value: String) -> UIImage {
+    static func emoji(_ value: String, color: UIColor) -> UIImage {
         let format = UIGraphicsImageRendererFormat()
         format.scale = UIScreen.main.scale
         format.opaque = false
@@ -663,7 +690,8 @@ private enum CelebrationParticleImage {
             paragraphStyle.alignment = .center
 
             let attributes: [NSAttributedString.Key: Any] = [
-                .font: UIFont.systemFont(ofSize: 28),
+                .font: UIFont.systemFont(ofSize: 28, weight: .bold),
+                .foregroundColor: color,
                 .paragraphStyle: paragraphStyle
             ]
 
@@ -673,18 +701,12 @@ private enum CelebrationParticleImage {
             )
         }
     }
+}
 
-    static func spark(color: UIColor) -> UIImage {
-        let format = UIGraphicsImageRendererFormat()
-        format.scale = UIScreen.main.scale
-        format.opaque = false
-
-        let size = CGSize(width: 12, height: 12)
-        return UIGraphicsImageRenderer(size: size, format: format).image { context in
-            let rect = CGRect(origin: .zero, size: size).insetBy(dx: 1.5, dy: 1.5)
-            context.cgContext.setFillColor(color.cgColor)
-            context.cgContext.fillEllipse(in: rect)
-        }
+private enum ProSupporterCelebrationHaptics {
+    static func play() {
+        UINotificationFeedbackGenerator().notificationOccurred(.success)
+        UIImpactFeedbackGenerator(style: .light).impactOccurred(intensity: 0.65)
     }
 }
 

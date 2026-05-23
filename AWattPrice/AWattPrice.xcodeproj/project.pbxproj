@@ -44,7 +44,6 @@
 		61635B4D2A483B140099F5AD /* PricesPreviewContent.json in Resources */ = {isa = PBXBuildFile; fileRef = 61635B3D2A4833730099F5AD /* PricesPreviewContent.json */; };
 		61635B4F2A485FE20099F5AD /* Region.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52D6D993DB3CE3CBB4B1E644 /* Region.swift */; };
 		61ACE7A62A56A7E7005D0110 /* EffectsLibrary in Frameworks */ = {isa = PBXBuildFile; productRef = 61ACE7A52A56A7E7005D0110 /* EffectsLibrary */; };
-		61B9C7A12FC10A8800000001 /* ConfettiSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 61B9C7A02FC10A8800000001 /* ConfettiSwiftUI */; };
 		61DC52D02A56F22B00FB2D08 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 95BD95FD492B1F960E9F23C4 /* Localizable.strings */; };
 		6AB9A889E5A3A17EBB1AF725 /* InputFieldStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 404CC5EAC0C3630A020070B0 /* InputFieldStyles.swift */; };
 		7806C62BA8F28AC26C3C88B7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3986605FAA7AF18D5AF2CB37 /* AppDelegate.swift */; };
@@ -196,7 +195,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				61ACE7A62A56A7E7005D0110 /* EffectsLibrary in Frameworks */,
-				61B9C7A12FC10A8800000001 /* ConfettiSwiftUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -573,7 +571,6 @@
 			name = AWattPrice;
 			packageProductDependencies = (
 				61ACE7A52A56A7E7005D0110 /* EffectsLibrary */,
-				61B9C7A02FC10A8800000001 /* ConfettiSwiftUI */,
 			);
 			productName = AWattPrice;
 			productReference = 4D92DAF6062C9BB0CC3973F3 /* AWattPrice.app */;
@@ -613,7 +610,6 @@
 			mainGroup = FED1070106A78573488FD37A;
 			packageReferences = (
 				61ACE7A42A56A7E7005D0110 /* XCRemoteSwiftPackageReference "effects-library" */,
-				61B9C7A02FC10A8700000001 /* XCRemoteSwiftPackageReference "ConfettiSwiftUI" */,
 			);
 			projectDirPath = "";
 			projectRoot = "";
@@ -1147,14 +1143,6 @@
 				minimumVersion = 1.0.0;
 			};
 		};
-		61B9C7A02FC10A8700000001 /* XCRemoteSwiftPackageReference "ConfettiSwiftUI" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/simibac/ConfettiSwiftUI.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 3.0.0;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1162,11 +1150,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 61ACE7A42A56A7E7005D0110 /* XCRemoteSwiftPackageReference "effects-library" */;
 			productName = EffectsLibrary;
-		};
-		61B9C7A02FC10A8800000001 /* ConfettiSwiftUI */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 61B9C7A02FC10A8700000001 /* XCRemoteSwiftPackageReference "ConfettiSwiftUI" */;
-			productName = ConfettiSwiftUI;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

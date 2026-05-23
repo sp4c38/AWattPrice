@@ -7,7 +7,7 @@
 
 import StoreKit
 import SwiftUI
-import ConfettiSwiftUI
+import UIKit
 
 private struct ProBenefit: Identifiable {
     let id = UUID()
@@ -456,26 +456,235 @@ struct ProSupporterPaywallView: View {
 
 private extension View {
     func proSupporterPurchaseConfetti(trigger: Binding<Int>) -> some View {
-        confettiCannon(
-            trigger: trigger,
-            num: 150,
-            confettis: [
-                .text("❤️"),
-                .text("⚡️"),
-            ],
-            colors: [
-                AppTheme.accent,
-                AppTheme.success,
-                .yellow,
-                .cyan,
-                .teal
-            ],
-            fadesOut: true,
-            radius: 500,
-            repetitions: 7,
-            repetitionInterval: 0.3,
-            hapticFeedback: true,
+        overlay {
+            ProSupporterCelebrationEmitter(trigger: trigger)
+                .allowsHitTesting(false)
+                .accessibilityHidden(true)
+        }
+    }
+}
+
+private struct ProSupporterCelebrationEmitter: UIViewRepresentable {
+    @Binding var trigger: Int
+
+    func makeUIView(context: Context) -> ProSupporterCelebrationView {
+        ProSupporterCelebrationView()
+    }
+
+    func updateUIView(_ view: ProSupporterCelebrationView, context: Context) {
+        guard trigger != context.coordinator.lastTrigger else { return }
+        context.coordinator.lastTrigger = trigger
+
+        guard trigger > 0 else { return }
+        view.play()
+    }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator()
+    }
+
+    final class Coordinator {
+        var lastTrigger = 0
+    }
+}
+
+private struct ProSupporterCelebrationConfig {
+    let burstDuration: TimeInterval = 2.35
+    let cleanupDelay: TimeInterval = 5.8
+    let emitterWidth: CGFloat = 380
+    let emitterTopRatio: CGFloat = 0.18
+    let minimumEmitterY: CGFloat = 120
+    let maximumEmitterY: CGFloat = 220
+
+    let heartBirthRate: Float = 26
+    let boltBirthRate: Float = 30
+    let sparkBirthRate: Float = 24
+
+    let heartScale: CGFloat = 0.23
+    let boltScale: CGFloat = 0.25
+    let sparkScale: CGFloat = 0.075
+    let alternateSparkScale: CGFloat = 0.105
+
+    let emojiLifetime: Float = 3.2
+    let sparkLifetime: Float = 2.65
+    let emojiVelocity: CGFloat = 280
+    let sparkVelocity: CGFloat = 325
+    let gravity: CGFloat = 220
+    let fadeOutSpeed: Float = -0.30
+}
+
+private final class ProSupporterCelebrationView: UIView {
+    private let config = ProSupporterCelebrationConfig()
+    private var emitter: CAEmitterLayer?
+    private var stopWorkItem: DispatchWorkItem?
+    private var cleanupWorkItem: DispatchWorkItem?
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        isUserInteractionEnabled = false
+        backgroundColor = .clear
+    }
+
+    required init?(coder: NSCoder) {
+        return nil
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        positionEmitter()
+    }
+
+    func play() {
+        stopWorkItem?.cancel()
+        cleanupWorkItem?.cancel()
+        emitter?.removeFromSuperlayer()
+
+        let emitter = CAEmitterLayer()
+        self.emitter = emitter
+        layer.addSublayer(emitter)
+        positionEmitter()
+
+        emitter.emitterShape = .point
+        emitter.emitterMode = .points
+        emitter.renderMode = .unordered
+        emitter.emitterCells = celebrationCells()
+        emitter.beginTime = CACurrentMediaTime()
+        emitter.birthRate = 1
+
+        playHaptics()
+
+        let stopWorkItem = DispatchWorkItem { [weak emitter] in
+            emitter?.birthRate = 0
+        }
+        self.stopWorkItem = stopWorkItem
+        DispatchQueue.main.asyncAfter(deadline: .now() + config.burstDuration, execute: stopWorkItem)
+
+        let cleanupWorkItem = DispatchWorkItem { [weak self, weak emitter] in
+            guard self?.emitter === emitter else { return }
+            emitter?.removeFromSuperlayer()
+            self?.emitter = nil
+        }
+        self.cleanupWorkItem = cleanupWorkItem
+        DispatchQueue.main.asyncAfter(deadline: .now() + config.cleanupDelay, execute: cleanupWorkItem)
+    }
+
+    private func positionEmitter() {
+        guard let emitter else { return }
+
+        emitter.frame = bounds
+        emitter.emitterPosition = CGPoint(
+            x: bounds.midX,
+            y: min(max(bounds.height * config.emitterTopRatio, config.minimumEmitterY), config.maximumEmitterY)
         )
+        emitter.emitterSize = CGSize(width: min(bounds.width * 0.72, config.emitterWidth), height: 24)
+    }
+
+    private func celebrationCells() -> [CAEmitterCell] {
+        let palette: [UIColor] = [
+            UIColor(AppTheme.accent),
+            UIColor(AppTheme.success),
+            .systemYellow,
+            .systemCyan,
+            .systemTeal
+        ]
+
+        let emojiCells = [
+            emojiCell("❤️", birthRate: config.heartBirthRate, scale: config.heartScale),
+            emojiCell("⚡️", birthRate: config.boltBirthRate, scale: config.boltScale)
+        ]
+
+        let sparkCells = palette.enumerated().map { index, color in
+            sparkCell(
+                color: color,
+                birthRate: config.sparkBirthRate,
+                scale: index.isMultiple(of: 2) ? config.alternateSparkScale : config.sparkScale
+            )
+        }
+
+        return emojiCells + sparkCells
+    }
+
+    private func emojiCell(_ emoji: String, birthRate: Float, scale: CGFloat) -> CAEmitterCell {
+        let cell = baseCell()
+        cell.contents = CelebrationParticleImage.emoji(emoji).cgImage
+        cell.birthRate = birthRate
+        cell.lifetime = config.emojiLifetime
+        cell.lifetimeRange = 0.8
+        cell.velocity = config.emojiVelocity
+        cell.velocityRange = 150
+        cell.scale = scale
+        cell.scaleRange = 0.08
+        cell.spin = 4.2
+        cell.spinRange = 6
+        return cell
+    }
+
+    private func sparkCell(color: UIColor, birthRate: Float, scale: CGFloat) -> CAEmitterCell {
+        let cell = baseCell()
+        cell.contents = CelebrationParticleImage.spark(color: color).cgImage
+        cell.birthRate = birthRate
+        cell.lifetime = config.sparkLifetime
+        cell.lifetimeRange = 0.55
+        cell.velocity = config.sparkVelocity
+        cell.velocityRange = 180
+        cell.scale = scale
+        cell.scaleRange = 0.045
+        cell.spin = 2.5
+        cell.spinRange = 5
+        return cell
+    }
+
+    private func baseCell() -> CAEmitterCell {
+        let cell = CAEmitterCell()
+        cell.emissionLongitude = -.pi / 2
+        cell.emissionRange = .pi * 0.95
+        cell.yAcceleration = config.gravity
+        cell.xAcceleration = 0
+        cell.alphaRange = 0.35
+        cell.alphaSpeed = config.fadeOutSpeed
+        return cell
+    }
+
+    private func playHaptics() {
+        UINotificationFeedbackGenerator().notificationOccurred(.success)
+        UIImpactFeedbackGenerator(style: .light).impactOccurred(intensity: 0.65)
+    }
+}
+
+private enum CelebrationParticleImage {
+    static func emoji(_ value: String) -> UIImage {
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = UIScreen.main.scale
+        format.opaque = false
+
+        let size = CGSize(width: 40, height: 40)
+        return UIGraphicsImageRenderer(size: size, format: format).image { _ in
+            let paragraphStyle = NSMutableParagraphStyle()
+            paragraphStyle.alignment = .center
+
+            let attributes: [NSAttributedString.Key: Any] = [
+                .font: UIFont.systemFont(ofSize: 28),
+                .paragraphStyle: paragraphStyle
+            ]
+
+            value.draw(
+                in: CGRect(x: 0, y: 4, width: size.width, height: size.height),
+                withAttributes: attributes
+            )
+        }
+    }
+
+    static func spark(color: UIColor) -> UIImage {
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = UIScreen.main.scale
+        format.opaque = false
+
+        let size = CGSize(width: 12, height: 12)
+        return UIGraphicsImageRenderer(size: size, format: format).image { context in
+            let rect = CGRect(origin: .zero, size: size).insetBy(dx: 1.5, dy: 1.5)
+            context.cgContext.setFillColor(color.cgColor)
+            context.cgContext.fillEllipse(in: rect)
+        }
     }
 }
 

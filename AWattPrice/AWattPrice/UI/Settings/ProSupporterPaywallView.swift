@@ -97,10 +97,13 @@ struct ProSupporterPaywallView: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button("Done".localized()) {
+                    guard proStore.isBusy == false else { return }
                     dismiss()
                 }
+                .disabled(proStore.isBusy)
             }
         }
+        .interactiveDismissDisabled(proStore.isBusy)
         .task {
             if runsInPreview == false {
                 proStore.start()
@@ -944,7 +947,7 @@ private struct ActiveProBoltIcon: View {
                         boltScale = 1
                     }
 
-                    try await Task.sleep(nanoseconds: 5_000_000_000)
+                    try await Task.sleep(nanoseconds: 3_000_000_000)
                     try Task.checkCancellation()
 
                     // Transition: trace opacity is ~0.1 while bolt is fully opaque,

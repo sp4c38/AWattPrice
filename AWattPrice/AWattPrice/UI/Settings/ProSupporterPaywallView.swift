@@ -145,16 +145,20 @@ struct ProSupporterPaywallView: View {
 
     @ViewBuilder
     private var headerIcon: some View {
-        if proStore.hasPro {
+        ZStack(alignment: .bottomTrailing) {
             ActiveProBoltIcon()
                 .frame(width: 42, height: 42)
-                .accessibilityHidden(true)
-        } else {
-            Image(systemName: "heart.fill")
-                .font(.title2.weight(.semibold))
-                .foregroundStyle(.green)
-                .accessibilityHidden(true)
+
+            if proStore.hasPro {
+                Image(systemName: "checkmark.seal.fill")
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundStyle(AppTheme.success)
+                    .padding(2)
+                    .background(Color(.systemBackground), in: Circle())
+                    .offset(x: 5, y: 5)
+            }
         }
+        .accessibilityHidden(true)
     }
 
     private var headerTitle: String {
@@ -895,22 +899,15 @@ private struct ActiveProBoltIcon: View {
             do {
                 try await Task.sleep(nanoseconds: 350_000_000)
 
+                // Draw the initial trace before entering the loop.
+                withAnimation(.easeInOut(duration: 0.85)) {
+                    strikeProgress = 1
+                }
+                try await Task.sleep(nanoseconds: 720_000_000)
+                try Task.checkCancellation()
+
                 while Task.isCancelled == false {
-                    strikeProgress = 0
-                    flashOpacity = 0
-                    boltOpacity = 0
-                    boltScale = 0.76
-                    revealGlowOpacity = 0
-                    revealGlowScale = 0.86
-
-                    try Task.checkCancellation()
-
-                    withAnimation(.easeInOut(duration: 0.85)) {
-                        strikeProgress = 1
-                    }
-
-                    try await Task.sleep(nanoseconds: 720_000_000)
-                    try Task.checkCancellation()
+                    // Entry state: trace drawn, bolt invisible (boltOpacity == 0).
 
                     withAnimation(.easeOut(duration: 0.12)) {
                         flashOpacity = 0.96
@@ -928,6 +925,8 @@ private struct ActiveProBoltIcon: View {
                         revealGlowScale = 1.12
                     }
 
+                    // Bolt is invisible here, so snapping scale is imperceptible.
+                    boltScale = 0.76
                     withAnimation(.spring(response: 0.40, dampingFraction: 0.46)) {
                         boltOpacity = 1
                         boltScale = 1.14
@@ -946,6 +945,28 @@ private struct ActiveProBoltIcon: View {
                     }
 
                     try await Task.sleep(nanoseconds: 5_000_000_000)
+                    try Task.checkCancellation()
+
+                    // Transition: trace opacity is ~0.1 while bolt is fully opaque,
+                    // so snapping strikeProgress to 0 is imperceptible.
+                    strikeProgress = 0
+                    revealGlowScale = 0.86
+
+                    // Start bolt fade, then let it get going before drawing the trace.
+                    withAnimation(.easeIn(duration: 0.65)) {
+                        boltOpacity = 0
+                        boltScale = 0.88
+                    }
+
+                    try await Task.sleep(nanoseconds: 450_000_000)
+                    try Task.checkCancellation()
+
+                    withAnimation(.easeInOut(duration: 0.85)) {
+                        strikeProgress = 1
+                    }
+
+                    try await Task.sleep(nanoseconds: 720_000_000)
+                    try Task.checkCancellation()
                 }
             } catch {
                 return

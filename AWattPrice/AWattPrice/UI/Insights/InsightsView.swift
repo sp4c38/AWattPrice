@@ -227,15 +227,6 @@ private struct PriceRangeGraph: View {
                         .position(x: markerX(for: minPrice.marketprice, width: geometry.size.width), y: railY)
                     }
 
-                    if let averagePrice = model.averagePrice {
-                        PriceRangeMarker(
-                            label: "Average",
-                            price: averagePrice,
-                            tint: Color.secondary
-                        )
-                        .position(x: markerX(for: averagePrice, width: geometry.size.width), y: railY)
-                    }
-
                     if let maxPrice = model.maxPrice {
                         PriceRangeMarker(
                             label: "Highest",
@@ -246,15 +237,24 @@ private struct PriceRangeGraph: View {
                     }
 
                     if let currentPrice = model.currentPrice {
-                        CurrentPriceRangeMarker(
+                        let currentX = currentLabelX(for: currentPrice.marketprice, width: geometry.size.width)
+
+                        CurrentPriceRangeCallout(
                             price: currentPrice.marketprice,
                             tint: insightsAccent,
                             connectorHeight: 14
                         )
                         .position(
-                            x: currentLabelX(for: currentPrice.marketprice, width: geometry.size.width),
+                            x: currentX,
                             y: currentLabelY
                         )
+
+                        PriceRangeMarker(
+                            label: "Current",
+                            price: currentPrice.marketprice,
+                            tint: insightsAccent
+                        )
+                        .position(x: currentX, y: railY)
                     }
                 }
             }
@@ -276,7 +276,8 @@ private struct PriceRangeGraph: View {
                     value: model.averagePrice,
                     subtitle: nil,
                     alignment: .center,
-                    tint: Color.secondary
+                    tint: Color.secondary,
+                    showsDot: false
                 )
                 Spacer()
                 RangeValueLabel(
@@ -331,7 +332,7 @@ private struct PriceRangeMarker: View {
     }
 }
 
-private struct CurrentPriceRangeMarker: View {
+private struct CurrentPriceRangeCallout: View {
     let price: Double
     let tint: Color
     let connectorHeight: CGFloat
@@ -360,15 +361,6 @@ private struct CurrentPriceRangeMarker: View {
             Rectangle()
                 .fill(tint.opacity(0.45))
                 .frame(width: 2, height: connectorHeight)
-
-            Circle()
-                .fill(tint)
-                .frame(width: 14, height: 14)
-                .overlay {
-                    Circle()
-                        .stroke(.background, lineWidth: 3)
-                }
-                .shadow(color: tint.opacity(0.24), radius: 4, y: 2)
         }
         .frame(width: 112)
         .accessibilityElement(children: .ignore)
@@ -383,13 +375,16 @@ private struct RangeValueLabel: View {
     let subtitle: String?
     let alignment: HorizontalAlignment
     let tint: Color
+    var showsDot = true
 
     var body: some View {
         VStack(alignment: alignment, spacing: 3) {
             HStack(spacing: 4) {
-                Circle()
-                    .fill(tint)
-                    .frame(width: 6, height: 6)
+                if showsDot {
+                    Circle()
+                        .fill(tint)
+                        .frame(width: 6, height: 6)
+                }
 
                 Text(title)
                     .font(.caption2.weight(.semibold))
@@ -906,7 +901,21 @@ struct InsightsView: View {
                                     PriceWindowRow(window: window, tint: AppTheme.success)
                                 }
                             }
-
+                            
+                            InsightsCard(tint: AppTheme.accent) {
+                                VStack(alignment: .leading, spacing: 10) {
+                                    InsightsSectionTitle(
+                                        title: "Price range",
+                                        systemImage: "chart.bar.fill",
+                                        tint: AppTheme.accent
+                                    )
+                                    
+                                    PriceRangeGraph(model: model)
+                                }
+                            }
+                            
+                            generationMixSection
+                            
                             InsightsCard(tint: AppTheme.error) {
                                 InsightsSectionTitle(
                                     title: "Most expensive times",
@@ -918,20 +927,6 @@ struct InsightsView: View {
                                     PriceWindowRow(window: window, tint: AppTheme.error)
                                 }
                             }
-                            
-                            InsightsCard(tint: AppTheme.accent) {
-                                VStack(alignment: .leading, spacing: 17) {
-                                    InsightsSectionTitle(
-                                        title: "Price range",
-                                        systemImage: "chart.bar.fill",
-                                        tint: AppTheme.accent
-                                    )
-                                    
-                                    PriceRangeGraph(model: model)
-                                }
-                            }
-
-                            generationMixSection
                         }
                         .padding(.horizontal, 16)
                         .padding(.vertical, 12)

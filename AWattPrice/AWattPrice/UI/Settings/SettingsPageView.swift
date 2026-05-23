@@ -322,6 +322,7 @@ struct SettingsPageView: View {
                 .padding(.horizontal, 16)
                 .padding(.top, 14)
                 .padding(.bottom, 28)
+                .appReadableContent(maxWidth: 760)
             }
             .appScreenBackground()
             .navigationTitle("Settings")

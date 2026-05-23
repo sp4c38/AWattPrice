@@ -5,8 +5,11 @@
 //  Created by Léon Becker on 27.10.20.
 //
 
-import MessageUI
 import SwiftUI
+import UIKit
+#if !targetEnvironment(macCatalyst)
+import MessageUI
+#endif
 
 private struct HelpAndSuggestionBackground: View {
     @Environment(\.colorScheme) private var colorScheme
@@ -116,22 +119,33 @@ struct HelpAndSuggestionView: View {
                 .padding(.horizontal, 16)
                 .padding(.top, 14)
                 .padding(.bottom, 28)
+                .appReadableContent(maxWidth: 680)
             }
         }
         .navigationTitle("Help & Suggestions")
         .navigationBarTitleDisplayMode(.inline)
         .sheet(item: $activeMailAction) { action in
+            #if targetEnvironment(macCatalyst)
+            EmptyView()
+            #else
             MailView(mailContent: action.mailContent)
                 .edgesIgnoringSafeArea(.bottom)
+            #endif
         }
     }
 
     private func openMail(for action: SupportMailAction) {
-        if MFMailComposeViewController.canSendMail() {
-            activeMailAction = action
-        } else if let alternativeUrl = MailView(mailContent: action.mailContent).getAlternativeMailApp() {
+        #if targetEnvironment(macCatalyst)
+        if let alternativeUrl = MailAppURLProvider.alternativeMailApp(for: action.mailContent) {
             UIApplication.shared.open(alternativeUrl)
         }
+        #else
+        if MFMailComposeViewController.canSendMail() {
+            activeMailAction = action
+        } else if let alternativeUrl = MailAppURLProvider.alternativeMailApp(for: action.mailContent) {
+            UIApplication.shared.open(alternativeUrl)
+        }
+        #endif
     }
 }
 

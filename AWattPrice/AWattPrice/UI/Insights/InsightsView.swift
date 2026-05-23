@@ -621,6 +621,7 @@ private struct GenerationMixHistoryContent: View {
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
+            .appReadableContent(maxWidth: 980)
         }
     }
 }
@@ -935,6 +936,7 @@ struct InsightsView: View {
                         }
                         .padding(.horizontal, 16)
                         .padding(.vertical, 12)
+                        .appReadableContent(maxWidth: 980)
                         .animation(.easeInOut(duration: 0.2), value: generationMix != nil)
                         .animation(.easeInOut(duration: 0.2), value: generationMixStateAnimationValue)
                     }

@@ -142,6 +142,7 @@ struct CheapestTimeView: View {
                     .padding(.horizontal, 16)
                     .padding(.top, 14)
                     .padding(.bottom, 28)
+                    .appReadableContent(maxWidth: 680)
                 }
             } else {
                 DataDownloadAndError()

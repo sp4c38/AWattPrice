@@ -7,6 +7,7 @@
 
 
 import SwiftUI
+import UIKit
 
 /// Opens the apps privacy policy in the browser in the correct language depending on the device language.
 func openAgreementLink(_ agreementLinks: (String, String)) {

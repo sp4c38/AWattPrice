@@ -146,10 +146,7 @@ struct ProSupporterPaywallView: View {
     @ViewBuilder
     private var headerIcon: some View {
         if proStore.hasPro {
-            Image(systemName: "checkmark.seal.fill")
-                .font(.title2.weight(.bold))
-                .foregroundStyle(AppTheme.success)
-                .symbolEffect(.bounce, options: .nonRepeating, value: purchaseCelebrationID)
+            ActiveProBoltIcon()
                 .frame(width: 42, height: 42)
                 .accessibilityHidden(true)
         } else {
@@ -777,6 +774,229 @@ private struct ActiveBenefitTile: View {
             RoundedRectangle(cornerRadius: 16, style: .continuous)
                 .stroke(benefit.tint.opacity(isActive ? 0.30 : 0.12), lineWidth: 1)
         }
+    }
+}
+
+private struct ActiveProBoltIcon: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var strikeProgress: CGFloat = 0
+    @State private var flashOpacity: CGFloat = 0
+    @State private var boltOpacity: CGFloat = 0
+    @State private var boltScale: CGFloat = 0.76
+    @State private var revealGlowOpacity: CGFloat = 0
+    @State private var revealGlowScale: CGFloat = 0.45
+    @State private var animationTask: Task<Void, Never>?
+
+    var body: some View {
+        ZStack {
+            ZStack {
+                ActiveProBoltShape()
+                    .fill(
+                        LinearGradient(
+                            colors: [
+                                Color.white.opacity(0.80),
+                                Color(red: 1.0, green: 0.96, blue: 0.18).opacity(0.62),
+                                Color(red: 1.0, green: 0.58, blue: 0.00).opacity(0.20)
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .overlay {
+                        ActiveProBoltShape()
+                            .stroke(Color.white.opacity(0.94), lineWidth: 2.4)
+                            .shadow(color: Color(red: 1.0, green: 0.92, blue: 0.08).opacity(0.92), radius: 5)
+                            .shadow(color: Color(red: 1.0, green: 0.44, blue: 0.00).opacity(0.46), radius: 9)
+                    }
+                    .scaleEffect(reduceMotion ? 0.9 : revealGlowScale)
+                    .opacity(reduceMotion ? 0 : revealGlowOpacity)
+                    .blur(radius: 0.35)
+
+                ZStack {
+                    ActiveProBoltShape()
+                        .stroke(
+                            Color.white,
+                            style: StrokeStyle(lineWidth: 5, lineCap: .round, lineJoin: .round)
+                        )
+                        .shadow(color: Color.white.opacity(0.42), radius: 3)
+                        .shadow(color: Color(red: 1.0, green: 0.48, blue: 0.00).opacity(0.36), radius: 8, y: 2)
+
+                    ActiveProBoltShape()
+                        .fill(
+                            LinearGradient(
+                                colors: [
+                                    Color(red: 1.0, green: 0.86, blue: 0.20),
+                                    Color(red: 1.0, green: 0.55, blue: 0.00),
+                                    Color(red: 0.88, green: 0.24, blue: 0.00)
+                                ],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+
+                    ActiveProBoltShape()
+                        .stroke(Color(red: 0.46, green: 0.14, blue: 0.00).opacity(0.18), lineWidth: 0.65)
+
+                    ActiveProBoltShape()
+                        .stroke(Color.white.opacity(0.36), lineWidth: 0.5)
+                        .blendMode(.screen)
+                }
+                .opacity(reduceMotion ? 1 : boltOpacity)
+                .scaleEffect(reduceMotion ? 1 : boltScale)
+
+                ActiveProLightningTraceShape()
+                    .trim(from: 0, to: reduceMotion ? 0 : strikeProgress)
+                    .stroke(
+                        Color.white,
+                        style: StrokeStyle(lineWidth: 4.6, lineCap: .round, lineJoin: .round)
+                    )
+                    .shadow(color: Color(red: 1.0, green: 0.94, blue: 0.08).opacity(0.94), radius: 8)
+                    .shadow(color: Color(red: 1.0, green: 0.44, blue: 0.00).opacity(0.62), radius: 11)
+                    .opacity(reduceMotion ? 0 : max(0, 1 - boltOpacity * 0.9))
+
+                ActiveProBoltShape()
+                    .fill(Color.white.opacity(reduceMotion ? 0 : flashOpacity))
+                    .blur(radius: 6)
+                    .scaleEffect(1.36)
+            }
+            .frame(width: 42, height: 42)
+        }
+        .frame(width: 112, height: 112)
+        .frame(width: 42, height: 42)
+        .onAppear(perform: startAnimationIfNeeded)
+        .onDisappear {
+            animationTask?.cancel()
+            animationTask = nil
+        }
+    }
+
+    private func startAnimationIfNeeded() {
+        guard animationTask == nil else { return }
+        animationTask?.cancel()
+
+        guard reduceMotion == false else {
+            strikeProgress = 1
+            boltOpacity = 1
+            boltScale = 1
+            flashOpacity = 0
+            revealGlowOpacity = 0
+            revealGlowScale = 1
+            return
+        }
+
+        strikeProgress = 0
+        flashOpacity = 0
+        boltOpacity = 0
+        boltScale = 0.76
+        revealGlowOpacity = 0
+        revealGlowScale = 0.86
+
+        animationTask = Task { @MainActor in
+            do {
+                try await Task.sleep(nanoseconds: 350_000_000)
+
+                while Task.isCancelled == false {
+                    strikeProgress = 0
+                    flashOpacity = 0
+                    boltOpacity = 0
+                    boltScale = 0.76
+                    revealGlowOpacity = 0
+                    revealGlowScale = 0.86
+
+                    try Task.checkCancellation()
+
+                    withAnimation(.easeInOut(duration: 0.85)) {
+                        strikeProgress = 1
+                    }
+
+                    try await Task.sleep(nanoseconds: 720_000_000)
+                    try Task.checkCancellation()
+
+                    withAnimation(.easeOut(duration: 0.12)) {
+                        flashOpacity = 0.96
+                    }
+
+                    try await Task.sleep(nanoseconds: 180_000_000)
+                    try Task.checkCancellation()
+
+                    withAnimation(.easeOut(duration: 0.16)) {
+                        flashOpacity = 0
+                    }
+
+                    withAnimation(.easeOut(duration: 0.16)) {
+                        revealGlowOpacity = 0.92
+                        revealGlowScale = 1.12
+                    }
+
+                    withAnimation(.spring(response: 0.40, dampingFraction: 0.46)) {
+                        boltOpacity = 1
+                        boltScale = 1.14
+                    }
+
+                    try await Task.sleep(nanoseconds: 160_000_000)
+                    try Task.checkCancellation()
+
+                    withAnimation(.easeOut(duration: 0.68)) {
+                        revealGlowOpacity = 0
+                        revealGlowScale = 2.35
+                    }
+
+                    withAnimation(.spring(response: 0.28, dampingFraction: 0.74)) {
+                        boltScale = 1
+                    }
+
+                    try await Task.sleep(nanoseconds: 5_000_000_000)
+                }
+            } catch {
+                return
+            }
+        }
+    }
+}
+
+private enum ActiveProBoltGeometry {
+    static let points = [
+        CGPoint(x: 0.62, y: 0.02),
+        CGPoint(x: 0.17, y: 0.55),
+        CGPoint(x: 0.43, y: 0.55),
+        CGPoint(x: 0.31, y: 0.98),
+        CGPoint(x: 0.86, y: 0.35),
+        CGPoint(x: 0.57, y: 0.38)
+    ]
+
+    static func path(in rect: CGRect, closeSubpath: Bool) -> Path {
+        var path = Path()
+
+        for (index, point) in points.enumerated() {
+            let resolvedPoint = CGPoint(
+                x: rect.minX + point.x * rect.width,
+                y: rect.minY + point.y * rect.height
+            )
+
+            if index == 0 {
+                path.move(to: resolvedPoint)
+            } else {
+                path.addLine(to: resolvedPoint)
+            }
+        }
+
+        if closeSubpath {
+            path.closeSubpath()
+        }
+
+        return path
+    }
+}
+
+private struct ActiveProBoltShape: Shape {
+    func path(in rect: CGRect) -> Path {
+        ActiveProBoltGeometry.path(in: rect, closeSubpath: true)
+    }
+}
+
+private struct ActiveProLightningTraceShape: Shape {
+    func path(in rect: CGRect) -> Path {
+        ActiveProBoltGeometry.path(in: rect, closeSubpath: true)
     }
 }
 

@@ -1052,7 +1052,8 @@ private struct ElectricCTAHighlight: View {
 
     let isDisabled: Bool
 
-    private let duration: TimeInterval = 3.2
+    /// One full sweep takes this many seconds.
+    private let period: TimeInterval = 2.6
 
     var body: some View {
         if isDisabled {
@@ -1061,26 +1062,41 @@ private struct ElectricCTAHighlight: View {
             RoundedRectangle(cornerRadius: 16, style: .continuous)
                 .stroke(Color.white.opacity(0.16), lineWidth: 1)
         } else {
-            TimelineView(.animation) { context in
-                let progress = context.date.timeIntervalSinceReferenceDate
-                    .truncatingRemainder(dividingBy: duration) / duration
+            ZStack {
+                // Subtle persistent border so the button always looks polished.
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .stroke(Color.white.opacity(0.14), lineWidth: 1)
 
-                GeometryReader { geometry in
-                    Rectangle()
-                        .fill(
-                            LinearGradient(
-                                colors: [
-                                    Color.white.opacity(0),
-                                    Color.white.opacity(0.24),
-                                    Color.white.opacity(0)
-                                ],
-                                startPoint: .leading,
-                                endPoint: .trailing
+                // Animated sheen drawn with Canvas — no layout shapes, no
+                // rectangles, clips automatically to its own bounds.
+                TimelineView(.animation) { timeline in
+                    let t = CGFloat(
+                        timeline.date.timeIntervalSinceReferenceDate
+                            .truncatingRemainder(dividingBy: period) / period
+                    )
+                    Canvas { ctx, size in
+                        // Half-width of the soft gradient band.
+                        let hw = size.width * 0.22
+                        // Center of the band sweeps from off-screen left to
+                        // off-screen right so the loop is seamless.
+                        let cx = -hw + (size.width + hw * 2) * t
+
+                        // A diagonal gradient (startPoint top-left of band,
+                        // endPoint bottom-right) gives the classic angled-
+                        // sheen look without any rotated shapes.
+                        ctx.fill(
+                            Path(CGRect(origin: .zero, size: size)),
+                            with: .linearGradient(
+                                Gradient(stops: [
+                                    .init(color: .white.opacity(0.00), location: 0),
+                                    .init(color: .white.opacity(0.28), location: 0.5),
+                                    .init(color: .white.opacity(0.00), location: 1),
+                                ]),
+                                startPoint: CGPoint(x: cx - hw, y: 0),
+                                endPoint:   CGPoint(x: cx + hw, y: size.height)
                             )
                         )
-                        .frame(width: geometry.size.width * 0.34)
-                        .rotationEffect(.degrees(-12))
-                        .offset(x: (geometry.size.width * CGFloat(progress)) - (geometry.size.width * 0.28))
+                    }
                 }
             }
             .allowsHitTesting(false)

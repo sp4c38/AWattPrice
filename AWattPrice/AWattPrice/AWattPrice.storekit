@@ -43,7 +43,7 @@
     "_developerTeamID" : "RC32A2AMHF",
     "_disableDialogs" : false,
     "_failTransactionsEnabled" : false,
-    "_lastSynchronizedDate" : 801214029.399894,
+    "_lastSynchronizedDate" : 801232502.98602295,
     "_locale" : "de",
     "_renewalBillingIssuesEnabled" : false,
     "_storefront" : "DEU",
@@ -67,8 +67,8 @@
           "billingPlans" : [
             {
               "billingPlanType" : "BILLED_UPFRONT",
-              "commitmentDisplayPrice" : "1.99",
-              "displayPrice" : "1.99",
+              "commitmentDisplayPrice" : "0.99",
+              "displayPrice" : "0.99",
               "internalID" : "6771800952_BILLED_UPFRONT",
               "isEnabled" : true
             }
@@ -76,7 +76,7 @@
           "codeOffers" : [
 
           ],
-          "displayPrice" : "1.99",
+          "displayPrice" : "0.99",
           "familyShareable" : true,
           "groupNumber" : 1,
           "internalID" : "6771800952",

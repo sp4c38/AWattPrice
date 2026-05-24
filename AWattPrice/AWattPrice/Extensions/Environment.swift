@@ -47,7 +47,7 @@ private struct SavingStatusOverlayContent: View {
         .foregroundStyle(AppTheme.accent)
         .padding(.horizontal, 12)
         .padding(.vertical, 7)
-        .background(.white, in: Capsule())
+        .background(Color(uiColor: .systemBackground), in: Capsule())
         .overlay(
             Capsule()
                 .stroke(AppTheme.accent, lineWidth: 1)

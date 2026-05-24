@@ -139,11 +139,15 @@ private struct EnergyPriceGraphDisplayRow: Identifiable {
             return "\(formattedTime(startTime))-\(formattedTime(endTime))"
         }
 
-        return formattedTime(startTime)
+        return formattedHour(startTime)
     }
 
     private func formattedTime(_ date: Date) -> String {
         date.formatted(.dateTime.hour(.twoDigits(amPM: .omitted)).minute(.twoDigits))
+    }
+
+    private func formattedHour(_ date: Date) -> String {
+        "\(date.formatted(.dateTime.hour(.twoDigits(amPM: .omitted))))h"
     }
 }
 
@@ -566,8 +570,8 @@ struct EnergyPriceGraph: View {
             return prices.enumerated().map { index, pricePoint in
                 let isSelected = selectedGroupIndex == index
                 let isFullHour = startsOnFullHour(pricePoint.startTime)
-                let isLowestPrice = marksExtremes && isExtremePrice(pricePoint.marketprice, matching: minPrice)
-                let isHighestPrice = marksExtremes && isExtremePrice(pricePoint.marketprice, matching: maxPrice)
+                let isLowestPrice = isSelected && marksExtremes && isExtremePrice(pricePoint.marketprice, matching: minPrice)
+                let isHighestPrice = isSelected && marksExtremes && isExtremePrice(pricePoint.marketprice, matching: maxPrice)
 
                 return EnergyPriceGraphDisplayRow(
                     id: "interval-\(index)",

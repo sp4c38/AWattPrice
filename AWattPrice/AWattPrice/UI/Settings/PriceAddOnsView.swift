@@ -113,6 +113,12 @@ private struct PriceAddOnsDraft: Equatable {
         fixedPriceAddOn + monthlyFixedCostPrice
     }
 
+    func hasServerRelevantChanges(comparedTo other: PriceAddOnsDraft) -> Bool {
+        totalPriceAddOn != other.totalPriceAddOn
+            || percentagePriceAddOn != other.percentagePriceAddOn
+            || activeAddOnKinds != other.activeAddOnKinds
+    }
+
     var hasActiveAddOns: Bool {
         percentagePriceAddOn.isActivePriceComponent
             || fixedPriceAddOn.isActivePriceComponent
@@ -205,6 +211,7 @@ private class PriceAddOnsViewModel: ObservableObject {
 
     var needsServerSave: Bool {
         notificationService.wantToReceiveAnyNotification(setting: settingsManager.setting)
+            && draft.hasServerRelevantChanges(comparedTo: savedDraft)
     }
 
     func resetFromSettings() {
@@ -756,7 +763,7 @@ struct PriceAddOnsView: View {
     private func priceAddOnSection(for kind: PriceAddOnKind) -> some View {
         ReorderablePriceAddOnSection(
             kind: kind,
-            canReorder: viewModel.draft.canReorderAddOns && viewModel.draft.isActive(kind),
+            canReorder: true,
             isDragging: draggingKind == kind,
             dragTranslation: draggingKind == kind ? dragTranslation : 0,
             onDragChanged: { handleDragChanged(kind: kind, value: $0) },
@@ -853,11 +860,11 @@ struct PriceAddOnsView: View {
         var keepChecking = true
         while keepChecking {
             keepChecking = false
-            let active = viewModel.draft.activeAddOnKinds
-            guard let idx = active.firstIndex(of: kind) else { break }
+            let all = Setting.normalizedPriceAddOnOrder(viewModel.draft.addOnOrder)
+            guard let idx = all.firstIndex(of: kind) else { break }
 
-            if dragTranslation > 0, idx < active.count - 1 {
-                let next = active[idx + 1]
+            if dragTranslation > 0, idx < all.count - 1 {
+                let next = all[idx + 1]
                 let threshold = (itemHeights[next] ?? 100) + cardSpacing
                 if dragTranslation > threshold / 2 {
                     withAnimation(.interactiveSpring(response: 0.25)) {
@@ -867,7 +874,7 @@ struct PriceAddOnsView: View {
                     keepChecking = true
                 }
             } else if dragTranslation < 0, idx > 0 {
-                let prev = active[idx - 1]
+                let prev = all[idx - 1]
                 let threshold = (itemHeights[prev] ?? 100) + cardSpacing
                 if dragTranslation < -(threshold / 2) {
                     withAnimation(.interactiveSpring(response: 0.25)) {

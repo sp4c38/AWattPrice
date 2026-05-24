@@ -80,49 +80,21 @@ private struct SettingsActionRow: View {
     let subtitle: String?
     let systemImage: String
     let tint: Color
-    let action: () -> Void
+    let action: (() -> Void)?
 
     var body: some View {
-        Button(action: action) {
-            HStack(spacing: 14) {
-                Image(systemName: systemImage)
-                    .font(.system(size: 18, weight: .semibold))
-                    .foregroundStyle(tint)
-                    .frame(width: 40, height: 40)
-                    .background(tint.opacity(0.12), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(title)
-                        .font(.headline)
-                        .foregroundStyle(.primary)
-
-                    if let subtitle {
-                        Text(subtitle)
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                            .multilineTextAlignment(.leading)
-                    }
-                }
-
-                Spacer()
-
-                Image(systemName: "chevron.right")
-                    .font(.footnote.weight(.semibold))
-                    .foregroundStyle(.tertiary)
+        if let action {
+            Button(action: action) {
+                rowContent(showsChevron: true)
             }
-            .contentShape(Rectangle())
+            .buttonStyle(.plain)
+        } else {
+            rowContent(showsChevron: false)
         }
-        .buttonStyle(.plain)
     }
-}
 
-private struct SettingsInfoRow: View {
-    let title: String
-    let subtitle: String
-    let systemImage: String
-    let tint: Color
-
-    var body: some View {
+    @ViewBuilder
+    private func rowContent(showsChevron: Bool) -> some View {
         HStack(spacing: 14) {
             Image(systemName: systemImage)
                 .font(.system(size: 18, weight: .semibold))
@@ -135,14 +107,23 @@ private struct SettingsInfoRow: View {
                     .font(.headline)
                     .foregroundStyle(.primary)
 
-                Text(subtitle)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.leading)
+                if let subtitle {
+                    Text(subtitle)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.leading)
+                }
             }
 
             Spacer()
+
+            if showsChevron {
+                Image(systemName: "chevron.right")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(.tertiary)
+            }
         }
+        .contentShape(Rectangle())
     }
 }
 
@@ -246,7 +227,7 @@ struct SettingsPageView: View {
                             } else {
                                 SettingsActionRow(
                                     title: "Price Add-ons".localized(),
-                                    subtitle: "Pro unlocks custom price markups.".localized(),
+                                    subtitle: "Pro lets you include provider fees and taxes in displayed prices.".localized(),
                                     systemImage: "sum",
                                     tint: SettingsPageStyle.priceIconTint,
                                     action: onPresentProPaywall
@@ -260,22 +241,13 @@ struct SettingsPageView: View {
 
                     SettingsCard {
                         VStack(spacing: 16) {
-                            if proSupporterStore.hasPro {
-                                SettingsInfoRow(
-                                    title: "Widgets".localized(),
-                                    subtitle: "Add our widgets to your Home Screen for quick price updates.".localized(),
-                                    systemImage: "square.grid.2x2.fill",
-                                    tint: SettingsPageStyle.widgetsIconTint
-                                )
-                            } else {
-                                SettingsActionRow(
-                                    title: "Widgets".localized(),
-                                    subtitle: nil,
-                                    systemImage: "square.grid.2x2.fill",
-                                    tint: SettingsPageStyle.widgetsIconTint,
-                                    action: onPresentProPaywall
-                                )
-                            }
+                            SettingsActionRow(
+                                title: "Widgets".localized(),
+                                subtitle: "Add our widgets to your Home Screen for quick price updates.".localized(),
+                                systemImage: "square.grid.2x2.fill",
+                                tint: SettingsPageStyle.widgetsIconTint,
+                                action: proSupporterStore.hasPro ? nil : onPresentProPaywall
+                            )
 
                             Divider()
 
@@ -283,7 +255,7 @@ struct SettingsPageView: View {
                                 title: "AWattPrice Pro Supporter".localized(),
                                 subtitle: proSupporterStore.hasPro
                                     ? "Unlocked".localized()
-                                    : "Support the app and unlock notifications and advanced insights.".localized(),
+                                    : "Unlock pro features and support the app.".localized(),
                                 systemImage: "heart.fill",
                                 tint: SettingsPageStyle.proIconTint,
                                 action: onPresentProPaywall

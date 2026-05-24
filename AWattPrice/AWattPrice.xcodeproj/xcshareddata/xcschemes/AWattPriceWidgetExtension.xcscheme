@@ -49,9 +49,9 @@
             parallelizable = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "61F4EF352A6584D6007CCAA6"
-               BuildableName = "UITesting.xctest"
-               BlueprintName = "UITesting"
+               BlueprintIdentifier = "D60000612FC0000100000001"
+               BuildableName = "AWattPriceTests.xctest"
+               BlueprintName = "AWattPriceTests"
                ReferencedContainer = "container:AWattPrice.xcodeproj">
             </BuildableReference>
          </TestableReference>

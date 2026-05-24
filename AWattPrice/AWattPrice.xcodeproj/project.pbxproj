@@ -69,6 +69,12 @@
 		D6A2D1CD2D8B5A8C0013028D /* EnergyDataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E1E9B883B731AD9BA0E6A9 /* EnergyDataController.swift */; };
 		D6A2D1CE2D8B752D0013028D /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13637B90539D4C9A8BB48CC0 /* APIClient.swift */; };
 		D6A2D1D02D8B75700013028D /* NotificationConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CCBC50D92AE763388DAAB90 /* NotificationConfiguration.swift */; };
+		D60000012FC0000100000001 /* EnergyDataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D60000112FC0000100000001 /* EnergyDataTests.swift */; };
+		D60000022FC0000100000001 /* CheapestHourManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D60000122FC0000100000001 /* CheapestHourManagerTests.swift */; };
+		D60000032FC0000100000001 /* SettingsAndNotificationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D60000132FC0000100000001 /* SettingsAndNotificationTests.swift */; };
+		D60000042FC0000100000001 /* APIClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D60000142FC0000100000001 /* APIClientTests.swift */; };
+		D60000052FC0000100000001 /* WidgetPriceSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D60000152FC0000100000001 /* WidgetPriceSnapshotTests.swift */; };
+		D60000062FC0000100000001 /* FormattingAndRegionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D60000162FC0000100000001 /* FormattingAndRegionTests.swift */; };
 		D8CFCC7C18D97EA76DB02E08 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 546D5FA692CB5FFBAF81B22A /* Launch Screen.storyboard */; };
 		D94911F464C45AAEFFDEEF53 /* SplashScreenSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79260E66169C7FFE7A752077 /* SplashScreenSetupView.swift */; };
 		DA697D947FD57718F9F2ADAC /* EnergyDataPreviewContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 147B08A0FC4429D5BA97DFA2 /* EnergyDataPreviewContent.swift */; };
@@ -90,6 +96,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 61635B232A482E690099F5AD;
 			remoteInfo = AWattPriceWidgetExtension;
+		};
+		D60000812FC0000100000001 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 80976F3A00A5122A760B668F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F9290196FBFAE745A3E6B2A3;
+			remoteInfo = AWattPrice;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -174,6 +187,13 @@
 		D6A2D1C02D8B2AC00013028D /* SwiftDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataService.swift; sourceTree = "<group>"; };
 		D6B5EC412FB8BB920073D82F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		D6FB7487869EADAEB411F1A7 /* Int.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Int.swift; sourceTree = "<group>"; };
+		D60000112FC0000100000001 /* EnergyDataTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnergyDataTests.swift; sourceTree = "<group>"; };
+		D60000122FC0000100000001 /* CheapestHourManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheapestHourManagerTests.swift; sourceTree = "<group>"; };
+		D60000132FC0000100000001 /* SettingsAndNotificationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsAndNotificationTests.swift; sourceTree = "<group>"; };
+		D60000142FC0000100000001 /* APIClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClientTests.swift; sourceTree = "<group>"; };
+		D60000152FC0000100000001 /* WidgetPriceSnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetPriceSnapshotTests.swift; sourceTree = "<group>"; };
+		D60000162FC0000100000001 /* FormattingAndRegionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormattingAndRegionTests.swift; sourceTree = "<group>"; };
+		D60000212FC0000100000001 /* AWattPriceTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AWattPriceTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E2BCED411DC7AD4E79FC22B9 /* TotalTimeFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TotalTimeFormatter.swift; sourceTree = "<group>"; };
 		EA5DF4BB1567348D207BC3BC /* HelpAndSuggestionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpAndSuggestionView.swift; sourceTree = "<group>"; };
 		EDDDD6143A8627F05026A525 /* SplashScreenStartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashScreenStartView.swift; sourceTree = "<group>"; };
@@ -196,6 +216,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				61ACE7A62A56A7E7005D0110 /* EffectsLibrary in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D60000312FC0000100000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -264,6 +291,7 @@
 			children = (
 				4D92DAF6062C9BB0CC3973F3 /* AWattPrice.app */,
 				61635B242A482E690099F5AD /* AWattPriceWidgetExtension.appex */,
+				D60000212FC0000100000001 /* AWattPriceTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -486,6 +514,19 @@
 			path = API;
 			sourceTree = "<group>";
 		};
+		D60000912FC0000100000001 /* AWattPriceTests */ = {
+			isa = PBXGroup;
+			children = (
+				D60000142FC0000100000001 /* APIClientTests.swift */,
+				D60000122FC0000100000001 /* CheapestHourManagerTests.swift */,
+				D60000112FC0000100000001 /* EnergyDataTests.swift */,
+				D60000162FC0000100000001 /* FormattingAndRegionTests.swift */,
+				D60000132FC0000100000001 /* SettingsAndNotificationTests.swift */,
+				D60000152FC0000100000001 /* WidgetPriceSnapshotTests.swift */,
+			);
+			path = AWattPriceTests;
+			sourceTree = "<group>";
+		};
 		E18353461A3EAEA81012197F /* AWattPrice */ = {
 			isa = PBXGroup;
 			children = (
@@ -531,6 +572,7 @@
 				25A41E122FBA629C00A685EF /* AppIcon.icon/Assets/App Icon v3.png */,
 				61635B412A4834D20099F5AD /* Shared */,
 				E18353461A3EAEA81012197F /* AWattPrice */,
+				D60000912FC0000100000001 /* AWattPriceTests */,
 				61635B2A2A482E690099F5AD /* AWattPriceWidget */,
 				4BBB0F3B49E60388309A1685 /* Products */,
 			);
@@ -578,6 +620,24 @@
 			productReference = 4D92DAF6062C9BB0CC3973F3 /* AWattPrice.app */;
 			productType = "com.apple.product-type.application";
 		};
+		D60000612FC0000100000001 /* AWattPriceTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D60000C12FC0000100000001 /* Build configuration list for PBXNativeTarget "AWattPriceTests" */;
+			buildPhases = (
+				D60000412FC0000100000001 /* Sources */,
+				D60000312FC0000100000001 /* Frameworks */,
+				D60000512FC0000100000001 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D60000712FC0000100000001 /* PBXTargetDependency */,
+			);
+			name = AWattPriceTests;
+			productName = AWattPriceTests;
+			productReference = D60000212FC0000100000001 /* AWattPriceTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -590,6 +650,10 @@
 				TargetAttributes = {
 					61635B232A482E690099F5AD = {
 						CreatedOnToolsVersion = 14.3.1;
+					};
+					D60000612FC0000100000001 = {
+						CreatedOnToolsVersion = 26.0;
+						TestTargetID = F9290196FBFAE745A3E6B2A3;
 					};
 					F9290196FBFAE745A3E6B2A3 = {
 						SystemCapabilities = {
@@ -618,6 +682,7 @@
 			targets = (
 				F9290196FBFAE745A3E6B2A3 /* AWattPrice */,
 				61635B232A482E690099F5AD /* AWattPriceWidgetExtension */,
+				D60000612FC0000100000001 /* AWattPriceTests */,
 			);
 		};
 /* End PBXProject section */
@@ -644,6 +709,13 @@
 				D8CFCC7C18D97EA76DB02E08 /* Launch Screen.storyboard in Resources */,
 				59BDBAACA1BB8316305D917B /* Localizable.strings in Resources */,
 				F1212CD12690C400EAB49863 /* PreviewEnergyData.json in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D60000512FC0000100000001 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -726,6 +798,19 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D60000412FC0000100000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D60000042FC0000100000001 /* APIClientTests.swift in Sources */,
+				D60000022FC0000100000001 /* CheapestHourManagerTests.swift in Sources */,
+				D60000012FC0000100000001 /* EnergyDataTests.swift in Sources */,
+				D60000062FC0000100000001 /* FormattingAndRegionTests.swift in Sources */,
+				D60000032FC0000100000001 /* SettingsAndNotificationTests.swift in Sources */,
+				D60000052FC0000100000001 /* WidgetPriceSnapshotTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -736,6 +821,11 @@
 			);
 			target = 61635B232A482E690099F5AD /* AWattPriceWidgetExtension */;
 			targetProxy = 612286832A56E39700FA0F9C /* PBXContainerItemProxy */;
+		};
+		D60000712FC0000100000001 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F9290196FBFAE745A3E6B2A3 /* AWattPrice */;
+			targetProxy = D60000812FC0000100000001 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1121,6 +1211,60 @@
 			};
 			name = Release;
 		};
+		D60000A12FC0000100000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = RC32A2AMHF;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundlePackageType = BNDL;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = me.space8.AWattPriceTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AWattPrice.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/AWattPrice";
+			};
+			name = Debug;
+		};
+		D60000B12FC0000100000001 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = RC32A2AMHF;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundlePackageType = BNDL;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = me.space8.AWattPriceTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AWattPrice.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/AWattPrice";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1147,6 +1291,15 @@
 			buildConfigurations = (
 				61635B362A482E6A0099F5AD /* Debug */,
 				61635B3A2A482E6A0099F5AD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		D60000C12FC0000100000001 /* Build configuration list for PBXNativeTarget "AWattPriceTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D60000A12FC0000100000001 /* Debug */,
+				D60000B12FC0000100000001 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

@@ -266,6 +266,25 @@ private struct PriceModelInputRow: View {
     let unit: String
     @Binding var value: Double
     let isInputActive: FocusState<Bool>.Binding
+    let activeTint: Color?
+    @State private var text: String
+
+    init(
+        title: String,
+        subtitle: String?,
+        unit: String,
+        value: Binding<Double>,
+        isInputActive: FocusState<Bool>.Binding,
+        activeTint: Color? = nil
+    ) {
+        self.title = title
+        self.subtitle = subtitle
+        self.unit = unit
+        self._value = value
+        self.isInputActive = isInputActive
+        self.activeTint = activeTint
+        self._text = State(initialValue: Self.text(for: value.wrappedValue, unit: unit))
+    }
 
     private var inputFill: Color {
         AppTheme.fieldBackground(for: colorScheme)
@@ -275,11 +294,59 @@ private struct PriceModelInputRow: View {
         AppTheme.cardStroke(for: colorScheme)
     }
 
+    private var placeholder: String {
+        Self.text(for: 0, unit: unit)
+    }
+
+    private static func text(for value: Double, unit: String) -> String {
+        if unit == "kWh/year" {
+            value.formatted(.number.precision(.fractionLength(0)))
+        } else {
+            value.formatted(.number.precision(.fractionLength(2)))
+        }
+    }
+
+    private static func parsedValue(from text: String, unit: String) -> Double? {
+        let trimmedText = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard trimmedText.isEmpty == false else { return 0 }
+
+        if unit == "kWh/year" {
+            var sanitizedText = ""
+            for character in trimmedText {
+                if character == "-", sanitizedText.isEmpty {
+                    sanitizedText.append(character)
+                } else if character.isNumber {
+                    sanitizedText.append(character)
+                }
+            }
+            return Double(sanitizedText)
+        }
+
+        let decimalSeparator = Locale.current.decimalSeparator ?? "."
+        let alternateSeparator = decimalSeparator == "," ? "." : ","
+        let textWithLocaleDecimalSeparator: String
+
+        if trimmedText.range(of: decimalSeparator) == nil, trimmedText.range(of: alternateSeparator) != nil {
+            textWithLocaleDecimalSeparator = trimmedText.replacingOccurrences(of: alternateSeparator, with: decimalSeparator)
+        } else {
+            textWithLocaleDecimalSeparator = trimmedText
+        }
+
+        return textWithLocaleDecimalSeparator.doubleValue
+    }
+
+    private func updateValue(from newText: String) {
+        if let parsedValue = Self.parsedValue(from: newText, unit: unit) {
+            value = parsedValue
+        }
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             VStack(alignment: .leading, spacing: 3) {
                 Text(title.localized())
                     .font(.headline)
+                    .foregroundStyle(activeTint ?? .primary)
 
                 if let subtitle = subtitle {
                     Text(subtitle.localized())
@@ -289,11 +356,21 @@ private struct PriceModelInputRow: View {
             }
 
             HStack(spacing: 12) {
-                TextField("0.00", value: $value, format: .number.precision(.fractionLength(0 ... 2)))
+                TextField(placeholder, text: $text)
                     .keyboardType(.decimalPad)
                     .focused(isInputActive)
                     .font(.system(size: 22, weight: .semibold, design: .rounded))
                     .monospacedDigit()
+                    .onChange(of: text) { _, newText in
+                        updateValue(from: newText)
+                    }
+                    .onChange(of: value) { _, newValue in
+                        guard text.isEmpty == false else { return }
+                        let parsedTextValue = Self.parsedValue(from: text, unit: unit)
+                        if parsedTextValue.map({ $0 != newValue }) ?? true {
+                            text = Self.text(for: newValue, unit: unit)
+                        }
+                    }
 
                 Spacer(minLength: 0)
 
@@ -307,10 +384,12 @@ private struct PriceModelInputRow: View {
                     .fill(inputFill)
                     .overlay(
                         RoundedRectangle(cornerRadius: 18, style: .continuous)
-                            .stroke(inputStroke, lineWidth: 1)
+                            .stroke(activeTint.map { $0.opacity(0.42) } ?? inputStroke, lineWidth: 1)
                     )
             )
+            .animation(.easeInOut(duration: 0.18), value: activeTint != nil)
         }
+        .animation(.easeInOut(duration: 0.18), value: activeTint != nil)
     }
 }
 
@@ -375,12 +454,12 @@ private struct PriceFormulaView: View {
             PriceFormulaTerm.percentage("VAT", tint: .orange, id: "vat")
         ]
 
-        if draft.percentagePriceAddOn.isActivePriceComponent {
-            terms.append(PriceFormulaTerm.percentage(draft.percentagePriceAddOn.percentageText, tint: .cyan, id: "percentage"))
-        }
-
         if draft.fixedPriceAddOn.isActivePriceComponent {
             terms.append(PriceFormulaTerm.price(draft.fixedPriceAddOn.priceAddOnSummaryText, unit: "ct/kWh", tint: .green, id: "fixed"))
+        }
+
+        if draft.percentagePriceAddOn.isActivePriceComponent {
+            terms.append(PriceFormulaTerm.percentage(draft.percentagePriceAddOn.percentageText, tint: .cyan, id: "percentage"))
         }
 
         if draft.monthlyFixedCostPrice.isActivePriceComponent {
@@ -546,16 +625,11 @@ struct PriceAddOnsView: View {
     }
 
     var body: some View {
-        ZStack {
+        ZStack(alignment: .top) {
             PriceAddOnsBackground()
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
-                    if viewModel.isSaving {
-                        PriceAddOnsBadge(text: "Saving to server", tint: AppTheme.accent, isLoading: true)
-                            .transition(.opacity.combined(with: .move(edge: .top)))
-                    }
-
                     PriceAddOnsCard {
                         Text("Add-ons are applied to prices everywhere throughout AWattPrice.".localized())
                             .font(.subheadline)
@@ -565,10 +639,6 @@ struct PriceAddOnsView: View {
                             PriceFormulaView(draft: viewModel.draft)
                         }
                     }
-                    .animation(.spring(response: 0.28, dampingFraction: 0.82), value: viewModel.draft.hasActiveAddOns)
-                    .animation(.spring(response: 0.28, dampingFraction: 0.82), value: viewModel.draft.fixedPriceAddOn.isActivePriceComponent)
-                    .animation(.spring(response: 0.28, dampingFraction: 0.82), value: viewModel.draft.percentagePriceAddOn.isActivePriceComponent)
-                    .animation(.spring(response: 0.28, dampingFraction: 0.82), value: viewModel.draft.monthlyFixedCostPrice.isActivePriceComponent)
 
                     PriceAddOnsCard {
                         VStack(alignment: .leading, spacing: 16) {
@@ -577,7 +647,8 @@ struct PriceAddOnsView: View {
                                 subtitle: nil,
                                 unit: "ct/kWh",
                                 value: $viewModel.draft.fixedPriceAddOn,
-                                isInputActive: $isInputActive
+                                isInputActive: $isInputActive,
+                                activeTint: viewModel.draft.fixedPriceAddOn.isActivePriceComponent ? .green : nil
                             )
                         }
                     }
@@ -589,7 +660,8 @@ struct PriceAddOnsView: View {
                                 subtitle: nil,
                                 unit: "%",
                                 value: $viewModel.draft.percentagePriceAddOn,
-                                isInputActive: $isInputActive
+                                isInputActive: $isInputActive,
+                                activeTint: viewModel.draft.percentagePriceAddOn.isActivePriceComponent ? .cyan : nil
                             )
                         }
                     }
@@ -601,7 +673,8 @@ struct PriceAddOnsView: View {
                                 subtitle: "Basic electricity provider fee.",
                                 unit: "EUR/month",
                                 value: $viewModel.draft.monthlyFixedCost,
-                                isInputActive: $isInputActive
+                                isInputActive: $isInputActive,
+                                activeTint: viewModel.draft.monthlyFixedCostPrice.isActivePriceComponent ? .blue : nil
                             )
 
                             PriceModelInputRow(
@@ -609,7 +682,8 @@ struct PriceAddOnsView: View {
                                 subtitle: "Used to spread fixed monthly costs over each kWh.",
                                 unit: "kWh/year",
                                 value: $viewModel.draft.annualConsumptionKWh,
-                                isInputActive: $isInputActive
+                                isInputActive: $isInputActive,
+                                activeTint: viewModel.draft.monthlyFixedCostPrice.isActivePriceComponent ? .blue : nil
                             )
 
                             HStack(alignment: .firstTextBaseline, spacing: 4) {
@@ -618,10 +692,13 @@ struct PriceAddOnsView: View {
 
                                 PriceValueLabel(
                                     value: viewModel.draft.monthlyFixedCostPrice.priceAddOnSummaryText,
-                                    unit: "ct/kWh.",
+                                    unit: "ct/kWh",
                                     tint: Color.secondary,
                                     size: 13
                                 )
+
+                                Text(".")
+                                    .font(.footnote.weight(.semibold))
                             }
                             .foregroundStyle(.secondary)
 
@@ -642,8 +719,14 @@ struct PriceAddOnsView: View {
                 .padding(.horizontal, 16)
                 .padding(.top, 14)
                 .padding(.bottom, 28)
+                .animation(.spring(response: 0.28, dampingFraction: 0.82), value: viewModel.draft.hasActiveAddOns)
+                .animation(.spring(response: 0.28, dampingFraction: 0.82), value: viewModel.draft.fixedPriceAddOn.isActivePriceComponent)
+                .animation(.spring(response: 0.28, dampingFraction: 0.82), value: viewModel.draft.percentagePriceAddOn.isActivePriceComponent)
+                .animation(.spring(response: 0.28, dampingFraction: 0.82), value: viewModel.draft.monthlyFixedCostPrice.isActivePriceComponent)
             }
+
         }
+        .background(SavingStatusWindowOverlay(isVisible: viewModel.isSaving).frame(width: 0, height: 0))
         .animation(.easeInOut(duration: 0.18), value: viewModel.isSaving)
         .navigationTitle("Price Add-ons")
         .navigationBarTitleDisplayMode(.large)

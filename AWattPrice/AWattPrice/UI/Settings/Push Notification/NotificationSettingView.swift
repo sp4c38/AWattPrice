@@ -498,24 +498,11 @@ struct NotificationSettingView: View {
     )
 
     var body: some View {
-        ZStack {
+        ZStack(alignment: .top) {
             NotificationSettingsBackground()
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
-                    if viewModel.isSaving {
-                        HStack {
-                            NotificationSettingsBadge(
-                                text: "Saving to server",
-                                tint: AppTheme.accent,
-                                isLoading: true
-                            )
-                            
-                            Spacer()
-                        }
-                        .transition(.opacity.combined(with: .move(edge: .top)))
-                    }
-
                     if notificationService.accessState == .rejected {
                         NotificationSettingsCard {
                             NoNotificationAccessView()
@@ -599,7 +586,9 @@ struct NotificationSettingView: View {
                 .padding(.top, 14)
                 .padding(.bottom, 28)
             }
+
         }
+        .background(SavingStatusWindowOverlay(isVisible: viewModel.isSaving).frame(width: 0, height: 0))
         .animation(.easeInOut(duration: 0.18), value: viewModel.isSaving)
         .animation(.easeInOut(duration: 0.2), value: viewModel.exampleMessage)
         .navigationTitle("Notifications")

@@ -34,6 +34,104 @@ enum AppTheme {
     }
 }
 
+private struct SavingStatusOverlayContent: View {
+    var body: some View {
+        HStack(spacing: 6) {
+            ProgressView()
+                .controlSize(.mini)
+                .tint(AppTheme.accent)
+
+            Text("Saving to server".localized())
+                .font(.caption.weight(.semibold))
+        }
+        .foregroundStyle(AppTheme.accent)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 7)
+        .background(.white, in: Capsule())
+        .overlay(
+            Capsule()
+                .stroke(AppTheme.accent, lineWidth: 1)
+        )
+        .shadow(color: Color.black.opacity(0.18), radius: 10, y: 8)
+        .shadow(color: AppTheme.accent.opacity(0.12), radius: 8, y: 2)
+    }
+}
+
+struct SavingStatusWindowOverlay: UIViewRepresentable {
+    let isVisible: Bool
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator()
+    }
+
+    func makeUIView(context: Context) -> UIView {
+        let view = UIView(frame: .zero)
+        view.isUserInteractionEnabled = false
+        return view
+    }
+
+    func updateUIView(_ view: UIView, context: Context) {
+        DispatchQueue.main.async {
+            context.coordinator.update(isVisible: isVisible, sourceView: view)
+        }
+    }
+
+    final class Coordinator {
+        private var hostingController: UIHostingController<SavingStatusOverlayContent>?
+
+        func update(isVisible: Bool, sourceView: UIView) {
+            guard let window = sourceView.window else { return }
+
+            if isVisible {
+                show(in: window)
+            } else {
+                hide()
+            }
+        }
+
+        private func show(in window: UIWindow) {
+            if let hostingController {
+                hostingController.view.alpha = 1
+                hostingController.view.transform = .identity
+                return
+            }
+
+            let hostingController = UIHostingController(rootView: SavingStatusOverlayContent())
+            hostingController.view.backgroundColor = .clear
+            hostingController.view.translatesAutoresizingMaskIntoConstraints = false
+            hostingController.view.isUserInteractionEnabled = false
+            hostingController.view.alpha = 0
+            hostingController.view.transform = CGAffineTransform(scaleX: 0.96, y: 0.96)
+
+            window.addSubview(hostingController.view)
+            NSLayoutConstraint.activate([
+                hostingController.view.topAnchor.constraint(equalTo: window.safeAreaLayoutGuide.topAnchor, constant: 8),
+                hostingController.view.centerXAnchor.constraint(equalTo: window.safeAreaLayoutGuide.centerXAnchor)
+            ])
+
+            self.hostingController = hostingController
+
+            UIView.animate(withDuration: 0.2, delay: 0, options: [.curveEaseInOut, .beginFromCurrentState]) {
+                hostingController.view.alpha = 1
+                hostingController.view.transform = .identity
+            }
+        }
+
+        private func hide() {
+            guard let hostingController else { return }
+
+            UIView.animate(withDuration: 0.2, delay: 0, options: [.curveEaseInOut, .beginFromCurrentState]) {
+                hostingController.view.alpha = 0
+                hostingController.view.transform = CGAffineTransform(scaleX: 0.96, y: 0.96)
+            } completion: { _ in
+                hostingController.view.removeFromSuperview()
+            }
+
+            self.hostingController = nil
+        }
+    }
+}
+
 enum AppPlatform {
     static var isMacCatalyst: Bool {
         #if targetEnvironment(macCatalyst)

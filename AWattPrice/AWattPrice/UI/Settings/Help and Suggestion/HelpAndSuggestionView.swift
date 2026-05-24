@@ -77,7 +77,7 @@ struct HelpAndSuggestionView: View {
         return SupportMailAction(
             id: "help",
             title: "Get Help",
-            systemImage: "lifepreserver.fill",
+            systemImage: "lifepreserver",
             tint: AppTheme.accent,
             mailContent: content
         )
@@ -87,7 +87,7 @@ struct HelpAndSuggestionView: View {
         SupportMailAction(
             id: "suggestion",
             title: "Send Suggestion",
-            systemImage: "sparkles",
+            systemImage: "wand.and.sparkles",
             tint: AppTheme.accent,
             mailContent: SuggestionMailContent()
         )

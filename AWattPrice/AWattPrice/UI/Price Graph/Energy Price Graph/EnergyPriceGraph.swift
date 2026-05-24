@@ -129,7 +129,10 @@ private struct EnergyPriceGraphDisplayRow: Identifiable {
     let isExpandedInterval: Bool
     let isFocused: Bool
     let showsPrice: Bool
+    let showsExtremePriceText: Bool
     let showsSelectedOverlay: Bool
+    let isLowestPrice: Bool
+    let isHighestPrice: Bool
 
     var timeLabel: String {
         if isExpandedInterval || isFocused {
@@ -281,20 +284,24 @@ private struct EnergyPriceBarRow: View {
     private var positiveGradient: LinearGradient {
         LinearGradient(
             colors: [
-                Color(red: 1.00, green: 0.76, blue: 0.31),
-                Color(red: 0.88, green: 0.38, blue: 0.25),
+                Color(red: 1.00, green: 0.76, blue: 0.24),
+                Color(red: 0.86, green: 0.20, blue: 0.16),
             ],
             startPoint: .leading,
             endPoint: .trailing
         )
     }
 
-    private var negativeFill: Color {
-        Color(red: 0.25, green: 0.69, blue: 0.43)
+    private var selectedPositiveFill: Color {
+        Color(red: 0.92, green: 0.24, blue: 0.16)
     }
 
-    private var selectedFill: Color {
-        Color(red: 0.82, green: 0.28, blue: 0.20)
+    private var negativeFill: Color {
+        Color(red: 0.20, green: 0.70, blue: 0.38)
+    }
+
+    private var selectedNegativeFill: Color {
+        Color(red: 0.08, green: 0.82, blue: 0.34)
     }
 
     private var timeLabelFontSize: CGFloat {
@@ -312,7 +319,13 @@ private struct EnergyPriceBarRow: View {
                 .frame(width: plotWidth, height: rowHeight)
 
             if barFrame.width > 0 {
-                if row.price >= 0 {
+                if row.showsSelectedOverlay {
+                    barFill(
+                        trackHeight: trackHeight,
+                        barFrame: barFrame,
+                        fill: row.price >= 0 ? selectedPositiveFill : selectedNegativeFill
+                    )
+                } else if row.price >= 0 {
                     positiveBar(
                         trackHeight: trackHeight,
                         barFrame: barFrame,
@@ -324,12 +337,8 @@ private struct EnergyPriceBarRow: View {
                 }
             }
 
-            if row.showsSelectedOverlay, barFrame.width > 0 {
-                barFill(
-                    trackHeight: trackHeight,
-                    barFrame: barFrame,
-                    fill: selectedFill.opacity(0.82)
-                )
+            if row.showsDayChange {
+                dayChangeSeparator(around: barFrame)
             }
 
             HStack(spacing: 8) {
@@ -359,18 +368,54 @@ private struct EnergyPriceBarRow: View {
 
                 Spacer(minLength: 8)
 
-                EnergyPriceValueText(value: priceText, isFocused: row.isFocused)
-                    .foregroundStyle(.primary)
-                    .fixedSize(horizontal: true, vertical: false)
-                    .padding(.horizontal, 6)
-                    .padding(.vertical, 2)
-                    .background(.thickMaterial, in: RoundedRectangle(cornerRadius: 5, style: .continuous))
-                    .opacity(row.showsPrice ? 1 : 0)
+                HStack(spacing: 4) {
+                    if row.isLowestPrice {
+                        Image(systemName: "arrow.down.circle.fill")
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundStyle(negativeFill)
+                            .accessibilityLabel("Lowest price")
+                    } else if row.isHighestPrice {
+                        Image(systemName: "arrow.up.circle.fill")
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundStyle(selectedPositiveFill)
+                            .accessibilityLabel("Highest price")
+                    }
+
+                    EnergyPriceValueText(value: priceText, isFocused: row.isFocused)
+                        .foregroundStyle(.primary)
+                        .opacity(row.showsPrice || row.showsExtremePriceText ? 1 : 0)
+                }
+                .fixedSize(horizontal: true, vertical: false)
+                .padding(.horizontal, 6)
+                .padding(.vertical, 2)
+                .background(.thickMaterial, in: RoundedRectangle(cornerRadius: 5, style: .continuous))
+                .opacity(row.showsPrice || row.isLowestPrice || row.isHighestPrice ? 1 : 0)
             }
             .padding(.horizontal, EnergyPriceGraphLayout.overlayHorizontalPadding)
             .frame(width: plotWidth, height: rowHeight)
         }
         .frame(width: plotWidth, height: rowHeight, alignment: .leading)
+    }
+
+    private func dayChangeSeparator(around barFrame: (x: CGFloat, width: CGFloat)) -> some View {
+        let gap: CGFloat = 3
+        let leadingWidth = max(barFrame.x - gap, 0)
+        let trailingStart = min(barFrame.x + barFrame.width + gap, plotWidth)
+        let trailingWidth = max(plotWidth - trailingStart, 0)
+
+        return ZStack(alignment: .leading) {
+            separatorSegment(width: leadingWidth, x: leadingWidth / 2)
+            separatorSegment(width: trailingWidth, x: trailingStart + trailingWidth / 2)
+        }
+        .frame(width: plotWidth, height: 1.3, alignment: .leading)
+        .position(x: plotWidth / 2, y: 0)
+    }
+
+    private func separatorSegment(width: CGFloat, x: CGFloat) -> some View {
+        Rectangle()
+            .fill(.secondary.opacity(0.45))
+            .frame(width: width, height: 1.3)
+            .position(x: x, y: 0.65)
     }
 
     @ViewBuilder
@@ -501,12 +546,28 @@ struct EnergyPriceGraph: View {
         return Calendar.current.isDate(groups[index - 1].startTime, inSameDayAs: groups[index].startTime) == false
     }
 
+    private func showsExtremes(minPrice: Double?, maxPrice: Double?) -> Bool {
+        guard let minPrice, let maxPrice else { return false }
+        return minPrice != maxPrice
+    }
+
+    private func isExtremePrice(_ price: Double, matching extremePrice: Double?) -> Bool {
+        guard let extremePrice else { return false }
+        return price == extremePrice
+    }
+
     private func displayRows(for prices: [EnergyPricePoint], groups: [EnergyPriceHourGroup]) -> [EnergyPriceGraphDisplayRow] {
         switch displayInterval {
         case .fifteenMinutes:
+            let minPrice = prices.map(\.marketprice).min()
+            let maxPrice = prices.map(\.marketprice).max()
+            let marksExtremes = showsExtremes(minPrice: minPrice, maxPrice: maxPrice)
+
             return prices.enumerated().map { index, pricePoint in
                 let isSelected = selectedGroupIndex == index
                 let isFullHour = startsOnFullHour(pricePoint.startTime)
+                let isLowestPrice = marksExtremes && isExtremePrice(pricePoint.marketprice, matching: minPrice)
+                let isHighestPrice = marksExtremes && isExtremePrice(pricePoint.marketprice, matching: maxPrice)
 
                 return EnergyPriceGraphDisplayRow(
                     id: "interval-\(index)",
@@ -519,7 +580,10 @@ struct EnergyPriceGraph: View {
                     isExpandedInterval: false,
                     isFocused: isSelected,
                     showsPrice: isFullHour || isSelected,
-                    showsSelectedOverlay: isSelected
+                    showsExtremePriceText: isFullHour || isSelected,
+                    showsSelectedOverlay: isSelected,
+                    isLowestPrice: isLowestPrice,
+                    isHighestPrice: isHighestPrice
                 )
             }
 
@@ -529,11 +593,16 @@ struct EnergyPriceGraph: View {
     }
 
     private func hourlyDisplayRows(for groups: [EnergyPriceHourGroup]) -> [EnergyPriceGraphDisplayRow] {
-        groups.enumerated().flatMap { groupIndex, group in
+        let minHourlyPrice = groups.map(\.averagePrice).min()
+        let maxHourlyPrice = groups.map(\.averagePrice).max()
+        let marksHourlyExtremes = showsExtremes(minPrice: minHourlyPrice, maxPrice: maxHourlyPrice)
+
+        return groups.enumerated().flatMap { groupIndex, group in
             let groupShowsDayChange = showsDayChange(at: groupIndex, groups: groups)
             let expandsToIntervals = allowsHourlyExpansion && group.pricePoints.count > 1
+            let isSelectedGroup = selectedGroupIndex == groupIndex
 
-            if selectedGroupIndex == groupIndex, expandsToIntervals {
+            if isSelectedGroup, expandsToIntervals {
                 return group.pricePoints.enumerated().map { intervalIndex, pricePoint in
                     EnergyPriceGraphDisplayRow(
                         id: "interval-\(groupIndex)-\(intervalIndex)",
@@ -546,7 +615,10 @@ struct EnergyPriceGraph: View {
                         isExpandedInterval: true,
                         isFocused: false,
                         showsPrice: true,
-                        showsSelectedOverlay: true
+                        showsExtremePriceText: true,
+                        showsSelectedOverlay: true,
+                        isLowestPrice: false,
+                        isHighestPrice: false
                     )
                 }
             }
@@ -563,7 +635,10 @@ struct EnergyPriceGraph: View {
                     isExpandedInterval: false,
                     isFocused: false,
                     showsPrice: true,
-                    showsSelectedOverlay: selectedGroupIndex == groupIndex && expandsToIntervals == false
+                    showsExtremePriceText: true,
+                    showsSelectedOverlay: isSelectedGroup && expandsToIntervals == false,
+                    isLowestPrice: isSelectedGroup == false && marksHourlyExtremes && isExtremePrice(group.averagePrice, matching: minHourlyPrice),
+                    isHighestPrice: isSelectedGroup == false && marksHourlyExtremes && isExtremePrice(group.averagePrice, matching: maxHourlyPrice)
                 ),
             ]
         }

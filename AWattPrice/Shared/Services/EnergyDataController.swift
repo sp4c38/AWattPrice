@@ -97,7 +97,7 @@ struct EnergyData: Decodable {
         }
     }
 
-    private static func adjustedPrices(
+    static func adjustedPrices(
         _ pricePoints: [EnergyPricePoint],
         with pricingConfiguration: PricingConfiguration
     ) -> [EnergyPricePoint] {

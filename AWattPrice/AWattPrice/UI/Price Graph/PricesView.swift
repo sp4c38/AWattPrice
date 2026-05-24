@@ -81,6 +81,21 @@ struct PricesView: View {
         }
     }
 
+    private var todayEnergyData: EnergyData? {
+        guard var energyData = energyDataService.energyData else { return nil }
+
+        let calendar = PriceHistoryDateOptions.calendar(for: pricingConfiguration.marketArea)
+        let today = PriceHistoryDateOptions.today(for: pricingConfiguration.marketArea)
+        energyData.currentPrices = EnergyData.adjustedPrices(
+            energyData.prices.filter { pricePoint in
+                calendar.isDate(pricePoint.startTime, inSameDayAs: today)
+            }
+            .sorted { $0.startTime < $1.startTime },
+            with: pricingConfiguration
+        )
+        return energyData
+    }
+
     private var hasVisiblePriceData: Bool {
         visiblePrices.isEmpty == false
     }
@@ -118,15 +133,6 @@ struct PricesView: View {
         )
     }
 
-    private var graphIdentity: String {
-        switch dataMode {
-        case .current:
-            return "current"
-        case .history:
-            return historyData == nil && isDownloadingHistory ? "current" : "history"
-        }
-    }
-
     init(onPresentProPaywall: @escaping () -> Void = {}) {
         self.onPresentProPaywall = onPresentProPaywall
     }
@@ -134,18 +140,16 @@ struct PricesView: View {
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
-                if dataMode == .history {
+                if dataMode == .history || hasVisiblePriceData {
                     statusRow
 
                     if hasVisiblePriceData {
                         graph
-                    } else {
+                    } else if dataMode == .history {
                         historyUnavailableView
+                    } else {
+                        DataDownloadAndError()
                     }
-                } else if hasVisiblePriceData {
-                    statusRow
-
-                    graph
                 } else {
                     DataDownloadAndError()
                 }
@@ -153,7 +157,6 @@ struct PricesView: View {
             .appScreenBackground()
             .navigationBarTitleDisplayMode(.inline)
             .toolbar(.hidden, for: .navigationBar)
-            .animation(.easeInOut(duration: 0.22), value: graphIdentity)
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .task(id: historyRequestKey) {
@@ -171,8 +174,6 @@ struct PricesView: View {
             displayInterval: effectiveDisplayInterval,
             allowsHourlyExpansion: hasFifteenMinutePriceIntervals
         )
-            .id(graphIdentity)
-            .transition(.opacity)
             .padding(.leading, PricesLayout.graphLeadingPadding)
             .padding(.trailing, PricesLayout.graphTrailingPadding)
             .padding(.bottom, PricesLayout.graphBottomPadding)
@@ -286,6 +287,8 @@ struct PricesView: View {
 
             Divider()
 
+            todayHistoryDateButton
+
             recentHistoryDateButtons
 
             Button {
@@ -320,6 +323,8 @@ struct PricesView: View {
 
             Divider()
 
+            todayHistoryDateButton
+
             recentHistoryDateButtons
 
             Button {
@@ -329,6 +334,14 @@ struct PricesView: View {
             }
         } label: {
             label()
+        }
+    }
+
+    private var todayHistoryDateButton: some View {
+        Button {
+            selectToday()
+        } label: {
+            Label("Today".localized(), systemImage: proSupporterStore.hasPro ? "calendar" : "lock")
         }
     }
 
@@ -453,6 +466,19 @@ struct PricesView: View {
     @MainActor
     private func loadHistoryIfNeeded() async {
         guard dataMode == .history, proSupporterStore.hasPro else { return }
+
+        if PriceHistoryDateOptions.isSameDay(
+            selectedHistoryDate,
+            PriceHistoryDateOptions.today(for: pricingConfiguration.marketArea),
+            marketArea: pricingConfiguration.marketArea
+        ) {
+            let todayData = todayEnergyData
+            historyData = todayData
+            historyDownloadFailed = todayData == nil
+            isDownloadingHistory = false
+            return
+        }
+
         await loadHistory(force: false)
     }
 
@@ -534,6 +560,20 @@ struct PricesView: View {
         dataMode = .history
     }
 
+    private func selectToday() {
+        guard proSupporterStore.hasPro else {
+            onPresentProPaywall()
+            return
+        }
+
+        selectedHistoryDate = PriceHistoryDateOptions.today(for: pricingConfiguration.marketArea)
+        let todayData = todayEnergyData
+        historyData = todayData
+        isDownloadingHistory = false
+        historyDownloadFailed = todayData == nil
+        dataMode = .history
+    }
+
     private func presentHistoryDatePicker() {
         guard proSupporterStore.hasPro else {
             onPresentProPaywall()
@@ -569,11 +609,15 @@ private enum PriceHistoryDateOptions {
 
     static func recentDates(for marketArea: MarketArea) -> [Date] {
         let calendar = calendar(for: marketArea)
-        let today = calendar.startOfDay(for: Date())
+        let today = today(for: marketArea)
 
         return (1...4).compactMap { dayOffset in
             calendar.date(byAdding: .day, value: -dayOffset, to: today)
         }
+    }
+
+    static func today(for marketArea: MarketArea) -> Date {
+        calendar(for: marketArea).startOfDay(for: Date())
     }
 
     static func latestSelectableDate(for marketArea: MarketArea) -> Date {
@@ -591,6 +635,10 @@ private enum PriceHistoryDateOptions {
 
     static func title(for date: Date, marketArea: MarketArea) -> String {
         let calendar = calendar(for: marketArea)
+
+        if calendar.isDateInToday(date) {
+            return "Today".localized()
+        }
 
         if
             let yesterday = calendar.date(byAdding: .day, value: -1, to: calendar.startOfDay(for: Date())),

@@ -328,7 +328,7 @@ private struct EnergyPriceValueBadge: View {
         .background {
             RoundedRectangle(cornerRadius: 5, style: .continuous)
                 .fill(.thickMaterial)
-                .shadow(color: .black.opacity(valueBadgeShadowOpacity), radius: colorScheme == .dark ? 4 : 2, y: 1)
+                .shadow(color: .black.opacity(valueBadgeShadowOpacity), radius: colorScheme == .dark ? 4 : 4, y: 1)
                 .shadow(color: .white.opacity(valueBadgeHighlightOpacity), radius: 3)
         }
         .opacity(row.showsPrice || row.isLowestPrice || row.isHighestPrice ? 1 : 0)

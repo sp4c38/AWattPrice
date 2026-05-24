@@ -271,7 +271,7 @@ struct RegionView: View {
                     .background(AppTheme.subtleFill(AppTheme.accent, for: colorScheme), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Market area".localized())
+                    Text("Price zone".localized())
                         .font(.headline)
                         .foregroundStyle(.primary)
 
@@ -306,7 +306,7 @@ struct MarketAreaMapSelectionView: View {
     @Environment(\.colorScheme) private var colorScheme
 
     @ObservedObject var viewModel: MarketAreaTaxSelectionViewModel
-    let height: CGFloat
+    var height: CGFloat? = nil
 
     private var unselectedPinFill: Color {
         AppTheme.cardBackground(for: colorScheme)
@@ -348,12 +348,7 @@ struct MarketAreaMapSelectionView: View {
                     }
             )
         }
-        .frame(height: height)
-        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .stroke(AppTheme.accent.opacity(0.2), lineWidth: 1)
-        )
+        .frame(maxWidth: .infinity, maxHeight: height ?? .infinity)
     }
 
     private func marketArea(near location: CGPoint, in proxy: MapProxy) -> MarketArea? {
@@ -380,19 +375,16 @@ private struct MarketAreaSelectionPage: View {
     @ObservedObject var viewModel: MarketAreaTaxSelectionViewModel
 
     var body: some View {
-        GeometryReader { geometry in
-            MarketAreaMapSelectionView(
-                viewModel: viewModel,
-                height: max(420, geometry.size.height - 32)
-            )
-            .padding(16)
-        }
-        .navigationTitle("Select price market area")
-        .navigationBarTitleDisplayMode(.inline)
-        .onAppear {
-            viewModel.loadAreasIfNeeded()
-            viewModel.focusSelectedArea()
-        }
+        MarketAreaMapSelectionView(viewModel: viewModel)
+            .ignoresSafeArea(edges: .bottom)
+            .navigationTitle("Price zone")
+            .navigationBarTitleDisplayMode(.large)
+            .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
+            .onAppear {
+                viewModel.loadAreasIfNeeded()
+                viewModel.focusSelectedArea()
+            }
     }
 }
 
@@ -402,5 +394,17 @@ struct RegionView_Previews: PreviewProvider {
             .environmentObject(NotificationService())
             .environmentObject(EnergyDataService())
             .environmentObject(SettingsManager.shared)
+    }
+}
+
+#Preview("Market Area Selection") {
+    NavigationView {
+        MarketAreaSelectionPage(
+            viewModel: MarketAreaTaxSelectionViewModel(
+                settingsManager: SettingsManager.shared,
+                notificationService: NotificationService(),
+                energyDataService: EnergyDataService()
+            )
+        )
     }
 }

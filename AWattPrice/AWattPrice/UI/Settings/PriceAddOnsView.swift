@@ -82,7 +82,7 @@ private struct PriceValueLabel: View {
                 .font(.system(size: size, weight: .semibold, design: .rounded))
                 .monospacedDigit()
 
-            UnitLabel(unit: unit, size: size * 0.80, weight: .semibold)
+            UnitLabel(unit: unit, size: size, weight: .semibold)
         }
         .foregroundStyle(tint)
         .fixedSize()
@@ -818,13 +818,10 @@ struct PriceAddOnsView: View {
 
                         PriceValueLabel(
                             value: viewModel.draft.monthlyFixedCostPrice.priceAddOnSummaryText,
-                            unit: "ct/kWh",
+                            unit: "ct/kWh.",
                             tint: Color.secondary,
                             size: 13
                         )
-
-                        Text(".")
-                            .font(.footnote.weight(.semibold))
                     }
                     .foregroundStyle(.secondary)
 

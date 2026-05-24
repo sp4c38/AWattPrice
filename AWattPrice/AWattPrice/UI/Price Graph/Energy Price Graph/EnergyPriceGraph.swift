@@ -312,6 +312,18 @@ private struct EnergyPriceBarRow: View {
         row.isFocused ? 13 : 11
     }
 
+    private var movesValueBadgeUp: Bool {
+        (row.isLowestPrice || row.isHighestPrice) && row.isFocused == false && row.showsTimeLabel == false
+    }
+
+    private var valueBadgeYOffset: CGFloat {
+        movesValueBadgeUp ? -max(rowHeight * 0.28, 8) : 0
+    }
+
+    private var valueBadgeShadowOpacity: Double {
+        row.isLowestPrice || row.isHighestPrice ? 0.24 : 0
+    }
+
     var body: some View {
         let trackHeight = max((rowHeight - 1) * trackHeightFactor, 3)
         let barFrame = metrics.barFrame(for: row.price, width: plotWidth)
@@ -392,8 +404,13 @@ private struct EnergyPriceBarRow: View {
                 .fixedSize(horizontal: true, vertical: false)
                 .padding(.horizontal, 6)
                 .padding(.vertical, 2)
-                .background(.thickMaterial, in: RoundedRectangle(cornerRadius: 5, style: .continuous))
+                .background {
+                    RoundedRectangle(cornerRadius: 5, style: .continuous)
+                        .fill(.thickMaterial)
+                        .shadow(color: .black.opacity(valueBadgeShadowOpacity), radius: 4, y: 1)
+                }
                 .opacity(row.showsPrice || row.isLowestPrice || row.isHighestPrice ? 1 : 0)
+                .offset(y: valueBadgeYOffset)
             }
             .padding(.horizontal, EnergyPriceGraphLayout.overlayHorizontalPadding)
             .frame(width: plotWidth, height: rowHeight)
@@ -570,8 +587,8 @@ struct EnergyPriceGraph: View {
             return prices.enumerated().map { index, pricePoint in
                 let isSelected = selectedGroupIndex == index
                 let isFullHour = startsOnFullHour(pricePoint.startTime)
-                let isLowestPrice = isSelected && marksExtremes && isExtremePrice(pricePoint.marketprice, matching: minPrice)
-                let isHighestPrice = isSelected && marksExtremes && isExtremePrice(pricePoint.marketprice, matching: maxPrice)
+                let isLowestPrice = marksExtremes && isExtremePrice(pricePoint.marketprice, matching: minPrice)
+                let isHighestPrice = marksExtremes && isExtremePrice(pricePoint.marketprice, matching: maxPrice)
 
                 return EnergyPriceGraphDisplayRow(
                     id: "interval-\(index)",
@@ -583,8 +600,8 @@ struct EnergyPriceGraph: View {
                     showsTimeLabel: isFullHour || isSelected,
                     isExpandedInterval: false,
                     isFocused: isSelected,
-                    showsPrice: isFullHour || isSelected,
-                    showsExtremePriceText: isFullHour || isSelected,
+                    showsPrice: isFullHour || isSelected || isLowestPrice || isHighestPrice,
+                    showsExtremePriceText: true,
                     showsSelectedOverlay: isSelected,
                     isLowestPrice: isLowestPrice,
                     isHighestPrice: isHighestPrice
@@ -736,6 +753,10 @@ struct EnergyPriceGraph: View {
     private func rowZIndex(for row: EnergyPriceGraphDisplayRow) -> Double {
         if row.showsSelectedOverlay {
             return 3
+        }
+
+        if (row.isLowestPrice || row.isHighestPrice), row.isFocused == false, row.showsTimeLabel == false {
+            return 2.8
         }
 
         if row.showsPrice || row.showsTimeLabel || row.showsDayChange {

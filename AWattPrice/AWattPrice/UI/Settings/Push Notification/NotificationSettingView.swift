@@ -414,6 +414,7 @@ private struct NotificationRuleCard<Content: View>: View {
 
                     Toggle(title.localized(), isOn: animatedIsEnabled)
                         .labelsHidden()
+                        .tint(tint)
                 }
             }
 

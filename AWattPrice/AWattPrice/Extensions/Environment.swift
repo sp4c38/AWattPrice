@@ -103,7 +103,7 @@ struct SavingStatusWindowOverlay: UIViewRepresentable {
 
             window.addSubview(hostingController.view)
             NSLayoutConstraint.activate([
-                hostingController.view.topAnchor.constraint(equalTo: window.safeAreaLayoutGuide.topAnchor, constant: 8),
+                hostingController.view.topAnchor.constraint(equalTo: window.safeAreaLayoutGuide.topAnchor, constant: 8 + topTabBarOffset(in: window) + (UIDevice.current.userInterfaceIdiom == .pad ? 5 : 0)),
                 hostingController.view.centerXAnchor.constraint(equalTo: window.safeAreaLayoutGuide.centerXAnchor)
             ])
 
@@ -113,6 +113,25 @@ struct SavingStatusWindowOverlay: UIViewRepresentable {
                 hostingController.view.alpha = 1
                 hostingController.view.transform = .identity
             }
+        }
+
+        /// Returns the height of the tab bar when it is positioned at the top of the screen on iPad.
+        /// On iPhone (tab bar at the bottom) this returns 0.
+        private func topTabBarOffset(in window: UIWindow) -> CGFloat {
+            guard UIDevice.current.userInterfaceIdiom == .pad else { return 0 }
+            guard let tabBar = findTabBar(in: window) else { return 49 }
+            // Only compensate when the tab bar lives near the top of the window.
+            let approxTopEdge = window.safeAreaInsets.top + tabBar.frame.height
+            guard tabBar.frame.maxY <= approxTopEdge + 4 else { return 0 }
+            return tabBar.frame.height
+        }
+
+        private func findTabBar(in view: UIView) -> UITabBar? {
+            if let tabBar = view as? UITabBar { return tabBar }
+            for subview in view.subviews {
+                if let found = findTabBar(in: subview) { return found }
+            }
+            return nil
         }
 
         private func hide() {

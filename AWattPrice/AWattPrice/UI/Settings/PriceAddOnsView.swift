@@ -697,7 +697,7 @@ struct PriceAddOnsView: View {
                         Text("Add-ons are applied to prices everywhere throughout AWattPrice.".localized())
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
-                        
+
                         VStack(alignment: .leading, spacing: 12) {
                             PriceFormulaView(draft: viewModel.draft)
                         }
@@ -723,7 +723,6 @@ struct PriceAddOnsView: View {
                 .animation(.spring(response: 0.28, dampingFraction: 0.82), value: viewModel.draft.percentagePriceAddOn.isActivePriceComponent)
                 .animation(.spring(response: 0.28, dampingFraction: 0.82), value: viewModel.draft.monthlyFixedCostPrice.isActivePriceComponent)
             }
-
         }
         .background(SavingStatusWindowOverlay(isVisible: viewModel.isSaving).frame(width: 0, height: 0))
         .animation(.easeInOut(duration: 0.18), value: viewModel.isSaving)

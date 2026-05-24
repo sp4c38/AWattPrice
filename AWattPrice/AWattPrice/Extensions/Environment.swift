@@ -100,8 +100,18 @@ struct SavingStatusWindowOverlay: UIViewRepresentable {
             hostingController.view.isUserInteractionEnabled = false
             hostingController.view.alpha = 0
             hostingController.view.transform = CGAffineTransform(scaleX: 0.96, y: 0.96)
+            // Set the UIKit-level tint so UIActivityIndicatorView has the correct colour
+            // from the very first rendered frame, before SwiftUI's environment propagates.
+            hostingController.view.tintColor = UIColor(AppTheme.accent)
 
+            // Proper child-VC containment gives the hosting controller a trait collection
+            // so SwiftUI can resolve environment values (including .tint) synchronously.
+            // Sequence: addChild → add view → didMove(toParent:)
+            let parentVC = window.rootViewController
+            parentVC?.addChild(hostingController)
             window.addSubview(hostingController.view)
+            hostingController.didMove(toParent: parentVC)
+
             NSLayoutConstraint.activate([
                 hostingController.view.topAnchor.constraint(equalTo: window.safeAreaLayoutGuide.topAnchor, constant: 8 + topTabBarOffset(in: window) + (UIDevice.current.userInterfaceIdiom == .pad ? 5 : 0)),
                 hostingController.view.centerXAnchor.constraint(equalTo: window.safeAreaLayoutGuide.centerXAnchor)
@@ -137,11 +147,14 @@ struct SavingStatusWindowOverlay: UIViewRepresentable {
         private func hide() {
             guard let hostingController else { return }
 
+            hostingController.willMove(toParent: nil)
+
             UIView.animate(withDuration: 0.2, delay: 0, options: [.curveEaseInOut, .beginFromCurrentState]) {
                 hostingController.view.alpha = 0
                 hostingController.view.transform = CGAffineTransform(scaleX: 0.96, y: 0.96)
             } completion: { _ in
                 hostingController.view.removeFromSuperview()
+                hostingController.removeFromParent()
             }
 
             self.hostingController = nil

@@ -100,11 +100,6 @@ struct HelpAndSuggestionView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
                     HelpAndSuggestionCard {
-                        Text("Help & Suggestions")
-                            .font(.system(size: 34, weight: .bold, design: .rounded))
-                    }
-
-                    HelpAndSuggestionCard {
                         SupportMailRow(action: helpAction) {
                             openMail(for: helpAction)
                         }
@@ -122,7 +117,7 @@ struct HelpAndSuggestionView: View {
             }
         }
         .navigationTitle("Help & Suggestions")
-        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarTitleDisplayMode(.large)
         .sheet(item: $activeMailAction) { action in
             #if targetEnvironment(macCatalyst)
             EmptyView()

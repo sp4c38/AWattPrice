@@ -91,7 +91,6 @@ private struct TimeRangePresetButton: View {
 }
 
 private struct TimeRangeInputFieldSelectionPart: View {
-    @Environment(\.colorScheme) private var colorScheme
     @Binding var partSelection: Date
 
     let name: String
@@ -99,7 +98,12 @@ private struct TimeRangeInputFieldSelectionPart: View {
     let range: ClosedRange<Date>
 
     var body: some View {
-        LabeledContent {
+        VStack(alignment: .leading, spacing: 10) {
+            Label(name.localized(), systemImage: systemImage)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+
             DatePicker(
                 "",
                 selection: $partSelection,
@@ -108,16 +112,11 @@ private struct TimeRangeInputFieldSelectionPart: View {
             )
             .labelsHidden()
             .datePickerStyle(.compact)
-        } label: {
-            Label(name.localized(), systemImage: systemImage)
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(.secondary)
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .padding(16)
-        .background(
-            RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .fill(AppTheme.fieldBackground(for: colorScheme))
-        )
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
@@ -146,7 +145,7 @@ struct TimeRangeInputField: View {
                 }
             }
 
-            VStack(alignment: .leading, spacing: 12) {
+            VStack(alignment: .leading, spacing: 0) {
                 TimeRangeInputFieldSelectionPart(
                     partSelection: $cheapestHourManager.startDate,
                     name: "Earliest start",
@@ -154,25 +153,32 @@ struct TimeRangeInputField: View {
                     range: inputDateRange
                 )
 
+                Divider()
+                    .padding(.leading, 16)
+
                 TimeRangeInputFieldSelectionPart(
                     partSelection: $cheapestHourManager.endDate,
                     name: "Latest finish",
                     systemImage: "flag.circle.fill",
                     range: inputDateRange
                 )
+            }
+            .background(
+                RoundedRectangle(cornerRadius: 20, style: .continuous)
+                    .fill(AppTheme.fieldBackground(for: colorScheme))
+            )
 
-                if cheapestHourManager.showsTimeRangeError {
-                    Label(getMinRangeNeededString(), systemImage: "exclamationmark.triangle.fill")
-                        .font(.caption.weight(.medium))
-                        .foregroundStyle(AppTheme.error)
-                        .padding(12)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(
-                            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                                .fill(AppTheme.subtleFill(AppTheme.error, for: colorScheme))
-                        )
-                        .id("TimeRangeInputFieldErrorText" + getMinRangeNeededString())
-                }
+            if cheapestHourManager.showsTimeRangeError {
+                Label(getMinRangeNeededString(), systemImage: "exclamationmark.triangle.fill")
+                    .font(.caption.weight(.medium))
+                    .foregroundStyle(AppTheme.error)
+                    .padding(12)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(
+                        RoundedRectangle(cornerRadius: 16, style: .continuous)
+                            .fill(AppTheme.subtleFill(AppTheme.error, for: colorScheme))
+                    )
+                    .id("TimeRangeInputFieldErrorText" + getMinRangeNeededString())
             }
         }
         .cheapestTimeCardStyle()

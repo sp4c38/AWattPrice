@@ -376,11 +376,9 @@ private struct MarketAreaSelectionPage: View {
 
     var body: some View {
         MarketAreaMapSelectionView(viewModel: viewModel)
-            .ignoresSafeArea(edges: .bottom)
+            .ignoresSafeArea()
             .navigationTitle("Price zone")
-            .navigationBarTitleDisplayMode(.large)
-            .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
-            .toolbarBackground(.visible, for: .navigationBar)
+            .navigationBarTitleDisplayMode(.inline)
             .onAppear {
                 viewModel.loadAreasIfNeeded()
                 viewModel.focusSelectedArea()

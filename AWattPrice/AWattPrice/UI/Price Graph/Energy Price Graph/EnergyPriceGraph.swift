@@ -269,23 +269,8 @@ private struct EnergyPriceValueText: View {
     }
 }
 
-private struct EnergyPriceBarRow: View {
-    let row: EnergyPriceGraphDisplayRow
-    let metrics: EnergyPriceGraphMetrics
-    let rowHeight: CGFloat
-    let plotWidth: CGFloat
-
-    private let trackHeightFactor: CGFloat = 0.95
-
-    private var priceText: String {
-        row.price.priceString.flatMap { $0.isEmpty ? nil : $0 } ?? "0.00"
-    }
-
-    private var dayBadgeText: String {
-        row.startTime.formatted(.dateTime.weekday(.abbreviated).day())
-    }
-
-    private var positiveGradient: LinearGradient {
+private enum EnergyPriceGraphPalette {
+    static var positiveGradient: LinearGradient {
         LinearGradient(
             colors: [
                 Color(red: 1.00, green: 0.76, blue: 0.24),
@@ -296,32 +281,89 @@ private struct EnergyPriceBarRow: View {
         )
     }
 
-    private var selectedPositiveFill: Color {
-        Color(red: 0.92, green: 0.24, blue: 0.16)
+    static let selectedPositiveFill = Color(red: 0.92, green: 0.24, blue: 0.16)
+    static let negativeFill = Color(red: 0.20, green: 0.70, blue: 0.38)
+    static let selectedNegativeFill = Color(red: 0.08, green: 0.82, blue: 0.34)
+}
+
+private struct EnergyPriceValueBadge: View {
+    @Environment(\.colorScheme) private var colorScheme
+
+    let row: EnergyPriceGraphDisplayRow
+
+    private var priceText: String {
+        row.price.priceString.flatMap { $0.isEmpty ? nil : $0 } ?? "0.00"
     }
 
-    private var negativeFill: Color {
-        Color(red: 0.20, green: 0.70, blue: 0.38)
+    private var valueBadgeShadowOpacity: Double {
+        guard row.showsSelectedOverlay || row.isLowestPrice || row.isHighestPrice else { return 0 }
+        return colorScheme == .dark ? 0.24 : 0.12
     }
 
-    private var selectedNegativeFill: Color {
-        Color(red: 0.08, green: 0.82, blue: 0.34)
+    private var valueBadgeHighlightOpacity: Double {
+        colorScheme == .dark && (row.showsSelectedOverlay || row.isLowestPrice || row.isHighestPrice) ? 0.3 : 0
+    }
+
+    var body: some View {
+        HStack(spacing: 4) {
+            if row.isLowestPrice {
+                Image(systemName: "arrow.down.circle.fill")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(EnergyPriceGraphPalette.negativeFill)
+                    .accessibilityLabel("Lowest price")
+            } else if row.isHighestPrice {
+                Image(systemName: "arrow.up.circle.fill")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(EnergyPriceGraphPalette.selectedPositiveFill)
+                    .accessibilityLabel("Highest price")
+            }
+
+            EnergyPriceValueText(value: priceText, isFocused: row.isFocused)
+                .foregroundStyle(.primary)
+                .opacity(row.showsPrice || row.showsExtremePriceText ? 1 : 0)
+        }
+        .fixedSize(horizontal: true, vertical: false)
+        .padding(.horizontal, 6)
+        .padding(.vertical, 2)
+        .background {
+            RoundedRectangle(cornerRadius: 5, style: .continuous)
+                .fill(.thickMaterial)
+                .shadow(color: .black.opacity(valueBadgeShadowOpacity), radius: colorScheme == .dark ? 4 : 2, y: 1)
+                .shadow(color: .white.opacity(valueBadgeHighlightOpacity), radius: 3)
+        }
+        .opacity(row.showsPrice || row.isLowestPrice || row.isHighestPrice ? 1 : 0)
+    }
+}
+
+private struct EnergyPriceBarRow: View {
+    @Environment(\.colorScheme) private var colorScheme
+
+    let row: EnergyPriceGraphDisplayRow
+    let metrics: EnergyPriceGraphMetrics
+    let rowHeight: CGFloat
+    let plotWidth: CGFloat
+
+    private let trackHeightFactor: CGFloat = 0.95
+
+    private var dayBadgeText: String {
+        row.startTime.formatted(.dateTime.weekday(.abbreviated).day())
     }
 
     private var timeLabelFontSize: CGFloat {
         row.isFocused ? 13 : 11
     }
 
-    private var movesValueBadgeUp: Bool {
+    private var liftsValueBadge: Bool {
         (row.isLowestPrice || row.isHighestPrice) && row.isFocused == false && row.showsTimeLabel == false
     }
 
-    private var valueBadgeYOffset: CGFloat {
-        movesValueBadgeUp ? -max(rowHeight * 0.28, 8) : 0
+    private var selectedLabelShadowOpacity: Double {
+        guard row.showsSelectedOverlay else { return 0 }
+        return colorScheme == .dark ? 0.24 : 0.12
     }
 
-    private var valueBadgeShadowOpacity: Double {
-        row.isLowestPrice || row.isHighestPrice ? 0.24 : 0
+    private var selectedLabelHighlightOpacity: Double {
+        colorScheme == .dark && row.showsSelectedOverlay ? 0.3 : 0
     }
 
     var body: some View {
@@ -339,7 +381,7 @@ private struct EnergyPriceBarRow: View {
                     barFill(
                         trackHeight: trackHeight,
                         barFrame: barFrame,
-                        fill: row.price >= 0 ? selectedPositiveFill : selectedNegativeFill
+                        fill: row.price >= 0 ? EnergyPriceGraphPalette.selectedPositiveFill : EnergyPriceGraphPalette.selectedNegativeFill
                     )
                 } else if row.price >= 0 {
                     positiveBar(
@@ -349,7 +391,7 @@ private struct EnergyPriceBarRow: View {
                         zeroX: zeroX
                     )
                 } else {
-                    barFill(trackHeight: trackHeight, barFrame: barFrame, fill: negativeFill)
+                    barFill(trackHeight: trackHeight, barFrame: barFrame, fill: EnergyPriceGraphPalette.negativeFill)
                 }
             }
 
@@ -367,13 +409,17 @@ private struct EnergyPriceBarRow: View {
                                 .fixedSize(horizontal: true, vertical: false)
                                 .padding(.horizontal, 5)
                                 .padding(.vertical, 2)
-                                .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 5, style: .continuous))
+                                .background {
+                                    RoundedRectangle(cornerRadius: 5, style: .continuous)
+                                        .fill(.regularMaterial)
+                                        .shadow(color: .black.opacity(selectedLabelShadowOpacity), radius: colorScheme == .dark ? 4 : 2, y: 1)
+                                        .shadow(color: .white.opacity(selectedLabelHighlightOpacity), radius: 3)
+                                }
                         }
 
                         if row.showsDayChange {
                             Text(dayBadgeText)
                                 .font(.caption2.weight(.semibold))
-                                .foregroundStyle(.secondary)
                                 .fixedSize()
                                 .padding(.horizontal, 5)
                                 .padding(.vertical, 2)
@@ -384,33 +430,9 @@ private struct EnergyPriceBarRow: View {
 
                 Spacer(minLength: 8)
 
-                HStack(spacing: 4) {
-                    if row.isLowestPrice {
-                        Image(systemName: "arrow.down.circle.fill")
-                            .font(.system(size: 11, weight: .semibold))
-                            .foregroundStyle(negativeFill)
-                            .accessibilityLabel("Lowest price")
-                    } else if row.isHighestPrice {
-                        Image(systemName: "arrow.up.circle.fill")
-                            .font(.system(size: 11, weight: .semibold))
-                            .foregroundStyle(selectedPositiveFill)
-                            .accessibilityLabel("Highest price")
-                    }
-
-                    EnergyPriceValueText(value: priceText, isFocused: row.isFocused)
-                        .foregroundStyle(.primary)
-                        .opacity(row.showsPrice || row.showsExtremePriceText ? 1 : 0)
+                if liftsValueBadge == false {
+                    EnergyPriceValueBadge(row: row)
                 }
-                .fixedSize(horizontal: true, vertical: false)
-                .padding(.horizontal, 6)
-                .padding(.vertical, 2)
-                .background {
-                    RoundedRectangle(cornerRadius: 5, style: .continuous)
-                        .fill(.thickMaterial)
-                        .shadow(color: .black.opacity(valueBadgeShadowOpacity), radius: 4, y: 1)
-                }
-                .opacity(row.showsPrice || row.isLowestPrice || row.isHighestPrice ? 1 : 0)
-                .offset(y: valueBadgeYOffset)
             }
             .padding(.horizontal, EnergyPriceGraphLayout.overlayHorizontalPadding)
             .frame(width: plotWidth, height: rowHeight)
@@ -428,7 +450,7 @@ private struct EnergyPriceBarRow: View {
             separatorSegment(width: leadingWidth, x: leadingWidth / 2)
             separatorSegment(width: trailingWidth, x: trailingStart + trailingWidth / 2)
         }
-        .frame(width: plotWidth, height: 1.3, alignment: .leading)
+        .frame(width: plotWidth, height: 1.1, alignment: .leading)
         .position(x: plotWidth / 2, y: 0)
     }
 
@@ -447,7 +469,7 @@ private struct EnergyPriceBarRow: View {
         zeroX: CGFloat
     ) -> some View {
         let cornerRadius = min(trackHeight * 0.35, 4)
-        let bar = positiveGradient
+        let bar = EnergyPriceGraphPalette.positiveGradient
             .frame(width: positiveGradientWidth, height: trackHeight)
             .offset(x: zeroX - barFrame.x)
             .frame(width: barFrame.width, height: trackHeight, alignment: .leading)
@@ -587,8 +609,8 @@ struct EnergyPriceGraph: View {
             return prices.enumerated().map { index, pricePoint in
                 let isSelected = selectedGroupIndex == index
                 let isFullHour = startsOnFullHour(pricePoint.startTime)
-                let isLowestPrice = marksExtremes && isExtremePrice(pricePoint.marketprice, matching: minPrice)
-                let isHighestPrice = marksExtremes && isExtremePrice(pricePoint.marketprice, matching: maxPrice)
+                let isLowestPrice = isSelected && marksExtremes && isExtremePrice(pricePoint.marketprice, matching: minPrice)
+                let isHighestPrice = isSelected && marksExtremes && isExtremePrice(pricePoint.marketprice, matching: maxPrice)
 
                 return EnergyPriceGraphDisplayRow(
                     id: "interval-\(index)",
@@ -600,8 +622,8 @@ struct EnergyPriceGraph: View {
                     showsTimeLabel: isFullHour || isSelected,
                     isExpandedInterval: false,
                     isFocused: isSelected,
-                    showsPrice: isFullHour || isSelected || isLowestPrice || isHighestPrice,
-                    showsExtremePriceText: true,
+                    showsPrice: isFullHour || isSelected,
+                    showsExtremePriceText: isSelected,
                     showsSelectedOverlay: isSelected,
                     isLowestPrice: isLowestPrice,
                     isHighestPrice: isHighestPrice
@@ -755,10 +777,6 @@ struct EnergyPriceGraph: View {
             return 3
         }
 
-        if (row.isLowestPrice || row.isHighestPrice), row.isFocused == false, row.showsTimeLabel == false {
-            return 2.8
-        }
-
         if row.showsPrice || row.showsTimeLabel || row.showsDayChange {
             return 2
         }
@@ -768,6 +786,14 @@ struct EnergyPriceGraph: View {
         }
 
         return 0
+    }
+
+    private func liftsValueBadge(for row: EnergyPriceGraphDisplayRow) -> Bool {
+        (row.isLowestPrice || row.isHighestPrice) && row.isFocused == false && row.showsTimeLabel == false
+    }
+
+    private func liftedValueBadgeYOffset(for rowHeight: CGFloat) -> CGFloat {
+        -max(rowHeight * 0.28, 8)
     }
 
     private func rowWeight(for row: EnergyPriceGraphDisplayRow, at index: Int, rows: [EnergyPriceGraphDisplayRow]) -> CGFloat {
@@ -841,12 +867,32 @@ struct EnergyPriceGraph: View {
                                 for: row,
                                 collapsedOffsetY: collapsedOffsetY
                             ))
-                            .zIndex(rowZIndex(for: row))
+                            .zIndex(max(rowZIndex(for: row), row.showsSelectedOverlay ? 5 : 0))
                         }
                     }
                     .clipped()
                 }
                 .frame(width: plotWidth, height: geometry.size.height, alignment: .topLeading)
+
+                ForEach(Array(rows.enumerated()), id: \.element.id) { index, row in
+                    if liftsValueBadge(for: row) {
+                        HStack {
+                            Spacer(minLength: 0)
+
+                            EnergyPriceValueBadge(row: row)
+                        }
+                        .padding(.horizontal, EnergyPriceGraphLayout.overlayHorizontalPadding)
+                        .frame(width: plotWidth, height: layout.rowHeight(at: index), alignment: .trailing)
+                        .position(
+                            x: plotWidth / 2,
+                            y: EnergyPriceGraphLayout.axisHeight
+                                + layout.rowCenterY(at: index)
+                                + liftedValueBadgeYOffset(for: layout.rowHeight(at: index))
+                        )
+                        .zIndex(4)
+                        .allowsHitTesting(false)
+                    }
+                }
             }
             .animation(selectionAnimation, value: selectedGroupIndex)
             .animation(dataChangeAnimation, value: dataAnimationKey)

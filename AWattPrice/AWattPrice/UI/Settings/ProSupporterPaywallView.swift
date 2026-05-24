@@ -49,6 +49,12 @@ private let proBenefits = [
         tint: .cyan
     ),
     ProBenefit(
+        title: "Family Sharing",
+        subtitle: "Share Pro with your family members at no extra cost.",
+        systemImage: "figure.and.child.holdinghands",
+        tint: .orange
+    ),
+    ProBenefit(
         title: "Development",
         subtitle: "Helps keep AWattPrice maintained.",
         systemImage: "heart.fill",
@@ -200,7 +206,8 @@ struct ProSupporterPaywallView: View {
 
     private var activeSupporterExperience: some View {
         VStack(alignment: .leading, spacing: 16) {
-            ActiveSupporterBenefits(highlightedBenefitIndex: highlightedBenefitIndex)
+            benefitsList(title: "Unlocked for you", itemSpacing: 20)
+                .padding(.top, 3)
             restoreButton
         }
         .task(id: reduceMotion) {
@@ -209,8 +216,15 @@ struct ProSupporterPaywallView: View {
     }
 
     private var benefitsSection: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            Text("What you get with Pro Supporter".localized())
+        benefitsList(title: "What you get with Pro Supporter")
+            .task(id: reduceMotion) {
+                await runBenefitHighlightAnimation()
+            }
+    }
+
+    private func benefitsList(title: String, itemSpacing: CGFloat = 16) -> some View {
+        VStack(alignment: .leading, spacing: itemSpacing) {
+            Text(title.localized())
                 .font(.headline)
 
             ForEach(Array(proBenefits.enumerated()), id: \.element.id) { index, benefit in
@@ -233,9 +247,6 @@ struct ProSupporterPaywallView: View {
                     }
                 }
             }
-        }
-        .task(id: reduceMotion) {
-            await runBenefitHighlightAnimation()
         }
     }
 
@@ -746,71 +757,6 @@ private enum ProSupporterCelebrationHaptics {
     static func play() {
         UINotificationFeedbackGenerator().notificationOccurred(.success)
         UIImpactFeedbackGenerator(style: .light).impactOccurred(intensity: 0.65)
-    }
-}
-
-private struct ActiveSupporterBenefits: View {
-    @Environment(\.colorScheme) private var colorScheme
-
-    let highlightedBenefitIndex: Int?
-
-    private let columns = [
-        GridItem(.adaptive(minimum: 145), spacing: 10, alignment: .top)
-    ]
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Unlocked for you".localized())
-                .font(.headline)
-
-            LazyVGrid(columns: columns, alignment: .leading, spacing: 10) {
-                ForEach(Array(proBenefits.enumerated()), id: \.element.id) { index, benefit in
-                    ActiveBenefitTile(
-                        benefit: benefit,
-                        index: index,
-                        isActive: highlightedBenefitIndex == index
-                    )
-                }
-            }
-        }
-    }
-}
-
-private struct ActiveBenefitTile: View {
-    @Environment(\.colorScheme) private var colorScheme
-
-    let benefit: ProBenefit
-    let index: Int
-    let isActive: Bool
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 9) {
-            AnimatedBenefitIcon(
-                systemImage: benefit.systemImage,
-                tint: benefit.tint,
-                index: index,
-                isActive: isActive
-            )
-
-            VStack(alignment: .leading, spacing: 3) {
-                Text(benefit.title.localized())
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.primary)
-                    .fixedSize(horizontal: false, vertical: true)
-
-                Text(benefit.subtitle.localized())
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-        }
-        .frame(maxWidth: .infinity, minHeight: 132, alignment: .topLeading)
-        .padding(13)
-        .background(AppTheme.cardBackground(for: colorScheme), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .stroke(benefit.tint.opacity(isActive ? 0.30 : 0.12), lineWidth: 1)
-        }
     }
 }
 

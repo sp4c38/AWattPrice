@@ -110,8 +110,15 @@ struct EnergyData: Decodable {
             {
                 adjustedPricePoints[i].marketprice *= taxMultiplier
             }
-            adjustedPricePoints[i].marketprice *= 1 + pricingConfiguration.percentagePriceAddOn / 100
-            adjustedPricePoints[i].marketprice += pricingConfiguration.fixedPriceAddOn
+
+            for addOn in pricingConfiguration.orderedAddOns {
+                switch addOn.kind {
+                case .fixed, .monthly:
+                    adjustedPricePoints[i].marketprice += addOn.value
+                case .percentage:
+                    adjustedPricePoints[i].marketprice *= 1 + addOn.value / 100
+                }
+            }
         }
 
         return adjustedPricePoints

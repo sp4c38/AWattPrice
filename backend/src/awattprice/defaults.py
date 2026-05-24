@@ -68,6 +68,13 @@ NOTIFICATION_PROFILE_SCHEMA = {
                 "tax": {"type": "boolean"},
                 "base_fee": {"type": "number"},
                 "percentage_add_on": {"type": "number"},
+                "fixed_add_on": {"type": "number"},
+                "monthly_fixed_cost_add_on": {"type": "number"},
+                "add_on_order": {
+                    "type": "array",
+                    "items": {"enum": ["fixed", "percentage", "monthly"]},
+                    "uniqueItems": True,
+                },
             },
             "required": ["area", "tax", "base_fee", "percentage_add_on"],
             "additionalProperties": False,

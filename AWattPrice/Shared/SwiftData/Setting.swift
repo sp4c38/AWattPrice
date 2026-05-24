@@ -12,7 +12,19 @@ import SwiftData
 struct PricingConfiguration: Sendable {
     let fixedPriceAddOn: Double
     let percentagePriceAddOn: Double
+    let orderedAddOns: [PriceAddOnConfiguration]
     let marketArea: MarketArea
+}
+
+enum PriceAddOnKind: String, CaseIterable, Codable, Hashable, Sendable {
+    case fixed
+    case percentage
+    case monthly
+}
+
+struct PriceAddOnConfiguration: Hashable, Sendable {
+    let kind: PriceAddOnKind
+    let value: Double
 }
 
 @Model
@@ -25,6 +37,7 @@ public class Setting {
     var percentagePriceAddOn: Double = 0.0
     var monthlyFixedCost: Double = 0.0
     var annualConsumptionKWh: Double = 3500.0
+    var priceAddOnOrder: String = "fixed,percentage,monthly"
     var onboarded: Bool = false // Splash screens finished
     
     // Notification attributes
@@ -58,8 +71,50 @@ public class Setting {
         PricingConfiguration(
             fixedPriceAddOn: totalPriceAddOn,
             percentagePriceAddOn: percentagePriceAddOn,
+            orderedAddOns: orderedPriceAddOns,
             marketArea: marketArea
         )
+    }
+
+    var orderedPriceAddOnKinds: [PriceAddOnKind] {
+        get {
+            let savedOrder = priceAddOnOrder
+                .split(separator: ",")
+                .compactMap { PriceAddOnKind(rawValue: String($0)) }
+            return Self.normalizedPriceAddOnOrder(savedOrder)
+        }
+        set {
+            priceAddOnOrder = Self.normalizedPriceAddOnOrder(newValue)
+                .map(\.rawValue)
+                .joined(separator: ",")
+        }
+    }
+
+    var orderedPriceAddOns: [PriceAddOnConfiguration] {
+        orderedPriceAddOnKinds.compactMap { kind in
+            switch kind {
+            case .fixed:
+                guard baseFeePrice != 0 else { return nil }
+                return PriceAddOnConfiguration(kind: kind, value: baseFeePrice)
+            case .percentage:
+                guard percentagePriceAddOn != 0 else { return nil }
+                return PriceAddOnConfiguration(kind: kind, value: percentagePriceAddOn)
+            case .monthly:
+                guard monthlyFixedCostPrice != 0 else { return nil }
+                return PriceAddOnConfiguration(kind: kind, value: monthlyFixedCostPrice)
+            }
+        }
+    }
+
+    static func normalizedPriceAddOnOrder(_ order: [PriceAddOnKind]) -> [PriceAddOnKind] {
+        var result: [PriceAddOnKind] = []
+        for kind in order where result.contains(kind) == false {
+            result.append(kind)
+        }
+        for kind in PriceAddOnKind.allCases where result.contains(kind) == false {
+            result.append(kind)
+        }
+        return result
     }
 }
 

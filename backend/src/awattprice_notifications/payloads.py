@@ -44,7 +44,17 @@ def construct_notification_headers(apns_authorization: str, selected_prices: lis
 def adjusted_price(price_point: Box, profile: Box, round_: bool = True) -> Decimal:
     """Return the user's final price for a price point."""
     marketprice = price_point.marketprice.subunit_kwh(taxed=profile.general.tax, round_=round_)
-    return marketprice * (1 + profile.general.percentage_add_on / 100) + profile.general.base_fee
+    add_on_order = profile.general.get("add_on_order", ["percentage", "fixed", "monthly"])
+
+    for add_on in add_on_order:
+        if add_on == "fixed":
+            marketprice += profile.general.get("fixed_add_on", profile.general.base_fee)
+        elif add_on == "monthly":
+            marketprice += profile.general.get("monthly_fixed_cost_add_on", Decimal("0"))
+        elif add_on == "percentage":
+            marketprice *= 1 + profile.general.percentage_add_on / 100
+
+    return marketprice
 
 
 def stringify_adjusted_price(price_point: Box, profile: Box) -> str:
@@ -59,6 +69,8 @@ def copy_profile_with_rule_threshold(profile: Box, rule_type: str, threshold: De
     updated_profile = Box(profile.to_dict())
     updated_profile.general.base_fee = Decimal(str(updated_profile.general.base_fee))
     updated_profile.general.percentage_add_on = Decimal(str(updated_profile.general.percentage_add_on))
+    updated_profile.general.fixed_add_on = Decimal(str(updated_profile.general.get("fixed_add_on", updated_profile.general.base_fee)))
+    updated_profile.general.monthly_fixed_cost_add_on = Decimal(str(updated_profile.general.get("monthly_fixed_cost_add_on", 0)))
     updated_profile.rules[rule_type].threshold = threshold
     return updated_profile
 

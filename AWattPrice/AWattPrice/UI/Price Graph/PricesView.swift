@@ -44,6 +44,7 @@ private struct PriceHistoryRequestKey: Hashable {
     let selectedDate: Date
     let fixedPriceAddOn: Double
     let percentagePriceAddOn: Double
+    let orderedAddOns: [PriceAddOnConfiguration]
 }
 
 struct PricesView: View {
@@ -112,7 +113,8 @@ struct PricesView: View {
             areaKey: pricingConfiguration.marketArea.key,
             selectedDate: selectedHistoryDate,
             fixedPriceAddOn: pricingConfiguration.fixedPriceAddOn,
-            percentagePriceAddOn: pricingConfiguration.percentagePriceAddOn
+            percentagePriceAddOn: pricingConfiguration.percentagePriceAddOn,
+            orderedAddOns: pricingConfiguration.orderedAddOns
         )
     }
 

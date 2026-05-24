@@ -320,7 +320,10 @@ class NotificationSettingViewModel: ObservableObject {
             marketArea: settingsManager.setting.marketArea,
             tax: true,
             baseFee: settingsManager.setting.totalPriceAddOn,
-            percentageAddOn: settingsManager.setting.percentagePriceAddOn
+            percentageAddOn: settingsManager.setting.percentagePriceAddOn,
+            fixedAddOn: settingsManager.setting.baseFeePrice,
+            monthlyFixedCostAddOn: settingsManager.setting.monthlyFixedCostPrice,
+            addOnOrder: settingsManager.setting.orderedPriceAddOnKinds
         )
         let rules = NotificationRulesConfiguration(
             priceBelow: PriceBelowNotificationNotificationConfiguration(

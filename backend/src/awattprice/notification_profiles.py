@@ -21,6 +21,7 @@ from awattprice import defaults
 
 SCHEMA_VERSION = 1
 STORE_FILE_NAME = "notification-profiles.json"
+DEFAULT_ADD_ON_ORDER = ["percentage", "fixed", "monthly"]
 
 
 def get_store_path(config) -> Path:
@@ -45,6 +46,16 @@ def parse_notification_profile_body(profile: Box) -> Optional[Box]:
 
     profile.general.base_fee = _decimal_from_number(profile.general.base_fee)
     profile.general.percentage_add_on = _decimal_from_number(profile.general.percentage_add_on)
+    if "fixed_add_on" not in profile.general:
+        profile.general.fixed_add_on = profile.general.base_fee
+    else:
+        profile.general.fixed_add_on = _decimal_from_number(profile.general.fixed_add_on)
+    if "monthly_fixed_cost_add_on" not in profile.general:
+        profile.general.monthly_fixed_cost_add_on = Decimal("0")
+    else:
+        profile.general.monthly_fixed_cost_add_on = _decimal_from_number(profile.general.monthly_fixed_cost_add_on)
+    if "add_on_order" not in profile.general:
+        profile.general.add_on_order = DEFAULT_ADD_ON_ORDER
 
     for rule_name in ("price_below", "price_above"):
         rule = profile.rules[rule_name]
@@ -124,4 +135,14 @@ class NotificationProfileStore:
     def _normalize_stored_profile(profile: Box) -> Box:
         profile.general.base_fee = Decimal(str(profile.general.base_fee))
         profile.general.percentage_add_on = Decimal(str(profile.general.percentage_add_on))
+        if "fixed_add_on" not in profile.general:
+            profile.general.fixed_add_on = profile.general.base_fee
+        else:
+            profile.general.fixed_add_on = Decimal(str(profile.general.fixed_add_on))
+        if "monthly_fixed_cost_add_on" not in profile.general:
+            profile.general.monthly_fixed_cost_add_on = Decimal("0")
+        else:
+            profile.general.monthly_fixed_cost_add_on = Decimal(str(profile.general.monthly_fixed_cost_add_on))
+        if "add_on_order" not in profile.general:
+            profile.general.add_on_order = DEFAULT_ADD_ON_ORDER
         return profile

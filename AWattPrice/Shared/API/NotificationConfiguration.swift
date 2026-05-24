@@ -12,11 +12,17 @@ struct GeneralNotificationConfiguration: Encodable {
     var tax: Bool
     var baseFee: Double
     var percentageAddOn: Double
+    var fixedAddOn: Double
+    var monthlyFixedCostAddOn: Double
+    var addOnOrder: [PriceAddOnKind]
     
     enum CodingKeys: String, CodingKey {
         case area, tax
         case baseFee = "base_fee"
         case percentageAddOn = "percentage_add_on"
+        case fixedAddOn = "fixed_add_on"
+        case monthlyFixedCostAddOn = "monthly_fixed_cost_add_on"
+        case addOnOrder = "add_on_order"
     }
     
     func encode(to encoder: Encoder) throws {
@@ -25,6 +31,9 @@ struct GeneralNotificationConfiguration: Encodable {
         try container.encode(tax, forKey: .tax)
         try container.encode(baseFee, forKey: .baseFee)
         try container.encode(percentageAddOn, forKey: .percentageAddOn)
+        try container.encode(fixedAddOn, forKey: .fixedAddOn)
+        try container.encode(monthlyFixedCostAddOn, forKey: .monthlyFixedCostAddOn)
+        try container.encode(addOnOrder.map(\.rawValue), forKey: .addOnOrder)
     }
 }
 
@@ -94,7 +103,10 @@ struct NotificationConfiguration: Encodable {
             marketArea: setting.marketArea,
             tax: true,
             baseFee: setting.totalPriceAddOn,
-            percentageAddOn: setting.percentagePriceAddOn
+            percentageAddOn: setting.percentagePriceAddOn,
+            fixedAddOn: setting.baseFeePrice,
+            monthlyFixedCostAddOn: setting.monthlyFixedCostPrice,
+            addOnOrder: setting.orderedPriceAddOnKinds
         )
         let priceBelowNotification = PriceBelowNotificationNotificationConfiguration(
             active: setting.priceDropsBelowEnabled,

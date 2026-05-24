@@ -29,6 +29,16 @@ private extension Double {
     }
 }
 
+private extension PriceAddOnKind {
+    var tint: Color {
+        switch self {
+        case .fixed: AppTheme.success
+        case .percentage: AppTheme.accent
+        case .monthly: AppTheme.success
+        }
+    }
+}
+
 private struct PriceAddOnsBackground: View {
     @Environment(\.colorScheme) private var colorScheme
 
@@ -45,29 +55,6 @@ private struct PriceAddOnsCard<Content: View>: View {
         AppCard(cornerRadius: 20, padding: 18, spacing: 16) {
             content
         }
-    }
-}
-
-private struct PriceAddOnsBadge: View {
-    let text: String
-    let tint: Color
-    var isLoading = false
-
-    var body: some View {
-        HStack(spacing: 6) {
-            if isLoading {
-                ProgressView()
-                    .controlSize(.mini)
-                    .tint(tint)
-            }
-
-            Text(text.localized())
-        }
-        .font(.caption.weight(.semibold))
-        .foregroundStyle(tint)
-        .padding(.horizontal, 10)
-        .padding(.vertical, 6)
-        .background(tint.opacity(0.12), in: Capsule())
     }
 }
 
@@ -107,12 +94,14 @@ private struct PriceAddOnsDraft: Equatable {
     var percentagePriceAddOn: Double
     var monthlyFixedCost: Double
     var annualConsumptionKWh: Double
+    var addOnOrder: [PriceAddOnKind]
 
     init(setting: Setting) {
         fixedPriceAddOn = setting.baseFeePrice
         percentagePriceAddOn = setting.percentagePriceAddOn
         monthlyFixedCost = setting.monthlyFixedCost
         annualConsumptionKWh = setting.annualConsumptionKWh
+        addOnOrder = setting.orderedPriceAddOnKinds
     }
 
     var monthlyFixedCostPrice: Double {
@@ -130,10 +119,52 @@ private struct PriceAddOnsDraft: Equatable {
             || monthlyFixedCostPrice.isActivePriceComponent
     }
 
+    var activeAddOnKinds: [PriceAddOnKind] {
+        addOnOrder.filter { isActive($0) }
+    }
+
+    var canReorderAddOns: Bool {
+        activeAddOnKinds.count > 1
+    }
+
     var canSave: Bool {
         if monthlyFixedCost > 0, annualConsumptionKWh <= 0 { return false }
         return true
     }
+
+    func isActive(_ kind: PriceAddOnKind) -> Bool {
+        switch kind {
+        case .fixed: fixedPriceAddOn.isActivePriceComponent
+        case .percentage: percentagePriceAddOn.isActivePriceComponent
+        case .monthly: monthlyFixedCostPrice.isActivePriceComponent
+        }
+    }
+
+    func formulaTerm(for kind: PriceAddOnKind) -> PriceFormulaTerm {
+        switch kind {
+        case .fixed:
+            PriceFormulaTerm.price(fixedPriceAddOn.priceAddOnSummaryText, unit: "ct/kWh", tint: kind.tint, id: kind.rawValue)
+        case .percentage:
+            PriceFormulaTerm.percentage(percentagePriceAddOn.percentageText, tint: kind.tint, id: kind.rawValue)
+        case .monthly:
+            PriceFormulaTerm.price(monthlyFixedCostPrice.priceAddOnSummaryText, unit: "ct/kWh", tint: kind.tint, id: kind.rawValue)
+        }
+    }
+
+    mutating func moveAddOn(_ source: PriceAddOnKind, to target: PriceAddOnKind) {
+        guard source != target else { return }
+        var normalizedOrder = Setting.normalizedPriceAddOnOrder(addOnOrder)
+        guard
+            let sourceIndex = normalizedOrder.firstIndex(of: source),
+            let targetIndex = normalizedOrder.firstIndex(of: target)
+        else { return }
+
+        normalizedOrder.remove(at: sourceIndex)
+        let insertionIndex = min(targetIndex, normalizedOrder.count)
+        normalizedOrder.insert(source, at: insertionIndex)
+        addOnOrder = Setting.normalizedPriceAddOnOrder(normalizedOrder)
+    }
+
 }
 
 @MainActor
@@ -217,6 +248,7 @@ private class PriceAddOnsViewModel: ObservableObject {
         settingsManager.setting.percentagePriceAddOn = draftToSave.percentagePriceAddOn
         settingsManager.setting.monthlyFixedCost = draftToSave.monthlyFixedCost
         settingsManager.setting.annualConsumptionKWh = draftToSave.annualConsumptionKWh
+        settingsManager.setting.orderedPriceAddOnKinds = draftToSave.addOnOrder
 
         var notificationConfiguration = NotificationConfiguration.create(nil, settingsManager.setting)
         notificationConfiguration.general.baseFee = draftToSave.totalPriceAddOn
@@ -256,6 +288,7 @@ private class PriceAddOnsViewModel: ObservableObject {
             settingsManager.setting.percentagePriceAddOn = previousDraft.percentagePriceAddOn
             settingsManager.setting.monthlyFixedCost = previousDraft.monthlyFixedCost
             settingsManager.setting.annualConsumptionKWh = previousDraft.annualConsumptionKWh
+            settingsManager.setting.orderedPriceAddOnKinds = previousDraft.addOnOrder
             draft = savedDraft
             isUploadRequestInFlight = false
             uploadIndicatorStart = nil
@@ -478,17 +511,7 @@ private struct PriceFormulaView: View {
             PriceFormulaTerm.percentage("VAT", tint: .orange, id: "vat")
         ]
 
-        if draft.fixedPriceAddOn.isActivePriceComponent {
-            terms.append(PriceFormulaTerm.price(draft.fixedPriceAddOn.priceAddOnSummaryText, unit: "ct/kWh", tint: .green, id: "fixed"))
-        }
-
-        if draft.percentagePriceAddOn.isActivePriceComponent {
-            terms.append(PriceFormulaTerm.percentage(draft.percentagePriceAddOn.percentageText, tint: .cyan, id: "percentage"))
-        }
-
-        if draft.monthlyFixedCostPrice.isActivePriceComponent {
-            terms.append(PriceFormulaTerm.price(draft.monthlyFixedCostPrice.priceAddOnSummaryText, unit: "ct/kWh", tint: .blue, id: "monthly"))
-        }
+        terms.append(contentsOf: draft.activeAddOnKinds.map { draft.formulaTerm(for: $0) })
 
         return terms
     }
@@ -517,36 +540,42 @@ private struct PriceFormulaView: View {
     }
 }
 
-private struct ActivePriceAddOnsView: View {
-    let draft: PriceAddOnsDraft
+private struct ReorderablePriceAddOnSection<Content: View>: View {
+    let kind: PriceAddOnKind
+    let canReorder: Bool
+    let isDragging: Bool
+    let dragTranslation: CGFloat
+    let onDragChanged: (DragGesture.Value) -> Void
+    let onDragEnded: (DragGesture.Value) -> Void
+    @ViewBuilder let content: Content
 
     var body: some View {
-        if draft.hasActiveAddOns {
-            FlowLayout(spacing: 8) {
-                if draft.percentagePriceAddOn.isActivePriceComponent {
-                    PriceAddOnsBadge(
-                        text: String(format: "Percentage %@".localized(), "+\(draft.percentagePriceAddOn.percentageText)"),
-                        tint: AppTheme.accent
-                    )
-                }
+        PriceAddOnsCard {
+            if canReorder {
+                HStack {
+                    Spacer()
 
-                if draft.fixedPriceAddOn.isActivePriceComponent {
-                    PriceAddOnsBadge(
-                        text: String(format: "Fixed %@".localized(), "+\(draft.fixedPriceAddOn.priceAddOnSummaryText)"),
-                        tint: AppTheme.success
-                    )
-                }
-
-                if draft.monthlyFixedCostPrice.isActivePriceComponent {
-                    PriceAddOnsBadge(
-                        text: String(format: "Monthly cost %@".localized(), "+\(draft.monthlyFixedCostPrice.priceAddOnSummaryText)"),
-                        tint: AppTheme.success
-                    )
+                    Image(systemName: "line.3.horizontal")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(isDragging ? .secondary : .tertiary)
+                        .padding(10)
+                        .contentShape(Rectangle())
+                        .gesture(
+                            DragGesture(minimumDistance: 4, coordinateSpace: .global)
+                                .onChanged(onDragChanged)
+                                .onEnded(onDragEnded)
+                        )
+                        .accessibilityLabel("Reorder".localized())
                 }
             }
-        } else {
-            PriceAddOnsBadge(text: "No add-ons active", tint: Color.secondary)
+
+            content
         }
+        .scaleEffect(isDragging ? 1.03 : 1)
+        .shadow(color: .black.opacity(isDragging ? 0.12 : 0), radius: isDragging ? 10 : 0, y: isDragging ? 4 : 0)
+        .offset(y: isDragging ? dragTranslation : 0)
+        .zIndex(isDragging ? 1 : 0)
+        .animation(.spring(response: 0.25, dampingFraction: 0.85), value: isDragging)
     }
 }
 
@@ -640,6 +669,12 @@ struct PriceAddOnsView: View {
     @State private var autoSaveTask: Task<Void, Never>?
     @State private var uploadFeedbackTask: Task<Void, Never>?
 
+    @State private var draggingKind: PriceAddOnKind? = nil
+    @State private var dragTranslation: CGFloat = 0
+    @State private var lastRawTranslation: CGFloat = 0
+    @State private var itemHeights: [PriceAddOnKind: CGFloat] = [:]
+    private let cardSpacing: CGFloat = 18
+
     init() {
         _viewModel = StateObject(wrappedValue: PriceAddOnsViewModel(
             settingsManager: SettingsManager.shared,
@@ -664,80 +699,16 @@ struct PriceAddOnsView: View {
                         }
                     }
 
-                    PriceAddOnsCard {
-                        VStack(alignment: .leading, spacing: 16) {
-                            PriceModelInputRow(
-                                title: "Fixed Add-on",
-                                subtitle: nil,
-                                unit: "ct/kWh",
-                                value: $viewModel.draft.fixedPriceAddOn,
-                                isInputActive: $isInputActive,
-                                activeTint: viewModel.draft.fixedPriceAddOn.isActivePriceComponent ? .green : nil
+                    ForEach(Setting.normalizedPriceAddOnOrder(viewModel.draft.addOnOrder), id: \.self) { kind in
+                        priceAddOnSection(for: kind)
+                            .background(
+                                GeometryReader { geo in
+                                    Color.clear
+                                        .onAppear { itemHeights[kind] = geo.size.height }
+                                        .onChange(of: geo.size.height) { _, h in itemHeights[kind] = h }
+                                }
                             )
-                        }
-                    }
-
-                    PriceAddOnsCard {
-                        VStack(alignment: .leading, spacing: 16) {
-                            PriceModelInputRow(
-                                title: "Percentage Add-on",
-                                subtitle: nil,
-                                unit: "%",
-                                value: $viewModel.draft.percentagePriceAddOn,
-                                isInputActive: $isInputActive,
-                                activeTint: viewModel.draft.percentagePriceAddOn.isActivePriceComponent ? .cyan : nil
-                            )
-                        }
-                    }
-
-                    PriceAddOnsCard {
-                        VStack(alignment: .leading, spacing: 16) {
-                            PriceModelInputRow(
-                                title: "Monthly Fixed Cost",
-                                subtitle: "Basic electricity provider fee.",
-                                unit: "EUR/month",
-                                value: $viewModel.draft.monthlyFixedCost,
-                                isInputActive: $isInputActive,
-                                activeTint: viewModel.draft.monthlyFixedCostPrice.isActivePriceComponent ? .blue : nil
-                            )
-
-                            PriceModelInputRow(
-                                title: "Annual Consumption",
-                                subtitle: "Used to spread fixed monthly costs over each kWh.",
-                                unit: "kWh/year",
-                                value: $viewModel.draft.annualConsumptionKWh,
-                                isInputActive: $isInputActive,
-                                activeTint: viewModel.draft.monthlyFixedCostPrice.isActivePriceComponent ? .blue : nil
-                            )
-
-                            HStack(alignment: .firstTextBaseline, spacing: 4) {
-                                Text("Monthly fixed cost adds".localized())
-                                    .font(.footnote.weight(.semibold))
-
-                                PriceValueLabel(
-                                    value: viewModel.draft.monthlyFixedCostPrice.priceAddOnSummaryText,
-                                    unit: "ct/kWh",
-                                    tint: Color.secondary,
-                                    size: 13
-                                )
-
-                                Text(".")
-                                    .font(.footnote.weight(.semibold))
-                            }
-                            .foregroundStyle(.secondary)
-
-                            if let annualConsumptionValidationMessage = viewModel.annualConsumptionValidationMessage {
-                                Text(annualConsumptionValidationMessage.localized())
-                                    .font(.footnote.weight(.semibold))
-                                    .foregroundStyle(AppTheme.error)
-                            }
-
-                            if viewModel.uploadFailed {
-                                Text("Price add-ons could not be saved to the server. Your previous settings were restored.".localized())
-                                    .font(.footnote.weight(.semibold))
-                                    .foregroundStyle(AppTheme.error)
-                            }
-                        }
+                            .transition(.move(edge: .top).combined(with: .opacity))
                     }
                 }
                 .padding(.horizontal, 16)
@@ -782,6 +753,142 @@ struct PriceAddOnsView: View {
             uploadFeedbackTask?.cancel()
             viewModel.cancelPendingUploadFeedback()
         }
+    }
+
+    @ViewBuilder
+    private func priceAddOnSection(for kind: PriceAddOnKind) -> some View {
+        ReorderablePriceAddOnSection(
+            kind: kind,
+            canReorder: viewModel.draft.canReorderAddOns && viewModel.draft.isActive(kind),
+            isDragging: draggingKind == kind,
+            dragTranslation: draggingKind == kind ? dragTranslation : 0,
+            onDragChanged: { handleDragChanged(kind: kind, value: $0) },
+            onDragEnded: { handleDragEnded(kind: kind, value: $0) }
+        ) {
+            switch kind {
+            case .fixed:
+                VStack(alignment: .leading, spacing: 16) {
+                    PriceModelInputRow(
+                        title: "Fixed Add-on",
+                        subtitle: nil,
+                        unit: "ct/kWh",
+                        value: $viewModel.draft.fixedPriceAddOn,
+                        isInputActive: $isInputActive,
+                        activeTint: viewModel.draft.fixedPriceAddOn.isActivePriceComponent ? .green : nil
+                    )
+                }
+            case .percentage:
+                VStack(alignment: .leading, spacing: 16) {
+                    PriceModelInputRow(
+                        title: "Percentage Add-on",
+                        subtitle: nil,
+                        unit: "%",
+                        value: $viewModel.draft.percentagePriceAddOn,
+                        isInputActive: $isInputActive,
+                        activeTint: viewModel.draft.percentagePriceAddOn.isActivePriceComponent ? .cyan : nil
+                    )
+                }
+            case .monthly:
+                VStack(alignment: .leading, spacing: 16) {
+                    PriceModelInputRow(
+                        title: "Monthly Fixed Cost",
+                        subtitle: "Basic electricity provider fee.",
+                        unit: "EUR/month",
+                        value: $viewModel.draft.monthlyFixedCost,
+                        isInputActive: $isInputActive,
+                        activeTint: viewModel.draft.monthlyFixedCostPrice.isActivePriceComponent ? .blue : nil
+                    )
+
+                    PriceModelInputRow(
+                        title: "Annual Consumption",
+                        subtitle: "Used to spread fixed monthly costs over each kWh.",
+                        unit: "kWh/year",
+                        value: $viewModel.draft.annualConsumptionKWh,
+                        isInputActive: $isInputActive,
+                        activeTint: viewModel.draft.monthlyFixedCostPrice.isActivePriceComponent ? .blue : nil
+                    )
+
+                    HStack(alignment: .firstTextBaseline, spacing: 4) {
+                        Text("Monthly fixed cost adds".localized())
+                            .font(.footnote.weight(.semibold))
+
+                        PriceValueLabel(
+                            value: viewModel.draft.monthlyFixedCostPrice.priceAddOnSummaryText,
+                            unit: "ct/kWh",
+                            tint: Color.secondary,
+                            size: 13
+                        )
+
+                        Text(".")
+                            .font(.footnote.weight(.semibold))
+                    }
+                    .foregroundStyle(.secondary)
+
+                    if let annualConsumptionValidationMessage = viewModel.annualConsumptionValidationMessage {
+                        Text(annualConsumptionValidationMessage.localized())
+                            .font(.footnote.weight(.semibold))
+                            .foregroundStyle(AppTheme.error)
+                    }
+
+                    if viewModel.uploadFailed {
+                        Text("Price add-ons could not be saved to the server. Your previous settings were restored.".localized())
+                            .font(.footnote.weight(.semibold))
+                            .foregroundStyle(AppTheme.error)
+                    }
+                }
+            }
+        }
+    }
+
+    private func handleDragChanged(kind: PriceAddOnKind, value: DragGesture.Value) {
+        if draggingKind == nil {
+            draggingKind = kind
+            lastRawTranslation = 0
+        }
+
+        let raw = value.translation.height
+        dragTranslation += raw - lastRawTranslation
+        lastRawTranslation = raw
+
+        // Swap with adjacent active item when the drag crosses the midpoint of that item.
+        // Both the order change and the offset correction are wrapped in the same animation so
+        // the dragged card appears stationary while neighbours spring into their new slots.
+        var keepChecking = true
+        while keepChecking {
+            keepChecking = false
+            let active = viewModel.draft.activeAddOnKinds
+            guard let idx = active.firstIndex(of: kind) else { break }
+
+            if dragTranslation > 0, idx < active.count - 1 {
+                let next = active[idx + 1]
+                let threshold = (itemHeights[next] ?? 100) + cardSpacing
+                if dragTranslation > threshold / 2 {
+                    withAnimation(.interactiveSpring(response: 0.25)) {
+                        viewModel.draft.moveAddOn(kind, to: next)
+                        dragTranslation -= threshold
+                    }
+                    keepChecking = true
+                }
+            } else if dragTranslation < 0, idx > 0 {
+                let prev = active[idx - 1]
+                let threshold = (itemHeights[prev] ?? 100) + cardSpacing
+                if dragTranslation < -(threshold / 2) {
+                    withAnimation(.interactiveSpring(response: 0.25)) {
+                        viewModel.draft.moveAddOn(kind, to: prev)
+                        dragTranslation += threshold
+                    }
+                    keepChecking = true
+                }
+            }
+        }
+    }
+
+    private func handleDragEnded(kind: PriceAddOnKind, value: DragGesture.Value) {
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.85)) {
+            draggingKind = nil
+            dragTranslation = 0
+        }
+        lastRawTranslation = 0
     }
 
     private func scheduleAutoSave() {

@@ -356,6 +356,10 @@ private struct PriceModelInputRow: View {
         }
     }
 
+    private func formatText() {
+        text = Self.text(for: value, unit: unit)
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             VStack(alignment: .leading, spacing: 3) {
@@ -384,6 +388,11 @@ private struct PriceModelInputRow: View {
                         let parsedTextValue = Self.parsedValue(from: text, unit: unit)
                         if parsedTextValue.map({ $0 != newValue }) ?? true {
                             text = Self.text(for: newValue, unit: unit)
+                        }
+                    }
+                    .onChange(of: isInputActive.wrappedValue) { _, isActive in
+                        if isActive == false {
+                            formatText()
                         }
                     }
 

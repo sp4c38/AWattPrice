@@ -10,7 +10,9 @@ import Foundation
 extension Int {
     var priceString: String? {
         let numberFormatter = NumberFormatter()
-        numberFormatter.numberStyle = .none
+        numberFormatter.numberStyle = .decimal
+        numberFormatter.minimumFractionDigits = 2
+        numberFormatter.maximumFractionDigits = 2
 
         if let result = numberFormatter.string(from: NSNumber(value: self)) {
             return result

@@ -438,21 +438,50 @@ private struct ThresholdInput: View {
         AppTheme.cardStroke(for: colorScheme)
     }
 
-    private func integerText(from input: String) -> String {
+    private func priceText(from input: String) -> String {
         var output = ""
         var canAddMinus = true
+        var didAddDecimalSeparator = false
+        var fractionDigitCount = 0
+        let decimalSeparator = Locale.current.decimalSeparator ?? ","
+        let alternateDecimalSeparator = decimalSeparator == "," ? "." : ","
 
         for character in input {
             if character == "-", canAddMinus, output.isEmpty {
                 output.append(character)
                 canAddMinus = false
             } else if character.isNumber {
+                if didAddDecimalSeparator {
+                    guard fractionDigitCount < 2 else { continue }
+                    fractionDigitCount += 1
+                }
                 output.append(character)
+                canAddMinus = false
+            } else if String(character) == decimalSeparator || String(character) == alternateDecimalSeparator {
+                guard didAddDecimalSeparator == false else { continue }
+                output.append(decimalSeparator)
+                didAddDecimalSeparator = true
                 canAddMinus = false
             }
         }
 
         return output
+    }
+
+    private func formattedPriceText(from input: String) -> String? {
+        guard let value = input.doubleValue else { return nil }
+
+        let numberFormatter = NumberFormatter()
+        numberFormatter.numberStyle = .decimal
+        numberFormatter.minimumFractionDigits = 2
+        numberFormatter.maximumFractionDigits = 2
+        return numberFormatter.string(from: NSNumber(value: value))
+    }
+
+    private func formatValue() {
+        if let formattedValue = formattedPriceText(from: value) {
+            value = formattedValue
+        }
     }
 
     var body: some View {
@@ -469,9 +498,14 @@ private struct ThresholdInput: View {
                     .font(.system(size: 22, weight: .semibold, design: .rounded))
                     .monospacedDigit()
                     .onChange(of: value) { _, newValue in
-                        let sanitizedValue = integerText(from: newValue)
+                        let sanitizedValue = priceText(from: newValue)
                         if sanitizedValue != newValue {
                             value = sanitizedValue
+                        }
+                    }
+                    .onChange(of: focusedField.wrappedValue) { _, focusedField in
+                        if focusedField != field {
+                            formatValue()
                         }
                     }
 

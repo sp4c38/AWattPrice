@@ -640,7 +640,7 @@ struct NotificationSettingView: View {
             }
 
         }
-        .background(SavingStatusWindowOverlay(isVisible: viewModel.isSaving).frame(width: 0, height: 0))
+        .savingStatusOverlay(isVisible: viewModel.isSaving)
         .animation(.easeInOut(duration: 0.18), value: viewModel.isSaving)
         .animation(.easeInOut(duration: 0.2), value: viewModel.exampleMessage)
         .navigationTitle("Notifications")

@@ -194,6 +194,7 @@ struct ContentView: View {
             }
         }
         .ignoresSafeArea(.keyboard)
+        .savingStatusOverlayHost()
         .onChange(of: scenePhase) { _, newPhase in
             guard newPhase == .active else { return }
             refreshAppData()

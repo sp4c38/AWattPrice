@@ -39,7 +39,7 @@ private struct SavingStatusOverlayContent: View {
         HStack(spacing: 6) {
             ProgressView()
                 .controlSize(.mini)
-                .tint(AppTheme.accent)
+                .progressViewStyle(CircularProgressViewStyle(tint: AppTheme.accent))
 
             Text("Saving to server".localized())
                 .font(.caption.weight(.semibold))
@@ -55,110 +55,48 @@ private struct SavingStatusOverlayContent: View {
     }
 }
 
-struct SavingStatusWindowOverlay: UIViewRepresentable {
+private struct SavingStatusOverlayModifier: ViewModifier {
     let isVisible: Bool
 
-    func makeCoordinator() -> Coordinator {
-        Coordinator()
+    func body(content: Content) -> some View {
+        content
+            .preference(key: SavingStatusOverlayPreferenceKey.self, value: isVisible)
+    }
+}
+
+private struct SavingStatusOverlayHostModifier: ViewModifier {
+    @State private var isVisible = false
+
+    func body(content: Content) -> some View {
+        content
+            .onPreferenceChange(SavingStatusOverlayPreferenceKey.self) { isVisible = $0 }
+            .overlay(alignment: .top) {
+                if isVisible {
+                    SavingStatusOverlayContent()
+                        .padding(.top, 8)
+                        .transition(.scale(scale: 0.96).combined(with: .opacity))
+                        .allowsHitTesting(false)
+                }
+            }
+            .animation(.easeInOut(duration: 0.18), value: isVisible)
+    }
+}
+
+private struct SavingStatusOverlayPreferenceKey: PreferenceKey {
+    static let defaultValue = false
+
+    static func reduce(value: inout Bool, nextValue: () -> Bool) {
+        value = value || nextValue()
+    }
+}
+
+extension View {
+    func savingStatusOverlay(isVisible: Bool) -> some View {
+        modifier(SavingStatusOverlayModifier(isVisible: isVisible))
     }
 
-    func makeUIView(context: Context) -> UIView {
-        let view = UIView(frame: .zero)
-        view.isUserInteractionEnabled = false
-        return view
-    }
-
-    func updateUIView(_ view: UIView, context: Context) {
-        DispatchQueue.main.async {
-            context.coordinator.update(isVisible: isVisible, sourceView: view)
-        }
-    }
-
-    final class Coordinator {
-        private var hostingController: UIHostingController<SavingStatusOverlayContent>?
-
-        func update(isVisible: Bool, sourceView: UIView) {
-            guard let window = sourceView.window else { return }
-
-            if isVisible {
-                show(in: window)
-            } else {
-                hide()
-            }
-        }
-
-        private func show(in window: UIWindow) {
-            if let hostingController {
-                hostingController.view.alpha = 1
-                hostingController.view.transform = .identity
-                return
-            }
-
-            let hostingController = UIHostingController(rootView: SavingStatusOverlayContent())
-            hostingController.view.backgroundColor = .clear
-            hostingController.view.translatesAutoresizingMaskIntoConstraints = false
-            hostingController.view.isUserInteractionEnabled = false
-            hostingController.view.alpha = 0
-            hostingController.view.transform = CGAffineTransform(scaleX: 0.96, y: 0.96)
-            // Set the UIKit-level tint so UIActivityIndicatorView has the correct colour
-            // from the very first rendered frame, before SwiftUI's environment propagates.
-            hostingController.view.tintColor = UIColor(AppTheme.accent)
-
-            // Proper child-VC containment gives the hosting controller a trait collection
-            // so SwiftUI can resolve environment values (including .tint) synchronously.
-            // Sequence: addChild → add view → didMove(toParent:)
-            let parentVC = window.rootViewController
-            parentVC?.addChild(hostingController)
-            window.addSubview(hostingController.view)
-            hostingController.didMove(toParent: parentVC)
-
-            NSLayoutConstraint.activate([
-                hostingController.view.topAnchor.constraint(equalTo: window.safeAreaLayoutGuide.topAnchor, constant: 8 + topTabBarOffset(in: window) + (UIDevice.current.userInterfaceIdiom == .pad ? 5 : 0)),
-                hostingController.view.centerXAnchor.constraint(equalTo: window.safeAreaLayoutGuide.centerXAnchor)
-            ])
-
-            self.hostingController = hostingController
-
-            UIView.animate(withDuration: 0.2, delay: 0, options: [.curveEaseInOut, .beginFromCurrentState]) {
-                hostingController.view.alpha = 1
-                hostingController.view.transform = .identity
-            }
-        }
-
-        /// Returns the height of the tab bar when it is positioned at the top of the screen on iPad.
-        /// On iPhone (tab bar at the bottom) this returns 0.
-        private func topTabBarOffset(in window: UIWindow) -> CGFloat {
-            guard UIDevice.current.userInterfaceIdiom == .pad else { return 0 }
-            guard let tabBar = findTabBar(in: window) else { return 49 }
-            // Only compensate when the tab bar lives near the top of the window.
-            let approxTopEdge = window.safeAreaInsets.top + tabBar.frame.height
-            guard tabBar.frame.maxY <= approxTopEdge + 4 else { return 0 }
-            return tabBar.frame.height
-        }
-
-        private func findTabBar(in view: UIView) -> UITabBar? {
-            if let tabBar = view as? UITabBar { return tabBar }
-            for subview in view.subviews {
-                if let found = findTabBar(in: subview) { return found }
-            }
-            return nil
-        }
-
-        private func hide() {
-            guard let hostingController else { return }
-
-            hostingController.willMove(toParent: nil)
-
-            UIView.animate(withDuration: 0.2, delay: 0, options: [.curveEaseInOut, .beginFromCurrentState]) {
-                hostingController.view.alpha = 0
-                hostingController.view.transform = CGAffineTransform(scaleX: 0.96, y: 0.96)
-            } completion: { _ in
-                hostingController.view.removeFromSuperview()
-                hostingController.removeFromParent()
-            }
-
-            self.hostingController = nil
-        }
+    func savingStatusOverlayHost() -> some View {
+        modifier(SavingStatusOverlayHostModifier())
     }
 }
 

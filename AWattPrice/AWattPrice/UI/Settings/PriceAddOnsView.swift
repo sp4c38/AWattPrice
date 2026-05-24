@@ -724,7 +724,7 @@ struct PriceAddOnsView: View {
                 .animation(.spring(response: 0.28, dampingFraction: 0.82), value: viewModel.draft.monthlyFixedCostPrice.isActivePriceComponent)
             }
         }
-        .background(SavingStatusWindowOverlay(isVisible: viewModel.isSaving).frame(width: 0, height: 0))
+        .savingStatusOverlay(isVisible: viewModel.isSaving)
         .animation(.easeInOut(duration: 0.18), value: viewModel.isSaving)
         .navigationTitle("Price Add-ons")
         .navigationBarTitleDisplayMode(.large)

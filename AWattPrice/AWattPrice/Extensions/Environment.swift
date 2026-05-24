@@ -52,8 +52,6 @@ private struct SavingStatusOverlayContent: View {
             Capsule()
                 .stroke(AppTheme.accent, lineWidth: 1)
         )
-        .shadow(color: Color.black.opacity(0.18), radius: 10, y: 8)
-        .shadow(color: AppTheme.accent.opacity(0.12), radius: 8, y: 2)
     }
 }
 

@@ -123,6 +123,10 @@ class NotificationSettingViewModel: ObservableObject {
         draft != savedDraft
     }
 
+    var needsServerSave: Bool {
+        draft.hasAnyActiveRule || savedDraft.hasAnyActiveRule
+    }
+
     func refreshAccessState() async {
         await notificationService.updateAccessStates()
     }
@@ -171,6 +175,16 @@ class NotificationSettingViewModel: ObservableObject {
         settingsManager.setting.dailySummaryEnabled = draftToSave.dailySummaryEnabled
 
         let configuration = notificationConfiguration(for: draftToSave, token: nil)
+
+        if needsServerSave == false {
+            settingsManager.saveChanges()
+            savedDraft = draftToSave
+            isUploadRequestInFlight = false
+            uploadIndicatorStart = nil
+            isSaving = false
+            uploadFailed = false
+            return
+        }
 
         isSaving = true
         uploadFailed = false
@@ -636,11 +650,13 @@ struct NotificationSettingView: View {
             return
         }
 
-        uploadFeedbackTask = Task {
-            try? await Task.sleep(nanoseconds: NotificationSettingViewModel.Timing.uploadIndicatorDelayNanoseconds)
-            guard Task.isCancelled == false else { return }
-            await MainActor.run {
-                viewModel.beginUploadFeedback()
+        if viewModel.needsServerSave {
+            uploadFeedbackTask = Task {
+                try? await Task.sleep(nanoseconds: NotificationSettingViewModel.Timing.uploadIndicatorDelayNanoseconds)
+                guard Task.isCancelled == false else { return }
+                await MainActor.run {
+                    viewModel.beginUploadFeedback()
+                }
             }
         }
 

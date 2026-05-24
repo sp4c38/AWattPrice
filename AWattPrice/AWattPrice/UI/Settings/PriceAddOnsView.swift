@@ -172,6 +172,10 @@ private class PriceAddOnsViewModel: ObservableObject {
         return "Annual consumption is required to allocate monthly fixed costs."
     }
 
+    var needsServerSave: Bool {
+        notificationService.wantToReceiveAnyNotification(setting: settingsManager.setting)
+    }
+
     func resetFromSettings() {
         let currentDraft = PriceAddOnsDraft(setting: settingsManager.setting)
         draft = currentDraft
@@ -217,6 +221,17 @@ private class PriceAddOnsViewModel: ObservableObject {
         var notificationConfiguration = NotificationConfiguration.create(nil, settingsManager.setting)
         notificationConfiguration.general.baseFee = draftToSave.totalPriceAddOn
         notificationConfiguration.general.percentageAddOn = draftToSave.percentagePriceAddOn
+
+        if needsServerSave == false {
+            settingsManager.saveChanges()
+            savedDraft = draftToSave
+            isUploadRequestInFlight = false
+            uploadIndicatorStart = nil
+            isSaving = false
+            uploadFailed = false
+            energyDataService.energyData?.computeValues(with: settingsManager.setting.pricingConfiguration)
+            return
+        }
 
         isSaving = true
         uploadFailed = false
@@ -768,11 +783,13 @@ struct PriceAddOnsView: View {
             return
         }
 
-        uploadFeedbackTask = Task {
-            try? await Task.sleep(nanoseconds: PriceAddOnsViewModel.Timing.uploadIndicatorDelayNanoseconds)
-            guard Task.isCancelled == false else { return }
-            await MainActor.run {
-                viewModel.beginUploadFeedback()
+        if viewModel.needsServerSave {
+            uploadFeedbackTask = Task {
+                try? await Task.sleep(nanoseconds: PriceAddOnsViewModel.Timing.uploadIndicatorDelayNanoseconds)
+                guard Task.isCancelled == false else { return }
+                await MainActor.run {
+                    viewModel.beginUploadFeedback()
+                }
             }
         }
 

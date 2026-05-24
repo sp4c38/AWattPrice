@@ -431,14 +431,22 @@ struct PricesView: View {
             .datePickerStyle(.graphical)
             .labelsHidden()
             .tint(AppTheme.accent)
+            .frame(height: 330)
+            .clipped()
         }
         .padding(.vertical)
         .padding(.horizontal, 8)
-        .frame(width: 340)
+        .frame(width: 340, height: 400)
+        .transaction { transaction in
+            transaction.animation = nil
+        }
         .presentationCompactAdaptation(.popover)
         .onChange(of: datePickerHistoryDate) { _, newDate in
-            selectHistoryDate(newDate)
             showsHistoryDatePicker = false
+            Task { @MainActor in
+                try? await Task.sleep(nanoseconds: 180_000_000)
+                selectHistoryDate(newDate)
+            }
         }
     }
 

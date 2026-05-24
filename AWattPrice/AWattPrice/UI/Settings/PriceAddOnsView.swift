@@ -32,9 +32,9 @@ private extension Double {
 private extension PriceAddOnKind {
     var tint: Color {
         switch self {
-        case .fixed: AppTheme.success
-        case .percentage: AppTheme.accent
-        case .monthly: AppTheme.success
+        case .fixed: .green
+        case .percentage: .cyan
+        case .monthly: .blue
         }
     }
 }
@@ -551,25 +551,22 @@ private struct ReorderablePriceAddOnSection<Content: View>: View {
 
     var body: some View {
         PriceAddOnsCard {
-            if canReorder {
-                HStack {
-                    Spacer()
-
-                    Image(systemName: "line.3.horizontal")
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(isDragging ? .secondary : .tertiary)
-                        .padding(10)
-                        .contentShape(Rectangle())
-                        .gesture(
-                            DragGesture(minimumDistance: 4, coordinateSpace: .global)
-                                .onChanged(onDragChanged)
-                                .onEnded(onDragEnded)
-                        )
-                        .accessibilityLabel("Reorder".localized())
-                }
-            }
-
             content
+        }
+        .overlay(alignment: .topTrailing) {
+            if canReorder {
+                Image(systemName: "line.3.horizontal")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(isDragging ? .secondary : .tertiary)
+                    .padding(18) // matches PriceAddOnsCard's padding so it sits flush with the content edge
+                    .contentShape(Rectangle())
+                    .gesture(
+                        DragGesture(minimumDistance: 4, coordinateSpace: .global)
+                            .onChanged(onDragChanged)
+                            .onEnded(onDragEnded)
+                    )
+                    .accessibilityLabel("Reorder".localized())
+            }
         }
         .scaleEffect(isDragging ? 1.03 : 1)
         .shadow(color: .black.opacity(isDragging ? 0.12 : 0), radius: isDragging ? 10 : 0, y: isDragging ? 4 : 0)

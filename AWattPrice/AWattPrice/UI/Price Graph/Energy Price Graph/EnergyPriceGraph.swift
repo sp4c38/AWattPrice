@@ -283,7 +283,7 @@ private enum EnergyPriceGraphPalette {
 
     static let selectedPositiveFill = Color(red: 0.92, green: 0.24, blue: 0.16)
     static let negativeFill = Color(red: 0.20, green: 0.70, blue: 0.38)
-    static let selectedNegativeFill = Color(red: 0.10, green: 0.50, blue: 0.25)
+    static let selectedNegativeFill = Color(red: 0.02, green: 0.80, blue: 0.24)
 }
 
 private struct EnergyPriceValueBadge: View {

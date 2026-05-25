@@ -100,7 +100,7 @@ def _ensure_dir(path: Path):
     """
     if not path.exists():
         sys.stdout.write(f"INFO: Creating missing directory referred to in the config: {path}.\n")
-        path.mkdir(parents=True)
+        path.mkdir(parents=True, exist_ok=True)
 
     if not path.is_dir():
         raise NotADirectoryError(path)

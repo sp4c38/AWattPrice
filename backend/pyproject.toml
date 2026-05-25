@@ -27,4 +27,4 @@ requires = ["uv_build>=0.11.1,<0.12.0"]
 build-backend = "uv_build"
 
 [tool.uv.build-backend]
-module-name = ["awattprice", "awattprice_notifications"]
+module-name = ["awattprice", "awattprice_notifications", "awattprice_refresher"]

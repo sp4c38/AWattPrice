@@ -12,6 +12,7 @@ from box import Box
 
 from awattprice import defaults
 from awattprice import prices
+from awattprice_refresher import prices as price_refresher
 from awattprice_notifications import payloads
 from awattprice_notifications import prices as notification_prices
 
@@ -95,9 +96,9 @@ class PriceCacheAndConversionTests(unittest.TestCase):
         same_data = Box({"prices": [Box({"end_timestamp": arrow.get("2026-05-24T10:00:00+02:00")})]})
         new_data = Box({"prices": [Box({"end_timestamp": arrow.get("2026-05-24T11:00:00+02:00")})]})
 
-        self.assertFalse(prices.check_data_new(old_data, same_data))
-        self.assertTrue(prices.check_data_new(old_data, new_data))
-        self.assertTrue(prices.check_data_new(None, same_data))
+        self.assertFalse(price_refresher.check_data_new(old_data, same_data))
+        self.assertTrue(price_refresher.check_data_new(old_data, new_data))
+        self.assertTrue(price_refresher.check_data_new(None, same_data))
 
     def test_current_price_fallback_rejects_expired_cache(self):
         async def run_test():

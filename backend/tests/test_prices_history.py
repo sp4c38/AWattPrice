@@ -14,6 +14,7 @@ from box import Box
 
 from awattprice import defaults
 from awattprice import prices
+from awattprice_refresher import prices as price_refresher
 
 
 AREA = defaults.get_market_area("DE-LU")
@@ -63,8 +64,8 @@ def test_config(root: Path) -> Box:
 
 class PriceHistoryTests(unittest.TestCase):
     def test_history_query_uses_market_area_day_with_dst(self):
-        period_start, period_end = prices.get_history_period(AREA, date(2026, 3, 29))
-        query_params = prices.get_entsoe_query_params(AREA, period_start, period_end)
+        period_start, period_end = price_refresher.get_history_period(AREA, date(2026, 3, 29))
+        query_params = price_refresher.get_entsoe_query_params(AREA, period_start, period_end)
 
         self.assertEqual(query_params["periodStart"], "202603282300")
         self.assertEqual(query_params["periodEnd"], "202603292200")
@@ -99,8 +100,8 @@ class PriceHistoryTests(unittest.TestCase):
                 history_date = date(2026, 5, 13)
                 await prices.store_history_data(cached_data, AREA.key, history_date, config)
 
-                with patch("awattprice.prices.download_data", new=AsyncMock()) as download_data:
-                    result = await prices.get_history_prices(AREA.key, history_date, config)
+                with patch("awattprice_refresher.prices.download_data", new=AsyncMock()) as download_data:
+                    result = await price_refresher.refresh_history_prices(AREA.key, history_date, config)
 
                 self.assertEqual(result.area, AREA.key)
                 download_data.assert_not_awaited()

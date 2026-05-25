@@ -187,7 +187,7 @@ class GenerationMixAPITests(unittest.TestCase):
 
     def test_history_endpoint_defaults_to_24_hours(self):
         with (
-            patch.object(api.generation_mix, "get_current_generation_mix", new=AsyncMock(return_value=Box())),
+            patch.object(api.generation_mix, "get_stored_data", new=AsyncMock(return_value=Box())),
             patch.object(
                 api.generation_mix,
                 "parse_to_history_response_data",
@@ -202,7 +202,7 @@ class GenerationMixAPITests(unittest.TestCase):
 
     def test_history_endpoint_accepts_168_hours(self):
         with (
-            patch.object(api.generation_mix, "get_current_generation_mix", new=AsyncMock(return_value=Box())),
+            patch.object(api.generation_mix, "get_stored_data", new=AsyncMock(return_value=Box())),
             patch.object(
                 api.generation_mix,
                 "parse_to_history_response_data",

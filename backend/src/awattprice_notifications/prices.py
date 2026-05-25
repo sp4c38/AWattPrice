@@ -60,7 +60,7 @@ class NotifiableDetailedPriceData(DetailedPriceData):
 
 async def collect_areas_prices(config: Config, area_keys: list[str]) -> Box:
     """Get the current prices for multiple market areas."""
-    prices_tasks = [awattprice_prices.get_current_prices(area_key, config, fall_back=False) for area_key in area_keys]
+    prices_tasks = [awattprice_prices.get_stored_data(area_key, config) for area_key in area_keys]
     areas_prices = await asyncio.gather(*prices_tasks)
     areas_prices = dict(zip(area_keys, areas_prices))
 

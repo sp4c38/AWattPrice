@@ -39,3 +39,18 @@ services:
       - "${AWATTPRICE_HOST_ROOT:-/etc/awattprice-v3}/encryption_key.p8:/etc/awattprice/encryption_key.p8:ro"
       - "${AWATTPRICE_HOST_ROOT:-/etc/awattprice-v3}/config.ini:/etc/awattprice/config.ini:ro"
       - "${AWATTPRICE_HOST_ROOT:-/etc/awattprice-v3}/entsoe-token.txt:/etc/awattprice/entsoe-token.txt:ro"
+
+  data-refresher:
+    image: ${AWATTPRICE_IMAGE:-awattprice-backend:v3}
+    container_name: awattprice-data-refresher-v3
+    restart: unless-stopped
+    command:
+      - python
+      - -m
+      - awattprice_refresher.service
+    volumes:
+      - "${AWATTPRICE_HOST_ROOT:-/etc/awattprice-v3}/data:/etc/awattprice/data"
+      - "${AWATTPRICE_HOST_ROOT:-/etc/awattprice-v3}/logs:/etc/awattprice/logs"
+      - "${AWATTPRICE_HOST_ROOT:-/etc/awattprice-v3}/encryption_key.p8:/etc/awattprice/encryption_key.p8:ro"
+      - "${AWATTPRICE_HOST_ROOT:-/etc/awattprice-v3}/config.ini:/etc/awattprice/config.ini:ro"
+      - "${AWATTPRICE_HOST_ROOT:-/etc/awattprice-v3}/entsoe-token.txt:/etc/awattprice/entsoe-token.txt:ro"

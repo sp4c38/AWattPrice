@@ -9,9 +9,9 @@ from fastapi import Query
 from fastapi import Request
 from loguru import logger
 from starlette.responses import Response
-from starlette.responses import RedirectResponse
 
 from awattprice import configurator
+from awattprice import cache_status
 from awattprice import defaults
 from awattprice import generation_mix
 from awattprice import notification_profiles
@@ -58,12 +58,7 @@ async def get_area_prices(area_key: str):
     except KeyError:
         raise HTTPException(404)
 
-    price_data = await prices.get_current_prices(
-        normalized_area_key,
-        config,
-        fall_back=True,
-        background_refresh=True,
-    )
+    price_data = await prices.get_stored_data(normalized_area_key, config)
 
     if price_data is None:
         logger.warning(f"Couldn't get current price data for area {normalized_area_key}.")
@@ -87,23 +82,13 @@ async def get_area_price_history(area_key: str, history_date: date):
     if not prices.validate_history_date(area, history_date):
         raise HTTPException(400)
 
-    price_data = await prices.get_history_prices(normalized_area_key, history_date, config)
+    price_data = await prices.get_stored_history_data(normalized_area_key, history_date, config)
 
     if price_data is None:
         logger.warning(f"Couldn't get historical price data for area {normalized_area_key} and date {history_date}.")
         raise HTTPException(503)
 
     return prices.parse_to_response_data(price_data)
-
-
-@logger.catch
-@app.get("/prices/")
-async def get_default_area_prices():
-    """Get current price data for the default market area.
-
-    This will respond with a temporary redirect to the default market area price endpoint.
-    """
-    return RedirectResponse(url=f"/prices/{defaults.DEFAULT_MARKET_AREA_KEY}")
 
 
 @logger.catch
@@ -116,11 +101,7 @@ async def get_area_generation_mix_history_for_hours(area_key: str, hours: int = 
     except KeyError:
         raise HTTPException(404)
 
-    generation_data = await generation_mix.get_current_generation_mix(
-        normalized_area_key,
-        config,
-        fall_back=True,
-    )
+    generation_data = await generation_mix.get_stored_data(normalized_area_key, config)
 
     if generation_data is None:
         logger.warning(f"Couldn't get generation mix history for area {normalized_area_key}.")
@@ -130,10 +111,10 @@ async def get_area_generation_mix_history_for_hours(area_key: str, hours: int = 
 
 
 @logger.catch
-@app.get("/generation-mix/")
-async def get_default_area_generation_mix():
-    """Get generation mix history for the default market area."""
-    return RedirectResponse(url=f"/generation-mix/{defaults.DEFAULT_MARKET_AREA_KEY}/history")
+@app.get("/cache/status")
+async def get_cache_status():
+    """Get internal cache coverage and freshness status."""
+    return await cache_status.cache_status_response(config)
 
 
 @logger.catch
@@ -178,12 +159,7 @@ async def get_notification_example(rule_type: str, request: Request):
     if profile is None:
         raise HTTPException(400)
 
-    price_data = await prices.get_current_prices(
-        profile.general.area,
-        config,
-        fall_back=True,
-        background_refresh=True,
-    )
+    price_data = await prices.get_stored_data(profile.general.area, config)
     if price_data is None:
         if not force:
             raise HTTPException(503)

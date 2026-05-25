@@ -7,13 +7,13 @@ final class WidgetPriceSnapshotTests: XCTestCase {
             createdAt: Self.base.addingTimeInterval(30 * 60),
             marketAreaName: "Deutschland / Luxemburg",
             points: [
-                point(hour: 2, price: 30),
-                point(hour: 0, price: 10),
-                point(hour: 1, price: 20),
+                Self.point(hour: 2, price: 30),
+                Self.point(hour: 0, price: 10),
+                Self.point(hour: 1, price: 20),
             ]
         )
 
-        XCTAssertEqual(snapshot.points.map(\.marketprice), [10, 20, 30])
+        XCTAssertEqual(snapshot.points.map(\WidgetPricePoint.marketprice), [10, 20, 30])
         XCTAssertEqual(snapshot.currentPrice?.marketprice, 10)
         XCTAssertEqual(try XCTUnwrap(snapshot.averagePrice), 20, accuracy: 0.0001)
         XCTAssertEqual(snapshot.minPrice?.marketprice, 10)
@@ -27,9 +27,9 @@ final class WidgetPriceSnapshotTests: XCTestCase {
             createdAt: Self.base,
             marketAreaName: "Deutschland / Luxemburg",
             points: [
-                point(startMinutes: 0, endMinutes: 15, price: 10),
-                point(startMinutes: 15, endMinutes: 60, price: 30),
-                point(startMinutes: 60, endMinutes: 120, price: 20),
+                Self.point(startMinutes: 0, endMinutes: 15, price: 10),
+                Self.point(startMinutes: 15, endMinutes: 60, price: 30),
+                Self.point(startMinutes: 60, endMinutes: 120, price: 20),
             ]
         )
 
@@ -47,15 +47,15 @@ final class WidgetPriceSnapshotTests: XCTestCase {
             createdAt: Self.base,
             marketAreaName: "Deutschland / Luxemburg",
             points: [
-                point(hour: 0, price: 30),
-                point(hour: 1, price: 5),
-                point(hour: 2, price: 10),
-                point(hour: 3, price: 40),
-                point(hour: 4, price: 1),
+                Self.point(hour: 0, price: 30),
+                Self.point(hour: 1, price: 5),
+                Self.point(hour: 2, price: 10),
+                Self.point(hour: 3, price: 40),
+                Self.point(hour: 4, price: 1),
             ]
         )
 
-        let windowsByDuration = Dictionary(uniqueKeysWithValues: snapshot.cheapestWindows.map { ($0.duration, $0) })
+        let windowsByDuration: [TimeInterval: WidgetPriceWindow] = Dictionary(uniqueKeysWithValues: snapshot.cheapestWindows.map { ($0.duration, $0) })
 
         XCTAssertEqual(windowsByDuration[60 * 60]?.startTime, Self.base.addingTimeInterval(4 * 60 * 60))
         XCTAssertEqual(windowsByDuration[2 * 60 * 60]?.startTime, Self.base.addingTimeInterval(60 * 60))

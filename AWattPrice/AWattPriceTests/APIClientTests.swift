@@ -24,7 +24,13 @@ final class APIClientTests: XCTestCase {
         let history = APIClient.createGenerationMixHistoryRequest(marketArea: .austria)
 
         XCTAssertEqual(current.urlRequest.url?.absoluteString, "https://api.awattprice.com/v3/generation-mix/AT")
-        XCTAssertEqual(history.urlRequest.url?.absoluteString, "https://api.awattprice.com/v3/generation-mix/AT/last-24h")
+        XCTAssertEqual(history.urlRequest.url?.absoluteString, "https://api.awattprice.com/v3/generation-mix/AT/history?hours=24")
+    }
+
+    func testGenerationMixHistoryRequestSupportsWeekRange() {
+        let history = APIClient.createGenerationMixHistoryRequest(marketArea: .austria, range: .week)
+
+        XCTAssertEqual(history.urlRequest.url?.absoluteString, "https://api.awattprice.com/v3/generation-mix/AT/history?hours=168")
     }
 
     func testNotificationRequestRequiresToken() throws {

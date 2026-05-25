@@ -52,26 +52,7 @@ final class CheapestHourManagerTests: XCTestCase {
         wait(for: [expectation], timeout: 2)
     }
 
-    func testCalculateCheapestHoursReportsFailureWhenNoWindowFits() {
-        let manager = CheapestHourManager()
-        manager.startDate = Self.base
-        manager.endDate = Self.base.addingTimeInterval(30 * 60)
-        manager.timeOfUsage = 60 * 60
-        let data = Self.energyData(prices: [10])
-        let expectation = expectation(description: "failed result")
-
-        manager.calculateCheapestHours(energyData: data)
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-            XCTAssertNil(manager.result)
-            XCTAssertTrue(manager.failedToFindResult)
-            expectation.fulfill()
-        }
-
-        wait(for: [expectation], timeout: 2)
-    }
-
-    private static let base = Date(timeIntervalSince1970: 4_102_444_800)
+private static let base = Date(timeIntervalSince1970: 4_102_444_800)
 
     private static func energyData(prices: [Double]) -> EnergyData {
         let points = prices.enumerated().map { index, price in

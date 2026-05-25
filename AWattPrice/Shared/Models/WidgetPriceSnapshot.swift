@@ -52,7 +52,7 @@ struct WidgetPriceSnapshot: Codable {
     }
 
     var forecastPoints: [WidgetPricePoint] {
-        let endDate = Date().addingTimeInterval(24 * 60 * 60)
+        let endDate = createdAt.addingTimeInterval(24 * 60 * 60)
         return points.filter { $0.startTime < endDate }
     }
 

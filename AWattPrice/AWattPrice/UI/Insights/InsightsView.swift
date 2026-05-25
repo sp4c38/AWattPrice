@@ -697,8 +697,12 @@ private struct GenerationMixHistoryContent: View {
 
     @State private var selectedIntervalID: Date?
 
+    private var displayIntervals: [GenerationMixInterval] {
+        generationMixDisplayIntervals(for: history, range: range)
+    }
+
     private var selectedInterval: GenerationMixInterval? {
-        let intervals = history.sortedIntervals
+        let intervals = displayIntervals
         guard intervals.isEmpty == false else { return nil }
 
         guard let selectedIntervalID else { return intervals.last }
@@ -746,6 +750,7 @@ private struct GenerationMixHistoryContent: View {
 
                         GenerationMixStackedGenerationChart(
                             history: history,
+                            intervals: displayIntervals,
                             selectedIntervalID: $selectedIntervalID
                         )
 
@@ -761,11 +766,79 @@ private struct GenerationMixHistoryContent: View {
     }
 }
 
+private func generationMixDisplayIntervals(
+    for history: GenerationMixHistoryData,
+    range: GenerationMixHistoryRange
+) -> [GenerationMixInterval] {
+    let intervals = history.sortedIntervals
+    guard range != .day, let firstStartTime = intervals.first?.startTime else { return intervals }
+
+    let bucketDuration: TimeInterval = 60 * 60
+    let groupedIntervals = Dictionary(grouping: intervals) { interval in
+        let bucketOffset = floor(interval.startTime.timeIntervalSince(firstStartTime) / bucketDuration) * bucketDuration
+        return firstStartTime.addingTimeInterval(bucketOffset)
+    }
+
+    return groupedIntervals.keys.sorted().compactMap { bucketStart in
+        guard let bucket = groupedIntervals[bucketStart], bucket.isEmpty == false else { return nil }
+        return averagedGenerationMixInterval(
+            from: bucket,
+            categories: history.categories,
+            startTime: bucketStart
+        )
+    }
+}
+
+private func averagedGenerationMixInterval(
+    from intervals: [GenerationMixInterval],
+    categories: [GenerationMixCategory],
+    startTime: Date
+) -> GenerationMixInterval {
+    let divisor = Double(max(intervals.count, 1))
+    let endTime = intervals.map(\.endTime).max() ?? startTime.addingTimeInterval(60 * 60)
+    let averagedCategories = categories.map { category in
+        let generationMW = intervals.reduce(0) { total, interval in
+            total + (interval.categories.first { $0.category == category.category }?.generationMW ?? 0)
+        } / divisor
+        return GenerationMixCategory(
+            category: category.category,
+            generationMW: generationMW,
+            share: 0,
+            isRenewable: category.isRenewable
+        )
+    }
+    let totalGenerationMW = averagedCategories.reduce(0) { $0 + $1.generationMW }
+    let renewableGenerationMW = averagedCategories
+        .filter { $0.isRenewable }
+        .reduce(0) { $0 + $1.generationMW }
+    let finalCategories = averagedCategories.map { category in
+        GenerationMixCategory(
+            category: category.category,
+            generationMW: category.generationMW,
+            share: totalGenerationMW > 0 ? (category.generationMW / totalGenerationMW) * 100 : 0,
+            isRenewable: category.isRenewable
+        )
+    }
+
+    return GenerationMixInterval(
+        startTime: startTime,
+        endTime: endTime,
+        totalGenerationMW: totalGenerationMW,
+        renewableGenerationMW: renewableGenerationMW,
+        renewableShare: totalGenerationMW > 0 ? (renewableGenerationMW / totalGenerationMW) * 100 : 0,
+        categories: finalCategories
+    )
+}
+
 private struct GenerationMixSelectedIntervalView: View {
     let interval: GenerationMixInterval
 
     private var topCategories: [GenerationMixCategory] {
         Array(interval.visibleCategories.prefix(4))
+    }
+
+    private var animationKey: String {
+        "\(interval.startTime.timeIntervalSince1970)-\(Int(interval.totalGenerationMW.rounded()))-\(Int(interval.renewableShare.rounded()))"
     }
 
     var body: some View {
@@ -779,6 +852,7 @@ private struct GenerationMixSelectedIntervalView: View {
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .monospacedDigit()
+                        .contentTransition(.numericText())
                 }
 
                 Spacer()
@@ -786,6 +860,7 @@ private struct GenerationMixSelectedIntervalView: View {
                 Text(percentText(interval.renewableShare))
                     .font(.title3.weight(.bold))
                     .monospacedDigit()
+                    .contentTransition(.numericText())
             }
 
             GenerationMixBar(categories: interval.visibleCategories)
@@ -799,6 +874,7 @@ private struct GenerationMixSelectedIntervalView: View {
         .padding(.top, 2)
         .accessibilityElement(children: .combine)
         .accessibilityLabel(historyIntervalAccessibilityText(interval))
+        .animation(.interactiveSpring(response: 0.18, dampingFraction: 0.86, blendDuration: 0.06), value: animationKey)
     }
 }
 
@@ -817,19 +893,16 @@ private struct GenerationMixTotalChartPoint: Identifiable {
 
 private struct GenerationMixStackedGenerationChart: View {
     let history: GenerationMixHistoryData
+    let intervals: [GenerationMixInterval]
     @Binding var selectedIntervalID: Date?
 
-    private var intervals: [GenerationMixInterval] {
-        history.sortedIntervals
-    }
-
     private var chartPoints: [GenerationMixChartPoint] {
-        smoothedCategoryValues.flatMap { category, values in
-            values.map { value in
+        smoothedCategoryValues.flatMap { entry in
+            entry.values.map { value in
                 return GenerationMixChartPoint(
-                    id: "\(value.time.timeIntervalSince1970)-\(category)",
+                    id: "\(value.time.timeIntervalSince1970)-\(entry.category)",
                     time: value.time,
-                    category: category,
+                    category: entry.category,
                     generationMW: value.generationMW
                 )
             }
@@ -854,10 +927,18 @@ private struct GenerationMixStackedGenerationChart: View {
         categoryDomain.map(generationMixColor)
     }
 
-    private var xDomain: ClosedRange<Date>? {
-        guard let first = intervals.first, let last = intervals.last else { return nil }
-        let intervalDuration = max(first.endTime.timeIntervalSince(first.startTime), 60 * 60)
-        return first.startTime.addingTimeInterval(-intervalDuration * 0.5)...last.endTime.addingTimeInterval(intervalDuration * 0.5)
+    private var edgePaddingDuration: TimeInterval {
+        guard let first = intervals.first else { return 60 * 60 }
+        return max(first.endTime.timeIntervalSince(first.startTime), 60 * 60) * 0.5
+    }
+
+    private var xDomain: ClosedRange<Date> {
+        guard let first = intervals.first, let last = intervals.last else {
+            let now = Date()
+            return now...now.addingTimeInterval(1)
+        }
+
+        return first.startTime.addingTimeInterval(-edgePaddingDuration)...last.endTime.addingTimeInterval(edgePaddingDuration)
     }
 
     private var smoothedCategoryValues: [(category: String, values: [(time: Date, generationMW: Double)])] {
@@ -865,23 +946,23 @@ private struct GenerationMixStackedGenerationChart: View {
             let values = intervals.map { interval in
                 interval.categories.first { $0.category == category }?.generationMW ?? 0
             }
-            return (
-                category,
-                smooth(values)
-                    .enumerated()
-                    .map { index, generationMW in
-                        (time: intervals[index].startTime, generationMW: generationMW)
-                    }
-            )
+            let smoothedValues = smooth(values)
+            let chartValues = smoothedValues
+                .enumerated()
+                .map { index, generationMW in
+                    (time: intervals[index].startTime, generationMW: generationMW)
+                }
+            return (category, paddedChartValues(chartValues))
         }
     }
 
     private var smoothedTotals: [(time: Date, generationMW: Double)] {
-        smooth(intervals.map(\.totalGenerationMW))
+        let chartValues = smooth(intervals.map(\.totalGenerationMW))
             .enumerated()
             .map { index, generationMW in
                 (time: intervals[index].startTime, generationMW: generationMW)
             }
+        return paddedChartValues(chartValues)
     }
 
     var body: some View {
@@ -934,7 +1015,7 @@ private struct GenerationMixStackedGenerationChart: View {
             .chartYAxis(.hidden)
             .chartPlotStyle { plotArea in
                 plotArea
-                    .background(.secondary.opacity(0.05), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+                    .background(Color(red: 0.949, green: 0.949, blue: 0.961), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
                     .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
             }
             .chartOverlay { proxy in
@@ -986,14 +1067,34 @@ private struct GenerationMixStackedGenerationChart: View {
     }
 
     private func smooth(_ values: [Double]) -> [Double] {
-        guard values.count > 2 else { return values }
+        guard values.count > 6 else { return values }
 
         return values.indices.map { index in
-            let previous = values[max(values.startIndex, index - 1)]
+            let previous3 = values[max(values.startIndex, index - 3)]
+            let previous2 = values[max(values.startIndex, index - 2)]
+            let previous1 = values[max(values.startIndex, index - 1)]
             let current = values[index]
-            let next = values[min(values.index(before: values.endIndex), index + 1)]
-            return (previous * 0.2) + (current * 0.6) + (next * 0.2)
+            let next1 = values[min(values.index(before: values.endIndex), index + 1)]
+            let next2 = values[min(values.index(before: values.endIndex), index + 2)]
+            let next3 = values[min(values.index(before: values.endIndex), index + 3)]
+            return (previous3 * 0.06)
+                + (previous2 * 0.12)
+                + (previous1 * 0.18)
+                + (current * 0.28)
+                + (next1 * 0.18)
+                + (next2 * 0.12)
+                + (next3 * 0.06)
         }
+    }
+
+    private func paddedChartValues(_ values: [(time: Date, generationMW: Double)]) -> [(time: Date, generationMW: Double)] {
+        guard let first = values.first, let last = values.last else { return values }
+
+        return [
+            (time: first.time.addingTimeInterval(-edgePaddingDuration), generationMW: first.generationMW),
+        ] + values + [
+            (time: last.time.addingTimeInterval(edgePaddingDuration), generationMW: last.generationMW),
+        ]
     }
 }
 
@@ -1080,6 +1181,12 @@ private struct GenerationMixBar: View {
     let categories: [GenerationMixCategory]
     private let segmentSpacing: CGFloat = 2
 
+    private var animationKey: String {
+        categories
+            .map { "\($0.category):\(Int(($0.share * 10).rounded()))" }
+            .joined(separator: "|")
+    }
+
     var body: some View {
         GeometryReader { geometry in
             let availableWidth = max(geometry.size.width - segmentSpacing * CGFloat(max(categories.count - 1, 0)), 0)
@@ -1094,6 +1201,7 @@ private struct GenerationMixBar: View {
         }
         .frame(height: 16)
         .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+        .animation(.interactiveSpring(response: 0.18, dampingFraction: 0.88, blendDuration: 0.05), value: animationKey)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("Generation mix")
     }
@@ -1117,9 +1225,11 @@ private struct GenerationMixCategoryLabel: View {
                     .font(.caption2)
                     .foregroundStyle(.secondary)
                     .monospacedDigit()
+                    .contentTransition(.numericText())
                     .lineLimit(1)
             }
         }
+        .animation(.interactiveSpring(response: 0.18, dampingFraction: 0.88, blendDuration: 0.05), value: "\(Int((category.share * 10).rounded()))-\(Int(category.generationMW.rounded()))")
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(generationMixAccessibilityText(category))
     }

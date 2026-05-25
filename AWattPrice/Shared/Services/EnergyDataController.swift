@@ -261,6 +261,36 @@ struct GenerationMixInterval: Decodable, Identifiable {
     }
 }
 
+enum GenerationMixHistoryRange: Int, CaseIterable, Identifiable {
+    case day
+    case threeDays
+    case week
+
+    var id: Int { rawValue }
+
+    var hours: Int {
+        switch self {
+        case .day:
+            return 24
+        case .threeDays:
+            return 72
+        case .week:
+            return 168
+        }
+    }
+
+    var title: String {
+        switch self {
+        case .day:
+            return "24h"
+        case .threeDays:
+            return "3d"
+        case .week:
+            return "7d"
+        }
+    }
+}
+
 struct GenerationMixHistoryData: Decodable {
     let area: String?
     let resolution: String?
@@ -314,8 +344,11 @@ struct GenerationMixHistoryData: Decodable {
         return jsonDecoder
     }
 
-    static func download(marketArea: MarketArea) async throws -> GenerationMixHistoryData {
-        let request = APIClient.createGenerationMixHistoryRequest(marketArea: marketArea)
+    static func download(
+        marketArea: MarketArea,
+        range: GenerationMixHistoryRange = .day
+    ) async throws -> GenerationMixHistoryData {
+        let request = APIClient.createGenerationMixHistoryRequest(marketArea: marketArea, range: range)
         return try await APIClient().request(to: request)
     }
 }
@@ -358,6 +391,7 @@ class EnergyDataService: ObservableObject {
         if energyData?.area != requestedMarketAreaKey {
             energyData = nil
             generationMixData = nil
+            generationMixHistoryData = nil
         }
         generationMixDownloadState = .downloading
         

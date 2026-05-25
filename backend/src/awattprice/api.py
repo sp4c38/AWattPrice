@@ -5,6 +5,7 @@ from json import JSONDecodeError
 from box import Box
 from fastapi import FastAPI
 from fastapi import HTTPException
+from fastapi import Query
 from fastapi import Request
 from loguru import logger
 from starlette.responses import Response
@@ -109,6 +110,13 @@ async def get_default_area_prices():
 @app.get("/generation-mix/{area_key}/last-24h")
 async def get_area_generation_mix_history(area_key: str):
     """Get grouped generation mix history for a market area."""
+    return await get_area_generation_mix_history_for_hours(area_key, hours=24)
+
+
+@logger.catch
+@app.get("/generation-mix/{area_key}/history")
+async def get_area_generation_mix_history_for_hours(area_key: str, hours: int = Query(24, ge=24, le=168)):
+    """Get grouped generation mix history for a market area."""
     try:
         normalized_area_key = defaults.normalize_market_area_key(area_key)
         defaults.get_market_area(normalized_area_key)
@@ -125,7 +133,7 @@ async def get_area_generation_mix_history(area_key: str):
         logger.warning(f"Couldn't get generation mix history for area {normalized_area_key}.")
         raise HTTPException(503)
 
-    return generation_mix.parse_to_history_response_data(generation_data)
+    return generation_mix.parse_to_history_response_data(generation_data, hours=hours)
 
 
 @logger.catch

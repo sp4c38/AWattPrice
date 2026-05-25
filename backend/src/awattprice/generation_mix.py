@@ -146,7 +146,7 @@ async def acquire_refresh_lock_immediate(
 def get_entsoe_query_params(area: MarketArea) -> dict[str, str]:
     """Build ENTSO-E query parameters for actual generation per production type."""
     now_local = arrow.now(area.timezone)
-    period_start_local = now_local.shift(hours=-24)
+    period_start_local = now_local.shift(hours=-168)
     period_end_local = now_local.shift(hours=+1)
 
     return {
@@ -439,11 +439,11 @@ def parse_to_response_data(generation_data: Box) -> Box:
     return response
 
 
-def parse_to_history_response_data(generation_data: Box) -> Box:
-    """Parse cached generation data to grouped app history for the last 24 hours."""
+def parse_to_history_response_data(generation_data: Box, hours: int = 24) -> Box:
+    """Parse cached generation data to grouped app history for the requested hours."""
     representative_intervals = representative_interval_points(generation_data)
     latest_end = max(point.end_timestamp for point in representative_intervals[-1])
-    cutoff = latest_end.shift(hours=-24)
+    cutoff = latest_end.shift(hours=-hours)
     interval_points = [
         points
         for points in representative_intervals

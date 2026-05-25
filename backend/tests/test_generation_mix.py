@@ -1,9 +1,13 @@
 import unittest
 
 from decimal import Decimal
+from unittest.mock import AsyncMock
+from unittest.mock import patch
 
 from box import Box
+from fastapi.testclient import TestClient
 
+from awattprice import api
 from awattprice import generation_mix
 from awattprice.market_areas import create_market_area
 
@@ -168,3 +172,67 @@ class GenerationMixParsingTests(unittest.TestCase):
 
         self.assertEqual(len(response.intervals), 2)
         self.assertEqual(response.total_generation_mw, 1210.0)
+
+    def test_history_respects_requested_hour_window(self):
+        data = generation_mix.parse_downloaded_data(AREA, generation_xml())
+        response = generation_mix.parse_to_history_response_data(data, hours=1)
+
+        self.assertEqual(len(response.intervals), 1)
+        self.assertEqual(response.total_generation_mw, 600.0)
+
+
+class GenerationMixAPITests(unittest.TestCase):
+    def setUp(self):
+        self.client = TestClient(api.app)
+
+    def test_history_endpoint_defaults_to_24_hours(self):
+        with (
+            patch.object(api.generation_mix, "get_current_generation_mix", new=AsyncMock(return_value=Box())),
+            patch.object(
+                api.generation_mix,
+                "parse_to_history_response_data",
+                return_value={"intervals": [], "hours": 24},
+            ) as parse,
+        ):
+            response = self.client.get("/generation-mix/DE-LU/history")
+
+        self.assertEqual(response.status_code, 200)
+        parse.assert_called_once()
+        self.assertEqual(parse.call_args.kwargs["hours"], 24)
+
+    def test_history_endpoint_accepts_168_hours(self):
+        with (
+            patch.object(api.generation_mix, "get_current_generation_mix", new=AsyncMock(return_value=Box())),
+            patch.object(
+                api.generation_mix,
+                "parse_to_history_response_data",
+                return_value={"intervals": [], "hours": 168},
+            ) as parse,
+        ):
+            response = self.client.get("/generation-mix/DE-LU/history?hours=168")
+
+        self.assertEqual(response.status_code, 200)
+        parse.assert_called_once()
+        self.assertEqual(parse.call_args.kwargs["hours"], 168)
+
+    def test_history_endpoint_rejects_invalid_hours(self):
+        too_short = self.client.get("/generation-mix/DE-LU/history?hours=23")
+        too_long = self.client.get("/generation-mix/DE-LU/history?hours=169")
+
+        self.assertEqual(too_short.status_code, 422)
+        self.assertEqual(too_long.status_code, 422)
+
+    def test_last_24h_endpoint_keeps_legacy_contract(self):
+        with (
+            patch.object(api.generation_mix, "get_current_generation_mix", new=AsyncMock(return_value=Box())),
+            patch.object(
+                api.generation_mix,
+                "parse_to_history_response_data",
+                return_value={"intervals": [], "hours": 24},
+            ) as parse,
+        ):
+            response = self.client.get("/generation-mix/DE-LU/last-24h")
+
+        self.assertEqual(response.status_code, 200)
+        parse.assert_called_once()
+        self.assertEqual(parse.call_args.kwargs["hours"], 24)

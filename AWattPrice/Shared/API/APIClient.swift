@@ -114,13 +114,20 @@ class APIClient {
         return ResponseRequest(urlRequest: urlRequest, decoder: decoder)
     }
 
-    static func createGenerationMixHistoryRequest(marketArea: MarketArea) -> ResponseRequest<GenerationMixHistoryData> {
+    static func createGenerationMixHistoryRequest(
+        marketArea: MarketArea,
+        range: GenerationMixHistoryRange = .day
+    ) -> ResponseRequest<GenerationMixHistoryData> {
         let requestURL = APIClient.apiURL
             .appendingPathComponent("generation-mix", isDirectory: true)
             .appendingPathComponent(marketArea.key, isDirectory: true)
-            .appendingPathComponent("last-24h")
+            .appendingPathComponent("history")
+        var components = URLComponents(url: requestURL, resolvingAgainstBaseURL: false)
+        components?.queryItems = [
+            URLQueryItem(name: "hours", value: String(range.hours))
+        ]
         let urlRequest = URLRequest(
-            url: requestURL,
+            url: components?.url ?? requestURL,
             cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,
             timeoutInterval: 60
         )

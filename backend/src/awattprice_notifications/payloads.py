@@ -6,7 +6,6 @@ import httpx
 
 from awattprice import defaults as awattprice_defaults
 from awattprice.utils import round_subunitkwh
-from awattprice_notifications import utils as awattprice_notification_utils
 from box import Box
 from decimal import Decimal
 from http import HTTPStatus
@@ -14,9 +13,9 @@ from liteconfig import Config
 from loguru import logger
 
 from awattprice_notifications.apns import get_apns_authorization
-from awattprice_notifications.apns_client import send_notification
+from awattprice_notifications.apns import send_notification
 from awattprice_notifications import rules
-from awattprice_notifications.prices import NotifiableDetailedPriceData
+from awattprice_notifications.prices import NotifiablePriceData
 
 
 def format_price_timestamp(price_timestamp, resolution: str) -> str:
@@ -60,8 +59,15 @@ def adjusted_price(price_point: Box, profile: Box, round_: bool = True) -> Decim
 def stringify_adjusted_price(price_point: Box, profile: Box) -> str:
     """Return a localized string for the user's final price."""
     area = awattprice_defaults.get_market_area(profile.general.area)
-    price_value = adjusted_price(price_point, profile)
-    return awattprice_notification_utils.stringify_price(price_value, area)
+    return stringify_price(adjusted_price(price_point, profile), area)
+
+
+def stringify_price(price_value: Decimal, area) -> str:
+    """Return a localized price string."""
+    price_string = str(price_value)
+    if area.decimal_separator != ".":
+        price_string = price_string.replace(".", area.decimal_separator)
+    return price_string
 
 
 def copy_profile_with_rule_threshold(profile: Box, rule_type: str, threshold: Decimal) -> Box:
@@ -75,7 +81,7 @@ def copy_profile_with_rule_threshold(profile: Box, rule_type: str, threshold: De
     return updated_profile
 
 
-def construct_notification(profile: Box, rule_type: str, selected_prices: list[Box], notifiable_prices: NotifiableDetailedPriceData) -> Box:
+def construct_notification(profile: Box, rule_type: str, selected_prices: list[Box], notifiable_prices: NotifiablePriceData) -> Box:
     """Construct the APNs payload for a notification rule."""
     if len(selected_prices) == 0:
         raise ValueError("Selected prices must contain at least one price point.")
@@ -91,9 +97,7 @@ def construct_notification(profile: Box, rule_type: str, selected_prices: list[B
     if rule_type == "price_below":
         threshold = round_subunitkwh(Decimal(str(profile.rules.price_below.threshold)))
         best_price = min(selected_prices, key=lambda price_point: adjusted_price(price_point, profile))
-        threshold_str = awattprice_notification_utils.stringify_price(
-            threshold, awattprice_defaults.get_market_area(profile.general.area)
-        )
+        threshold_str = stringify_price(threshold, awattprice_defaults.get_market_area(profile.general.area))
         best_time = format_price_timestamp(best_price.start_timestamp, notifiable_prices.data.resolution)
         best_price_str = stringify_adjusted_price(best_price, profile)
         loc_key = rules.NOTIFICATION.loc_keys.price_below_single
@@ -104,9 +108,7 @@ def construct_notification(profile: Box, rule_type: str, selected_prices: list[B
     elif rule_type == "price_above":
         threshold = round_subunitkwh(Decimal(str(profile.rules.price_above.threshold)))
         worst_price = max(selected_prices, key=lambda price_point: adjusted_price(price_point, profile))
-        threshold_str = awattprice_notification_utils.stringify_price(
-            threshold, awattprice_defaults.get_market_area(profile.general.area)
-        )
+        threshold_str = stringify_price(threshold, awattprice_defaults.get_market_area(profile.general.area))
         worst_time = format_price_timestamp(worst_price.start_timestamp, notifiable_prices.data.resolution)
         worst_price_str = stringify_adjusted_price(worst_price, profile)
         loc_key = rules.NOTIFICATION.loc_keys.price_above_single
@@ -130,7 +132,7 @@ def construct_notification(profile: Box, rule_type: str, selected_prices: list[B
     return notification
 
 
-def example_prices_from_available_data(price_data: Box) -> NotifiableDetailedPriceData | None:
+def example_prices_from_available_data(price_data: Box) -> NotifiablePriceData | None:
     """Return available prices for example notifications when tomorrow prices are not complete yet."""
     if "prices" not in price_data or len(price_data.prices) == 0:
         return None
@@ -141,7 +143,7 @@ def example_prices_from_available_data(price_data: Box) -> NotifiableDetailedPri
             continue
         example_data[key] = value
     example_data.prices = list(price_data.prices)
-    return NotifiableDetailedPriceData(example_data)
+    return NotifiablePriceData(example_data)
 
 
 def synthetic_example_alert(rule_type: str) -> Box:
@@ -203,7 +205,7 @@ async def handle_apns_response(profile_store, profile: Box, response: httpx.Resp
         logger.error(f"Error sending notification with token {profile.token} to apns: {status_code} - {status}. Doing nothing with this token.")
 
 
-def selected_prices_for_rule(profile: Box, rule_type: str, notifiable_prices: NotifiableDetailedPriceData) -> list[Box]:
+def selected_prices_for_rule(profile: Box, rule_type: str, notifiable_prices: NotifiablePriceData) -> list[Box]:
     """Return prices that make a rule apply."""
     if rule_type == "daily_summary":
         return list(notifiable_prices.data.prices)
@@ -226,7 +228,7 @@ def selected_prices_for_rule(profile: Box, rule_type: str, notifiable_prices: No
 
 
 def forced_example_for_rule(
-    profile: Box, rule_type: str, notifiable_prices: NotifiableDetailedPriceData
+    profile: Box, rule_type: str, notifiable_prices: NotifiablePriceData
 ) -> tuple[Box, list[Box]]:
     """Return a profile and selected prices that force a representative rule example."""
     if rule_type == "daily_summary":
@@ -261,7 +263,7 @@ async def deliver_notifications(
     profile_store,
     config: Config,
     areas_profiles: Box[str, list[Box]],
-    notifiable_areas_prices: Box[str, NotifiableDetailedPriceData],
+    notifiable_areas_prices: Box[str, NotifiablePriceData],
 ) -> tuple[int, int]:
     """Send notifications for profiles grouped by area.
 

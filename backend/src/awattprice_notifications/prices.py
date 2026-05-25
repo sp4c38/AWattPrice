@@ -2,9 +2,7 @@
 import asyncio
 import os
 import pickle
-import sys
 
-from decimal import Decimal
 from typing import Optional
 
 from aiofile import async_open
@@ -19,43 +17,13 @@ from awattprice_notifications.rules import check_area_updated
 from awattprice_notifications.rules import get_notifiable_prices
 
 
-class DetailedPriceData:
-    """Describes price data in a detailed manner."""
+class NotifiablePriceData:
+    """Holds prices that may trigger user notifications."""
 
     data: Box
 
-    lowest_price: Optional[Box] = None
-
     def __init__(self, data: Box):
         self.data = data
-
-    def find_lowest_price(self):
-        """Find the lowest price."""
-        lowest_price = min(self.data.prices, key=lambda price_point: price_point.marketprice.value)
-        self.lowest_price = lowest_price
-
-    def get_prices_below_value(
-        self, below_value: int, base_fee: float, percentage_add_on: float, taxed: bool
-    ) -> list[int]:
-        """Get prices which are on or below the given value.
-
-        :param taxed: If true prices are taxed before comparing to the below value. This doesn't affect the
-            below value.
-        """
-        below_value_prices = []
-        for price_point in self.data.prices:
-            marketprice = price_point.marketprice.subunit_kwh(taxed=taxed, round_=True)
-            marketprice = marketprice * (1 + percentage_add_on / 100) + base_fee
-            if marketprice <= below_value:
-                below_value_prices.append(price_point)
-        return below_value_prices
-
-
-class NotifiableDetailedPriceData(DetailedPriceData):
-    """Holds price data about which users should be notified for."""
-
-    def __init__(self, notifiable_data: Box):
-        self.data = notifiable_data
 
 
 async def collect_areas_prices(config: Config, area_keys: list[str]) -> Box:
@@ -144,7 +112,7 @@ async def write_updated_areas_endtimes(
         logger.debug(f"Wrote new endtime for area {area_key}.")
 
 
-def get_notifiable_areas_prices(areas_prices: Box) -> Box[str, NotifiableDetailedPriceData]:
+def get_notifiable_areas_prices(areas_prices: Box) -> Box[str, NotifiablePriceData]:
     """Get the prices for which users should be notified for."""
     notifiable_areas_prices = Box()
     for area_key, prices_data in areas_prices.items():
@@ -158,7 +126,6 @@ def get_notifiable_areas_prices(areas_prices: Box) -> Box[str, NotifiableDetaile
                 continue
             notifiable_prices_data[key] = value
         notifiable_prices_data.prices = notifiable_prices
-        notifiable_detailed_prices = NotifiableDetailedPriceData(notifiable_prices_data)
-        notifiable_areas_prices[area_key] = notifiable_detailed_prices
+        notifiable_areas_prices[area_key] = NotifiablePriceData(notifiable_prices_data)
 
     return notifiable_areas_prices

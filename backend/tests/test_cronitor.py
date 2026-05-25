@@ -231,7 +231,7 @@ class NotificationWorkerMonitoringTests(unittest.IsolatedAsyncioTestCase):
             }
         )
         area_prices = Box({"DE-LU": Box({"prices": []})})
-        notifiable_prices = Box({"DE-LU": Box({"data": Box({"prices": []}), "find_lowest_price": lambda: None})})
+        notifiable_prices = Box({"DE-LU": Box({"data": Box({"prices": []})})})
 
         async def fake_collect_prices(_config, _active_areas):
             return area_prices

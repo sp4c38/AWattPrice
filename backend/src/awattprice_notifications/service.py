@@ -7,8 +7,8 @@ from awattprice import configurator
 from awattprice import notification_profiles
 from loguru import logger
 
+from awattprice_notifications import apns
 from awattprice_notifications import cronitor
-from awattprice_notifications import apns_defaults
 from awattprice_notifications import payloads
 from awattprice_notifications import prices
 from box import Box
@@ -46,9 +46,6 @@ async def run_worker_cycle(config, profile_store: notification_profiles.Notifica
     if len(notifiable_areas_prices) == 0:
         logger.debug("No notifiable prices for all checked areas.")
         return {"reason": "no_notifiable_prices", "active_area_count": len(active_areas), "updated_area_count": len(updated_areas), "notification_count": 0, "error_count": 0}
-    for notifiable_prices in notifiable_areas_prices.values():
-        notifiable_prices.find_lowest_price()
-
     updated_notifiable_areas_prices = {
         area_key: notifiable_areas_prices[area_key]
         for area_key in updated_areas
@@ -95,7 +92,7 @@ def monitoring_message(result: dict) -> str:
 async def main():
     """Run one notification worker cycle."""
     config = configurator.get_config()
-    configurator.configure_loguru(apns_defaults.NOTIFICATIONS_SERVICE_NAME, config)
+    configurator.configure_loguru(apns.NOTIFICATIONS_SERVICE_NAME, config)
     cronitor.require_configured(config)
 
     series = str(uuid.uuid4())

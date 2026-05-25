@@ -76,7 +76,7 @@ struct GenerationMixHistoryView: View {
             }
         }
         .appScreenBackground()
-        .navigationTitle("Renewable history")
+        .navigationTitle("Energy Mix")
         .navigationBarTitleDisplayMode(.large)
         .task(id: requestKey) {
             await loadHistory()

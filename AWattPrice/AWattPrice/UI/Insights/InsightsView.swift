@@ -424,7 +424,6 @@ private struct RangeValueLabel: View {
 
 private struct GenerationMixCard: View {
     let generationMix: GenerationMixData
-    let cachedHistory: GenerationMixHistoryData?
 
     private var visibleCategories: [GenerationMixCategory] {
         generationMix.visibleCategories
@@ -499,10 +498,10 @@ private struct GenerationMixCard: View {
                 NavigationLink {
                     GenerationMixHistoryView()
                 } label: {
-                    GenerationMixHistoryLinkLabel(history: cachedHistory)
+                    GenerationMixHistoryLinkLabel()
                 }
                 .buttonStyle(.plain)
-                .accessibilityLabel("Open renewable history")
+                .accessibilityLabel("Open Energy Mix History")
             }
         }
     }
@@ -527,32 +526,18 @@ private struct LiveGenerationMixBadge: View {
 }
 
 private struct GenerationMixHistoryLinkLabel: View {
-    let history: GenerationMixHistoryData?
-
     var body: some View {
         HStack(spacing: 10) {
-            Image(systemName: "clock.arrow.circlepath")
+            Image(systemName: "chart.xyaxis.line")
                 .font(.headline)
                 .foregroundStyle(AppTheme.success)
                 .frame(width: 24)
 
-            VStack(alignment: .leading, spacing: 2) {
-                Text("History")
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.primary)
-
-                Text(historySubtitle)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
-            }
+            Text("Energy Mix History")
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.primary)
 
             Spacer(minLength: 8)
-
-            if let history, history.sortedIntervals.count > 1 {
-                GenerationMixSparkline(history: history)
-                    .frame(width: 64, height: 28)
-            }
 
             Image(systemName: "chevron.right")
                 .font(.caption.weight(.bold))
@@ -562,35 +547,8 @@ private struct GenerationMixHistoryLinkLabel: View {
         .padding(.vertical, 10)
         .background(AppTheme.success.opacity(0.08), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
     }
-
-    private var historySubtitle: String {
-        guard let history else { return "7d" }
-        return "\(percentText(history.renewableShare)) · 7d"
-    }
 }
 
-private struct GenerationMixSparkline: View {
-    let history: GenerationMixHistoryData
-
-    private var intervals: [GenerationMixInterval] {
-        history.sortedIntervals
-    }
-
-    var body: some View {
-        Chart(intervals) { interval in
-            LineMark(
-                x: .value("Time", interval.startTime),
-                y: .value("Renewable", interval.renewableShare)
-            )
-            .foregroundStyle(AppTheme.success)
-            .interpolationMethod(.catmullRom)
-        }
-        .chartXAxis(.hidden)
-        .chartYAxis(.hidden)
-        .chartYScale(domain: 0...100)
-        .accessibilityHidden(true)
-    }
-}
 
 private struct InsightsLiveStatusDot: View {
     private let pulseDuration: TimeInterval = 2.1
@@ -712,7 +670,7 @@ struct GenerationMixCategoryLabel: View {
     var showsMW: Bool = false
 
     var body: some View {
-        HStack(spacing: 6) {
+        HStack(spacing: 8) {
             Circle()
                 .fill(generationMixColor(for: category.category))
                 .frame(width: 7, height: 7)
@@ -760,14 +718,10 @@ struct InsightsView: View {
         energyDataService.generationMixData
       }
 
-    private var cachedHistory: GenerationMixHistoryData? {
-        energyDataService.generationMixHistoryData
-      }
-
      @ViewBuilder
     private var generationMixSection: some View {
         if let generationMix {
-            GenerationMixCard(generationMix: generationMix, cachedHistory: cachedHistory)
+            GenerationMixCard(generationMix: generationMix)
                  .transition(.opacity.combined(with: .scale(scale: 0.98, anchor: .top)))
           } else {
             switch energyDataService.generationMixDownloadState {

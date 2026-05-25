@@ -185,20 +185,9 @@ class GenerationMixAPITests(unittest.TestCase):
     def setUp(self):
         self.client = TestClient(api.app)
 
-    def test_history_endpoint_defaults_to_24_hours(self):
-        with (
-            patch.object(api.generation_mix, "get_stored_data", new=AsyncMock(return_value=Box())),
-            patch.object(
-                api.generation_mix,
-                "parse_to_history_response_data",
-                return_value={"intervals": [], "hours": 24},
-            ) as parse,
-        ):
-            response = self.client.get("/generation-mix/DE-LU/history")
-
-        self.assertEqual(response.status_code, 200)
-        parse.assert_called_once()
-        self.assertEqual(parse.call_args.kwargs["hours"], 24)
+    def test_history_endpoint_requires_hours_param(self):
+        response = self.client.get("/generation-mix/DE-LU/history")
+        self.assertEqual(response.status_code, 422)
 
     def test_history_endpoint_accepts_168_hours(self):
         with (
@@ -215,9 +204,8 @@ class GenerationMixAPITests(unittest.TestCase):
         parse.assert_called_once()
         self.assertEqual(parse.call_args.kwargs["hours"], 168)
 
-    def test_history_endpoint_rejects_invalid_hours(self):
-        too_short = self.client.get("/generation-mix/DE-LU/history?hours=23")
-        too_long = self.client.get("/generation-mix/DE-LU/history?hours=169")
-
-        self.assertEqual(too_short.status_code, 422)
-        self.assertEqual(too_long.status_code, 422)
+    def test_history_endpoint_rejects_non_168_hours(self):
+        for hours in [24, 48, 72, 167, 169]:
+            with self.subTest(hours=hours):
+                response = self.client.get(f"/generation-mix/DE-LU/history?hours={hours}")
+                self.assertEqual(response.status_code, 422)

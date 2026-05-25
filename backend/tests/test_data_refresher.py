@@ -53,6 +53,46 @@ def price_data_for(end_time: str) -> Box:
     )
 
 
+class RefresherStatePersistenceTests(unittest.TestCase):
+    def test_load_state_returns_fresh_state_when_no_file_exists(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            config = test_config(Path(temp_dir))
+            state = data_refresher.load_state(config)
+
+        self.assertIsNone(state.current_prices)
+        self.assertIsNone(state.price_history)
+        self.assertIsNone(state.generation_mix)
+        self.assertIsNone(state.cleanup)
+
+    def test_save_and_load_state_roundtrip(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            config = test_config(Path(temp_dir))
+
+            original = data_refresher.RefresherState()
+            original.current_prices = arrow.get("2026-05-25T10:00:00+00:00")
+            original.price_history = arrow.get("2026-05-25T08:00:00+00:00")
+            original.generation_mix = arrow.get("2026-05-25T09:30:00+00:00")
+            original.cleanup = None
+
+            data_refresher.save_state(original, config)
+            loaded = data_refresher.load_state(config)
+
+        self.assertEqual(loaded.current_prices.int_timestamp, original.current_prices.int_timestamp)
+        self.assertEqual(loaded.price_history.int_timestamp, original.price_history.int_timestamp)
+        self.assertEqual(loaded.generation_mix.int_timestamp, original.generation_mix.int_timestamp)
+        self.assertIsNone(loaded.cleanup)
+
+    def test_load_state_recovers_from_corrupt_file(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            config = test_config(Path(temp_dir))
+            (Path(temp_dir) / "refresher-state.json").write_text("not valid json{{{")
+
+            state = data_refresher.load_state(config)
+
+        self.assertIsNone(state.current_prices)
+        self.assertIsNone(state.price_history)
+
+
 class DataRefresherScheduleTests(unittest.TestCase):
     def test_berlin_fast_window_uses_ten_minute_interval(self):
         fast_time = arrow.get("2026-05-25T13:30:00+02:00")

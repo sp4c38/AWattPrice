@@ -1,5 +1,6 @@
 """Warm AWattPrice caches on a global Berlin-time schedule."""
 import asyncio
+import json
 import random
 
 from datetime import date
@@ -305,6 +306,9 @@ async def prune_cache(config: Config, now=None) -> int:
     return pruned_count
 
 
+_STATE_ATTRS = ("current_prices", "price_history", "generation_mix", "cleanup")
+
+
 class RefresherState:
     """Track last run timestamps for the in-process scheduler."""
 
@@ -313,6 +317,47 @@ class RefresherState:
         self.price_history: Optional[arrow.Arrow] = None
         self.generation_mix: Optional[arrow.Arrow] = None
         self.cleanup: Optional[arrow.Arrow] = None
+
+
+def _state_file_path(config: Config):
+    return config.paths.data_dir / defaults.REFRESHER_STATE_FILE_NAME
+
+
+def load_state(config: Config) -> RefresherState:
+    """Load persisted refresher timestamps from disk, falling back to a fresh state."""
+    state = RefresherState()
+    path = _state_file_path(config)
+    try:
+        raw = json.loads(path.read_text())
+    except FileNotFoundError:
+        logger.debug("No persisted refresher state found; all tasks are due on first cycle.")
+        return state
+    except Exception as exc:
+        logger.warning(f"Couldn't read refresher state ({exc}); all tasks are due on first cycle.")
+        return state
+
+    for attr in _STATE_ATTRS:
+        ts = raw.get(attr)
+        if ts is not None:
+            try:
+                setattr(state, attr, arrow.get(int(ts)))
+            except Exception as exc:
+                logger.warning(f"Ignoring unreadable refresher state field {attr!r}: {exc}.")
+
+    return state
+
+
+def save_state(state: RefresherState, config: Config):
+    """Persist current refresher timestamps to disk."""
+    data = {
+        attr: getattr(state, attr).int_timestamp if getattr(state, attr) is not None else None
+        for attr in _STATE_ATTRS
+    }
+    path = _state_file_path(config)
+    try:
+        path.write_text(json.dumps(data))
+    except OSError as exc:
+        logger.warning(f"Couldn't save refresher state: {exc}.")
 
 
 async def run_cycle(config: Config, state: RefresherState, now=None):
@@ -343,9 +388,10 @@ async def run_cycle(config: Config, state: RefresherState, now=None):
 
 async def run_forever(config: Config):
     """Run the refresher scheduler forever."""
-    state = RefresherState()
+    state = load_state(config)
     while True:
         await run_cycle(config, state)
+        save_state(state, config)
         await asyncio.sleep(60)
 
 

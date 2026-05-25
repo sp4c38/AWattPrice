@@ -3,6 +3,11 @@ services:
     image: ${AWATTPRICE_IMAGE:-awattprice-backend:v3}
     container_name: awattprice-backend-v3
     restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
     command:
       - gunicorn
       - --workers
@@ -27,6 +32,11 @@ services:
     image: ${AWATTPRICE_IMAGE:-awattprice-backend:v3}
     container_name: awattprice-notifications-v3
     restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
     profiles:
       - worker
     command:
@@ -44,6 +54,11 @@ services:
     image: ${AWATTPRICE_IMAGE:-awattprice-backend:v3}
     container_name: awattprice-data-refresher-v3
     restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
     command:
       - python
       - -m

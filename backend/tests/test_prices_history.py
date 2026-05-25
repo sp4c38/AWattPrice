@@ -11,7 +11,9 @@ from unittest.mock import patch
 import arrow
 
 from box import Box
+from fastapi.testclient import TestClient
 
+from awattprice import api
 from awattprice import defaults
 from awattprice import prices
 from awattprice_refresher import prices as price_refresher
@@ -157,6 +159,41 @@ class PriceHistoryTests(unittest.TestCase):
         self.assertEqual(len(data.prices), 4)
         self.assertEqual(data.prices[0].marketprice.value, Decimal("10"))
         self.assertEqual(data.prices[-1].marketprice.value, Decimal("40"))
+
+
+class PriceHistoryAPITests(unittest.TestCase):
+    def setUp(self):
+        self.client = TestClient(api.app)
+
+    def test_uncached_old_history_is_downloaded_without_storing(self):
+        price_data = prices.parse_downloaded_data(AREA, price_xml())
+
+        with (
+            patch.object(api.prices, "get_stored_history_data", new=AsyncMock(return_value=None)),
+            patch.object(api, "is_retained_history_date", return_value=False),
+            patch.object(
+                api.price_refresher,
+                "download_history_prices",
+                new=AsyncMock(return_value=price_data),
+            ) as download_history,
+            patch.object(api.prices, "store_history_data", new=AsyncMock()) as store_history,
+        ):
+            response = self.client.get("/prices/DE-LU/history/2026-05-01")
+
+        self.assertEqual(response.status_code, 200)
+        download_history.assert_awaited_once()
+        store_history.assert_not_awaited()
+
+    def test_retained_missing_history_is_not_downloaded_by_api(self):
+        with (
+            patch.object(api.prices, "get_stored_history_data", new=AsyncMock(return_value=None)),
+            patch.object(api, "is_retained_history_date", return_value=True),
+            patch.object(api.price_refresher, "download_history_prices", new=AsyncMock()) as download_history,
+        ):
+            response = self.client.get("/prices/DE-LU/history/2026-05-24")
+
+        self.assertEqual(response.status_code, 503)
+        download_history.assert_not_awaited()
 
 
 if __name__ == "__main__":

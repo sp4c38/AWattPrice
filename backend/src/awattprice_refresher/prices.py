@@ -239,14 +239,23 @@ async def refresh_history_prices(area_key: str, day: date, config: Config) -> Op
             if stored_data is not None:
                 return stored_data
 
-            period_start_local, period_end_local = get_history_period(area, day)
-            downloaded_data = await download_data(area, config, period_start_local, period_end_local)
-            if downloaded_data is None:
+            new_data = await download_history_prices(area_key, day, config)
+            if new_data is None:
                 return None
 
-            new_data = prices.parse_downloaded_data(area, downloaded_data)
             await prices.store_history_data(new_data, area_key, day, config)
             return new_data
 
     refresh_lock.release()
     return await prices.get_stored_history_data(area_key, day, config)
+
+
+async def download_history_prices(area_key: str, day: date, config: Config) -> Optional[Box]:
+    """Download and parse one historical price day without storing it."""
+    area = defaults.get_market_area(area_key)
+    period_start_local, period_end_local = get_history_period(area, day)
+    downloaded_data = await download_data(area, config, period_start_local, period_end_local)
+    if downloaded_data is None:
+        return None
+
+    return prices.parse_downloaded_data(area, downloaded_data)

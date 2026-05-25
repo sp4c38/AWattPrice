@@ -19,12 +19,18 @@ from awattprice import prices
 from awattprice_notifications import rules as notification_defaults
 from awattprice_notifications import payloads as notification_payloads
 from awattprice_notifications import prices as notification_prices
+from awattprice_refresher import prices as price_refresher
 
 config = configurator.get_config()
 configurator.configure_loguru(defaults.AWATTPRICE_SERVICE_NAME, config)
 profile_store = notification_profiles.NotificationProfileStore(notification_profiles.get_store_path(config))
 
 app = FastAPI()
+
+
+def is_retained_history_date(history_date: date) -> bool:
+    """Return true when the date belongs to the warmed history cache."""
+    return history_date in cache_status.latest_history_days()
 
 
 @logger.catch
@@ -83,6 +89,14 @@ async def get_area_price_history(area_key: str, history_date: date):
         raise HTTPException(400)
 
     price_data = await prices.get_stored_history_data(normalized_area_key, history_date, config)
+    if price_data is None and not is_retained_history_date(history_date):
+        try:
+            price_data = await price_refresher.download_history_prices(normalized_area_key, history_date, config)
+        except Exception as exc:
+            logger.warning(
+                f"Couldn't download uncached historical price data for area "
+                f"{normalized_area_key} and date {history_date}: {exc}."
+            )
 
     if price_data is None:
         logger.warning(f"Couldn't get historical price data for area {normalized_area_key} and date {history_date}.")

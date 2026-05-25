@@ -91,6 +91,7 @@ private struct TimeRangePresetButton: View {
 }
 
 private struct TimeRangeInputFieldSelectionPart: View {
+    @Environment(\.colorScheme) private var colorScheme
     @Binding var partSelection: Date
 
     let name: String
@@ -98,11 +99,18 @@ private struct TimeRangeInputFieldSelectionPart: View {
     let range: ClosedRange<Date>
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Label(name.localized(), systemImage: systemImage)
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 10) {
+                Image(systemName: systemImage)
+                    .font(.callout.weight(.semibold))
+                    .foregroundStyle(cheapestTimeAccent)
+
+                Text(name.localized())
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.primary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.85)
+            }
 
             DatePicker(
                 "",
@@ -114,9 +122,18 @@ private struct TimeRangeInputFieldSelectionPart: View {
             .datePickerStyle(.compact)
             .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 12)
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+        .frame(minHeight: 44)
+        .frame(maxWidth: .infinity)
+        .background(
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .fill(AppTheme.fieldBackground(for: colorScheme))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .stroke(AppTheme.cardStroke(for: colorScheme), lineWidth: 1)
+        )
     }
 }
 
@@ -145,16 +162,13 @@ struct TimeRangeInputField: View {
                 }
             }
 
-            VStack(alignment: .leading, spacing: 0) {
+            VStack(alignment: .leading, spacing: 12) {
                 TimeRangeInputFieldSelectionPart(
                     partSelection: $cheapestHourManager.startDate,
                     name: "Earliest start",
                     systemImage: "arrow.forward.circle.fill",
                     range: inputDateRange
                 )
-
-                Divider()
-                    .padding(.leading, 16)
 
                 TimeRangeInputFieldSelectionPart(
                     partSelection: $cheapestHourManager.endDate,
@@ -163,10 +177,6 @@ struct TimeRangeInputField: View {
                     range: inputDateRange
                 )
             }
-            .background(
-                RoundedRectangle(cornerRadius: 20, style: .continuous)
-                    .fill(AppTheme.fieldBackground(for: colorScheme))
-            )
 
             if cheapestHourManager.showsTimeRangeError {
                 Label(getMinRangeNeededString(), systemImage: "exclamationmark.triangle.fill")

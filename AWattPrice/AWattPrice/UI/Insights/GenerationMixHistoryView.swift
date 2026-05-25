@@ -132,33 +132,19 @@ private struct GenerationMixHistoryContent: View {
         return totalGeneration > 0 ? (totalRenewable / totalGeneration) * 100 : 0
     }
 
-    private var displayStartTime: Date? { displayIntervals.first?.startTime }
-    private var displayEndTime: Date? { displayIntervals.last?.endTime }
-
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 14) {
                 InsightsCard(tint: AppTheme.success) {
-                    VStack(alignment: .leading, spacing: 10) {
-                        Text("Renewable mix")
-                            .font(.headline)
+                    HStack(alignment: .firstTextBaseline, spacing: 8) {
+                        Text(percentText(displayRenewableShare))
+                            .font(.system(.largeTitle, design: .rounded).weight(.bold))
+                            .monospacedDigit()
+                            .contentTransition(.numericText())
 
-                        HStack(alignment: .firstTextBaseline, spacing: 8) {
-                            Text(percentText(displayRenewableShare))
-                                .font(.system(.largeTitle, design: .rounded).weight(.bold))
-                                .monospacedDigit()
-                                .contentTransition(.numericText())
-
-                            Text("renewable")
-                                .font(.subheadline.weight(.semibold))
-                                .foregroundStyle(.secondary)
-                        }
-
-                        if let start = displayStartTime, let end = displayEndTime {
-                            Text(historyRangeText(from: start, to: end))
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
+                        Text("renewable")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(.secondary)
                     }
                 }
                 .animation(.easeInOut(duration: 0.35), value: range)
@@ -264,7 +250,7 @@ private struct GenerationMixSelectedIntervalView: View {
     let interval: GenerationMixInterval
 
     private var topCategories: [GenerationMixCategory] {
-        Array(interval.visibleCategories.prefix(4))
+        interval.visibleCategories
     }
 
     private var animationKey: String {
@@ -433,9 +419,13 @@ private struct GenerationMixStackedGenerationChart: View {
                     .interpolationMethod(.cardinal)
                 }
 
+                // Fall back to the last interval so the indicator is always
+                // visible — on first appearance and after a range switch.
+                let indicatorTime = selectedIntervalID ?? intervals.last?.startTime
+
                 // RuleMark follows the raw drag position so it tracks the finger
                 // all the way to the chart edge.
-                if let rawTime = selectedIntervalID {
+                if let rawTime = indicatorTime {
                     RuleMark(x: .value("Selected", rawTime))
                         .foregroundStyle(.primary.opacity(0.55))
                         .lineStyle(StrokeStyle(lineWidth: 1, dash: [4, 4]))
@@ -445,7 +435,7 @@ private struct GenerationMixStackedGenerationChart: View {
                 // always travels with the line.  The y is linearly interpolated
                 // between the two surrounding smoothed-total data points so it
                 // tracks the drawn line as closely as possible.
-                if let rawTime = selectedIntervalID,
+                if let rawTime = indicatorTime,
                    let interpolatedY = interpolatedSmoothedTotal(at: rawTime) {
                     PointMark(
                         x: .value("Selected time", rawTime),
@@ -469,7 +459,7 @@ private struct GenerationMixStackedGenerationChart: View {
             .chartYAxis(.hidden)
             .chartPlotStyle { plotArea in
                 plotArea
-                    .background(Color(red: 0.949, green: 0.949, blue: 0.961), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+                    .background(Color(red: 0.07, green: 0.07, blue: 0.07, opacity: 1.0), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
                     .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
             }
             .chartOverlay { proxy in
@@ -510,9 +500,8 @@ private struct GenerationMixStackedGenerationChart: View {
             }
         }
         .onChange(of: range) {
-            // Reset to the latest interval when the range changes so the
-            // selection doesn't dangle outside the new time window.
-            selectedIntervalID = nil
+            // Jump to the latest interval in the new range.
+            selectedIntervalID = intervals.last?.startTime
         }
     }
 
@@ -602,14 +591,6 @@ private struct GenerationMixCompactLegendItem: View {
 }
 
 // MARK: - History-only helpers
-
-private func historyRangeText(from startTime: Date, to endTime: Date) -> String {
-    String.localizedStringWithFormat(
-        NSLocalizedString("Data from %@ to %@", comment: "Time range text for generation mix history"),
-        timeText(startTime),
-        timeText(endTime)
-    )
-}
 
 private func historyIntervalAccessibilityText(_ interval: GenerationMixInterval) -> String {
     String.localizedStringWithFormat(

@@ -389,7 +389,6 @@
 "Renewable" = "Erneuerbar";
 "Renewable history" = "Erneuerbare Historie";
 "Last 24h" = "Letzte 24 h";
-"Data from %@ to %@" = "Daten von %@ bis %@";
 "%@, renewable mix %@" = "%@, erneuerbarer Mix %@";
 "Try Again" = "Erneut versuchen";
 "Data until %@" = "Daten bis %@";

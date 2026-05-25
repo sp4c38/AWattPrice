@@ -430,6 +430,33 @@ private struct GenerationMixCard: View {
         generationMix.visibleCategories
     }
 
+    /// Data is considered live if the last known interval ended no more than 90 minutes ago.
+    private var isLive: Bool {
+        generationMix.endTime >= Date().addingTimeInterval(-90 * 60)
+    }
+
+    @ViewBuilder
+    private var freshnessView: some View {
+        if generationMix.endTime > Date() {
+            // Interval is still running right now.
+            Text(
+                String.localizedStringWithFormat(
+                    NSLocalizedString("Live now · until %@", comment: "Live freshness text for generation mix data"),
+                    timeText(generationMix.endTime)
+                )
+            )
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(.secondary)
+        } else if !isLive {
+            // Data is older than 90 minutes — warn the user.
+            Label("Data may be outdated", systemImage: "exclamationmark.triangle.fill")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.orange)
+        }
+        // else: interval just ended but data is still fresh — the Live badge
+        // in the header is sufficient; no caption text needed.
+    }
+
     var body: some View {
         InsightsCard(tint: AppTheme.success) {
             VStack(alignment: .leading, spacing: 14) {
@@ -442,7 +469,9 @@ private struct GenerationMixCard: View {
 
                     Spacer()
 
-                    LiveGenerationMixBadge(isLive: generationMix.endTime > Date())
+                    if isLive {
+                        LiveGenerationMixBadge()
+                    }
                 }
 
                 HStack(alignment: .firstTextBaseline, spacing: 8) {
@@ -450,16 +479,14 @@ private struct GenerationMixCard: View {
                         .font(.system(.largeTitle, design: .rounded).weight(.bold))
                         .monospacedDigit()
 
-                    Text("currently renewable")
+                    Text("renewable right now")
                         .font(.subheadline.weight(.semibold))
                         .foregroundStyle(.secondary)
 
                     Spacer()
                 }
 
-                Text(generationMixStatusText(generationMix))
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.secondary)
+                freshnessView
 
                 GenerationMixBar(categories: visibleCategories)
 
@@ -488,24 +515,20 @@ private struct GenerationMixCard: View {
 }
 
 private struct LiveGenerationMixBadge: View {
-    let isLive: Bool
-
     var body: some View {
         HStack(spacing: 5) {
-            if isLive {
-                InsightsLiveStatusDot()
-            }
+            InsightsLiveStatusDot()
 
-            Text(LocalizedStringKey(isLive ? "Live now" : "Updated"))
+            Text("Live")
                 .font(.caption.weight(.semibold))
-                .foregroundStyle(isLive ? AppTheme.success : .secondary)
+                .foregroundStyle(AppTheme.success)
                 .lineLimit(1)
         }
         .padding(.horizontal, 8)
         .padding(.vertical, 5)
-        .background((isLive ? AppTheme.success : Color.secondary).opacity(0.12), in: Capsule())
+        .background(AppTheme.success.opacity(0.12), in: Capsule())
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(isLive ? Text("Live now") : Text("Updated"))
+        .accessibilityLabel(Text("Live now"))
     }
 }
 
@@ -883,19 +906,6 @@ func timeText(_ date: Date) -> String {
     date.formatted(.dateTime.hour(.twoDigits(amPM: .omitted)).minute(.twoDigits))
 }
 
-private func generationMixStatusText(_ generationMix: GenerationMixData) -> String {
-    if generationMix.endTime > Date() {
-        return String.localizedStringWithFormat(
-            NSLocalizedString("Live now · until %@", comment: "Live freshness text for generation mix data"),
-            timeText(generationMix.endTime)
-        )
-    }
-
-    return String.localizedStringWithFormat(
-        NSLocalizedString("Updated %@", comment: "Stale freshness text for generation mix data"),
-        timeText(generationMix.endTime)
-    )
-}
 
 func generationMixAccessibilityText(_ category: GenerationMixCategory) -> String {
     "\(generationMixLocalizedTitle(for: category.category)), \(percentText(category.share)), \(megawattText(category.generationMW))"

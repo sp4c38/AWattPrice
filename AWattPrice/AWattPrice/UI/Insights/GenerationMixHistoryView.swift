@@ -117,12 +117,17 @@ private struct GenerationMixHistoryContent: View {
     // drag events. Both interval arrays are therefore computed exactly once per
     // range switch, in the same render pass as the range change itself, which
     // is what keeps the chart animation in sync.
+    // Selection intervals keep the last clock-hour at native resolution so the
+    // breakdown matches the live InsightsView reading.
     private var displayIntervals: [GenerationMixInterval] {
-        generationMixDisplayIntervals(for: history, range: range)
+        generationMixDisplayIntervals(for: history, range: range, nativeLastHour: true)
     }
 
+    // Rendering intervals are purely hourly so the smoothing algorithm (which
+    // is index-based, not time-based) doesn't produce a bump where native
+    // 15-min points suddenly follow hour-averaged points.
     private var allDisplayIntervals: [GenerationMixInterval] {
-        generationMixDisplayIntervals(for: history, range: .week)
+        generationMixDisplayIntervals(for: history, range: .week, nativeLastHour: false)
     }
 
     private var displayRenewableShare: Double {
@@ -166,29 +171,51 @@ private struct GenerationMixHistoryContent: View {
 
 private func generationMixDisplayIntervals(
     for history: GenerationMixHistoryData,
-    range: GenerationMixHistoryRange
+    range: GenerationMixHistoryRange,
+    nativeLastHour: Bool
 ) -> [GenerationMixInterval] {
     // Trim to the requested window.  The cached dataset is always 7d so 24h
     // and 3d are derived in-memory without any extra network traffic.
     let cutoff = history.endTime.addingTimeInterval(-TimeInterval(range.hours) * 3600)
     let trimmed = history.sortedIntervals.filter { $0.startTime >= cutoff }
-    guard let firstStartTime = trimmed.first?.startTime else { return [] }
+    guard trimmed.isEmpty == false else { return [] }
 
-    // Aggregate into 1-hour buckets so all three ranges share the same
-    // granularity and the smoothing / chart code behaves consistently.
-    let bucketDuration: TimeInterval = 3600
+    // Group by calendar clock-hours rather than offsets from firstStartTime.
+    // Clock-hour alignment guarantees the last bucket is always the current,
+    // still-filling clock hour — regardless of which range (24h / 3d / 7d) is
+    // selected.  Offset-relative bucketing causes the 24h range to produce a
+    // "full" last bucket whose intervals straddle the live period, making the
+    // displayed values diverge from the Insights view.
+    let calendar = Calendar.current
     let grouped = Dictionary(grouping: trimmed) { interval in
-        let offset = floor(interval.startTime.timeIntervalSince(firstStartTime) / bucketDuration) * bucketDuration
-        return firstStartTime.addingTimeInterval(offset)
+        calendar.dateInterval(of: .hour, for: interval.startTime)?.start ?? interval.startTime
     }
 
-    return grouped.keys.sorted().compactMap { bucketStart in
-        guard let bucket = grouped[bucketStart], bucket.isEmpty == false else { return nil }
-        return averagedGenerationMixInterval(
+    let sortedBucketKeys = grouped.keys.sorted()
+    let lastBucketKey = sortedBucketKeys.last
+
+    return sortedBucketKeys.flatMap { bucketStart -> [GenerationMixInterval] in
+        guard let bucket = grouped[bucketStart], bucket.isEmpty == false else { return [] }
+
+        // Selection data: keep the last clock-hour at native resolution so the
+        // breakdown matches the live Insights view.
+        if nativeLastHour && bucketStart == lastBucketKey {
+            return bucket.sorted { $0.startTime < $1.startTime }
+        }
+
+        // Rendering data: always produce one averaged point per bucket so point
+        // density stays uniform and the index-based smoother doesn't create a
+        // bump. For the last bucket, anchor the point at the most recent
+        // interval's start time so the chart visually extends to the latest data.
+        let startTime = (bucketStart == lastBucketKey)
+            ? (bucket.map(\.startTime).max() ?? bucketStart)
+            : bucketStart
+
+        return [averagedGenerationMixInterval(
             from: bucket,
             categories: history.categories,
-            startTime: bucketStart
-        )
+            startTime: startTime
+        )]
     }
 }
 
@@ -260,10 +287,16 @@ private struct GenerationMixSelectedIntervalView: View {
 
                 Spacer()
 
-                Text(percentText(interval.renewableShare))
-                    .font(.title3.weight(.bold))
-                    .monospacedDigit()
-                    .contentTransition(.numericText())
+                VStack(alignment: .trailing, spacing: 2) {
+                    Text(percentText(interval.renewableShare))
+                        .font(.title3.weight(.bold))
+                        .monospacedDigit()
+                        .contentTransition(.numericText())
+
+                    Text("renewable")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
             }
 
             GenerationMixBar(categories: interval.visibleCategories)
@@ -299,6 +332,8 @@ private struct GenerationMixStackedGenerationChart: View {
     let allIntervals: [GenerationMixInterval]  // full 7d — stable across range switches
     let intervals: [GenerationMixInterval]     // range-filtered — for domain & selection
     let range: GenerationMixHistoryRange
+
+    @Environment(\.colorScheme) private var colorScheme
 
     // Owned here so drag events only re-render this view, not the parent.
     @State private var selectedIntervalID: Date?
@@ -445,7 +480,7 @@ private struct GenerationMixStackedGenerationChart: View {
             .chartYAxis(.hidden)
             .chartPlotStyle { plotArea in
                 plotArea
-                    .background(Color(red: 0.07, green: 0.07, blue: 0.07, opacity: 1.0), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+                    .background(AppTheme.chartPlotBackground(for: colorScheme), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
                     .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
             }
             .chartOverlay { proxy in

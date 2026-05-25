@@ -32,6 +32,10 @@ enum AppTheme {
     static func fieldBackground(for colorScheme: ColorScheme) -> Color {
         colorScheme == .dark ? Color.white.opacity(0.07) : Color(uiColor: .secondarySystemGroupedBackground)
     }
+
+    static func chartPlotBackground(for colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? Color(red: 0.07, green: 0.07, blue: 0.07) : Color(uiColor: .secondarySystemBackground)
+    }
 }
 
 private struct SavingStatusOverlayContent: View {

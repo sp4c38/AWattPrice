@@ -158,8 +158,7 @@ async def update_last_update_time(area_key: str, config: Config):
     file_name = defaults.PRICE_DATA_UPDATE_TS_FILE_NAME.format(prices.area_file_key(area_key))
     file_path = config.paths.price_data_dir / file_name
 
-    async with async_open(file_path, "w") as file:
-        await file.write(str(arrow.now().int_timestamp))
+    await utils.async_atomic_write_text(file_path, str(arrow.now().int_timestamp))
 
 
 async def get_last_update_time(area_key: str, config: Config) -> Optional[Arrow]:

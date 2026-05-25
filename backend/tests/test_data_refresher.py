@@ -16,6 +16,7 @@ from awattprice import cache_status
 from awattprice import defaults
 from awattprice import generation_mix
 from awattprice import prices
+from awattprice import utils
 from awattprice_refresher import service as data_refresher
 
 
@@ -222,6 +223,27 @@ class DataRefresherCleanupTests(unittest.TestCase):
                 self.assertEqual(response.cleanup.pruned_count, 3)
 
         asyncio.run(run_test())
+
+
+class AtomicCacheWriteTests(unittest.TestCase):
+    def test_atomic_write_keeps_old_payload_until_replace(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "cache.pickle"
+            path.write_bytes(b"old payload")
+            real_replace = utils.os.replace
+            observed = {}
+
+            def observe_replace(temp_path, target_path):
+                observed["temp_payload"] = Path(temp_path).read_bytes()
+                observed["target_payload_before_replace"] = Path(target_path).read_bytes()
+                real_replace(temp_path, target_path)
+
+            with patch("awattprice.utils.os.replace", side_effect=observe_replace):
+                utils.atomic_write_bytes(path, b"new payload")
+
+            self.assertEqual(observed["temp_payload"], b"new payload")
+            self.assertEqual(observed["target_payload_before_replace"], b"old payload")
+            self.assertEqual(path.read_bytes(), b"new payload")
 
 
 if __name__ == "__main__":

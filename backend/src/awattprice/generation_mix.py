@@ -15,6 +15,7 @@ from liteconfig import Config
 from loguru import logger
 
 from awattprice import defaults
+from awattprice import utils
 from awattprice.market_areas import MarketArea
 from awattprice.prices import area_file_key
 from awattprice.prices import resolution_to_seconds
@@ -146,8 +147,7 @@ async def store_data(data: Box, area_key: str, config: Config):
     file_path = config.paths.generation_data_dir / file_name
 
     logger.info(f"Storing ENTSO-E {area_key} generation data to {file_path}.")
-    async with async_open(file_path, "wb") as file:
-        await file.write(pickle.dumps(data))
+    await utils.async_atomic_write_bytes(file_path, pickle.dumps(data))
 
 
 def representative_interval_points(generation_data: Box) -> list[BoxList]:

@@ -237,15 +237,13 @@ def parse_downloaded_data(area: MarketArea, xml_content: bytes) -> Box:
 
 async def store_data(data: Box, area_key: str, config: Config):
     """Store new price data to the filesystem."""
-    store_dir = config.paths.price_data_dir
     file_name = defaults.PRICE_DATA_FILE_NAME.format(area_file_key(area_key))
-    file_path = store_dir / file_name
+    file_path = config.paths.price_data_dir / file_name
 
     pickled_data = pickle.dumps(data)
 
     logger.info(f"Storing ENTSO-E {area_key} price data to {file_path}.")
-    async with async_open(file_path, "wb") as file:
-        await file.write(pickled_data)
+    await utils.async_atomic_write_bytes(file_path, pickled_data)
 
 
 def get_history_data_dir(config: Config):
@@ -291,8 +289,7 @@ async def store_history_data(data: Box, area_key: str, day: date, config: Config
     pickled_data = pickle.dumps(data)
 
     logger.info(f"Storing ENTSO-E {area_key} historical price data for {day} to {file_path}.")
-    async with async_open(file_path, "wb") as file:
-        await file.write(pickled_data)
+    await utils.async_atomic_write_bytes(file_path, pickled_data)
 
 
 def parse_to_response_data(price_data: Box) -> Box:

@@ -23,6 +23,7 @@ from tenacity import (
 
 from awattprice import defaults
 from awattprice import generation_mix
+from awattprice import utils
 from awattprice.prices import area_file_key
 from awattprice.utils import ExtendedFileLock
 from awattprice.utils import log_attempts
@@ -123,8 +124,7 @@ async def update_last_update_time(area_key: str, config: Config):
     file_name = defaults.GENERATION_DATA_UPDATE_TS_FILE_NAME.format(area_file_key(area_key))
     file_path = config.paths.generation_data_dir / file_name
 
-    async with async_open(file_path, "w") as file:
-        await file.write(str(arrow.now().int_timestamp))
+    await utils.async_atomic_write_text(file_path, str(arrow.now().int_timestamp))
 
 
 async def get_last_update_time(area_key: str, config: Config) -> Optional[Arrow]:

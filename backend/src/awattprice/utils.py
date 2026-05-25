@@ -1,9 +1,12 @@
 """Helper functions which don't fit into a bigger category."""
 import asyncio
+import os
+import tempfile
 
 from contextlib import contextmanager
 from decimal import Decimal
 from functools import partial
+from pathlib import Path
 from typing import Callable
 from typing import Union
 
@@ -50,6 +53,37 @@ def async_wrap(func: Callable):
         return await loop.run_in_executor(executor, pfunc)
 
     return run
+
+
+def atomic_write_bytes(path: Path, data: bytes) -> None:
+    """Write bytes by replacing the target only after the full payload is durable."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, temp_path = tempfile.mkstemp(
+        prefix=f".{path.name}.",
+        suffix=".tmp",
+        dir=path.parent,
+    )
+    try:
+        with os.fdopen(fd, "wb") as file:
+            file.write(data)
+            file.flush()
+            os.fsync(file.fileno())
+        os.replace(temp_path, path)
+    finally:
+        try:
+            os.unlink(temp_path)
+        except FileNotFoundError:
+            pass
+
+
+async def async_atomic_write_bytes(path: Path, data: bytes) -> None:
+    """Async wrapper for atomic byte writes."""
+    await asyncio.to_thread(atomic_write_bytes, path, data)
+
+
+async def async_atomic_write_text(path: Path, text: str) -> None:
+    """Async wrapper for atomic text writes."""
+    await async_atomic_write_bytes(path, text.encode())
 
 
 def http_exc_validate_json_schema(body: Union[Box, dict, list], schema: dict, http_code: int):

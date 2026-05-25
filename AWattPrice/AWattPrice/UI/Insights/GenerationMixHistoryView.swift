@@ -150,25 +150,12 @@ private struct GenerationMixHistoryContent: View {
                 .animation(.easeInOut(duration: 0.35), value: range)
 
                 InsightsCard(tint: AppTheme.success) {
-                    VStack(alignment: .leading, spacing: 12) {
-                        HStack {
-                            Text(range.title)
-                                .font(.headline)
-
-                            Spacer()
-
-                            Text("Generation mix")
-                                .font(.caption.weight(.semibold))
-                                .foregroundStyle(.secondary)
-                        }
-
-                        GenerationMixStackedGenerationChart(
-                            history: history,
-                            allIntervals: allDisplayIntervals,
-                            intervals: displayIntervals,
-                            range: range
-                        )
-                    }
+                    GenerationMixStackedGenerationChart(
+                        history: history,
+                        allIntervals: allDisplayIntervals,
+                        intervals: displayIntervals,
+                        range: range
+                    )
                 }
             }
             .padding(.horizontal, 16)
@@ -281,9 +268,9 @@ private struct GenerationMixSelectedIntervalView: View {
 
             GenerationMixBar(categories: interval.visibleCategories)
 
-            LazyVGrid(columns: [GridItem(.adaptive(minimum: 118), spacing: 10)], alignment: .leading, spacing: 8) {
+            FlowLayout(horizontalSpacing: 14, verticalSpacing: 8) {
                 ForEach(topCategories) { category in
-                    GenerationMixCategoryLabel(category: category)
+                    GenerationMixCategoryLabel(category: category, showsMW: true)
                 }
             }
         }
@@ -406,7 +393,6 @@ private struct GenerationMixStackedGenerationChart: View {
                     )
                     .foregroundStyle(by: .value("Category", point.category))
                     .interpolationMethod(.cardinal)
-                    .opacity(0.86)
                 }
 
                 ForEach(totalPoints) { point in

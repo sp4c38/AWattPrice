@@ -490,15 +490,9 @@ private struct GenerationMixCard: View {
 
                 GenerationMixBar(categories: visibleCategories)
 
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Generation mix")
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.secondary)
-
-                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 118), spacing: 10)], alignment: .leading, spacing: 8) {
-                        ForEach(visibleCategories) { category in
-                            GenerationMixCategoryLabel(category: category)
-                        }
+                FlowLayout(horizontalSpacing: 14, verticalSpacing: 8) {
+                    ForEach(visibleCategories) { category in
+                        GenerationMixCategoryLabel(category: category)
                     }
                 }
                 
@@ -715,6 +709,7 @@ struct GenerationMixBar: View {
 
 struct GenerationMixCategoryLabel: View {
     let category: GenerationMixCategory
+    var showsMW: Bool = false
 
     var body: some View {
         HStack(spacing: 6) {
@@ -727,15 +722,21 @@ struct GenerationMixCategoryLabel: View {
                     .font(.caption.weight(.semibold))
                     .lineLimit(1)
 
-                Text("\(percentText(category.share)) · \(megawattText(category.generationMW))")
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-                    .monospacedDigit()
-                    .contentTransition(.numericText())
-                    .lineLimit(1)
+                Group {
+                    if showsMW {
+                        Text("\(percentText(category.share)) · \(megawattText(category.generationMW))")
+                    } else {
+                        Text(percentText(category.share))
+                    }
+                }
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+                .monospacedDigit()
+                .contentTransition(.numericText())
+                .lineLimit(1)
             }
         }
-        .animation(.interactiveSpring(response: 0.18, dampingFraction: 0.88, blendDuration: 0.05), value: "\(Int((category.share * 10).rounded()))-\(Int(category.generationMW.rounded()))")
+        .animation(.interactiveSpring(response: 0.18, dampingFraction: 0.88, blendDuration: 0.05), value: Int((category.share * 10).rounded()))
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(generationMixAccessibilityText(category))
     }
@@ -908,7 +909,7 @@ func timeText(_ date: Date) -> String {
 
 
 func generationMixAccessibilityText(_ category: GenerationMixCategory) -> String {
-    "\(generationMixLocalizedTitle(for: category.category)), \(percentText(category.share)), \(megawattText(category.generationMW))"
+    "\(generationMixLocalizedTitle(for: category.category)), \(percentText(category.share))"
 }
 
 func timeRangeText(from startTime: Date, to endTime: Date) -> String {
@@ -972,4 +973,84 @@ func generationMixColor(for category: String) -> Color {
     default:
         return Color.secondary
     }
+}
+
+struct FlowLayout: Layout {
+    var horizontalSpacing: CGFloat
+    var verticalSpacing: CGFloat
+
+    init(spacing: CGFloat) {
+        self.horizontalSpacing = spacing
+        self.verticalSpacing = spacing
+    }
+
+    init(horizontalSpacing: CGFloat, verticalSpacing: CGFloat) {
+        self.horizontalSpacing = horizontalSpacing
+        self.verticalSpacing = verticalSpacing
+    }
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        let rows = rows(proposal: proposal, subviews: subviews)
+        return CGSize(
+            width: proposal.width ?? rows.map(\.width).max() ?? 0,
+            height: rows.last.map { $0.y + $0.height } ?? 0
+        )
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        for row in rows(proposal: ProposedViewSize(width: bounds.width, height: proposal.height), subviews: subviews) {
+            for item in row.items {
+                subviews[item.index].place(
+                    at: CGPoint(x: bounds.minX + item.x, y: bounds.minY + row.y),
+                    proposal: ProposedViewSize(item.size)
+                )
+            }
+        }
+    }
+
+    private func rows(proposal: ProposedViewSize, subviews: Subviews) -> [FlowLayoutRow] {
+        let maxWidth = proposal.width ?? .infinity
+        var rows: [FlowLayoutRow] = []
+        var currentItems: [FlowLayoutItem] = []
+        var currentWidth: CGFloat = 0
+        var currentHeight: CGFloat = 0
+        var currentY: CGFloat = 0
+
+        for index in subviews.indices {
+            let size = subviews[index].sizeThatFits(.unspecified)
+            let nextWidth = currentItems.isEmpty ? size.width : currentWidth + horizontalSpacing + size.width
+
+            if nextWidth > maxWidth, currentItems.isEmpty == false {
+                rows.append(FlowLayoutRow(items: currentItems, y: currentY, width: currentWidth, height: currentHeight))
+                currentY += currentHeight + verticalSpacing
+                currentItems = [FlowLayoutItem(index: index, x: 0, size: size)]
+                currentWidth = size.width
+                currentHeight = size.height
+            } else {
+                let x = currentItems.isEmpty ? 0 : currentWidth + horizontalSpacing
+                currentItems.append(FlowLayoutItem(index: index, x: x, size: size))
+                currentWidth = nextWidth
+                currentHeight = max(currentHeight, size.height)
+            }
+        }
+
+        if currentItems.isEmpty == false {
+            rows.append(FlowLayoutRow(items: currentItems, y: currentY, width: currentWidth, height: currentHeight))
+        }
+
+        return rows
+    }
+}
+
+private struct FlowLayoutItem {
+    let index: Int
+    let x: CGFloat
+    let size: CGSize
+}
+
+private struct FlowLayoutRow {
+    let items: [FlowLayoutItem]
+    let y: CGFloat
+    let width: CGFloat
+    let height: CGFloat
 }

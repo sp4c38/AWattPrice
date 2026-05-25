@@ -698,6 +698,10 @@ struct PriceAddOnsView: View {
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
 
+                        Text("Check your electricity contract and fill in whichever values apply to you.".localized())
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+
                         VStack(alignment: .leading, spacing: 12) {
                             PriceFormulaView(draft: viewModel.draft)
                         }

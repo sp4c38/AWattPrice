@@ -1,8 +1,12 @@
 """Run notification delivery for configured users."""
 import asyncio
+import json
 import time
 import uuid
 
+from typing import Optional
+
+import arrow
 from awattprice import configurator
 from awattprice import notification_profiles
 from loguru import logger
@@ -12,6 +16,71 @@ from awattprice_notifications import cronitor
 from awattprice_notifications import payloads
 from awattprice_notifications import prices
 from box import Box
+
+
+NOTIFICATION_INTERVAL_SECONDS = 10 * 60
+SCHEDULER_POLL_SECONDS = 60
+STATE_FILE_NAME = "notifications-state.json"
+
+
+class NotificationWorkerState:
+    """Track the last scheduled notification worker cycle."""
+
+    def __init__(self):
+        self.last_run_at: Optional[arrow.Arrow] = None
+
+
+def _state_file_path(config):
+    return config.paths.data_dir / STATE_FILE_NAME
+
+
+def load_state(config) -> NotificationWorkerState:
+    """Load persisted notification scheduler state."""
+    state = NotificationWorkerState()
+    path = _state_file_path(config)
+    try:
+        raw = json.loads(path.read_text())
+    except FileNotFoundError:
+        logger.debug("No persisted notification worker state found; first cycle will wait for the interval.")
+        state.last_run_at = arrow.now()
+        save_state(state, config)
+        return state
+    except Exception as exc:
+        logger.warning(f"Couldn't read notification worker state ({exc}); first cycle will wait for the interval.")
+        state.last_run_at = arrow.now()
+        save_state(state, config)
+        return state
+
+    ts = raw.get("last_run_at")
+    if ts is not None:
+        try:
+            state.last_run_at = arrow.get(int(ts))
+        except Exception as exc:
+            logger.warning(f"Ignoring unreadable notification worker state: {exc}.")
+            state.last_run_at = arrow.now()
+            save_state(state, config)
+
+    return state
+
+
+def save_state(state: NotificationWorkerState, config):
+    """Persist notification scheduler state."""
+    data = {
+        "last_run_at": state.last_run_at.int_timestamp if state.last_run_at is not None else None
+    }
+    path = _state_file_path(config)
+    try:
+        path.write_text(json.dumps(data))
+    except OSError as exc:
+        logger.warning(f"Couldn't save notification worker state: {exc}.")
+
+
+def due(last_run_at: Optional[arrow.Arrow], now=None) -> bool:
+    """Return whether the next notification worker cycle is due."""
+    current = now or arrow.now()
+    if last_run_at is None:
+        return True
+    return (current - last_run_at).total_seconds() >= NOTIFICATION_INTERVAL_SECONDS
 
 
 def collect_active_profiles(profile_store: notification_profiles.NotificationProfileStore) -> Box[str, list[Box]]:
@@ -95,8 +164,14 @@ async def main(run_once: bool = False):
     configurator.configure_loguru(apns.NOTIFICATIONS_SERVICE_NAME, config)
     cronitor.require_configured(config)
     profile_store = notification_profiles.NotificationProfileStore(notification_profiles.get_store_path(config))
+    state = None if run_once else load_state(config)
 
     while True:
+        if not run_once and not due(state.last_run_at):
+            await asyncio.sleep(SCHEDULER_POLL_SECONDS)
+            continue
+
+        current = arrow.now()
         series = str(uuid.uuid4())
         started_at = time.monotonic()
         await cronitor.send_event(config, "run", series, message="notification worker started")
@@ -129,9 +204,12 @@ async def main(run_once: bool = False):
                 error_count=result["error_count"],
                 status_code=0,
             )
+            if not run_once:
+                state.last_run_at = current
+                save_state(state, config)
         if run_once:
             return
-        await asyncio.sleep(10 * 60)
+        await asyncio.sleep(SCHEDULER_POLL_SECONDS)
 
 
 if __name__ == "__main__":

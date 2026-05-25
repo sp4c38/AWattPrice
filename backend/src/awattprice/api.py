@@ -93,8 +93,8 @@ async def get_area_price_history(area_key: str, history_date: date):
 
 @logger.catch
 @app.get("/generation-mix/{area_key}/history")
-async def get_area_generation_mix_history_for_hours(area_key: str, hours: int = Query(24, ge=24, le=168)):
-    """Get grouped generation mix history for a market area."""
+async def get_area_generation_mix_history_for_hours(area_key: str, hours: int = Query(..., ge=168, le=168)):
+    """Get grouped generation mix history for a market area (only hours=168 is supported)."""
     try:
         normalized_area_key = defaults.normalize_market_area_key(area_key)
         defaults.get_market_area(normalized_area_key)

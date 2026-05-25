@@ -52,7 +52,30 @@ final class CheapestHourManagerTests: XCTestCase {
         wait(for: [expectation], timeout: 2)
     }
 
-private static let base = Date(timeIntervalSince1970: 4_102_444_800)
+    func testCalculateCheapestHoursTrimsWindowForNonIntegerHourDuration() {
+        let manager = CheapestHourManager()
+        manager.startDate = Self.base
+        manager.endDate = Self.base.addingTimeInterval(4 * 60 * 60)
+        manager.timeOfUsage = Int(1.5 * 60 * 60) // 90 minutes
+        let data = Self.energyData(prices: [30, 5, 10, 40])
+        let expectation = expectation(description: "trimmed result")
+
+        manager.calculateCheapestHours(energyData: data)
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            // Cheapest 2-slot window is hours 1–2 (avg 7.5 cent).
+            // Hour 1 (price 5) is cheaper than hour 2 (price 10),
+            // so the 30-min remainder is trimmed from the end.
+            XCTAssertEqual(manager.result?.startDate, Self.base.addingTimeInterval(60 * 60))
+            XCTAssertEqual(manager.result?.endDate,   Self.base.addingTimeInterval(2.5 * 60 * 60))
+            XCTAssertFalse(manager.failedToFindResult)
+            expectation.fulfill()
+        }
+
+        wait(for: [expectation], timeout: 2)
+    }
+
+    private static let base = Date(timeIntervalSince1970: 4_102_444_800)
 
     private static func energyData(prices: [Double]) -> EnergyData {
         let points = prices.enumerated().map { index, price in

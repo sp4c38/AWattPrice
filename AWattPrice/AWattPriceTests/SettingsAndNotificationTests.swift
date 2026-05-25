@@ -72,6 +72,13 @@ final class SettingsAndNotificationTests: XCTestCase {
         XCTAssertEqual(dailySummary["active"] as? Bool, true)
     }
 
+    func testMonthlyFixedCostIsZeroWhenAnnualConsumptionIsZero() {
+        let setting = Setting()
+        setting.monthlyFixedCost = 10.0
+        setting.annualConsumptionKWh = 0
+        XCTAssertEqual(setting.monthlyFixedCostPrice, 0)
+    }
+
     func testNotificationExampleResponseDefaultsMissingLocArgsToEmptyArray() throws {
         let response = try JSONDecoder().decode(
             NotificationExampleResponse.self,

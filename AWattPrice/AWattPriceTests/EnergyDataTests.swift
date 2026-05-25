@@ -111,6 +111,47 @@ final class EnergyDataTests: XCTestCase {
         XCTAssertEqual(data.orderedCategories.map(\.category), ["solar", "hydro", "fossil"])
     }
 
+    func testGenerationMixHistoryDecodesUnchangedPayload() throws {
+        let data = try GenerationMixHistoryData.jsonDecoder().decode(
+            GenerationMixHistoryData.self,
+            from: Data(
+                """
+                {
+                  "area": "DE-LU",
+                  "resolution": "PT60M",
+                  "updated_at": 4102444800,
+                  "start_timestamp": 4102444800,
+                  "end_timestamp": 4102448400,
+                  "total_generation_mw": 100,
+                  "renewable_generation_mw": 50,
+                  "renewable_share": 50,
+                  "categories": [
+                    { "category": "solar", "generation_mw": 50, "share": 50, "is_renewable": true },
+                    { "category": "fossil", "generation_mw": 50, "share": 50, "is_renewable": false }
+                  ],
+                  "intervals": [
+                    {
+                      "start_timestamp": 4102444800,
+                      "end_timestamp": 4102448400,
+                      "total_generation_mw": 100,
+                      "renewable_generation_mw": 50,
+                      "renewable_share": 50,
+                      "categories": [
+                        { "category": "solar", "generation_mw": 50, "share": 50, "is_renewable": true },
+                        { "category": "fossil", "generation_mw": 50, "share": 50, "is_renewable": false }
+                      ]
+                    }
+                  ]
+                }
+                """.utf8
+            )
+        )
+
+        XCTAssertEqual(data.intervals.count, 1)
+        XCTAssertEqual(data.renewableShare, 50)
+        XCTAssertEqual(data.sortedIntervals.first?.visibleCategories.map(\.category), ["solar", "fossil"])
+    }
+
     private static func decodePricePoint(start: Int, end: Int, marketprice: Double) throws -> EnergyPricePoint {
         try EnergyData.jsonDecoder().decode(
             EnergyPricePoint.self,

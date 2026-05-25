@@ -43,9 +43,7 @@ def create_market_area(
     )
 
 
-SUPPORTED_MARKET_AREAS = {
-    area.key: area
-    for area in [
+PRICE_ZONE_CANDIDATES = [
         create_market_area("AL", "10YAL-KESH-----5", "Albania", "AL", "Europe/Tirane"),
         create_market_area("AM", "10Y1001A1001B004", "Armenia", "AM", "Asia/Yerevan"),
         create_market_area("AT", "10YAT-APG------L", "Austria", "AT", "Europe/Vienna", tax_multiplier="1.20"),
@@ -108,7 +106,60 @@ SUPPORTED_MARKET_AREAS = {
         create_market_area("UA-DobTPP", "10Y1001A1001A869", "Ukraine Dobrotvir TPP", "UA", "Europe/Kyiv"),
         create_market_area("UA-IPS", "10Y1001C--000182", "Ukraine IPS", "UA", "Europe/Kyiv"),
         create_market_area("XK", "10Y1001C--00100H", "Kosovo", "XK", "Europe/Belgrade"),
-    ]
+]
+
+SUPPORTED_PRICE_ZONE_KEYS = [
+    "AL",
+    "AT",
+    "BE",
+    "BG",
+    "CH",
+    "CZ",
+    "DE-LU",
+    "DK1",
+    "DK2",
+    "EE",
+    "ES",
+    "FI",
+    "FR",
+    "GR",
+    "HR",
+    "HU",
+    "IE(SEM)",
+    "IT-Calabria",
+    "IT-Centre-North",
+    "IT-Centre-South",
+    "IT-North",
+    "IT-Sardinia",
+    "IT-Sicily",
+    "IT-South",
+    "LT",
+    "LV",
+    "ME",
+    "MK",
+    "NL",
+    "NO1",
+    "NO2",
+    "NO3",
+    "NO4",
+    "NO5",
+    "PL",
+    "PT",
+    "RO",
+    "RS",
+    "SE1",
+    "SE2",
+    "SE3",
+    "SE4",
+    "SI",
+    "SK",
+    "UA-IPS",
+]
+
+SUPPORTED_MARKET_AREAS = {
+    area.key: area
+    for area in PRICE_ZONE_CANDIDATES
+    if area.key in SUPPORTED_PRICE_ZONE_KEYS
 }
 
 DEFAULT_MARKET_AREA_KEY = "DE-LU"
@@ -134,3 +185,8 @@ def get_market_area(area_key: str) -> MarketArea:
 def list_market_areas() -> list[MarketArea]:
     """Return supported market areas in declaration order."""
     return list(SUPPORTED_MARKET_AREAS.values())
+
+
+def list_price_zone_candidates() -> list[MarketArea]:
+    """Return all known ENTSO-E price-zone candidates."""
+    return list(PRICE_ZONE_CANDIDATES)

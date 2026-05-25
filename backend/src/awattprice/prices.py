@@ -144,6 +144,14 @@ def select_time_series(area: MarketArea, time_series_list: list[ET.Element]) -> 
     if len(time_series_list) == 1:
         return time_series_list
 
+    sequence_values = [
+        time_series.findtext("{*}classificationSequence_AttributeInstanceComponent.position")
+        for time_series in time_series_list
+    ]
+    if all(sequence is None for sequence in sequence_values):
+        logger.debug(f"Using all unclassified ENTSO-E price series for {area.key}.")
+        return time_series_list
+
     if area.preferred_price_sequence is not None:
         preferred_time_series = [
             time_series

@@ -8,6 +8,22 @@ FastAPI backend for AWattPrice. It serves ENTSO-E electricity prices, caches the
 ./run-local.sh
 ```
 
+## Maintenance Checks
+
+Check which configured ENTSO-E price zones currently expose price data:
+
+```sh
+PYTHONPATH=src .venv/bin/python misc/check_price_zones.py --days 7 --concurrency 4 --timeout 30
+```
+
+Run this from the backend directory. The script uses the configured ENTSO-E token and checks all known price-zone candidates, including zones the app does not currently expose. It prints the supported zones that should remain in `SUPPORTED_PRICE_ZONE_KEYS` in `src/awattprice/market_areas.py`.
+
+To verify one zone:
+
+```sh
+PYTHONPATH=src .venv/bin/python misc/check_price_zones.py --area IT-Centre-North --days 7 --concurrency 1 --timeout 30
+```
+
 ## First Server Setup
 
 NGINX must already proxy `/v3/` on `api.awattprice.com` to `http://127.0.0.1:8003/`.

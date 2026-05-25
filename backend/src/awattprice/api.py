@@ -54,13 +54,13 @@ async def get_area_prices(area_key: str):
     """Get current price data for a market area."""
     try:
         normalized_area_key = defaults.normalize_market_area_key(area_key)
-        defaults.get_market_area(normalized_area_key)
+        area = defaults.get_market_area(normalized_area_key)
     except KeyError:
         raise HTTPException(404)
 
     price_data = await prices.get_stored_data(normalized_area_key, config)
 
-    if price_data is None:
+    if price_data is None or not prices.has_current_price_points(price_data, area):
         logger.warning(f"Couldn't get current price data for area {normalized_area_key}.")
         raise HTTPException(503)
 

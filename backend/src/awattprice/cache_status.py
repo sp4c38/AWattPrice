@@ -139,11 +139,13 @@ def record_cache_result(
 
 def record_price_success(config: Config, area_key: str, price_data: Box):
     """Record current price cache coverage."""
+    area = defaults.get_market_area(area_key)
     coverage_start, coverage_end = _coverage_from_prices(price_data)
     record_cache_result(
         config,
         area_key,
         DATASET_CURRENT_PRICES,
+        state=STATE_FRESH if prices.has_current_price_points(price_data, area) else STATE_TEMPORARILY_FAILED,
         coverage_start=coverage_start,
         coverage_end=coverage_end,
     )

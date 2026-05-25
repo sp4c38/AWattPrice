@@ -54,6 +54,41 @@ def price_xml(resolution: str = "PT60M") -> bytes:
 """.encode()
 
 
+def unclassified_multi_series_xml() -> bytes:
+    return f"""<?xml version="1.0" encoding="UTF-8"?>
+<Publication_MarketDocument xmlns="urn:iec62325.351:tc57wg16:451-3:publicationdocument:7:3">
+  <TimeSeries>
+    <in_Domain.mRID>{AREA.entsoe_domain}</in_Domain.mRID>
+    <out_Domain.mRID>{AREA.entsoe_domain}</out_Domain.mRID>
+    <currency_Unit.name>EUR</currency_Unit.name>
+    <Period>
+      <timeInterval>
+        <start>2026-05-13T00:00Z</start>
+        <end>2026-05-13T02:00Z</end>
+      </timeInterval>
+      <resolution>PT60M</resolution>
+      <Point><position>1</position><price.amount>10</price.amount></Point>
+      <Point><position>2</position><price.amount>20</price.amount></Point>
+    </Period>
+  </TimeSeries>
+  <TimeSeries>
+    <in_Domain.mRID>{AREA.entsoe_domain}</in_Domain.mRID>
+    <out_Domain.mRID>{AREA.entsoe_domain}</out_Domain.mRID>
+    <currency_Unit.name>EUR</currency_Unit.name>
+    <Period>
+      <timeInterval>
+        <start>2026-05-13T02:00Z</start>
+        <end>2026-05-13T04:00Z</end>
+      </timeInterval>
+      <resolution>PT60M</resolution>
+      <Point><position>1</position><price.amount>30</price.amount></Point>
+      <Point><position>2</position><price.amount>40</price.amount></Point>
+    </Period>
+  </TimeSeries>
+</Publication_MarketDocument>
+""".encode()
+
+
 def test_config(root: Path) -> Box:
     config = Box()
     config.paths = Box()
@@ -115,6 +150,13 @@ class PriceHistoryTests(unittest.TestCase):
         self.assertEqual(response.resolution, "PT15M")
         self.assertEqual(len(response.prices), 4)
         self.assertEqual(response.prices[1].start_timestamp - response.prices[0].start_timestamp, 15 * 60)
+
+    def test_unclassified_multiple_time_series_are_combined(self):
+        data = prices.parse_downloaded_data(AREA, unclassified_multi_series_xml())
+
+        self.assertEqual(len(data.prices), 4)
+        self.assertEqual(data.prices[0].marketprice.value, Decimal("10"))
+        self.assertEqual(data.prices[-1].marketprice.value, Decimal("40"))
 
 
 if __name__ == "__main__":

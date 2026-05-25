@@ -381,6 +381,7 @@ class EnergyDataService: ObservableObject {
     }
     
     private var currentDownloadTask: Task<Void, Never>?
+    private var currentDownloadAreaKey: String?
     
     @Published var downloadState: DownloadState = .idle
     @Published var energyData: EnergyData? = nil
@@ -393,8 +394,12 @@ class EnergyDataService: ObservableObject {
         let requestedMarketAreaKey = pricingConfiguration.marketArea.key
         let marketAreaName = pricingConfiguration.marketArea.localizedDisplayName
 
-        // Cancel any existing task first
+        if currentDownloadAreaKey == requestedMarketAreaKey {
+            return
+        }
+
         cancelDownloads()
+        currentDownloadAreaKey = requestedMarketAreaKey
         downloadState = .downloading
 
         if energyData?.area != requestedMarketAreaKey {
@@ -405,6 +410,10 @@ class EnergyDataService: ObservableObject {
         generationMixDownloadState = .downloading
         
         currentDownloadTask = Task {
+            defer {
+                currentDownloadAreaKey = nil
+            }
+
             do {
                 var newEnergyData = try await EnergyData.download(marketArea: pricingConfiguration.marketArea)
                 newEnergyData.computeValues(with: pricingConfiguration)
@@ -463,6 +472,7 @@ class EnergyDataService: ObservableObject {
     func cancelDownloads() {
         currentDownloadTask?.cancel()
         currentDownloadTask = nil
+        currentDownloadAreaKey = nil
         if case .downloading = downloadState {
             downloadState = .idle
         }

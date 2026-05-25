@@ -133,6 +133,49 @@ class DataRefresherScheduleTests(unittest.TestCase):
 
         asyncio.run(run_test())
 
+    def test_run_cycle_returns_monitoring_summary(self):
+        async def run_test():
+            with tempfile.TemporaryDirectory() as temp_dir:
+                config = test_config(Path(temp_dir))
+                state = data_refresher.RefresherState()
+
+                with (
+                    patch("awattprice_refresher.service.defaults.list_market_areas", return_value=[AREA]),
+                    patch("awattprice_refresher.service.run_bounded", new=AsyncMock()) as run_bounded,
+                    patch("awattprice_refresher.service.prune_cache", new=AsyncMock(return_value=4)),
+                ):
+                    result = await data_refresher.run_cycle(
+                        config,
+                        state,
+                        arrow.get("2026-05-25T13:30:00+02:00"),
+                    )
+
+            self.assertEqual(run_bounded.await_count, 3)
+            self.assertEqual(result["area_count"], 1)
+            self.assertEqual(result["current_prices"], "ran")
+            self.assertEqual(result["price_history"], "ran")
+            self.assertEqual(result["generation_mix"], "ran")
+            self.assertEqual(result["pruned_count"], 4)
+
+        asyncio.run(run_test())
+
+    def test_monitoring_message_includes_cycle_status(self):
+        message = data_refresher.monitoring_message(
+            {
+                "area_count": 45,
+                "current_prices": "ran",
+                "price_history": "skipped",
+                "generation_mix": "ran",
+                "pruned_count": 2,
+            }
+        )
+
+        self.assertIn("areas=45", message)
+        self.assertIn("current_prices=ran", message)
+        self.assertIn("price_history=skipped", message)
+        self.assertIn("generation_mix=ran", message)
+        self.assertIn("pruned=2", message)
+
 
 class DataRefresherCleanupTests(unittest.TestCase):
     def test_history_prune_keeps_only_latest_five_completed_berlin_days(self):

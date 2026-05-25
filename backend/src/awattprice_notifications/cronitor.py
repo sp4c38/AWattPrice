@@ -13,18 +13,22 @@ ATTEMPTS = 3
 RETRY_DELAY = 1
 
 
-def is_enabled(config: Config) -> bool:
+def _monitor_key(config: Config, monitor_key: Optional[str] = None) -> Optional[str]:
+    return monitor_key or getattr(config.cronitor, "monitor_key", None)
+
+
+def is_enabled(config: Config, monitor_key: Optional[str] = None) -> bool:
     """Return whether Cronitor telemetry has the required credentials."""
     return bool(
         getattr(config.cronitor, "api_key", None)
-        and getattr(config.cronitor, "monitor_key", None)
+        and _monitor_key(config, monitor_key)
     )
 
 
-def require_configured(config: Config):
-    """Raise if Cronitor is not configured for the notification worker."""
-    if not is_enabled(config):
-        raise RuntimeError("Cronitor must be configured for the notifications worker.")
+def require_configured(config: Config, monitor_key: Optional[str] = None, service_name: str = "worker"):
+    """Raise if Cronitor is not configured for a worker."""
+    if not is_enabled(config, monitor_key):
+        raise RuntimeError(f"Cronitor must be configured for the {service_name}.")
 
 
 def build_params(
@@ -69,11 +73,13 @@ async def send_event(
     count: Optional[int] = None,
     error_count: Optional[int] = None,
     status_code: Optional[int] = None,
+    monitor_key: Optional[str] = None,
 ) -> bool:
     """Send one Cronitor event, returning false if disabled or unavailable."""
-    require_configured(config)
+    resolved_monitor_key = _monitor_key(config, monitor_key)
+    require_configured(config, resolved_monitor_key)
 
-    url = TELEMETRY_URL_TEMPLATE.format(api_key=config.cronitor.api_key, monitor_key=config.cronitor.monitor_key)
+    url = TELEMETRY_URL_TEMPLATE.format(api_key=config.cronitor.api_key, monitor_key=resolved_monitor_key)
     params = build_params(
         config,
         state,

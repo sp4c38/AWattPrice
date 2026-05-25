@@ -34,6 +34,7 @@ key_id =
 [cronitor]
 api_key =
 monitor_key =
+refresher_monitor_key =
 environment = production
 """
 

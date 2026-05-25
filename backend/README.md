@@ -46,16 +46,17 @@ Optional for push notifications:
 /etc/awattprice-v3/config.ini with apns.team_id and apns.key_id
 ```
 
-Required Cronitor job monitoring for the notifications worker:
+Required Cronitor job monitoring for the notifications worker and data refresher:
 
 ```ini
 [cronitor]
 api_key = <cronitor api key>
-monitor_key = <cronitor job key>
+monitor_key = <notifications worker job key>
+refresher_monitor_key = <data refresher job key>
 environment = production
 ```
 
-Configure the Cronitor monitor as a Job with a schedule slightly longer than the worker loop, for example 15 minutes for the 10 minute Docker loop. Each worker cycle sends `run`, then `complete` for normal outcomes or `fail` for unhandled errors. The notifications worker exits if Cronitor credentials are missing.
+Configure both Cronitor monitors as Jobs. The notifications monitor should use a schedule slightly longer than the worker loop, for example 15 minutes for the 10 minute Docker loop. The refresher monitor should use a schedule slightly longer than its 60 second scheduler heartbeat. Each worker cycle sends `run`, then `complete` for normal outcomes or `fail` for unhandled errors. The workers exit if their Cronitor credentials are missing.
 
 ## Deploy
 

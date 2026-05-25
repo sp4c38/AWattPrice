@@ -2,6 +2,8 @@
 import asyncio
 import json
 import random
+import time
+import uuid
 
 from datetime import date
 from pathlib import Path
@@ -21,6 +23,7 @@ from awattprice import defaults
 from awattprice import generation_mix
 from awattprice import prices
 from awattprice.market_areas import MarketArea
+from awattprice_notifications import cronitor
 from awattprice_refresher import generation_mix as generation_mix_refresher
 from awattprice_refresher import prices as prices_refresher
 
@@ -360,38 +363,106 @@ def save_state(state: RefresherState, config: Config):
         logger.warning(f"Couldn't save refresher state: {exc}.")
 
 
-async def run_cycle(config: Config, state: RefresherState, now=None):
-    """Run due refresher tasks once."""
+async def run_cycle(config: Config, state: RefresherState, now=None) -> dict:
+    """Run due refresher tasks once and return monitoring metadata."""
     current = now or now_berlin()
     areas = defaults.list_market_areas()
+    result = {
+        "area_count": len(areas),
+        "current_prices": "skipped",
+        "price_history": "skipped",
+        "generation_mix": "skipped",
+        "pruned_count": 0,
+    }
 
     if due(state.current_prices, current_price_poll_interval(current), current):
         logger.info("Refreshing current price caches.")
         await run_bounded(areas, lambda area: refresh_current_prices_for_area(area, config))
         state.current_prices = current
+        result["current_prices"] = "ran"
 
     if due(state.price_history, defaults.REFRESHER_HISTORY_INTERVAL_SECONDS, current):
         logger.info("Refreshing retained price history caches.")
         await run_bounded(areas, lambda area: refresh_history_for_area(area, config))
         state.price_history = current
+        result["price_history"] = "ran"
 
     if due(state.generation_mix, defaults.REFRESHER_GENERATION_INTERVAL_SECONDS, current):
         logger.info("Refreshing generation mix caches.")
         await run_bounded(areas, lambda area: refresh_generation_mix_for_area(area, config))
         state.generation_mix = current
+        result["generation_mix"] = "ran"
 
     if due(state.cleanup, defaults.REFRESHER_SLOW_POLL_INTERVAL_SECONDS, current):
         pruned_count = await prune_cache(config, current)
         logger.info(f"Cache cleanup pruned {pruned_count} entries.")
         state.cleanup = current
+        result["pruned_count"] = pruned_count
+
+    return result
+
+
+def monitoring_message(result: dict) -> str:
+    """Build a compact Cronitor message for one refresher cycle."""
+    return (
+        f"areas={result['area_count']}; "
+        f"current_prices={result['current_prices']}; "
+        f"price_history={result['price_history']}; "
+        f"generation_mix={result['generation_mix']}; "
+        f"pruned={result['pruned_count']}"
+    )
+
+
+def refresher_monitor_key(config: Config) -> Optional[str]:
+    """Return the Cronitor monitor key dedicated to the refresher."""
+    return getattr(config.cronitor, "refresher_monitor_key", None)
 
 
 async def run_forever(config: Config):
     """Run the refresher scheduler forever."""
+    monitor_key = refresher_monitor_key(config)
+    cronitor.require_configured(config, monitor_key, service_name="cache refresher")
     state = load_state(config)
     while True:
-        await run_cycle(config, state)
-        save_state(state, config)
+        series = str(uuid.uuid4())
+        started_at = time.monotonic()
+        await cronitor.send_event(
+            config,
+            "run",
+            series,
+            message="cache refresher cycle started",
+            monitor_key=monitor_key,
+        )
+
+        try:
+            result = await run_cycle(config, state)
+            save_state(state, config)
+        except Exception as exc:
+            duration = time.monotonic() - started_at
+            await cronitor.send_event(
+                config,
+                "fail",
+                series,
+                message=f"cache refresher cycle failed: {exc}",
+                duration=duration,
+                error_count=1,
+                status_code=1,
+                monitor_key=monitor_key,
+            )
+            raise
+
+        duration = time.monotonic() - started_at
+        await cronitor.send_event(
+            config,
+            "complete",
+            series,
+            message=monitoring_message(result),
+            duration=duration,
+            count=result["area_count"],
+            error_count=0,
+            status_code=0,
+            monitor_key=monitor_key,
+        )
         await asyncio.sleep(60)
 
 

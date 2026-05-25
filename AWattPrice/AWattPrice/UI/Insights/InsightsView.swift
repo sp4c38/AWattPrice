@@ -450,7 +450,7 @@ private struct GenerationMixCard: View {
                         .font(.system(.largeTitle, design: .rounded).weight(.bold))
                         .monospacedDigit()
 
-                    Text("renewable")
+                    Text("currently renewable")
                         .font(.subheadline.weight(.semibold))
                         .foregroundStyle(.secondary)
 
@@ -463,14 +463,6 @@ private struct GenerationMixCard: View {
 
                 GenerationMixBar(categories: visibleCategories)
 
-                NavigationLink {
-                    GenerationMixHistoryView()
-                } label: {
-                    GenerationMixHistoryLinkLabel(history: cachedHistory)
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel("Open renewable history")
-
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Generation mix")
                         .font(.caption.weight(.semibold))
@@ -482,6 +474,14 @@ private struct GenerationMixCard: View {
                         }
                     }
                 }
+                
+                NavigationLink {
+                    GenerationMixHistoryView()
+                } label: {
+                    GenerationMixHistoryLinkLabel(history: cachedHistory)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Open renewable history")
             }
         }
     }
@@ -547,8 +547,8 @@ private struct GenerationMixHistoryLinkLabel: View {
     }
 
     private var historySubtitle: String {
-        guard let history else { return "24h" }
-        return "\(percentText(history.renewableShare)) · 24h"
+        guard let history else { return "7d" }
+        return "\(percentText(history.renewableShare)) · 7d"
     }
 }
 
@@ -615,8 +615,10 @@ private struct GenerationMixHistoryView: View {
     @State private var selectedRange: GenerationMixHistoryRange = .day
     @State private var loadState: GenerationMixHistoryLoadState = .loading
 
+    // Only re-trigger the load task when the market area changes.
+    // Range changes are handled purely in-memory from the cached 7d dataset.
     private var requestKey: String {
-        "\(marketArea.key)-\(selectedRange.hours)"
+        marketArea.key
     }
 
     var body: some View {
@@ -672,21 +674,25 @@ private struct GenerationMixHistoryView: View {
     }
 
     private func loadHistory() async {
-        loadState = .loading
-
-        if selectedRange == .day, let cached = energyDataService.generationMixHistoryData {
+        // If the service already has the 7d dataset (fetched during the main
+        // data refresh, or from a previous visit to this screen), use it
+        // immediately — no network call needed.
+        if let cached = energyDataService.generationMixHistoryData {
             loadState = .loaded(cached)
+            return
         }
 
+        loadState = .loading
+
         do {
-            let history = try await GenerationMixHistoryData.download(marketArea: marketArea, range: selectedRange)
-            if selectedRange == .day {
-                energyDataService.generationMixHistoryData = history
-            }
+            let history = try await GenerationMixHistoryData.download(marketArea: marketArea, range: .week)
+            energyDataService.generationMixHistoryData = history
             loadState = .loaded(history)
         } catch {
             print("Generation mix history download failed: \(error).")
-            loadState = .failed
+            if case .loading = loadState {
+                loadState = .failed
+            }
         }
     }
 }
@@ -695,21 +701,29 @@ private struct GenerationMixHistoryContent: View {
     let history: GenerationMixHistoryData
     let range: GenerationMixHistoryRange
 
-    @State private var selectedIntervalID: Date?
-
+    // Pure computed view — no @State here. The only state (selected interval)
+    // lives inside GenerationMixStackedGenerationChart, so this view only
+    // re-renders when history data or the selected range changes, never during
+    // drag events. Both interval arrays are therefore computed exactly once per
+    // range switch, in the same render pass as the range change itself, which
+    // is what keeps the chart animation in sync.
     private var displayIntervals: [GenerationMixInterval] {
         generationMixDisplayIntervals(for: history, range: range)
     }
 
-    private var selectedInterval: GenerationMixInterval? {
-        let intervals = displayIntervals
-        guard intervals.isEmpty == false else { return nil }
-
-        guard let selectedIntervalID else { return intervals.last }
-        return intervals.min {
-            abs($0.startTime.timeIntervalSince(selectedIntervalID)) < abs($1.startTime.timeIntervalSince(selectedIntervalID))
-        }
+    private var allDisplayIntervals: [GenerationMixInterval] {
+        generationMixDisplayIntervals(for: history, range: .week)
     }
+
+    private var displayRenewableShare: Double {
+        let intervals = displayIntervals
+        let totalRenewable = intervals.reduce(0.0) { $0 + $1.renewableGenerationMW }
+        let totalGeneration = intervals.reduce(0.0) { $0 + $1.totalGenerationMW }
+        return totalGeneration > 0 ? (totalRenewable / totalGeneration) * 100 : 0
+    }
+
+    private var displayStartTime: Date? { displayIntervals.first?.startTime }
+    private var displayEndTime: Date? { displayIntervals.last?.endTime }
 
     var body: some View {
         ScrollView {
@@ -720,20 +734,24 @@ private struct GenerationMixHistoryContent: View {
                             .font(.headline)
 
                         HStack(alignment: .firstTextBaseline, spacing: 8) {
-                            Text(percentText(history.renewableShare))
+                            Text(percentText(displayRenewableShare))
                                 .font(.system(.largeTitle, design: .rounded).weight(.bold))
                                 .monospacedDigit()
+                                .contentTransition(.numericText())
 
                             Text("renewable")
                                 .font(.subheadline.weight(.semibold))
                                 .foregroundStyle(.secondary)
                         }
 
-                        Text(historyRangeText(from: history.startTime, to: history.endTime))
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                        if let start = displayStartTime, let end = displayEndTime {
+                            Text(historyRangeText(from: start, to: end))
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
                     }
                 }
+                .animation(.easeInOut(duration: 0.35), value: range)
 
                 InsightsCard(tint: AppTheme.success) {
                     VStack(alignment: .leading, spacing: 12) {
@@ -750,13 +768,10 @@ private struct GenerationMixHistoryContent: View {
 
                         GenerationMixStackedGenerationChart(
                             history: history,
+                            allIntervals: allDisplayIntervals,
                             intervals: displayIntervals,
-                            selectedIntervalID: $selectedIntervalID
+                            range: range
                         )
-
-                        if let selectedInterval {
-                            GenerationMixSelectedIntervalView(interval: selectedInterval)
-                        }
                     }
                 }
             }
@@ -770,17 +785,22 @@ private func generationMixDisplayIntervals(
     for history: GenerationMixHistoryData,
     range: GenerationMixHistoryRange
 ) -> [GenerationMixInterval] {
-    let intervals = history.sortedIntervals
-    guard range != .day, let firstStartTime = intervals.first?.startTime else { return intervals }
+    // Trim to the requested window.  The cached dataset is always 7d so 24h
+    // and 3d are derived in-memory without any extra network traffic.
+    let cutoff = history.endTime.addingTimeInterval(-TimeInterval(range.hours) * 3600)
+    let trimmed = history.sortedIntervals.filter { $0.startTime >= cutoff }
+    guard let firstStartTime = trimmed.first?.startTime else { return [] }
 
-    let bucketDuration: TimeInterval = 60 * 60
-    let groupedIntervals = Dictionary(grouping: intervals) { interval in
-        let bucketOffset = floor(interval.startTime.timeIntervalSince(firstStartTime) / bucketDuration) * bucketDuration
-        return firstStartTime.addingTimeInterval(bucketOffset)
+    // Aggregate into 1-hour buckets so all three ranges share the same
+    // granularity and the smoothing / chart code behaves consistently.
+    let bucketDuration: TimeInterval = 3600
+    let grouped = Dictionary(grouping: trimmed) { interval in
+        let offset = floor(interval.startTime.timeIntervalSince(firstStartTime) / bucketDuration) * bucketDuration
+        return firstStartTime.addingTimeInterval(offset)
     }
 
-    return groupedIntervals.keys.sorted().compactMap { bucketStart in
-        guard let bucket = groupedIntervals[bucketStart], bucket.isEmpty == false else { return nil }
+    return grouped.keys.sorted().compactMap { bucketStart in
+        guard let bucket = grouped[bucketStart], bucket.isEmpty == false else { return nil }
         return averagedGenerationMixInterval(
             from: bucket,
             categories: history.categories,
@@ -893,8 +913,12 @@ private struct GenerationMixTotalChartPoint: Identifiable {
 
 private struct GenerationMixStackedGenerationChart: View {
     let history: GenerationMixHistoryData
-    let intervals: [GenerationMixInterval]
-    @Binding var selectedIntervalID: Date?
+    let allIntervals: [GenerationMixInterval]  // full 7d — stable across range switches
+    let intervals: [GenerationMixInterval]     // range-filtered — for domain & selection
+    let range: GenerationMixHistoryRange
+
+    // Owned here so drag events only re-render this view, not the parent.
+    @State private var selectedIntervalID: Date?
 
     private var chartPoints: [GenerationMixChartPoint] {
         smoothedCategoryValues.flatMap { entry in
@@ -928,7 +952,7 @@ private struct GenerationMixStackedGenerationChart: View {
     }
 
     private var edgePaddingDuration: TimeInterval {
-        guard let first = intervals.first else { return 60 * 60 }
+        guard let first = allIntervals.first else { return 60 * 60 }
         return max(first.endTime.timeIntervalSince(first.startTime), 60 * 60) * 0.5
     }
 
@@ -938,35 +962,45 @@ private struct GenerationMixStackedGenerationChart: View {
             return now...now.addingTimeInterval(1)
         }
 
-        return first.startTime.addingTimeInterval(-edgePaddingDuration)...last.endTime.addingTimeInterval(edgePaddingDuration)
+        return first.startTime.addingTimeInterval(-edgePaddingDuration)...last.startTime.addingTimeInterval(edgePaddingDuration)
+    }
+
+    private var yDomain: ClosedRange<Double> {
+        // Scale to the *range-filtered* maximum so the chart fills its height
+        // correctly for every range, while the mark data itself (allIntervals)
+        // stays constant. A small headroom factor prevents stacked area marks
+        // from being clipped when independently-smoothed category sums slightly
+        // exceed the smoothed total.
+        let maxSmoothed = smooth(intervals.map(\.totalGenerationMW)).max() ?? 1
+        return 0...(maxSmoothed * 1.05)
     }
 
     private var smoothedCategoryValues: [(category: String, values: [(time: Date, generationMW: Double)])] {
         categoryDomain.map { category in
-            let values = intervals.map { interval in
+            let values = allIntervals.map { interval in
                 interval.categories.first { $0.category == category }?.generationMW ?? 0
             }
             let smoothedValues = smooth(values)
             let chartValues = smoothedValues
                 .enumerated()
                 .map { index, generationMW in
-                    (time: intervals[index].startTime, generationMW: generationMW)
+                    (time: allIntervals[index].startTime, generationMW: generationMW)
                 }
             return (category, paddedChartValues(chartValues))
         }
     }
 
     private var smoothedTotals: [(time: Date, generationMW: Double)] {
-        let chartValues = smooth(intervals.map(\.totalGenerationMW))
+        let chartValues = smooth(allIntervals.map(\.totalGenerationMW))
             .enumerated()
             .map { index, generationMW in
-                (time: intervals[index].startTime, generationMW: generationMW)
+                (time: allIntervals[index].startTime, generationMW: generationMW)
             }
         return paddedChartValues(chartValues)
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: 12) {
             Chart {
                 ForEach(chartPoints) { point in
                     AreaMark(
@@ -989,14 +1023,23 @@ private struct GenerationMixStackedGenerationChart: View {
                     .interpolationMethod(.cardinal)
                 }
 
-                if let selectedInterval {
-                    RuleMark(x: .value("Selected", selectedInterval.startTime))
+                // RuleMark follows the raw drag position so it tracks the finger
+                // all the way to the chart edge.
+                if let rawTime = selectedIntervalID {
+                    RuleMark(x: .value("Selected", rawTime))
                         .foregroundStyle(.primary.opacity(0.55))
                         .lineStyle(StrokeStyle(lineWidth: 1, dash: [4, 4]))
+                }
 
+                // PointMark shares the same raw x as the RuleMark so the dot
+                // always travels with the line.  The y is linearly interpolated
+                // between the two surrounding smoothed-total data points so it
+                // tracks the drawn line as closely as possible.
+                if let rawTime = selectedIntervalID,
+                   let interpolatedY = interpolatedSmoothedTotal(at: rawTime) {
                     PointMark(
-                        x: .value("Selected time", selectedInterval.startTime),
-                        y: .value("Selected total", selectedInterval.totalGenerationMW)
+                        x: .value("Selected time", rawTime),
+                        y: .value("Selected total", interpolatedY)
                     )
                     .foregroundStyle(.primary.opacity(0.72))
                     .symbolSize(58)
@@ -1004,6 +1047,7 @@ private struct GenerationMixStackedGenerationChart: View {
             }
             .chartForegroundStyleScale(domain: categoryDomain, range: categoryColors)
             .chartXScale(domain: xDomain)
+            .chartYScale(domain: yDomain)
             .chartXAxis {
                 AxisMarks(values: .automatic(desiredCount: 4)) { _ in
                     AxisGridLine()
@@ -1028,7 +1072,12 @@ private struct GenerationMixStackedGenerationChart: View {
                                 .onChanged { value in
                                     guard let plotFrameAnchor = proxy.plotFrame else { return }
                                     let plotFrame = geometry[plotFrameAnchor]
-                                    let xPosition = value.location.x - plotFrame.origin.x
+                                    // Clamp so dragging beyond either edge still maps to a
+                                    // valid domain date and the guard never silently fails.
+                                    let xPosition = min(
+                                        max(value.location.x - plotFrame.origin.x, 0),
+                                        plotFrame.width
+                                    )
                                     guard let selectedTime: Date = proxy.value(atX: xPosition) else { return }
                                     updateSelection(to: selectedTime)
                                 }
@@ -1036,6 +1085,7 @@ private struct GenerationMixStackedGenerationChart: View {
                 }
             }
             .chartLegend(.hidden)
+            .animation(.easeInOut(duration: 0.4), value: range)
             .frame(height: 240)
             .accessibilityElement(children: .ignore)
             .accessibilityLabel("Generation mix")
@@ -1044,6 +1094,15 @@ private struct GenerationMixStackedGenerationChart: View {
                     selectedIntervalID = intervals.last?.startTime
                 }
             }
+
+            if let selectedInterval {
+                GenerationMixSelectedIntervalView(interval: selectedInterval)
+            }
+        }
+        .onChange(of: range) {
+            // Reset to the latest interval when the range changes so the
+            // selection doesn't dangle outside the new time window.
+            selectedIntervalID = nil
         }
     }
 
@@ -1054,10 +1113,33 @@ private struct GenerationMixStackedGenerationChart: View {
         }
     }
 
+    /// Linearly interpolates the smoothed-total y value at `time` between the
+    /// two surrounding entries in `smoothedTotals`.  This keeps the PointMark
+    /// dot on the drawn line regardless of where the drag position lands.
+    private func interpolatedSmoothedTotal(at time: Date) -> Double? {
+        let points = smoothedTotals
+        guard points.isEmpty == false else { return nil }
+        guard points.count >= 2 else { return points.first?.generationMW }
+
+        guard let upperIdx = points.firstIndex(where: { $0.time >= time }) else {
+            return points.last?.generationMW
+        }
+        guard upperIdx > 0 else { return points.first?.generationMW }
+
+        let lower = points[upperIdx - 1]
+        let upper = points[upperIdx]
+        let span = upper.time.timeIntervalSince(lower.time)
+        guard span > 0 else { return lower.generationMW }
+
+        let t = time.timeIntervalSince(lower.time) / span
+        return lower.generationMW + t * (upper.generationMW - lower.generationMW)
+    }
+
     private func updateSelection(to selectedTime: Date) {
-        selectedIntervalID = intervals.min {
-            abs($0.startTime.timeIntervalSince(selectedTime)) < abs($1.startTime.timeIntervalSince(selectedTime))
-        }?.startTime
+        // Store the raw drag time so the RuleMark can follow the finger exactly,
+        // including into the edge-padding zone.  The selectedInterval lookup above
+        // already snaps to the nearest real data interval.
+        selectedIntervalID = selectedTime
     }
 
     private func smooth(_ values: [Double]) -> [Double] {

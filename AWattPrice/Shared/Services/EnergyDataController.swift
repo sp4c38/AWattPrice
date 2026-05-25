@@ -424,7 +424,9 @@ class EnergyDataService: ObservableObject {
                 }
 
                 do {
-                    let history = try await GenerationMixHistoryData.download(marketArea: pricingConfiguration.marketArea)
+                    // Always fetch 7d so the history view can derive any sub-range
+                    // without issuing additional network requests.
+                    let history = try await GenerationMixHistoryData.download(marketArea: pricingConfiguration.marketArea, range: .week)
                     let generationMixData = GenerationMixData(history: history)
                     await MainActor.run {
                         guard self.energyData?.area == requestedMarketAreaKey else { return }

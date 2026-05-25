@@ -43,7 +43,7 @@ async def collect_areas_prices(config: Config, area_keys: list[str]) -> Box:
 
 async def read_last_updated_endtime(config: Config, area_key: str) -> Optional[Arrow]:
     """Get the end time of the latest price point when the price data was updated last for the certain area."""
-    file_name = rules.LAST_UPDATED_ENDTIME_FILE_NAME.format(area_key.lower())
+    file_name = rules.NOTIFICATION_LAST_UPDATED_ENDTIME_FILE_NAME.format(area_key.lower())
     file_path = config.paths.price_data_dir / file_name
     try:
         async with async_open(file_path, "rb") as file:
@@ -102,7 +102,7 @@ async def write_updated_areas_endtimes(
         endtime = get_current_endtime(prices)
         pickled_endtime = pickle.dumps(endtime)
 
-        file_name = rules.LAST_UPDATED_ENDTIME_FILE_NAME.format(area_key.lower())
+        file_name = rules.NOTIFICATION_LAST_UPDATED_ENDTIME_FILE_NAME.format(area_key.lower())
         file_path = config.paths.price_data_dir / file_name
         temp_file_path = file_path.with_suffix(file_path.suffix + ".tmp")
 

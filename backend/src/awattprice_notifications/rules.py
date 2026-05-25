@@ -9,7 +9,7 @@ from awattprice import prices as awattprice_prices
 from box import Box
 from loguru import logger
 
-LAST_UPDATED_ENDTIME_FILE_NAME = "last-updated-{}-endtime.pickle"
+NOTIFICATION_LAST_UPDATED_ENDTIME_FILE_NAME = "notification-last-updated-{}-endtime.pickle"
 
 NOTIFICATION = Box(
     {

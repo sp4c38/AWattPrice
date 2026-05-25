@@ -125,7 +125,7 @@ struct AWattPriceApp: App {
 struct ContentView: View {
     @Environment(\.networkManager) var networkManager
     @Environment(\.scenePhase) var scenePhase
-    
+
     // Access settings only through the manager
     @EnvironmentObject var settingsManager: SettingsManager
     @EnvironmentObject var notificationService: NotificationService
@@ -135,6 +135,8 @@ struct ContentView: View {
     @State var selectedTab = 2
     @State private var activeProPaywallTrigger: ProPaywallTrigger?
     @AppStorage("pendingDeepLinkDestination") private var pendingDeepLinkDestination = ""
+
+    private let foregroundRefreshTimer = Timer.publish(every: 5 * 60, on: .main, in: .common).autoconnect()
     
     var body: some View {
         VStack(spacing: 0) {
@@ -200,6 +202,10 @@ struct ContentView: View {
             refreshAppData()
         }
         .onAppear {
+            refreshAppData()
+        }
+        .onReceive(foregroundRefreshTimer) { _ in
+            guard scenePhase == .active else { return }
             refreshAppData()
         }
         .onOpenURL { url in

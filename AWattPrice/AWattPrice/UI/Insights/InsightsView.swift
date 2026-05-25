@@ -745,6 +745,8 @@ struct InsightsView: View {
                 } else {
                     ScrollView {
                         VStack(alignment: .leading, spacing: 14) {
+                            generationMixSection
+                            
                             InsightsCard(tint: AppTheme.success) {
                                 HStack {
                                     InsightsSectionTitle(
@@ -787,8 +789,6 @@ struct InsightsView: View {
                                     PriceRangeGraph(model: model)
                                 }
                             }
-                            
-                            generationMixSection
                             
                             InsightsCard(tint: AppTheme.error) {
                                 InsightsSectionTitle(

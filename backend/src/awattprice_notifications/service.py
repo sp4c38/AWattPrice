@@ -89,44 +89,49 @@ def monitoring_message(result: dict) -> str:
     )
 
 
-async def main():
-    """Run one notification worker cycle."""
+async def main(run_once: bool = False):
+    """Run notification worker cycles forever."""
     config = configurator.get_config()
     configurator.configure_loguru(apns.NOTIFICATIONS_SERVICE_NAME, config)
     cronitor.require_configured(config)
-
-    series = str(uuid.uuid4())
-    started_at = time.monotonic()
-    await cronitor.send_event(config, "run", series, message="notification worker started")
-
     profile_store = notification_profiles.NotificationProfileStore(notification_profiles.get_store_path(config))
 
-    try:
-        result = await run_worker_cycle(config, profile_store)
-    except Exception as exc:
-        duration = time.monotonic() - started_at
-        await cronitor.send_event(
-            config,
-            "fail",
-            series,
-            message=f"notification worker failed: {exc}",
-            duration=duration,
-            error_count=1,
-            status_code=1,
-        )
-        raise
+    while True:
+        series = str(uuid.uuid4())
+        started_at = time.monotonic()
+        await cronitor.send_event(config, "run", series, message="notification worker started")
 
-    duration = time.monotonic() - started_at
-    await cronitor.send_event(
-        config,
-        "complete",
-        series,
-        message=monitoring_message(result),
-        duration=duration,
-        count=result["notification_count"],
-        error_count=result["error_count"],
-        status_code=0,
-    )
+        try:
+            result = await run_worker_cycle(config, profile_store)
+        except Exception as exc:
+            duration = time.monotonic() - started_at
+            await cronitor.send_event(
+                config,
+                "fail",
+                series,
+                message=f"notification worker failed: {exc}",
+                duration=duration,
+                error_count=1,
+                status_code=1,
+            )
+            logger.exception(f"Notification worker cycle failed: {exc}.")
+            if run_once:
+                raise
+        else:
+            duration = time.monotonic() - started_at
+            await cronitor.send_event(
+                config,
+                "complete",
+                series,
+                message=monitoring_message(result),
+                duration=duration,
+                count=result["notification_count"],
+                error_count=result["error_count"],
+                status_code=0,
+            )
+        if run_once:
+            return
+        await asyncio.sleep(10 * 60)
 
 
 if __name__ == "__main__":

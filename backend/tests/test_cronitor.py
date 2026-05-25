@@ -129,7 +129,7 @@ class NotificationWorkerMonitoringTests(unittest.IsolatedAsyncioTestCase):
             service.configurator.configure_loguru = lambda _service_name, _config: None
 
             with self.assertRaises(RuntimeError):
-                await service.main()
+                await service.main(run_once=True)
         finally:
             service.configurator.get_config = original_get_config
             service.configurator.configure_loguru = original_configure_loguru
@@ -158,7 +158,7 @@ class NotificationWorkerMonitoringTests(unittest.IsolatedAsyncioTestCase):
             service.notification_profiles.NotificationProfileStore = FakeStore
             service.cronitor.send_event = fake_send_event
 
-            await service.main()
+            await service.main(run_once=True)
         finally:
             service.configurator.get_config = original_get_config
             service.configurator.configure_loguru = original_configure_loguru
@@ -195,7 +195,7 @@ class NotificationWorkerMonitoringTests(unittest.IsolatedAsyncioTestCase):
             service.cronitor.send_event = fake_send_event
 
             with self.assertRaises(RuntimeError):
-                await service.main()
+                await service.main(run_once=True)
         finally:
             service.configurator.get_config = original_get_config
             service.configurator.configure_loguru = original_configure_loguru

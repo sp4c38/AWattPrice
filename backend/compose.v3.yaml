@@ -40,9 +40,9 @@ services:
     profiles:
       - worker
     command:
-      - /bin/sh
-      - -c
-      - while true; do python /usr/src/awattprice/src/awattprice_notifications/service.py; sleep 600; done
+      - python
+      - -m
+      - awattprice_notifications.service
     volumes:
       - "${AWATTPRICE_HOST_ROOT:-/etc/awattprice-v3}/data:/etc/awattprice/data"
       - "${AWATTPRICE_HOST_ROOT:-/etc/awattprice-v3}/logs:/etc/awattprice/logs"

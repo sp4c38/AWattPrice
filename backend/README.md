@@ -56,7 +56,7 @@ refresher_monitor_key = <data refresher job key>
 environment = production
 ```
 
-Configure both Cronitor monitors as Jobs. The notifications monitor should use a schedule slightly longer than the worker loop, for example 15 minutes for the 10 minute Docker loop. The refresher monitor should use a schedule slightly longer than its 60 second scheduler heartbeat. Each worker cycle sends `run`, then `complete` for normal outcomes or `fail` for unhandled errors. The workers exit if their Cronitor credentials are missing.
+Configure both Cronitor monitors as Jobs. The notifications monitor should use a schedule slightly longer than the worker loop, for example 15 minutes for the 10 minute scheduler interval. The refresher monitor should use a schedule slightly longer than its 60 second scheduler heartbeat. Each worker cycle sends `run`, then `complete` for normal outcomes or `fail` for unhandled errors. The workers exit if their Cronitor credentials are missing.
 
 ## Deploy
 

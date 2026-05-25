@@ -380,7 +380,9 @@ private struct GenerationMixStackedGenerationChart: View {
             return now...now.addingTimeInterval(1)
         }
 
-        return first.startTime.addingTimeInterval(-edgePaddingDuration)...last.startTime.addingTimeInterval(edgePaddingDuration)
+        // Use 2× padding on the leading edge so the leftmost axis label is
+        // never clipped when its tick falls close to the domain boundary.
+        return first.startTime.addingTimeInterval(-edgePaddingDuration * 2)...last.startTime.addingTimeInterval(edgePaddingDuration)
     }
 
     private var yDomain: ClosedRange<Double> {
@@ -470,11 +472,40 @@ private struct GenerationMixStackedGenerationChart: View {
             .chartXScale(domain: xDomain)
             .chartYScale(domain: yDomain)
             .chartXAxis {
-                AxisMarks(values: .automatic(desiredCount: 4)) { _ in
+                // Both AxisMarks blocks are always present so neither is ever
+                // structurally replaced when range changes (structural replacement
+                // causes Swift Charts to flash "…" during the transition).
+                //
+                // Visibility is controlled via opacity so SwiftUI can cross-fade:
+                //   • AxisGridLine  → foregroundStyle opacity
+                //   • AxisValueLabel → custom Text content with animated opacity
+                //     (always in the hierarchy so the fade has something to drive)
+                //
+                //   24h  → 4h gridlines + hour labels visible; daily block faded out
+                //   3d/7d → daily gridlines + weekday labels visible; 4h block faded out
+                AxisMarks(values: .stride(by: .hour, count: 4)) { value in
                     AxisGridLine()
-                        .foregroundStyle(.secondary.opacity(0.14))
-                    AxisValueLabel(format: .dateTime.weekday(.abbreviated).hour(.twoDigits(amPM: .omitted)))
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(.secondary.opacity(range == .day ? 0.14 : 0))
+                    AxisValueLabel {
+                        if let date = value.as(Date.self) {
+                            Text(date, format: .dateTime.hour(.twoDigits(amPM: .omitted)))
+                                .foregroundStyle(.secondary)
+                                .opacity(range == .day ? 1 : 0)
+                                .animation(.easeInOut(duration: 0.25), value: range)
+                        }
+                    }
+                }
+                AxisMarks(values: .stride(by: .day, count: 1)) { value in
+                    AxisGridLine()
+                        .foregroundStyle(.secondary.opacity(range == .day ? 0 : 0.14))
+                    AxisValueLabel {
+                        if let date = value.as(Date.self) {
+                            Text(date, format: .dateTime.weekday(.abbreviated))
+                                .foregroundStyle(.secondary)
+                                .opacity(range != .day ? 1 : 0)
+                                .animation(.easeInOut(duration: 0.25), value: range)
+                        }
+                    }
                 }
             }
             .chartYAxis(.hidden)

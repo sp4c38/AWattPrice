@@ -37,8 +37,6 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
-    profiles:
-      - worker
     command:
       - python
       - -m

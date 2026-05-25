@@ -20,6 +20,7 @@
 		25A41E132FBA629C00A685EF /* AppIcon.icon/Assets/App Icon v3.png in Resources */ = {isa = PBXBuildFile; fileRef = 25A41E122FBA629C00A685EF /* AppIcon.icon/Assets/App Icon v3.png */; };
 		268ABCBD2289736785AE38B3 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13637B90539D4C9A8BB48CC0 /* APIClient.swift */; };
 		2AB8E54B3F4BB4E1E64CA519 /* Font.swift in Sources */ = {isa = PBXBuildFile; fileRef = D22CD9B053C7AA6D5411FFE0 /* Font.swift */; };
+		2B7EAD9F2B3ECB40423333A0 /* GenerationMixHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1359566AF5B93E47797952D8 /* GenerationMixHistoryView.swift */; };
 		3764069C227C8A20FD65EB7C /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0D566683455A9834699592 /* String.swift */; };
 		3B97EF0D59A77C4995F737C8 /* SettingsPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CF596453B643BA753483A2C /* SettingsPageView.swift */; };
 		4190E3BB83AC5F034211C2B9 /* NotificationService+Access.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C87AF4B25871BFD4A3501F5 /* NotificationService+Access.swift */; };
@@ -124,6 +125,7 @@
 		0128DEB3ECF3622979FBC803 /* LazyNavigationDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LazyNavigationDestination.swift; sourceTree = "<group>"; };
 		09B8A781BFC660F0533130E9 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		09C662D82C544FFEBADE9BB1 /* MailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailView.swift; sourceTree = "<group>"; };
+		1359566AF5B93E47797952D8 /* GenerationMixHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenerationMixHistoryView.swift; sourceTree = "<group>"; };
 		13637B90539D4C9A8BB48CC0 /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
 		147B08A0FC4429D5BA97DFA2 /* EnergyDataPreviewContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnergyDataPreviewContent.swift; sourceTree = "<group>"; };
 		22523FA7380336A83DEE1624 /* Environment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Environment.swift; sourceTree = "<group>"; };
@@ -445,6 +447,7 @@
 		9B8C7D6E5F4A3210B1C2D3E4 /* Insights */ = {
 			isa = PBXGroup;
 			children = (
+				1359566AF5B93E47797952D8 /* GenerationMixHistoryView.swift */,
 				6A93F0D1C8B24D479E5A0123 /* InsightsView.swift */,
 			);
 			path = Insights;
@@ -740,6 +743,7 @@
 				0E3EB76E159021A4574B6416 /* EasyIntervalPicker.swift in Sources */,
 				1CCDA78DC9491A406AB24B42 /* EasyIntervalPickerRepresentable.swift in Sources */,
 				1D6A3E2B9C4F4185A2B7D930 /* InsightsView.swift in Sources */,
+				2B7EAD9F2B3ECB40423333A0 /* GenerationMixHistoryView.swift in Sources */,
 				D6A2D1C12D8B2AC00013028D /* SwiftDataService.swift in Sources */,
 				8E8FDA62E4A1CECC1E57FFE3 /* EnergyDataController.swift in Sources */,
 				DA697D947FD57718F9F2ADAC /* EnergyDataPreviewContent.swift in Sources */,

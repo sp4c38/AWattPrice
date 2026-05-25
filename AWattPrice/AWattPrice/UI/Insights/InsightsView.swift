@@ -1044,12 +1044,6 @@ private struct GenerationMixStackedGenerationChart: View {
                     selectedIntervalID = intervals.last?.startTime
                 }
             }
-
-            LazyVGrid(columns: [GridItem(.adaptive(minimum: 92), spacing: 10)], alignment: .leading, spacing: 8) {
-                ForEach(history.orderedCategories) { category in
-                    GenerationMixCompactLegendItem(category: category)
-                }
-            }
         }
     }
 

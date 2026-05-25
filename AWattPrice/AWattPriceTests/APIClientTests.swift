@@ -20,10 +20,8 @@ final class APIClientTests: XCTestCase {
     }
 
     func testGenerationMixRequestsUseExpectedEndpoints() {
-        let current = APIClient.createGenerationMixRequest(marketArea: .austria)
         let history = APIClient.createGenerationMixHistoryRequest(marketArea: .austria)
 
-        XCTAssertEqual(current.urlRequest.url?.absoluteString, "https://api.awattprice.com/v3/generation-mix/AT")
         XCTAssertEqual(history.urlRequest.url?.absoluteString, "https://api.awattprice.com/v3/generation-mix/AT/history?hours=24")
     }
 

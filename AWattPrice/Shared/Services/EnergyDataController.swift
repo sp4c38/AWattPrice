@@ -193,6 +193,19 @@ struct GenerationMixData: Decodable {
     let renewableShare: Double
     let categories: [GenerationMixCategory]
 
+    init(history: GenerationMixHistoryData) {
+        let latestInterval = history.sortedIntervals.last
+        self.area = history.area
+        self.resolution = history.resolution
+        self.updatedAt = history.updatedAt
+        self.startTime = latestInterval?.startTime ?? history.startTime
+        self.endTime = latestInterval?.endTime ?? history.endTime
+        self.totalGenerationMW = latestInterval?.totalGenerationMW ?? history.totalGenerationMW
+        self.renewableGenerationMW = latestInterval?.renewableGenerationMW ?? history.renewableGenerationMW
+        self.renewableShare = latestInterval?.renewableShare ?? history.renewableShare
+        self.categories = latestInterval?.categories ?? history.categories
+    }
+
     var visibleCategories: [GenerationMixCategory] {
         categories
             .filter { $0.generationMW > 0 }
@@ -229,10 +242,6 @@ struct GenerationMixData: Decodable {
         return jsonDecoder
     }
 
-    static func download(marketArea: MarketArea) async throws -> GenerationMixData {
-        let request = APIClient.createGenerationMixRequest(marketArea: marketArea)
-        return try await APIClient().request(to: request)
-    }
 }
 
 struct GenerationMixInterval: Decodable, Identifiable {
@@ -415,33 +424,24 @@ class EnergyDataService: ObservableObject {
                 }
 
                 do {
-                    let generationMixData = try await GenerationMixData.download(marketArea: pricingConfiguration.marketArea)
+                    let history = try await GenerationMixHistoryData.download(marketArea: pricingConfiguration.marketArea)
+                    let generationMixData = GenerationMixData(history: history)
                     await MainActor.run {
                         guard self.energyData?.area == requestedMarketAreaKey else { return }
                         self.generationMixData = generationMixData
+                        self.generationMixHistoryData = history
                         self.generationMixDownloadState = .finished
-                         print("Generation mix download completed.")
+                         print("Generation mix history download completed.")
                       }
                    } catch {
                       await MainActor.run {
                          guard !Self.isCancellation(error) else { return }
                          self.generationMixData = nil
+                         self.generationMixHistoryData = nil
                          self.generationMixDownloadState = .failed
-                         print("Generation mix download failed: \(error).")
+                         print("Generation mix history download failed: \(error).")
                       }
                    }
-
-                  Task {
-                     let pricingConfig = pricingConfiguration
-                     do {
-                        let history = try await GenerationMixHistoryData.download(marketArea: pricingConfig.marketArea)
-                        await MainActor.run {
-                           self.generationMixHistoryData = history
-                        }
-                     } catch {
-                        print("Generation mix history download failed: \(error).")
-                     }
-                  }
                } catch {
                 await MainActor.run {
                     guard !Self.isCancellation(error) else {

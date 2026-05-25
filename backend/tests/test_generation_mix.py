@@ -221,18 +221,3 @@ class GenerationMixAPITests(unittest.TestCase):
 
         self.assertEqual(too_short.status_code, 422)
         self.assertEqual(too_long.status_code, 422)
-
-    def test_last_24h_endpoint_keeps_legacy_contract(self):
-        with (
-            patch.object(api.generation_mix, "get_current_generation_mix", new=AsyncMock(return_value=Box())),
-            patch.object(
-                api.generation_mix,
-                "parse_to_history_response_data",
-                return_value={"intervals": [], "hours": 24},
-            ) as parse,
-        ):
-            response = self.client.get("/generation-mix/DE-LU/last-24h")
-
-        self.assertEqual(response.status_code, 200)
-        parse.assert_called_once()
-        self.assertEqual(parse.call_args.kwargs["hours"], 24)

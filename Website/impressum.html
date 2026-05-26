@@ -1,135 +1,321 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Impressum | AWattPrice</title>
-    <meta name="description" content="Impressum und Kontaktangaben für AWattPrice.">
+    <title data-i18n-title data-en="Legal Notice | AWattPrice" data-de="Impressum | AWattPrice">Legal Notice | AWattPrice</title>
+    <meta name="description" data-i18n-description data-en="Legal notice and contact information for AWattPrice." data-de="Impressum und Kontaktangaben für AWattPrice." content="Legal notice and contact information for AWattPrice.">
     <meta name="theme-color" content="#ef7d32">
     <link rel="icon" href="images/favicon/favicon.png" type="image/png">
     <link rel="apple-touch-icon" href="images/app-icon.png">
     <link href="css/legal.css" rel="stylesheet">
+    <style>
+        .lang-toggle {
+            display: flex;
+            align-items: center;
+            gap: .35rem;
+            font-size: .85rem;
+            margin-left: .5rem;
+        }
+        .lang-toggle a {
+            color: inherit;
+            text-decoration: none;
+            opacity: .55;
+            transition: opacity .2s;
+        }
+        .lang-toggle a[aria-current="page"] {
+            opacity: 1;
+            font-weight: 600;
+        }
+        .lang-toggle a:hover {
+            opacity: 1;
+        }
+        .lang-sep {
+            opacity: .3;
+        }
+    </style>
 </head>
 <body>
-    <a class="skip-link" href="#main">Zum Hauptinhalt springen</a>
-
-    <header class="topbar">
-        <div class="container topbar-row">
-            <a class="brand" href="index.html" aria-label="AWattPrice Startseite">
-                <img src="images/app-icon.png" alt="" width="40" height="40">
-                <span>AWattPrice</span>
-            </a>
-            <nav class="topnav" aria-label="Hauptnavigation">
-                <a href="index.html#features">Funktionen</a>
-                <a href="index.html#faq">FAQ</a>
-                <a href="impressum.html" aria-current="page">Impressum</a>
-            </nav>
-            <a class="cta-pill" href="https://apps.apple.com/app/awattprice/id1536629626">App laden</a>
-        </div>
-    </header>
-
-    <main id="main">
-        <section class="legal-hero">
-            <div class="container legal-hero-grid">
-                <div>
-                    <span class="eyebrow">Impressum</span>
-                    <h1>Angaben zum Anbieter von AWattPrice.</h1>
-                    <p class="lede">Kontakt, Verantwortlichkeit und Hinweise zum unabhängigen Open-Source-Projekt AWattPrice.</p>
-                    <div class="meta-row">
-                        <span class="meta-chip">AWattPrice</span>
-                        <span class="meta-chip">Unabhängiges Projekt</span>
-                    </div>
-                </div>
-                <aside class="hero-note">
-                    <strong>Schneller Kontakt</strong>
-                    <p>Bei Fragen zu App, Website oder rechtlichen Angaben erreichen Sie AWattPrice per E-Mail.</p>
-                    <div class="language-switch">
-                        <a href="mailto:kontakt-awattprice@space8.me">E-Mail senden</a>
-                    </div>
-                </aside>
-            </div>
-        </section>
-
-        <div class="container legal-shell">
-            <aside class="legal-aside">
-                <nav class="side-card" aria-label="Abschnitte">
-                    <h2>Inhalt</h2>
-                    <a href="#anbieter">Anbieter</a>
-                    <a href="#kontakt">Kontakt</a>
-                    <a href="#verantwortlich">Verantwortlich</a>
-                    <a href="#hinweis">Hinweis</a>
-                </nav>
-            </aside>
-
-            <article class="legal-card">
-                <section id="anbieter">
-                    <h2>Angaben gemäß § 5 DDG</h2>
-                    <div class="contact-panel">
-                        <strong>Léon Becker</strong>
-                        <p>AWattPrice</p>
-                    </div>
-                </section>
-
-                <section id="kontakt">
-                    <h2>Kontakt</h2>
-                    <p>Bitte richten Sie allgemeine Anfragen, Hinweise oder rechtliche Fragen an die folgende E-Mail-Adresse.</p>
-                    <div class="contact-panel">
-                        <strong>E-Mail</strong>
-                        <a href="mailto:kontakt-awattprice@space8.me">kontakt-awattprice@space8.me</a>
-                    </div>
-                </section>
-
-                <section id="verantwortlich">
-                    <h2>Verantwortlich für den Inhalt</h2>
-                    <p>Verantwortlich für die Inhalte dieser Website ist Léon Becker.</p>
-                </section>
-
-                <section id="hinweis">
-                    <h2>Hinweis zu aWATTar</h2>
-                    <p>AWattPrice ist ein unabhängiges Projekt und steht in keiner Verbindung zur aWATTar GmbH. Alle genannten Marken und Produktnamen sind Eigentum der jeweiligen Rechteinhaber.</p>
-                </section>
-
-                <section id="links">
-                    <h2>Weitere rechtliche Informationen</h2>
-                    <p>Details zum Datenschutz und zur Nutzung der App finden Sie auf den folgenden Seiten.</p>
-                    <div class="language-switch">
-                        <a href="privacy_policy/?lang=de">Datenschutz</a>
-                        <a href="terms_of_use/?lang=de">Nutzungsbedingungen</a>
-                    </div>
-                </section>
-            </article>
-        </div>
-    </main>
-
-    <footer class="site-footer">
-        <div class="container footer-grid">
-            <div class="footer-brand-block">
-                <a class="brand brand-light" href="index.html">
+    <div data-lang="en">
+        <a class="skip-link" href="#main-en">Skip to main content</a>
+        <header class="topbar">
+            <div class="container topbar-row">
+                <a class="brand" href="index.html" aria-label="AWattPrice homepage">
                     <img src="images/app-icon.png" alt="" width="40" height="40">
                     <span>AWattPrice</span>
                 </a>
-                <p>Fragen, Hinweise oder Feedback? Ich freue mich über jede Mail.</p>
-                <a class="footer-mail" href="mailto:kontakt-awattprice@space8.me">kontakt-awattprice@space8.me</a>
-            </div>
-            <div class="footer-cols">
-                <div>
-                    <h3>App</h3>
-                    <a href="https://apps.apple.com/app/awattprice/id1536629626">App Store</a>
-                    <a href="https://awattprice.space8.me/prices/">Web App</a>
-                    <a href="https://github.com/sp4c38/AWattPrice">GitHub</a>
+                <nav class="topnav" aria-label="Main navigation">
+                    <a href="index.html#en-features">Features</a>
+                    <a href="index.html#en-screens">Views</a>
+                    <a href="index.html#en-faq">FAQ</a>
+                </nav>
+                <div class="lang-toggle">
+                    <a href="?lang=de">DE</a>
+                    <span class="lang-sep">|</span>
+                    <a href="?lang=en" aria-current="page">EN</a>
                 </div>
-                <div>
-                    <h3>Rechtliches</h3>
-                    <a href="privacy_policy/?lang=de">Datenschutz</a>
-                    <a href="terms_of_use/?lang=de">Nutzungsbedingungen</a>
-                    <a href="impressum.html">Impressum</a>
+                <a class="cta-pill" href="https://apps.apple.com/app/awattprice/id1536629626">Download app</a>
+            </div>
+        </header>
+        <main id="main-en">
+            <section class="legal-hero">
+                <div class="container legal-hero-grid">
+                    <div>
+                        <span class="eyebrow">Legal Notice</span>
+                        <h1>Provider information for AWattPrice.</h1>
+                        <p class="lede">Contact, responsibility and notices regarding the independent open-source project AWattPrice.</p>
+                        <div class="meta-row">
+                            <span class="meta-chip">AWattPrice</span>
+                            <span class="meta-chip">Independent Project</span>
+                        </div>
+                    </div>
+                    <aside class="hero-note">
+                        <strong>Quick Contact</strong>
+                        <p>For questions about the app, website or legal information you can reach AWattPrice by email.</p>
+                        <div class="language-switch">
+                            <a href="mailto:kontakt-awattprice@space8.me">Send Email</a>
+                        </div>
+                    </aside>
+                </div>
+            </section>
+
+            <div class="container legal-shell">
+                <aside class="legal-aside">
+                    <nav class="side-card" aria-label="Sections">
+                        <h2>Contents</h2>
+                        <a href="#en-provider">Provider</a>
+                        <a href="#en-contact">Contact</a>
+                        <a href="#en-responsible">Responsible</a>
+                        <a href="#en-notice">Notice</a>
+                    </nav>
+                </aside>
+
+                <article class="legal-card">
+                    <section id="en-provider">
+                        <h2>Information pursuant to § 5 DDG</h2>
+                        <div class="contact-panel">
+                            <strong>Léon Becker</strong>
+                            <p>AWattPrice</p>
+                        </div>
+                    </section>
+
+                    <section id="en-contact">
+                        <h2>Contact</h2>
+                        <p>Please direct general enquiries, notices or legal questions to the following email address.</p>
+                        <div class="contact-panel">
+                            <strong>E-Mail</strong>
+                            <a href="mailto:kontakt-awattprice@space8.me">kontakt-awattprice@space8.me</a>
+                        </div>
+                    </section>
+
+                    <section id="en-responsible">
+                        <h2>Responsible for content</h2>
+                        <p>Responsible for the content of this website is Léon Becker.</p>
+                    </section>
+
+                    <section id="en-notice">
+                        <h2>Note on aWATTar</h2>
+                        <p>AWattPrice is an independent project and is not affiliated with aWATTar GmbH. All mentioned trademarks and product names are the property of their respective owners.</p>
+                    </section>
+
+                    <section id="en-links">
+                        <h2>Further legal information</h2>
+                        <p>Details on data protection and the use of the app can be found on the following pages.</p>
+                        <div class="language-switch">
+                            <a href="privacy_policy/?lang=en">Privacy</a>
+                            <a href="terms_of_use/?lang=en">Terms of Use</a>
+                        </div>
+                    </section>
+                </article>
+            </div>
+        </main>
+        <footer class="site-footer">
+            <div class="container footer-grid">
+                <div class="footer-brand-block">
+                    <a class="brand brand-light" href="index.html">
+                        <img src="images/app-icon.png" alt="" width="40" height="40">
+                        <span>AWattPrice</span>
+                    </a>
+                    <p>Questions, notes or feedback? Email is welcome.</p>
+                    <a class="footer-mail" href="mailto:kontakt-awattprice@space8.me">kontakt-awattprice@space8.me</a>
+                </div>
+                <div class="footer-cols">
+                    <div>
+                        <h3>App</h3>
+                        <a href="https://apps.apple.com/app/awattprice/id1536629626">App Store</a>
+                        <a href="https://awattprice.space8.me/prices/">Web App</a>
+                        <a href="https://github.com/sp4c38/AWattPrice">GitHub</a>
+                    </div>
+                    <div>
+                        <h3>Legal</h3>
+                        <a href="privacy_policy/?lang=en">Privacy</a>
+                        <a href="terms_of_use/?lang=en">Terms of Use</a>
+                        <a href="support/?lang=en">Support</a>
+                        <a href="impressum.html">Impressum</a>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="container footer-bottom">
-            <p>© 2026 Léon Becker. Alle Rechte vorbehalten.</p>
-            <p>AWattPrice ist ein unabhängiges Projekt und steht in keiner Verbindung zur aWATTar GmbH.</p>
-        </div>
-    </footer>
+            <div class="container footer-bottom">
+                <p>© 2026 Léon Becker. All rights reserved.</p>
+                <p>AWattPrice is an independent project and is not affiliated with aWATTar GmbH.</p>
+            </div>
+        </footer>
+    </div>
+
+    <div data-lang="de" hidden>
+        <a class="skip-link" href="#main-de">Zum Hauptinhalt springen</a>
+        <header class="topbar">
+            <div class="container topbar-row">
+                <a class="brand" href="index.html" aria-label="AWattPrice Startseite">
+                    <img src="images/app-icon.png" alt="" width="40" height="40">
+                    <span>AWattPrice</span>
+                </a>
+                <nav class="topnav" aria-label="Hauptnavigation">
+                    <a href="index.html#de-features">Funktionen</a>
+                    <a href="index.html#de-screens">Ansichten</a>
+                    <a href="index.html#de-faq">FAQ</a>
+                </nav>
+                <div class="lang-toggle">
+                    <a href="?lang=de" aria-current="page">DE</a>
+                    <span class="lang-sep">|</span>
+                    <a href="?lang=en">EN</a>
+                </div>
+                <a class="cta-pill" href="https://apps.apple.com/app/awattprice/id1536629626">App laden</a>
+            </div>
+        </header>
+        <main id="main-de">
+            <section class="legal-hero">
+                <div class="container legal-hero-grid">
+                    <div>
+                        <span class="eyebrow">Impressum</span>
+                        <h1>Angaben zum Anbieter von AWattPrice.</h1>
+                        <p class="lede">Kontakt, Verantwortlichkeit und Hinweise zum unabhängigen Open-Source-Projekt AWattPrice.</p>
+                        <div class="meta-row">
+                            <span class="meta-chip">AWattPrice</span>
+                            <span class="meta-chip">Unabhängiges Projekt</span>
+                        </div>
+                    </div>
+                    <aside class="hero-note">
+                        <strong>Schneller Kontakt</strong>
+                        <p>Bei Fragen zu App, Website oder rechtlichen Angaben erreichen Sie AWattPrice per E-Mail.</p>
+                        <div class="language-switch">
+                            <a href="mailto:kontakt-awattprice@space8.me">E-Mail senden</a>
+                        </div>
+                    </aside>
+                </div>
+            </section>
+
+            <div class="container legal-shell">
+                <aside class="legal-aside">
+                    <nav class="side-card" aria-label="Abschnitte">
+                        <h2>Inhalt</h2>
+                        <a href="#anbieter">Anbieter</a>
+                        <a href="#kontakt">Kontakt</a>
+                        <a href="#verantwortlich">Verantwortlich</a>
+                        <a href="#hinweis">Hinweis</a>
+                    </nav>
+                </aside>
+
+                <article class="legal-card">
+                    <section id="anbieter">
+                        <h2>Angaben gemäß § 5 DDG</h2>
+                        <div class="contact-panel">
+                            <strong>Léon Becker</strong>
+                            <p>AWattPrice</p>
+                        </div>
+                    </section>
+
+                    <section id="kontakt">
+                        <h2>Kontakt</h2>
+                        <p>Bitte richten Sie allgemeine Anfragen, Hinweise oder rechtliche Fragen an die folgende E-Mail-Adresse.</p>
+                        <div class="contact-panel">
+                            <strong>E-Mail</strong>
+                            <a href="mailto:kontakt-awattprice@space8.me">kontakt-awattprice@space8.me</a>
+                        </div>
+                    </section>
+
+                    <section id="verantwortlich">
+                        <h2>Verantwortlich für den Inhalt</h2>
+                        <p>Verantwortlich für die Inhalte dieser Website ist Léon Becker.</p>
+                    </section>
+
+                    <section id="hinweis">
+                        <h2>Hinweis zu aWATTar</h2>
+                        <p>AWattPrice ist ein unabhängiges Projekt und steht in keiner Verbindung zur aWATTar GmbH. Alle genannten Marken und Produktnamen sind Eigentum der jeweiligen Rechteinhaber.</p>
+                    </section>
+
+                    <section id="links">
+                        <h2>Weitere rechtliche Informationen</h2>
+                        <p>Details zum Datenschutz und zur Nutzung der App finden Sie auf den folgenden Seiten.</p>
+                        <div class="language-switch">
+                            <a href="privacy_policy/?lang=de">Datenschutz</a>
+                            <a href="terms_of_use/?lang=de">Nutzungsbedingungen</a>
+                        </div>
+                    </section>
+                </article>
+            </div>
+        </main>
+        <footer class="site-footer">
+            <div class="container footer-grid">
+                <div class="footer-brand-block">
+                    <a class="brand brand-light" href="index.html">
+                        <img src="images/app-icon.png" alt="" width="40" height="40">
+                        <span>AWattPrice</span>
+                    </a>
+                    <p>Fragen, Hinweise oder Feedback? Ich freue mich über jede Mail.</p>
+                    <a class="footer-mail" href="mailto:kontakt-awattprice@space8.me">kontakt-awattprice@space8.me</a>
+                </div>
+                <div class="footer-cols">
+                    <div>
+                        <h3>App</h3>
+                        <a href="https://apps.apple.com/app/awattprice/id1536629626">App Store</a>
+                        <a href="https://awattprice.space8.me/prices/">Web App</a>
+                        <a href="https://github.com/sp4c38/AWattPrice">GitHub</a>
+                    </div>
+                    <div>
+                        <h3>Rechtliches</h3>
+                        <a href="privacy_policy/?lang=de">Datenschutz</a>
+                        <a href="terms_of_use/?lang=de">Nutzungsbedingungen</a>
+                        <a href="support/?lang=de">Support</a>
+                        <a href="impressum.html">Impressum</a>
+                    </div>
+                </div>
+            </div>
+            <div class="container footer-bottom">
+                <p>© 2026 Léon Becker. Alle Rechte vorbehalten.</p>
+                <p>AWattPrice ist ein unabhängiges Projekt und steht in keiner Verbindung zur aWATTar GmbH.</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        (() => {
+            const params = new URLSearchParams(window.location.search);
+            const queryLanguage = params.get('lang');
+            const storedLanguage = localStorage.getItem('awattprice-lang');
+            const browserLanguage = (navigator.language || navigator.userLanguage || '').toLowerCase();
+            const language = queryLanguage === 'de' || queryLanguage === 'en'
+                ? queryLanguage
+                : storedLanguage === 'de' || storedLanguage === 'en'
+                    ? storedLanguage
+                    : (browserLanguage.startsWith('de') ? 'de' : 'en');
+
+            localStorage.setItem('awattprice-lang', language);
+            document.documentElement.lang = language;
+            document.querySelectorAll('[data-lang]').forEach((element) => {
+                element.hidden = element.dataset.lang !== language;
+            });
+
+            const title = document.querySelector('[data-i18n-title]');
+            if (title) {
+                title.textContent = title.dataset[language];
+            }
+
+            const description = document.querySelector('[data-i18n-description]');
+            if (description) {
+                description.setAttribute('content', description.dataset[language]);
+            }
+        })();
+    </script>
 </body>
 </html>

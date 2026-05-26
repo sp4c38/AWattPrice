@@ -9,6 +9,31 @@
     <link rel="icon" href="../images/favicon/favicon.png" type="image/png">
     <link rel="apple-touch-icon" href="../images/app-icon.png">
     <link href="../css/legal.css" rel="stylesheet">
+    <style>
+        .lang-toggle {
+            display: flex;
+            align-items: center;
+            gap: .35rem;
+            font-size: .85rem;
+            margin-left: .5rem;
+        }
+        .lang-toggle a {
+            color: inherit;
+            text-decoration: none;
+            opacity: .55;
+            transition: opacity .2s;
+        }
+        .lang-toggle a[aria-current="page"] {
+            opacity: 1;
+            font-weight: 600;
+        }
+        .lang-toggle a:hover {
+            opacity: 1;
+        }
+        .lang-sep {
+            opacity: .3;
+        }
+    </style>
 </head>
 <body>
     <div data-lang="en">
@@ -20,10 +45,15 @@
                     <span>AWattPrice</span>
                 </a>
                 <nav class="topnav" aria-label="Main navigation">
-                    <a href="../index.html#features">Features</a>
-                    <a href="../index.html#faq">FAQ</a>
-                    <a href="../impressum.html">Impressum</a>
+                    <a href="../index.html#en-features">Features</a>
+                    <a href="../index.html#en-screens">Views</a>
+                    <a href="../index.html#en-faq">FAQ</a>
                 </nav>
+                <div class="lang-toggle">
+                    <a href="?lang=de">DE</a>
+                    <span class="lang-sep">|</span>
+                    <a href="?lang=en" aria-current="page">EN</a>
+                </div>
                 <a class="cta-pill" href="https://apps.apple.com/app/awattprice/id1536629626">Download app</a>
             </div>
         </header>
@@ -33,13 +63,7 @@
                 <div>
                     <h1>Terms of Use</h1>
                 </div>
-                <aside class="hero-note" aria-label="Language selection">
-                    <strong>Language</strong>
-                    <div class="language-switch">
-                        <a href="?lang=de">Deutsch</a>
-                        <a href="?lang=en" aria-current="page">English</a>
-                    </div>
-                </aside>
+
             </div>
         </section>
 
@@ -60,8 +84,8 @@
             <article class="legal-card">
                 <section id="en-intro">
                     <h2>Agreement</h2>
-                    <p>AWattPrice is licensed to you by Frank Becker for use under these terms. By downloading the app from the Apple App Store or TestFlight, including updates, you accept this agreement.</p>
-                    <p>Apple is not a party to this agreement and is not responsible for warranty, liability, maintenance or support of AWattPrice. Frank Becker is solely responsible for the licensed application and its content.</p>
+                    <p>AWattPrice is licensed to you by Léon Becker for use under these terms. By downloading the app from the Apple App Store or TestFlight, including updates, you accept this agreement.</p>
+                    <p>Apple is not a party to this agreement and is not responsible for warranty, liability, maintenance or support of AWattPrice. Léon Becker is solely responsible for the licensed application and its content.</p>
                     <p>All rights not expressly granted to You are reserved.</p>
                 </section>
 
@@ -119,7 +143,7 @@
 
                 <section id="en-termination">
                     <h2>9. Termination</h2>
-                    <p>The license is valid until terminated by Frank Becker or by You. Your rights under this license will terminate automatically and without notice from Frank Becker if You fail to adhere to any term(s) of this license.</p>
+                    <p>The license is valid until terminated by Léon Becker or by You. Your rights under this license will terminate automatically and without notice from Léon Becker if You fail to adhere to any term(s) of this license.</p>
                 </section>
 
                 <section id="en-law">
@@ -158,6 +182,7 @@
                     <h3>Legal</h3>
                     <a href="../privacy_policy/?lang=en">Privacy</a>
                     <a href="?lang=en">Terms of Use</a>
+                    <a href="../support/?lang=en">Support</a>
                     <a href="../impressum.html">Impressum</a>
                 </div>
             </div>
@@ -178,10 +203,15 @@
                     <span>AWattPrice</span>
                 </a>
                 <nav class="topnav" aria-label="Hauptnavigation">
-                    <a href="../index.html#features">Funktionen</a>
-                    <a href="../index.html#faq">FAQ</a>
-                    <a href="../impressum.html">Impressum</a>
+                    <a href="../index.html#de-features">Funktionen</a>
+                    <a href="../index.html#de-screens">Ansichten</a>
+                    <a href="../index.html#de-faq">FAQ</a>
                 </nav>
+                <div class="lang-toggle">
+                    <a href="?lang=de" aria-current="page">DE</a>
+                    <span class="lang-sep">|</span>
+                    <a href="?lang=en">EN</a>
+                </div>
                 <a class="cta-pill" href="https://apps.apple.com/app/awattprice/id1536629626">App laden</a>
             </div>
         </header>
@@ -191,13 +221,7 @@
                 <div>
                     <h1>Nutzungsbedingungen</h1>
                 </div>
-                <aside class="hero-note" aria-label="Sprachwahl">
-                    <strong>Sprache</strong>
-                    <div class="language-switch">
-                        <a href="?lang=de" aria-current="page">Deutsch</a>
-                        <a href="?lang=en">English</a>
-                    </div>
-                </aside>
+
             </div>
         </section>
 
@@ -218,8 +242,8 @@
             <article class="legal-card">
                 <section id="de-intro">
                     <h2>Vereinbarung</h2>
-                    <p>AWattPrice wird Ihnen von Frank Becker zur Nutzung unter diesen Bedingungen lizenziert. Durch das Herunterladen der App aus dem Apple App Store oder von TestFlight, einschließlich Updates, akzeptieren Sie diese Vereinbarung.</p>
-                    <p>Apple ist keine Partei dieser Vereinbarung und nicht für Gewährleistung, Haftung, Wartung oder Support von AWattPrice verantwortlich. Frank Becker ist allein verantwortlich für die lizenzierte Anwendung und deren Inhalt.</p>
+                    <p>AWattPrice wird Ihnen von Léon Becker zur Nutzung unter diesen Bedingungen lizenziert. Durch das Herunterladen der App aus dem Apple App Store oder von TestFlight, einschließlich Updates, akzeptieren Sie diese Vereinbarung.</p>
+                    <p>Apple ist keine Partei dieser Vereinbarung und nicht für Gewährleistung, Haftung, Wartung oder Support von AWattPrice verantwortlich. Léon Becker ist allein verantwortlich für die lizenzierte Anwendung und deren Inhalt.</p>
                     <p>Alle Rechte, die Ihnen nicht ausdrücklich gewährt werden, bleiben vorbehalten.</p>
                 </section>
 
@@ -277,7 +301,7 @@
 
                 <section id="de-termination">
                     <h2>9. Kündigung</h2>
-                    <p>Die Lizenz ist gültig, bis sie von Frank Becker oder von Ihnen gekündigt wird. Ihre Rechte unter dieser Lizenz enden automatisch und ohne Benachrichtigung durch Frank Becker, wenn Sie eine oder mehrere Bedingungen dieser Lizenz nicht einhalten.</p>
+                    <p>Die Lizenz ist gültig, bis sie von Léon Becker oder von Ihnen gekündigt wird. Ihre Rechte unter dieser Lizenz enden automatisch und ohne Benachrichtigung durch Léon Becker, wenn Sie eine oder mehrere Bedingungen dieser Lizenz nicht einhalten.</p>
                 </section>
 
                 <section id="de-law">
@@ -316,6 +340,7 @@
                     <h3>Rechtliches</h3>
                     <a href="../privacy_policy/?lang=de">Datenschutz</a>
                     <a href="?lang=de">Nutzungsbedingungen</a>
+                    <a href="../support/?lang=de">Support</a>
                     <a href="../impressum.html">Impressum</a>
                 </div>
             </div>
@@ -331,11 +356,15 @@
         (() => {
             const params = new URLSearchParams(window.location.search);
             const queryLanguage = params.get('lang');
+            const storedLanguage = localStorage.getItem('awattprice-lang');
             const browserLanguage = (navigator.language || navigator.userLanguage || '').toLowerCase();
             const language = queryLanguage === 'de' || queryLanguage === 'en'
                 ? queryLanguage
-                : (browserLanguage.startsWith('de') ? 'de' : 'en');
+                : storedLanguage === 'de' || storedLanguage === 'en'
+                    ? storedLanguage
+                    : (browserLanguage.startsWith('de') ? 'de' : 'en');
 
+            localStorage.setItem('awattprice-lang', language);
             document.documentElement.lang = language;
             document.querySelectorAll('[data-lang]').forEach((element) => {
                 element.hidden = element.dataset.lang !== language;

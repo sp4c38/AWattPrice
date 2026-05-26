@@ -1,12 +1,15 @@
 <!doctype html>
-<html lang="de">
+<html lang="en">
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>AWattPrice – Strompreise auf die Stunde genau</title>
+        <title data-i18n-title data-en="AWattPrice – Electricity prices by the hour" data-de="AWattPrice – Strompreise auf die Stunde genau">AWattPrice – Electricity prices by the hour</title>
         <meta
             name="description"
-            content="AWattPrice zeigt dynamische Strompreise auf die Stunde genau. Günstige Zeitfenster finden, eigene Kosten einrechnen, flexible Verbraucher gezielt planen – auf iPhone und im Browser."
+            data-i18n-description
+            data-en="AWattPrice shows dynamic electricity prices by the hour. Find cheap time slots, factor in your own costs, plan flexible appliances – on iPhone and in the browser."
+            data-de="AWattPrice zeigt dynamische Strompreise auf die Stunde genau. Günstige Zeitfenster finden, eigene Kosten einrechnen, flexible Verbraucher gezielt planen – auf iPhone und im Browser."
+            content="AWattPrice shows dynamic electricity prices by the hour. Find cheap time slots, factor in your own costs, plan flexible appliances – on iPhone and in the browser."
         />
         <meta name="theme-color" content="#ef7d32" />
         <meta name="apple-itunes-app" content="app-id=1536629626" />
@@ -22,13 +25,532 @@
         <link rel="icon" href="images/favicon/favicon.png" type="image/png" />
         <link rel="apple-touch-icon" href="images/app-icon.png" />
         <link href="css/style.css" rel="stylesheet" />
+        <style>
+            .lang-toggle {
+                display: flex;
+                align-items: center;
+                gap: .35rem;
+                font-size: .85rem;
+                margin-left: .5rem;
+            }
+            .lang-toggle a {
+                color: inherit;
+                text-decoration: none;
+                opacity: .55;
+                transition: opacity .2s;
+            }
+            .lang-toggle a[aria-current="page"] {
+                opacity: 1;
+                font-weight: 600;
+            }
+            .lang-toggle a:hover {
+                opacity: 1;
+            }
+            .lang-sep {
+                opacity: .3;
+            }
+        </style>
     </head>
     <body>
-        <a class="skip-link" href="#main">Zum Hauptinhalt springen</a>
+        <div data-lang="en">
+        <a class="skip-link" href="#en-main">Skip to main content</a>
 
         <header class="topbar">
             <div class="container topbar-row">
-                <a class="brand" href="#top" aria-label="AWattPrice Startseite">
+                <a class="brand" href="#en-top" aria-label="AWattPrice homepage">
+                    <img
+                        src="images/app-icon.png"
+                        alt=""
+                        width="40"
+                        height="40"
+                    />
+                    <span>AWattPrice</span>
+                </a>
+                <nav class="topnav" aria-label="Main navigation">
+                    <a href="#en-features">Features</a>
+                    <a href="#en-screens">Views</a>
+                    <a href="#en-faq">FAQ</a>
+                </nav>
+                <div class="lang-toggle">
+                    <a href="?lang=de">DE</a>
+                    <span class="lang-sep">|</span>
+                    <a href="?lang=en" aria-current="page">EN</a>
+                </div>
+                <a
+                    class="cta-pill"
+                    href="https://apps.apple.com/app/awattprice/id1536629626"
+                    >Download app</a
+                >
+            </div>
+        </header>
+
+        <main id="en-main">
+            <section class="hero" id="en-top">
+                <div class="container hero-grid">
+                    <div class="hero-copy">
+                        <span class="eyebrow">For dynamic electricity tariffs</span>
+                        <h1>
+                            Electricity prices by the hour – before you
+                            consume.
+                        </h1>
+                        <p class="lede">
+                            AWattPrice shows the electricity price of your
+                            dynamic tariff for every hour of the day. Start
+                            your washing machine, heat pump or EV charger
+                            when electricity is cheap.
+                        </p>
+                        <div class="hero-actions">
+                            <a
+                                class="btn btn-primary"
+                                href="https://apps.apple.com/app/awattprice/id1536629626"
+                            >
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    fill="currentColor"
+                                    aria-hidden="true"
+                                    width="20"
+                                    height="20"
+                                >
+                                    <path
+                                        d="M16.365 1.43c0 1.14-.42 2.21-1.13 3-.78.86-2.07 1.51-3.13 1.43-.13-1.1.43-2.24 1.13-2.97.78-.83 2.13-1.45 3.13-1.46zM20.5 17.4c-.55 1.27-.81 1.84-1.52 2.96-.99 1.56-2.39 3.5-4.12 3.51-1.55.02-1.95-1.01-4.05-.99-2.1.01-2.54 1-4.09.98-1.74-.02-3.06-1.77-4.05-3.33C-1.41 15.13-1.06 8.6 2.36 6.4c1.58-1.02 3.07-1.07 4.43-.06 1.36 1.01 2.36.06 4.05.06 1.69 0 2.69-.95 4.05-.06 1.36.89 2.78.96 4.43-.06.16.27.41.69.62 1.07-3.6 1.96-3.04 7.21.56 8.05z"
+                                    />
+                                </svg>
+                                <span>App Store</span>
+                            </a>
+                            <a
+                                class="btn btn-secondary"
+                                href="https://awattprice.space8.me/prices/"
+                            >
+                                <span>Open in browser</span>
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    aria-hidden="true"
+                                    width="18"
+                                    height="18"
+                                >
+                                    <path d="M5 12h14" />
+                                    <path d="m13 5 7 7-7 7" />
+                                </svg>
+                            </a>
+                        </div>
+                        <ul class="hero-meta">
+                            <li>
+                                <span class="dot"></span>iPhone &amp; Widget
+                            </li>
+                            <li><span class="dot"></span>Web App</li>
+                            <li><span class="dot"></span>Open Source</li>
+                        </ul>
+                    </div>
+                    <div class="hero-visual" aria-hidden="true">
+                        <div class="hero-glow"></div>
+                        <img
+                            class="hero-phone"
+                            src="images/Electricity Price Page.png"
+                            alt=""
+                            loading="eager"
+                        />
+                    </div>
+                </div>
+            </section>
+
+            <section class="band band-purpose" id="en-why">
+                <div class="container purpose-grid">
+                    <div>
+                        <span class="eyebrow">Why AWattPrice</span>
+                        <h2>
+                            Dynamic tariffs reward those who hit the right
+                            moment.
+                        </h2>
+                    </div>
+                    <p class="purpose-text">
+                        With a dynamic electricity tariff the price per
+                        kilowatt-hour changes with supply and demand. A
+                        washing machine can run cheaper in the morning than
+                        in the evening; an EV can charge overnight for half
+                        the cost. AWattPrice brings these fluctuations into
+                        a calm view – so you can plan flexible appliances
+                        at the right time.
+                    </p>
+                </div>
+            </section>
+
+            <section class="band band-features" id="en-features">
+                <div class="container">
+                    <div class="section-head">
+                        <span class="eyebrow">Features</span>
+                        <h2>Everything you need for cheaper electricity.</h2>
+                    </div>
+                    <div class="feature-grid">
+                        <article class="feature">
+                            <span class="feature-icon">
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                >
+                                    <path d="M4 20V10" />
+                                    <path d="M10 20V4" />
+                                    <path d="M16 20v-7" />
+                                    <path d="M22 20H2" />
+                                </svg>
+                            </span>
+                            <h3>Hourly prices throughout the day</h3>
+                            <p>
+                                A bar chart shows all 24 hourly prices.
+                                Cheap and expensive phases are visible at a
+                                glance.
+                            </p>
+                        </article>
+                        <article class="feature">
+                            <span class="feature-icon">
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                >
+                                    <circle cx="12" cy="12" r="9" />
+                                    <path d="M12 7v5l3.2 2" />
+                                </svg>
+                            </span>
+                            <h3>Cheapest time slot</h3>
+                            <p>
+                                Enter a duration or consumption – AWattPrice
+                                finds the cheapest start window throughout
+                                the day.
+                            </p>
+                        </article>
+                        <article class="feature">
+                            <span class="feature-icon">
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                >
+                                    <path d="M12 2v20" />
+                                    <path
+                                        d="M17 5H9.5a3.5 3.5 0 1 0 0 7h5a3.5 3.5 0 1 1 0 7H6"
+                                    />
+                                </svg>
+                            </span>
+                            <h3>Real end prices</h3>
+                            <p>
+                                Set your region, VAT and base fees – the
+                                display then matches your actual tariff.
+                            </p>
+                        </article>
+                        <article class="feature">
+                            <span class="feature-icon">
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                >
+                                    <rect
+                                        x="6"
+                                        y="2"
+                                        width="12"
+                                        height="20"
+                                        rx="2.5"
+                                    />
+                                    <path d="M11 18h2" />
+                                </svg>
+                            </span>
+                            <h3>Home screen widget</h3>
+                            <p>
+                                Current hourly prices right on your iPhone
+                                home screen – without opening the app.
+                            </p>
+                        </article>
+                        <article class="feature">
+                            <span class="feature-icon">
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                >
+                                    <path
+                                        d="M6 8a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6"
+                                    />
+                                    <path d="M10 19a2 2 0 0 0 4 0" />
+                                </svg>
+                            </span>
+                            <h3>Price watcher</h3>
+                            <p>
+                                Get a push notification as soon as prices
+                                drop below a threshold of your choice.
+                            </p>
+                        </article>
+                        <article class="feature">
+                            <span class="feature-icon">
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                >
+                                    <circle cx="12" cy="12" r="9" />
+                                    <path d="M3 12h18" />
+                                    <path d="M12 3a14 14 0 0 1 0 18" />
+                                    <path d="M12 3a14 14 0 0 0 0 18" />
+                                </svg>
+                            </span>
+                            <h3>Also in the browser</h3>
+                            <p>
+                                The same prices on any device – no
+                                installation, no sign-up, no ads.
+                            </p>
+                        </article>
+                    </div>
+                </div>
+            </section>
+
+            <section class="band band-screens" id="en-screens">
+                <div class="container">
+                    <div class="section-head">
+                        <span class="eyebrow">App, Widget &amp; Web</span>
+                        <h2>
+                            Three views, one goal: hit the right moment.
+                        </h2>
+                    </div>
+                    <div class="screens-grid">
+                        <figure class="screen">
+                            <div class="screen-frame">
+                                <img
+                                    src="images/Electricity Price Page.png"
+                                    alt="AWattPrice price overview with hourly values as a bar chart"
+                                    loading="lazy"
+                                />
+                            </div>
+                            <figcaption>
+                                <h3>Check prices</h3>
+                                <p>
+                                    All hourly prices throughout the day,
+                                    colour-coded from cheap to expensive.
+                                </p>
+                            </figcaption>
+                        </figure>
+                        <figure class="screen">
+                            <div class="screen-frame">
+                                <img
+                                    src="images/Cheapest Price Page.png"
+                                    alt="AWattPrice input for cheapest time slot"
+                                    loading="lazy"
+                                />
+                            </div>
+                            <figcaption>
+                                <h3>Cheapest time</h3>
+                                <p>
+                                    Enter a usage duration and let the app
+                                    calculate the cheapest start window for
+                                    flexible appliances.
+                                </p>
+                            </figcaption>
+                        </figure>
+                        <figure class="screen">
+                            <div class="screen-frame">
+                                <img
+                                    src="images/Settings Page.png"
+                                    alt="AWattPrice settings for region, VAT and base fees"
+                                    loading="lazy"
+                                />
+                            </div>
+                            <figcaption>
+                                <h3>Adjust costs</h3>
+                                <p>
+                                    Region, VAT and base fees adapt the
+                                    prices to your actual tariff.
+                                </p>
+                            </figcaption>
+                        </figure>
+                    </div>
+                </div>
+            </section>
+
+            <section class="band band-faq" id="en-faq">
+                <div class="container faq-grid">
+                    <div>
+                        <span class="eyebrow">FAQ</span>
+                        <h2>Frequently asked questions.</h2>
+                        <p class="faq-aside">
+                            Question not answered?
+                            <a href="mailto:kontakt-awattprice@space8.me"
+                                >Feel free to send me an email.</a
+                            >
+                        </p>
+                    </div>
+                    <div class="faq-list">
+                        <details>
+                            <summary>Do I need an aWATTar tariff?</summary>
+                            <p>
+                                No. AWattPrice uses the publicly available
+                                price data from aWATTar for Germany and
+                                Austria. You get the most benefit with a
+                                dynamic tariff – for example HOURLY. But
+                                you can also use the app without a contract
+                                if you're simply interested in price
+                                trends.
+                            </p>
+                        </details>
+                        <details>
+                            <summary>What does AWattPrice cost?</summary>
+                            <p>
+                                Nothing. The app and browser version are
+                                free – no ads and no in-app purchases.
+                            </p>
+                        </details>
+                        <details>
+                            <summary>What data is collected?</summary>
+                            <p>
+                                As little as possible. Push notifications
+                                are optional and activated on your device.
+                                All details are in the
+                                <a href="privacy_policy/?lang=en"
+                                    >privacy policy</a
+                                >.
+                            </p>
+                        </details>
+                        <details>
+                            <summary>
+                                Does AWattPrice also work in Austria?
+                            </summary>
+                            <p>
+                                Yes. In the settings you choose between
+                                Germany and Austria – including the
+                                applicable VAT rate.
+                            </p>
+                        </details>
+                        <details>
+                            <summary>Is AWattPrice open source?</summary>
+                            <p>
+                                Yes. The full source code is available on
+                                <a href="https://github.com/sp4c38/AWattPrice"
+                                    >GitHub</a
+                                >. Feedback and contributions are welcome.
+                            </p>
+                        </details>
+                    </div>
+                </div>
+            </section>
+
+            <section class="band band-cta">
+                <div class="container cta-card">
+                    <div>
+                        <h2>Ready for cheaper electricity?</h2>
+                        <p>
+                            Download AWattPrice for iPhone or open the web
+                            version. Free, no sign-up, no ads.
+                        </p>
+                    </div>
+                    <div class="cta-actions">
+                        <a
+                            class="btn btn-primary"
+                            href="https://apps.apple.com/app/awattprice/id1536629626"
+                        >
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="currentColor"
+                                aria-hidden="true"
+                                width="20"
+                                height="20"
+                            >
+                                <path
+                                    d="M16.365 1.43c0 1.14-.42 2.21-1.13 3-.78.86-2.07 1.51-3.13 1.43-.13-1.1.43-2.24 1.13-2.97.78-.83 2.13-1.45 3.13-1.46zM20.5 17.4c-.55 1.27-.81 1.84-1.52 2.96-.99 1.56-2.39 3.5-4.12 3.51-1.55.02-1.95-1.01-4.05-.99-2.1.01-2.54 1-4.09.98-1.74-.02-3.06-1.77-4.05-3.33C-1.41 15.13-1.06 8.6 2.36 6.4c1.58-1.02 3.07-1.07 4.43-.06 1.36 1.01 2.36.06 4.05.06 1.69 0 2.69-.95 4.05-.06 1.36.89 2.78.96 4.43-.06.16.27.41.69.62 1.07-3.6 1.96-3.04 7.21.56 8.05z"
+                                />
+                            </svg>
+                            <span>App Store</span>
+                        </a>
+                        <a
+                            class="btn btn-ghost"
+                            href="https://awattprice.space8.me/prices/"
+                            >Open in browser</a
+                        >
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="site-footer" id="en-contact">
+            <div class="container footer-grid">
+                <div class="footer-brand-block">
+                    <a class="brand brand-light" href="#en-top">
+                        <img
+                            src="images/app-icon.png"
+                            alt=""
+                            width="40"
+                            height="40"
+                        />
+                        <span>AWattPrice</span>
+                    </a>
+                    <p>
+                        Questions, suggestions or feedback? I welcome every
+                        email.
+                    </p>
+                    <a
+                        class="footer-mail"
+                        href="mailto:kontakt-awattprice@space8.me"
+                        >kontakt-awattprice@space8.me</a
+                    >
+                </div>
+                <div class="footer-cols">
+                    <div>
+                        <h4>App</h4>
+                        <a
+                            href="https://apps.apple.com/app/awattprice/id1536629626"
+                            >App Store</a
+                        >
+                        <a href="https://awattprice.space8.me/prices/"
+                            >Web App</a
+                        >
+                        <a href="https://github.com/sp4c38/AWattPrice"
+                            >GitHub</a
+                        >
+                    </div>
+                    <div>
+                        <h4>Service</h4>
+                        <a href="https://awattprice.cronitorstatus.com/"
+                            >Status page</a
+                        >
+                        <a href="privacy_policy/?lang=en">Privacy</a>
+                        <a href="terms_of_use/?lang=en">Terms of Use</a>
+                        <a href="support/?lang=en">Support</a>
+                        <a href="impressum.html">Impressum</a>
+                    </div>
+                </div>
+            </div>
+            <div class="container footer-bottom">
+                <p>© 2026 Léon Becker. All rights reserved.</p>
+            </div>
+        </footer>
+        </div>
+
+        <div data-lang="de" hidden>
+        <a class="skip-link" href="#de-main">Zum Hauptinhalt springen</a>
+
+        <header class="topbar">
+            <div class="container topbar-row">
+                <a class="brand" href="#de-top" aria-label="AWattPrice Startseite">
                     <img
                         src="images/app-icon.png"
                         alt=""
@@ -38,10 +560,15 @@
                     <span>AWattPrice</span>
                 </a>
                 <nav class="topnav" aria-label="Hauptnavigation">
-                    <a href="#features">Funktionen</a>
-                    <a href="#screens">Ansichten</a>
-                    <a href="#faq">FAQ</a>
+                    <a href="#de-features">Funktionen</a>
+                    <a href="#de-screens">Ansichten</a>
+                    <a href="#de-faq">FAQ</a>
                 </nav>
+                <div class="lang-toggle">
+                    <a href="?lang=de" aria-current="page">DE</a>
+                    <span class="lang-sep">|</span>
+                    <a href="?lang=en">EN</a>
+                </div>
                 <a
                     class="cta-pill"
                     href="https://apps.apple.com/app/awattprice/id1536629626"
@@ -50,8 +577,8 @@
             </div>
         </header>
 
-        <main id="main">
-            <section class="hero" id="top">
+        <main id="de-main">
+            <section class="hero" id="de-top">
                 <div class="container hero-grid">
                     <div class="hero-copy">
                         <span class="eyebrow">Für dynamische Stromtarife</span>
@@ -124,7 +651,7 @@
                 </div>
             </section>
 
-            <section class="band band-purpose" id="why">
+            <section class="band band-purpose" id="de-why">
                 <div class="container purpose-grid">
                     <div>
                         <span class="eyebrow">Warum AWattPrice</span>
@@ -145,7 +672,7 @@
                 </div>
             </section>
 
-            <section class="band band-features" id="features">
+            <section class="band band-features" id="de-features">
                 <div class="container">
                     <div class="section-head">
                         <span class="eyebrow">Funktionen</span>
@@ -295,7 +822,7 @@
                 </div>
             </section>
 
-            <section class="band band-screens" id="screens">
+            <section class="band band-screens" id="de-screens">
                 <div class="container">
                     <div class="section-head">
                         <span class="eyebrow">App, Widget und Web</span>
@@ -359,7 +886,7 @@
                 </div>
             </section>
 
-            <section class="band band-faq" id="faq">
+            <section class="band band-faq" id="de-faq">
                 <div class="container faq-grid">
                     <div>
                         <span class="eyebrow">FAQ</span>
@@ -464,10 +991,10 @@
             </section>
         </main>
 
-        <footer class="site-footer" id="contact">
+        <footer class="site-footer" id="de-contact">
             <div class="container footer-grid">
                 <div class="footer-brand-block">
-                    <a class="brand brand-light" href="#top">
+                    <a class="brand brand-light" href="#de-top">
                         <img
                             src="images/app-icon.png"
                             alt=""
@@ -507,6 +1034,7 @@
                         >
                         <a href="privacy_policy/?lang=de">Datenschutz</a>
                         <a href="terms_of_use/?lang=de">Nutzungsbedingungen</a>
+                        <a href="support/?lang=de">Support</a>
                         <a href="impressum.html">Impressum</a>
                     </div>
                 </div>
@@ -515,5 +1043,36 @@
                 <p>© 2026 Léon Becker. Alle Rechte vorbehalten.</p>
             </div>
         </footer>
+        </div>
+
+        <script>
+            (() => {
+                const params = new URLSearchParams(window.location.search);
+                const queryLanguage = params.get('lang');
+                const storedLanguage = localStorage.getItem('awattprice-lang');
+                const browserLanguage = (navigator.language || navigator.userLanguage || '').toLowerCase();
+                const language = queryLanguage === 'de' || queryLanguage === 'en'
+                    ? queryLanguage
+                    : storedLanguage === 'de' || storedLanguage === 'en'
+                        ? storedLanguage
+                        : (browserLanguage.startsWith('de') ? 'de' : 'en');
+
+                localStorage.setItem('awattprice-lang', language);
+                document.documentElement.lang = language;
+                document.querySelectorAll('[data-lang]').forEach((element) => {
+                    element.hidden = element.dataset.lang !== language;
+                });
+
+                const title = document.querySelector('[data-i18n-title]');
+                if (title) {
+                    title.textContent = title.dataset[language];
+                }
+
+                const description = document.querySelector('[data-i18n-description]');
+                if (description) {
+                    description.setAttribute('content', description.dataset[language]);
+                }
+            })();
+        </script>
     </body>
 </html>

@@ -9,8 +9,8 @@ struct PricesWidget: Widget {
             ForecastWidgetView(entry: entry)
         }
         .configurationDisplayName("Price Forecast")
-        .description("Shows the next 24 hours of electricity prices.")
-        .supportedFamilies([.systemMedium, .systemLarge])
+        .description("Shows upcoming electricity prices.")
+        .supportedFamilies([.systemMedium])
         .contentMarginsDisabled()
     }
 }
@@ -21,8 +21,20 @@ struct PricesWidget: Widget {
     WidgetPriceEntry.preview
 }
 
-#Preview("Large", as: .systemLarge) {
+#Preview("Medium Cached", as: .systemMedium) {
     PricesWidget()
 } timeline: {
-    WidgetPriceEntry.preview
+    WidgetPriceEntry.cachedPreview
+}
+
+#Preview("Medium Unavailable", as: .systemMedium) {
+    PricesWidget()
+} timeline: {
+    WidgetPriceEntry.unavailablePreview
+}
+
+#Preview("Medium Pro", as: .systemMedium) {
+    PricesWidget()
+} timeline: {
+    WidgetPriceEntry.lockedProPreview
 }

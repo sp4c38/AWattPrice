@@ -20,3 +20,21 @@ struct CheapestTimesWidget: Widget {
 } timeline: {
     WidgetPriceEntry.preview
 }
+
+#Preview("Cached", as: .systemSmall) {
+    CheapestTimesWidget()
+} timeline: {
+    WidgetPriceEntry.cachedPreview
+}
+
+#Preview("Unavailable", as: .systemSmall) {
+    CheapestTimesWidget()
+} timeline: {
+    WidgetPriceEntry.unavailablePreview
+}
+
+#Preview("Pro", as: .systemSmall) {
+    CheapestTimesWidget()
+} timeline: {
+    WidgetPriceEntry.lockedProPreview
+}

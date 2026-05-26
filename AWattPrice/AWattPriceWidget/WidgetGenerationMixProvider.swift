@@ -13,6 +13,30 @@ struct WidgetGenerationMixEntry: TimelineEntry {
             state: .fresh
         )
     }
+
+    static var cachedPreview: WidgetGenerationMixEntry {
+        WidgetGenerationMixEntry(
+            date: Date(),
+            snapshot: WidgetGenerationMixPreviewData.snapshot(),
+            state: .cached
+        )
+    }
+
+    static var unavailablePreview: WidgetGenerationMixEntry {
+        WidgetGenerationMixEntry(
+            date: Date(),
+            snapshot: WidgetGenerationMixSnapshot.empty(),
+            state: .unavailable
+        )
+    }
+
+    static var lockedProPreview: WidgetGenerationMixEntry {
+        WidgetGenerationMixEntry(
+            date: Date(),
+            snapshot: WidgetGenerationMixPreviewData.snapshot(),
+            state: .lockedPro
+        )
+    }
 }
 
 struct WidgetGenerationMixProvider: TimelineProvider {

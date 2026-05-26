@@ -42,6 +42,59 @@ final class WidgetPriceSnapshotTests: XCTestCase {
         XCTAssertEqual(snapshot.currentHourlyForecastPrice?.marketprice, 25)
     }
 
+    func testSnapshotCalculatesUpcomingHourlyForecastFromNowOnward() throws {
+        let snapshot = WidgetPriceSnapshot(
+            createdAt: Self.base.addingTimeInterval(90 * 60),
+            marketAreaName: "Deutschland / Luxemburg",
+            points: [
+                Self.point(hour: 0, price: 10),
+                Self.point(hour: 1, price: 20),
+                Self.point(hour: 2, price: 30),
+                Self.point(hour: 3, price: 40),
+            ]
+        )
+
+        XCTAssertEqual(snapshot.upcomingForecastPoints.map(\.marketprice), [20, 30, 40])
+        XCTAssertEqual(snapshot.upcomingHourlyForecastPoints.map(\.marketprice), [20, 30, 40])
+        XCTAssertEqual(try XCTUnwrap(snapshot.upcomingForecastAveragePrice), 30, accuracy: 0.0001)
+        XCTAssertEqual(try XCTUnwrap(snapshot.upcomingHourlyForecastAveragePrice), 30, accuracy: 0.0001)
+    }
+
+    func testSnapshotUpcomingForecastIncludesMoreThanTwentyFourHours() {
+        let points = (0..<30).map { hour in
+            Self.point(hour: hour, price: Double(hour))
+        }
+
+        let snapshot = WidgetPriceSnapshot(
+            createdAt: Self.base,
+            marketAreaName: "Deutschland / Luxemburg",
+            points: points
+        )
+
+        XCTAssertEqual(snapshot.hourlyForecastPoints.count, 24)
+        XCTAssertEqual(snapshot.upcomingForecastPoints.count, 30)
+        XCTAssertEqual(snapshot.upcomingHourlyForecastPoints.count, 30)
+    }
+
+    func testSnapshotUpcomingForecastPreservesFifteenMinuteValuesAndWeightedAveraging() throws {
+        let snapshot = WidgetPriceSnapshot(
+            createdAt: Self.base.addingTimeInterval(30 * 60),
+            marketAreaName: "Deutschland / Luxemburg",
+            points: [
+                Self.point(startMinutes: 0, endMinutes: 15, price: 10),
+                Self.point(startMinutes: 15, endMinutes: 60, price: 30),
+                Self.point(startMinutes: 60, endMinutes: 120, price: 20),
+            ]
+        )
+
+        XCTAssertEqual(snapshot.upcomingForecastPoints.map(\.marketprice), [30, 20])
+        XCTAssertEqual(try XCTUnwrap(snapshot.upcomingForecastAveragePrice), 25, accuracy: 0.0001)
+        XCTAssertEqual(snapshot.upcomingHourlyForecastPoints.count, 2)
+        XCTAssertEqual(snapshot.upcomingHourlyForecastPoints[0].marketprice, 30, accuracy: 0.0001)
+        XCTAssertEqual(snapshot.upcomingHourlyForecastPoints[1].marketprice, 20, accuracy: 0.0001)
+        XCTAssertEqual(try XCTUnwrap(snapshot.upcomingHourlyForecastAveragePrice), 25, accuracy: 0.0001)
+    }
+
     func testSnapshotCalculatesRisingNextThreeHourTrend() {
         let snapshot = WidgetPriceSnapshot(
             createdAt: Self.base.addingTimeInterval(30 * 60),

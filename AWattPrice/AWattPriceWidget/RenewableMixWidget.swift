@@ -24,31 +24,19 @@ struct RenewableMixWidget: Widget {
 #Preview("Cached", as: .systemSmall) {
     RenewableMixWidget()
 } timeline: {
-    WidgetGenerationMixEntry(
-        date: Date(),
-        snapshot: WidgetGenerationMixPreviewData.snapshot(),
-        state: .cached
-    )
+    WidgetGenerationMixEntry.cachedPreview
 }
 
 #Preview("Unavailable", as: .systemSmall) {
     RenewableMixWidget()
 } timeline: {
-    WidgetGenerationMixEntry(
-        date: Date(),
-        snapshot: WidgetGenerationMixSnapshot.empty(),
-        state: .unavailable
-    )
+    WidgetGenerationMixEntry.unavailablePreview
 }
 
 #Preview("Pro", as: .systemSmall) {
     RenewableMixWidget()
 } timeline: {
-    WidgetGenerationMixEntry(
-        date: Date(),
-        snapshot: WidgetGenerationMixPreviewData.snapshot(),
-        state: .lockedPro
-    )
+    WidgetGenerationMixEntry.lockedProPreview
 }
 
 #Preview(as: .accessoryRectangular) {

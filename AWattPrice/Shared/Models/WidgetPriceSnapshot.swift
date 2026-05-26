@@ -62,27 +62,28 @@ struct WidgetPriceSnapshot: Codable {
         return points.filter { $0.startTime < endDate }
     }
 
+    var upcomingForecastPoints: [WidgetPricePoint] {
+        points.filter { $0.endTime > createdAt }
+    }
+
     var hourlyForecastPoints: [WidgetPricePoint] {
-        let calendar = Calendar.autoupdatingCurrent
-        let groupedPoints = Dictionary(grouping: forecastPoints) { point in
-            calendar.startOfHour(for: point.startTime)
-        }
+        hourlyPoints(from: forecastPoints)
+    }
 
-        return groupedPoints.keys.sorted().compactMap { hourStart in
-            guard let hourPoints = groupedPoints[hourStart] else { return nil }
-            let hourEnd = calendar.date(byAdding: .hour, value: 1, to: hourStart) ?? hourStart.addingTimeInterval(60 * 60)
-            let average = WidgetPriceSnapshot.weightedAverage(for: hourPoints) ?? hourPoints.first?.marketprice ?? 0
-
-            return WidgetPricePoint(
-                startTime: hourStart,
-                endTime: hourEnd,
-                marketprice: average
-            )
-        }
+    var upcomingHourlyForecastPoints: [WidgetPricePoint] {
+        hourlyPoints(from: upcomingForecastPoints)
     }
 
     var hourlyForecastAveragePrice: Double? {
         WidgetPriceSnapshot.weightedAverage(for: hourlyForecastPoints)
+    }
+
+    var upcomingForecastAveragePrice: Double? {
+        WidgetPriceSnapshot.weightedAverage(for: upcomingForecastPoints)
+    }
+
+    var upcomingHourlyForecastAveragePrice: Double? {
+        WidgetPriceSnapshot.weightedAverage(for: upcomingHourlyForecastPoints)
     }
 
     var hourlyForecastMinPrice: WidgetPricePoint? {
@@ -240,6 +241,25 @@ struct WidgetPriceSnapshot: Codable {
         }
 
         return weightedSum / totalDuration
+    }
+
+    private func hourlyPoints(from sourcePoints: [WidgetPricePoint]) -> [WidgetPricePoint] {
+        let calendar = Calendar.autoupdatingCurrent
+        let groupedPoints = Dictionary(grouping: sourcePoints) { point in
+            calendar.startOfHour(for: point.startTime)
+        }
+
+        return groupedPoints.keys.sorted().compactMap { hourStart in
+            guard let hourPoints = groupedPoints[hourStart] else { return nil }
+            let hourEnd = calendar.date(byAdding: .hour, value: 1, to: hourStart) ?? hourStart.addingTimeInterval(60 * 60)
+            let average = WidgetPriceSnapshot.weightedAverage(for: hourPoints) ?? hourPoints.first?.marketprice ?? 0
+
+            return WidgetPricePoint(
+                startTime: hourStart,
+                endTime: hourEnd,
+                marketprice: average
+            )
+        }
     }
 
     private static func cheapestWindows(in points: [WidgetPricePoint]) -> [WidgetPriceWindow] {

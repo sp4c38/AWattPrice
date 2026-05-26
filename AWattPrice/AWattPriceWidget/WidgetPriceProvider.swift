@@ -21,6 +21,30 @@ struct WidgetPriceEntry: TimelineEntry {
             state: .fresh
         )
     }
+
+    static var cachedPreview: WidgetPriceEntry {
+        WidgetPriceEntry(
+            date: Date(),
+            snapshot: WidgetPreviewData.snapshot(),
+            state: .cached
+        )
+    }
+
+    static var unavailablePreview: WidgetPriceEntry {
+        WidgetPriceEntry(
+            date: Date(),
+            snapshot: WidgetPriceSnapshot.empty(),
+            state: .unavailable
+        )
+    }
+
+    static var lockedProPreview: WidgetPriceEntry {
+        WidgetPriceEntry(
+            date: Date(),
+            snapshot: WidgetPreviewData.snapshot(),
+            state: .lockedPro
+        )
+    }
 }
 
 struct WidgetPriceProvider: TimelineProvider {
@@ -133,7 +157,7 @@ enum WidgetPreviewData {
         let setting = WidgetSettingsProvider.shared.reloadSetting()
         energyData.computeValues(with: setting.pricingConfiguration)
         let snapshot = WidgetPriceSnapshot(energyData: energyData, setting: setting)
-        return snapshot.hasPrices ? snapshot : fallbackSnapshot()
+        return snapshot.hasPrices && snapshot.upcomingForecastPoints.isEmpty == false ? snapshot : fallbackSnapshot()
     }
 
     private static func fallbackSnapshot() -> WidgetPriceSnapshot {
@@ -141,10 +165,11 @@ enum WidgetPreviewData {
         let now = Calendar.autoupdatingCurrent.startOfHour(for: Date())
         var points: [WidgetPricePoint] = []
 
-        for index in 0..<24 {
-            let startTime = now.addingTimeInterval(TimeInterval(index * 60 * 60))
-            let endTime = now.addingTimeInterval(TimeInterval((index + 1) * 60 * 60))
-            let price = Double((index % 8) + 2)
+        for index in 0..<112 {
+            let startTime = now.addingTimeInterval(TimeInterval(index * 15 * 60))
+            let endTime = now.addingTimeInterval(TimeInterval((index + 1) * 15 * 60))
+            let hoursFromNow = Double(index) * 0.25
+            let price = fallbackPrice(hoursFromNow: hoursFromNow)
 
             let point = WidgetPricePoint(
                 startTime: startTime,
@@ -159,5 +184,21 @@ enum WidgetPreviewData {
             marketAreaName: setting.marketArea.localizedDisplayName,
             points: points
         )
+    }
+
+    private static func fallbackPrice(hoursFromNow: Double) -> Double {
+        let eveningPeak = gaussian(center: 5.5, width: 2.6, x: hoursFromNow) * 11.0
+        let overnightLow = gaussian(center: 11.5, width: 3.4, x: hoursFromNow) * 5.6
+        let morningRise = gaussian(center: 16.5, width: 3.0, x: hoursFromNow) * 5.2
+        let middayDip = gaussian(center: 21.0, width: 3.2, x: hoursFromNow) * 3.8
+        let nextEveningPeak = gaussian(center: 27.0, width: 3.8, x: hoursFromNow) * 7.8
+        let gentleWave = sin(hoursFromNow / 28 * .pi * 2) * 0.8
+
+        return max(1.2, 12.0 + eveningPeak + morningRise + nextEveningPeak + gentleWave - overnightLow - middayDip)
+    }
+
+    private static func gaussian(center: Double, width: Double, x: Double) -> Double {
+        let distance = (x - center) / width
+        return exp(-0.5 * distance * distance)
     }
 }

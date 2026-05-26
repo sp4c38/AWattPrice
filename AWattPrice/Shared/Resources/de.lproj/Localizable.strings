@@ -451,7 +451,8 @@
 "Next 3h falling" = "Nächste 3h fallend";
 "Next 3h stable" = "Nächste 3h stabil";
 "Price Forecast" = "Preisverlauf";
-"Shows the next 24 hours of electricity prices." = "Zeigt die Strompreise der nächsten 24 Stunden.";
+"Shows upcoming electricity prices." = "Zeigt die verfügbaren kommenden Strompreise.";
+"Upcoming" = "Kommend";
 "Next prices" = "Nächste Preise";
 "Cheapest Times" = "Günstigste Zeiten";
 "Shows the cheapest upcoming electricity windows." = "Zeigt die günstigsten kommenden Strom-Zeitfenster.";

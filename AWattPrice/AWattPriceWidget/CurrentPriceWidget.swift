@@ -21,10 +21,22 @@ struct CurrentPriceWidget: Widget {
     WidgetPriceEntry.preview
 }
 
-#Preview(as: .accessoryCircular) {
+#Preview("Cached", as: .systemSmall) {
     CurrentPriceWidget()
 } timeline: {
-    WidgetPriceEntry.preview
+    WidgetPriceEntry.cachedPreview
+}
+
+#Preview("Unavailable", as: .systemSmall) {
+    CurrentPriceWidget()
+} timeline: {
+    WidgetPriceEntry.unavailablePreview
+}
+
+#Preview("Pro", as: .systemSmall) {
+    CurrentPriceWidget()
+} timeline: {
+    WidgetPriceEntry.lockedProPreview
 }
 
 #Preview(as: .accessoryRectangular) {

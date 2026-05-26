@@ -86,7 +86,7 @@ enum WidgetText {
     }
 
     static func hourLabel(_ date: Date) -> String {
-        String(format: "%02dh", Calendar.current.component(.hour, from: date))
+        String(format: "%02d", Calendar.current.component(.hour, from: date))
     }
 
     static func timeRange(from startTime: Date, to endTime: Date) -> String {
@@ -639,7 +639,7 @@ struct ForecastWidgetView: View {
     private var currentPriceColor: Color {
         WidgetStyle.color(
             for: entry.snapshot.currentPrice?.marketprice ?? 0,
-            average: entry.snapshot.hourlyForecastAveragePrice
+            average: entry.snapshot.upcomingForecastAveragePrice
         )
     }
 
@@ -649,19 +649,19 @@ struct ForecastWidgetView: View {
         } else if entry.snapshot.hasPrices == false {
             WidgetUnavailableView(snapshot: entry.snapshot, route: WidgetRoute.prices)
         } else {
-            VStack(alignment: .leading, spacing: 10) {
+            VStack(alignment: .leading, spacing: 3) {
                 HStack(alignment: .top) {
-                    Label("Next 24h", systemImage: "bolt.fill")
-                        .font(.caption.weight(.semibold))
+                    Label("Upcoming", systemImage: "bolt.fill")
+                        .font(.callout.weight(.semibold))
                         .foregroundStyle(currentPriceColor)
                         .lineLimit(1)
                         .minimumScaleFactor(0.8)
 
                     Spacer(minLength: 4)
 
-                    HStack(spacing: 5) {
+                    VStack(alignment: .trailing, spacing: 1) {
                         Text(WidgetText.price(entry.snapshot.currentPrice?.marketprice))
-                            .font(.caption.weight(.bold))
+                            .font(.callout.weight(.bold))
                             .monospacedDigit()
                             .foregroundStyle(currentPriceColor)
                             .lineLimit(1)
@@ -678,7 +678,7 @@ struct ForecastWidgetView: View {
                 }
 
                 PriceForecastChart(
-                    points: entry.snapshot.hourlyForecastPoints
+                    points: entry.snapshot.upcomingForecastPoints
                 )
             }
             .padding(WidgetStyle.chartPadding)
@@ -692,64 +692,70 @@ struct ForecastWidgetView: View {
 struct PriceForecastChart: View {
     let points: [WidgetPricePoint]
 
+    private var chartPoints: [WidgetPricePoint] {
+        movingAveragePoints(points)
+    }
+
     var body: some View {
         VStack(spacing: 4) {
             GeometryReader { geometry in
-                let metrics = WidgetChartMetrics(points: points, size: geometry.size, topInset: 20)
+                let metrics = WidgetChartMetrics(points: chartPoints, size: geometry.size, topInset: 20)
 
                 ZStack(alignment: .topLeading) {
-                    let maxIdx = points.indices.max(by: { points[$0].marketprice < points[$1].marketprice })
-                    let minIdx = points.indices.min(by: { points[$0].marketprice < points[$1].marketprice })
+                    let maxIdx = chartPoints.indices.max(by: { chartPoints[$0].marketprice < chartPoints[$1].marketprice })
+                    let minIdx = chartPoints.indices.min(by: { chartPoints[$0].marketprice < chartPoints[$1].marketprice })
 
-                    // Zero baseline
-                    Rectangle()
-                        .fill(.secondary.opacity(0.18))
-                        .frame(height: 1)
-                        .position(x: geometry.size.width / 2, y: metrics.yPosition(for: 0))
-
-                    // Price bars
-                    ForEach(Array(points.enumerated()), id: \.element.startTime) { index, point in
-                        let frame = metrics.barFrame(for: point.marketprice, index: index)
-
-                        RoundedRectangle(cornerRadius: 2, style: .continuous)
-                            .fill(WidgetStyle.chartBarFill(for: point.marketprice,
-                                                          lowerBound: metrics.lowerBound,
-                                                          upperBound: metrics.upperBound))
-                            .frame(width: frame.width, height: frame.height)
-                            .position(x: frame.midX, y: frame.midY)
-                            .opacity(0.88)
+                    if metrics.crossesZero {
+                        Rectangle()
+                            .fill(.secondary.opacity(0.18))
+                            .frame(height: 1)
+                            .position(x: geometry.size.width / 2, y: metrics.yPosition(for: 0))
                     }
 
-                    // High/low labels above their respective bars
+                    smoothedLinePath(metrics: metrics)
+                    .stroke(
+                        LinearGradient(
+                            colors: [
+                                WidgetStyle.low,
+                                WidgetStyle.accent,
+                                WidgetStyle.high
+                            ],
+                            startPoint: .bottom,
+                            endPoint: .top
+                        ),
+                        style: StrokeStyle(lineWidth: 2.6, lineCap: .round, lineJoin: .round)
+                    )
+
+                    ForEach(Array(chartPoints.enumerated()), id: \.element.startTime) { index, point in
+                        let isExtreme = (maxIdx.map { $0 == index } ?? false) || (minIdx.map { $0 == index } ?? false)
+                        let pointColor = (maxIdx.map { $0 == index } ?? false)
+                            ? WidgetStyle.high
+                            : (point.marketprice < 0 ? WidgetStyle.low : WidgetStyle.accent)
+
+                        Circle()
+                            .fill(pointColor)
+                            .frame(width: 4, height: 4)
+                            .position(metrics.pointPosition(for: index))
+                            .opacity(isExtreme ? 1 : 0)
+                    }
+
                     if let idx = maxIdx {
-                        let frame = metrics.barFrame(for: points[idx].marketprice, index: idx)
-                        HStack(spacing: 2) {
-                            Image(systemName: "arrow.up.circle.fill")
-                                .font(.caption2.weight(.bold))
-                                .foregroundStyle(WidgetStyle.high)
-                            Text(axisLabel(points[idx].marketprice))
-                                .font(.caption2.weight(.bold))
-                                .monospacedDigit()
-                                .foregroundStyle(WidgetStyle.high)
-                        }
-                        .fixedSize()
-                        .position(x: frame.midX, y: extremaLabelY(for: frame))
+                        PriceForecastExtremaLabel(
+                            systemImage: "arrow.up.circle.fill",
+                            price: axisLabel(chartPoints[idx].marketprice),
+                            color: WidgetStyle.high
+                        )
+                        .position(extremaLabelPosition(index: idx, isHigh: true, pairedIndex: minIdx, metrics: metrics))
                     }
 
-                    if let idx = minIdx, idx != maxIdx {
-                        let frame = metrics.barFrame(for: points[idx].marketprice, index: idx)
-                        let lowLabelColor = points[idx].marketprice < 0 ? WidgetStyle.low : WidgetStyle.accent
-                        HStack(spacing: 2) {
-                            Image(systemName: "arrow.down.circle.fill")
-                                .font(.caption2.weight(.bold))
-                                .foregroundStyle(lowLabelColor)
-                            Text(axisLabel(points[idx].marketprice))
-                                .font(.caption2.weight(.bold))
-                                .monospacedDigit()
-                                .foregroundStyle(lowLabelColor)
-                        }
-                        .fixedSize()
-                        .position(x: frame.midX, y: extremaLabelY(for: frame))
+                    if let idx = minIdx, maxIdx.map({ $0 != idx }) ?? true {
+                        let lowLabelColor = chartPoints[idx].marketprice < 0 ? WidgetStyle.low : WidgetStyle.accent
+                        PriceForecastExtremaLabel(
+                            systemImage: "arrow.down.circle.fill",
+                            price: axisLabel(chartPoints[idx].marketprice),
+                            color: lowLabelColor
+                        )
+                        .position(extremaLabelPosition(index: idx, isHigh: false, pairedIndex: maxIdx, metrics: metrics))
                     }
                 }
             }
@@ -763,8 +769,110 @@ struct PriceForecastChart: View {
         "\(Int(price.rounded())) ct"
     }
 
-    private func extremaLabelY(for barFrame: CGRect) -> CGFloat {
-        max(barFrame.minY - 12, 7)
+    private func extremaLabelPosition(index: Int, isHigh: Bool, pairedIndex: Int?, metrics: WidgetChartMetrics) -> CGPoint {
+        let point = metrics.pointPosition(for: index)
+        var y = point.y - 18
+
+        if let pairedIndex {
+            let pairedPoint = metrics.pointPosition(for: pairedIndex)
+
+            if abs(point.x - pairedPoint.x) < 74, abs(point.y - pairedPoint.y) < 28 {
+                y += isHigh ? -8 : 16
+            }
+        }
+
+        return metrics.clampedLabelPosition(x: point.x, y: y)
+    }
+
+    private func smoothedLinePath(metrics: WidgetChartMetrics) -> Path {
+        let positions = chartPoints.indices.map { metrics.pointPosition(for: $0) }
+
+        return Path { path in
+            guard let first = positions.first else { return }
+            path.move(to: first)
+
+            guard positions.count > 2 else {
+                for point in positions.dropFirst() {
+                    path.addLine(to: point)
+                }
+                return
+            }
+
+            for index in 0..<(positions.count - 1) {
+                let previous = positions[max(index - 1, 0)]
+                let current = positions[index]
+                let next = positions[index + 1]
+                let following = positions[min(index + 2, positions.count - 1)]
+                let smoothness: CGFloat = 4.2
+
+                let control1 = CGPoint(
+                    x: current.x + (next.x - previous.x) / smoothness,
+                    y: current.y + (next.y - previous.y) / smoothness
+                )
+                let control2 = CGPoint(
+                    x: next.x - (following.x - current.x) / smoothness,
+                    y: next.y - (following.y - current.y) / smoothness
+                )
+
+                path.addCurve(to: next, control1: control1, control2: control2)
+            }
+        }
+    }
+
+    private func movingAveragePoints(_ sourcePoints: [WidgetPricePoint]) -> [WidgetPricePoint] {
+        let weights: [(offset: Int, weight: Double)] = [
+            (-2, 0.10),
+            (-1, 0.20),
+            (0, 0.40),
+            (1, 0.20),
+            (2, 0.10),
+        ]
+
+        return sourcePoints.indices.map { index in
+            var weightedSum = 0.0
+            var totalWeight = 0.0
+
+            for item in weights {
+                let sourceIndex = index + item.offset
+
+                guard sourcePoints.indices.contains(sourceIndex) else {
+                    continue
+                }
+
+                weightedSum += sourcePoints[sourceIndex].marketprice * item.weight
+                totalWeight += item.weight
+            }
+
+            let smoothedPrice = totalWeight > 0 ? weightedSum / totalWeight : sourcePoints[index].marketprice
+
+            return WidgetPricePoint(
+                startTime: sourcePoints[index].startTime,
+                endTime: sourcePoints[index].endTime,
+                marketprice: smoothedPrice
+            )
+        }
+    }
+}
+
+private struct PriceForecastExtremaLabel: View {
+    let systemImage: String
+    let price: String
+    let color: Color
+
+    var body: some View {
+        HStack(spacing: 2) {
+            Image(systemName: systemImage)
+                .font(.caption2.weight(.bold))
+
+            Text(price)
+                .font(.caption2.weight(.bold))
+                .monospacedDigit()
+        }
+        .foregroundStyle(color)
+        .fixedSize()
+        .padding(.horizontal, 5)
+        .padding(.vertical, 2)
+        .background(.regularMaterial, in: Capsule())
     }
 }
 
@@ -774,10 +882,30 @@ struct ForecastHourAxis: View {
     private var labelIndexes: [Int] {
         guard points.count > 1 else { return points.isEmpty ? [] : [0] }
 
-        let labelCount = 6
-        return (0..<labelCount).map { i in
-            Int(round(Double(i) * Double(points.count - 1) / Double(labelCount - 1)))
+        let calendar = Calendar.autoupdatingCurrent
+        let stride = axisHourStride()
+        let firstHour = calendar.startOfHour(for: points[0].startTime)
+        let firstTick = firstHour < points[0].startTime
+            ? firstHour.addingTimeInterval(60 * 60)
+            : firstHour
+        let firstTickHour = calendar.component(.hour, from: firstTick)
+        let hourOffset = (stride - (firstTickHour % stride)) % stride
+        var tickDate = firstTick.addingTimeInterval(TimeInterval(hourOffset * 60 * 60))
+        var indexes: [Int] = []
+
+        while tickDate <= points[points.count - 1].startTime {
+            if let index = points.firstIndex(where: { calendar.startOfHour(for: $0.startTime) == tickDate }) {
+                indexes.append(index)
+            }
+
+            tickDate = tickDate.addingTimeInterval(TimeInterval(stride * 60 * 60))
         }
+
+        if indexes.isEmpty {
+            return [0]
+        }
+
+        return indexes
     }
 
     var body: some View {
@@ -809,6 +937,19 @@ struct ForecastHourAxis: View {
         let inset: CGFloat = 16
         return min(max(width * fraction, inset), max(width - inset, inset))
     }
+
+    private func axisHourStride() -> Int {
+        guard let first = points.first?.startTime, let last = points.last?.startTime else {
+            return 1
+        }
+
+        let spanHours = max(last.timeIntervalSince(first) / (60 * 60), 1)
+
+        if spanHours > 30 { return 4 }
+        if spanHours > 16 { return 3 }
+        if spanHours > 6 { return 2 }
+        return 1
+    }
 }
 
 struct WidgetChartMetrics {
@@ -817,6 +958,8 @@ struct WidgetChartMetrics {
     let lowerBound: Double
     let upperBound: Double
     let topInset: CGFloat
+    let bottomInset: CGFloat = 2
+    let horizontalInset: CGFloat = 16
 
     init(points: [WidgetPricePoint], size: CGSize, topInset: CGFloat = 0) {
         self.points = points
@@ -824,11 +967,11 @@ struct WidgetChartMetrics {
         self.topInset = topInset
 
         let prices = points.map(\.marketprice)
-        let minPrice = min(prices.min() ?? 0, 0)
-        let maxPrice = max(prices.max() ?? 1, 0)
+        let minPrice = prices.min() ?? 0
+        let maxPrice = prices.max() ?? 1
 
         if minPrice == maxPrice {
-            lowerBound = minPrice
+            lowerBound = minPrice - 1
             upperBound = maxPrice + 1
         } else {
             lowerBound = minPrice
@@ -836,26 +979,38 @@ struct WidgetChartMetrics {
         }
     }
 
+    var crossesZero: Bool {
+        lowerBound < 0 && upperBound > 0
+    }
+
     func yPosition(for price: Double) -> CGFloat {
         guard upperBound > lowerBound else { return size.height }
 
         let normalized = (price - lowerBound) / (upperBound - lowerBound)
-        let drawableHeight = size.height - topInset
-        return size.height - CGFloat(normalized) * drawableHeight
+        let drawableHeight = max(size.height - topInset - bottomInset, 1)
+        return size.height - bottomInset - CGFloat(normalized) * drawableHeight
     }
 
-    func barFrame(for price: Double, index: Int) -> CGRect {
-        let count = max(points.count, 1)
-        let spacing: CGFloat = 2
-        let totalSpacing = spacing * CGFloat(max(count - 1, 0))
-        let barWidth = max((size.width - totalSpacing) / CGFloat(count), 2)
-        let x = CGFloat(index) * (barWidth + spacing)
-        let baselineY = yPosition(for: 0)
-        let valueY = yPosition(for: price)
-        let minY = min(baselineY, valueY)
-        let height = max(abs(valueY - baselineY), 2)
+    func xPosition(for index: Int) -> CGFloat {
+        guard points.count > 1 else { return size.width / 2 }
 
-        return CGRect(x: x, y: minY, width: barWidth, height: height)
+        let drawableWidth = max(size.width - horizontalInset * 2, 1)
+        let fraction = CGFloat(index) / CGFloat(points.count - 1)
+        return horizontalInset + drawableWidth * fraction
+    }
+
+    func pointPosition(for index: Int) -> CGPoint {
+        let price = points.indices.contains(index) ? points[index].marketprice : 0
+        return CGPoint(x: xPosition(for: index), y: yPosition(for: price))
+    }
+
+    func clampedLabelPosition(x: CGFloat, y: CGFloat) -> CGPoint {
+        let labelHalfWidth: CGFloat = 34
+        let labelHalfHeight: CGFloat = 9
+        let clampedX = min(max(x, labelHalfWidth), max(size.width - labelHalfWidth, labelHalfWidth))
+        let clampedY = min(max(y, labelHalfHeight), max(size.height - labelHalfHeight, labelHalfHeight))
+
+        return CGPoint(x: clampedX, y: clampedY)
     }
 
 }

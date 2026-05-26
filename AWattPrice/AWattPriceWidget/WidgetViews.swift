@@ -858,7 +858,7 @@ struct PriceForecastChart: View {
         let preferredSide = preferredHorizontalSide(for: index, metrics: metrics)
         let secondarySide = -preferredSide
         let verticalOffsets: [CGFloat] = [24, 32, 40]
-        let diagonalOffset: CGFloat = 34
+        let diagonalOffset: CGFloat = 54
         var rawPositions: [CGPoint] = []
 
         for offset in verticalOffsets {
@@ -896,10 +896,11 @@ struct PriceForecastChart: View {
         let dangerRect = labelRect.insetBy(dx: -6, dy: -6)
         let linePenalty = lineIntersections(with: dangerRect, positions: linePositions) * 18
         let pointPenalty: CGFloat = labelRect.contains(point) ? 2_000 : 0
+        let lowerThanPointPenalty: CGFloat = position.y > point.y ? 700 : 0
         let distance = hypot(position.x - point.x, position.y - point.y)
         let horizontalOffsetPenalty = abs(position.x - point.x) * 7
         let orderPenalty = CGFloat(order) * 4
-        let score = CGFloat(linePenalty) + pointPenalty + distance + horizontalOffsetPenalty + orderPenalty
+        let score = CGFloat(linePenalty) + pointPenalty + lowerThanPointPenalty + distance + horizontalOffsetPenalty + orderPenalty
 
         return ForecastCalloutCandidate(position: position, rect: labelRect, score: score)
     }
@@ -1198,11 +1199,9 @@ struct WidgetChartMetrics {
             lowerBound = minPrice - 1
             upperBound = maxPrice + 1
         } else {
-            let range = maxPrice - minPrice
-            let lowerPadding = max(range * 0.16, 1)
-            let upperPadding = max(range * 0.75, 1)
-            lowerBound = minPrice >= 0 ? max(0, minPrice - lowerPadding) : minPrice - lowerPadding
-            upperBound = maxPrice + upperPadding
+            let padding = max((maxPrice - minPrice) * 0.24, 1)
+            lowerBound = minPrice >= 0 ? max(0, minPrice - padding) : minPrice - padding
+            upperBound = maxPrice + padding
         }
     }
 
@@ -1233,7 +1232,7 @@ struct WidgetChartMetrics {
 
     func clampedLabelPosition(x: CGFloat, y: CGFloat) -> CGPoint {
         let labelHalfWidth: CGFloat = 37
-        let labelHalfHeight: CGFloat = 13
+        let labelHalfHeight: CGFloat = 9
         let clampedX = min(max(x, labelHalfWidth), max(size.width - labelHalfWidth, labelHalfWidth))
         let clampedY = min(max(y, labelHalfHeight), max(size.height - labelHalfHeight, labelHalfHeight))
 

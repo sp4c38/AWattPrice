@@ -14,6 +14,7 @@ enum WidgetStyle {
     static let high = Color(red: 0.86, green: 0.20, blue: 0.16)
     static let neutral = Color.secondary
     static let smallPadding: CGFloat = 15
+    static let chartPadding: CGFloat = 14
     static let regularPadding: CGFloat = 18
 
     static func color(for price: Double, average: Double?) -> Color {
@@ -37,7 +38,7 @@ enum WidgetStyle {
     }
 
     /// Returns a fill style for a chart bar. Negative/zero prices use solid green.
-    /// Positive prices use a vertical gradient (orange-yellow at the baseline → the bar's
+    /// Positive prices use a vertical gradient (yellow at the baseline → the bar's
     /// own price color at its top), so every bar shows the same color at the same y-level —
     /// matching how the app's horizontal price graph samples a fixed gradient per bar.
     static func chartBarFill(for price: Double, lowerBound: Double, upperBound: Double) -> AnyShapeStyle {
@@ -47,7 +48,7 @@ enum WidgetStyle {
         let range = max(upperBound - floor, 1)
         let t = min(max((price - floor) / range, 0), 1)
 
-        let oy: (Double, Double, Double) = (1.00, 0.58, 0.12)   // orange (baseline)
+        let oy: (Double, Double, Double) = (1.00, 0.74, 0.12)   // yellow (baseline)
         let dr: (Double, Double, Double) = (0.92, 0.14, 0.11)   // dark red (max)
 
         let bottomColor = Color(red: oy.0, green: oy.1, blue: oy.2)
@@ -311,13 +312,20 @@ struct CurrentPriceWidgetView: View {
 struct ForecastWidgetView: View {
     let entry: WidgetPriceEntry
 
+    private var currentPriceColor: Color {
+        WidgetStyle.color(
+            for: entry.snapshot.currentPrice?.marketprice ?? 0,
+            average: entry.snapshot.hourlyForecastAveragePrice
+        )
+    }
+
     var body: some View {
         if entry.state == .lockedPro {
             WidgetProLockedView()
         } else if entry.snapshot.hasPrices == false {
             WidgetUnavailableView(snapshot: entry.snapshot, route: WidgetRoute.prices)
         } else {
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: 10) {
                 HStack(alignment: .top) {
                     Label("Next 24h", systemImage: "bolt.fill")
                         .font(.caption.weight(.semibold))
@@ -326,16 +334,30 @@ struct ForecastWidgetView: View {
                         .minimumScaleFactor(0.8)
 
                     Spacer(minLength: 4)
-                    WidgetStatusBadge(entry: entry)
+
+                    HStack(spacing: 5) {
+                        Text(WidgetText.price(entry.snapshot.currentPrice?.marketprice))
+                            .font(.caption.weight(.bold))
+                            .monospacedDigit()
+                            .foregroundStyle(currentPriceColor)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.8)
+                        
+                        Text("now")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(currentPriceColor)
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
+
+                        WidgetStatusBadge(entry: entry)
+                    }
                 }
 
                 PriceForecastChart(
-                    points: entry.snapshot.hourlyForecastPoints,
-                    averagePrice: entry.snapshot.hourlyForecastAveragePrice,
-                    currentPrice: entry.snapshot.currentPrice
+                    points: entry.snapshot.hourlyForecastPoints
                 )
             }
-            .padding(WidgetStyle.regularPadding)
+            .padding(WidgetStyle.chartPadding)
             .awattWidgetBackground()
             .widgetURL(WidgetRoute.prices)
         }
@@ -345,8 +367,6 @@ struct ForecastWidgetView: View {
 
 struct PriceForecastChart: View {
     let points: [WidgetPricePoint]
-    let averagePrice: Double?
-    let currentPrice: WidgetPricePoint?
 
     var body: some View {
         VStack(spacing: 4) {
@@ -354,36 +374,14 @@ struct PriceForecastChart: View {
                 let metrics = WidgetChartMetrics(points: points, size: geometry.size, topInset: 20)
 
                 ZStack(alignment: .topLeading) {
+                    let maxIdx = points.indices.max(by: { points[$0].marketprice < points[$1].marketprice })
+                    let minIdx = points.indices.min(by: { points[$0].marketprice < points[$1].marketprice })
+
                     // Zero baseline
                     Rectangle()
                         .fill(.secondary.opacity(0.18))
                         .frame(height: 1)
                         .position(x: geometry.size.width / 2, y: metrics.yPosition(for: 0))
-
-                    // Average price line (solid)
-                    if let averagePrice {
-                        let avgY = metrics.yPosition(for: averagePrice)
-
-                        Path { path in
-                            path.move(to: CGPoint(x: 0, y: avgY))
-                            path.addLine(to: CGPoint(x: geometry.size.width, y: avgY))
-                        }
-                        .stroke(.secondary.opacity(0.4), lineWidth: 1)
-
-                        // Label floated just above the right end of the line
-                        HStack(spacing: 2) {
-                            Spacer(minLength: 0)
-                            Text("Ø")
-                                .font(.caption2.weight(.semibold))
-                                .foregroundStyle(.secondary)
-                            Text(axisLabel(averagePrice))
-                                .font(.caption2.weight(.semibold))
-                                .monospacedDigit()
-                                .foregroundStyle(.secondary)
-                        }
-                        .frame(width: geometry.size.width)
-                        .position(x: geometry.size.width / 2, y: avgY - 8)
-                    }
 
                     // Price bars
                     ForEach(Array(points.enumerated()), id: \.element.startTime) { index, point in
@@ -399,9 +397,6 @@ struct PriceForecastChart: View {
                     }
 
                     // High/low labels above their respective bars
-                    let maxIdx = points.indices.max(by: { points[$0].marketprice < points[$1].marketprice })
-                    let minIdx = points.indices.min(by: { points[$0].marketprice < points[$1].marketprice })
-
                     if let idx = maxIdx {
                         let frame = metrics.barFrame(for: points[idx].marketprice, index: idx)
                         HStack(spacing: 2) {
@@ -414,22 +409,23 @@ struct PriceForecastChart: View {
                                 .foregroundStyle(WidgetStyle.high)
                         }
                         .fixedSize()
-                        .position(x: frame.midX, y: max(frame.minY - 12, 7))
+                        .position(x: frame.midX, y: extremaLabelY(for: frame))
                     }
 
                     if let idx = minIdx, idx != maxIdx {
                         let frame = metrics.barFrame(for: points[idx].marketprice, index: idx)
+                        let lowLabelColor = points[idx].marketprice < 0 ? WidgetStyle.low : WidgetStyle.accent
                         HStack(spacing: 2) {
                             Image(systemName: "arrow.down.circle.fill")
                                 .font(.caption2.weight(.bold))
-                                .foregroundStyle(WidgetStyle.low)
+                                .foregroundStyle(lowLabelColor)
                             Text(axisLabel(points[idx].marketprice))
                                 .font(.caption2.weight(.bold))
                                 .monospacedDigit()
-                                .foregroundStyle(WidgetStyle.low)
+                                .foregroundStyle(lowLabelColor)
                         }
                         .fixedSize()
-                        .position(x: frame.midX, y: max(frame.minY - 12, 7))
+                        .position(x: frame.midX, y: extremaLabelY(for: frame))
                     }
                 }
             }
@@ -443,9 +439,8 @@ struct PriceForecastChart: View {
         "\(Int(price.rounded())) ct"
     }
 
-    private func isCurrentHour(_ point: WidgetPricePoint) -> Bool {
-        guard let currentPrice else { return false }
-        return point.startTime <= currentPrice.startTime && point.endTime > currentPrice.startTime
+    private func extremaLabelY(for barFrame: CGRect) -> CGFloat {
+        max(barFrame.minY - 12, 7)
     }
 }
 

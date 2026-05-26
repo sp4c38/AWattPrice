@@ -9,8 +9,8 @@ struct CurrentPriceWidget: Widget {
             CurrentPriceWidgetView(entry: entry)
         }
         .configurationDisplayName("Current Price")
-        .description("Shows the current electricity price and how it compares to the upcoming average.")
-        .supportedFamilies([.systemSmall, .accessoryCircular, .accessoryRectangular])
+        .description("Shows the current electricity price.")
+        .supportedFamilies([.systemSmall, .accessoryRectangular])
         .contentMarginsDisabled()
     }
 }

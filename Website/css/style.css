@@ -597,8 +597,8 @@ h3 {
     grid-template-columns: 1fr;
   }
 
-  .hero-visual { min-height: 460px; order: -1; }
-  .hero-phone { width: min(300px, 70%); }
+  .hero-visual { min-height: auto; margin-top: 24px; }
+  .hero-phone { width: min(280px, 60%); }
 
   .feature-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .screens-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -612,7 +612,8 @@ h3 {
 
   .cta-card { grid-template-columns: 1fr; }
 
-  .topnav { display: none; }
+  .topbar-row { flex-wrap: wrap; }
+  .topnav { width: 100%; order: 4; justify-content: center; gap: 24px; padding-bottom: 12px; }
 }
 
 @media (max-width: 640px) {
@@ -629,8 +630,8 @@ h3 {
   .hero-actions { gap: 12px; }
   .btn { width: 100%; height: 54px; font-size: 1rem; }
 
-  .hero-visual { min-height: 380px; }
-  .hero-phone { width: min(260px, 80%); transform: rotate(-1.5deg); }
+  .hero-visual { min-height: auto; }
+  .hero-phone { width: min(240px, 70%); transform: rotate(-1.5deg); }
 
   .band { padding: 64px 0; }
 

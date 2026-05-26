@@ -132,6 +132,7 @@ button { font: inherit; }
   color: #fff;
   font-size: 0.98rem;
   font-weight: 600;
+  white-space: nowrap;
   transition: transform 160ms ease, background 160ms ease;
 }
 .cta-pill:hover { background: var(--dark-soft); transform: translateY(-1px); }
@@ -586,20 +587,6 @@ h3 {
 .footer-bottom p { margin: 0; }
 
 /* Compatibility for legal pages' back-button class */
-.backToStartButton {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 50px;
-  margin: 0 auto 28px;
-  padding: 0 22px;
-  border-radius: var(--radius);
-  background: var(--ink);
-  color: #fff;
-  font-size: 1rem;
-  font-weight: 600;
-}
-
 /* ----- Responsive ----- */
 
 @media (max-width: 980px) {
@@ -616,6 +603,13 @@ h3 {
   .feature-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .screens-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
+  /* centre lone 3rd screenshot card in 2-col grid */
+  .screens-grid > *:nth-child(3):last-child {
+    grid-column: 1 / -1;
+    max-width: calc(50% - 12px);
+    margin-inline: auto;
+  }
+
   .cta-card { grid-template-columns: 1fr; }
 
   .topnav { display: none; }
@@ -627,7 +621,7 @@ h3 {
   .topbar-row { min-height: 64px; }
   .brand { font-size: 1.1rem; }
   .brand img { width: 34px; height: 34px; }
-  .cta-pill { height: 40px; padding: 0 16px; font-size: 0.94rem; }
+  .cta-pill { height: 38px; padding: 0 12px; font-size: 0.88rem; }
 
   .hero { padding: 48px 0 64px; }
   .hero h1 { font-size: clamp(2.4rem, 11vw, 3.4rem); }

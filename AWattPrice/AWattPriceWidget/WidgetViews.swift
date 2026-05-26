@@ -699,7 +699,7 @@ struct PriceForecastChart: View {
     var body: some View {
         VStack(spacing: 4) {
             GeometryReader { geometry in
-                let metrics = WidgetChartMetrics(points: chartPoints, size: geometry.size, topInset: 18, bottomInset: 18)
+                let metrics = WidgetChartMetrics(points: chartPoints, size: geometry.size, topInset: 18, bottomInset: 8)
 
                 ZStack(alignment: .topLeading) {
                     let maxIdx = chartPoints.indices.max(by: { chartPoints[$0].marketprice < chartPoints[$1].marketprice })
@@ -775,28 +775,54 @@ struct PriceForecastChart: View {
     }
 
     private func extremaCallouts(maxIdx: Int?, minIdx: Int?, metrics: WidgetChartMetrics) -> [ForecastExtremaCallout] {
-        var callouts: [ForecastExtremaCallout] = []
+        var specs: [(index: Int, isHigh: Bool)] = []
 
         if let maxIdx {
-            callouts.append(callout(index: maxIdx, isHigh: true, metrics: metrics))
+            specs.append((index: maxIdx, isHigh: true))
         }
 
         if let minIdx, maxIdx.map({ $0 != minIdx }) ?? true {
-            callouts.append(callout(index: minIdx, isHigh: false, metrics: metrics))
+            specs.append((index: minIdx, isHigh: false))
         }
 
-        return separatedCallouts(callouts, metrics: metrics)
+        guard specs.count == 2 else {
+            return specs.map { spec in
+                let candidate = calloutCandidates(for: spec.index, metrics: metrics).first
+                return callout(index: spec.index, isHigh: spec.isHigh, labelPosition: candidate?.position, metrics: metrics)
+            }
+        }
+
+        let firstSpec = specs[0]
+        let secondSpec = specs[1]
+        let firstCandidates = calloutCandidates(for: firstSpec.index, metrics: metrics)
+        let secondCandidates = calloutCandidates(for: secondSpec.index, metrics: metrics)
+        var bestPair: (first: ForecastCalloutCandidate, second: ForecastCalloutCandidate, score: CGFloat)?
+
+        for first in firstCandidates {
+            for second in secondCandidates {
+                let overlapPenalty: CGFloat = first.rect.intersects(second.rect) ? 6_000 : 0
+                let score = first.score + second.score + overlapPenalty
+
+                if bestPair == nil || score < bestPair!.score {
+                    bestPair = (first: first, second: second, score: score)
+                }
+            }
+        }
+
+        return [
+            callout(index: firstSpec.index, isHigh: firstSpec.isHigh, labelPosition: bestPair?.first.position, metrics: metrics),
+            callout(index: secondSpec.index, isHigh: secondSpec.isHigh, labelPosition: bestPair?.second.position, metrics: metrics),
+        ]
     }
 
-    private func callout(index: Int, isHigh: Bool, metrics: WidgetChartMetrics) -> ForecastExtremaCallout {
+    private func callout(index: Int, isHigh: Bool, labelPosition: CGPoint?, metrics: WidgetChartMetrics) -> ForecastExtremaCallout {
         let point = metrics.pointPosition(for: index)
         let price = chartPoints[index].marketprice
         let color = isHigh ? WidgetStyle.high : (price < 0 ? WidgetStyle.low : WidgetStyle.accent)
-        let labelPosition = bestCalloutPosition(for: point, isHigh: isHigh, metrics: metrics)
 
         return ForecastExtremaCallout(
             kind: isHigh ? .high : .low,
-            labelPosition: labelPosition,
+            labelPosition: labelPosition ?? metrics.clampedLabelPosition(x: point.x, y: point.y),
             pointPosition: point,
             systemImage: isHigh ? "arrow.up.circle.fill" : "arrow.down.circle.fill",
             price: axisLabel(price),
@@ -804,70 +830,78 @@ struct PriceForecastChart: View {
         )
     }
 
-    private func bestCalloutPosition(for point: CGPoint, isHigh: Bool, metrics: WidgetChartMetrics) -> CGPoint {
-        let topLaneY: CGFloat = 10
-        let bottomLaneY = max(metrics.size.height - 10, topLaneY)
-        let verticalOffset: CGFloat = 30
-        let diagonalXOffset: CGFloat = 54
-        let candidates: [CGPoint]
-        let preferredPosition = metrics.clampedLabelPosition(
-            x: point.x,
-            y: isHigh ? point.y + verticalOffset : point.y - verticalOffset
-        )
+    private func preferredHorizontalSide(for index: Int, metrics: WidgetChartMetrics) -> CGFloat {
+        guard chartPoints.count > 1 else { return 1 }
+
+        let point = metrics.pointPosition(for: index)
+
+        if point.x < metrics.size.width * 0.32 {
+            return 1
+        }
+
+        if point.x > metrics.size.width * 0.68 {
+            return -1
+        }
+
+        let previous = metrics.pointPosition(for: max(index - 1, 0))
+        let next = metrics.pointPosition(for: min(index + 1, chartPoints.count - 1))
+        let localDirection = next.x == previous.x ? 0 : (next.y - previous.y) / (next.x - previous.x)
+
+        return localDirection >= 0 ? -1 : 1
+    }
+
+    private func calloutCandidates(for index: Int, metrics: WidgetChartMetrics) -> [ForecastCalloutCandidate] {
+        let point = metrics.pointPosition(for: index)
         let linePositions = chartPoints.indices.map { metrics.pointPosition(for: $0) }
+        let primaryDirection: CGFloat = -1
+        let secondaryDirection = -primaryDirection
+        let preferredSide = preferredHorizontalSide(for: index, metrics: metrics)
+        let secondarySide = -preferredSide
+        let verticalOffsets: [CGFloat] = [24, 32, 40]
+        let diagonalOffset: CGFloat = 34
+        var rawPositions: [CGPoint] = []
 
-        if canUsePreferredCallout(position: preferredPosition, point: point, linePositions: linePositions) {
-            return preferredPosition
+        for offset in verticalOffsets {
+            rawPositions.append(CGPoint(x: point.x, y: point.y + primaryDirection * offset))
         }
 
-        if isHigh {
-            candidates = [
-                CGPoint(x: point.x, y: point.y + verticalOffset),
-                CGPoint(x: point.x, y: point.y - verticalOffset),
-                CGPoint(x: point.x, y: topLaneY),
-                CGPoint(x: point.x - diagonalXOffset, y: point.y + verticalOffset),
-                CGPoint(x: point.x + diagonalXOffset, y: point.y + verticalOffset),
-                CGPoint(x: point.x - diagonalXOffset, y: point.y - verticalOffset),
-                CGPoint(x: point.x + diagonalXOffset, y: point.y - verticalOffset),
-            ]
-        } else {
-            candidates = [
-                CGPoint(x: point.x, y: point.y - verticalOffset),
-                CGPoint(x: point.x, y: point.y + verticalOffset),
-                CGPoint(x: point.x, y: bottomLaneY),
-                CGPoint(x: point.x - diagonalXOffset, y: point.y - verticalOffset),
-                CGPoint(x: point.x + diagonalXOffset, y: point.y - verticalOffset),
-                CGPoint(x: point.x - diagonalXOffset, y: point.y + verticalOffset),
-                CGPoint(x: point.x + diagonalXOffset, y: point.y + verticalOffset),
-            ]
+        for offset in verticalOffsets.prefix(2) {
+            rawPositions.append(CGPoint(x: point.x + preferredSide * diagonalOffset, y: point.y + primaryDirection * offset))
+            rawPositions.append(CGPoint(x: point.x + secondarySide * diagonalOffset, y: point.y + primaryDirection * offset))
         }
 
-        return candidates
-            .map { metrics.clampedLabelPosition(x: $0.x, y: $0.y) }
-            .min { first, second in
-                calloutScore(position: first, point: point, linePositions: linePositions) <
-                    calloutScore(position: second, point: point, linePositions: linePositions)
-            } ?? metrics.clampedLabelPosition(x: point.x, y: point.y)
+        for offset in verticalOffsets.prefix(2) {
+            rawPositions.append(CGPoint(x: point.x, y: point.y + secondaryDirection * offset))
+            rawPositions.append(CGPoint(x: point.x + preferredSide * diagonalOffset, y: point.y + secondaryDirection * offset))
+            rawPositions.append(CGPoint(x: point.x + secondarySide * diagonalOffset, y: point.y + secondaryDirection * offset))
+        }
+
+        var seenPositions: [CGPoint] = []
+
+        return rawPositions.enumerated().compactMap { order, rawPosition in
+            let position = metrics.clampedLabelPosition(x: rawPosition.x, y: rawPosition.y)
+
+            guard seenPositions.contains(where: { hypot($0.x - position.x, $0.y - position.y) < 1 }) == false else {
+                return nil
+            }
+
+            seenPositions.append(position)
+            return calloutCandidate(position: position, point: point, linePositions: linePositions, order: order)
+        }
+        .sorted { $0.score < $1.score }
     }
 
-    private func canUsePreferredCallout(position: CGPoint, point: CGPoint, linePositions: [CGPoint]) -> Bool {
+    private func calloutCandidate(position: CGPoint, point: CGPoint, linePositions: [CGPoint], order: Int) -> ForecastCalloutCandidate {
         let labelRect = calloutLabelRect(centeredAt: position)
-
-        if labelRect.contains(point) {
-            return false
-        }
-
-        return lineIntersections(with: labelRect, positions: linePositions) <= 1
-    }
-
-    private func calloutScore(position: CGPoint, point: CGPoint, linePositions: [CGPoint]) -> CGFloat {
-        let labelRect = calloutLabelRect(centeredAt: position)
-        let linePenalty = lineIntersections(with: labelRect, positions: linePositions) * 220
+        let dangerRect = labelRect.insetBy(dx: -6, dy: -6)
+        let linePenalty = lineIntersections(with: dangerRect, positions: linePositions) * 18
         let pointPenalty: CGFloat = labelRect.contains(point) ? 2_000 : 0
         let distance = hypot(position.x - point.x, position.y - point.y)
-        let horizontalOffsetPenalty = abs(position.x - point.x) * 6
+        let horizontalOffsetPenalty = abs(position.x - point.x) * 7
+        let orderPenalty = CGFloat(order) * 4
+        let score = CGFloat(linePenalty) + pointPenalty + distance + horizontalOffsetPenalty + orderPenalty
 
-        return CGFloat(linePenalty) + pointPenalty + distance + horizontalOffsetPenalty
+        return ForecastCalloutCandidate(position: position, rect: labelRect, score: score)
     }
 
     private func calloutLabelRect(centeredAt position: CGPoint) -> CGRect {
@@ -892,24 +926,6 @@ struct PriceForecastChart: View {
         }
 
         return intersections
-    }
-
-    private func separatedCallouts(_ callouts: [ForecastExtremaCallout], metrics: WidgetChartMetrics) -> [ForecastExtremaCallout] {
-        guard callouts.count == 2 else { return callouts }
-
-        var first = callouts[0]
-        var second = callouts[1]
-        let minimumDistance: CGFloat = 76
-
-        if abs(first.labelPosition.y - second.labelPosition.y) < 18,
-           abs(first.labelPosition.x - second.labelPosition.x) < minimumDistance {
-            let shift = (minimumDistance - abs(first.labelPosition.x - second.labelPosition.x)) / 2
-            let firstDirection: CGFloat = first.labelPosition.x <= second.labelPosition.x ? -1 : 1
-            first = first.movingLabel(to: metrics.clampedLabelPosition(x: first.labelPosition.x + firstDirection * shift, y: first.labelPosition.y))
-            second = second.movingLabel(to: metrics.clampedLabelPosition(x: second.labelPosition.x - firstDirection * shift, y: second.labelPosition.y))
-        }
-
-        return [first, second]
     }
 
     private func smoothedLinePath(metrics: WidgetChartMetrics) -> Path {
@@ -1021,16 +1037,12 @@ private struct ForecastExtremaCallout: Identifiable {
         )
     }
 
-    func movingLabel(to position: CGPoint) -> ForecastExtremaCallout {
-        ForecastExtremaCallout(
-            kind: kind,
-            labelPosition: position,
-            pointPosition: pointPosition,
-            systemImage: systemImage,
-            price: price,
-            color: color
-        )
-    }
+}
+
+private struct ForecastCalloutCandidate {
+    let position: CGPoint
+    let rect: CGRect
+    let score: CGFloat
 }
 
 private extension CGRect {
@@ -1186,8 +1198,11 @@ struct WidgetChartMetrics {
             lowerBound = minPrice - 1
             upperBound = maxPrice + 1
         } else {
-            lowerBound = minPrice
-            upperBound = maxPrice
+            let range = maxPrice - minPrice
+            let lowerPadding = max(range * 0.16, 1)
+            let upperPadding = max(range * 0.75, 1)
+            lowerBound = minPrice >= 0 ? max(0, minPrice - lowerPadding) : minPrice - lowerPadding
+            upperBound = maxPrice + upperPadding
         }
     }
 
@@ -1217,8 +1232,8 @@ struct WidgetChartMetrics {
     }
 
     func clampedLabelPosition(x: CGFloat, y: CGFloat) -> CGPoint {
-        let labelHalfWidth: CGFloat = 34
-        let labelHalfHeight: CGFloat = 9
+        let labelHalfWidth: CGFloat = 37
+        let labelHalfHeight: CGFloat = 13
         let clampedX = min(max(x, labelHalfWidth), max(size.width - labelHalfWidth, labelHalfWidth))
         let clampedY = min(max(y, labelHalfHeight), max(size.height - labelHalfHeight, labelHalfHeight))
 

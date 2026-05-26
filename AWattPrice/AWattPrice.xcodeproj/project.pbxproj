@@ -35,6 +35,10 @@
 		5A1000042FBE000100000001 /* WidgetViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A1000092FBE000100000001 /* WidgetViews.swift */; };
 		5A1000052FBE000100000001 /* WidgetPriceSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A10000A2FBE000100000001 /* WidgetPriceSnapshot.swift */; };
 		5A10000B2FBE000100000001 /* WidgetPriceSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A10000A2FBE000100000001 /* WidgetPriceSnapshot.swift */; };
+		5A10000C2FC2000100000001 /* RenewableMixWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A10000F2FC2000100000001 /* RenewableMixWidget.swift */; };
+		5A10000D2FC2000100000001 /* WidgetGenerationMixProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A1000102FC2000100000001 /* WidgetGenerationMixProvider.swift */; };
+		5A10000E2FC2000100000001 /* WidgetGenerationMixSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A1000112FC2000100000001 /* WidgetGenerationMixSnapshot.swift */; };
+		5A1000122FC2000100000001 /* WidgetGenerationMixSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A1000112FC2000100000001 /* WidgetGenerationMixSnapshot.swift */; };
 		5B0000012FBE100100000001 /* ProSupporterStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0000032FBE100100000001 /* ProSupporterStore.swift */; };
 		5B0000022FBE100100000001 /* ProSupporterPaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0000042FBE100100000001 /* ProSupporterPaywallView.swift */; };
 		612286822A56E39700FA0F9C /* AWattPriceWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 61635B242A482E690099F5AD /* AWattPriceWidgetExtension.appex */; platformFilters = (ios, ); settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -151,6 +155,9 @@
 		5A1000082FBE000100000001 /* WidgetPriceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetPriceProvider.swift; sourceTree = "<group>"; };
 		5A1000092FBE000100000001 /* WidgetViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetViews.swift; sourceTree = "<group>"; };
 		5A10000A2FBE000100000001 /* WidgetPriceSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetPriceSnapshot.swift; sourceTree = "<group>"; };
+		5A10000F2FC2000100000001 /* RenewableMixWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenewableMixWidget.swift; sourceTree = "<group>"; };
+		5A1000102FC2000100000001 /* WidgetGenerationMixProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetGenerationMixProvider.swift; sourceTree = "<group>"; };
+		5A1000112FC2000100000001 /* WidgetGenerationMixSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetGenerationMixSnapshot.swift; sourceTree = "<group>"; };
 		5B0000032FBE100100000001 /* ProSupporterStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProSupporterStore.swift; sourceTree = "<group>"; };
 		5B0000042FBE100100000001 /* ProSupporterPaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProSupporterPaywallView.swift; sourceTree = "<group>"; };
 		5CF596453B643BA753483A2C /* SettingsPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPageView.swift; sourceTree = "<group>"; };
@@ -306,7 +313,9 @@
 				5A1000062FBE000100000001 /* CurrentPriceWidget.swift */,
 				61635B2D2A482E690099F5AD /* PricesWidget.swift */,
 				5A1000072FBE000100000001 /* CheapestTimesWidget.swift */,
+				5A10000F2FC2000100000001 /* RenewableMixWidget.swift */,
 				5A1000082FBE000100000001 /* WidgetPriceProvider.swift */,
+				5A1000102FC2000100000001 /* WidgetGenerationMixProvider.swift */,
 				5A1000092FBE000100000001 /* WidgetViews.swift */,
 				61635B2F2A482E6A0099F5AD /* Assets.xcassets */,
 				61635B3F2A4833EF0099F5AD /* Preview Content */,
@@ -348,6 +357,7 @@
 			children = (
 				52D6D993DB3CE3CBB4B1E644 /* Region.swift */,
 				5A10000A2FBE000100000001 /* WidgetPriceSnapshot.swift */,
+				5A1000112FC2000100000001 /* WidgetGenerationMixSnapshot.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -778,6 +788,7 @@
 				1FF85FE467F2EBD6F0165295 /* TotalTimeFormatter.swift in Sources */,
 				F0EF08E10D3BD6AF40D000D7 /* UpdatedDataView.swift in Sources */,
 				5A10000B2FBE000100000001 /* WidgetPriceSnapshot.swift in Sources */,
+				5A1000122FC2000100000001 /* WidgetGenerationMixSnapshot.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -797,7 +808,10 @@
 				5A1000022FBE000100000001 /* CheapestTimesWidget.swift in Sources */,
 				61635B2E2A482E690099F5AD /* PricesWidget.swift in Sources */,
 				5A1000032FBE000100000001 /* WidgetPriceProvider.swift in Sources */,
+				5A10000D2FC2000100000001 /* WidgetGenerationMixProvider.swift in Sources */,
 				5A1000052FBE000100000001 /* WidgetPriceSnapshot.swift in Sources */,
+				5A10000E2FC2000100000001 /* WidgetGenerationMixSnapshot.swift in Sources */,
+				5A10000C2FC2000100000001 /* RenewableMixWidget.swift in Sources */,
 				5A1000042FBE000100000001 /* WidgetViews.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

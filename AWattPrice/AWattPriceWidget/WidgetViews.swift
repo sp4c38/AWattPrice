@@ -105,6 +105,14 @@ enum WidgetText {
     static func updated(_ date: Date) -> String {
         date.formatted(.dateTime.hour(.twoDigits(amPM: .omitted)).minute(.twoDigits))
     }
+
+    static func percent(_ value: Double) -> String {
+        (value / 100).formatted(.percent.precision(.fractionLength(0)))
+    }
+
+    static func megawatt(_ value: Double) -> String {
+        "\(value.formatted(.number.precision(.fractionLength(0)))) MW"
+    }
 }
 
 struct WidgetBackgroundModifier: ViewModifier {
@@ -191,6 +199,265 @@ struct WidgetStatusBadge: View {
     }
 }
 
+struct WidgetGenerationMixStatusBadge: View {
+    let entry: WidgetGenerationMixEntry
+
+    var body: some View {
+        switch entry.state {
+        case .fresh:
+            EmptyView()
+        case .cached:
+            Text("Cached")
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(.secondary)
+        case .unavailable:
+            Text("Unavailable")
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(.secondary)
+        case .lockedPro:
+            Text("Pro")
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(.secondary)
+        }
+    }
+}
+
+struct WidgetGenerationMixUnavailableView: View {
+    let snapshot: WidgetGenerationMixSnapshot
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Image(systemName: "leaf.slash.fill")
+                .font(.title3)
+                .foregroundStyle(WidgetStyle.low)
+
+            Text("Renewable mix unavailable")
+                .font(.headline)
+                .lineLimit(2)
+
+            Text(snapshot.marketAreaName)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .padding(WidgetStyle.smallPadding)
+        .awattWidgetBackground()
+        .widgetURL(WidgetRoute.insights)
+    }
+}
+
+struct RenewableMixWidgetView: View {
+    @Environment(\.widgetFamily) private var family
+
+    let entry: WidgetGenerationMixEntry
+
+    private var snapshot: WidgetGenerationMixSnapshot {
+        entry.snapshot
+    }
+
+    private var renewableColor: Color {
+        if snapshot.renewableShare >= 70 {
+            return WidgetStyle.low
+        }
+
+        if snapshot.renewableShare >= 45 {
+            return WidgetStyle.accent
+        }
+
+        return WidgetStyle.high
+    }
+
+    private var isOutdated: Bool {
+        snapshot.endTime < Date().addingTimeInterval(-90 * 60)
+    }
+
+    var body: some View {
+        if entry.state == .lockedPro {
+            WidgetProLockedView()
+        } else if snapshot.hasMix == false {
+            WidgetGenerationMixUnavailableView(snapshot: snapshot)
+        } else {
+            switch family {
+            case .accessoryRectangular:
+                accessoryRectangularBody
+            default:
+                systemSmallBody
+            }
+        }
+    }
+
+    private var systemSmallBody: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(alignment: .top) {
+                Label("Renewable", systemImage: "leaf.fill")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(WidgetStyle.low)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+
+                Spacer(minLength: 4)
+            }
+
+            Spacer(minLength: 0)
+
+            VStack(alignment: .leading, spacing: isOutdated ? 2 : 0) {
+                Text(WidgetText.percent(snapshot.renewableShare))
+                    .font(.system(size: 34, weight: .bold, design: .rounded))
+                    .monospacedDigit()
+                    .minimumScaleFactor(0.72)
+                    .foregroundStyle(renewableColor)
+                    .lineLimit(1)
+
+                if isOutdated {
+                    Text("Data may be outdated")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.orange)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.82)
+                }
+            }
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Top sources")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+
+                RenewableMixLeadingSources(categories: Array(snapshot.visibleCategories.prefix(2)))
+            }
+        }
+        .padding(WidgetStyle.smallPadding)
+        .awattWidgetBackground()
+        .widgetURL(WidgetRoute.insights)
+    }
+
+    private var accessoryRectangularBody: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Label("Renewable", systemImage: "leaf.fill")
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+
+            Text(WidgetText.percent(snapshot.renewableShare))
+                .font(.system(size: 20, weight: .bold, design: .rounded))
+                .monospacedDigit()
+                .minimumScaleFactor(0.72)
+                .lineLimit(1)
+                .widgetAccentable()
+
+            Text(accessoryContextText)
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+        .containerBackground(.fill, for: .widget)
+        .widgetURL(WidgetRoute.insights)
+    }
+
+    private var accessoryContextText: String {
+        if isOutdated {
+            return String(localized: "Data may be outdated")
+        }
+
+        let topCategories = Array(snapshot.visibleCategories.prefix(2))
+        guard topCategories.isEmpty == false else {
+            return snapshot.marketAreaName
+        }
+
+        return topCategories
+            .map { "\(widgetGenerationMixLocalizedTitle(for: $0.category)) \(WidgetText.percent($0.share))" }
+            .joined(separator: ", ")
+    }
+}
+
+private struct RenewableMixLeadingSources: View {
+    let categories: [WidgetGenerationMixCategory]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 5) {
+            ForEach(categories) { category in
+                HStack(spacing: 6) {
+                    Circle()
+                        .fill(widgetGenerationMixColor(for: category.category))
+                        .frame(width: 7, height: 7)
+
+                    Text(widgetGenerationMixTitle(for: category.category))
+                        .font(.caption.weight(.semibold))
+                        .lineLimit(1)
+
+                    Spacer(minLength: 4)
+
+                    Text(WidgetText.percent(category.share))
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .monospacedDigit()
+                        .lineLimit(1)
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+func widgetGenerationMixTitle(for category: String) -> LocalizedStringKey {
+    switch category {
+    case "solar":
+        return "Solar"
+    case "wind":
+        return "Wind"
+    case "hydro":
+        return "Hydro"
+    case "biomass":
+        return "Biomass"
+    case "fossil":
+        return "Fossil"
+    case "nuclear":
+        return "Nuclear"
+    default:
+        return "Other"
+    }
+}
+
+func widgetGenerationMixLocalizedTitle(for category: String) -> String {
+    switch category {
+    case "solar":
+        return NSLocalizedString("Solar", comment: "Generation mix category")
+    case "wind":
+        return NSLocalizedString("Wind", comment: "Generation mix category")
+    case "hydro":
+        return NSLocalizedString("Hydro", comment: "Generation mix category")
+    case "biomass":
+        return NSLocalizedString("Biomass", comment: "Generation mix category")
+    case "fossil":
+        return NSLocalizedString("Fossil", comment: "Generation mix category")
+    case "nuclear":
+        return NSLocalizedString("Nuclear", comment: "Generation mix category")
+    default:
+        return NSLocalizedString("Other", comment: "Generation mix category")
+    }
+}
+
+func widgetGenerationMixColor(for category: String) -> Color {
+    switch category {
+    case "solar":
+        return Color(red: 0.95, green: 0.67, blue: 0.18)
+    case "wind":
+        return Color(red: 0.28, green: 0.60, blue: 0.86)
+    case "hydro":
+        return Color(red: 0.12, green: 0.48, blue: 0.78)
+    case "biomass":
+        return Color(red: 0.30, green: 0.62, blue: 0.28)
+    case "fossil":
+        return Color(red: 0.50, green: 0.44, blue: 0.39)
+    case "nuclear":
+        return Color(red: 0.58, green: 0.44, blue: 0.78)
+    default:
+        return Color.secondary
+    }
+}
+
 struct CurrentPriceWidgetView: View {
     @Environment(\.widgetFamily) private var family
 
@@ -248,7 +515,7 @@ struct CurrentPriceWidgetView: View {
             HStack(alignment: .top) {
                 Label("Now", systemImage: "bolt.fill")
                     .font(.caption.weight(.semibold))
-                    .foregroundStyle(WidgetStyle.accent)
+                    .foregroundStyle(priceColor)
                     .lineLimit(1)
                     .minimumScaleFactor(0.8)
 
@@ -329,7 +596,7 @@ struct ForecastWidgetView: View {
                 HStack(alignment: .top) {
                     Label("Next 24h", systemImage: "bolt.fill")
                         .font(.caption.weight(.semibold))
-                        .foregroundStyle(WidgetStyle.accent)
+                        .foregroundStyle(currentPriceColor)
                         .lineLimit(1)
                         .minimumScaleFactor(0.8)
 
@@ -549,7 +816,7 @@ struct CheapestTimesWidgetView: View {
                 HStack(alignment: .top) {
                     Label("Cheapest", systemImage: "timer")
                         .font(.caption.weight(.semibold))
-                        .foregroundStyle(WidgetStyle.accent)
+                        .foregroundStyle(WidgetStyle.low)
                         .lineLimit(1)
                         .minimumScaleFactor(0.8)
 

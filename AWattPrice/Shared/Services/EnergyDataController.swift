@@ -437,11 +437,17 @@ class EnergyDataService: ObservableObject {
                     // without issuing additional network requests.
                     let history = try await GenerationMixHistoryData.download(marketArea: pricingConfiguration.marketArea, range: .week)
                     let generationMixData = GenerationMixData(history: history)
+                    let widgetGenerationMixSnapshot = WidgetGenerationMixSnapshot(
+                        generationMix: generationMixData,
+                        setting: setting
+                    )
                     await MainActor.run {
                         guard self.energyData?.area == requestedMarketAreaKey else { return }
                         self.generationMixData = generationMixData
                         self.generationMixHistoryData = history
                         self.generationMixDownloadState = .finished
+                        widgetGenerationMixSnapshot.cache()
+                        AWattPriceWidgetTimelines.reloadAll()
                          print("Generation mix history download completed.")
                       }
                    } catch {

@@ -14,5 +14,6 @@ struct AWattPriceWidgetBundle: WidgetBundle {
         CurrentPriceWidget()
         PricesWidget()
         CheapestTimesWidget()
+        RenewableMixWidget()
     }
 }

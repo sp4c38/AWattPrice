@@ -139,15 +139,23 @@ private struct EnergyPriceGraphDisplayRow: Identifiable {
             return "\(formattedTime(startTime))-\(formattedTime(endTime))"
         }
 
-        return formattedHour(startTime)
+        return formattedCollapsedTimeLabel(startTime: startTime, endTime: endTime)
     }
 
     private func formattedTime(_ date: Date) -> String {
         date.formatted(.dateTime.hour(.twoDigits(amPM: .omitted)).minute(.twoDigits))
     }
 
-    private func formattedHour(_ date: Date) -> String {
-        "\(date.formatted(.dateTime.hour(.twoDigits(amPM: .omitted))))h"
+    private func formattedCollapsedTimeLabel(startTime: Date, endTime: Date) -> String {
+        let calendar = Calendar.current
+        let startsOnFullHour = calendar.component(.minute, from: startTime) == 0
+        let endsOnFullHour = calendar.component(.minute, from: endTime) == 0
+
+        if startsOnFullHour == false || endsOnFullHour == false {
+            return "\(formattedTime(startTime))-\(formattedTime(endTime))"
+        }
+
+        return "\(startTime.formatted(.dateTime.hour(.twoDigits(amPM: .omitted))))h"
     }
 }
 
@@ -159,12 +167,13 @@ private struct EnergyPriceGraphLayout {
     static let adjacentFocusedRowWeight: CGFloat = 1.65
     static let focusedHourlyRowWeight: CGFloat = 1.35
     static let adjacentFocusedHourlyRowWeight: CGFloat = 1.13
+    static let plotTopPadding: CGFloat = 10
 
     let plotHeight: CGFloat
     let rowHeights: [CGFloat]
 
     init(rowWeights: [CGFloat], availableHeight: CGFloat) {
-        let localPlotHeight = max(availableHeight - Self.axisHeight, 0)
+        let localPlotHeight = max(availableHeight - Self.axisHeight - Self.plotTopPadding, 0)
         let totalSpacing = Self.rowSpacing * CGFloat(max(rowWeights.count - 1, 0))
         let availableRowsHeight = max(localPlotHeight - totalSpacing, 0)
         let totalWeight = rowWeights.reduce(0, +)
@@ -187,7 +196,7 @@ private struct EnergyPriceGraphLayout {
     }
 
     func index(at locationY: CGFloat) -> Int? {
-        let plotY = locationY - Self.axisHeight
+        let plotY = locationY - Self.axisHeight - Self.plotTopPadding
         guard plotY >= 0, plotY <= plotHeight else { return nil }
 
         var rowMinY: CGFloat = 0
@@ -870,6 +879,7 @@ struct EnergyPriceGraph: View {
                             .zIndex(max(rowZIndex(for: row), row.showsSelectedOverlay ? 5 : 0))
                         }
                     }
+                    .padding(.top, EnergyPriceGraphLayout.plotTopPadding)
                     .clipped()
                 }
                 .frame(width: plotWidth, height: geometry.size.height, alignment: .topLeading)
@@ -886,6 +896,7 @@ struct EnergyPriceGraph: View {
                         .position(
                             x: plotWidth / 2,
                             y: EnergyPriceGraphLayout.axisHeight
+                                + EnergyPriceGraphLayout.plotTopPadding
                                 + layout.rowCenterY(at: index)
                                 + liftedValueBadgeYOffset(for: layout.rowHeight(at: index))
                         )

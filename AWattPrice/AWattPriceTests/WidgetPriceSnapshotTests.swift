@@ -76,6 +76,61 @@ final class WidgetPriceSnapshotTests: XCTestCase {
         XCTAssertEqual(snapshot.cheapestWindows.count, 0)
     }
 
+    func testGenerationMixSnapshotSortsAndFiltersCategories() {
+        let snapshot = Self.generationMixSnapshot(
+            categories: [
+                WidgetGenerationMixCategory(category: "fossil", generationMW: 10, share: 10, isRenewable: false),
+                WidgetGenerationMixCategory(category: "hydro", generationMW: 20, share: 20, isRenewable: true),
+                WidgetGenerationMixCategory(category: "solar", generationMW: 20, share: 20, isRenewable: true),
+                WidgetGenerationMixCategory(category: "wind", generationMW: 0, share: 0, isRenewable: true),
+            ]
+        )
+
+        XCTAssertEqual(snapshot.visibleCategories.map(\.category), ["solar", "hydro", "fossil"])
+        XCTAssertEqual(snapshot.orderedCategories.map(\.category), ["solar", "hydro", "fossil"])
+        XCTAssertTrue(snapshot.hasMix)
+    }
+
+    func testGenerationMixSnapshotPreservesSummaryValues() {
+        let snapshot = Self.generationMixSnapshot()
+
+        XCTAssertEqual(snapshot.marketAreaName, "Deutschland / Luxemburg")
+        XCTAssertEqual(snapshot.updatedAt, Self.base)
+        XCTAssertEqual(snapshot.startTime, Self.base)
+        XCTAssertEqual(snapshot.endTime, Self.base.addingTimeInterval(60 * 60))
+        XCTAssertEqual(snapshot.totalGenerationMW, 100)
+        XCTAssertEqual(snapshot.renewableGenerationMW, 64)
+        XCTAssertEqual(snapshot.renewableShare, 64)
+    }
+
+    func testGenerationMixSnapshotCodableRoundTrip() throws {
+        let snapshot = Self.generationMixSnapshot()
+        let data = try JSONEncoder().encode(snapshot)
+        let decoded = try JSONDecoder().decode(WidgetGenerationMixSnapshot.self, from: data)
+
+        XCTAssertEqual(decoded.marketAreaName, snapshot.marketAreaName)
+        XCTAssertEqual(decoded.renewableShare, snapshot.renewableShare)
+        XCTAssertEqual(decoded.visibleCategories.map(\.category), snapshot.visibleCategories.map(\.category))
+    }
+
+    func testEmptyGenerationMixSnapshotIsUnavailable() {
+        let snapshot = WidgetGenerationMixSnapshot(
+            createdAt: Self.base,
+            marketAreaName: "Deutschland / Luxemburg",
+            updatedAt: Self.base,
+            startTime: Self.base,
+            endTime: Self.base,
+            totalGenerationMW: 0,
+            renewableGenerationMW: 0,
+            renewableShare: 0,
+            categories: []
+        )
+
+        XCTAssertFalse(snapshot.hasMix)
+        XCTAssertEqual(snapshot.visibleCategories.count, 0)
+        XCTAssertEqual(snapshot.orderedCategories.count, 0)
+    }
+
     private static let base = Date(timeIntervalSince1970: 4_102_444_800)
 
     private static func point(hour: Int, price: Double) -> WidgetPricePoint {
@@ -91,6 +146,27 @@ final class WidgetPriceSnapshotTests: XCTestCase {
             startTime: base.addingTimeInterval(TimeInterval(startMinutes * 60)),
             endTime: base.addingTimeInterval(TimeInterval(endMinutes * 60)),
             marketprice: price
+        )
+    }
+
+    private static func generationMixSnapshot(
+        categories: [WidgetGenerationMixCategory] = [
+            WidgetGenerationMixCategory(category: "solar", generationMW: 22, share: 22, isRenewable: true),
+            WidgetGenerationMixCategory(category: "wind", generationMW: 34, share: 34, isRenewable: true),
+            WidgetGenerationMixCategory(category: "hydro", generationMW: 8, share: 8, isRenewable: true),
+            WidgetGenerationMixCategory(category: "fossil", generationMW: 36, share: 36, isRenewable: false),
+        ]
+    ) -> WidgetGenerationMixSnapshot {
+        WidgetGenerationMixSnapshot(
+            createdAt: base,
+            marketAreaName: "Deutschland / Luxemburg",
+            updatedAt: base,
+            startTime: base,
+            endTime: base.addingTimeInterval(60 * 60),
+            totalGenerationMW: 100,
+            renewableGenerationMW: 64,
+            renewableShare: 64,
+            categories: categories
         )
     }
 }

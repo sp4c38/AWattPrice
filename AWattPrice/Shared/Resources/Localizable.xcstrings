@@ -1,0 +1,4321 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "·" : {
+
+    },
+    "**Tomorrow's** price summary." : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preisübersicht für **morgen**."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "**Tomorrow's** price summary."
+          }
+        }
+      }
+    },
+    "%@ - %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ - %2$@"
+          }
+        }
+      }
+    },
+    "%@ · %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ · %2$@"
+          }
+        }
+      }
+    },
+    "%@ %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ %2$@"
+          }
+        }
+      }
+    },
+    "%@ %@ (%@)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ %2$@ (%3$@)"
+          }
+        }
+      }
+    },
+    "%@ usage" : {
+      "comment" : "NSLocalizedString",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ Nutzung"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ usage"
+          }
+        }
+      }
+    },
+    "%@, renewable mix %@" : {
+      "comment" : "Accessibility label for one generation mix history interval",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, erneuerbarer Mix %@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, renewable mix %@"
+          }
+        }
+      }
+    },
+    "%@h" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ Std."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@h"
+          }
+        }
+      }
+    },
+    "%@h, %@min" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ Std., %@ min"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@h, %@min"
+          }
+        }
+      }
+    },
+    "%@min" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ min"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@min"
+          }
+        }
+      }
+    },
+    "<1min" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "<1 min"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "<1min"
+          }
+        }
+      }
+    },
+    "1h usage" : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 Std. Nutzung"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1h usage"
+          }
+        }
+      }
+    },
+    "2h usage" : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 Std. Nutzung"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2h usage"
+          }
+        }
+      }
+    },
+    "4h usage" : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "4 Std. Nutzung"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "4h usage"
+          }
+        }
+      }
+    },
+    "60m (recommended): Better readability showing the hourly averages. Tap an hour for 15-min prices.\n\n15m: See all price points directly." : {
+      "comment" : "SwiftUI literal",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "60 min (empfohlen): Bessere Lesbarkeit mit stündlichen Durchschnittswerten. Tippe auf eine Stunde für 15-min-Preise.\n\n15 min: Zeigt alle Preispunkte direkt."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "60m (recommended): Better readability showing the hourly averages. Tap an hour for 15-min prices.\n\n15m: See all price points directly."
+          }
+        }
+      }
+    },
+    "A note from the developer" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eine Notiz vom Entwickler"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A note from the developer"
+          }
+        }
+      }
+    },
+    "About the price of a donut." : {
+      "comment" : "Localized returned display text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Etwa der Preis eines Donuts."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "About the price of a donut."
+          }
+        }
+      }
+    },
+    "Add our widgets to your Home Screen for quick price updates." : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Füge die Widgets deinem Home-Bildschirm hinzu, um Preise schnell im Blick zu behalten."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add our widgets to your Home Screen for quick price updates."
+          }
+        }
+      }
+    },
+    "Add-ons are applied to prices everywhere throughout AWattPrice." : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preisaufschläge werden überall in AWattPrice auf Preise angewendet."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add-ons are applied to prices everywhere throughout AWattPrice."
+          }
+        }
+      }
+    },
+    "Advanced insights" : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erweiterte Einblicke"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Advanced insights"
+          }
+        }
+      }
+    },
+    "Advanced insights help you plan around cheap hours, expensive peaks, and renewable energy mix." : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erweiterte Einblicke helfen dir, günstige Stunden, teure Spitzen und erneuerbaren Strommix besser einzuplanen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Advanced insights help you plan around cheap hours, expensive peaks, and renewable energy mix."
+          }
+        }
+      }
+    },
+    "Alert below" : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hinweis unter"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alert below"
+          }
+        }
+      }
+    },
+    "All available" : {
+      "comment" : "Localized returned display text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alles Verfügbare"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All available"
+          }
+        }
+      }
+    },
+    "Annual Consumption" : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jahresverbrauch"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Annual Consumption"
+          }
+        }
+      }
+    },
+    "Annual consumption is required to allocate monthly fixed costs." : {
+      "comment" : "Localized returned display text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Jahresverbrauch ist erforderlich, um monatliche Fixkosten umzulegen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Annual consumption is required to allocate monthly fixed costs."
+          }
+        }
+      }
+    },
+    "Around average" : {
+      "comment" : "Localized returned display text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Um den Durchschnitt"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Around average"
+          }
+        }
+      }
+    },
+    "Austria" : {
+      "comment" : "NSLocalizedString",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Österreich"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Austria"
+          }
+        }
+      }
+    },
+    "Average" : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Durchschnitt"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Average"
+          }
+        }
+      }
+    },
+    "Average Price" : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Durchschnittspreis"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Average Price"
+          }
+        }
+      }
+    },
+    "AWattPrice" : {
+      "comment" : "SwiftUI literal",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AWattPrice"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AWattPrice"
+          }
+        }
+      }
+    },
+    "AWattPrice Pro Supporter" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AWattPrice Pro Supporter"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AWattPrice Pro Supporter"
+          }
+        }
+      }
+    },
+    "Basic electricity provider fee." : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grundgebühr deines Stromanbieters."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Basic electricity provider fee."
+          }
+        }
+      }
+    },
+    "Bio" : {
+      "comment" : "Localized returned display text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bio"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bio"
+          }
+        }
+      }
+    },
+    "Biomass" : {
+      "comment" : "Generation mix category",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Biomasse"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Biomass"
+          }
+        }
+      }
+    },
+    "Cached" : {
+      "comment" : "SwiftUI literal",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gecacht"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cached"
+          }
+        }
+      }
+    },
+    "Calculate results" : {
+      "comment" : "SwiftUI literal",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ergebnis berechnen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Calculate results"
+          }
+        }
+      }
+    },
+    "Category" : {
+      "comment" : "String(localized:)",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kategorie"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Category"
+          }
+        }
+      }
+    },
+    "Cheap hours **tomorrow**." : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Günstige Stunden **morgen**."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cheap hours **tomorrow**."
+          }
+        }
+      }
+    },
+    "Cheapest" : {
+      "comment" : "SwiftUI literal",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Günstigste"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cheapest"
+          }
+        }
+      }
+    },
+    "Cheapest Time" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Günstigste Zeit"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cheapest Time"
+          }
+        }
+      }
+    },
+    "Cheapest times" : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Günstigste Zeiten"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cheapest times"
+          }
+        }
+      }
+    },
+    "Cheapest Times" : {
+      "comment" : "Widget display name",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Günstigste Zeiten"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cheapest Times"
+          }
+        }
+      }
+    },
+    "Cheapest windows, expensive peaks, and renewable mix infos." : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Günstige Zeitfenster, teure Spitzen und Infos zum erneuerbaren Mix."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cheapest windows, expensive peaks, and renewable mix infos."
+          }
+        }
+      }
+    },
+    "cheapestPriceResultPage.cheapestTimeErrorOccurred" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Es ist ein Fehler aufgetreten.\nBitte versuchen Sie es später noch einmal."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "An error occurred.\nPlease try again later."
+          }
+        }
+      }
+    },
+    "Check your electricity contract and fill in whichever values apply to you." : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prüfe deinen Stromvertrag und trage die Werte ein, die auf dich zutreffen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Check your electricity contract and fill in whichever values apply to you."
+          }
+        }
+      }
+    },
+    "Compare prices" : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preise vergleichen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compare prices"
+          }
+        }
+      }
+    },
+    "Continue" : {
+      "comment" : "SwiftUI literal",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weiter"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continue"
+          }
+        }
+      }
+    },
+    "Continue with %@" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weiter mit %@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continue with %@"
+          }
+        }
+      }
+    },
+    "Couldn't get history" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Historie konnte nicht geladen werden"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't get history"
+          }
+        }
+      }
+    },
+    "Couldn't get new data. Tap to retry." : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Neue Daten konnten nicht heruntergeladen werden. Tippe, um erneut zu versuchen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't get new data. Tap to retry."
+          }
+        }
+      }
+    },
+    "ct/kWh" : {
+      "comment" : "SwiftUI literal",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ct/kWh"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ct/kWh"
+          }
+        }
+      }
+    },
+    "Current" : {
+      "comment" : "SwiftUI literal",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktuell"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Current"
+          }
+        }
+      }
+    },
+    "Current electricity price" : {
+      "comment" : "Localized returned display text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktueller Strompreis"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Current electricity price"
+          }
+        }
+      }
+    },
+    "Current Price" : {
+      "comment" : "Widget display name",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktueller Preis"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Current Price"
+          }
+        }
+      }
+    },
+    "Current prices · Tap for history" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktuelle Preise · Verlauf anzeigen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Current prices · Tap for history"
+          }
+        }
+      }
+    },
+    "Custom" : {
+      "comment" : "SwiftUI literal",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eigene Suche"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Custom"
+          }
+        }
+      }
+    },
+    "Custom date" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eigenes Datum"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Custom date"
+          }
+        }
+      }
+    },
+    "Daily Summary" : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tägliche Übersicht"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Daily Summary"
+          }
+        }
+      }
+    },
+    "Data may be outdated" : {
+      "comment" : "SwiftUI literal",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Daten eventuell veraltet"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Data may be outdated"
+          }
+        }
+      }
+    },
+    "dataError.connection.message" : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AWattPrice benötigt eine Verbindung, um die aktuellen Strompreise zu laden."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AWattPrice needs a connection to load the latest electricity prices."
+          }
+        }
+      }
+    },
+    "dataError.connection.retryDisabled" : {
+      "comment" : "SwiftUI literal",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erneut versuchen ist verfügbar, sobald Sie wieder online sind."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retry is available once you are back online."
+          }
+        }
+      }
+    },
+    "dataError.connection.title" : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Internetverbindung"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Internet Connection"
+          }
+        }
+      }
+    },
+    "dataError.download.message" : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bitte versuche es gleich noch einmal."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please try again in a moment."
+          }
+        }
+      }
+    },
+    "dataError.download.title" : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preise konnten nicht geladen werden"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prices couldn't be loaded"
+          }
+        }
+      }
+    },
+    "dataError.noData.message" : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Für diese Marktzone sind aktuell keine Strompreisdaten verfügbar."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "There is currently no electricity price data for this market area."
+          }
+        }
+      }
+    },
+    "dataError.noData.title" : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Preise verfügbar"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No prices available"
+          }
+        }
+      }
+    },
+    "dataError.settings.title" : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einstellungen konnten nicht geladen werden."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't load settings."
+          }
+        }
+      }
+    },
+    "Date" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Datum"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Date"
+          }
+        }
+      }
+    },
+    "Development" : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entwicklung"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Development"
+          }
+        }
+      }
+    },
+    "Done" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fertig"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Done"
+          }
+        }
+      }
+    },
+    "Duration" : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dauer"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Duration"
+          }
+        }
+      }
+    },
+    "Electricity Price" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Strompreis"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Electricity Price"
+          }
+        }
+      }
+    },
+    "Energy mix" : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erzeugungsmix"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Energy mix"
+          }
+        }
+      }
+    },
+    "Energy Mix" : {
+      "comment" : "SwiftUI navigation title",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erzeugungsmix"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Energy Mix"
+          }
+        }
+      }
+    },
+    "Energy Mix History" : {
+      "comment" : "SwiftUI literal",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erzeugungsmix-Verlauf"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Energy Mix History"
+          }
+        }
+      }
+    },
+    "Enter app" : {
+      "comment" : "SwiftUI literal",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zur App"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter app"
+          }
+        }
+      }
+    },
+    "Error uploading settings" : {
+      "comment" : "SwiftUI literal",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fehler beim Hochladen der Einstellungen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error uploading settings"
+          }
+        }
+      }
+    },
+    "Expensive hours **tomorrow**." : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Teure Stunden **morgen**."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Expensive hours **tomorrow**."
+          }
+        }
+      }
+    },
+    "Extras & Help" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Extras & Hilfe"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Extras & Help"
+          }
+        }
+      }
+    },
+    "Family Sharing" : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Familienfreigabe"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Family Sharing"
+          }
+        }
+      }
+    },
+    "Final price =" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Endpreis ="
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Final price ="
+          }
+        }
+      }
+    },
+    "Find the cheapest time for a selected duration within a time range." : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Finde die günstigste Zeit für eine gewählte Dauer innerhalb eines Zeitfensters."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Find the cheapest time for a selected duration within a time range."
+          }
+        }
+      }
+    },
+    "Finding cheapest time..." : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Günstigste Zeit wird gesucht..."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Finding cheapest time..."
+          }
+        }
+      }
+    },
+    "Fixed Add-on" : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fixe Zusatzkosten"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fixed Add-on"
+          }
+        }
+      }
+    },
+    "Focus modes may silence example notifications." : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fokusmodi können Beispiel-Benachrichtigungen stummschalten."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Focus modes may silence example notifications."
+          }
+        }
+      }
+    },
+    "Fossil" : {
+      "comment" : "Generation mix category",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fossil"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fossil"
+          }
+        }
+      }
+    },
+    "Generation" : {
+      "comment" : "String(localized:)",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erzeugung"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Generation"
+          }
+        }
+      }
+    },
+    "Generation mix" : {
+      "comment" : "Accessibility label",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erzeugungsmix"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Generation mix"
+          }
+        }
+      }
+    },
+    "Generation mix unavailable" : {
+      "comment" : "SwiftUI literal",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erzeugungsmix nicht verfügbar"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Generation mix unavailable"
+          }
+        }
+      }
+    },
+    "Germany / Luxembourg" : {
+      "comment" : "NSLocalizedString",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deutschland / Luxemburg"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Germany / Luxembourg"
+          }
+        }
+      }
+    },
+    "Get Help" : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hilfe erhalten"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Get Help"
+          }
+        }
+      }
+    },
+    "Good time to use energy!" : {
+      "comment" : "Localized returned display text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Guter Zeitpunkt für Stromverbrauch!"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Good time to use energy!"
+          }
+        }
+      }
+    },
+    "Help & Suggestions" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hilfe & Vorschläge"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Help & Suggestions"
+          }
+        }
+      }
+    },
+    "Helps keep AWattPrice maintained." : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hilft, AWattPrice weiter zu pflegen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Helps keep AWattPrice maintained."
+          }
+        }
+      }
+    },
+    "Hi! I’m a student and developing AWattPrice in my spare time. The goal is to make dynamic electricity prices easier to follow. Pro helps cover server and license costs and keeps the app running. I hope you like the app!" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hi! Ich bin Student und entwickle AWattPrice in meiner Freizeit. Das Ziel ist, dynamische Strompreise leichter verständlich zu machen. Pro hilft, Server- und Lizenzkosten zu decken und die App am Laufen zu halten. Ich hoffe, dir gefällt die App!"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hi! I’m a student and developing AWattPrice in my spare time. The goal is to make dynamic electricity prices easier to follow. Pro helps cover server and license costs and keeps the app running. I hope you like the app!"
+          }
+        }
+      }
+    },
+    "Highest" : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Höchstwert"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Highest"
+          }
+        }
+      }
+    },
+    "Highest price" : {
+      "comment" : "Accessibility label",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Höchster Preis"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Highest price"
+          }
+        }
+      }
+    },
+    "Historical prices" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Historische Preise"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Historical prices"
+          }
+        }
+      }
+    },
+    "History" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Historie"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "History"
+          }
+        }
+      }
+    },
+    "Home Screen widgets" : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Home-Bildschirm-Widgets"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Home Screen widgets"
+          }
+        }
+      }
+    },
+    "hour" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Std."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "hour"
+          }
+        }
+      }
+    },
+    "hours" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Std."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "hours"
+          }
+        }
+      }
+    },
+    "Hydro" : {
+      "comment" : "Generation mix category",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wasser"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hydro"
+          }
+        }
+      }
+    },
+    "Include your provider’s fees and taxes in displayed prices." : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beziehe Gebühren und Steuern deines Anbieters in angezeigte Preise ein."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Include your provider’s fees and taxes in displayed prices."
+          }
+        }
+      }
+    },
+    "Insights" : {
+      "comment" : "SwiftUI literal",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einblicke"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Insights"
+          }
+        }
+      }
+    },
+    "Keep prices visible at a glance outside the app." : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Behalte Preise auch außerhalb der App schnell im Blick."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keep prices visible at a glance outside the app."
+          }
+        }
+      }
+    },
+    "Less than a dinner out." : {
+      "comment" : "Localized returned display text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weniger als ein Abendessen auswärts."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Less than a dinner out."
+          }
+        }
+      }
+    },
+    "Lifetime" : {
+      "comment" : "Localized returned display text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lifetime"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lifetime"
+          }
+        }
+      }
+    },
+    "Live" : {
+      "comment" : "SwiftUI literal",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Live"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Live"
+          }
+        }
+      }
+    },
+    "Live now" : {
+      "comment" : "SwiftUI literal",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jetzt live"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Live now"
+          }
+        }
+      }
+    },
+    "Live now · until %@" : {
+      "comment" : "Live freshness text for generation mix data",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jetzt live · bis %@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Live now · until %@"
+          }
+        }
+      }
+    },
+    "Loading" : {
+      "comment" : "SwiftUI literal",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lädt"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Loading"
+          }
+        }
+      }
+    },
+    "Loading generation mix" : {
+      "comment" : "SwiftUI literal",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lade Erzeugungsmix"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Loading generation mix"
+          }
+        }
+      }
+    },
+    "Loading history" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lade Historie"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Loading history"
+          }
+        }
+      }
+    },
+    "Loading Pro options" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro-Optionen werden geladen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Loading Pro options"
+          }
+        }
+      }
+    },
+    "Look back at previous days directly in the price graph." : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sieh vergangene Tage direkt im Preisdiagramm."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Look back at previous days directly in the price graph."
+          }
+        }
+      }
+    },
+    "Lowest" : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tiefstwert"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lowest"
+          }
+        }
+      }
+    },
+    "Lowest price" : {
+      "comment" : "Accessibility label",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Niedrigster Preis"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lowest price"
+          }
+        }
+      }
+    },
+    "Made with love in Dresden for a sustainable future." : {
+      "comment" : "SwiftUI literal",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mit Liebe in Dresden für eine nachhaltige Zukunft gemacht."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Made with love in Dresden for a sustainable future."
+          }
+        }
+      }
+    },
+    "Market price" : {
+      "comment" : "Localized formula label",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Marktpreis"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Market price"
+          }
+        }
+      }
+    },
+    "min" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "min"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "min"
+          }
+        }
+      }
+    },
+    "Monthly" : {
+      "comment" : "Localized returned display text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Monatlich"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Monthly"
+          }
+        }
+      }
+    },
+    "Monthly and yearly plans renew automatically. Lifetime is a one-time purchase. All purchases include free family sharing." : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Monats- und Jahresabos verlängern sich automatisch. Lifetime ist ein einmaliger Kauf. Alle Käufe unterstützen die Familienfreigabe."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Monthly and yearly plans renew automatically. Lifetime is a one-time purchase. All purchases include free family sharing."
+          }
+        }
+      }
+    },
+    "Monthly Fixed Cost" : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Monatliche Fixkosten"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Monthly Fixed Cost"
+          }
+        }
+      }
+    },
+    "Monthly fixed cost adds" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Monatliche Fixkosten ergeben"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Monthly fixed cost adds"
+          }
+        }
+      }
+    },
+    "Most expensive times" : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Teuerste Zeiten"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Most expensive times"
+          }
+        }
+      }
+    },
+    "Most popular" : {
+      "comment" : "Localized returned display text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Am beliebtesten"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Most popular"
+          }
+        }
+      }
+    },
+    "Next 3 hours" : {
+      "comment" : "Localized returned display text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nächste 3 Std."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Next 3 hours"
+          }
+        }
+      }
+    },
+    "Next 3h falling" : {
+      "comment" : "Localized returned display text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nächste 3 Std. fallend"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Next 3h falling"
+          }
+        }
+      }
+    },
+    "Next 3h rising" : {
+      "comment" : "Localized returned display text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nächste 3 Std. steigend"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Next 3h rising"
+          }
+        }
+      }
+    },
+    "Next 3h stable" : {
+      "comment" : "Localized returned display text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nächste 3 Std. stabil"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Next 3h stable"
+          }
+        }
+      }
+    },
+    "Next 12 hours" : {
+      "comment" : "Localized returned display text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nächste 12 Std."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Next 12 hours"
+          }
+        }
+      }
+    },
+    "No active Pro purchase was found." : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Es wurde kein aktiver Pro-Kauf gefunden."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No active Pro purchase was found."
+          }
+        }
+      }
+    },
+    "No full time window available." : {
+      "comment" : "SwiftUI literal",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kein vollständiges Zeitfenster verfügbar."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No full time window available."
+          }
+        }
+      }
+    },
+    "No history data available" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine historischen Daten verfügbar"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No history data available"
+          }
+        }
+      }
+    },
+    "No Result Found" : {
+      "comment" : "SwiftUI literal",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kein Ergebnis gefunden"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Result Found"
+          }
+        }
+      }
+    },
+    "Notification example could not be loaded." : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das Benachrichtigungsbeispiel konnte nicht geladen werden."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notification example could not be loaded."
+          }
+        }
+      }
+    },
+    "Notification settings could not be saved to the server. Your previous settings were restored." : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Benachrichtigungen konnten nicht auf dem Server gespeichert werden. Deine vorherigen Einstellungen wurden wiederhergestellt."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notification settings could not be saved to the server. Your previous settings were restored."
+          }
+        }
+      }
+    },
+    "Notifications" : {
+      "comment" : "SwiftUI literal",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Benachrichtigungen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notifications"
+          }
+        }
+      }
+    },
+    "Notifications are disabled." : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Benachrichtigungen sind deaktiviert."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notifications are disabled."
+          }
+        }
+      }
+    },
+    "notifications.daily_summary.body" : {
+      "comment" : "APNs localization key",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Morgen ist die günstigste Stunde um %@ Uhr mit %@ ct. Die teuerste Stunde ist um %@ Uhr mit %@ ct."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tomorrow's cheapest hour is %@ at %@ ct. Most expensive hour is %@ at %@ ct."
+          }
+        }
+      }
+    },
+    "notifications.daily_summary.body.example" : {
+      "comment" : "APNs localization key",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Morgen ist die günstigste Stunde um %@ Uhr mit %@ ct. Die teuerste Stunde ist um %@ Uhr mit %@ ct. [Beispieldaten]"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tomorrow's cheapest hour is %@ at %@ ct. Most expensive hour is %@ at %@ ct. [Example data]"
+          }
+        }
+      }
+    },
+    "notifications.daily_summary.title" : {
+      "comment" : "APNs localization key",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tägliche Übersicht"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Daily Summary"
+          }
+        }
+      }
+    },
+    "notifications.price_above.body.example" : {
+      "comment" : "APNs localization key",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Morgen steigen die Strompreise über %@ ct. Teuerste Stunde um %@ Uhr mit %@ ct. [Beispieldaten]"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tomorrow, electricity prices rise above %@ ct. Most expensive hour at %@ with %@ ct. [Example data]"
+          }
+        }
+      }
+    },
+    "notifications.price_above.body.multiple" : {
+      "comment" : "APNs localization key",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Morgen steigen die Strompreise %1$@ Mal über %2$@ ct. Teuerster Preis um %3$@ Uhr mit %4$@ ct."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tomorrow, electricity prices rise above %2$@ ct %1$@ times. Most expensive hour at %3$@ with %4$@ ct."
+          }
+        }
+      }
+    },
+    "notifications.price_above.body.single" : {
+      "comment" : "APNs localization key",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Morgen steigen die Strompreise %1$@ Mal über %2$@ ct. Teuerster Preis um %3$@ Uhr mit %4$@ ct."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tomorrow, electricity prices rise above %2$@ ct %1$@ time. Most expensive hour at %3$@ with %4$@ ct."
+          }
+        }
+      }
+    },
+    "notifications.price_above.title" : {
+      "comment" : "APNs localization key",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preis über Grenze"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Price Above Alert"
+          }
+        }
+      }
+    },
+    "notifications.price_below.body.example" : {
+      "comment" : "APNs localization key",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Morgen fallen die Strompreise unter %@ ct. Günstigste Stunde um %@ Uhr mit %@ ct. [Beispieldaten]"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tomorrow, electricity prices drop below %@ ct. Cheapest hour at %@ with %@ ct. [Example data]"
+          }
+        }
+      }
+    },
+    "notifications.price_below.body.multiple" : {
+      "comment" : "APNs localization key",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Morgen fallen die Strompreise %1$@ Mal unter %2$@ ct. Günstigster Preis um %3$@ Uhr mit %4$@ ct."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tomorrow, electricity prices drop below %2$@ ct %1$@ times. Cheapest hour at %3$@ with %4$@ ct."
+          }
+        }
+      }
+    },
+    "notifications.price_below.body.single" : {
+      "comment" : "APNs localization key",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Morgen fallen die Strompreise %1$@ Mal unter %2$@ ct. Günstigster Preis um %3$@ Uhr mit %4$@ ct."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tomorrow, electricity prices drop below %2$@ ct %1$@ time. Cheapest hour at %3$@ with %4$@ ct."
+          }
+        }
+      }
+    },
+    "notifications.price_below.title" : {
+      "comment" : "APNs localization key",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preis unter Grenze"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Price Below Alert"
+          }
+        }
+      }
+    },
+    "now" : {
+      "comment" : "SwiftUI literal",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "jetzt"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "now"
+          }
+        }
+      }
+    },
+    "Now" : {
+      "comment" : "SwiftUI literal",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jetzt"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Now"
+          }
+        }
+      }
+    },
+    "Nuclear" : {
+      "comment" : "Generation mix category",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kernkraft"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nuclear"
+          }
+        }
+      }
+    },
+    "OK" : {
+      "comment" : "SwiftUI literal",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
+          }
+        }
+      }
+    },
+    "One-time" : {
+      "comment" : "Localized returned display text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einmalig"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "One-time"
+          }
+        }
+      }
+    },
+    "Open AWattPrice to unlock widgets." : {
+      "comment" : "SwiftUI literal",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Öffne AWattPrice, um Widgets freizuschalten."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open AWattPrice to unlock widgets."
+          }
+        }
+      }
+    },
+    "Open Cheapest Time" : {
+      "comment" : "Accessibility label",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Günstigste Zeit öffnen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open Cheapest Time"
+          }
+        }
+      }
+    },
+    "Open Energy Mix History" : {
+      "comment" : "Accessibility label",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erzeugungsmix-Verlauf öffnen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open Energy Mix History"
+          }
+        }
+      }
+    },
+    "Open Settings App" : {
+      "comment" : "SwiftUI literal",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einstellungen öffnen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open Settings App"
+          }
+        }
+      }
+    },
+    "Other" : {
+      "comment" : "Generation mix category",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sonstige"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Other"
+          }
+        }
+      }
+    },
+    "Percentage Add-on" : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prozentualer Aufschlag"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Percentage Add-on"
+          }
+        }
+      }
+    },
+    "Play confetti" : {
+      "comment" : "SwiftUI literal",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Konfetti abspielen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Play confetti"
+          }
+        }
+      }
+    },
+    "Price Above" : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preis darüber"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Price Above"
+          }
+        }
+      }
+    },
+    "Price add-ons" : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preisaufschläge"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Price add-ons"
+          }
+        }
+      }
+    },
+    "Price Add-ons" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preisaufschläge"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Price Add-ons"
+          }
+        }
+      }
+    },
+    "Price add-ons could not be saved to the server. Your previous settings were restored." : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Preisaufschläge konnten nicht auf dem Server gespeichert werden. Ihre vorherigen Einstellungen wurden wiederhergestellt."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Price add-ons could not be saved to the server. Your previous settings were restored."
+          }
+        }
+      }
+    },
+    "Price alerts and daily summaries when new prices arrive." : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preishinweise und tägliche Übersichten, sobald neue Preise ankommen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Price alerts and daily summaries when new prices arrive."
+          }
+        }
+      }
+    },
+    "Price Below" : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preis darunter"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Price Below"
+          }
+        }
+      }
+    },
+    "Price data selection" : {
+      "comment" : "Accessibility label",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preisdaten-Auswahl"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Price data selection"
+          }
+        }
+      }
+    },
+    "Price Forecast" : {
+      "comment" : "Widget display name",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preisprognose"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Price Forecast"
+          }
+        }
+      }
+    },
+    "Price graph interval" : {
+      "comment" : "SwiftUI literal",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Intervall des Preisdiagramms"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Price graph interval"
+          }
+        }
+      }
+    },
+    "Price graph interval info" : {
+      "comment" : "Accessibility label",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Info zum Intervall des Preisdiagramms"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Price graph interval info"
+          }
+        }
+      }
+    },
+    "Price Guard" : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preiswächter"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Price Guard"
+          }
+        }
+      }
+    },
+    "Price history" : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preishistorie"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Price history"
+          }
+        }
+      }
+    },
+    "Price is sub-zero" : {
+      "comment" : "Localized returned display text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preis unter Null"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Price is sub-zero"
+          }
+        }
+      }
+    },
+    "Price range" : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preisspanne"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Price range"
+          }
+        }
+      }
+    },
+    "Price range from %@ to %@, average %@" : {
+      "comment" : "Accessibility label for the insights price range",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preisspanne von %@ bis %@, Durchschnitt %@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Price range from %@ to %@, average %@"
+          }
+        }
+      }
+    },
+    "Price zone" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preiszone"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Price zone"
+          }
+        }
+      }
+    },
+    "Prices" : {
+      "comment" : "SwiftUI literal",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preise"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prices"
+          }
+        }
+      }
+    },
+    "Prices loaded" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preise geladen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prices loaded"
+          }
+        }
+      }
+    },
+    "Prices unavailable" : {
+      "comment" : "SwiftUI literal",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preise nicht verfügbar"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prices unavailable"
+          }
+        }
+      }
+    },
+    "Pricier right now" : {
+      "comment" : "Localized returned display text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gerade teurer"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pricier right now"
+          }
+        }
+      }
+    },
+    "Privacy Policy" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Datenschutz"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Privacy Policy"
+          }
+        }
+      }
+    },
+    "Pro" : {
+      "comment" : "SwiftUI literal",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro"
+          }
+        }
+      }
+    },
+    "Pro is active. Thank you for your support." : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro ist aktiv. Danke für deine Unterstützung."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro is active. Thank you for your support."
+          }
+        }
+      }
+    },
+    "Pro lets you include provider fees and taxes in displayed prices." : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mit Pro kannst du Anbietergebühren und Steuern in angezeigte Preise einbeziehen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro lets you include provider fees and taxes in displayed prices."
+          }
+        }
+      }
+    },
+    "Pro options unavailable" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro-Optionen nicht verfügbar"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro options unavailable"
+          }
+        }
+      }
+    },
+    "Pro products could not be loaded. Please try again in a moment." : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Pro-Produkte konnten nicht geladen werden. Bitte versuche es gleich noch einmal."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro products could not be loaded. Please try again in a moment."
+          }
+        }
+      }
+    },
+    "Pro unlocks price alerts and daily summaries when new electricity prices are available." : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro schaltet Preishinweise und tägliche Übersichten frei, sobald neue Strompreise verfügbar sind."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro unlocks price alerts and daily summaries when new electricity prices are available."
+          }
+        }
+      }
+    },
+    "Purchases could not be restored. Please try again." : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Käufe konnten nicht wiederhergestellt werden. Bitte versuche es erneut."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Purchases could not be restored. Please try again."
+          }
+        }
+      }
+    },
+    "Range" : {
+      "comment" : "SwiftUI literal",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zeitraum"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Range"
+          }
+        }
+      }
+    },
+    "Refresh" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktualisieren"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Refresh"
+          }
+        }
+      }
+    },
+    "Refreshing" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wird aktualisiert"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Refreshing"
+          }
+        }
+      }
+    },
+    "renewable" : {
+      "comment" : "SwiftUI literal",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "erneuerbar"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "renewable"
+          }
+        }
+      }
+    },
+    "Renewable" : {
+      "comment" : "SwiftUI literal",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erneuerbar"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Renewable"
+          }
+        }
+      }
+    },
+    "Renewable mix" : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erneuerbarer Mix"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Renewable mix"
+          }
+        }
+      }
+    },
+    "Renewable mix unavailable" : {
+      "comment" : "SwiftUI literal",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erneuerbarer Mix nicht verfügbar"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Renewable mix unavailable"
+          }
+        }
+      }
+    },
+    "renewable right now" : {
+      "comment" : "SwiftUI literal",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "erneuerbar jetzt"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "renewable right now"
+          }
+        }
+      }
+    },
+    "Reorder" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Neu anordnen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reorder"
+          }
+        }
+      }
+    },
+    "Restore Purchases" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Käufe wiederherstellen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Restore Purchases"
+          }
+        }
+      }
+    },
+    "Retry" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erneut versuchen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retry"
+          }
+        }
+      }
+    },
+    "Saving to server" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Speichert auf dem Server"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saving to server"
+          }
+        }
+      }
+    },
+    "Select history date" : {
+      "comment" : "Accessibility label",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Datum für Historie auswählen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select history date"
+          }
+        }
+      }
+    },
+    "Select your electricity price market area" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wähle deine Strompreis-Marktzone"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select your electricity price market area"
+          }
+        }
+      }
+    },
+    "Selected" : {
+      "comment" : "String(localized:)",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ausgewählt"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selected"
+          }
+        }
+      }
+    },
+    "Selected time" : {
+      "comment" : "String(localized:)",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ausgewählte Zeit"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selected time"
+          }
+        }
+      }
+    },
+    "Selected total" : {
+      "comment" : "String(localized:)",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ausgewählte Gesamtleistung"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selected total"
+          }
+        }
+      }
+    },
+    "Send example" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beispiel senden"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Send example"
+          }
+        }
+      }
+    },
+    "Send Suggestion" : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vorschlag senden"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Send Suggestion"
+          }
+        }
+      }
+    },
+    "Sent" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gesendet"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sent"
+          }
+        }
+      }
+    },
+    "Settings" : {
+      "comment" : "SwiftUI literal",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einstellungen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Settings"
+          }
+        }
+      }
+    },
+    "Setup" : {
+      "comment" : "SwiftUI navigation title",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einrichtung"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Setup"
+          }
+        }
+      }
+    },
+    "Share Pro with your family members at no extra cost." : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Teile Pro ohne zusätzliche Kosten mit deiner Familie."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share Pro with your family members at no extra cost."
+          }
+        }
+      }
+    },
+    "Shows the cheapest upcoming electricity windows." : {
+      "comment" : "Widget description",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zeigt die günstigsten kommenden Strom-Zeitfenster."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shows the cheapest upcoming electricity windows."
+          }
+        }
+      }
+    },
+    "Shows the current electricity price." : {
+      "comment" : "Widget description",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zeigt den aktuellen Strompreis."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shows the current electricity price."
+          }
+        }
+      }
+    },
+    "Shows the current renewable energy mix." : {
+      "comment" : "Widget description",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zeigt den aktuellen erneuerbaren Energiemix."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shows the current renewable energy mix."
+          }
+        }
+      }
+    },
+    "Shows upcoming electricity prices." : {
+      "comment" : "Widget description",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zeigt kommende Strompreise."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shows upcoming electricity prices."
+          }
+        }
+      }
+    },
+    "Smart notifications" : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Smarte Benachrichtigungen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Smart notifications"
+          }
+        }
+      }
+    },
+    "Solar" : {
+      "comment" : "Generation mix category",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solar"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solar"
+          }
+        }
+      }
+    },
+    "splashScreen.start.notAffiliatedNote" : {
+      "comment" : "SwiftUI literal",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AWattPrice ist eine unabhängige App. Preise werden nicht garantiert."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AWattPrice is an independent app. Prices are not guaranteed."
+          }
+        }
+      }
+    },
+    "Terms of Use" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nutzungsbedingungen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Terms of Use"
+          }
+        }
+      }
+    },
+    "Thank you for supporting AWattPrice!" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Danke, dass du AWattPrice unterstützt!"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Thank you for supporting AWattPrice!"
+          }
+        }
+      }
+    },
+    "The price of a book." : {
+      "comment" : "Localized returned display text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Preis eines Buches."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The price of a book."
+          }
+        }
+      }
+    },
+    "The purchase could not be completed. Please try again." : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Kauf konnte nicht abgeschlossen werden. Bitte versuche es erneut."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The purchase could not be completed. Please try again."
+          }
+        }
+      }
+    },
+    "The purchase could not be verified." : {
+      "comment" : "Localized returned display text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Kauf konnte nicht verifiziert werden."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The purchase could not be verified."
+          }
+        }
+      }
+    },
+    "Time" : {
+      "comment" : "String(localized:)",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zeit"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Time"
+          }
+        }
+      }
+    },
+    "Time range" : {
+      "comment" : "SwiftUI literal",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zeitfenster"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Time range"
+          }
+        }
+      }
+    },
+    "Timeline" : {
+      "comment" : "SwiftUI literal",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zeitplan"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Timeline"
+          }
+        }
+      }
+    },
+    "Today" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Heute"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Today"
+          }
+        }
+      }
+    },
+    "Tomorrow" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Morgen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tomorrow"
+          }
+        }
+      }
+    },
+    "Tonight" : {
+      "comment" : "Localized returned display text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Heute Nacht"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tonight"
+          }
+        }
+      }
+    },
+    "Top sources" : {
+      "comment" : "SwiftUI literal",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Top-Quellen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Top sources"
+          }
+        }
+      }
+    },
+    "Total" : {
+      "comment" : "String(localized:)",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gesamt"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Total"
+          }
+        }
+      }
+    },
+    "Try Again" : {
+      "comment" : "SwiftUI literal",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erneut versuchen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Try Again"
+          }
+        }
+      }
+    },
+    "Unavailable" : {
+      "comment" : "SwiftUI literal",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nicht verfügbar"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unavailable"
+          }
+        }
+      }
+    },
+    "Unlock pro features and support the app." : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schalte Pro-Funktionen frei und unterstütze die App."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unlock pro features and support the app."
+          }
+        }
+      }
+    },
+    "Unlocked" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Freigeschaltet"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unlocked"
+          }
+        }
+      }
+    },
+    "Unlocked for you" : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Für dich freigeschaltet"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unlocked for you"
+          }
+        }
+      }
+    },
+    "Upcoming" : {
+      "comment" : "SwiftUI literal",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kommend"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Upcoming"
+          }
+        }
+      }
+    },
+    "Upcoming (default)" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kommend (Standard)"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Upcoming (default)"
+          }
+        }
+      }
+    },
+    "Updated just now" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gerade aktualisiert"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Updated just now"
+          }
+        }
+      }
+    },
+    "Used to spread fixed monthly costs over each kWh." : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Damit werden monatliche Fixkosten auf jede kWh umgelegt."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Used to spread fixed monthly costs over each kWh."
+          }
+        }
+      }
+    },
+    "VAT" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MwSt."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "VAT"
+          }
+        }
+      }
+    },
+    "Version" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Version"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Version"
+          }
+        }
+      }
+    },
+    "View prices" : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preise ansehen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "View prices"
+          }
+        }
+      }
+    },
+    "Warn above" : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Warnung über"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Warn above"
+          }
+        }
+      }
+    },
+    "Welcome to" : {
+      "comment" : "SwiftUI literal",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Willkommen zu"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Welcome to"
+          }
+        }
+      }
+    },
+    "What you get with Pro Supporter" : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Was du mit Pro Supporter bekommst"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "What you get with Pro Supporter"
+          }
+        }
+      }
+    },
+    "Widgets" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Widgets"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Widgets"
+          }
+        }
+      }
+    },
+    "Widgets are Pro" : {
+      "comment" : "SwiftUI literal",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Widgets sind Pro"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Widgets are Pro"
+          }
+        }
+      }
+    },
+    "Wind" : {
+      "comment" : "Generation mix category",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wind"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wind"
+          }
+        }
+      }
+    },
+    "Yearly" : {
+      "comment" : "Localized returned display text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jährlich"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yearly"
+          }
+        }
+      }
+    },
+    "Yesterday" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gestern"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yesterday"
+          }
+        }
+      }
+    },
+    "Your purchase is pending approval." : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dein Kauf wartet auf Freigabe."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your purchase is pending approval."
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

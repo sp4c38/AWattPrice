@@ -515,7 +515,7 @@ private struct PriceFormulaView: View {
     private var formulaTerms: [PriceFormulaTerm] {
         var terms = [
             PriceFormulaTerm.text("Market price", id: "market-price"),
-            PriceFormulaTerm.percentage("VAT", tint: .orange, id: "vat")
+            PriceFormulaTerm.percentage("VAT".localized(), tint: .orange, id: "vat")
         ]
 
         terms.append(contentsOf: draft.activeAddOnKinds.map { draft.formulaTerm(for: $0) })

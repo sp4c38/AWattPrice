@@ -424,18 +424,18 @@ private struct GenerationMixStackedGenerationChart: View {
             Chart {
                 ForEach(chartPoints) { point in
                     AreaMark(
-                        x: .value("Time", point.time),
-                        y: .value("Generation", point.generationMW),
+                        x: .value(String(localized: "Time"), point.time),
+                        y: .value(String(localized: "Generation"), point.generationMW),
                         stacking: .standard
                     )
-                    .foregroundStyle(by: .value("Category", point.category))
+                    .foregroundStyle(by: .value(String(localized: "Category"), point.category))
                     .interpolationMethod(.cardinal)
                 }
 
                 ForEach(totalPoints) { point in
                     LineMark(
-                        x: .value("Time", point.time),
-                        y: .value("Total", point.generationMW)
+                        x: .value(String(localized: "Time"), point.time),
+                        y: .value(String(localized: "Total"), point.generationMW)
                     )
                     .foregroundStyle(.primary.opacity(0.28))
                     .lineStyle(StrokeStyle(lineWidth: 1.2, lineCap: .round, lineJoin: .round))
@@ -449,7 +449,7 @@ private struct GenerationMixStackedGenerationChart: View {
                 // RuleMark follows the raw drag position so it tracks the finger
                 // all the way to the chart edge.
                 if let rawTime = indicatorTime {
-                    RuleMark(x: .value("Selected", rawTime))
+                    RuleMark(x: .value(String(localized: "Selected"), rawTime))
                         .foregroundStyle(.primary.opacity(0.55))
                         .lineStyle(StrokeStyle(lineWidth: 1, dash: [4, 4]))
                 }
@@ -461,8 +461,8 @@ private struct GenerationMixStackedGenerationChart: View {
                 if let rawTime = indicatorTime,
                    let interpolatedY = interpolatedSmoothedTotal(at: rawTime) {
                     PointMark(
-                        x: .value("Selected time", rawTime),
-                        y: .value("Selected total", interpolatedY)
+                        x: .value(String(localized: "Selected time"), rawTime),
+                        y: .value(String(localized: "Selected total"), interpolatedY)
                     )
                     .foregroundStyle(.primary.opacity(0.72))
                     .symbolSize(58)

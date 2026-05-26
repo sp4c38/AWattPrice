@@ -28,7 +28,7 @@
 		555F47FC1D9F98F6114CFD89 /* SettingsUploadErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7312444A00735A79F3140BF9 /* SettingsUploadErrorView.swift */; };
 		593C14ACDA8A7823983C839A /* PriceBelowNotificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5A96314B5FDFB69823B75C9 /* PriceBelowNotificationView.swift */; };
 		5968D801ED3B64E9059A3555 /* CheapestHourManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2EFEC10A5ED85CC875CFCF7 /* CheapestHourManager.swift */; };
-		59BDBAACA1BB8316305D917B /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 95BD95FD492B1F960E9F23C4 /* Localizable.strings */; };
+		59BDBAACA1BB8316305D917B /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 95BD95FD492B1F960E9F23C4 /* Localizable.xcstrings */; };
 		5A1000012FBE000100000001 /* CurrentPriceWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A1000062FBE000100000001 /* CurrentPriceWidget.swift */; };
 		5A1000022FBE000100000001 /* CheapestTimesWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A1000072FBE000100000001 /* CheapestTimesWidget.swift */; };
 		5A1000032FBE000100000001 /* WidgetPriceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A1000082FBE000100000001 /* WidgetPriceProvider.swift */; };
@@ -49,7 +49,7 @@
 		61635B4D2A483B140099F5AD /* PricesPreviewContent.json in Resources */ = {isa = PBXBuildFile; fileRef = 61635B3D2A4833730099F5AD /* PricesPreviewContent.json */; };
 		61635B4F2A485FE20099F5AD /* Region.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52D6D993DB3CE3CBB4B1E644 /* Region.swift */; };
 		61ACE7A62A56A7E7005D0110 /* EffectsLibrary in Frameworks */ = {isa = PBXBuildFile; productRef = 61ACE7A52A56A7E7005D0110 /* EffectsLibrary */; };
-		61DC52D02A56F22B00FB2D08 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 95BD95FD492B1F960E9F23C4 /* Localizable.strings */; };
+		61DC52D02A56F22B00FB2D08 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 95BD95FD492B1F960E9F23C4 /* Localizable.xcstrings */; };
 		6AB9A889E5A3A17EBB1AF725 /* InputFieldStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 404CC5EAC0C3630A020070B0 /* InputFieldStyles.swift */; };
 		7806C62BA8F28AC26C3C88B7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3986605FAA7AF18D5AF2CB37 /* AppDelegate.swift */; };
 		79BF8D2C50E18982950D8CEC /* TimeRangeInputField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EF4803E3C737282BE08A7A8 /* TimeRangeInputField.swift */; };
@@ -146,7 +146,6 @@
 		4CAEECA30ABDB0DF6C9DB6DA /* EnergyPriceGraph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnergyPriceGraph.swift; sourceTree = "<group>"; };
 		4D92DAF6062C9BB0CC3973F3 /* AWattPrice.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AWattPrice.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		51649CD95D1B046EA6D3FF0F /* PriceAddOnsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceAddOnsView.swift; sourceTree = "<group>"; };
-		52A4CD1362317193ABA4A25D /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
 		52D6D993DB3CE3CBB4B1E644 /* Region.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Region.swift; sourceTree = "<group>"; };
 		546D5FA692CB5FFBAF81B22A /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		59B5203B024111C62B8F9D80 /* DataDownloadAndError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataDownloadAndError.swift; sourceTree = "<group>"; };
@@ -209,7 +208,7 @@
 		EFB366C2E4BA54E151458B35 /* AWattPrice.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AWattPrice.entitlements; sourceTree = "<group>"; };
 		F532255ECC882E59C9739E19 /* SplashScreenFeaturesAndConsent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashScreenFeaturesAndConsent.swift; sourceTree = "<group>"; };
 		F7E1E9B883B731AD9BA0E6A9 /* EnergyDataController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnergyDataController.swift; sourceTree = "<group>"; };
-		FAF135EF7614FABF7138D122 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		95BD95FD492B1F960E9F23C4 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -365,7 +364,7 @@
 		61DC52CF2A56F22200FB2D08 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				95BD95FD492B1F960E9F23C4 /* Localizable.strings */,
+				95BD95FD492B1F960E9F23C4 /* Localizable.xcstrings */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -706,7 +705,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				61635B4D2A483B140099F5AD /* PricesPreviewContent.json in Resources */,
-				61DC52D02A56F22B00FB2D08 /* Localizable.strings in Resources */,
+				61DC52D02A56F22B00FB2D08 /* Localizable.xcstrings in Resources */,
 				61635B302A482E6A0099F5AD /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -720,7 +719,7 @@
 				25A41E132FBA629C00A685EF /* AppIcon.icon/Assets/App Icon v3.png in Resources */,
 				D4E7A0102FBA4D9A8C0D4E10 /* AppIcon.icon in Resources */,
 				D8CFCC7C18D97EA76DB02E08 /* Launch Screen.storyboard in Resources */,
-				59BDBAACA1BB8316305D917B /* Localizable.strings in Resources */,
+				59BDBAACA1BB8316305D917B /* Localizable.xcstrings in Resources */,
 				F1212CD12690C400EAB49863 /* PreviewEnergyData.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -846,18 +845,6 @@
 			targetProxy = D60000812FC0000100000001 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
-
-/* Begin PBXVariantGroup section */
-		95BD95FD492B1F960E9F23C4 /* Localizable.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				52A4CD1362317193ABA4A25D /* de */,
-				FAF135EF7614FABF7138D122 /* en */,
-			);
-			name = Localizable.strings;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		10962E2B1509DDA53A27298D /* Debug */ = {

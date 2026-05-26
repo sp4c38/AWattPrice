@@ -10,12 +10,24 @@ struct CurrentPriceWidget: Widget {
         }
         .configurationDisplayName("Current Price")
         .description("Shows the current electricity price and how it compares to the upcoming average.")
-        .supportedFamilies([.systemSmall])
+        .supportedFamilies([.systemSmall, .accessoryCircular, .accessoryRectangular])
         .contentMarginsDisabled()
     }
 }
 
 #Preview(as: .systemSmall) {
+    CurrentPriceWidget()
+} timeline: {
+    WidgetPriceEntry.preview
+}
+
+#Preview(as: .accessoryCircular) {
+    CurrentPriceWidget()
+} timeline: {
+    WidgetPriceEntry.preview
+}
+
+#Preview(as: .accessoryRectangular) {
     CurrentPriceWidget()
 } timeline: {
     WidgetPriceEntry.preview

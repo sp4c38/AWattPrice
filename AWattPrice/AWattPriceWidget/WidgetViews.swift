@@ -151,10 +151,16 @@ struct WidgetStatusBadge: View {
 }
 
 struct CurrentPriceWidgetView: View {
+    @Environment(\.widgetFamily) private var family
+
     let entry: WidgetPriceEntry
 
     private var point: WidgetPricePoint? {
         entry.snapshot.currentPrice
+    }
+
+    private var priceColor: Color {
+        WidgetStyle.color(for: point?.marketprice ?? 0, average: entry.snapshot.averagePrice)
     }
 
     private var contextText: LocalizedStringKey {
@@ -163,22 +169,22 @@ struct CurrentPriceWidgetView: View {
         }
 
         if currentPrice < 0 {
-            return "Negative price right now."
+            return "Price is sub-zero"
         }
 
         guard let average = entry.snapshot.averagePrice else {
-            return "Current electricity price."
+            return "Current electricity price"
         }
 
         if currentPrice <= average * 0.85 {
-            return "Below average"
+            return "Good time to use energy!"
         }
 
         if currentPrice >= average * 1.20 {
-            return "Above average"
+            return "Pricier right now"
         }
 
-        return "Near average"
+        return "Around average"
     }
 
     var body: some View {
@@ -187,45 +193,99 @@ struct CurrentPriceWidgetView: View {
         } else if entry.snapshot.hasPrices == false {
             WidgetUnavailableView(snapshot: entry.snapshot, route: WidgetRoute.prices)
         } else {
-            VStack(alignment: .leading, spacing: 8) {
-                HStack(alignment: .top) {
-                    Label("Now", systemImage: "bolt.fill")
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(WidgetStyle.accent)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.8)
-
-                    Spacer(minLength: 4)
-                    WidgetStatusBadge(entry: entry)
-                }
-
-                Spacer(minLength: 0)
-
-                Text(WidgetText.price(point?.marketprice))
-                    .font(.system(size: 30, weight: .bold, design: .rounded))
-                    .monospacedDigit()
-                    .minimumScaleFactor(0.72)
-                    .foregroundStyle(WidgetStyle.color(for: point?.marketprice ?? 0, average: entry.snapshot.averagePrice))
-                    .lineLimit(1)
-
-                VStack(alignment: .leading, spacing: 3) {
-                    if let point {
-                        Text(WidgetText.timeRange(from: point.startTime, to: point.endTime))
-                            .font(.caption.weight(.semibold))
-                            .monospacedDigit()
-                    }
-
-                    Text(contextText)
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(2)
-                        .minimumScaleFactor(0.82)
-                }
+            switch family {
+            case .accessoryCircular:
+                accessoryCircularBody
+            case .accessoryRectangular:
+                accessoryRectangularBody
+            default:
+                systemSmallBody
             }
-            .padding(WidgetStyle.smallPadding)
-            .awattWidgetBackground()
-            .widgetURL(WidgetRoute.prices)
         }
+    }
+
+    private var systemSmallBody: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(alignment: .top) {
+                Label("Now", systemImage: "bolt.fill")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(WidgetStyle.accent)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+
+                Spacer(minLength: 4)
+                WidgetStatusBadge(entry: entry)
+            }
+
+            Spacer(minLength: 0)
+
+            Text(WidgetText.price(point?.marketprice))
+                .font(.system(size: 30, weight: .bold, design: .rounded))
+                .monospacedDigit()
+                .minimumScaleFactor(0.72)
+                .foregroundStyle(priceColor)
+                .lineLimit(1)
+
+            VStack(alignment: .leading, spacing: 3) {
+                if let point {
+                    Text(WidgetText.timeRange(from: point.startTime, to: point.endTime))
+                        .font(.caption.weight(.semibold))
+                        .monospacedDigit()
+                }
+
+                Text(contextText)
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.82)
+            }
+        }
+        .padding(WidgetStyle.smallPadding)
+        .awattWidgetBackground()
+        .widgetURL(WidgetRoute.prices)
+    }
+
+    private var accessoryCircularBody: some View {
+        VStack(spacing: 1) {
+            Text(WidgetText.price(point?.marketprice))
+                .font(.system(size: 16, weight: .bold, design: .rounded))
+                .monospacedDigit()
+                .minimumScaleFactor(0.7)
+                .lineLimit(1)
+                .widgetAccentable()
+
+            Text(contextText)
+                .font(.system(size: 9, weight: .semibold))
+                .minimumScaleFactor(0.7)
+                .lineLimit(1)
+                .foregroundStyle(.secondary)
+        }
+        .containerBackground(.fill, for: .widget)
+        .widgetURL(WidgetRoute.prices)
+    }
+
+    private var accessoryRectangularBody: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Label("Now", systemImage: "bolt.fill")
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+
+            Text(WidgetText.price(point?.marketprice))
+                .font(.system(size: 20, weight: .bold, design: .rounded))
+                .monospacedDigit()
+                .minimumScaleFactor(0.72)
+                .lineLimit(1)
+                .widgetAccentable()
+
+            Text(contextText)
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+        .containerBackground(.fill, for: .widget)
+        .widgetURL(WidgetRoute.prices)
     }
 }
 

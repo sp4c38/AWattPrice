@@ -439,9 +439,14 @@
 "Now" = "Jetzt";
 "Negative price right now." = "Der Preis ist gerade negativ.";
 "Current electricity price." = "Aktueller Strompreis.";
+"Current electricity price" = "Aktueller Strompreis";
 "Below average" = "Unter Durchschnitt";
 "Above average" = "Über Durchschnitt";
 "Near average" = "Nahe Durchschnitt";
+"Price is sub-zero" = "Preis unter Null";
+"Good time to use energy!" = "Guter Zeitpunkt zum Energieverbrauch!";
+"Pricier right now" = "Gerade etwas teurer";
+"Around average" = "Um den Durchschnitt";
 "Price Forecast" = "Preisverlauf";
 "Shows the next 24 hours of electricity prices." = "Zeigt die Strompreise der nächsten 24 Stunden.";
 "Next prices" = "Nächste Preise";

@@ -259,9 +259,14 @@
 "Now" = "Now";
 "Negative price right now." = "Negative price right now.";
 "Current electricity price." = "Current electricity price.";
+"Current electricity price" = "Current electricity price";
 "Below average" = "Below average";
 "Above average" = "Above average";
 "Near average" = "Near average";
+"Price is sub-zero" = "Price is sub-zero";
+"Good time to use energy!" = "Good time to use energy!";
+"Pricier right now" = "Pricier right now";
+"Around average" = "Around average";
 "Price Forecast" = "Price Forecast";
 "Shows the next 24 hours of electricity prices." = "Shows the next 24 hours of electricity prices.";
 "Next prices" = "Next prices";

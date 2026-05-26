@@ -461,7 +461,7 @@ private struct GenerationMixCard: View {
             VStack(alignment: .leading, spacing: 14) {
                 HStack(spacing: 10) {
                     InsightsSectionTitle(
-                        title: "Renewable mix",
+                        title: "Energy mix",
                         systemImage: "leaf.fill",
                         tint: AppTheme.success
                     )

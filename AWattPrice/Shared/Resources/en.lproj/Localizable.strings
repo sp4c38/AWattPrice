@@ -254,7 +254,6 @@
 "No history data available" = "No history data available";
 
 // Widget localizations
-"widget.pricesWidget.description" = "View electricity prices at a glance.";
 "widget.current.displayName" = "Current Price";
 "widget.current.description" = "Shows the current electricity price and how it compares to the upcoming average.";
 "widget.current.title" = "Now";
@@ -262,12 +261,11 @@
 "widget.current.available" = "Current electricity price.";
 "widget.current.belowAverage" = "Below average";
 "widget.current.aboveAverage" = "Above average";
+"widget.current.nearAverage" = "Near average";
 "widget.forecast.displayName" = "Price Forecast";
 "widget.forecast.description" = "Shows the next 24 hours of electricity prices.";
 "widget.forecast.title" = "Next prices";
-"widget.forecast.next24h" = "Next 24h";
 "widget.forecast.lowest" = "Lowest";
-"widget.forecast.average" = "Average";
 "widget.forecast.current" = "Current";
 "widget.forecast.highest" = "Highest";
 "widget.cheapest.displayName" = "Cheapest Times";

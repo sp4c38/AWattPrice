@@ -15,14 +15,14 @@ struct PricesWidget: Widget {
     }
 }
 
-struct PricesWidget_Previews: PreviewProvider {
-    static var previews: some View {
-        Group {
-            ForecastWidgetView(entry: .preview)
-                .previewContext(WidgetPreviewContext(family: .systemMedium))
+#Preview("Medium", as: .systemMedium) {
+    PricesWidget()
+} timeline: {
+    WidgetPriceEntry.preview
+}
 
-            ForecastWidgetView(entry: .preview)
-                .previewContext(WidgetPreviewContext(family: .systemLarge))
-        }
-    }
+#Preview("Large", as: .systemLarge) {
+    PricesWidget()
+} timeline: {
+    WidgetPriceEntry.preview
 }

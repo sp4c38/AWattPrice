@@ -15,9 +15,8 @@ struct CurrentPriceWidget: Widget {
     }
 }
 
-struct CurrentPriceWidget_Previews: PreviewProvider {
-    static var previews: some View {
-        CurrentPriceWidgetView(entry: .preview)
-            .previewContext(WidgetPreviewContext(family: .systemSmall))
-    }
+#Preview(as: .systemSmall) {
+    CurrentPriceWidget()
+} timeline: {
+    WidgetPriceEntry.preview
 }

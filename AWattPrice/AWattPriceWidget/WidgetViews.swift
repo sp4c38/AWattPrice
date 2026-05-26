@@ -170,7 +170,15 @@ struct CurrentPriceWidgetView: View {
             return "widget.current.available"
         }
 
-        return currentPrice <= average ? "widget.current.belowAverage" : "widget.current.aboveAverage"
+        if currentPrice <= average * 0.85 {
+            return "widget.current.belowAverage"
+        }
+
+        if currentPrice >= average * 1.20 {
+            return "widget.current.aboveAverage"
+        }
+
+        return "widget.current.nearAverage"
     }
 
     var body: some View {
@@ -233,6 +241,17 @@ struct ForecastWidgetView: View {
             WidgetUnavailableView(snapshot: entry.snapshot, route: WidgetRoute.prices)
         } else {
             VStack(alignment: .leading, spacing: 8) {
+                HStack(alignment: .top) {
+                    Label("widget.forecast.title", systemImage: "bolt.fill")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(WidgetStyle.accent)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
+
+                    Spacer(minLength: 4)
+                    WidgetStatusBadge(entry: entry)
+                }
+
                 PriceForecastChart(
                     points: entry.snapshot.hourlyForecastPoints,
                     averagePrice: entry.snapshot.hourlyForecastAveragePrice,
@@ -443,16 +462,14 @@ struct CheapestTimesWidgetView: View {
             WidgetUnavailableView(snapshot: entry.snapshot, route: WidgetRoute.cheapestTime)
         } else {
             VStack(alignment: .leading, spacing: 8) {
-                HStack(alignment: .firstTextBaseline) {
-                    HStack(spacing: 6) {
-                        Image(systemName: "timer")
-                        Text("widget.cheapest.title")
-                    }
-                    .font(.headline.weight(.bold))
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.76)
+                HStack(alignment: .top) {
+                    Label("widget.cheapest.title", systemImage: "timer")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(WidgetStyle.accent)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
 
-                    Spacer(minLength: 6)
+                    Spacer(minLength: 4)
                     WidgetStatusBadge(entry: entry)
                 }
 
@@ -474,18 +491,9 @@ struct CheapestTimesWidgetView: View {
             } else {
                 let windows = Array(entry.snapshot.cheapestWindows.prefix(3))
 
-                if windows.indices.contains(0) {
-                    CheapestWindowCompactRow(window: windows[0])
-                }
-
-                if windows.indices.contains(1) {
-                    CheapestWindowDivider()
-                    CheapestWindowCompactRow(window: windows[1])
-                }
-
-                if windows.indices.contains(2) {
-                    CheapestWindowDivider()
-                    CheapestWindowCompactRow(window: windows[2])
+                ForEach(Array(windows.enumerated()), id: \.offset) { index, window in
+                    if index > 0 { CheapestWindowDivider() }
+                    CheapestWindowCompactRow(window: window)
                 }
             }
         }

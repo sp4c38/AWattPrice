@@ -431,10 +431,6 @@
 
 
 
-"widget.pricesWidget.description" = "Sehen Sie die Strompreise auf einen Blick.";
-
-"Next 24h" = "Folgende 24h";
-
 "price in ct" = "Preis in ct";
 "widget.current.displayName" = "Aktueller Preis";
 "widget.current.description" = "Zeigt den aktuellen Strompreis und den Vergleich zum kommenden Durchschnitt.";
@@ -443,12 +439,11 @@
 "widget.current.available" = "Aktueller Strompreis.";
 "widget.current.belowAverage" = "Unter Durchschnitt.";
 "widget.current.aboveAverage" = "Über Durchschnitt.";
+"widget.current.nearAverage" = "Nahe Durchschnitt.";
 "widget.forecast.displayName" = "Preisverlauf";
 "widget.forecast.description" = "Zeigt die Strompreise der nächsten 24 Stunden.";
 "widget.forecast.title" = "Nächste Preise";
-"widget.forecast.next24h" = "Nächste 24h";
 "widget.forecast.lowest" = "Tiefstwert";
-"widget.forecast.average" = "Durchschnitt";
 "widget.forecast.current" = "Aktuell";
 "widget.forecast.highest" = "Höchstwert";
 "widget.cheapest.displayName" = "Günstigste Zeiten";

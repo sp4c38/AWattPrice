@@ -15,9 +15,8 @@ struct CheapestTimesWidget: Widget {
     }
 }
 
-struct CheapestTimesWidget_Previews: PreviewProvider {
-    static var previews: some View {
-        CheapestTimesWidgetView(entry: .preview)
-            .previewContext(WidgetPreviewContext(family: .systemSmall))
-    }
+#Preview(as: .systemSmall) {
+    CheapestTimesWidget()
+} timeline: {
+    WidgetPriceEntry.preview
 }

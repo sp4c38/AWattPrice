@@ -495,6 +495,10 @@ struct CurrentPriceWidgetView: View {
         return "Around average"
     }
 
+    private var trend: WidgetPriceTrend? {
+        entry.snapshot.nextThreeHourTrend
+    }
+
     var body: some View {
         if entry.state == .lockedPro {
             WidgetProLockedView()
@@ -511,7 +515,7 @@ struct CurrentPriceWidgetView: View {
     }
 
     private var systemSmallBody: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 7) {
             HStack(alignment: .top) {
                 Label("Now", systemImage: "bolt.fill")
                     .font(.caption.weight(.semibold))
@@ -525,6 +529,12 @@ struct CurrentPriceWidgetView: View {
 
             Spacer(minLength: 0)
 
+            if let point {
+                Text(WidgetText.timeRange(from: point.startTime, to: point.endTime))
+                    .font(.caption.weight(.semibold))
+                    .monospacedDigit()
+            }
+            
             Text(WidgetText.price(point?.marketprice))
                 .font(.system(size: 30, weight: .bold, design: .rounded))
                 .monospacedDigit()
@@ -533,17 +543,15 @@ struct CurrentPriceWidgetView: View {
                 .lineLimit(1)
 
             VStack(alignment: .leading, spacing: 3) {
-                if let point {
-                    Text(WidgetText.timeRange(from: point.startTime, to: point.endTime))
-                        .font(.caption.weight(.semibold))
-                        .monospacedDigit()
+                if let trend {
+                    WidgetPriceTrendLabel(trend: trend)
+                } else {
+                    Text(contextText)
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(2)
+                        .minimumScaleFactor(0.82)
                 }
-
-                Text(contextText)
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(2)
-                    .minimumScaleFactor(0.82)
             }
         }
         .padding(WidgetStyle.smallPadding)
@@ -565,14 +573,63 @@ struct CurrentPriceWidgetView: View {
                 .lineLimit(1)
                 .widgetAccentable()
 
-            Text(contextText)
-                .font(.caption2)
-                .foregroundStyle(.secondary)
-                .lineLimit(1)
+            if let trend {
+                WidgetPriceTrendLabel(trend: trend)
+            } else {
+                Text(contextText)
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
         .containerBackground(.fill, for: .widget)
         .widgetURL(WidgetRoute.prices)
+    }
+}
+
+private struct WidgetPriceTrendLabel: View {
+    let trend: WidgetPriceTrend
+
+    private var title: LocalizedStringKey {
+        switch trend {
+        case .rising:
+            return "Next 3h rising"
+        case .falling:
+            return "Next 3h falling"
+        case .stable:
+            return "Next 3h stable"
+        }
+    }
+
+    private var systemImage: String {
+        switch trend {
+        case .rising:
+            return "arrow.up.right"
+        case .falling:
+            return "arrow.down.right"
+        case .stable:
+            return "arrow.right"
+        }
+    }
+
+    private var color: Color {
+        switch trend {
+        case .rising:
+            return WidgetStyle.high
+        case .falling:
+            return WidgetStyle.low
+        case .stable:
+            return .secondary
+        }
+    }
+
+    var body: some View {
+        Label(title, systemImage: systemImage)
+            .font(.caption2.weight(.semibold))
+            .foregroundStyle(color)
+            .lineLimit(1)
+            .minimumScaleFactor(0.82)
     }
 }
 

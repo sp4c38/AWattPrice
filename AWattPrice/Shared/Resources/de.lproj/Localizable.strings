@@ -447,6 +447,9 @@
 "Good time to use energy!" = "Guter Zeitpunkt zum Energieverbrauch!";
 "Pricier right now" = "Gerade etwas teurer";
 "Around average" = "Um den Durchschnitt";
+"Next 3h rising" = "Nächste 3h steigend";
+"Next 3h falling" = "Nächste 3h fallend";
+"Next 3h stable" = "Nächste 3h stabil";
 "Price Forecast" = "Preisverlauf";
 "Shows the next 24 hours of electricity prices." = "Zeigt die Strompreise der nächsten 24 Stunden.";
 "Next prices" = "Nächste Preise";

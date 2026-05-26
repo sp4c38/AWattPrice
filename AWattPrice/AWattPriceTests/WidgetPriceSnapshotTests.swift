@@ -42,6 +42,60 @@ final class WidgetPriceSnapshotTests: XCTestCase {
         XCTAssertEqual(snapshot.currentHourlyForecastPrice?.marketprice, 25)
     }
 
+    func testSnapshotCalculatesRisingNextThreeHourTrend() {
+        let snapshot = WidgetPriceSnapshot(
+            createdAt: Self.base.addingTimeInterval(30 * 60),
+            marketAreaName: "Deutschland / Luxemburg",
+            points: [
+                Self.point(hour: 0, price: 10),
+                Self.point(hour: 1, price: 11),
+                Self.point(hour: 2, price: 12),
+            ]
+        )
+
+        XCTAssertEqual(snapshot.nextThreeHourTrend, .rising)
+    }
+
+    func testSnapshotCalculatesFallingNextThreeHourTrend() {
+        let snapshot = WidgetPriceSnapshot(
+            createdAt: Self.base.addingTimeInterval(30 * 60),
+            marketAreaName: "Deutschland / Luxemburg",
+            points: [
+                Self.point(hour: 0, price: 12),
+                Self.point(hour: 1, price: 11),
+                Self.point(hour: 2, price: 10),
+            ]
+        )
+
+        XCTAssertEqual(snapshot.nextThreeHourTrend, .falling)
+    }
+
+    func testSnapshotCalculatesStableNextThreeHourTrend() {
+        let snapshot = WidgetPriceSnapshot(
+            createdAt: Self.base.addingTimeInterval(30 * 60),
+            marketAreaName: "Deutschland / Luxemburg",
+            points: [
+                Self.point(hour: 0, price: 10),
+                Self.point(hour: 1, price: 10.2),
+                Self.point(hour: 2, price: 10.1),
+            ]
+        )
+
+        XCTAssertEqual(snapshot.nextThreeHourTrend, .stable)
+    }
+
+    func testSnapshotHasNoNextThreeHourTrendWithInsufficientData() {
+        let snapshot = WidgetPriceSnapshot(
+            createdAt: Self.base.addingTimeInterval(30 * 60),
+            marketAreaName: "Deutschland / Luxemburg",
+            points: [
+                Self.point(hour: 0, price: 10),
+            ]
+        )
+
+        XCTAssertNil(snapshot.nextThreeHourTrend)
+    }
+
     func testSnapshotFindsCheapestWindowsForExpectedDurations() throws {
         let snapshot = WidgetPriceSnapshot(
             createdAt: Self.base,

@@ -267,6 +267,9 @@
 "Good time to use energy!" = "Good time to use energy!";
 "Pricier right now" = "Pricier right now";
 "Around average" = "Around average";
+"Next 3h rising" = "Next 3h rising";
+"Next 3h falling" = "Next 3h falling";
+"Next 3h stable" = "Next 3h stable";
 "Price Forecast" = "Price Forecast";
 "Shows the next 24 hours of electricity prices." = "Shows the next 24 hours of electricity prices.";
 "Next prices" = "Next prices";

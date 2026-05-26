@@ -29,6 +29,12 @@ struct WidgetPriceWindow: Codable, Identifiable {
     var id: TimeInterval { duration }
 }
 
+enum WidgetPriceTrend: Equatable {
+    case rising
+    case falling
+    case stable
+}
+
 struct WidgetPriceSnapshot: Codable {
     let createdAt: Date
     let marketAreaName: String
@@ -93,6 +99,39 @@ struct WidgetPriceSnapshot: Codable {
         return hourlyForecastPoints.first { point in
             point.startTime <= currentPrice.startTime && point.endTime > currentPrice.startTime
         } ?? hourlyForecastPoints.first
+    }
+
+    var nextThreeHourTrend: WidgetPriceTrend? {
+        let hourlyPoints = hourlyForecastPoints
+        let startIndex: Int
+
+        if let currentPrice,
+           let index = hourlyPoints.firstIndex(where: { point in
+               point.startTime <= currentPrice.startTime && point.endTime > currentPrice.startTime
+           }) {
+            startIndex = index
+        } else {
+            startIndex = hourlyPoints.startIndex
+        }
+
+        guard hourlyPoints.indices.contains(startIndex) else { return nil }
+
+        let trendPoints = Array(hourlyPoints[startIndex...].prefix(3))
+        guard let firstPrice = trendPoints.first?.marketprice,
+              let lastPrice = trendPoints.last?.marketprice,
+              trendPoints.count >= 2
+        else {
+            return nil
+        }
+
+        let change = lastPrice - firstPrice
+        let stableThreshold = 0.1
+
+        if abs(change) <= stableThreshold {
+            return .stable
+        }
+
+        return change > 0 ? .rising : .falling
     }
 
     var nextPriceBoundary: Date? {

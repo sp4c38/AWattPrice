@@ -25,6 +25,12 @@ final class APIClientTests: XCTestCase {
         XCTAssertEqual(history.urlRequest.url?.absoluteString, "https://api.awattprice.com/v3/generation-mix/AT/history?hours=24")
     }
 
+    func testGenerationMixHistoryRequestAlwaysUsesWeekRangeForGermanyLuxembourg() {
+        let history = APIClient.createGenerationMixHistoryRequest(marketArea: .germanyLuxembourg)
+
+        XCTAssertEqual(history.urlRequest.url?.absoluteString, "https://api.awattprice.com/v3/generation-mix/DE-LU/history?hours=168")
+    }
+
     func testGenerationMixHistoryRequestSupportsWeekRange() {
         let history = APIClient.createGenerationMixHistoryRequest(marketArea: .austria, range: .week)
 

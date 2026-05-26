@@ -111,7 +111,7 @@ class APIClient {
             .appendingPathComponent("history")
         var components = URLComponents(url: requestURL, resolvingAgainstBaseURL: false)
         components?.queryItems = [
-            URLQueryItem(name: "hours", value: String(range.hours))
+            URLQueryItem(name: "hours", value: String(generationMixHistoryHours(for: marketArea, range: range)))
         ]
         let urlRequest = URLRequest(
             url: components?.url ?? requestURL,
@@ -120,6 +120,14 @@ class APIClient {
         )
         let decoder = GenerationMixHistoryData.jsonDecoder()
         return ResponseRequest(urlRequest: urlRequest, decoder: decoder)
+    }
+
+    private static func generationMixHistoryHours(for marketArea: MarketArea, range: GenerationMixHistoryRange) -> Int {
+        if marketArea.key == "DE-LU" {
+            return GenerationMixHistoryRange.week.hours
+        }
+
+        return range.hours
     }
 
     static func createSupportedMarketAreasRequest() -> ResponseRequest<SupportedMarketAreasResponse> {

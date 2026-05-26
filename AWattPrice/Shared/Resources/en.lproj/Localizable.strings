@@ -254,30 +254,27 @@
 "No history data available" = "No history data available";
 
 // Widget localizations
-"widget.current.displayName" = "Current Price";
-"widget.current.description" = "Shows the current electricity price and how it compares to the upcoming average.";
-"widget.current.title" = "Now";
-"widget.current.negative" = "Negative price right now.";
-"widget.current.available" = "Current electricity price.";
-"widget.current.belowAverage" = "Below average";
-"widget.current.aboveAverage" = "Above average";
-"widget.current.nearAverage" = "Near average";
-"widget.forecast.displayName" = "Price Forecast";
-"widget.forecast.description" = "Shows the next 24 hours of electricity prices.";
-"widget.forecast.title" = "Next prices";
-"widget.forecast.lowest" = "Lowest";
-"widget.forecast.current" = "Current";
-"widget.forecast.highest" = "Highest";
-"widget.cheapest.displayName" = "Cheapest Times";
-"widget.cheapest.description" = "Shows the cheapest upcoming electricity windows.";
-"widget.cheapest.title" = "Cheapest";
-"widget.cheapest.usageDuration" = "%@ usage";
-"widget.cheapest.noWindow" = "No full time window available.";
-"widget.unavailable.title" = "Prices unavailable";
-"widget.unavailable.short" = "Unavailable";
-"widget.cached" = "Cached";
-"widget.pro.title" = "Widgets are Pro";
-"widget.pro.subtitle" = "Open AWattPrice to unlock widgets.";
+"Current Price" = "Current Price";
+"Shows the current electricity price and how it compares to the upcoming average." = "Shows the current electricity price and how it compares to the upcoming average.";
+"Now" = "Now";
+"Negative price right now." = "Negative price right now.";
+"Current electricity price." = "Current electricity price.";
+"Below average" = "Below average";
+"Above average" = "Above average";
+"Near average" = "Near average";
+"Price Forecast" = "Price Forecast";
+"Shows the next 24 hours of electricity prices." = "Shows the next 24 hours of electricity prices.";
+"Next prices" = "Next prices";
+"Cheapest Times" = "Cheapest Times";
+"Shows the cheapest upcoming electricity windows." = "Shows the cheapest upcoming electricity windows.";
+"Cheapest" = "Cheapest";
+"%@ usage" = "%@ usage";
+"No full time window available." = "No full time window available.";
+"Prices unavailable" = "Prices unavailable";
+"Unavailable" = "Unavailable";
+"Cached" = "Cached";
+"Widgets are Pro" = "Widgets are Pro";
+"Open AWattPrice to unlock widgets." = "Open AWattPrice to unlock widgets.";
 
 // AWattPrice Pro Supporter localizations
 "AWattPrice Pro" = "AWattPrice Pro Supporter";

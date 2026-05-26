@@ -8,8 +8,8 @@ struct CurrentPriceWidget: Widget {
         StaticConfiguration(kind: kind, provider: WidgetPriceProvider()) { entry in
             CurrentPriceWidgetView(entry: entry)
         }
-        .configurationDisplayName("widget.current.displayName")
-        .description("widget.current.description")
+        .configurationDisplayName("Current Price")
+        .description("Shows the current electricity price and how it compares to the upcoming average.")
         .supportedFamilies([.systemSmall])
         .contentMarginsDisabled()
     }

@@ -8,8 +8,8 @@ struct CheapestTimesWidget: Widget {
         StaticConfiguration(kind: kind, provider: WidgetPriceProvider()) { entry in
             CheapestTimesWidgetView(entry: entry)
         }
-        .configurationDisplayName("widget.cheapest.displayName")
-        .description("widget.cheapest.description")
+        .configurationDisplayName("Cheapest Times")
+        .description("Shows the cheapest upcoming electricity windows.")
         .supportedFamilies([.systemSmall])
         .contentMarginsDisabled()
     }

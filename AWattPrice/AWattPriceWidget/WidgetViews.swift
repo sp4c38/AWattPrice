@@ -58,7 +58,7 @@ enum WidgetText {
     }
 
     static func usageDuration(_ timeInterval: TimeInterval) -> String {
-        String(format: NSLocalizedString("widget.cheapest.usageDuration", comment: ""), duration(timeInterval))
+        String(format: NSLocalizedString("%@ usage", comment: ""), duration(timeInterval))
     }
 
     static func updated(_ date: Date) -> String {
@@ -88,7 +88,7 @@ struct WidgetUnavailableView: View {
                 .font(.title3)
                 .foregroundStyle(WidgetStyle.accent)
 
-            Text("widget.unavailable.title")
+            Text("Prices unavailable")
                 .font(.headline)
                 .lineLimit(2)
 
@@ -111,11 +111,11 @@ struct WidgetProLockedView: View {
                 .font(.title3)
                 .foregroundStyle(WidgetStyle.accent)
 
-            Text("widget.pro.title")
+            Text("Widgets are Pro")
                 .font(.headline)
                 .lineLimit(2)
 
-            Text("widget.pro.subtitle")
+            Text("Open AWattPrice to unlock widgets.")
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .lineLimit(3)
@@ -135,11 +135,11 @@ struct WidgetStatusBadge: View {
         case .fresh:
             EmptyView()
         case .cached:
-            Text("widget.cached")
+            Text("Cached")
                 .font(.caption2.weight(.semibold))
                 .foregroundStyle(.secondary)
         case .unavailable:
-            Text("widget.unavailable.short")
+            Text("Unavailable")
                 .font(.caption2.weight(.semibold))
                 .foregroundStyle(.secondary)
         case .lockedPro:
@@ -159,26 +159,26 @@ struct CurrentPriceWidgetView: View {
 
     private var contextText: LocalizedStringKey {
         guard let currentPrice = point?.marketprice else {
-            return "widget.unavailable.short"
+            return "Unavailable"
         }
 
         if currentPrice < 0 {
-            return "widget.current.negative"
+            return "Negative price right now."
         }
 
         guard let average = entry.snapshot.averagePrice else {
-            return "widget.current.available"
+            return "Current electricity price."
         }
 
         if currentPrice <= average * 0.85 {
-            return "widget.current.belowAverage"
+            return "Below average"
         }
 
         if currentPrice >= average * 1.20 {
-            return "widget.current.aboveAverage"
+            return "Above average"
         }
 
-        return "widget.current.nearAverage"
+        return "Near average"
     }
 
     var body: some View {
@@ -189,7 +189,7 @@ struct CurrentPriceWidgetView: View {
         } else {
             VStack(alignment: .leading, spacing: 8) {
                 HStack(alignment: .top) {
-                    Label("widget.current.title", systemImage: "bolt.fill")
+                    Label("Now", systemImage: "bolt.fill")
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(WidgetStyle.accent)
                         .lineLimit(1)
@@ -242,7 +242,7 @@ struct ForecastWidgetView: View {
         } else {
             VStack(alignment: .leading, spacing: 8) {
                 HStack(alignment: .top) {
-                    Label("widget.forecast.title", systemImage: "bolt.fill")
+                    Label("Next prices", systemImage: "bolt.fill")
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(WidgetStyle.accent)
                         .lineLimit(1)
@@ -270,9 +270,9 @@ struct ForecastWidgetView: View {
 
     private var largeSummary: some View {
         HStack(spacing: 10) {
-            ForecastSummaryItem(title: "widget.forecast.lowest", point: entry.snapshot.hourlyForecastMinPrice, tint: WidgetStyle.low)
-            ForecastSummaryItem(title: "widget.forecast.current", point: entry.snapshot.currentHourlyForecastPrice, tint: WidgetStyle.accent)
-            ForecastSummaryItem(title: "widget.forecast.highest", point: entry.snapshot.hourlyForecastMaxPrice, tint: WidgetStyle.high)
+            ForecastSummaryItem(title: "Lowest", point: entry.snapshot.hourlyForecastMinPrice, tint: WidgetStyle.low)
+            ForecastSummaryItem(title: "Current", point: entry.snapshot.currentHourlyForecastPrice, tint: WidgetStyle.accent)
+            ForecastSummaryItem(title: "Highest", point: entry.snapshot.hourlyForecastMaxPrice, tint: WidgetStyle.high)
         }
     }
 }
@@ -463,7 +463,7 @@ struct CheapestTimesWidgetView: View {
         } else {
             VStack(alignment: .leading, spacing: 8) {
                 HStack(alignment: .top) {
-                    Label("widget.cheapest.title", systemImage: "timer")
+                    Label("Cheapest", systemImage: "timer")
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(WidgetStyle.accent)
                         .lineLimit(1)
@@ -484,7 +484,7 @@ struct CheapestTimesWidgetView: View {
     private var cheapestWindowsList: some View {
         VStack(spacing: 2) {
             if entry.snapshot.cheapestWindows.isEmpty {
-                Text("widget.cheapest.noWindow")
+                Text("No full time window available.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)

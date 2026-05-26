@@ -432,30 +432,29 @@
 
 
 "price in ct" = "Preis in ct";
-"widget.current.displayName" = "Aktueller Preis";
-"widget.current.description" = "Zeigt den aktuellen Strompreis und den Vergleich zum kommenden Durchschnitt.";
-"widget.current.title" = "Jetzt";
-"widget.current.negative" = "Der Preis ist gerade negativ.";
-"widget.current.available" = "Aktueller Strompreis.";
-"widget.current.belowAverage" = "Unter Durchschnitt.";
-"widget.current.aboveAverage" = "Über Durchschnitt.";
-"widget.current.nearAverage" = "Nahe Durchschnitt.";
-"widget.forecast.displayName" = "Preisverlauf";
-"widget.forecast.description" = "Zeigt die Strompreise der nächsten 24 Stunden.";
-"widget.forecast.title" = "Nächste Preise";
-"widget.forecast.lowest" = "Tiefstwert";
-"widget.forecast.current" = "Aktuell";
-"widget.forecast.highest" = "Höchstwert";
-"widget.cheapest.displayName" = "Günstigste Zeiten";
-"widget.cheapest.description" = "Zeigt die günstigsten kommenden Strom-Zeitfenster.";
-"widget.cheapest.title" = "Günstigste";
-"widget.cheapest.usageDuration" = "%@ Nutzung";
-"widget.cheapest.noWindow" = "Kein vollständiges Zeitfenster verfügbar.";
-"widget.unavailable.title" = "Preise nicht verfügbar";
-"widget.unavailable.short" = "Nicht verfügbar";
-"widget.cached" = "Gecacht";
-"widget.pro.title" = "Widgets sind Pro";
-"widget.pro.subtitle" = "Öffne AWattPrice, um Widgets freizuschalten.";
+
+// Widget localizations
+"Current Price" = "Aktueller Preis";
+"Shows the current electricity price and how it compares to the upcoming average." = "Zeigt den aktuellen Strompreis und den Vergleich zum kommenden Durchschnitt.";
+"Now" = "Jetzt";
+"Negative price right now." = "Der Preis ist gerade negativ.";
+"Current electricity price." = "Aktueller Strompreis.";
+"Below average" = "Unter Durchschnitt";
+"Above average" = "Über Durchschnitt";
+"Near average" = "Nahe Durchschnitt";
+"Price Forecast" = "Preisverlauf";
+"Shows the next 24 hours of electricity prices." = "Zeigt die Strompreise der nächsten 24 Stunden.";
+"Next prices" = "Nächste Preise";
+"Cheapest Times" = "Günstigste Zeiten";
+"Shows the cheapest upcoming electricity windows." = "Zeigt die günstigsten kommenden Strom-Zeitfenster.";
+"Cheapest" = "Günstigste";
+"%@ usage" = "%@ Nutzung";
+"No full time window available." = "Kein vollständiges Zeitfenster verfügbar.";
+"Prices unavailable" = "Preise nicht verfügbar";
+"Unavailable" = "Nicht verfügbar";
+"Cached" = "Gecacht";
+"Widgets are Pro" = "Widgets sind Pro";
+"Open AWattPrice to unlock widgets." = "Öffne AWattPrice, um Widgets freizuschalten.";
 
 // AWattPrice Pro Supporter localizations
 "AWattPrice Pro" = "AWattPrice Pro Supporter";

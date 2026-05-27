@@ -8,7 +8,7 @@ import UIKit
 
 // MARK: - Data Model
 
-private struct ProGalleryItem: Identifiable {
+private struct ProGalleryItem: Identifiable, Equatable {
     let id = UUID()
     /// The name of the image asset in the asset catalog.
     /// If no image with this name exists, a placeholder is shown.
@@ -56,6 +56,8 @@ private let proGalleryItems: [ProGalleryItem] = [
 // MARK: - Gallery View
 
 struct ProFeatureGalleryView: View {
+    @State private var selectedItem: ProGalleryItem?
+
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("See Pro in action".localized())
@@ -65,7 +67,12 @@ struct ProFeatureGalleryView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHStack(spacing: 12) {
                     ForEach(proGalleryItems) { item in
-                        ProGalleryCard(item: item)
+                        Button {
+                            selectedItem = item
+                        } label: {
+                            ProGalleryCard(item: item)
+                        }
+                        .buttonStyle(.plain)
                     }
                 }
                 .scrollTargetLayout()
@@ -73,6 +80,9 @@ struct ProFeatureGalleryView: View {
                 .padding(.vertical, 4) // room for card shadows
             }
             .scrollTargetBehavior(.viewAligned(limitBehavior: .alwaysByOne))
+            .fullScreenCover(item: $selectedItem) { item in
+                ProGalleryFullScreenViewer(initialItem: item)
+            }
         }
     }
 }
@@ -182,6 +192,102 @@ private struct ProGalleryCard: View {
                 .foregroundStyle(.primary)
         }
         .frame(width: cardWidth, alignment: .leading)
+    }
+}
+
+// MARK: - Full Screen Viewer
+
+private struct ProGalleryFullScreenViewer: View {
+    @Environment(\.dismiss) private var dismiss
+    @State private var selection: UUID
+
+    init(initialItem: ProGalleryItem) {
+        _selection = State(initialValue: initialItem.id)
+    }
+
+    var body: some View {
+        ZStack {
+            Color.black.ignoresSafeArea()
+            
+            VStack(spacing: 0) {
+                // Header with close button
+                HStack {
+                    Spacer()
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.system(size: 30))
+                            .foregroundStyle(.white.opacity(0.8), .black.opacity(0.3))
+                    }
+                    .padding(.top, 16)
+                    .padding(.trailing, 20)
+                }
+                
+                // Image gallery
+                TabView(selection: $selection) {
+                    ForEach(proGalleryItems) { item in
+                        fullscreenImage(for: item)
+                            .tag(item.id)
+                    }
+                }
+                .tabViewStyle(.page(indexDisplayMode: .always))
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func fullscreenImage(for item: ProGalleryItem) -> some View {
+        let hasImage = UIImage(named: item.assetName) != nil
+        
+        Group {
+            if hasImage {
+                Image(item.assetName)
+                    .resizable()
+                    .scaledToFit()
+            } else {
+                VStack(spacing: 24) {
+                    Image(systemName: item.systemImage)
+                        .font(.system(size: 80, weight: .medium))
+                    
+                    Text("Screenshot coming soon".localized())
+                        .font(.title3.weight(.medium))
+                }
+                .foregroundStyle(item.tint)
+                // Add a gradient background for the placeholder to make it look like a real card
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(
+                    LinearGradient(
+                        colors: [
+                            item.tint.opacity(0.3),
+                            item.tint.opacity(0.1)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+            }
+        }
+        // Give the fullscreen image/placeholder nice device-like rounded corners and a border
+        .clipShape(RoundedRectangle(cornerRadius: 32, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 32, style: .continuous)
+                .stroke(Color.white.opacity(0.15), lineWidth: 1)
+        )
+        .shadow(
+            color: item.tint.opacity(0.5),
+            radius: 60,
+            y: 0
+        )
+        .shadow(
+            color: item.tint.opacity(0.4),
+            radius: 16,
+            y: 0
+        )
+        // Add padding so it doesn't touch the very edges of the screen
+        .padding(.horizontal, 16)
+        .padding(.top, 0)
+        .padding(.bottom, 48)
     }
 }
 

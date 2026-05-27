@@ -122,17 +122,18 @@ def validate_history_date(area: MarketArea, day: date) -> bool:
     return day <= yesterday
 
 
-def _price_point_signature(price_point: Box) -> tuple[int, int, str, Optional[str], bool]:
+def _price_point_signature(price_point: Box) -> tuple[int, int, str, Optional[str], bool, bool]:
     return (
         price_point.start_timestamp.int_timestamp,
         price_point.end_timestamp.int_timestamp,
         str(price_point.marketprice.value),
         price_point.get("sequence_position"),
         bool(price_point.get("is_fallback", False)),
+        bool(price_point.get("is_interpolated", False)),
     )
 
 
-def price_data_signature(price_data: Box) -> tuple[tuple[int, int, str, Optional[str], bool], ...]:
+def price_data_signature(price_data: Box) -> tuple[tuple[int, int, str, Optional[str], bool, bool], ...]:
     """Build a stable signature for comparing cached price payloads."""
     return tuple(sorted(_price_point_signature(price_point) for price_point in price_data.prices))
 
@@ -145,6 +146,11 @@ def unique_price_point_count(price_data: Box) -> int:
 def fallback_price_count(price_data: Box) -> int:
     """Count prices that were filled from a non-primary sequence."""
     return sum(1 for price_point in price_data.prices if price_point.get("is_fallback", False))
+
+
+def interpolated_price_count(price_data: Box) -> int:
+    """Count prices that were interpolated because no source sequence had the interval."""
+    return sum(1 for price_point in price_data.prices if price_point.get("is_interpolated", False))
 
 
 def has_complete_price_points(price_data: Optional[Box], period_start: Arrow, period_end: Arrow) -> bool:
@@ -257,6 +263,7 @@ def parse_to_response_data(price_data: Box) -> Box:
     response_data.sequence_position = price_data.sequence_position
     response_data.fallback_sequence_positions = list(price_data.get("fallback_sequence_positions", []))
     response_data.fallback_price_count = int(price_data.get("fallback_price_count", 0))
+    response_data.interpolated_price_count = int(price_data.get("interpolated_price_count", 0))
     response_data.prices = []
     for price_point in price_data.prices:
         response_point = Box()
@@ -265,6 +272,7 @@ def parse_to_response_data(price_data: Box) -> Box:
         response_point.marketprice = float(price_point.marketprice.value)
         response_point.sequence_position = price_point.get("sequence_position", price_data.sequence_position)
         response_point.is_fallback = bool(price_point.get("is_fallback", False))
+        response_point.is_interpolated = bool(price_point.get("is_interpolated", False))
         response_data.prices.append(response_point)
 
     return response_data

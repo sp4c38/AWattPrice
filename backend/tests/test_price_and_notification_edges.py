@@ -80,7 +80,12 @@ def price_point(hour: int, value: Decimal | str | int):
 
 def refresh_price_data(point_specs):
     data = Box({"prices": BoxList()})
-    for start_time, end_time, value, sequence_position, is_fallback in point_specs:
+    for point_spec in point_specs:
+        if len(point_spec) == 5:
+            start_time, end_time, value, sequence_position, is_fallback = point_spec
+            is_interpolated = False
+        else:
+            start_time, end_time, value, sequence_position, is_fallback, is_interpolated = point_spec
         data.prices.append(
             Box(
                 {
@@ -89,6 +94,7 @@ def refresh_price_data(point_specs):
                     "marketprice": prices.MarketPrice(Decimal(str(value)), AREA),
                     "sequence_position": sequence_position,
                     "is_fallback": is_fallback,
+                    "is_interpolated": is_interpolated,
                 }
             )
         )
@@ -152,6 +158,21 @@ class PriceCacheAndConversionTests(unittest.TestCase):
 
         self.assertTrue(price_refresher.check_data_new(fallback_data, preferred_data))
         self.assertFalse(price_refresher.check_data_new(preferred_data, fallback_data))
+
+    def test_check_data_new_replaces_interpolation_with_source_price(self):
+        interpolated_data = refresh_price_data([
+            ("2026-05-24T09:00:00+02:00", "2026-05-24T10:00:00+02:00", 10, "1", False),
+            ("2026-05-24T10:00:00+02:00", "2026-05-24T11:00:00+02:00", 20, "interpolated", False, True),
+            ("2026-05-24T11:00:00+02:00", "2026-05-24T12:00:00+02:00", 30, "1", False),
+        ])
+        fallback_data = refresh_price_data([
+            ("2026-05-24T09:00:00+02:00", "2026-05-24T10:00:00+02:00", 10, "1", False),
+            ("2026-05-24T10:00:00+02:00", "2026-05-24T11:00:00+02:00", 200, "2", True),
+            ("2026-05-24T11:00:00+02:00", "2026-05-24T12:00:00+02:00", 30, "1", False),
+        ])
+
+        self.assertTrue(price_refresher.check_data_new(interpolated_data, fallback_data))
+        self.assertFalse(price_refresher.check_data_new(fallback_data, interpolated_data))
 
     def test_current_price_fallback_rejects_expired_cache(self):
         async def run_test():

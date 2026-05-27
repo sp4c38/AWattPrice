@@ -1023,22 +1023,80 @@ private struct AnimatedBenefitIcon: View {
 }
 
 private struct ProSupporterBuyButtonStyle: ButtonStyle {
+    @Environment(\.isEnabled) private var isEnabled
+
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .background(
                 LinearGradient(
                     colors: [
-                        Color(red: 0.02, green: 0.48, blue: 0.68),
-                        Color(red: 0.08, green: 0.26, blue: 0.72)
+                        AppTheme.accent,
+                        Color(red: 0.95, green: 0.36, blue: 0.09)
                     ],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
                 ),
                 in: RoundedRectangle(cornerRadius: 16, style: .continuous)
             )
-            .shadow(color: Color(red: 0.03, green: 0.40, blue: 0.80).opacity(configuration.isPressed ? 0.18 : 0.32), radius: configuration.isPressed ? 8 : 16, y: configuration.isPressed ? 4 : 9)
+            .overlay {
+                ElectricCTAHighlight(isDisabled: !isEnabled)
+                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+            }
+            .shadow(color: AppTheme.accent.opacity(configuration.isPressed ? 0.18 : 0.32), radius: configuration.isPressed ? 8 : 16, y: configuration.isPressed ? 4 : 9)
             .scaleEffect(configuration.isPressed ? 0.985 : 1)
             .animation(.easeInOut(duration: 0.16), value: configuration.isPressed)
+    }
+}
+
+
+private struct ElectricCTAHighlight: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    let isDisabled: Bool
+
+    var body: some View {
+        if isDisabled {
+            Color.clear
+        } else if reduceMotion {
+            Color.clear
+        } else {
+            // Face sheen sweep
+            TimelineView(.animation) { timeline in
+                let period: TimeInterval = 3.5
+                let sweepDuration: TimeInterval = 2.8
+                let time = timeline.date.timeIntervalSinceReferenceDate.truncatingRemainder(dividingBy: period)
+                let progress = min(1.0, time / sweepDuration)
+                
+                Canvas { ctx, size in
+                    let hw = size.width * 0.25
+                    let tilt = size.width * 0.15
+                    let startX = -hw - tilt
+                    let endX = size.width + hw + tilt
+                    let cx = startX + (endX - startX) * progress
+                    
+                    ctx.blendMode = .screen
+                    
+                    let faceGradient = GraphicsContext.Shading.linearGradient(
+                        Gradient(stops: [
+                            .init(color: .white.opacity(0.00), location: 0.0),
+                            .init(color: .white.opacity(0.08), location: 0.35),
+                            .init(color: .white.opacity(0.28), location: 0.5),
+                            .init(color: .white.opacity(0.08), location: 0.65),
+                            .init(color: .white.opacity(0.00), location: 1.0),
+                        ]),
+                        startPoint: CGPoint(x: cx - hw - tilt, y: 0),
+                        endPoint:   CGPoint(x: cx + hw + tilt, y: size.height)
+                    )
+                    
+                    ctx.fill(
+                        Path(CGRect(origin: .zero, size: size)),
+                        with: faceGradient
+                    )
+                }
+            }
+            .allowsHitTesting(false)
+            .accessibilityHidden(true)
+        }
     }
 }
 

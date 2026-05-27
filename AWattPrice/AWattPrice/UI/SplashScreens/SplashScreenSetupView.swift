@@ -7,6 +7,7 @@
 
 
 import SwiftUI
+import UIKit
 
 struct CheckmarkShape: Shape {
     func path(in rect: CGRect) -> Path {
@@ -63,6 +64,13 @@ private struct AnimatingCheckmark: View {
             .scaleEffect(scale)
             .position(x: width / 2, y: height / 2)
             .onAppear {
+                #if os(iOS)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.75) {
+                    let generator = UINotificationFeedbackGenerator()
+                    generator.notificationOccurred(.success)
+                }
+                #endif
+
                 withAnimation(.spring(response: 1.15, dampingFraction: 0.82)) {
                     circleTrim = 1.0
                     scale = 1.0
@@ -155,7 +163,6 @@ struct SplashScreenSetupView: View {
         }
         .opacity(fadeOutSetup ? 0 : 1)
         .ignoresSafeArea(.keyboard)
-        .navigationTitle("Setup")
         .navigationBarBackButtonHidden(showCompletionOverlay)
         .background(AppTheme.screenBackground(for: colorScheme).ignoresSafeArea(.all))
         .onAppear {

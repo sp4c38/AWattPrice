@@ -547,7 +547,7 @@ struct EnergyPriceGraph: View {
 
     @State private var selectedGroupIndex: Int?
     @State private var expandedIntervalSwitchDirection: Int?
-    @State private var feedbackGenerator = UISelectionFeedbackGenerator()
+    @State private var feedbackGenerator = UIImpactFeedbackGenerator(style: .light)
 
     private var currentPrices: [EnergyPricePoint] {
         prices ?? energyDataService.energyData?.currentPrices ?? []
@@ -705,7 +705,7 @@ struct EnergyPriceGraph: View {
         }
 
         if boundedGroupIndex != nil {
-            feedbackGenerator.selectionChanged()
+            feedbackGenerator.impactOccurred(intensity: 0.75)
             feedbackGenerator.prepare()
         }
 

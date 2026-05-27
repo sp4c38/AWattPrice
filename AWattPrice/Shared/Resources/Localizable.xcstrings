@@ -3139,7 +3139,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mit Pro kannst du Gebühren und Steuern in deine angezeigten Preise einrechnen."
+            "value" : "Mit Pro werden Gebühren und Steuern in die Preise mit eingerechnet."
           }
         },
         "en" : {
@@ -4319,24 +4319,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Yesterday"
-          }
-        }
-      }
-    },
-    "Your market area decides which electricity prices are shown throughout the app." : {
-      "comment" : "SwiftUI literal",
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Deine Marktzone bestimmt, welche Strompreise in der App angezeigt werden."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Your market area decides which electricity prices are shown throughout the app."
           }
         }
       }

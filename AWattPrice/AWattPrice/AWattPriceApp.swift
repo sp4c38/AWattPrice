@@ -154,7 +154,7 @@ struct ContentView: View {
                         } paywall: {
                             ProLockedFeatureView(
                                 title: "Notifications",
-                                subtitle: "Pro unlocks price alerts and daily summaries when new electricity prices are available.",
+                                subtitle: "Set price alerts for tomorrow’s cheap and expensive hours, plus a daily summary when new prices arrive.",
                                 systemImage: "bell.badge",
                                 tint: .teal,
                                 actionTitle: "Unlock Pro"
@@ -178,7 +178,7 @@ struct ContentView: View {
                         } paywall: {
                             ProLockedFeatureView(
                                 title: "Insights",
-                                subtitle: "Advanced insights help you plan around cheap hours, expensive peaks, and renewable energy mix.",
+                                subtitle: "Compare today’s price range, cheapest and most expensive usage windows, plus the current renewable energy mix.",
                                 systemImage: "chart.bar.xaxis",
                                 tint: .blue,
                                 actionTitle: "Unlock Pro"

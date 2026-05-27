@@ -328,19 +328,19 @@
         }
       }
     },
-    "Advanced insights help you plan around cheap hours, expensive peaks, and renewable energy mix." : {
+    "Compare today’s price range, cheapest and most expensive usage windows, plus the current renewable energy mix." : {
       "comment" : "Localized custom view text",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Erweiterte Einblicke helfen dir, günstige Stunden, teure Preisspitzen und den Anteil erneuerbarer Energien besser zu berücksichtigen."
+            "value" : "Vergleiche die heutige Preisspanne, günstige und teure Nutzungsfenster sowie den aktuellen erneuerbaren Strommix."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Advanced insights help you plan around cheap hours, expensive peaks, and renewable energy mix."
+            "value" : "Compare today’s price range, cheapest and most expensive usage windows, plus the current renewable energy mix."
           }
         }
       }
@@ -3201,19 +3201,19 @@
         }
       }
     },
-    "Pro unlocks price alerts and daily summaries when new electricity prices are available." : {
+    "Set price alerts for tomorrow’s cheap and expensive hours, plus a daily summary when new prices arrive." : {
       "comment" : "Localized custom view text",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mit Pro erhältst du Preisalarme und tägliche Zusammenfassungen, sobald neue Strompreise verfügbar sind."
+            "value" : "Erstelle Preisalarme für günstige und teure Stunden morgen sowie eine tägliche Zusammenfassung, sobald neue Preise verfügbar sind."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pro unlocks price alerts and daily summaries when new electricity prices are available."
+            "value" : "Set price alerts for tomorrow’s cheap and expensive hours, plus a daily summary when new prices arrive."
           }
         }
       }

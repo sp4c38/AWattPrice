@@ -373,7 +373,7 @@ struct PricesView: View {
             UpdatedDataView(
                 fillsAvailableWidth: false,
                 refreshEnabled: false,
-                statusOverride: "Current prices · Tap for history".localized()
+                statusOverride: "Prices up to date · Tap for history".localized()
             )
         case .history:
             EmptyView()

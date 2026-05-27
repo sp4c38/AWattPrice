@@ -478,7 +478,7 @@ private struct GenerationMixCard: View {
                         .font(.system(.largeTitle, design: .rounded).weight(.bold))
                         .monospacedDigit()
 
-                    Text("renewable right now")
+                    Text("renewables now")
                         .font(.subheadline.weight(.semibold))
                         .foregroundStyle(.secondary)
 

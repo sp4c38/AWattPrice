@@ -576,7 +576,7 @@ struct NotificationSettingView: View {
                     
                     NotificationSettingsCard {
                         NotificationRuleCard(
-                            title: "Price Below",
+                            title: "Price below value",
                             subtitle: "Cheap hours **tomorrow**.",
                             systemImage: "bell.badge.fill",
                             tint: AppTheme.success,
@@ -598,7 +598,7 @@ struct NotificationSettingView: View {
 
                     NotificationSettingsCard {
                         NotificationRuleCard(
-                            title: "Price Above",
+                            title: "Price above value",
                             subtitle: "Expensive hours **tomorrow**.",
                             systemImage: "exclamationmark.triangle.fill",
                             tint: AppTheme.error,

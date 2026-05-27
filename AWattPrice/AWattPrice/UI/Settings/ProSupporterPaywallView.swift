@@ -56,7 +56,7 @@ private let proBenefits = [
     ),
     ProBenefit(
         title: "Development",
-        subtitle: "Helps keep AWattPrice maintained.",
+        subtitle: "Help keep AWattPrice maintained.",
         systemImage: "heart.fill",
         tint: .green
     ),
@@ -407,6 +407,7 @@ struct ProSupporterPaywallView: View {
             Text("Monthly and yearly plans renew automatically. Lifetime is a one-time purchase. All purchases include free family sharing.".localized())
                 .font(.caption2)
                 .foregroundStyle(.secondary)
+                .lineLimit(nil)
                 .fixedSize(horizontal: false, vertical: true)
         }
         .font(.caption)

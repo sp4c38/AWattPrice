@@ -488,7 +488,8 @@ private struct GenerationMixStackedGenerationChart: View {
                         .foregroundStyle(.secondary.opacity(range == .day ? 0.14 : 0))
                     AxisValueLabel {
                         if let date = value.as(Date.self) {
-                            Text(date, format: .dateTime.hour(.twoDigits(amPM: .omitted)))
+                            let hour = Calendar.current.component(.hour, from: date)
+                            Text(String(format: "%02d", hour))
                                 .foregroundStyle(.secondary)
                                 .opacity(range == .day ? 1 : 0)
                                 .animation(.easeInOut(duration: 0.25), value: range)

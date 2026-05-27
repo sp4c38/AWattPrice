@@ -25,7 +25,7 @@ private enum TimeRangeQuickPreset: CaseIterable, Identifiable {
         case .next12Hours:
             return "Next 12 hours"
         case .fullRange:
-            return "All available"
+            return "Maximum"
         }
     }
 
@@ -165,14 +165,14 @@ struct TimeRangeInputField: View {
             VStack(alignment: .leading, spacing: 12) {
                 TimeRangeInputFieldSelectionPart(
                     partSelection: $cheapestHourManager.startDate,
-                    name: "Earliest start",
+                    name: "Start",
                     systemImage: "arrow.forward.circle.fill",
                     range: inputDateRange
                 )
 
                 TimeRangeInputFieldSelectionPart(
                     partSelection: $cheapestHourManager.endDate,
-                    name: "Latest finish",
+                    name: "End",
                     systemImage: "flag.circle.fill",
                     range: inputDateRange
                 )

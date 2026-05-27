@@ -13,7 +13,7 @@ struct AWattPriceWidgetBundle: WidgetBundle {
     var body: some Widget {
         CurrentPriceWidget()
         PricesWidget()
-        CheapestTimesWidget()
         RenewableMixWidget()
+        CheapestTimesWidget()
     }
 }

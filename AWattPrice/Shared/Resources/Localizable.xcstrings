@@ -283,7 +283,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Widgets zum Home-Bildschirm hinzufügen und Preise einfacher im Blick behalten."
+            "value" : "Füge unsere Widgets zum Home-Bildschirm hinzu und erhalte schnelle Preisupdates."
           }
         },
         "en" : {
@@ -3139,7 +3139,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mit Pro werden Gebühren und Steuern in die Preise mit eingerechnet."
+            "value" : "Mit Pro können Gebühren und Steuern in die Preise eingerechnet werden."
           }
         },
         "en" : {

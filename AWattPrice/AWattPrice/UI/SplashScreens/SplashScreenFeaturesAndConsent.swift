@@ -92,21 +92,25 @@ struct SplashScreenFeaturesAndConsentView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            VStack(spacing: 15) {
+            VStack(alignment: .leading, spacing: 18) {
+                Text("What AWattPrice does")
+                    .font(.system(.title2, design: .rounded).weight(.bold))
+                    .fixedSize(horizontal: false, vertical: true)
+
                 AppFeatureView(
-                    title: "View prices",
+                    title: "Tomorrow’s prices",
                     subTitle: "splashScreen.featuresAndConsent.viewPrices.info",
                     imageName: ("magnifyingglass", true)
                 )
 
                 AppFeatureView(
-                    title: "Compare prices",
+                    title: "Best usage windows",
                     subTitle: "splashScreen.featuresAndConsent.comparePrices.info",
                     imageName: ("arrow.left.arrow.right", true)
                 )
 
                 AppFeatureView(
-                    title: "Price Guard",
+                    title: "Price alerts",
                     subTitle: "notificationPage.notification.priceDropsBelowValue.description",
                     imageName: ("PriceTag", false)
                 )
@@ -122,10 +126,11 @@ struct SplashScreenFeaturesAndConsentView: View {
             }
             .buttonStyle(ContinueButtonStyle())
         }
-        .padding(.top, 5)
+        .padding(.top, 12)
         .padding([.leading, .trailing], 20)
         .padding(.bottom, 16)
-        .navigationBarTitle("Features")
+        .navigationTitle("")
+        .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(isPresented: $showsSetup) {
             SplashScreenSetupView()
         }

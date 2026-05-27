@@ -113,6 +113,60 @@ private struct SetupCompleteOverlay: View {
     }
 }
 
+private struct SelectedMarketAreaSummary: View {
+    @Environment(\.colorScheme) private var colorScheme
+
+    let marketArea: MarketArea
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Text(marketArea.settingsFlag)
+                .font(.title3)
+                .frame(width: 38, height: 38)
+                .background(AppTheme.subtleFill(AppTheme.accent, for: colorScheme), in: Circle())
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text("Selected price zone")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
+
+                Text(marketArea.localizedDisplayName)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.primary)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.85)
+            }
+
+            Spacer(minLength: 0)
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+        .background(AppTheme.cardBackground(for: colorScheme), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .stroke(AppTheme.cardStroke(for: colorScheme), lineWidth: 1)
+        )
+    }
+}
+
+private struct SetupLoadingOverlay: View {
+    let message: LocalizedStringKey
+
+    var body: some View {
+        HStack(spacing: 10) {
+            ProgressView()
+                .progressViewStyle(CircularProgressViewStyle())
+
+            Text(message)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.primary)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .appCardStyle(cornerRadius: 18, padding: 0)
+    }
+}
+
 /// Splash screen which handles the input of settings which are required for the main functionality of the app.
 struct SplashScreenSetupView: View {
     @Environment(\.colorScheme) var colorScheme
@@ -135,31 +189,38 @@ struct SplashScreenSetupView: View {
     var body: some View {
         ZStack {
             VStack(alignment: .leading, spacing: 16) {
-                Text("Select your electricity price market area".localized())
-                    .font(.system(.title2, design: .rounded).weight(.bold))
-                    .fixedSize(horizontal: false, vertical: true)
-                    .padding(.horizontal, 16)
-                    .padding(.top, 12)
+                VStack(alignment: .leading, spacing: 7) {
+                    Text("Select your electricity price market area".localized())
+                        .font(.system(.title2, design: .rounded).weight(.bold))
+                        .fixedSize(horizontal: false, vertical: true)
 
-                MarketAreaMapSelectionView(viewModel: viewModel, height: 460)
+                    Text("Your market area decides which electricity prices AWattPrice downloads.")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .padding(.horizontal, 16)
+                .padding(.top, 12)
+
+                MarketAreaMapSelectionView(viewModel: viewModel, height: 400)
                     .padding(.horizontal, 16)
 
                 Spacer(minLength: 0)
+
+                SelectedMarketAreaSummary(marketArea: viewModel.selectedMarketArea)
+                    .padding(.horizontal, 16)
 
                 Button(action: finishSetup) {
                     Text("Enter app")
                 }
                 .buttonStyle(ContinueButtonStyle())
-                .disabled(showCompletionOverlay || viewModel.isLoading)
+                .disabled(showCompletionOverlay || viewModel.isLoading || viewModel.isLoadingAreas)
                 .padding(.bottom, 16)
                 .padding([.leading, .trailing], 16)
             }
 
             if viewModel.isLoading || viewModel.isLoadingAreas {
-                ProgressView()
-                    .progressViewStyle(CircularProgressViewStyle())
-                    .padding(16)
-                    .appCardStyle(cornerRadius: 18, padding: 0)
+                SetupLoadingOverlay(message: viewModel.isLoadingAreas ? "Loading price zones…" : "Saving price zone…")
             }
 
             if showCompletionOverlay {

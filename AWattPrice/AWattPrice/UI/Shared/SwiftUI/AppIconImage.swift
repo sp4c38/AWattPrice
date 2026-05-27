@@ -8,18 +8,21 @@ import UIKit
 
 struct AppIconImage: View {
     @Environment(\.colorScheme) private var colorScheme
+    var hasBorder: Bool = true
 
     var body: some View {
         let image = Self.appIcon(for: colorScheme)
 
         ZStack {
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .strokeBorder(
-                    colorScheme == .dark
-                    ? Color(red: 0.40, green: 0.40, blue: 0.42, opacity: 1.0)
-                    : Color(red: 0.83, green: 0.83, blue: 0.84, opacity: 1.0),
-                    lineWidth: 1
-                )
+            if hasBorder {
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .strokeBorder(
+                        colorScheme == .dark
+                        ? Color(red: 0.40, green: 0.40, blue: 0.42, opacity: 1.0)
+                        : Color(red: 0.83, green: 0.83, blue: 0.84, opacity: 1.0),
+                        lineWidth: 1
+                    )
+            }
 
             if let image {
                 Image(uiImage: image)

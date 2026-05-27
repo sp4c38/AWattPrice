@@ -139,7 +139,7 @@ struct ContentView: View {
     private let foregroundRefreshTimer = Timer.publish(every: 5 * 60, on: .main, in: .common).autoconnect()
     
     var body: some View {
-        VStack(spacing: 0) {
+        ZStack {
             if settingsManager.setting.onboarded {
                 TabView(selection: $selectedTab) {
                     SettingsPageView {
@@ -191,8 +191,10 @@ struct ContentView: View {
                     .tabItem { Label("Insights", systemImage: "chart.bar.xaxis") }
                 }
                 .tint(.primary)
+                .transition(.opacity)
             } else {
                 SplashScreenStartView()
+                    .transition(.opacity)
             }
         }
         .ignoresSafeArea(.keyboard)

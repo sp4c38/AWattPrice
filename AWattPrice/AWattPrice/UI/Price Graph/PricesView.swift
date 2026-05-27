@@ -154,6 +154,7 @@ struct PricesView: View {
                     DataDownloadAndError()
                 }
             }
+            .animation(.easeInOut, value: hasVisiblePriceData)
             .appScreenBackground()
             .navigationBarTitleDisplayMode(.inline)
             .toolbar(.hidden, for: .navigationBar)

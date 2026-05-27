@@ -725,7 +725,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vergleiche die heutige Preisspanne, günstige und teure Nutzungsfenster sowie den aktuellen erneuerbaren Strommix."
+            "value" : "Vergleiche die heutige Preisspanne, günstige und teure Nutzungsfenster sowie den aktuellen Strommix."
           }
         },
         "en" : {
@@ -4064,6 +4064,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Unavailable"
+          }
+        }
+      }
+    },
+    "Unlock Pro" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro freischalten"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unlock Pro"
           }
         }
       }

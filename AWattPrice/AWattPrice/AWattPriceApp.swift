@@ -157,7 +157,7 @@ struct ContentView: View {
                                 subtitle: "Set price alerts for tomorrow’s cheap and expensive hours, plus a daily summary when new prices arrive.",
                                 systemImage: "bell.badge",
                                 tint: .teal,
-                                actionTitle: "Unlock Pro"
+                                actionTitle: "Unlock Pro".localized()
                             ) {
                                 activeProPaywallTrigger = .notifications
                             }
@@ -181,7 +181,7 @@ struct ContentView: View {
                                 subtitle: "Compare today’s price range, cheapest and most expensive usage windows, plus the current renewable energy mix.",
                                 systemImage: "chart.bar.xaxis",
                                 tint: .blue,
-                                actionTitle: "Unlock Pro"
+                                actionTitle: "Unlock Pro".localized()
                             ) {
                                 activeProPaywallTrigger = .insights
                             }

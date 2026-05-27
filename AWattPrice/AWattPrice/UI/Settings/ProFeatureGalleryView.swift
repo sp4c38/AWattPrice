@@ -206,34 +206,38 @@ private struct ProGalleryFullScreenViewer: View {
     }
 
     var body: some View {
-        ZStack {
+        ZStack(alignment: .topTrailing) {
             Color.black.ignoresSafeArea()
             
-            VStack(spacing: 0) {
-                // Header with close button
-                HStack {
-                    Spacer()
-                    Button {
-                        dismiss()
-                    } label: {
-                        Image(systemName: "xmark.circle.fill")
-                            .font(.system(size: 30))
-                            .foregroundStyle(.white.opacity(0.8), .black.opacity(0.3))
-                    }
-                    .padding(.top, 16)
-                    .padding(.trailing, 20)
+            TabView(selection: $selection) {
+                ForEach(proGalleryItems) { item in
+                    fullscreenImage(for: item)
+                        .tag(item.id)
                 }
-                
-                // Image gallery
-                TabView(selection: $selection) {
-                    ForEach(proGalleryItems) { item in
-                        fullscreenImage(for: item)
-                            .tag(item.id)
-                    }
-                }
-                .tabViewStyle(.page(indexDisplayMode: .always))
             }
+            .tabViewStyle(.page(indexDisplayMode: .always))
+            .ignoresSafeArea()
+            
+            Button {
+                dismiss()
+            } label: {
+                Image(systemName: "xmark.circle.fill")
+                    .font(.system(size: 30))
+                    .foregroundStyle(.white.opacity(0.8), .black.opacity(0.3))
+            }
+            .padding(.top, 16)
+            .padding(.trailing, 20)
         }
+        .simultaneousGesture(
+            DragGesture(minimumDistance: 30)
+                .onEnded { value in
+                    // Only dismiss if the swipe is clearly downwards,
+                    // ignoring horizontal swipes meant for the TabView.
+                    if value.translation.height > 60 && abs(value.translation.width) < 60 {
+                        dismiss()
+                    }
+                }
+        )
     }
 
     @ViewBuilder
@@ -285,9 +289,9 @@ private struct ProGalleryFullScreenViewer: View {
             y: 0
         )
         // Add padding so it doesn't touch the very edges of the screen
-        .padding(.horizontal, 16)
-        .padding(.top, 0)
-        .padding(.bottom, 48)
+        .padding(.horizontal, 24)
+        .padding(.top, 64)
+        .padding(.bottom, 64)
     }
 }
 

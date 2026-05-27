@@ -329,13 +329,8 @@ struct ProSupporterPaywallView: View {
             .foregroundStyle(.white)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 14)
-            .background(AppTheme.accent, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-            .overlay {
-                ElectricCTAHighlight(isDisabled: purchaseButtonIsDisabled)
-                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-            }
         }
-        .buttonStyle(.plain)
+        .buttonStyle(ProSupporterBuyButtonStyle())
         .disabled(purchaseButtonIsDisabled)
         .opacity(purchaseButtonIsDisabled ? 0.55 : 1)
     }
@@ -1027,61 +1022,23 @@ private struct AnimatedBenefitIcon: View {
     }
 }
 
-private struct ElectricCTAHighlight: View {
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-
-    let isDisabled: Bool
-
-    /// One full sweep takes this many seconds.
-    private let period: TimeInterval = 2.6
-
-    var body: some View {
-        if isDisabled {
-            Color.clear
-        } else if reduceMotion {
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .stroke(Color.white.opacity(0.16), lineWidth: 1)
-        } else {
-            ZStack {
-                // Subtle persistent border so the button always looks polished.
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .stroke(Color.white.opacity(0.14), lineWidth: 1)
-
-                // Animated sheen drawn with Canvas — no layout shapes, no
-                // rectangles, clips automatically to its own bounds.
-                TimelineView(.animation) { timeline in
-                    let t = CGFloat(
-                        timeline.date.timeIntervalSinceReferenceDate
-                            .truncatingRemainder(dividingBy: period) / period
-                    )
-                    Canvas { ctx, size in
-                        // Half-width of the soft gradient band.
-                        let hw = size.width * 0.22
-                        // Center of the band sweeps from off-screen left to
-                        // off-screen right so the loop is seamless.
-                        let cx = -hw + (size.width + hw * 2) * t
-
-                        // A diagonal gradient (startPoint top-left of band,
-                        // endPoint bottom-right) gives the classic angled-
-                        // sheen look without any rotated shapes.
-                        ctx.fill(
-                            Path(CGRect(origin: .zero, size: size)),
-                            with: .linearGradient(
-                                Gradient(stops: [
-                                    .init(color: .white.opacity(0.00), location: 0),
-                                    .init(color: .white.opacity(0.28), location: 0.5),
-                                    .init(color: .white.opacity(0.00), location: 1),
-                                ]),
-                                startPoint: CGPoint(x: cx - hw, y: 0),
-                                endPoint:   CGPoint(x: cx + hw, y: size.height)
-                            )
-                        )
-                    }
-                }
-            }
-            .allowsHitTesting(false)
-            .accessibilityHidden(true)
-        }
+private struct ProSupporterBuyButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .background(
+                LinearGradient(
+                    colors: [
+                        Color(red: 0.02, green: 0.48, blue: 0.68),
+                        Color(red: 0.08, green: 0.26, blue: 0.72)
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                ),
+                in: RoundedRectangle(cornerRadius: 16, style: .continuous)
+            )
+            .shadow(color: Color(red: 0.03, green: 0.40, blue: 0.80).opacity(configuration.isPressed ? 0.18 : 0.32), radius: configuration.isPressed ? 8 : 16, y: configuration.isPressed ? 4 : 9)
+            .scaleEffect(configuration.isPressed ? 0.985 : 1)
+            .animation(.easeInOut(duration: 0.16), value: configuration.isPressed)
     }
 }
 

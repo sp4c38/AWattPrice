@@ -8,188 +8,138 @@
 
 import SwiftUI
 
-private struct SplashEnergyBackground: View {
+private struct SplashDotCarpet: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.colorScheme) private var colorScheme
+    @State private var start = Date.now
+
+    private let columns = 38
+    private let rows = 64
+
+    private var isDark: Bool {
+        colorScheme == .dark
+    }
+
     var body: some View {
-        TimelineView(.animation) { timeline in
-            let phase = timeline.date.timeIntervalSinceReferenceDate
+        TimelineView(.animation) { context in
+            let elapsed = reduceMotion ? 0 : context.date.timeIntervalSince(start)
 
-            ZStack {
-                LinearGradient(
-                    colors: [
-                        Color(red: 0.03, green: 0.06, blue: 0.12),
-                        Color(red: 0.06, green: 0.14, blue: 0.22),
-                        Color(red: 0.08, green: 0.11, blue: 0.18)
-                    ],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
+            Canvas { graphicsContext, size in
+                let topInset = -size.height * 0.14
+                let carpetHeight = size.height * 1.34
+                let centerX = size.width * 0.5
+                let topWidth = size.width * 0.92
+                let bottomWidth = size.width * 1.72
 
-                Canvas { context, size in
-                    for index in 0..<5 {
-                        var path = Path()
-                        let progress = CGFloat(index) / 4
-                        let yBase = size.height * (0.22 + progress * 0.48)
-                        let amplitude = size.height * (0.018 + progress * 0.016)
-                        let phaseOffset = phase * (0.7 + Double(progress) * 0.28)
+                for row in 0..<rows {
+                    let depth = CGFloat(row) / CGFloat(rows - 1)
+                    let easedDepth = CGFloat(pow(Double(depth), 1.18))
+                    let rowY = topInset + easedDepth * carpetHeight
+                    let rowWidth = topWidth + (bottomWidth - topWidth) * easedDepth
+                    let spacing = rowWidth / CGFloat(columns - 1)
+                    let wave = sin(elapsed * 1.25 + Double(row) * 0.42) * 6 * Double(0.35 + depth)
+                    let rowDrift = sin(elapsed * 0.36 + Double(row) * 0.18) * 12 * Double(0.25 + depth)
 
-                        path.move(to: CGPoint(x: -20, y: yBase))
+                    for column in 0..<columns {
+                        let xProgress = CGFloat(column) / CGFloat(columns - 1)
+                        let centered = xProgress - 0.5
+                        let curveLift = Double(centered * centered) * 34 * Double(depth)
+                        let x = centerX - rowWidth / 2 + CGFloat(column) * spacing + CGFloat(rowDrift)
+                        let y = rowY + CGFloat(wave) + CGFloat(curveLift)
+                        guard y >= -40, y <= size.height + 40 else { continue }
 
-                        for step in 0...48 {
-                            let x = CGFloat(step) / 48 * (size.width + 40) - 20
-                            let wave = sin((Double(step) * 0.32) + phaseOffset)
-                            path.addLine(to: CGPoint(x: x, y: yBase + CGFloat(wave) * amplitude))
-                        }
+                        let phase = elapsed * 1.8 + Double(column) * 0.32 + Double(row) * 0.21
+                        let shimmer = 0.52 + 0.48 * sin(phase)
+                        let edgeFade = 1 - min(abs(centered) * 1.65, 0.74)
+                        let distanceFade = 0.38 + 0.62 * depth
+                        let opacity = min(max((0.26 + 0.58 * shimmer) * Double(edgeFade) * Double(distanceFade), 0.11), 0.84)
+                        let titleXFade = max(0, 1 - abs(x - centerX) / (size.width * 0.46))
+                        let titleYFade = max(0, 1 - abs(y - size.height * 0.56) / (size.height * 0.14))
+                        let titleProtection = pow(Double(titleXFade * titleYFade), 0.7)
+                        let protectedOpacity = opacity * (1 - 0.74 * titleProtection)
+                        let dotSize = CGFloat(1.25 + 2.45 * Double(depth) + 0.82 * max(shimmer, 0))
+                        let color = Color(
+                            red: isDark ? 0.32 : 0.04,
+                            green: isDark ? 0.68 : 0.34,
+                            blue: isDark ? 1.0 : 0.82,
+                            opacity: protectedOpacity * (isDark ? 0.7 : 0.5)
+                        )
 
-                        context.stroke(
-                            path,
-                            with: .linearGradient(
-                                Gradient(colors: [
-                                    Color.cyan.opacity(0.02),
-                                    Color.cyan.opacity(0.24),
-                                    Color.blue.opacity(0.05)
-                                ]),
-                                startPoint: CGPoint(x: 0, y: yBase),
-                                endPoint: CGPoint(x: size.width, y: yBase)
-                            ),
-                            lineWidth: 1.6
+                        graphicsContext.fill(
+                            Path(ellipseIn: CGRect(
+                                x: x - dotSize / 2,
+                                y: y - dotSize / 2,
+                                width: dotSize,
+                                height: dotSize
+                            )),
+                            with: .color(color)
                         )
                     }
                 }
-                .blur(radius: 0.4)
-
-                LinearGradient(
-                    colors: [
-                        Color.white.opacity(0.10),
-                        Color.clear,
-                        Color.black.opacity(0.24)
-                    ],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
             }
-            .ignoresSafeArea()
         }
+        .accessibilityHidden(true)
     }
 }
 
-private struct SplashIconStage: View {
-    let iconSize: CGFloat
-
-    var body: some View {
-        TimelineView(.animation) { timeline in
-            let phase = timeline.date.timeIntervalSinceReferenceDate
-            let pulse = 0.5 + 0.5 * sin(phase * 1.2)
-            let rotation = Angle.degrees(phase.truncatingRemainder(dividingBy: 12) / 12 * 360)
-            let lift = CGFloat(sin(phase * 0.8)) * 6
-
-            ZStack {
-                Circle()
-                    .fill(
-                        RadialGradient(
-                            colors: [
-                                Color.cyan.opacity(0.34 + pulse * 0.12),
-                                Color.blue.opacity(0.14),
-                                Color.clear
-                            ],
-                            center: .center,
-                            startRadius: 4,
-                            endRadius: iconSize * 0.95
-                        )
-                    )
-                    .frame(width: iconSize * 1.9, height: iconSize * 1.9)
-                    .blur(radius: 18)
-
-                Circle()
-                    .stroke(
-                        AngularGradient(
-                            colors: [
-                                Color.cyan.opacity(0.18),
-                                Color.white.opacity(0.70),
-                                Color.blue.opacity(0.24),
-                                Color.cyan.opacity(0.18)
-                            ],
-                            center: .center,
-                            angle: rotation
-                        ),
-                        lineWidth: 3
-                    )
-                    .frame(width: iconSize * 1.22, height: iconSize * 1.22)
-                    .blur(radius: 0.3)
-
-                AppIconImage(hasBorder: false)
-                    .frame(width: iconSize, height: iconSize)
-                    .shadow(color: Color.cyan.opacity(0.24), radius: 26, y: 10)
-                    .offset(y: lift)
-            }
-            .accessibilityHidden(true)
-        }
-    }
-}
-
-private struct SplashContinueButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .font(Font.fBody.bold())
-            .foregroundColor(.white)
-            .frame(maxWidth: .infinity)
-            .padding()
-            .background(
-                LinearGradient(
-                    colors: [
-                        Color(red: 0.02, green: 0.48, blue: 0.68),
-                        Color(red: 0.08, green: 0.26, blue: 0.72)
-                    ],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                ),
-                in: RoundedRectangle(cornerRadius: 11, style: .continuous)
-            )
-            .shadow(color: Color(red: 0.03, green: 0.40, blue: 0.80).opacity(configuration.isPressed ? 0.18 : 0.32), radius: configuration.isPressed ? 8 : 16, y: configuration.isPressed ? 4 : 9)
-            .scaleEffect(configuration.isPressed ? 0.985 : 1)
-            .animation(.easeInOut(duration: 0.16), value: configuration.isPressed)
-    }
-}
 
 /**
  Start of all splash screens. Presents and describes the main functionalities of the app briefly.
  */
 struct SplashScreenStartView: View {
+    @Environment(\.colorScheme) private var colorScheme
     @State private var showsFeatures = false
     @ScaledMetric(relativeTo: .largeTitle) private var iconSize: CGFloat = 184
+
+    private var backgroundColor: Color {
+        colorScheme == .dark ? .black : .white
+    }
+
+    private var titleColor: Color {
+        colorScheme == .dark ? .white : .primary
+    }
+
+    private var appNameColor: Color {
+        Color(hue: 0.5648, saturation: 1.0000, brightness: colorScheme == .dark ? 0.92 : 0.62)
+    }
 
     var body: some View {
         NavigationStack {
             ZStack {
-                SplashEnergyBackground()
+                backgroundColor
+                    .ignoresSafeArea()
+
+                SplashDotCarpet()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .ignoresSafeArea()
+                    .blur(radius: 0.12)
 
                 VStack {
                     Spacer(minLength: 5)
 
                     VStack(spacing: 20) {
-                        SplashIconStage(iconSize: min(iconSize, 220))
+                        AppIconImage(hasBorder: false)
+                            .frame(width: min(iconSize, 220), height: min(iconSize, 220))
+                            .shadow(color: Color.cyan.opacity(colorScheme == .dark ? 0.22 : 0.12), radius: 24, y: 10)
 
                         VStack(spacing: 8) {
                             Text("Welcome to")
                                 .font(
                                     .custom("SFCompactDisplay-Black", size: 32, relativeTo: .title)
                                 )
-                                .foregroundStyle(.white.opacity(0.88))
+                                .foregroundStyle(titleColor.opacity(colorScheme == .dark ? 0.88 : 0.82))
                                 .lineLimit(1)
                                 .minimumScaleFactor(0.75)
 
                             Text("AWattPrice")
-                                .bold()
-                                .foregroundStyle(
-                                    LinearGradient(
-                                        colors: [.white, Color.cyan.opacity(0.95)],
-                                        startPoint: .top,
-                                        endPoint: .bottom
-                                    )
-                                )
+                                .foregroundStyle(appNameColor)
                                 .font(
-                                    .custom("SFCompactDisplay-Black", size: 50, relativeTo: .largeTitle)
+                                    .custom("SFCompactDisplay-Black", size: 60, relativeTo: .largeTitle)
                                 )
-                                .shadow(color: Color.cyan.opacity(0.34), radius: 18, y: 6)
+                                .fontWeight(.black)
+                                .tracking(1)
+                                .shadow(color: backgroundColor.opacity(colorScheme == .dark ? 0.88 : 0.96), radius: 9, y: 1)
+                                .shadow(color: appNameColor.opacity(colorScheme == .dark ? 0.38 : 0.24), radius: 11, y: 4)
                                 .lineLimit(1)
                                 .minimumScaleFactor(0.7)
                         }
@@ -202,7 +152,7 @@ struct SplashScreenStartView: View {
                     }) {
                         Text("Continue")
                     }
-                    .buttonStyle(SplashContinueButtonStyle())
+                    .buttonStyle(ContinueButtonStyle())
                 }
                 .padding([.leading, .trailing], 20)
                 .padding(.bottom, 16)

@@ -25,11 +25,23 @@ struct ContinueButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(Font.fBody.bold())
-            .foregroundColor(Color.white)
+            .foregroundColor(.white)
             .frame(maxWidth: .infinity)
             .padding()
-            .background(AppTheme.accent)
-            .cornerRadius(11)
+            .background(
+                LinearGradient(
+                    colors: [
+                        Color(red: 0.02, green: 0.48, blue: 0.68),
+                        Color(red: 0.08, green: 0.26, blue: 0.72)
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                ),
+                in: RoundedRectangle(cornerRadius: 11, style: .continuous)
+            )
+            .shadow(color: Color(red: 0.03, green: 0.40, blue: 0.80).opacity(configuration.isPressed ? 0.18 : 0.32), radius: configuration.isPressed ? 8 : 16, y: configuration.isPressed ? 4 : 9)
+            .scaleEffect(configuration.isPressed ? 0.985 : 1)
+            .animation(.easeInOut(duration: 0.16), value: configuration.isPressed)
     }
 }
 

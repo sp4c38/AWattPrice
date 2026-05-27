@@ -79,6 +79,15 @@
       <StoreKitConfigurationFileReference
          identifier = "../../AWattPrice/AWattPrice.storekit">
       </StoreKitConfigurationFileReference>
+      <PreActions>
+         <ExecutionAction
+            ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">
+            <ActionContent
+               title = "Set simulator status bar time"
+               scriptText = "xcrun simctl status_bar booted override --time &quot;9:41&quot;">
+            </ActionContent>
+         </ExecutionAction>
+      </PreActions>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"

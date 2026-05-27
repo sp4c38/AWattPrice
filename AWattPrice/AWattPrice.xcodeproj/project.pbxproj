@@ -40,6 +40,7 @@
 		5A1000122FC2000100000001 /* WidgetGenerationMixSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A1000112FC2000100000001 /* WidgetGenerationMixSnapshot.swift */; };
 		5B0000012FBE100100000001 /* ProSupporterStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0000032FBE100100000001 /* ProSupporterStore.swift */; };
 		5B0000022FBE100100000001 /* ProSupporterPaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0000042FBE100100000001 /* ProSupporterPaywallView.swift */; };
+		5B0000052FBE100100000001 /* ProFeatureGalleryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0000062FBE100100000001 /* ProFeatureGalleryView.swift */; };
 		612286822A56E39700FA0F9C /* AWattPriceWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 61635B242A482E690099F5AD /* AWattPriceWidgetExtension.appex */; platformFilters = (ios, ); settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		61635B2C2A482E690099F5AD /* AWattPriceWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61635B2B2A482E690099F5AD /* AWattPriceWidgetBundle.swift */; };
 		61635B2E2A482E690099F5AD /* PricesWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61635B2D2A482E690099F5AD /* PricesWidget.swift */; };
@@ -158,6 +159,7 @@
 		5A1000112FC2000100000001 /* WidgetGenerationMixSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetGenerationMixSnapshot.swift; sourceTree = "<group>"; };
 		5B0000032FBE100100000001 /* ProSupporterStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProSupporterStore.swift; sourceTree = "<group>"; };
 		5B0000042FBE100100000001 /* ProSupporterPaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProSupporterPaywallView.swift; sourceTree = "<group>"; };
+		5B0000062FBE100100000001 /* ProFeatureGalleryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProFeatureGalleryView.swift; sourceTree = "<group>"; };
 		5CF596453B643BA753483A2C /* SettingsPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPageView.swift; sourceTree = "<group>"; };
 		5E69EEB1FA019DD2F16C2815 /* AWattPriceWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AWattPriceWidgetExtension.entitlements; sourceTree = "<group>"; };
 		5F5F50002FC1000100000001 /* AWattPriceMac.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AWattPriceMac.entitlements; sourceTree = "<group>"; };
@@ -242,6 +244,7 @@
 				6EEAB0C5FE21817587BFCFEB /* RegionTaxSelection.swift */,
 				5CF596453B643BA753483A2C /* SettingsPageView.swift */,
 				5B0000042FBE100100000001 /* ProSupporterPaywallView.swift */,
+				5B0000062FBE100100000001 /* ProFeatureGalleryView.swift */,
 				ECEA22B6555DDB72F1DC0E8A /* Help and Suggestion */,
 				957B0FC2F08946E08E51EAC4 /* Push Notification */,
 			);
@@ -770,6 +773,7 @@
 				471979041724562B571FA8D2 /* NotificationSettingView.swift in Sources */,
 				593C14ACDA8A7823983C839A /* PriceBelowNotificationView.swift in Sources */,
 				5B0000022FBE100100000001 /* ProSupporterPaywallView.swift in Sources */,
+				5B0000052FBE100100000001 /* ProFeatureGalleryView.swift in Sources */,
 				5B0000012FBE100100000001 /* ProSupporterStore.swift in Sources */,
 				D19754BAE15970139A862323 /* Region.swift in Sources */,
 				8CF83B7D4714ABE33B8964AD /* RegionTaxSelection.swift in Sources */,

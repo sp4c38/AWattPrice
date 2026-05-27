@@ -136,6 +136,8 @@ struct ProSupporterPaywallView: View {
             } else {
                 supporterNote
                 benefitsSection
+                proFeatureGallery
+                    .padding(.horizontal, -20)
                 productSection
                     .padding(.top, 10)
             }
@@ -220,6 +222,10 @@ struct ProSupporterPaywallView: View {
             .task(id: reduceMotion) {
                 await runBenefitHighlightAnimation()
             }
+    }
+
+    private var proFeatureGallery: some View {
+        ProFeatureGalleryView()
     }
 
     private func benefitsList(title: String, itemSpacing: CGFloat = 16) -> some View {

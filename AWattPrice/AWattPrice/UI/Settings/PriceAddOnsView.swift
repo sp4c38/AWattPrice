@@ -59,7 +59,7 @@ private struct PriceAddOnsCard<Content: View>: View {
 }
 
 private struct UnitLabel: View {
-    let unit: String
+    let unit: LocalizedStringKey
     var size: CGFloat = 17
     var weight: Font.Weight = .semibold
 
@@ -82,7 +82,7 @@ private struct PriceValueLabel: View {
                 .font(.system(size: size, weight: .semibold, design: .rounded))
                 .monospacedDigit()
 
-            UnitLabel(unit: unit, size: size, weight: .semibold)
+            UnitLabel(unit: LocalizedStringKey(unit), size: size, weight: .semibold)
         }
         .foregroundStyle(tint)
         .fixedSize()
@@ -438,7 +438,7 @@ private struct PriceModelInputRow: View {
 
                 Spacer(minLength: 0)
 
-                UnitLabel(unit: unit)
+                UnitLabel(unit: LocalizedStringKey(unit))
                     .foregroundStyle(.secondary)
             }
             .padding(.horizontal, 14)

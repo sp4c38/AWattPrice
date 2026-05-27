@@ -95,7 +95,7 @@ enum WidgetText {
 
     static func duration(_ duration: TimeInterval) -> String {
         let hours = Int(duration / 3600)
-        return "\(hours)h"
+        return String(format: NSLocalizedString("%@h", comment: ""), String(hours))
     }
 
     static func usageDuration(_ timeInterval: TimeInterval) -> String {

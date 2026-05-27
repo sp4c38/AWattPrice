@@ -2,7 +2,15 @@
   "sourceLanguage" : "en",
   "strings" : {
     "·" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "·"
+          }
+        }
+      },
+      "shouldTranslate" : false
     },
     "**Tomorrow's** price summary." : {
       "comment" : "Localized custom view text",
@@ -29,7 +37,8 @@
             "value" : "%1$@ - %2$@"
           }
         }
-      }
+      },
+      "shouldTranslate" : false
     },
     "%@ · %@" : {
       "localizations" : {
@@ -39,7 +48,8 @@
             "value" : "%1$@ · %2$@"
           }
         }
-      }
+      },
+      "shouldTranslate" : false
     },
     "%@ %@" : {
       "localizations" : {
@@ -49,7 +59,8 @@
             "value" : "%1$@ %2$@"
           }
         }
-      }
+      },
+      "shouldTranslate" : false
     },
     "%@ %@ (%@)" : {
       "localizations" : {
@@ -59,7 +70,8 @@
             "value" : "%1$@ %2$@ (%3$@)"
           }
         }
-      }
+      },
+      "shouldTranslate" : false
     },
     "%@ usage" : {
       "comment" : "NSLocalizedString",
@@ -407,7 +419,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Um den Durchschnitt"
+            "value" : "Im Durchschnitt"
           }
         },
         "en" : {
@@ -713,7 +725,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Es ist ein Fehler aufgetreten.\nBitte versuchen Sie es später noch einmal."
+            "value" : "Es ist ein Fehler aufgetreten.\nBitte versuche es später noch einmal."
           }
         },
         "en" : {
@@ -827,7 +839,7 @@
       }
     },
     "ct/kWh" : {
-      "comment" : "SwiftUI literal",
+      "comment" : "Unit label",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -839,6 +851,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ct/kWh"
+          }
+        }
+      }
+    },
+    "ct/kWh." : {
+      "comment" : "Unit label with dot",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ct/kWh."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ct/kWh."
           }
         }
       }
@@ -1002,7 +1031,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Erneut versuchen ist verfügbar, sobald Sie wieder online sind."
+            "value" : "Erneut versuchen ist verfügbar, sobald du wieder online bist."
           }
         },
         "en" : {
@@ -1281,6 +1310,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Error uploading settings"
+          }
+        }
+      }
+    },
+    "EUR/month" : {
+      "comment" : "Unit label",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "EUR/Monat"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "EUR/month"
           }
         }
       }
@@ -1778,6 +1824,23 @@
         }
       }
     },
+    "kWh/year" : {
+      "comment" : "Unit label",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "kWh/Jahr"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "kWh/year"
+          }
+        }
+      }
+    },
     "Less than a dinner out." : {
       "comment" : "Localized returned display text",
       "localizations" : {
@@ -1937,7 +2000,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sieh vergangene Tage direkt im Preisdiagramm."
+            "value" : "Betrachte vergangene Tage direkt im Preisdiagramm."
           }
         },
         "en" : {
@@ -2056,7 +2119,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Monats- und Jahresabos verlängern sich automatisch. Lifetime ist ein einmaliger Kauf. Alle Käufe unterstützen die Familienfreigabe."
+            "value" : "Monats- und Jahresabos verlängern sich automatisch. Lifetime ist ein einmaliger Kauf. Alle Käufe beinhalten die kostenlose Familienfreigabe."
           }
         },
         "en" : {
@@ -2356,24 +2419,6 @@
         }
       }
     },
-    "notifications.daily_summary.body" : {
-      "comment" : "APNs localization key",
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Morgen ist die günstigste Stunde um %@ Uhr mit %@ ct. Die teuerste Stunde ist um %@ Uhr mit %@ ct."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tomorrow's cheapest hour is %@ at %@ ct. Most expensive hour is %@ at %@ ct."
-          }
-        }
-      }
-    },
     "notifications.daily_summary.body.example" : {
       "comment" : "APNs localization key",
       "localizations" : {
@@ -2425,42 +2470,6 @@
         }
       }
     },
-    "notifications.price_above.body.multiple" : {
-      "comment" : "APNs localization key",
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Morgen steigen die Strompreise %1$@ Mal über %2$@ ct. Teuerster Preis um %3$@ Uhr mit %4$@ ct."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tomorrow, electricity prices rise above %2$@ ct %1$@ times. Most expensive hour at %3$@ with %4$@ ct."
-          }
-        }
-      }
-    },
-    "notifications.price_above.body.single" : {
-      "comment" : "APNs localization key",
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Morgen steigen die Strompreise %1$@ Mal über %2$@ ct. Teuerster Preis um %3$@ Uhr mit %4$@ ct."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tomorrow, electricity prices rise above %2$@ ct %1$@ time. Most expensive hour at %3$@ with %4$@ ct."
-          }
-        }
-      }
-    },
     "notifications.price_above.title" : {
       "comment" : "APNs localization key",
       "localizations" : {
@@ -2491,42 +2500,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tomorrow, electricity prices drop below %@ ct. Cheapest hour at %@ with %@ ct. [Example data]"
-          }
-        }
-      }
-    },
-    "notifications.price_below.body.multiple" : {
-      "comment" : "APNs localization key",
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Morgen fallen die Strompreise %1$@ Mal unter %2$@ ct. Günstigster Preis um %3$@ Uhr mit %4$@ ct."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tomorrow, electricity prices drop below %2$@ ct %1$@ times. Cheapest hour at %3$@ with %4$@ ct."
-          }
-        }
-      }
-    },
-    "notifications.price_below.body.single" : {
-      "comment" : "APNs localization key",
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Morgen fallen die Strompreise %1$@ Mal unter %2$@ ct. Günstigster Preis um %3$@ Uhr mit %4$@ ct."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tomorrow, electricity prices drop below %2$@ ct %1$@ time. Cheapest hour at %3$@ with %4$@ ct."
           }
         }
       }
@@ -2809,7 +2782,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Die Preisaufschläge konnten nicht auf dem Server gespeichert werden. Ihre vorherigen Einstellungen wurden wiederhergestellt."
+            "value" : "Die Preisaufschläge konnten nicht auf dem Server gespeichert werden. Deine vorherigen Einstellungen wurden wiederhergestellt."
           }
         },
         "en" : {

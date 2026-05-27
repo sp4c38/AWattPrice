@@ -461,7 +461,7 @@ private struct GenerationMixCard: View {
             VStack(alignment: .leading, spacing: 14) {
                 HStack(spacing: 10) {
                     InsightsSectionTitle(
-                        title: "Energy mix",
+                        title: "Energy mix".localized(),
                         systemImage: "leaf.fill",
                         tint: AppTheme.success
                     )
@@ -578,7 +578,7 @@ private struct GenerationMixLoadingCard: View {
         InsightsCard(tint: AppTheme.success) {
             VStack(alignment: .leading, spacing: 14) {
                 InsightsSectionTitle(
-                    title: "Renewable mix",
+                    title: "Energy mix".localized(),
                     systemImage: "leaf.fill",
                     tint: AppTheme.success
                 )
@@ -603,7 +603,7 @@ private struct GenerationMixUnavailableCard: View {
         InsightsCard(tint: AppTheme.success) {
             VStack(alignment: .leading, spacing: 10) {
                 InsightsSectionTitle(
-                    title: "Renewable mix",
+                    title: "Energy mix".localized(),
                     systemImage: "leaf.fill",
                     tint: AppTheme.success
                 )
@@ -750,7 +750,7 @@ struct InsightsView: View {
                             InsightsCard(tint: AppTheme.success) {
                                 HStack {
                                     InsightsSectionTitle(
-                                        title: "Cheapest times",
+                                        title: "Cheapest times".localized(),
                                         systemImage: "timer",
                                         tint: AppTheme.success
                                     )
@@ -781,7 +781,7 @@ struct InsightsView: View {
                             InsightsCard(tint: AppTheme.accent) {
                                 VStack(alignment: .leading, spacing: 10) {
                                     InsightsSectionTitle(
-                                        title: "Price range",
+                                        title: "Price range".localized(),
                                         systemImage: "chart.bar.fill",
                                         tint: AppTheme.accent
                                     )
@@ -792,7 +792,7 @@ struct InsightsView: View {
                             
                             InsightsCard(tint: AppTheme.error) {
                                 InsightsSectionTitle(
-                                    title: "Most expensive times",
+                                    title: "Most expensive times".localized(),
                                     systemImage: "exclamationmark.triangle.fill",
                                     tint: AppTheme.error
                                 )

@@ -1,6 +1,5 @@
 """Poll and process price data."""
 import pickle
-import xml.etree.ElementTree as ET
 
 from datetime import date
 from decimal import Decimal
@@ -9,8 +8,8 @@ from typing import Optional
 import arrow
 
 from aiofile import async_open
+from arrow import Arrow
 from box import Box
-from box import BoxList
 from liteconfig import Config
 from loguru import logger
 
@@ -123,116 +122,68 @@ def validate_history_date(area: MarketArea, day: date) -> bool:
     return day <= yesterday
 
 
-def get_matching_time_series(root: ET.Element, area: MarketArea) -> list[ET.Element]:
-    """Get the ENTSO-E time series matching the configured area."""
-    matching_series = []
-    for time_series in root.findall(".//{*}TimeSeries"):
-        in_domain = time_series.findtext("{*}in_Domain.mRID")
-        out_domain = time_series.findtext("{*}out_Domain.mRID")
-        if in_domain != area.entsoe_domain or out_domain != area.entsoe_domain:
-            continue
-        matching_series.append(time_series)
-
-    return matching_series
-
-
-def select_time_series(area: MarketArea, time_series_list: list[ET.Element]) -> list[ET.Element]:
-    """Select the ENTSO-E time series to use for the area."""
-    if len(time_series_list) == 0:
-        raise ValueError(f"No ENTSO-E price series found for {area.key}.")
-
-    if len(time_series_list) == 1:
-        return time_series_list
-
-    sequence_values = [
-        time_series.findtext("{*}classificationSequence_AttributeInstanceComponent.position")
-        for time_series in time_series_list
-    ]
-    if all(sequence is None for sequence in sequence_values):
-        logger.debug(f"Using all unclassified ENTSO-E price series for {area.key}.")
-        return time_series_list
-
-    if area.preferred_price_sequence is not None:
-        preferred_time_series = [
-            time_series
-            for time_series in time_series_list
-            if time_series.findtext("{*}classificationSequence_AttributeInstanceComponent.position")
-            == str(area.preferred_price_sequence)
-        ]
-        if len(preferred_time_series) > 0:
-            logger.debug(
-                f"Selected ENTSO-E sequence {area.preferred_price_sequence} for {area.key}."
-            )
-            return preferred_time_series
-
-    sequence_one_series = [
-        time_series
-        for time_series in time_series_list
-        if time_series.findtext("{*}classificationSequence_AttributeInstanceComponent.position") == "1"
-    ]
-    if len(sequence_one_series) > 0:
-        logger.warning(f"Falling back to ENTSO-E sequence 1 for {area.key}.")
-        return sequence_one_series
-
-    logger.warning(f"Multiple ENTSO-E series found for {area.key}. Falling back to the first one.")
-    return [time_series_list[0]]
-
-
-def parse_downloaded_data(area: MarketArea, xml_content: bytes) -> Box:
-    """Parse the downloaded ENTSO-E price data into the app internal format."""
-    root = ET.fromstring(xml_content)
-    if root.tag.endswith("Acknowledgement_MarketDocument"):
-        reason = root.findtext(".//{*}text") or "Unknown ENTSO-E error."
-        raise ValueError(reason)
-
-    matching_time_series = get_matching_time_series(root, area)
-    selected_time_series_list = select_time_series(area, matching_time_series)
-    first_selected_time_series = selected_time_series_list[0]
-
-    selected_resolution = None
-    new_data = Box()
-    new_data.source = "ENTSOE"
-    new_data.area = area.key
-    new_data.display_name = area.display_name
-    new_data.entsoe_domain = area.entsoe_domain
-    new_data.timezone = area.timezone
-    new_data.currency = first_selected_time_series.findtext("{*}currency_Unit.name") or area.currency
-    new_data.sequence_position = first_selected_time_series.findtext(
-        "{*}classificationSequence_AttributeInstanceComponent.position"
+def _price_point_signature(price_point: Box) -> tuple[int, int, str, Optional[str], bool]:
+    return (
+        price_point.start_timestamp.int_timestamp,
+        price_point.end_timestamp.int_timestamp,
+        str(price_point.marketprice.value),
+        price_point.get("sequence_position"),
+        bool(price_point.get("is_fallback", False)),
     )
-    new_data.prices = BoxList()
-    for selected_time_series in selected_time_series_list:
-        for period in selected_time_series.findall("{*}Period"):
-            resolution = period.findtext("{*}resolution")
-            if resolution is None:
-                continue
-            if selected_resolution is None:
-                selected_resolution = resolution
-            elif selected_resolution != resolution:
-                raise ValueError(f"Mixed ENTSO-E resolutions for {area.key}: {selected_resolution} and {resolution}.")
 
-            interval_seconds = resolution_to_seconds(resolution)
-            period_start = arrow.get(period.findtext("{*}timeInterval/{*}start")).to(area.timezone)
 
-            for point in period.findall("{*}Point"):
-                position_text = point.findtext("{*}position")
-                price_text = point.findtext("{*}price.amount")
-                if position_text is None or price_text is None:
-                    continue
+def price_data_signature(price_data: Box) -> tuple[tuple[int, int, str, Optional[str], bool], ...]:
+    """Build a stable signature for comparing cached price payloads."""
+    return tuple(sorted(_price_point_signature(price_point) for price_point in price_data.prices))
 
-                new_point = Box()
-                position = int(position_text)
-                new_point.start_timestamp = period_start.shift(seconds=interval_seconds * (position - 1))
-                new_point.end_timestamp = new_point.start_timestamp.shift(seconds=interval_seconds)
-                new_point.marketprice = MarketPrice(Decimal(str(price_text)), area)
-                new_data.prices.append(new_point)
 
-    new_data.resolution = selected_resolution
-    new_data.prices = BoxList(sorted(new_data.prices, key=lambda point: point.start_timestamp))
-    if len(new_data.prices) == 0:
-        raise ValueError(f"No usable ENTSO-E price points found for {area.key}.")
+def unique_price_point_count(price_data: Box) -> int:
+    """Count unique start timestamps in a price payload."""
+    return len({price_point.start_timestamp.int_timestamp for price_point in price_data.prices})
 
-    return new_data
+
+def fallback_price_count(price_data: Box) -> int:
+    """Count prices that were filled from a non-primary sequence."""
+    return sum(1 for price_point in price_data.prices if price_point.get("is_fallback", False))
+
+
+def has_complete_price_points(price_data: Optional[Box], period_start: Arrow, period_end: Arrow) -> bool:
+    """Return true when a price payload contains every expected interval in a period."""
+    if price_data is None or not price_data.prices or price_data.resolution is None:
+        return False
+
+    interval_seconds = resolution_to_seconds(price_data.resolution)
+    expected_count = int((period_end.int_timestamp - period_start.int_timestamp) / interval_seconds)
+    expected_starts = {
+        period_start.int_timestamp + interval_seconds * index
+        for index in range(expected_count)
+    }
+    actual_starts = {
+        price_point.start_timestamp.int_timestamp
+        for price_point in price_data.prices
+        if (
+            price_point.start_timestamp.int_timestamp >= period_start.int_timestamp
+            and price_point.end_timestamp.int_timestamp <= period_end.int_timestamp
+        )
+    }
+
+    return actual_starts == expected_starts
+
+
+def has_complete_local_day(price_data: Optional[Box], area: MarketArea, day: date) -> bool:
+    """Return true when a price payload contains every interval for a local market day."""
+    period_start = arrow.get(day.isoformat(), "YYYY-MM-DD", tzinfo=area.timezone)
+    return has_complete_price_points(price_data, period_start, period_start.shift(days=+1))
+
+
+def complete_tomorrow_prices(price_data: Optional[Box], area: MarketArea, now=None) -> bool:
+    """Return true when a price payload contains all prices for the next local day."""
+    if price_data is None:
+        return False
+    current = now or arrow.now(area.timezone)
+    tomorrow_start = current.to(area.timezone).floor("day").shift(days=+1)
+    tomorrow_end = tomorrow_start.shift(days=+1)
+    return has_complete_price_points(price_data, tomorrow_start, tomorrow_end)
 
 
 async def store_data(data: Box, area_key: str, config: Config):
@@ -304,12 +255,16 @@ def parse_to_response_data(price_data: Box) -> Box:
     response_data.currency = price_data.currency
     response_data.resolution = price_data.resolution
     response_data.sequence_position = price_data.sequence_position
+    response_data.fallback_sequence_positions = list(price_data.get("fallback_sequence_positions", []))
+    response_data.fallback_price_count = int(price_data.get("fallback_price_count", 0))
     response_data.prices = []
     for price_point in price_data.prices:
         response_point = Box()
         response_point.start_timestamp = price_point.start_timestamp.int_timestamp
         response_point.end_timestamp = price_point.end_timestamp.int_timestamp
         response_point.marketprice = float(price_point.marketprice.value)
+        response_point.sequence_position = price_point.get("sequence_position", price_data.sequence_position)
+        response_point.is_fallback = bool(price_point.get("is_fallback", False))
         response_data.prices.append(response_point)
 
     return response_data

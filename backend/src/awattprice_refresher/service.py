@@ -68,12 +68,7 @@ def retained_history_days(now=None) -> list[date]:
 
 def price_data_covers_tomorrow(price_data: Optional[Box], area: MarketArea, now=None) -> bool:
     """Return true when current prices cover the full next local day."""
-    if price_data is None or not price_data.prices:
-        return False
-    current = now or arrow.now(area.timezone)
-    tomorrow_end = current.to(area.timezone).floor("day").shift(days=+2)
-    latest_price = max(price_data.prices, key=lambda point: point.end_timestamp)
-    return latest_price.end_timestamp >= tomorrow_end
+    return prices.complete_tomorrow_prices(price_data, area, now)
 
 
 async def run_bounded(

@@ -13,12 +13,12 @@ import httpx
 
 from awattprice import configurator
 from awattprice import defaults
-from awattprice import prices
 from awattprice.market_areas import MarketArea
 from awattprice.market_areas import list_price_zone_candidates
 from awattprice.market_areas import normalize_market_area_key
 from awattprice_refresher.prices import get_entsoe_query_params
 from awattprice_refresher.prices import get_history_period
+from awattprice_refresher.prices import parse_downloaded_data
 
 
 @dataclass(frozen=True)
@@ -62,7 +62,7 @@ async def check_area(
         for day in completed_days(area, days):
             try:
                 xml_content = await download_price_xml(client, config, area, day)
-                price_data = prices.parse_downloaded_data(area, xml_content)
+                price_data = parse_downloaded_data(area, xml_content)
             except Exception as exc:
                 errors.append(f"{day}: {exc}")
                 continue

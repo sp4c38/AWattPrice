@@ -54,6 +54,35 @@ def price_data_for(end_time: str) -> Box:
     )
 
 
+def complete_hourly_price_data_for_day(day: str) -> Box:
+    day_start = arrow.get(day, "YYYY-MM-DD", tzinfo=AREA.timezone)
+    points = BoxList()
+    for hour in range(24):
+        point = Box()
+        point.start_timestamp = day_start.shift(hours=+hour)
+        point.end_timestamp = day_start.shift(hours=+(hour + 1))
+        point.marketprice = prices.MarketPrice(Decimal(str(10 + hour)), AREA)
+        point.sequence_position = "1"
+        point.is_fallback = False
+        points.append(point)
+
+    return Box(
+        {
+            "source": "ENTSOE",
+            "area": AREA.key,
+            "display_name": AREA.display_name,
+            "entsoe_domain": AREA.entsoe_domain,
+            "timezone": AREA.timezone,
+            "currency": AREA.currency,
+            "resolution": "PT60M",
+            "sequence_position": "1",
+            "fallback_sequence_positions": [],
+            "fallback_price_count": 0,
+            "prices": points,
+        }
+    )
+
+
 class RefresherStatePersistenceTests(unittest.TestCase):
     def test_load_state_returns_fresh_state_when_no_file_exists(self):
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -114,7 +143,7 @@ class DataRefresherScheduleTests(unittest.TestCase):
         async def run_test():
             with tempfile.TemporaryDirectory() as temp_dir:
                 config = test_config(Path(temp_dir))
-                cached_data = price_data_for("2026-05-27T00:00:00+02:00")
+                cached_data = complete_hourly_price_data_for_day("2026-05-26")
                 await prices.store_data(cached_data, AREA.key, config)
 
                 with (
@@ -130,6 +159,29 @@ class DataRefresherScheduleTests(unittest.TestCase):
                     await data_refresher.refresh_current_prices_for_area(AREA, config)
 
                 refresh.assert_not_awaited()
+
+        asyncio.run(run_test())
+
+    def test_current_price_refresh_runs_when_tomorrow_has_gaps(self):
+        async def run_test():
+            with tempfile.TemporaryDirectory() as temp_dir:
+                config = test_config(Path(temp_dir))
+                cached_data = price_data_for("2026-05-27T00:00:00+02:00")
+                await prices.store_data(cached_data, AREA.key, config)
+
+                with (
+                    patch(
+                        "awattprice_refresher.service.arrow.now",
+                        return_value=arrow.get("2026-05-25T13:10:00+02:00"),
+                    ),
+                    patch(
+                        "awattprice_refresher.service.prices_refresher.refresh_current_prices",
+                        new=AsyncMock(return_value=cached_data),
+                    ) as refresh,
+                ):
+                    await data_refresher.refresh_current_prices_for_area(AREA, config)
+
+                refresh.assert_awaited_once()
 
         asyncio.run(run_test())
 

@@ -1,8 +1,10 @@
 """Refresh ENTSO-E price caches."""
 import filelock
 import httpx
+import xml.etree.ElementTree as ET
 
 from datetime import date
+from decimal import Decimal
 from typing import Optional
 
 import arrow
@@ -10,6 +12,7 @@ import arrow
 from aiofile import async_open
 from arrow import Arrow
 from box import Box
+from box import BoxList
 from liteconfig import Config
 from loguru import logger
 from tenacity import (
@@ -28,6 +31,147 @@ from awattprice.utils import ExtendedFileLock
 from awattprice.utils import log_attempts
 
 
+def get_matching_time_series(root: ET.Element, area: MarketArea) -> list[ET.Element]:
+    """Get the ENTSO-E time series matching the configured area."""
+    matching_series = []
+    for time_series in root.findall(".//{*}TimeSeries"):
+        in_domain = time_series.findtext("{*}in_Domain.mRID")
+        out_domain = time_series.findtext("{*}out_Domain.mRID")
+        if in_domain != area.entsoe_domain or out_domain != area.entsoe_domain:
+            continue
+        matching_series.append(time_series)
+
+    return matching_series
+
+
+def time_series_sequence_position(time_series: ET.Element) -> Optional[str]:
+    """Get the ENTSO-E sequence position for one time series."""
+    return time_series.findtext("{*}classificationSequence_AttributeInstanceComponent.position")
+
+
+def select_time_series(area: MarketArea, time_series_list: list[ET.Element]) -> list[ET.Element]:
+    """Select ENTSO-E time series in preferred order for import."""
+    if len(time_series_list) == 0:
+        raise ValueError(f"No ENTSO-E price series found for {area.key}.")
+
+    if len(time_series_list) == 1:
+        return time_series_list
+
+    sequence_values = [time_series_sequence_position(time_series) for time_series in time_series_list]
+    if all(sequence is None for sequence in sequence_values):
+        logger.debug(f"Using all unclassified ENTSO-E price series for {area.key}.")
+        return time_series_list
+
+    preferred_sequence = str(area.preferred_price_sequence) if area.preferred_price_sequence is not None else None
+
+    def sequence_priority(time_series: ET.Element) -> tuple[int, int]:
+        sequence_position = time_series_sequence_position(time_series)
+        if sequence_position == preferred_sequence:
+            return 0, 0
+        if sequence_position == "1":
+            return 1, 1
+        if sequence_position == "2":
+            return 2, 2
+        if sequence_position is None:
+            return 99, 99
+        try:
+            return 10 + int(sequence_position), int(sequence_position)
+        except ValueError:
+            return 90, 90
+
+    selected_time_series = sorted(time_series_list, key=sequence_priority)
+    selected_sequence_values = [
+        sequence
+        for sequence in [time_series_sequence_position(time_series) for time_series in selected_time_series]
+        if sequence is not None
+    ]
+    if preferred_sequence in selected_sequence_values:
+        logger.debug(
+            f"Selected ENTSO-E sequence {preferred_sequence} for {area.key} "
+            f"with fallback sequences {selected_sequence_values[1:]}."
+        )
+    else:
+        logger.warning(
+            f"Preferred ENTSO-E sequence {preferred_sequence} for {area.key} was not found. "
+            f"Using sequences {selected_sequence_values}."
+        )
+
+    return selected_time_series
+
+
+def parse_downloaded_data(area: MarketArea, xml_content: bytes) -> Box:
+    """Parse downloaded ENTSO-E price data into the cache format."""
+    root = ET.fromstring(xml_content)
+    if root.tag.endswith("Acknowledgement_MarketDocument"):
+        reason = root.findtext(".//{*}text") or "Unknown ENTSO-E error."
+        raise ValueError(reason)
+
+    matching_time_series = get_matching_time_series(root, area)
+    selected_time_series_list = select_time_series(area, matching_time_series)
+    first_selected_time_series = selected_time_series_list[0]
+
+    selected_resolution = None
+    new_data = Box()
+    new_data.source = "ENTSOE"
+    new_data.area = area.key
+    new_data.display_name = area.display_name
+    new_data.entsoe_domain = area.entsoe_domain
+    new_data.timezone = area.timezone
+    new_data.currency = first_selected_time_series.findtext("{*}currency_Unit.name") or area.currency
+    new_data.sequence_position = time_series_sequence_position(first_selected_time_series)
+    new_data.fallback_sequence_positions = []
+    new_data.fallback_price_count = 0
+    prices_by_start_timestamp = {}
+    for selected_time_series in selected_time_series_list:
+        sequence_position = time_series_sequence_position(selected_time_series)
+        for period in selected_time_series.findall("{*}Period"):
+            resolution = period.findtext("{*}resolution")
+            if resolution is None:
+                continue
+            if selected_resolution is None:
+                selected_resolution = resolution
+            elif selected_resolution != resolution:
+                raise ValueError(f"Mixed ENTSO-E resolutions for {area.key}: {selected_resolution} and {resolution}.")
+
+            interval_seconds = prices.resolution_to_seconds(resolution)
+            period_start = arrow.get(period.findtext("{*}timeInterval/{*}start")).to(area.timezone)
+
+            for point in period.findall("{*}Point"):
+                position_text = point.findtext("{*}position")
+                price_text = point.findtext("{*}price.amount")
+                if position_text is None or price_text is None:
+                    continue
+
+                new_point = Box()
+                position = int(position_text)
+                new_point.start_timestamp = period_start.shift(seconds=interval_seconds * (position - 1))
+                new_point.end_timestamp = new_point.start_timestamp.shift(seconds=interval_seconds)
+                new_point.marketprice = prices.MarketPrice(Decimal(str(price_text)), area)
+                new_point.sequence_position = sequence_position
+                new_point.is_fallback = sequence_position != new_data.sequence_position
+
+                start_timestamp = new_point.start_timestamp.int_timestamp
+                if start_timestamp in prices_by_start_timestamp:
+                    continue
+                if new_point.is_fallback:
+                    new_data.fallback_price_count += 1
+                    if sequence_position not in new_data.fallback_sequence_positions:
+                        new_data.fallback_sequence_positions.append(sequence_position)
+                prices_by_start_timestamp[start_timestamp] = new_point
+
+    new_data.resolution = selected_resolution
+    new_data.prices = BoxList(sorted(prices_by_start_timestamp.values(), key=lambda point: point.start_timestamp))
+    if len(new_data.prices) == 0:
+        raise ValueError(f"No usable ENTSO-E price points found for {area.key}.")
+    if new_data.fallback_price_count > 0:
+        logger.warning(
+            f"Filled {new_data.fallback_price_count} {area.key} price points from fallback "
+            f"ENTSO-E sequences {new_data.fallback_sequence_positions}."
+        )
+
+    return new_data
+
+
 def check_update_data(data: Optional[Box], last_update_time: Optional[Arrow], area: MarketArea) -> bool:
     """Check if current price data is due for update."""
     if data is None or len(data.prices) == 0:
@@ -42,10 +186,11 @@ def check_update_data(data: Optional[Box], last_update_time: Optional[Arrow], ar
         if now_local < next_update_time:
             return False
 
-    midnight_tomorrow_local = now_local.floor("day").shift(days=+2)
+    tomorrow_start_local = now_local.floor("day").shift(days=+1)
+    midnight_tomorrow_local = tomorrow_start_local.shift(days=+1)
     latest_price = max(data.prices, key=lambda point: point.end_timestamp)
     if latest_price.end_timestamp >= midnight_tomorrow_local:
-        return False
+        return not prices.has_complete_price_points(data, tomorrow_start_local, midnight_tomorrow_local)
 
     midnight_today_local = now_local.floor("day").shift(days=+1)
     if latest_price.end_timestamp < midnight_today_local:
@@ -182,7 +327,26 @@ def check_data_new(old_data: Optional[Box], new_data: Box) -> bool:
 
     old_latest = max(old_data.prices, key=lambda point: point.end_timestamp)
     new_latest = max(new_data.prices, key=lambda point: point.end_timestamp)
-    return new_latest.end_timestamp > old_latest.end_timestamp
+    if new_latest.end_timestamp > old_latest.end_timestamp:
+        return True
+    if new_latest.end_timestamp < old_latest.end_timestamp:
+        return False
+
+    old_point_count = prices.unique_price_point_count(old_data)
+    new_point_count = prices.unique_price_point_count(new_data)
+    if new_point_count > old_point_count:
+        return True
+    if new_point_count < old_point_count:
+        return False
+
+    old_fallback_count = prices.fallback_price_count(old_data)
+    new_fallback_count = prices.fallback_price_count(new_data)
+    if new_fallback_count < old_fallback_count:
+        return True
+    if new_fallback_count > old_fallback_count:
+        return False
+
+    return prices.price_data_signature(new_data) != prices.price_data_signature(old_data)
 
 
 async def refresh_current_prices(
@@ -209,7 +373,7 @@ async def refresh_current_prices(
                 await update_last_update_time(area_key, config)
             except Exception as exc:
                 logger.exception(f"Couldn't write last update time: {exc}.")
-            new_data = prices.parse_downloaded_data(area, downloaded_data)
+            new_data = parse_downloaded_data(area, downloaded_data)
             if not check_data_new(stored_data, new_data):
                 return None
             await prices.store_data(new_data, area_key, config)
@@ -223,7 +387,7 @@ async def refresh_history_prices(area_key: str, day: date, config: Config) -> Op
     """Download and store one historical price day."""
     area = defaults.get_market_area(area_key)
     stored_data = await prices.get_stored_history_data(area_key, day, config)
-    if stored_data is not None:
+    if stored_data is not None and prices.has_complete_local_day(stored_data, area, day):
         return stored_data
 
     prices.get_history_data_dir(config).mkdir(parents=True, exist_ok=True)
@@ -235,16 +399,19 @@ async def refresh_history_prices(area_key: str, day: date, config: Config) -> Op
 
     if could_acquire_immediately:
         with refresh_lock.context(acquire=False):
-            stored_data = await prices.get_stored_history_data(area_key, day, config)
-            if stored_data is not None:
-                return stored_data
+            latest_stored_data = await prices.get_stored_history_data(area_key, day, config)
+            if latest_stored_data is not None and prices.has_complete_local_day(latest_stored_data, area, day):
+                return latest_stored_data
 
             new_data = await download_history_prices(area_key, day, config)
             if new_data is None:
-                return None
+                return latest_stored_data or stored_data
 
-            await prices.store_history_data(new_data, area_key, day, config)
-            return new_data
+            if latest_stored_data is None or check_data_new(latest_stored_data, new_data):
+                await prices.store_history_data(new_data, area_key, day, config)
+                return new_data
+
+            return latest_stored_data
 
     refresh_lock.release()
     return await prices.get_stored_history_data(area_key, day, config)
@@ -258,4 +425,4 @@ async def download_history_prices(area_key: str, day: date, config: Config) -> O
     if downloaded_data is None:
         return None
 
-    return prices.parse_downloaded_data(area, downloaded_data)
+    return parse_downloaded_data(area, downloaded_data)

@@ -91,12 +91,75 @@ def unclassified_multi_series_xml() -> bytes:
 """.encode()
 
 
+def classified_multi_sequence_xml(sequence_one_points: str) -> bytes:
+    return f"""<?xml version="1.0" encoding="UTF-8"?>
+<Publication_MarketDocument xmlns="urn:iec62325.351:tc57wg16:451-3:publicationdocument:7:3">
+  <TimeSeries>
+    <in_Domain.mRID>{AREA.entsoe_domain}</in_Domain.mRID>
+    <out_Domain.mRID>{AREA.entsoe_domain}</out_Domain.mRID>
+    <currency_Unit.name>EUR</currency_Unit.name>
+    <classificationSequence_AttributeInstanceComponent.position>2</classificationSequence_AttributeInstanceComponent.position>
+    <Period>
+      <timeInterval>
+        <start>2026-05-13T00:00Z</start>
+        <end>2026-05-13T01:00Z</end>
+      </timeInterval>
+      <resolution>PT15M</resolution>
+      <Point><position>1</position><price.amount>100</price.amount></Point>
+      <Point><position>2</position><price.amount>200</price.amount></Point>
+      <Point><position>3</position><price.amount>300</price.amount></Point>
+      <Point><position>4</position><price.amount>400</price.amount></Point>
+    </Period>
+  </TimeSeries>
+  <TimeSeries>
+    <in_Domain.mRID>{AREA.entsoe_domain}</in_Domain.mRID>
+    <out_Domain.mRID>{AREA.entsoe_domain}</out_Domain.mRID>
+    <currency_Unit.name>EUR</currency_Unit.name>
+    <classificationSequence_AttributeInstanceComponent.position>1</classificationSequence_AttributeInstanceComponent.position>
+    <Period>
+      <timeInterval>
+        <start>2026-05-13T00:00Z</start>
+        <end>2026-05-13T01:00Z</end>
+      </timeInterval>
+      <resolution>PT15M</resolution>
+{sequence_one_points}
+    </Period>
+  </TimeSeries>
+</Publication_MarketDocument>
+""".encode()
+
+
 def test_config(root: Path) -> Box:
     config = Box()
     config.paths = Box()
     config.paths.price_data_dir = root / "price_data"
     config.paths.price_data_dir.mkdir(parents=True)
     return config
+
+
+def complete_hourly_price_data_for_day(day: date) -> Box:
+    day_start = arrow.get(day.isoformat(), "YYYY-MM-DD", tzinfo=AREA.timezone)
+    data = Box()
+    data.source = "ENTSOE"
+    data.area = AREA.key
+    data.display_name = AREA.display_name
+    data.entsoe_domain = AREA.entsoe_domain
+    data.timezone = AREA.timezone
+    data.currency = AREA.currency
+    data.resolution = "PT60M"
+    data.sequence_position = "1"
+    data.fallback_sequence_positions = []
+    data.fallback_price_count = 0
+    data.prices = []
+    for hour in range(24):
+        point = Box()
+        point.start_timestamp = day_start.shift(hours=+hour)
+        point.end_timestamp = day_start.shift(hours=+(hour + 1))
+        point.marketprice = prices.MarketPrice(Decimal(str(10 + hour)), AREA)
+        point.sequence_position = "1"
+        point.is_fallback = False
+        data.prices.append(point)
+    return data
 
 
 class PriceHistoryTests(unittest.TestCase):
@@ -118,23 +181,8 @@ class PriceHistoryTests(unittest.TestCase):
         async def run_test():
             with tempfile.TemporaryDirectory() as temp_dir:
                 config = test_config(Path(temp_dir))
-                cached_data = Box()
-                cached_data.source = "ENTSOE"
-                cached_data.area = AREA.key
-                cached_data.display_name = AREA.display_name
-                cached_data.entsoe_domain = AREA.entsoe_domain
-                cached_data.timezone = AREA.timezone
-                cached_data.currency = AREA.currency
-                cached_data.resolution = "PT60M"
-                cached_data.sequence_position = "1"
-
-                point = Box()
-                point.start_timestamp = arrow.get("2026-05-13T00:00:00+02:00")
-                point.end_timestamp = arrow.get("2026-05-13T01:00:00+02:00")
-                point.marketprice = prices.MarketPrice(Decimal("10"), AREA)
-                cached_data.prices = [point]
-
                 history_date = date(2026, 5, 13)
+                cached_data = complete_hourly_price_data_for_day(history_date)
                 await prices.store_history_data(cached_data, AREA.key, history_date, config)
 
                 with patch("awattprice_refresher.prices.download_data", new=AsyncMock()) as download_data:
@@ -146,7 +194,7 @@ class PriceHistoryTests(unittest.TestCase):
         asyncio.run(run_test())
 
     def test_history_response_preserves_fifteen_minute_intervals(self):
-        data = prices.parse_downloaded_data(AREA, price_xml("PT15M"))
+        data = price_refresher.parse_downloaded_data(AREA, price_xml("PT15M"))
         response = prices.parse_to_response_data(data)
 
         self.assertEqual(response.resolution, "PT15M")
@@ -154,11 +202,55 @@ class PriceHistoryTests(unittest.TestCase):
         self.assertEqual(response.prices[1].start_timestamp - response.prices[0].start_timestamp, 15 * 60)
 
     def test_unclassified_multiple_time_series_are_combined(self):
-        data = prices.parse_downloaded_data(AREA, unclassified_multi_series_xml())
+        data = price_refresher.parse_downloaded_data(AREA, unclassified_multi_series_xml())
 
         self.assertEqual(len(data.prices), 4)
         self.assertEqual(data.prices[0].marketprice.value, Decimal("10"))
         self.assertEqual(data.prices[-1].marketprice.value, Decimal("40"))
+
+    def test_preferred_sequence_is_filled_from_fallback_sequence(self):
+        sequence_one_points = """
+      <Point><position>1</position><price.amount>10</price.amount></Point>
+      <Point><position>2</position><price.amount>20</price.amount></Point>
+      <Point><position>4</position><price.amount>40</price.amount></Point>
+"""
+
+        data = price_refresher.parse_downloaded_data(AREA, classified_multi_sequence_xml(sequence_one_points))
+        response = prices.parse_to_response_data(data)
+
+        self.assertEqual(data.sequence_position, "1")
+        self.assertEqual(data.fallback_sequence_positions, ["2"])
+        self.assertEqual(data.fallback_price_count, 1)
+        self.assertEqual([point.marketprice.value for point in data.prices], [
+            Decimal("10"),
+            Decimal("20"),
+            Decimal("300"),
+            Decimal("40"),
+        ])
+        self.assertEqual([point.sequence_position for point in data.prices], ["1", "1", "2", "1"])
+        self.assertEqual([point.is_fallback for point in data.prices], [False, False, True, False])
+        self.assertEqual(response.fallback_price_count, 1)
+        self.assertTrue(response.prices[2].is_fallback)
+
+    def test_completed_preferred_sequence_replaces_fallback_prices(self):
+        sequence_one_points = """
+      <Point><position>1</position><price.amount>10</price.amount></Point>
+      <Point><position>2</position><price.amount>20</price.amount></Point>
+      <Point><position>3</position><price.amount>30</price.amount></Point>
+      <Point><position>4</position><price.amount>40</price.amount></Point>
+"""
+
+        data = price_refresher.parse_downloaded_data(AREA, classified_multi_sequence_xml(sequence_one_points))
+
+        self.assertEqual([point.marketprice.value for point in data.prices], [
+            Decimal("10"),
+            Decimal("20"),
+            Decimal("30"),
+            Decimal("40"),
+        ])
+        self.assertEqual(data.fallback_price_count, 0)
+        self.assertTrue(all(point.sequence_position == "1" for point in data.prices))
+        self.assertFalse(any(point.is_fallback for point in data.prices))
 
 
 class PriceHistoryAPITests(unittest.TestCase):
@@ -166,7 +258,7 @@ class PriceHistoryAPITests(unittest.TestCase):
         self.client = TestClient(api.app)
 
     def test_uncached_old_history_is_downloaded_without_storing(self):
-        price_data = prices.parse_downloaded_data(AREA, price_xml())
+        price_data = price_refresher.parse_downloaded_data(AREA, price_xml())
 
         with (
             patch.object(api.prices, "get_stored_history_data", new=AsyncMock(return_value=None)),

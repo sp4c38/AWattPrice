@@ -9,6 +9,7 @@ from unittest.mock import patch
 import arrow
 
 from box import Box
+from box import BoxList
 
 from awattprice import defaults
 from awattprice import prices
@@ -77,6 +78,23 @@ def price_point(hour: int, value: Decimal | str | int):
     )
 
 
+def refresh_price_data(point_specs):
+    data = Box({"prices": BoxList()})
+    for start_time, end_time, value, sequence_position, is_fallback in point_specs:
+        data.prices.append(
+            Box(
+                {
+                    "start_timestamp": arrow.get(start_time),
+                    "end_timestamp": arrow.get(end_time),
+                    "marketprice": prices.MarketPrice(Decimal(str(value)), AREA),
+                    "sequence_position": sequence_position,
+                    "is_fallback": is_fallback,
+                }
+            )
+        )
+    return data
+
+
 class PriceCacheAndConversionTests(unittest.TestCase):
     def test_area_file_key_normalizes_symbols_for_cache_paths(self):
         self.assertEqual(prices.area_file_key("DE-LU"), "de_lu")
@@ -92,13 +110,48 @@ class PriceCacheAndConversionTests(unittest.TestCase):
         self.assertEqual(market_price.subunit_kwh(taxed=True, round_=True), Decimal("11.90"))
 
     def test_check_data_new_compares_latest_end_timestamp(self):
-        old_data = Box({"prices": [Box({"end_timestamp": arrow.get("2026-05-24T10:00:00+02:00")})]})
-        same_data = Box({"prices": [Box({"end_timestamp": arrow.get("2026-05-24T10:00:00+02:00")})]})
-        new_data = Box({"prices": [Box({"end_timestamp": arrow.get("2026-05-24T11:00:00+02:00")})]})
+        old_data = refresh_price_data([
+            ("2026-05-24T09:00:00+02:00", "2026-05-24T10:00:00+02:00", 10, "1", False),
+        ])
+        same_data = refresh_price_data([
+            ("2026-05-24T09:00:00+02:00", "2026-05-24T10:00:00+02:00", 10, "1", False),
+        ])
+        new_data = refresh_price_data([
+            ("2026-05-24T10:00:00+02:00", "2026-05-24T11:00:00+02:00", 10, "1", False),
+        ])
 
         self.assertFalse(price_refresher.check_data_new(old_data, same_data))
         self.assertTrue(price_refresher.check_data_new(old_data, new_data))
         self.assertTrue(price_refresher.check_data_new(None, same_data))
+
+    def test_check_data_new_accepts_more_complete_payload_with_same_latest_end(self):
+        old_data = refresh_price_data([
+            ("2026-05-24T09:00:00+02:00", "2026-05-24T10:00:00+02:00", 10, "1", False),
+            ("2026-05-24T11:00:00+02:00", "2026-05-24T12:00:00+02:00", 30, "1", False),
+        ])
+        completed_data = refresh_price_data([
+            ("2026-05-24T09:00:00+02:00", "2026-05-24T10:00:00+02:00", 10, "1", False),
+            ("2026-05-24T10:00:00+02:00", "2026-05-24T11:00:00+02:00", 20, "2", True),
+            ("2026-05-24T11:00:00+02:00", "2026-05-24T12:00:00+02:00", 30, "1", False),
+        ])
+
+        self.assertTrue(price_refresher.check_data_new(old_data, completed_data))
+        self.assertFalse(price_refresher.check_data_new(completed_data, old_data))
+
+    def test_check_data_new_replaces_fallback_with_preferred_sequence(self):
+        fallback_data = refresh_price_data([
+            ("2026-05-24T09:00:00+02:00", "2026-05-24T10:00:00+02:00", 10, "1", False),
+            ("2026-05-24T10:00:00+02:00", "2026-05-24T11:00:00+02:00", 200, "2", True),
+            ("2026-05-24T11:00:00+02:00", "2026-05-24T12:00:00+02:00", 30, "1", False),
+        ])
+        preferred_data = refresh_price_data([
+            ("2026-05-24T09:00:00+02:00", "2026-05-24T10:00:00+02:00", 10, "1", False),
+            ("2026-05-24T10:00:00+02:00", "2026-05-24T11:00:00+02:00", 20, "1", False),
+            ("2026-05-24T11:00:00+02:00", "2026-05-24T12:00:00+02:00", 30, "1", False),
+        ])
+
+        self.assertTrue(price_refresher.check_data_new(fallback_data, preferred_data))
+        self.assertFalse(price_refresher.check_data_new(preferred_data, fallback_data))
 
     def test_current_price_fallback_rejects_expired_cache(self):
         async def run_test():

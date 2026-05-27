@@ -8,6 +8,16 @@ FastAPI backend for AWattPrice. It serves ENTSO-E electricity prices, caches the
 ./run-local.sh
 ```
 
+## Price Selection
+
+Prices are imported from the ENTSO-E Transparency Platform by the refresher and then served from the local cache by the API.
+
+For ENTSO-E day-ahead price documents with sequence data, AWattPrice treats Sequence 1 as authoritative. For DE-LU this is the SDAC day-ahead price series. If individual 15 minute intervals are missing from Sequence 1, the refresher fills only those missing intervals from later available sequences, usually Sequence 2. Sequence 1 prices always win when present.
+
+If no sequence contains a missing price, the refresher may interpolate as a final repair step, but only for internal PT15M gaps of one or two missing blocks. Wider gaps are left missing. Interpolated points are marked in the cached/API data with `is_interpolated = true`; sequence fallback points are marked with `is_fallback = true`.
+
+The refresher keeps treating incomplete or repaired data as replaceable. If ENTSO-E later publishes the missing Sequence 1 price, that real price replaces the fallback or interpolated point in the cache.
+
 ## Maintenance Checks
 
 Check which configured ENTSO-E price zones currently expose price data:

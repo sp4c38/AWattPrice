@@ -12,7 +12,6 @@
 		0F40C45BA00F72E80C519F96 /* PricesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E9C4F8C140D86F7F4233532 /* PricesView.swift */; };
 		1CCDA78DC9491A406AB24B42 /* EasyIntervalPickerRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C5F824C94B9912B11853532 /* EasyIntervalPickerRepresentable.swift */; };
 		1D6A3E2B9C4F4185A2B7D930 /* InsightsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A93F0D1C8B24D479E5A0123 /* InsightsView.swift */; };
-		1F050059A5AEEA309F5EF60A /* SplashScreenFeaturesAndConsent.swift in Sources */ = {isa = PBXBuildFile; fileRef = F532255ECC882E59C9739E19 /* SplashScreenFeaturesAndConsent.swift */; };
 		1FF85FE467F2EBD6F0165295 /* TotalTimeFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2BCED411DC7AD4E79FC22B9 /* TotalTimeFormatter.swift */; };
 		22A1A4D72FBA5D1100E57A2B /* AppIconImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A1A4D62FBA5D1100E57A2B /* AppIconImage.swift */; };
 		23D11D519B8DC7A7F5DA54BA /* PriceAddOnsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51649CD95D1B046EA6D3FF0F /* PriceAddOnsView.swift */; };
@@ -206,7 +205,6 @@
 		EA5DF4BB1567348D207BC3BC /* HelpAndSuggestionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpAndSuggestionView.swift; sourceTree = "<group>"; };
 		EDDDD6143A8627F05026A525 /* SplashScreenStartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashScreenStartView.swift; sourceTree = "<group>"; };
 		EFB366C2E4BA54E151458B35 /* AWattPrice.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AWattPrice.entitlements; sourceTree = "<group>"; };
-		F532255ECC882E59C9739E19 /* SplashScreenFeaturesAndConsent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashScreenFeaturesAndConsent.swift; sourceTree = "<group>"; };
 		F7E1E9B883B731AD9BA0E6A9 /* EnergyDataController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnergyDataController.swift; sourceTree = "<group>"; };
 		95BD95FD492B1F960E9F23C4 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -391,7 +389,6 @@
 		7EAC088DA04324FC0FDADE45 /* SplashScreens */ = {
 			isa = PBXGroup;
 			children = (
-				F532255ECC882E59C9739E19 /* SplashScreenFeaturesAndConsent.swift */,
 				79260E66169C7FFE7A752077 /* SplashScreenSetupView.swift */,
 				EDDDD6143A8627F05026A525 /* SplashScreenStartView.swift */,
 			);
@@ -778,7 +775,6 @@
 				8CF83B7D4714ABE33B8964AD /* RegionTaxSelection.swift in Sources */,
 				3B97EF0D59A77C4995F737C8 /* SettingsPageView.swift in Sources */,
 				555F47FC1D9F98F6114CFD89 /* SettingsUploadErrorView.swift in Sources */,
-				1F050059A5AEEA309F5EF60A /* SplashScreenFeaturesAndConsent.swift in Sources */,
 				D6A2D1CA2D8B3BE40013028D /* Setting.swift in Sources */,
 				D94911F464C45AAEFFDEEF53 /* SplashScreenSetupView.swift in Sources */,
 				865F84BF2724ED9CD2000B47 /* SplashScreenStartView.swift in Sources */,

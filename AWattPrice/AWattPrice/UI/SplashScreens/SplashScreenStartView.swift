@@ -88,7 +88,17 @@ private struct SplashDotCarpet: View {
  */
 struct SplashScreenStartView: View {
     @Environment(\.colorScheme) private var colorScheme
-    @State private var showsFeatures = false
+    @EnvironmentObject var energyDataService: EnergyDataService
+    @EnvironmentObject var notificationService: NotificationService
+    @EnvironmentObject var settingsManager: SettingsManager
+
+    @StateObject private var viewModel = MarketAreaTaxSelectionViewModel(
+        settingsManager: SettingsManager.shared,
+        notificationService: NotificationService(),
+        energyDataService: EnergyDataService()
+    )
+
+    @State private var showsSetup = false
     @ScaledMetric(relativeTo: .largeTitle) private var iconSize: CGFloat = 184
 
     private var backgroundColor: Color {
@@ -148,7 +158,7 @@ struct SplashScreenStartView: View {
                     Spacer(minLength: 16)
 
                     Button(action: {
-                        showsFeatures = true
+                        showsSetup = true
                     }) {
                         Text("Continue")
                     }
@@ -157,9 +167,16 @@ struct SplashScreenStartView: View {
                 .padding([.leading, .trailing], 20)
                 .padding(.bottom, 16)
             }
+            .onAppear {
+                viewModel.settingsManager = settingsManager
+                viewModel.notificationService = notificationService
+                viewModel.energyDataService = energyDataService
+                viewModel.selectedMarketAreaKey = settingsManager.setting.marketAreaKey
+                viewModel.loadAreasIfNeeded()
+            }
             .navigationBarHidden(true)
-            .navigationDestination(isPresented: $showsFeatures) {
-                SplashScreenFeaturesAndConsentView()
+            .navigationDestination(isPresented: $showsSetup) {
+                SplashScreenSetupView(viewModel: viewModel)
             }
         }
     }
@@ -168,6 +185,9 @@ struct SplashScreenStartView: View {
 struct SplashScreenStartView_Previews: PreviewProvider {
     static var previews: some View {
         SplashScreenStartView()
+            .environmentObject(SettingsManager.shared)
+            .environmentObject(NotificationService())
+            .environmentObject(EnergyDataService())
             .preferredColorScheme(.light)
     }
 }

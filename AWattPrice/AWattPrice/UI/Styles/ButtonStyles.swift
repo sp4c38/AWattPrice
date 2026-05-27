@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UIKit
 
 struct ActionButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
@@ -95,5 +96,20 @@ struct TimeRangeButtonStyle_Preview: PreviewProvider {
                 .fontWeight(.semibold)
         }
         .buttonStyle(TimeRangeButtonStyle())
+    }
+}
+
+/// Opens the apps privacy policy in the browser in the correct language depending on the device language.
+func openAgreementLink(_ agreementLinks: (String, String)) {
+    var agreementLink = URL(string: agreementLinks.0)
+
+    if Locale.current.language.languageCode?.identifier == "en" {
+        agreementLink = URL(string: agreementLinks.1)
+    }
+
+    if agreementLink != nil {
+        if agreementLink!.absoluteString != "" {
+            UIApplication.shared.open(agreementLink!)
+        }
     }
 }

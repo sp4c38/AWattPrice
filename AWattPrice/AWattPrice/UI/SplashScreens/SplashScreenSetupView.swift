@@ -103,7 +103,7 @@ private struct SetupCompleteOverlay: View {
     var body: some View {
         ZStack {
             Rectangle()
-                .fill(AppTheme.screenBackground(for: colorScheme).opacity(0.96))
+                .fill(AppTheme.screenBackground(for: colorScheme))
                 .ignoresSafeArea()
 
             AnimatingCheckmark()
@@ -113,41 +113,6 @@ private struct SetupCompleteOverlay: View {
     }
 }
 
-private struct SelectedMarketAreaSummary: View {
-    @Environment(\.colorScheme) private var colorScheme
-
-    let marketArea: MarketArea
-
-    var body: some View {
-        HStack(spacing: 12) {
-            Text(marketArea.settingsFlag)
-                .font(.title3)
-                .frame(width: 38, height: 38)
-                .background(AppTheme.subtleFill(AppTheme.accent, for: colorScheme), in: Circle())
-
-            VStack(alignment: .leading, spacing: 3) {
-                Text("Selected price zone")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.secondary)
-
-                Text(marketArea.localizedDisplayName)
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.primary)
-                    .lineLimit(2)
-                    .minimumScaleFactor(0.85)
-            }
-
-            Spacer(minLength: 0)
-        }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 10)
-        .background(AppTheme.cardBackground(for: colorScheme), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .stroke(AppTheme.cardStroke(for: colorScheme), lineWidth: 1)
-        )
-    }
-}
 
 private struct SetupLoadingOverlay: View {
     let message: LocalizedStringKey
@@ -174,17 +139,9 @@ struct SplashScreenSetupView: View {
     @EnvironmentObject var notificationService: NotificationService
     @EnvironmentObject var settingsManager: SettingsManager
 
-    @StateObject private var viewModel: MarketAreaTaxSelectionViewModel
+    @ObservedObject var viewModel: MarketAreaTaxSelectionViewModel
     @State private var showCompletionOverlay = false
     @State private var fadeOutSetup = false
-
-    init() {
-        _viewModel = StateObject(wrappedValue: MarketAreaTaxSelectionViewModel(
-            settingsManager: SettingsManager.shared,
-            notificationService: NotificationService(),
-            energyDataService: EnergyDataService()
-        ))
-    }
 
     var body: some View {
         ZStack {
@@ -193,21 +150,12 @@ struct SplashScreenSetupView: View {
                     Text("Select your electricity price market area".localized())
                         .font(.system(.title2, design: .rounded).weight(.bold))
                         .fixedSize(horizontal: false, vertical: true)
-
-                    Text("Your market area decides which electricity prices AWattPrice downloads.")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .fixedSize(horizontal: false, vertical: true)
                 }
                 .padding(.horizontal, 16)
                 .padding(.top, 12)
 
-                MarketAreaMapSelectionView(viewModel: viewModel, height: 400)
-                    .padding(.horizontal, 16)
-
-                Spacer(minLength: 0)
-
-                SelectedMarketAreaSummary(marketArea: viewModel.selectedMarketArea)
+                MarketAreaMapSelectionView(viewModel: viewModel)
+                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                     .padding(.horizontal, 16)
 
                 Button(action: finishSetup) {
@@ -229,7 +177,6 @@ struct SplashScreenSetupView: View {
         }
         .opacity(fadeOutSetup ? 0 : 1)
         .ignoresSafeArea(.keyboard)
-        .navigationTitle("Setup")
         .background(AppTheme.screenBackground(for: colorScheme).ignoresSafeArea(.all))
         .onAppear {
             viewModel.settingsManager = settingsManager
@@ -263,7 +210,11 @@ struct SplashScreenSetupView: View {
 struct SplashScreenSetupView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationStack {
-            SplashScreenSetupView()
+            SplashScreenSetupView(viewModel: MarketAreaTaxSelectionViewModel(
+                settingsManager: SettingsManager.shared,
+                notificationService: NotificationService(),
+                energyDataService: EnergyDataService()
+            ))
                 .environmentObject(SettingsManager.shared)
                 .environmentObject(NotificationService())
                 .environmentObject(EnergyDataService())

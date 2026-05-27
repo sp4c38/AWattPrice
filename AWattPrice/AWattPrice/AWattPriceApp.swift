@@ -201,6 +201,10 @@ struct ContentView: View {
             guard newPhase == .active else { return }
             refreshAppData()
         }
+        .onChange(of: settingsManager.setting.onboarded) { _, onboarded in
+            guard onboarded else { return }
+            refreshAppData()
+        }
         .onAppear {
             refreshAppData()
         }

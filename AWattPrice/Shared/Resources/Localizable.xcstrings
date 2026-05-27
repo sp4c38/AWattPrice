@@ -498,23 +498,6 @@
         }
       }
     },
-    "Best usage windows" : {
-      "comment" : "SwiftUI literal",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Günstige Zeitfenster"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Best usage windows"
-          }
-        }
-      }
-    },
     "Bio" : {
       "comment" : "Localized returned display text",
       "localizations" : {
@@ -732,24 +715,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Check your electricity contract and fill in whichever values apply to you."
-          }
-        }
-      }
-    },
-    "Compare prices" : {
-      "comment" : "Localized custom view text",
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Preise vergleichen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Compare prices"
           }
         }
       }
@@ -2420,23 +2385,6 @@
         }
       }
     },
-    "notificationPage.notification.priceDropsBelowValue.description" : {
-      "comment" : "SwiftUI literal",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Erhalte Hinweise, wenn Preise deine Grenzwerte erreichen."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Get notified when prices reach your limits."
-          }
-        }
-      }
-    },
     "Notifications" : {
       "comment" : "SwiftUI literal",
       "localizations" : {
@@ -2845,23 +2793,6 @@
         }
       }
     },
-    "Price alerts" : {
-      "comment" : "SwiftUI literal",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Preisalarme"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Price alerts"
-          }
-        }
-      }
-    },
     "Price alerts and daily summaries when new prices arrive." : {
       "comment" : "Localized custom view text",
       "localizations" : {
@@ -2960,24 +2891,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Price graph interval info"
-          }
-        }
-      }
-    },
-    "Price Guard" : {
-      "comment" : "Localized custom view text",
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Preiswächter"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Price Guard"
           }
         }
       }
@@ -3543,24 +3456,6 @@
         }
       }
     },
-    "See tomorrow’s electricity prices and find the best hours to use power." : {
-      "comment" : "SwiftUI literal",
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Strompreise für morgen sehen und die günstigsten Stunden finden."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "See tomorrow’s electricity prices and find the best hours to use power."
-          }
-        }
-      }
-    },
     "Select history date" : {
       "comment" : "Accessibility label",
       "localizations" : {
@@ -3608,23 +3503,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Selected"
-          }
-        }
-      }
-    },
-    "Selected price zone" : {
-      "comment" : "SwiftUI literal",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ausgewählte Preiszone"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Selected price zone"
           }
         }
       }
@@ -3748,23 +3626,6 @@
         }
       }
     },
-    "Setup" : {
-      "comment" : "SwiftUI navigation title",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Einrichtung"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Setup"
-          }
-        }
-      }
-    },
     "Share Pro with your family members at no extra cost." : {
       "comment" : "Localized custom view text",
       "localizations" : {
@@ -3880,40 +3741,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Solar"
-          }
-        }
-      }
-    },
-    "splashScreen.featuresAndConsent.comparePrices.info" : {
-      "comment" : "SwiftUI literal",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Finde günstige Stunden zum Laden, Waschen oder für andere geplante Nutzung."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Find cheaper hours for charging, washing, or other planned use."
-          }
-        }
-      }
-    },
-    "splashScreen.featuresAndConsent.viewPrices.info" : {
-      "comment" : "SwiftUI literal",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sieh aktuelle und kommende Strompreise im Diagramm."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "See current and upcoming electricity prices in the chart."
           }
         }
       }
@@ -4118,23 +3945,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tomorrow"
-          }
-        }
-      }
-    },
-    "Tomorrow’s prices" : {
-      "comment" : "SwiftUI literal",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Preise für morgen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tomorrow’s prices"
           }
         }
       }
@@ -4377,24 +4187,6 @@
         }
       }
     },
-    "View prices" : {
-      "comment" : "Localized custom view text",
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Preise ansehen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "View prices"
-          }
-        }
-      }
-    },
     "Warn above" : {
       "comment" : "Localized custom view text",
       "localizations" : {
@@ -4425,23 +4217,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Welcome to"
-          }
-        }
-      }
-    },
-    "What AWattPrice does" : {
-      "comment" : "SwiftUI literal",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Was AWattPrice kann"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "What AWattPrice does"
           }
         }
       }
@@ -4548,19 +4323,20 @@
         }
       }
     },
-    "Your market area decides which electricity prices AWattPrice downloads." : {
+    "Your market area decides which electricity prices are shown throughout the app." : {
       "comment" : "SwiftUI literal",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Deine Marktzone bestimmt, welche Strompreise AWattPrice lädt."
+            "value" : "Deine Marktzone bestimmt, welche Strompreise in der App angezeigt werden."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Your market area decides which electricity prices AWattPrice downloads."
+            "value" : "Your market area decides which electricity prices are shown throughout the app."
           }
         }
       }

@@ -135,27 +135,19 @@ private struct EnergyPriceGraphDisplayRow: Identifiable {
     let isHighestPrice: Bool
 
     var timeLabel: String {
-        if isExpandedInterval || isFocused {
+        let calendar = Calendar.current
+        let startsOnFullHour = calendar.component(.minute, from: startTime) == 0
+
+        if isExpandedInterval || isFocused || !startsOnFullHour {
             return "\(formattedTime(startTime))-\(formattedTime(endTime))"
         }
 
-        return formattedCollapsedTimeLabel(startTime: startTime, endTime: endTime)
+        let hour = calendar.component(.hour, from: startTime)
+        return String(format: "%02d", hour)
     }
 
     private func formattedTime(_ date: Date) -> String {
         date.formatted(.dateTime.hour(.twoDigits(amPM: .omitted)).minute(.twoDigits))
-    }
-
-    private func formattedCollapsedTimeLabel(startTime: Date, endTime: Date) -> String {
-        let calendar = Calendar.current
-        let startsOnFullHour = calendar.component(.minute, from: startTime) == 0
-        let endsOnFullHour = calendar.component(.minute, from: endTime) == 0
-
-        if startsOnFullHour == false || endsOnFullHour == false {
-            return "\(formattedTime(startTime))-\(formattedTime(endTime))"
-        }
-
-        return "\(startTime.formatted(.dateTime.hour(.twoDigits(amPM: .omitted))))h"
     }
 }
 
@@ -416,7 +408,7 @@ private struct EnergyPriceBarRow: View {
                                 .font(.system(size: timeLabelFontSize, weight: .semibold, design: .rounded))
                                 .monospacedDigit()
                                 .fixedSize(horizontal: true, vertical: false)
-                                .padding(.horizontal, 5)
+                                .padding(.horizontal, 6)
                                 .padding(.vertical, 2)
                                 .background {
                                     RoundedRectangle(cornerRadius: 5, style: .continuous)
@@ -430,7 +422,7 @@ private struct EnergyPriceBarRow: View {
                             Text(dayBadgeText)
                                 .font(.caption2.weight(.semibold))
                                 .fixedSize()
-                                .padding(.horizontal, 5)
+                                .padding(.horizontal, 6)
                                 .padding(.vertical, 2)
                                 .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 5, style: .continuous))
                         }
@@ -907,6 +899,7 @@ struct EnergyPriceGraph: View {
             }
             .animation(selectionAnimation, value: selectedGroupIndex)
             .animation(dataChangeAnimation, value: dataAnimationKey)
+            .animation(.spring(response: 0.38, dampingFraction: 0.82), value: displayInterval)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .contentShape(Rectangle())
             .gesture(

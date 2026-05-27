@@ -179,7 +179,7 @@ private struct SettingsLegalLinksView: View {
 
 private struct SettingsMadeWithLoveView: View {
     var body: some View {
-        HStack(spacing: 5) {
+        HStack(alignment: .firstTextBaseline, spacing: 5) {
             Image(systemName: "heart")
                 .font(.caption2.weight(.semibold))
                 .foregroundStyle(.secondary)

@@ -25,25 +25,25 @@ private let proGalleryItems: [ProGalleryItem] = [
         assetName: "pro_screenshot_price_addons",
         featureName: "Price add-ons",
         systemImage: "sum",
-        tint: .purple
+        tint: .teal
     ),
     ProGalleryItem(
         assetName: "pro_screenshot_insights",
         featureName: "Advanced insights",
         systemImage: "chart.bar.xaxis",
-        tint: .blue
+        tint: .orange
     ),
     ProGalleryItem(
         assetName: "pro_screenshot_widgets",
         featureName: "Home Screen widgets",
         systemImage: "square.grid.2x2.fill",
-        tint: .cyan
+        tint: .blue
     ),
     ProGalleryItem(
         assetName: "pro_screenshot_notifications",
         featureName: "Smart notifications",
         systemImage: "bell.badge.fill",
-        tint: .teal
+        tint: .pink
     ),
     ProGalleryItem(
         assetName: "pro_screenshot_price_history",
@@ -71,20 +71,21 @@ struct ProFeatureGalleryView: View {
             HStack(spacing: 14) {
                 Image(systemName: "photo.on.rectangle.angled")
                     .font(.system(size: 24))
-                    .foregroundStyle(AppTheme.accent)
+                    .foregroundStyle(.blue)
                 
                 Text("See Pro in action".localized())
                     .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.blue)
             
                 Spacer(minLength: 0)
                 
                 Image(systemName: "chevron.right")
                     .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.tertiary)
+                    .foregroundStyle(.blue.opacity(0.5))
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(16)
-            .background(Color.secondary.opacity(0.08), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .background(.blue.opacity(0.08), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
         }
         .buttonStyle(.plain)
         .fullScreenCover(item: $selectedItem) { item in

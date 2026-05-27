@@ -1422,7 +1422,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fokusmodi können Beispiel-Benachrichtigungen stummschalten."
+            "value" : "Fokusmodi können Beispiel-Mitteilungen stummschalten."
           }
         },
         "en" : {
@@ -1586,19 +1586,19 @@
         }
       }
     },
-    "Hi! I’m a student and developing AWattPrice in my spare time. The goal is to make dynamic electricity prices easier to follow. Pro helps cover server and license costs and keeps the app running. I hope you like the app!" : {
+    "Hi, I’m Leon, a student developing AWattPrice in my spare time. Pro helps keep the app running and supports further development. I hope you like the app!" : {
       "comment" : "String.localized()",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hi! Ich bin Student und entwickle AWattPrice in meiner Freizeit. Mit der App möchte ich dynamische Strompreise einfacher verständlich machen. Pro hilft dabei, Server- und Lizenzkosten zu decken und AWattPrice langfristig am Laufen zu halten. Ich hoffe, dir gefällt die App!"
+            "value" : "Hi, ich bin Leon, Student und entwickle AWattPrice in meiner Freizeit. Pro hilft dabei, die App am Laufen zu halten und die Weiterentwicklung zu unterstützen. Ich hoffe, dir gefällt die App!"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hi! I’m a student and developing AWattPrice in my spare time. The goal is to make dynamic electricity prices easier to follow. Pro helps cover server and license costs and keeps the app running. I hope you like the app!"
+            "value" : "Hi, I’m Leon, a student developing AWattPrice in my spare time. Pro helps keep the app running and supports further development. I hope you like the app!"
           }
         }
       }
@@ -2391,7 +2391,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Benachrichtigungen"
+            "value" : "Mitteilungen"
           }
         },
         "en" : {
@@ -2408,7 +2408,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Benachrichtigungen sind deaktiviert."
+            "value" : "Mitteilungen sind deaktiviert."
           }
         },
         "en" : {
@@ -3456,6 +3456,40 @@
         }
       }
     },
+    "Screenshot coming soon" : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Screenshot folgt bald"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Screenshot coming soon"
+          }
+        }
+      }
+    },
+    "See Pro in action" : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro in Aktion sehen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "See Pro in action"
+          }
+        }
+      }
+    },
     "Select history date" : {
       "comment" : "Accessibility label",
       "localizations" : {
@@ -3486,23 +3520,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Select your electricity price market area"
-          }
-        }
-      }
-    },
-    "See Pro in action" : {
-      "comment" : "Localized custom view text",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pro in Aktion sehen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "See Pro in action"
           }
         }
       }
@@ -3588,23 +3605,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Send Suggestion"
-          }
-        }
-      }
-    },
-    "Screenshot coming soon" : {
-      "comment" : "Localized custom view text",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Screenshot folgt bald"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Screenshot coming soon"
           }
         }
       }
@@ -3751,7 +3751,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Smarte Benachrichtigungen"
+            "value" : "Smarte Mitteilungen"
           }
         },
         "en" : {

@@ -28,37 +28,37 @@ private let proBenefits = [
         title: "Price add-ons",
         subtitle: "Include your provider’s fees and taxes in displayed prices.",
         systemImage: "sum",
-        tint: .purple
+        tint: .teal
     ),
     ProBenefit(
         title: "Advanced insights",
         subtitle: "Cheapest windows, expensive peaks, and renewable mix infos.",
         systemImage: "chart.bar.xaxis",
-        tint: .blue
+        tint: .orange
     ),
     ProBenefit(
         title: "Smart notifications",
         subtitle: "Price alerts and daily summaries when new prices arrive.",
         systemImage: "bell.badge.fill",
-        tint: .teal
+        tint: .pink
     ),
     ProBenefit(
         title: "Home Screen widgets",
         subtitle: "Keep prices visible at a glance outside the app.",
         systemImage: "square.grid.2x2.fill",
-        tint: .cyan
+        tint: .blue
     ),
     ProBenefit(
         title: "Family Sharing",
         subtitle: "Share Pro with your family members at no extra cost.",
         systemImage: "figure.and.child.holdinghands",
-        tint: .orange
+        tint: .purple
     ),
     ProBenefit(
         title: "Development",
         subtitle: "Help keep AWattPrice maintained.",
         systemImage: "heart.fill",
-        tint: .green
+        tint: .cyan
     ),
 ]
 
@@ -382,11 +382,13 @@ struct ProSupporterPaywallView: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(13)
-        .background(.gray.opacity(0.06), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .background(Color(.systemBackground), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .stroke(AppTheme.accent.opacity(0.12), lineWidth: 3)
+                .stroke(AppTheme.accent.opacity(0.25), lineWidth: 1)
         )
+        .shadow(color: AppTheme.accent.opacity(0.12), radius: 12, x: 0, y: 6)
+        .padding(.top, 6)
     }
 
     private var legalLinks: some View {

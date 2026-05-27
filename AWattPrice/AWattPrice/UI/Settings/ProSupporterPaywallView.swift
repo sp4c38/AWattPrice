@@ -137,9 +137,7 @@ struct ProSupporterPaywallView: View {
                 supporterNote
                 benefitsSection
                 proFeatureGallery
-                    .padding(.horizontal, -20)
                 productSection
-                    .padding(.top, 10)
             }
 
             if let message = proStore.message {
@@ -278,6 +276,7 @@ struct ProSupporterPaywallView: View {
             }
 
             purchaseButton
+                .padding(.top, 6)
             restoreButton
 
             if proStore.isLoadingProducts {
@@ -366,21 +365,27 @@ struct ProSupporterPaywallView: View {
     }
 
     private var supporterNote: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("A note from the developer".localized())
-                .font(.headline)
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(alignment: .center, spacing: 10) {
+                Image(systemName: "person.wave.2.fill")
+                    .font(.title3)
+                    .foregroundStyle(AppTheme.accent)
+                
+                Text("A note from the developer".localized())
+                    .font(.headline)
+            }
             
-            Text("Hi! I’m a student and developing AWattPrice in my spare time. The goal is to make dynamic electricity prices easier to follow. Pro helps cover server and license costs and keeps the app running. I hope you like the app!".localized())
+            Text("Hi, I’m Leon, a student developing AWattPrice in my spare time. Pro helps keep the app running and supports further development. I hope you like the app!".localized())
                 .font(.subheadline)
                 .lineSpacing(2)
                 .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(16)
-        .background(Color.blue.opacity(0.08), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .padding(13)
+        .background(.gray.opacity(0.06), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .stroke(Color.blue.opacity(0.16), lineWidth: 1)
+                .stroke(AppTheme.accent.opacity(0.12), lineWidth: 3)
         )
     }
 

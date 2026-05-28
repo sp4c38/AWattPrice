@@ -690,6 +690,8 @@ struct ForecastWidgetView: View {
 
 
 struct PriceForecastChart: View {
+    @Environment(\.widgetRenderingMode) private var renderingMode
+
     let points: [WidgetPricePoint]
 
     private var chartPoints: [WidgetPricePoint] {
@@ -735,7 +737,7 @@ struct PriceForecastChart: View {
 
                         ZStack {
                             Circle()
-                                .fill(.regularMaterial)
+                                .fill(renderingMode == .fullColor ? AnyShapeStyle(.regularMaterial) : AnyShapeStyle(Color.clear))
                                 .frame(width: 9, height: 9)
 
                             Circle()
@@ -1079,6 +1081,8 @@ private extension CGRect {
 }
 
 private struct PriceForecastExtremaLabel: View {
+    @Environment(\.widgetRenderingMode) private var renderingMode
+
     let systemImage: String
     let price: String
     let color: Color
@@ -1096,7 +1100,19 @@ private struct PriceForecastExtremaLabel: View {
         .fixedSize()
         .padding(.horizontal, 5)
         .padding(.vertical, 2)
-        .background(.regularMaterial, in: Capsule())
+        .background {
+            if renderingMode == .fullColor {
+                Capsule()
+                    .fill(.regularMaterial)
+            } else {
+                Capsule()
+                    .fill(Color.secondary.opacity(0.2))
+                    .overlay(
+                        Capsule()
+                            .stroke(color, lineWidth: 1.2)
+                    )
+            }
+        }
     }
 }
 

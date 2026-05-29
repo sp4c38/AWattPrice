@@ -32,7 +32,7 @@ class HelpMailContent: MailContent {
     }
 
     init() {
-        let recipientEmails = "contact-awattprice@space8.me"
+        let recipientEmails = "info@awattprice.com"
 
         super.init(
             recipientEmails: recipientEmails,
@@ -108,7 +108,7 @@ class HelpMailContent: MailContent {
 
 class SuggestionMailContent: MailContent {
     init() {
-        var recipientEmails = "contact-awattprice@space8.me"
+        var recipientEmails = "info@awattprice.com"
         var subject = "AWattPrice Vorschlag"
         var encodedSubject = subject.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!
 
@@ -116,7 +116,7 @@ class SuggestionMailContent: MailContent {
         var encodedBody = ""
 
         if Locale.current.language.languageCode?.identifier == "en" {
-            recipientEmails = "contact-awattprice@space8.me"
+            recipientEmails = "info@awattprice.com"
             subject = "AWattPrice Suggestion"
             encodedSubject = subject.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!
 

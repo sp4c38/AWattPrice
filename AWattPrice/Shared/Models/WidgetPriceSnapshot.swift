@@ -126,7 +126,7 @@ struct WidgetPriceSnapshot: Codable {
         }
 
         let change = lastPrice - firstPrice
-        let stableThreshold = 0.5
+        let stableThreshold = 1.5
 
         if abs(change) <= stableThreshold {
             return .stable

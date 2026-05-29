@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "butterkit": {
+      "type": "stdio",
+      "command": "/Applications/ButterKit.app/Contents/MacOS/butterkit-mcp",
+      "args": []
+    }
+  }
+}

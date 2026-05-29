@@ -850,6 +850,7 @@
 		10962E2B1509DDA53A27298D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				APS_ENVIRONMENT = development;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = AWattPrice/AWattPrice.entitlements;
 				"CODE_SIGN_ENTITLEMENTS[sdk=macosx*]" = AWattPrice/AWattPriceMac.entitlements;
@@ -890,6 +891,7 @@
 		34A1711C1739A657351EA845 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				APS_ENVIRONMENT = production;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = AWattPrice/AWattPrice.entitlements;
 				"CODE_SIGN_ENTITLEMENTS[sdk=macosx*]" = AWattPrice/AWattPriceMac.entitlements;

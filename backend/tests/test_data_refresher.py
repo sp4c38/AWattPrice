@@ -23,7 +23,7 @@ from awattprice_refresher import service as data_refresher
 AREA = defaults.get_market_area("DE-LU")
 
 
-def test_config(root: Path) -> Box:
+def make_config(root: Path) -> Box:
     config = Box()
     config.paths = Box()
     config.paths.data_dir = root
@@ -86,7 +86,7 @@ def complete_hourly_price_data_for_day(day: str) -> Box:
 class RefresherStatePersistenceTests(unittest.TestCase):
     def test_load_state_returns_fresh_state_when_no_file_exists(self):
         with tempfile.TemporaryDirectory() as temp_dir:
-            config = test_config(Path(temp_dir))
+            config = make_config(Path(temp_dir))
             state = data_refresher.load_state(config)
 
         self.assertIsNone(state.current_prices)
@@ -96,7 +96,7 @@ class RefresherStatePersistenceTests(unittest.TestCase):
 
     def test_save_and_load_state_roundtrip(self):
         with tempfile.TemporaryDirectory() as temp_dir:
-            config = test_config(Path(temp_dir))
+            config = make_config(Path(temp_dir))
 
             original = data_refresher.RefresherState()
             original.current_prices = arrow.get("2026-05-25T10:00:00+00:00")
@@ -114,7 +114,7 @@ class RefresherStatePersistenceTests(unittest.TestCase):
 
     def test_load_state_recovers_from_corrupt_file(self):
         with tempfile.TemporaryDirectory() as temp_dir:
-            config = test_config(Path(temp_dir))
+            config = make_config(Path(temp_dir))
             (Path(temp_dir) / "refresher-state.json").write_text("not valid json{{{")
 
             state = data_refresher.load_state(config)
@@ -142,7 +142,7 @@ class DataRefresherScheduleTests(unittest.TestCase):
     def test_current_price_refresh_skips_when_tomorrow_is_cached(self):
         async def run_test():
             with tempfile.TemporaryDirectory() as temp_dir:
-                config = test_config(Path(temp_dir))
+                config = make_config(Path(temp_dir))
                 cached_data = complete_hourly_price_data_for_day("2026-05-26")
                 await prices.store_data(cached_data, AREA.key, config)
 
@@ -165,7 +165,7 @@ class DataRefresherScheduleTests(unittest.TestCase):
     def test_current_price_refresh_runs_when_tomorrow_has_gaps(self):
         async def run_test():
             with tempfile.TemporaryDirectory() as temp_dir:
-                config = test_config(Path(temp_dir))
+                config = make_config(Path(temp_dir))
                 cached_data = price_data_for("2026-05-27T00:00:00+02:00")
                 await prices.store_data(cached_data, AREA.key, config)
 
@@ -188,7 +188,7 @@ class DataRefresherScheduleTests(unittest.TestCase):
     def test_run_cycle_returns_monitoring_summary(self):
         async def run_test():
             with tempfile.TemporaryDirectory() as temp_dir:
-                config = test_config(Path(temp_dir))
+                config = make_config(Path(temp_dir))
                 state = data_refresher.RefresherState()
 
                 with (
@@ -233,7 +233,7 @@ class DataRefresherCleanupTests(unittest.TestCase):
     def test_history_prune_keeps_only_latest_five_completed_berlin_days(self):
         async def run_test():
             with tempfile.TemporaryDirectory() as temp_dir:
-                config = test_config(Path(temp_dir))
+                config = make_config(Path(temp_dir))
                 retained_data = price_data_for("2026-05-24T01:00:00+02:00")
                 old_data = price_data_for("2026-05-18T01:00:00+02:00")
 
@@ -258,7 +258,7 @@ class DataRefresherCleanupTests(unittest.TestCase):
     def test_generation_prune_trims_old_points_but_keeps_recent_payload(self):
         async def run_test():
             with tempfile.TemporaryDirectory() as temp_dir:
-                config = test_config(Path(temp_dir))
+                config = make_config(Path(temp_dir))
                 old_point = Box(
                     {
                         "start_timestamp": arrow.get("2026-05-10T00:00:00+02:00"),
@@ -310,7 +310,7 @@ class DataRefresherCleanupTests(unittest.TestCase):
     def test_cache_status_reports_pruned_count(self):
         async def run_test():
             with tempfile.TemporaryDirectory() as temp_dir:
-                config = test_config(Path(temp_dir))
+                config = make_config(Path(temp_dir))
                 cache_status.record_prune_result(config, 3)
 
                 response = await cache_status.cache_status_response(config)

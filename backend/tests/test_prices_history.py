@@ -164,7 +164,7 @@ def classified_multi_sequence_xml_with_points(sequence_one_points: str, sequence
 """.encode()
 
 
-def test_config(root: Path) -> Box:
+def make_config(root: Path) -> Box:
     config = Box()
     config.paths = Box()
     config.paths.price_data_dir = root / "price_data"
@@ -215,7 +215,7 @@ class PriceHistoryTests(unittest.TestCase):
     def test_history_cache_hit_does_not_download(self):
         async def run_test():
             with tempfile.TemporaryDirectory() as temp_dir:
-                config = test_config(Path(temp_dir))
+                config = make_config(Path(temp_dir))
                 history_date = date(2026, 5, 13)
                 cached_data = complete_hourly_price_data_for_day(history_date)
                 await prices.store_history_data(cached_data, AREA.key, history_date, config)

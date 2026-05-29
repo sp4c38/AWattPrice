@@ -28,3 +28,12 @@ build-backend = "uv_build"
 
 [tool.uv.build-backend]
 module-name = ["awattprice", "awattprice_notifications", "awattprice_refresher"]
+
+[dependency-groups]
+dev = [
+    "anyio>=4.13.0",
+    "pytest>=9.0.3",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]

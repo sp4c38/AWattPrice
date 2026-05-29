@@ -138,7 +138,7 @@ struct PricesView: View {
     }
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack(spacing: 0) {
                 if dataMode == .history || hasVisiblePriceData {
                     statusRow
@@ -159,7 +159,6 @@ struct PricesView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar(.hidden, for: .navigationBar)
         }
-        .navigationViewStyle(StackNavigationViewStyle())
         .task(id: historyRequestKey) {
             await loadHistoryIfNeeded()
         }

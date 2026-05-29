@@ -134,19 +134,14 @@ struct SplashScreenStartView: View {
 
                         VStack(spacing: 8) {
                             Text("Welcome to")
-                                .font(
-                                    .custom("SFCompactDisplay-Black", size: 32, relativeTo: .title)
-                                )
+                                .font(.system(size: 32, weight: .black, design: .default))
                                 .foregroundStyle(titleColor.opacity(colorScheme == .dark ? 0.88 : 0.82))
                                 .lineLimit(1)
                                 .minimumScaleFactor(0.75)
 
                             Text("AWattPrice")
                                 .foregroundStyle(appNameColor)
-                                .font(
-                                    .custom("SFCompactDisplay-Black", size: 60, relativeTo: .largeTitle)
-                                )
-                                .fontWeight(.black)
+                                .font(.system(size: 60, weight: .black, design: .default))
                                 .tracking(1)
                                 .shadow(color: backgroundColor.opacity(colorScheme == .dark ? 0.88 : 0.96), radius: 9, y: 1)
                                 .shadow(color: appNameColor.opacity(colorScheme == .dark ? 0.38 : 0.24), radius: 11, y: 4)

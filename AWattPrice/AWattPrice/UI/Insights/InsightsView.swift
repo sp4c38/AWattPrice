@@ -429,9 +429,22 @@ private struct GenerationMixCard: View {
         generationMix.visibleCategories
     }
 
-    /// Data is considered live if the last known interval ended no more than 90 minutes ago.
+    /// Data is fresh enough to show the Live badge (ended ≤ 120 min ago).
     private var isLive: Bool {
-        generationMix.endTime >= Date().addingTimeInterval(-90 * 60)
+        generationMix.endTime >= Date().addingTimeInterval(-120 * 60)
+    }
+
+    /// Data is stale enough to warn the user (ended > 4 hours ago).
+    private var isOutdated: Bool {
+        generationMix.endTime < Date().addingTimeInterval(-4 * 3600)
+    }
+
+    private var dataAgeText: String {
+        let hours = max(1, Int((-generationMix.endTime.timeIntervalSinceNow) / 3600))
+        return String.localizedStringWithFormat(
+            NSLocalizedString("Data from %dh ago", comment: "Slightly stale data freshness label"),
+            hours
+        )
     }
 
     @ViewBuilder
@@ -446,14 +459,18 @@ private struct GenerationMixCard: View {
             )
             .font(.caption.weight(.semibold))
             .foregroundStyle(.secondary)
-        } else if !isLive {
-            // Data is older than 90 minutes — warn the user.
+        } else if isOutdated {
+            // Data is older than 3 hours — warn the user.
             Label("Data may be outdated", systemImage: "exclamationmark.triangle.fill")
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(.orange)
+        } else if !isLive {
+            // Data ended 90 min – 3 hours ago — show age without alarming the user.
+            Text(dataAgeText)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
         }
-        // else: interval just ended but data is still fresh — the Live badge
-        // in the header is sufficient; no caption text needed.
+        // else: data is fresh — Live badge in the header is sufficient.
     }
 
     var body: some View {

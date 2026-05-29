@@ -269,7 +269,17 @@ struct RenewableMixWidgetView: View {
     }
 
     private var isOutdated: Bool {
-        snapshot.endTime < Date().addingTimeInterval(-90 * 60)
+        snapshot.endTime < Date().addingTimeInterval(-4 * 3600)
+    }
+
+    private var isSlightlyStale: Bool {
+        let age = -snapshot.endTime.timeIntervalSinceNow
+        return age > 120 * 60 && age <= 4 * 3600
+    }
+
+    private var dataAgeText: String {
+        let hours = max(1, Int((-snapshot.endTime.timeIntervalSinceNow) / 3600))
+        return String(format: NSLocalizedString("%dh ago", comment: "Compact data age label for widget"), hours)
     }
 
     var body: some View {
@@ -301,7 +311,7 @@ struct RenewableMixWidgetView: View {
 
             Spacer(minLength: 0)
 
-            VStack(alignment: .leading, spacing: isOutdated ? 2 : 0) {
+            VStack(alignment: .leading, spacing: (isOutdated || isSlightlyStale) ? 2 : 0) {
                 Text(WidgetText.percent(snapshot.renewableShare))
                     .font(.system(size: 34, weight: .bold, design: .rounded))
                     .monospacedDigit()
@@ -313,6 +323,12 @@ struct RenewableMixWidgetView: View {
                     Text("Data may be outdated")
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(.orange)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.82)
+                } else if isSlightlyStale {
+                    Text(dataAgeText)
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
                         .lineLimit(1)
                         .minimumScaleFactor(0.82)
                 }
@@ -359,6 +375,10 @@ struct RenewableMixWidgetView: View {
     private var accessoryContextText: String {
         if isOutdated {
             return String(localized: "Data may be outdated")
+        }
+
+        if isSlightlyStale {
+            return dataAgeText
         }
 
         let topCategories = Array(snapshot.visibleCategories.prefix(2))

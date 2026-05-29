@@ -940,6 +940,40 @@
         }
       }
     },
+    "%dh ago" : {
+      "comment" : "Compact data age label for widget",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "vor %dh"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%dh ago"
+          }
+        }
+      }
+    },
+    "Data from %dh ago" : {
+      "comment" : "Slightly stale data freshness label",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Daten von vor %dh"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Data from %dh ago"
+          }
+        }
+      }
+    },
     "Data may be outdated" : {
       "comment" : "SwiftUI literal",
       "localizations" : {

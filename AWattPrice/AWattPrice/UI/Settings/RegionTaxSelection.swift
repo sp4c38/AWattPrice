@@ -377,7 +377,7 @@ private struct MarketAreaSelectionPage: View {
     var body: some View {
         MarketAreaMapSelectionView(viewModel: viewModel)
             .ignoresSafeArea()
-            .navigationTitle("Price zone")
+            .navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
             .onAppear {
                 viewModel.loadAreasIfNeeded()

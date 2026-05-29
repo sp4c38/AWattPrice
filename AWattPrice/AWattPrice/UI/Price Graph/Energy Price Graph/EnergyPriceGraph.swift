@@ -820,14 +820,6 @@ struct EnergyPriceGraph: View {
             return 1
 
         case .sixtyMinutes:
-            if row.groupIndex == selectedGroupIndex {
-                return EnergyPriceGraphLayout.focusedHourlyRowWeight
-            }
-
-            if abs(row.groupIndex - selectedGroupIndex) == 1, row.isExpandedInterval == false {
-                return EnergyPriceGraphLayout.adjacentFocusedHourlyRowWeight
-            }
-
             return 1
         }
     }

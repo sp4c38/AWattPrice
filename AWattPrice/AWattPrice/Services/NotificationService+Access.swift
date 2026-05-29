@@ -132,28 +132,16 @@ extension NotificationService {
             return await ensureAccess(ensurePushAccess: true)
             
         case .asked:
-            // Use withCheckedContinuation to wait for push state to update
-            return await withCheckedContinuation { continuation in
-                // Store the cancellable as a local variable that stays alive for this scope
-                let cancellable = $pushState
-                    .dropFirst()  // Skip the current value
-                    .first()      // Take just the next value
-                    .sink { newPushState in
-                        if newPushState == .apnsRegistrationSuccessful {
-                            continuation.resume(returning: true)
-                        } else {
-                            continuation.resume(returning: false)
-                        }
-                    }
-                
-                // Store the cancellable in a task-local variable to keep it alive
-                // until the continuation completes
-                Task {
-                    // This task keeps the reference to cancellable alive
-                    // until the continuation is resolved
-                    _ = cancellable
+            // Wait for APNs registration to resolve. $pushState.values includes the
+            // current value first, so we'll catch it even if it changed before the loop starts.
+            for await state in $pushState.values {
+                switch state {
+                case .apnsRegistrationSuccessful: return true
+                case .apnsRegistrationFailed: return false
+                default: continue
                 }
             }
+            return false
         case .apnsRegistrationSuccessful:
             return true
         case .apnsRegistrationFailed:

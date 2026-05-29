@@ -93,7 +93,7 @@ struct NotificationDraft: Equatable {
 class NotificationSettingViewModel: ObservableObject {
     enum Timing {
         static let temporaryBannerApproximationNanoseconds: UInt64 = 8_200_000_000
-        static let minimumUploadingNanoseconds: UInt64 = 1_600_000_000
+        static let minimumUploadingNanoseconds: UInt64 = 500_000_000
         static let uploadIndicatorDelayNanoseconds: UInt64 = 450_000_000
     }
 
@@ -676,7 +676,11 @@ struct NotificationSettingView: View {
         .onDisappear {
             autoSaveTask?.cancel()
             uploadFeedbackTask?.cancel()
-            viewModel.cancelPendingUploadFeedback()
+            if viewModel.hasUnsavedChanges {
+                Task { await viewModel.save() }
+            } else {
+                viewModel.cancelPendingUploadFeedback()
+            }
         }
     }
 

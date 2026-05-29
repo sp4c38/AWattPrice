@@ -725,9 +725,6 @@ struct EnergyPriceGraph: View {
         }
     }
 
-    private var dataChangeAnimation: Animation {
-        .spring(response: 0.42, dampingFraction: 0.86, blendDuration: 0.08)
-    }
 
     private func rowTransition(
         for row: EnergyPriceGraphDisplayRow,
@@ -898,8 +895,6 @@ struct EnergyPriceGraph: View {
                 }
             }
             .animation(selectionAnimation, value: selectedGroupIndex)
-            .animation(dataChangeAnimation, value: dataAnimationKey)
-            .animation(.spring(response: 0.38, dampingFraction: 0.82), value: displayInterval)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .contentShape(Rectangle())
             .gesture(

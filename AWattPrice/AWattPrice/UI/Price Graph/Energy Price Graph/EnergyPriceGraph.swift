@@ -715,13 +715,13 @@ struct EnergyPriceGraph: View {
     private var selectionAnimation: Animation {
         switch displayInterval {
         case .fifteenMinutes:
-            return .spring(response: 0.22, dampingFraction: 0.84, blendDuration: 0.04)
+            return .spring(response: 0.16, dampingFraction: 0.84, blendDuration: 0.04)
         case .sixtyMinutes:
             guard allowsHourlyExpansion else {
-                return .easeOut(duration: 0.12)
+                return .easeOut(duration: 0.10)
             }
 
-            return .spring(response: 0.34, dampingFraction: 0.82, blendDuration: 0.08)
+            return .spring(response: 0.26, dampingFraction: 0.82, blendDuration: 0.08)
         }
     }
 

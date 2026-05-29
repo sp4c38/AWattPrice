@@ -79,7 +79,7 @@ struct WidgetPriceSnapshot: Codable {
     }
 
     var upcomingForecastAveragePrice: Double? {
-        WidgetPriceSnapshot.weightedAverage(for: upcomingForecastPoints)
+        WidgetPriceSnapshot.weightedAverage(for: upcomingHourlyForecastPoints)
     }
 
     var upcomingHourlyForecastAveragePrice: Double? {

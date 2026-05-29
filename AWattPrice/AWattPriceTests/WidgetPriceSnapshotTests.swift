@@ -136,26 +136,26 @@ final class WidgetPriceSnapshotTests: XCTestCase {
         )
         XCTAssertEqual(snapshot1.nextThreeHourTrend, .stable)
 
-        // Change of exactly 0.5 should be stable
+        // Change of exactly 1.5 should be stable
         let snapshot2 = WidgetPriceSnapshot(
             createdAt: Self.base.addingTimeInterval(30 * 60),
             marketAreaName: "Deutschland / Luxemburg",
             points: [
                 Self.point(hour: 0, price: 10.0),
                 Self.point(hour: 1, price: 10.2),
-                Self.point(hour: 2, price: 9.5),
+                Self.point(hour: 2, price: 8.5),
             ]
         )
         XCTAssertEqual(snapshot2.nextThreeHourTrend, .stable)
 
-        // Change of 0.6 should be falling
+        // Change of 1.6 should be falling
         let snapshot3 = WidgetPriceSnapshot(
             createdAt: Self.base.addingTimeInterval(30 * 60),
             marketAreaName: "Deutschland / Luxemburg",
             points: [
                 Self.point(hour: 0, price: 10.0),
                 Self.point(hour: 1, price: 10.2),
-                Self.point(hour: 2, price: 9.4),
+                Self.point(hour: 2, price: 8.4),
             ]
         )
         XCTAssertEqual(snapshot3.nextThreeHourTrend, .falling)

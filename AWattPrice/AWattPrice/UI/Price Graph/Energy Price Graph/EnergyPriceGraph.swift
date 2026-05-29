@@ -155,10 +155,10 @@ private struct EnergyPriceGraphLayout {
     static let axisHeight: CGFloat = 18
     static let overlayHorizontalPadding: CGFloat = 6
     static let rowSpacing: CGFloat = 0.1
-    static let focusedRowWeight: CGFloat = 2.8
-    static let adjacentFocusedRowWeight: CGFloat = 1.65
-    static let focusedHourlyRowWeight: CGFloat = 1.35
-    static let adjacentFocusedHourlyRowWeight: CGFloat = 1.13
+    static let focusedRowWeight: CGFloat = 3.6
+    static let adjacentFocusedRowWeight: CGFloat = 1.9
+    static let focusedHourlyRowWeight: CGFloat = 1.7
+    static let adjacentFocusedHourlyRowWeight: CGFloat = 1.25
     static let plotTopPadding: CGFloat = 10
 
     let plotHeight: CGFloat
@@ -712,16 +712,20 @@ struct EnergyPriceGraph: View {
         selectedGroupIndex = boundedGroupIndex
     }
 
+    private var dataChangeAnimation: Animation {
+        .spring(response: 0.42, dampingFraction: 0.86, blendDuration: 0.08)
+    }
+
     private var selectionAnimation: Animation {
         switch displayInterval {
         case .fifteenMinutes:
-            return .spring(response: 0.16, dampingFraction: 0.84, blendDuration: 0.04)
+            return .spring(response: 0.26, dampingFraction: 0.88, blendDuration: 0.06)
         case .sixtyMinutes:
             guard allowsHourlyExpansion else {
-                return .easeOut(duration: 0.10)
+                return .easeOut(duration: 0.12)
             }
 
-            return .spring(response: 0.26, dampingFraction: 0.82, blendDuration: 0.08)
+            return .spring(response: 0.26, dampingFraction: 0.88, blendDuration: 0.06)
         }
     }
 
@@ -895,6 +899,7 @@ struct EnergyPriceGraph: View {
                 }
             }
             .animation(selectionAnimation, value: selectedGroupIndex)
+            .animation(dataChangeAnimation, value: dataAnimationKey)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .contentShape(Rectangle())
             .gesture(

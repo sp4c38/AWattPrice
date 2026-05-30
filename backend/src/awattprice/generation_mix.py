@@ -2,7 +2,6 @@
 import pickle
 import xml.etree.ElementTree as ET
 
-from math import ceil
 from decimal import Decimal
 from typing import Optional
 
@@ -150,34 +149,17 @@ async def store_data(data: Box, area_key: str, config: Config):
     await utils.async_atomic_write_bytes(file_path, pickle.dumps(data))
 
 
-def representative_interval_points(generation_data: Box) -> list[BoxList]:
-    """Return intervals with the most complete available production mix."""
+def _intervals_by_end_timestamp(generation_data: Box) -> list[BoxList]:
+    """Group all generation points into sorted per-interval buckets."""
     points_by_end = {}
     for point in generation_data.generation_points:
         points_by_end.setdefault(point.end_timestamp.int_timestamp, BoxList()).append(point)
-
-    production_type_counts = [
-        len({point.raw_production_type for point in points if point.raw_production_type is not None})
-        for points in points_by_end.values()
-    ]
-    best_production_type_count = max(production_type_counts)
-    minimum_representative_count = max(1, ceil(best_production_type_count * Decimal("0.7")))
-
-    representative_end_times = [
-        end_timestamp
-        for end_timestamp, points in points_by_end.items()
-        if len({point.raw_production_type for point in points if point.raw_production_type is not None})
-        >= minimum_representative_count
-    ]
-    return [
-        points_by_end[end_timestamp_key]
-        for end_timestamp_key in sorted(representative_end_times)
-    ]
+    return [points_by_end[k] for k in sorted(points_by_end.keys())]
 
 
 def latest_interval_points(generation_data: Box) -> BoxList:
-    """Return generation points for the latest interval with a representative production mix."""
-    return representative_interval_points(generation_data)[-1]
+    """Return generation points for the latest available interval."""
+    return _intervals_by_end_timestamp(generation_data)[-1]
 
 
 def category_values_for_points(points: BoxList) -> tuple[dict[str, Decimal], Decimal, Decimal]:
@@ -244,12 +226,12 @@ def parse_to_response_data(generation_data: Box) -> Box:
 
 def parse_to_history_response_data(generation_data: Box, hours: int = 24) -> Box:
     """Parse cached generation data to grouped app history for the requested hours."""
-    representative_intervals = representative_interval_points(generation_data)
-    latest_end = max(point.end_timestamp for point in representative_intervals[-1])
+    all_intervals = _intervals_by_end_timestamp(generation_data)
+    latest_end = max(point.end_timestamp for point in all_intervals[-1])
     cutoff = latest_end.shift(hours=-hours)
     interval_points = [
         points
-        for points in representative_intervals
+        for points in all_intervals
         if max(point.end_timestamp for point in points) > cutoff
     ]
     interval_responses = BoxList([interval_response(points) for points in interval_points])

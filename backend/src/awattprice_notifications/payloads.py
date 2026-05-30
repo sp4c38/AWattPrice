@@ -59,7 +59,7 @@ def adjusted_price(price_point: Box, profile: Box, round_: bool = True) -> Decim
 def stringify_adjusted_price(price_point: Box, profile: Box) -> str:
     """Return a localized string for the user's final price."""
     area = awattprice_defaults.get_market_area(profile.general.area)
-    return stringify_price(adjusted_price(price_point, profile), area)
+    return stringify_price(round_subunitkwh(adjusted_price(price_point, profile)), area)
 
 
 def stringify_price(price_value: Decimal, area) -> str:
@@ -94,15 +94,17 @@ def construct_notification(profile: Box, rule_type: str, selected_prices: list[B
     notification.aps["alert"] = {}
     notification.aps["alert"]["title-loc-key"] = rules.NOTIFICATION.title_loc_keys[rule_type]
 
+    is_15min = notifiable_prices.data.resolution != "PT60M"
     if rule_type == "price_below":
         threshold = round_subunitkwh(Decimal(str(profile.rules.price_below.threshold)))
         best_price = min(selected_prices, key=lambda price_point: adjusted_price(price_point, profile))
         threshold_str = stringify_price(threshold, awattprice_defaults.get_market_area(profile.general.area))
         best_time = format_price_timestamp(best_price.start_timestamp, notifiable_prices.data.resolution)
         best_price_str = stringify_adjusted_price(best_price, profile)
-        loc_key = rules.NOTIFICATION.loc_keys.price_below_single
         if len(selected_prices) > 1:
-            loc_key = rules.NOTIFICATION.loc_keys.price_below_multiple
+            loc_key = rules.NOTIFICATION.loc_keys.price_below_multiple_15min if is_15min else rules.NOTIFICATION.loc_keys.price_below_multiple
+        else:
+            loc_key = rules.NOTIFICATION.loc_keys.price_below_single_15min if is_15min else rules.NOTIFICATION.loc_keys.price_below_single
         notification.aps["alert"]["loc-key"] = loc_key
         notification.aps["alert"]["loc-args"] = [str(len(selected_prices)), threshold_str, best_time, best_price_str]
     elif rule_type == "price_above":
@@ -111,9 +113,10 @@ def construct_notification(profile: Box, rule_type: str, selected_prices: list[B
         threshold_str = stringify_price(threshold, awattprice_defaults.get_market_area(profile.general.area))
         worst_time = format_price_timestamp(worst_price.start_timestamp, notifiable_prices.data.resolution)
         worst_price_str = stringify_adjusted_price(worst_price, profile)
-        loc_key = rules.NOTIFICATION.loc_keys.price_above_single
         if len(selected_prices) > 1:
-            loc_key = rules.NOTIFICATION.loc_keys.price_above_multiple
+            loc_key = rules.NOTIFICATION.loc_keys.price_above_multiple_15min if is_15min else rules.NOTIFICATION.loc_keys.price_above_multiple
+        else:
+            loc_key = rules.NOTIFICATION.loc_keys.price_above_single_15min if is_15min else rules.NOTIFICATION.loc_keys.price_above_single
         notification.aps["alert"]["loc-key"] = loc_key
         notification.aps["alert"]["loc-args"] = [str(len(selected_prices)), threshold_str, worst_time, worst_price_str]
     elif rule_type == "daily_summary":
@@ -197,10 +200,12 @@ async def handle_apns_response(profile_store, profile: Box, response: httpx.Resp
         logger.error(f"Unsuccessful apns request but no reason returned: {status_code}.")
         return
 
-    if status_code == HTTPStatus.GONE:
-        if status.reason == "Unregistered":
-            logger.debug(f"Deleting token {profile.token} as it isn't valid anymore.")
-            profile_store.delete_profile(profile.token)
+    if status_code == HTTPStatus.GONE and status.reason == "Unregistered":
+        logger.debug(f"Deleting token {profile.token} as it isn't valid anymore.")
+        profile_store.delete_profile(profile.token)
+    elif status_code == HTTPStatus.BAD_REQUEST and status.reason == "BadDeviceToken":
+        logger.debug(f"Deleting token {profile.token} as it is invalid.")
+        profile_store.delete_profile(profile.token)
     else:
         logger.error(f"Error sending notification with token {profile.token} to apns: {status_code} - {status}. Doing nothing with this token.")
 

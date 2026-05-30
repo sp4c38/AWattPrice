@@ -16,22 +16,22 @@
   "products" : [
     {
       "displayPrice" : "24.99",
-      "familyShareable" : false,
+      "familyShareable" : true,
       "internalID" : "6771814422",
       "localizations" : [
         {
-          "description" : "Alle Funktionen für immer.",
-          "displayName" : "Pro Supporter Lifetime",
+          "description" : "Alle Pro-Funktionen lebenslang freischalten.",
+          "displayName" : "AWattPrice Pro Supporter Lebenslang",
           "locale" : "de"
         },
         {
-          "description" : "All functions forever.",
-          "displayName" : "Pro Supporter Lifetime",
+          "description" : "Unlock all Pro features forever.",
+          "displayName" : "AWattPrice Pro Supporter Lifetime",
           "locale" : "en_US"
         }
       ],
       "productID" : "awattprice.pro.supporter.lifetime",
-      "referenceName" : "Pro Supporter Lifetime",
+      "referenceName" : "AWattPrice Pro Supporter Lifetime",
       "type" : "NonConsumable"
     }
   ],
@@ -43,7 +43,7 @@
     "_developerTeamID" : "RC32A2AMHF",
     "_disableDialogs" : false,
     "_failTransactionsEnabled" : false,
-    "_lastSynchronizedDate" : 801232502.98602295,
+    "_lastSynchronizedDate" : 801821803.93043196,
     "_locale" : "de",
     "_renewalBillingIssuesEnabled" : false,
     "_storefront" : "DEU",
@@ -56,7 +56,16 @@
     {
       "id" : "22089487",
       "localizations" : [
-
+        {
+          "description" : "",
+          "displayName" : "AWattPrice Pro Supporter",
+          "locale" : "de"
+        },
+        {
+          "description" : "",
+          "displayName" : "AWattPrice Pro Supporter",
+          "locale" : "en_US"
+        }
       ],
       "name" : "AWattPrice Pro Supporter",
       "subscriptions" : [
@@ -85,19 +94,19 @@
           ],
           "localizations" : [
             {
-              "description" : "Alle Funktionen, monatliche Bezahlung.",
-              "displayName" : "Pro Supporter Monatlich",
+              "description" : "Alle Pro-Funktionen monatlich freischalten.",
+              "displayName" : "AWattPrice Pro Supporter Monatlich",
               "locale" : "de"
             },
             {
-              "description" : "All functions, pay monthly.",
-              "displayName" : "Pro Supporter Monthly",
+              "description" : "Unlock all Pro features monthly.",
+              "displayName" : "AWattPrice Pro Supporter Monthly",
               "locale" : "en_US"
             }
           ],
           "productID" : "awattprice.pro.supporter.monthly",
           "recurringSubscriptionPeriod" : "P1M",
-          "referenceName" : "Pro Supporter Monthly",
+          "referenceName" : "AWattPrice Pro Supporter Monthly",
           "subscriptionGroupID" : "22089487",
           "type" : "RecurringSubscription",
           "winbackOffers" : [
@@ -129,19 +138,19 @@
           ],
           "localizations" : [
             {
-              "description" : "All functions, pay yearly.",
-              "displayName" : "Pro Supporter Yearly",
+              "description" : "Unlock all Pro features yearly.",
+              "displayName" : "AWattPrice Pro Supporter Yearly",
               "locale" : "en_US"
             },
             {
-              "description" : "Alle Funktionen, jährlich bezahlt.",
-              "displayName" : "Pro Supporter Jährlich",
+              "description" : "Alle Pro-Funktionen jährlich freischalten.",
+              "displayName" : "AWattPrice Pro Supporter Jährlich",
               "locale" : "de"
             }
           ],
           "productID" : "awattprice.pro.supporter.yearly",
           "recurringSubscriptionPeriod" : "P1Y",
-          "referenceName" : "Pro Supporter Yearly",
+          "referenceName" : "AWattPrice Pro Supporter Yearly",
           "subscriptionGroupID" : "22089487",
           "type" : "RecurringSubscription",
           "winbackOffers" : [

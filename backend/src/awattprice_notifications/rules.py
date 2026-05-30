@@ -28,8 +28,12 @@ NOTIFICATION = Box(
         "loc_keys": {
             "price_below_single": "notifications.price_below.body.single",
             "price_below_multiple": "notifications.price_below.body.multiple",
+            "price_below_single_15min": "notifications.price_below.body.single.15min",
+            "price_below_multiple_15min": "notifications.price_below.body.multiple.15min",
             "price_above_single": "notifications.price_above.body.single",
             "price_above_multiple": "notifications.price_above.body.multiple",
+            "price_above_single_15min": "notifications.price_above.body.single.15min",
+            "price_above_multiple_15min": "notifications.price_above.body.multiple.15min",
             "daily_summary": "notifications.daily_summary.body",
         },
         "example_loc_keys": {

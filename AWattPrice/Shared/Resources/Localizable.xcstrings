@@ -158,6 +158,23 @@
         }
       }
     },
+    "%dh ago" : {
+      "comment" : "Compact data age label for widget",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "vor %dh"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%dh ago"
+          }
+        }
+      }
+    },
     "<1min" : {
       "comment" : "String.localized()",
       "localizations" : {
@@ -936,23 +953,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Daily Summary"
-          }
-        }
-      }
-    },
-    "%dh ago" : {
-      "comment" : "Compact data age label for widget",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "vor %dh"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%dh ago"
           }
         }
       }
@@ -2453,6 +2453,24 @@
         }
       }
     },
+    "notifications.daily_summary.body" : {
+      "comment" : "APNs localization key",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Morgen ist die günstigste Stunde um %1$@ Uhr mit %2$@ ct. Die teuerste Stunde ist um %3$@ Uhr mit %4$@ ct."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tomorrow's cheapest hour is %1$@ at %2$@ ct. Most expensive hour is %3$@ at %4$@ ct."
+          }
+        }
+      }
+    },
     "notifications.daily_summary.body.example" : {
       "comment" : "APNs localization key",
       "localizations" : {
@@ -2504,6 +2522,78 @@
         }
       }
     },
+    "notifications.price_above.body.multiple" : {
+      "comment" : "APNs localization key",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Morgen steigen %1$@ Stunden über %2$@ ct. Teuerste um %3$@ Uhr mit %4$@ ct."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tomorrow, %1$@ hours rise above %2$@ ct. Most expensive at %3$@ with %4$@ ct."
+          }
+        }
+      }
+    },
+    "notifications.price_above.body.multiple.15min" : {
+      "comment" : "APNs localization key",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Morgen steigen %1$@ Viertelstunden über %2$@ ct. Teuerste um %3$@ Uhr mit %4$@ ct."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tomorrow, %1$@ 15-min intervals rise above %2$@ ct. Most expensive at %3$@ with %4$@ ct."
+          }
+        }
+      }
+    },
+    "notifications.price_above.body.single" : {
+      "comment" : "APNs localization key",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Morgen steigen die Strompreise über %2$@ ct. Teuerste Stunde um %3$@ Uhr mit %4$@ ct."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tomorrow, electricity prices rise above %2$@ ct. Most expensive hour at %3$@ with %4$@ ct."
+          }
+        }
+      }
+    },
+    "notifications.price_above.body.single.15min" : {
+      "comment" : "APNs localization key",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Morgen steigen die Strompreise über %2$@ ct. Teuerste Viertelstunde um %3$@ Uhr mit %4$@ ct."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tomorrow, electricity prices rise above %2$@ ct. Most expensive 15-min interval at %3$@ with %4$@ ct."
+          }
+        }
+      }
+    },
     "notifications.price_above.title" : {
       "comment" : "APNs localization key",
       "localizations" : {
@@ -2534,6 +2624,78 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tomorrow, electricity prices drop below %@ ct. Cheapest hour at %@ with %@ ct. [Example data]"
+          }
+        }
+      }
+    },
+    "notifications.price_below.body.multiple" : {
+      "comment" : "APNs localization key",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Morgen fallen %1$@ Stunden unter %2$@ ct. Günstigste um %3$@ Uhr mit %4$@ ct."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tomorrow, %1$@ hours drop below %2$@ ct. Cheapest at %3$@ with %4$@ ct."
+          }
+        }
+      }
+    },
+    "notifications.price_below.body.multiple.15min" : {
+      "comment" : "APNs localization key",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Morgen fallen %1$@ Viertelstunden unter %2$@ ct. Günstigste um %3$@ Uhr mit %4$@ ct."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tomorrow, %1$@ 15-min intervals drop below %2$@ ct. Cheapest at %3$@ with %4$@ ct."
+          }
+        }
+      }
+    },
+    "notifications.price_below.body.single" : {
+      "comment" : "APNs localization key",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Morgen fallen die Strompreise unter %2$@ ct. Günstigste Stunde um %3$@ Uhr mit %4$@ ct."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tomorrow, electricity prices drop below %2$@ ct. Cheapest hour at %3$@ with %4$@ ct."
+          }
+        }
+      }
+    },
+    "notifications.price_below.body.single.15min" : {
+      "comment" : "APNs localization key",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Morgen fallen die Strompreise unter %2$@ ct. Günstigste Viertelstunde um %3$@ Uhr mit %4$@ ct."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tomorrow, electricity prices drop below %2$@ ct. Cheapest 15-min interval at %3$@ with %4$@ ct."
           }
         }
       }

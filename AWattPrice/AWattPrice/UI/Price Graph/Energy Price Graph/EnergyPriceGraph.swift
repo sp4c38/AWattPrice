@@ -799,7 +799,7 @@ struct EnergyPriceGraph: View {
     }
 
     private func rowWeight(for row: EnergyPriceGraphDisplayRow, at index: Int, rows: [EnergyPriceGraphDisplayRow]) -> CGFloat {
-        guard let selectedGroupIndex else {
+        guard selectedGroupIndex != nil else {
             return 1
         }
 

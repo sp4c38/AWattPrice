@@ -3,6 +3,7 @@ import pickle
 import xml.etree.ElementTree as ET
 
 from decimal import Decimal
+from statistics import mode
 from typing import Optional
 
 import arrow
@@ -162,8 +163,24 @@ def _intervals_by_end_timestamp(generation_data: Box) -> list[BoxList]:
 
 
 def latest_interval_points(generation_data: Box) -> BoxList:
-    """Return generation points for the latest available interval."""
-    return _intervals_by_end_timestamp(generation_data)[-1]
+    """Return the most recent interval with a complete production mix.
+
+    Walks backward through intervals and returns the first one whose unique
+    production type count matches the mode across all intervals.  This skips
+    trailing incomplete intervals (where only a handful of fast-reporting types
+    like wind have been published so far) while not being thrown off by a single
+    anomalous interval with an unusually high type count.
+    """
+    all_intervals = _intervals_by_end_timestamp(generation_data)
+    type_counts = [
+        len({p.raw_production_type for p in points if p.raw_production_type is not None})
+        for points in all_intervals
+    ]
+    typical_count = mode(type_counts)
+    for points, count in zip(reversed(all_intervals), reversed(type_counts)):
+        if count >= typical_count:
+            return points
+    return all_intervals[-1]
 
 
 def category_values_for_points(points: BoxList) -> tuple[dict[str, Decimal], Decimal, Decimal]:

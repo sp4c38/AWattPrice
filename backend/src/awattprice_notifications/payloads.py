@@ -291,11 +291,13 @@ async def deliver_notifications(
                 notifications_infos.append(notification_info)
 
     async with httpx.AsyncClient(http2=True) as client:
-        send_tasks = []
+        logger.info(f"Sending {len(notifications_infos)} notification(s).")
+        responses = []
         for info in notifications_infos:
-            send_tasks.append(send_notification(client, info.profile, info.headers, info.notification))
-        logger.info(f"Sending {len(send_tasks)} notification(s).")
-        responses = await asyncio.gather(*send_tasks, return_exceptions=True)
+            try:
+                responses.append(await send_notification(client, info.profile, info.headers, info.notification))
+            except Exception as exc:
+                responses.append(exc)
 
     handle_response_tasks = []
     error_count = 0
@@ -307,4 +309,4 @@ async def deliver_notifications(
         handle_response_tasks.append(handle_apns_response(profile_store, info.profile, response))
     await asyncio.gather(*handle_response_tasks)
 
-    return len(send_tasks), error_count
+    return len(notifications_infos), error_count

@@ -171,7 +171,11 @@ async def refresh_generation_mix(
             downloaded_data = await download_data(area, config)
             if downloaded_data is None:
                 return None
-            new_data = generation_mix.parse_downloaded_data(area, downloaded_data)
+            try:
+                new_data = generation_mix.parse_downloaded_data(area, downloaded_data)
+            except ValueError as exc:
+                logger.warning(f"Skipping generation mix update for {area.key}: {exc}.")
+                return None
             try:
                 await update_last_update_time(area_key, config)
             except Exception as exc:

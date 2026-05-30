@@ -149,12 +149,20 @@ def configure_loguru(service_name: str, config: Config):
 
     :param service_name: Name of the service for which logging should be registered.
     """
-    log_name = service_name + ".log"
+    logger.remove(0)
+    logger.add(
+        sys.stderr,
+        level=config.general.log_level,
+        format="{level: <8} | {name}:{function}:{line} - {message}",
+        colorize=True,
+        backtrace=True,
+        diagnose=False,
+    )
     log_path = config.paths.log_dir / (service_name + ".log")
     logger.add(
         log_path,
         level=config.general.log_level,
-        enqueue=True,  # This makes log calls non-blocking.
+        enqueue=True,
         colorize=True,
         backtrace=True,
         diagnose=False,

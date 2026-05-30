@@ -16,4 +16,4 @@ COPY src ./src
 
 RUN uv sync --locked --no-dev --no-editable
 
-CMD ["gunicorn", "--workers", "1", "--access-logfile", "-", "--bind", "unix:/etc/awattprice/socket/awattprice.sock", "-k", "uvicorn.workers.UvicornWorker", "awattprice.api:app"]
+CMD ["gunicorn", "--workers", "1", "--access-logfile", "-", "--access-logformat", "%(t)s %(h)s - \"%(r)s\" %(s)s", "--bind", "unix:/etc/awattprice/socket/awattprice.sock", "-k", "uvicorn.workers.UvicornWorker", "awattprice.api:app"]

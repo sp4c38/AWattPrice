@@ -93,7 +93,11 @@ def parse_downloaded_data(area: MarketArea, xml_content: bytes) -> Box:
     new_data.entsoe_domain = area.entsoe_domain
     new_data.timezone = area.timezone
     new_data.updated_at = arrow.now(area.timezone)
-    new_data.generation_points = BoxList()
+    # Keyed by (psr_type, psr_name, start_timestamp) so later TimeSeries entries
+    # (amendments/corrections from ENTSO-E) overwrite earlier ones for the same
+    # unit and time slot, while genuinely distinct units (different psr_name) are
+    # kept separately and summed when grouped into categories.
+    generation_points_by_key: dict = {}
 
     for time_series in root.findall(".//{*}TimeSeries"):
         psr_type = time_series.findtext("{*}MktPSRType/{*}psrType")
@@ -130,10 +134,10 @@ def parse_downloaded_data(area: MarketArea, xml_content: bytes) -> Box:
                 generation_point.category = category
                 generation_point.quantity_mw = Decimal(str(quantity_text))
                 generation_point.is_renewable = psr_type in RENEWABLE_PRODUCTION_TYPES
-                new_data.generation_points.append(generation_point)
+                generation_points_by_key[(psr_type, psr_name, generation_point.start_timestamp.int_timestamp)] = generation_point
 
     new_data.resolution = selected_resolution
-    new_data.generation_points = BoxList(sorted(new_data.generation_points, key=lambda point: point.start_timestamp))
+    new_data.generation_points = BoxList(sorted(generation_points_by_key.values(), key=lambda point: point.start_timestamp))
     if len(new_data.generation_points) == 0:
         raise ValueError(f"No usable ENTSO-E generation points found for {area.key}.")
 

@@ -191,20 +191,18 @@ class GenerationMixAPITests(unittest.TestCase):
 
     def test_history_endpoint_accepts_168_hours(self):
         with (
-            patch.object(api.generation_mix, "get_stored_history_response_json", new=AsyncMock(return_value=None)),
-            patch.object(api.generation_mix, "get_stored_data", new=AsyncMock(return_value=Box())),
             patch.object(
                 api.generation_mix,
-                "parse_to_history_response_data",
-                return_value={"intervals": [], "hours": 168},
-            ) as parse,
-            patch.object(api.generation_mix, "store_history_response_json", new=AsyncMock()),
+                "get_stored_history_response_json",
+                new=AsyncMock(return_value=b'{"intervals":[],"hours":168}'),
+            ),
+            patch.object(api.generation_mix, "parse_to_history_response_data") as parse,
         ):
             response = self.client.get("/generation-mix/DE-LU/history?hours=168")
 
         self.assertEqual(response.status_code, 200)
-        parse.assert_called_once()
-        self.assertEqual(parse.call_args.kwargs["hours"], 168)
+        self.assertEqual(response.json(), {"intervals": [], "hours": 168})
+        parse.assert_not_called()
 
     def test_history_endpoint_uses_precomputed_response_cache(self):
         with (
@@ -213,15 +211,23 @@ class GenerationMixAPITests(unittest.TestCase):
                 "get_stored_history_response_json",
                 new=AsyncMock(return_value=b'{"cached":true}'),
             ),
-            patch.object(api.generation_mix, "get_stored_data", new=AsyncMock()) as get_stored_data,
             patch.object(api.generation_mix, "parse_to_history_response_data") as parse,
         ):
             response = self.client.get("/generation-mix/DE-LU/history?hours=168")
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), {"cached": True})
-        get_stored_data.assert_not_called()
         parse.assert_not_called()
+
+    def test_history_endpoint_returns_503_when_precomputed_cache_missing(self):
+        with patch.object(
+            api.generation_mix,
+            "get_stored_history_response_json",
+            new=AsyncMock(return_value=None),
+        ):
+            response = self.client.get("/generation-mix/DE-LU/history?hours=168")
+
+        self.assertEqual(response.status_code, 503)
 
     def test_history_endpoint_rejects_non_168_hours(self):
         for hours in [24, 48, 72, 167, 169]:

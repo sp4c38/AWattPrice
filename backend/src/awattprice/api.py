@@ -119,20 +119,8 @@ async def get_area_generation_mix_history_for_hours(area_key: str, hours: int = 
     if cached_response_json is not None:
         return Response(content=cached_response_json, media_type="application/json")
 
-    generation_data = await generation_mix.get_stored_data(normalized_area_key, config)
-
-    if generation_data is None:
-        logger.warning(f"Couldn't get generation mix history for area {normalized_area_key}.")
-        raise HTTPException(503)
-
-    response_data = generation_mix.parse_to_history_response_data(generation_data, hours=hours)
-    try:
-        response_json = generation_mix.response_data_to_json_bytes(response_data)
-        await generation_mix.store_history_response_json(response_json, normalized_area_key, hours, config)
-        return Response(content=response_json, media_type="application/json")
-    except Exception as exc:
-        logger.exception(f"Couldn't store generation mix history response for area {normalized_area_key}: {exc}.")
-        return response_data
+    logger.warning(f"Couldn't get generation mix history for area {normalized_area_key}.")
+    raise HTTPException(503)
 
 
 @logger.catch

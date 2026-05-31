@@ -82,15 +82,6 @@ def _coverage_from_prices(price_data: Box) -> tuple[Optional[int], Optional[int]
     )
 
 
-def _coverage_from_generation(generation_data: Box) -> tuple[Optional[int], Optional[int]]:
-    if not generation_data or not generation_data.generation_points:
-        return None, None
-    return (
-        min(point.start_timestamp for point in generation_data.generation_points).int_timestamp,
-        max(point.end_timestamp for point in generation_data.generation_points).int_timestamp,
-    )
-
-
 def record_cache_result(
     config: Config,
     area_key: str,
@@ -164,15 +155,14 @@ def record_history_success(config: Config, area_key: str, day: date, price_data:
     )
 
 
-def record_generation_success(config: Config, area_key: str, generation_data: Box):
+def record_generation_success(config: Config, area_key: str, metadata: Box):
     """Record generation mix cache coverage."""
-    coverage_start, coverage_end = _coverage_from_generation(generation_data)
     record_cache_result(
         config,
         area_key,
         DATASET_GENERATION_MIX,
-        coverage_start=coverage_start,
-        coverage_end=coverage_end,
+        coverage_start=metadata.get("coverage_start"),
+        coverage_end=metadata.get("coverage_end"),
     )
 
 
@@ -275,12 +265,21 @@ async def price_history_summary(area: MarketArea, config: Config, records: dict)
 
 async def generation_mix_summary(area: MarketArea, config: Config, records: dict) -> Box:
     """Build generation mix cache status for one area."""
-    stored_data = await generation_mix.get_stored_data(area.key, config)
+    stored_metadata = await generation_mix.get_stored_metadata(area.key, config)
+    stored_response_json = await generation_mix.get_stored_history_response_json(
+        area.key,
+        defaults.GENERATION_RETENTION_HOURS,
+        config,
+    )
     record = records.get((area.key, DATASET_GENERATION_MIX, "current"))
     status = Box()
-    status.present = stored_data is not None
-    if stored_data is not None and stored_data.generation_points:
-        status.coverage_start, status.coverage_end = _coverage_from_generation(stored_data)
+    status.present = stored_metadata is not None and stored_response_json is not None
+    if stored_metadata is not None:
+        status.coverage_start = stored_metadata.get("coverage_start")
+        status.coverage_end = stored_metadata.get("coverage_end")
+        status.history_hours = stored_metadata.get("history_hours")
+        status.interval_count = stored_metadata.get("interval_count")
+        status.latest_generation_end = stored_metadata.get("latest_generation_end")
     status.state = record["state"] if record else None
     status.last_error = record["last_error"] if record else None
     status.next_retry_at = record["next_retry_at"] if record else None

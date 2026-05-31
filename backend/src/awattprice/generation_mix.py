@@ -1,6 +1,5 @@
 """Poll and process generation mix data."""
 import json
-import pickle
 import xml.etree.ElementTree as ET
 
 from decimal import Decimal
@@ -49,32 +48,15 @@ PRODUCTION_TYPE_CATEGORIES = {
 GENERATION_CATEGORIES = ["solar", "wind", "hydro", "biomass", "fossil", "nuclear", "other"]
 
 
-async def get_stored_data(area_key: str, config: Config) -> Optional[Box]:
-    """Get locally cached generation data."""
-    file_dir = config.paths.generation_data_dir
-    file_name = defaults.GENERATION_DATA_FILE_NAME.format(area_file_key(area_key))
-    file_path = file_dir / file_name
-
-    try:
-        async with async_open(file_path, "rb") as file:
-            unpickled_data = await file.read()
-    except FileNotFoundError as exc:
-        logger.debug(f"No stored generation data found: {exc}.")
-        return None
-
-    if len(unpickled_data) == 0:
-        return None
-
-    data = pickle.loads(unpickled_data)
-    if len(data.generation_points) == 0:
-        return None
-
-    return data
-
-
 def get_history_response_data_path(area_key: str, hours: int, config: Config):
     """Get the precomputed generation history response path."""
     file_name = defaults.GENERATION_HISTORY_RESPONSE_FILE_NAME.format(area_file_key(area_key), hours)
+    return config.paths.generation_data_dir / file_name
+
+
+def get_metadata_path(area_key: str, config: Config):
+    """Get the generation metadata path."""
+    file_name = defaults.GENERATION_METADATA_FILE_NAME.format(area_file_key(area_key))
     return config.paths.generation_data_dir / file_name
 
 
@@ -93,6 +75,30 @@ async def get_stored_history_response_json(area_key: str, hours: int, config: Co
         return None
 
     return response_json
+
+
+async def get_stored_metadata(area_key: str, config: Config) -> Optional[Box]:
+    """Get stored generation metadata."""
+    file_path = get_metadata_path(area_key, config)
+
+    try:
+        async with async_open(file_path, "r") as file:
+            metadata_json = await file.read()
+    except FileNotFoundError as exc:
+        logger.debug(f"No stored generation metadata found: {exc}.")
+        return None
+
+    if len(metadata_json) == 0:
+        return None
+
+    return Box(json.loads(metadata_json))
+
+
+async def store_metadata(metadata: Box, area_key: str, config: Config):
+    """Store generation metadata."""
+    file_path = get_metadata_path(area_key, config)
+    logger.info(f"Storing ENTSO-E {area_key} generation metadata to {file_path}.")
+    await utils.async_atomic_write_text(file_path, json.dumps(metadata, separators=(",", ":"), ensure_ascii=False))
 
 
 def production_category(psr_type: Optional[str]) -> str:
@@ -169,19 +175,6 @@ def parse_downloaded_data(area: MarketArea, xml_content: bytes) -> Box:
     return new_data
 
 
-async def store_data(data: Box, area_key: str, config: Config):
-    """Store generation data to the filesystem."""
-    file_name = defaults.GENERATION_DATA_FILE_NAME.format(area_file_key(area_key))
-    file_path = config.paths.generation_data_dir / file_name
-
-    logger.info(f"Storing ENTSO-E {area_key} generation data to {file_path}.")
-    await utils.async_atomic_write_bytes(file_path, pickle.dumps(data))
-    try:
-        await store_history_response_data(data, area_key, defaults.GENERATION_RETENTION_HOURS, config)
-    except Exception as exc:
-        logger.exception(f"Couldn't store generation history response cache for {area_key}: {exc}.")
-
-
 def response_data_to_json_bytes(response_data: Box) -> bytes:
     """Serialize response data once so the API can serve it without rebuilding."""
     return json.dumps(response_data, separators=(",", ":"), ensure_ascii=False).encode()
@@ -197,7 +190,39 @@ async def store_history_response_json(response_json: bytes, area_key: str, hours
 async def store_history_response_data(data: Box, area_key: str, hours: int, config: Config):
     """Build and store precomputed generation history response JSON."""
     response_data = parse_to_history_response_data(data, hours=hours)
+    await store_response_data(data, response_data, area_key, hours, config)
+
+
+def metadata_from_response_data(data: Box, response_data: Box, hours: int) -> Box:
+    """Build compact generation metadata from response data."""
+    metadata = Box()
+    metadata.source = data.source
+    metadata.area = data.area
+    metadata.display_name = data.display_name
+    metadata.entsoe_domain = data.entsoe_domain
+    metadata.timezone = data.timezone
+    metadata.resolution = data.resolution
+    metadata.updated_at = data.updated_at.int_timestamp
+    metadata.history_hours = hours
+    metadata.coverage_start = response_data.start_timestamp
+    metadata.coverage_end = response_data.end_timestamp
+    metadata.latest_generation_end = max(point.end_timestamp for point in data.generation_points).int_timestamp
+    metadata.interval_count = len(response_data.intervals)
+    return metadata
+
+
+async def store_response_data(data: Box, response_data: Box, area_key: str, hours: int, config: Config) -> Box:
+    """Store generation history response JSON and metadata."""
+    metadata = metadata_from_response_data(data, response_data, hours)
     await store_history_response_json(response_data_to_json_bytes(response_data), area_key, hours, config)
+    await store_metadata(metadata, area_key, config)
+    return metadata
+
+
+async def store_data(data: Box, area_key: str, config: Config) -> Box:
+    """Store generation response data to the filesystem."""
+    response_data = parse_to_history_response_data(data, hours=defaults.GENERATION_RETENTION_HOURS)
+    return await store_response_data(data, response_data, area_key, defaults.GENERATION_RETENTION_HOURS, config)
 
 
 def _intervals_by_end_timestamp(generation_data: Box) -> list[BoxList]:

@@ -158,10 +158,10 @@ async def refresh_history_for_area(area: MarketArea, config: Config):
 
 async def refresh_generation_mix_for_area(area: MarketArea, config: Config):
     """Warm generation mix data for one area."""
-    stored_data = await generation_mix.get_stored_data(area.key, config)
+    stored_metadata = await generation_mix.get_stored_metadata(area.key, config)
     try:
-        refreshed_data = await generation_mix_refresher.refresh_generation_mix(
-            stored_data,
+        refreshed_metadata = await generation_mix_refresher.refresh_generation_mix(
+            stored_metadata,
             area.key,
             config,
             lock_timeout=0,
@@ -176,8 +176,8 @@ async def refresh_generation_mix_for_area(area: MarketArea, config: Config):
         )
         return
 
-    latest_data = refreshed_data or await generation_mix.get_stored_data(area.key, config)
-    if latest_data is None:
+    latest_metadata = refreshed_metadata or await generation_mix.get_stored_metadata(area.key, config)
+    if latest_metadata is None:
         cache_status.record_failure(
             config,
             area.key,
@@ -187,7 +187,7 @@ async def refresh_generation_mix_for_area(area: MarketArea, config: Config):
         )
         return
 
-    cache_status.record_generation_success(config, area.key, latest_data)
+    cache_status.record_generation_success(config, area.key, latest_metadata)
 
 
 def _supported_area_file_keys() -> set[str]:
@@ -239,26 +239,45 @@ def prune_history_payloads(config: Config, now=None) -> int:
     return pruned_count
 
 
+def _history_response_cache_key(path: Path, supported_keys: set[str]) -> tuple[Optional[str], Optional[int]]:
+    stem = path.stem.removeprefix("generation-history-")
+    for area_key in supported_keys:
+        suffix = f"-{defaults.GENERATION_RETENTION_HOURS}h"
+        if stem == f"{area_key}{suffix}":
+            return area_key, defaults.GENERATION_RETENTION_HOURS
+    return None, None
+
+
+def _metadata_cache_key(path: Path, supported_keys: set[str]) -> Optional[str]:
+    cache_key = path.stem.removeprefix("generation-meta-")
+    if cache_key in supported_keys:
+        return cache_key
+    return None
+
+
 async def prune_generation_payloads(config: Config, now=None) -> int:
-    """Trim generation mix payloads to the retained rolling window."""
-    cutoff = (now or now_berlin()).shift(
-        hours=-(defaults.GENERATION_RETENTION_HOURS + defaults.GENERATION_RETENTION_SAFETY_HOURS)
-    )
+    """Delete legacy and unsupported generation mix payloads."""
+    supported_keys = _supported_area_file_keys()
     pruned_count = 0
-    for area in defaults.list_market_areas():
-        generation_data = await generation_mix.get_stored_data(area.key, config)
-        if generation_data is None or not generation_data.generation_points:
-            continue
-        retained_points = [
-            point for point in generation_data.generation_points
-            if point.end_timestamp > cutoff
-        ]
-        removed_count = len(generation_data.generation_points) - len(retained_points)
-        if removed_count <= 0 or len(retained_points) == 0:
-            continue
-        generation_data.generation_points = retained_points
-        await generation_mix.store_data(generation_data, area.key, config)
-        pruned_count += removed_count
+
+    if not config.paths.generation_data_dir.exists():
+        return 0
+
+    for path in config.paths.generation_data_dir.glob("generation-data-*.pickle"):
+        pruned_count += _delete_path(path)
+
+    for path in config.paths.generation_data_dir.glob("generation-update-ts-*.info"):
+        pruned_count += _delete_path(path)
+
+    for path in config.paths.generation_data_dir.glob("generation-history-*.json"):
+        area_key, hours = _history_response_cache_key(path, supported_keys)
+        if area_key is None or hours != defaults.GENERATION_RETENTION_HOURS:
+            pruned_count += _delete_path(path)
+
+    for path in config.paths.generation_data_dir.glob("generation-meta-*.json"):
+        if _metadata_cache_key(path, supported_keys) is None:
+            pruned_count += _delete_path(path)
+
     return pruned_count
 
 

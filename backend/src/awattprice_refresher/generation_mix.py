@@ -7,8 +7,6 @@ from typing import Optional
 
 import arrow
 
-from aiofile import async_open
-from arrow import Arrow
 from box import Box
 from liteconfig import Config
 from loguru import logger
@@ -23,31 +21,15 @@ from tenacity import (
 
 from awattprice import defaults
 from awattprice import generation_mix
-from awattprice import utils
 from awattprice.prices import area_file_key
 from awattprice.utils import ExtendedFileLock
 from awattprice.utils import log_attempts
 from awattprice.market_areas import MarketArea
 
 
-def check_update_data(data: Optional[Box], last_update_time: Optional[Arrow], area: MarketArea) -> bool:
-    """Check if generation data should be refreshed."""
-    if data is None or len(data.generation_points) == 0:
-        return True
-
-    now_local = arrow.now(area.timezone)
-    if last_update_time is not None:
-        next_update_time = last_update_time.shift(seconds=defaults.ENTSOE_GENERATION_COOLDOWN_INTERVAL)
-        if now_local < next_update_time:
-            return False
-
-    latest_point = max(data.generation_points, key=lambda point: point.end_timestamp)
-    return latest_point.end_timestamp < now_local.shift(minutes=-30)
-
-
 def get_data_refresh_lock(area_key: str, config: Config) -> ExtendedFileLock:
     """Get file lock used when refreshing generation data."""
-    lock_file_name = defaults.GENERATION_DATA_FILE_NAME.format(area_file_key(area_key)) + ".lock"
+    lock_file_name = defaults.GENERATION_REFRESH_LOCK_FILE_NAME.format(area_file_key(area_key))
     return ExtendedFileLock(config.paths.generation_data_dir / lock_file_name)
 
 
@@ -119,40 +101,16 @@ async def download_data(area: MarketArea, config: Config) -> Optional[bytes]:
     return None
 
 
-async def update_last_update_time(area_key: str, config: Config):
-    """Set the generation data update timestamp to now."""
-    file_name = defaults.GENERATION_DATA_UPDATE_TS_FILE_NAME.format(area_file_key(area_key))
-    file_path = config.paths.generation_data_dir / file_name
-
-    await utils.async_atomic_write_text(file_path, str(arrow.now().int_timestamp))
-
-
-async def get_last_update_time(area_key: str, config: Config) -> Optional[Arrow]:
-    """Get time the generation data was updated last."""
-    file_name = defaults.GENERATION_DATA_UPDATE_TS_FILE_NAME.format(area_file_key(area_key))
-    file_path = config.paths.generation_data_dir / file_name
-
-    try:
-        async with async_open(file_path, "r") as file:
-            file_content = await file.read()
-    except FileNotFoundError:
-        return None
-
-    return arrow.get(int(file_content))
-
-
-def check_data_new(old_data: Optional[Box], new_data: Box) -> bool:
+def check_data_new(old_metadata: Optional[Box], new_metadata: Box) -> bool:
     """Check if downloaded generation data has a newer interval."""
-    if old_data is None or len(old_data.generation_points) == 0:
+    if old_metadata is None:
         return True
 
-    old_latest = max(old_data.generation_points, key=lambda point: point.end_timestamp)
-    new_latest = max(new_data.generation_points, key=lambda point: point.end_timestamp)
-    return new_latest.end_timestamp > old_latest.end_timestamp
+    return new_metadata.latest_generation_end > old_metadata.latest_generation_end
 
 
 async def refresh_generation_mix(
-    stored_data: Optional[Box],
+    stored_metadata: Optional[Box],
     area_key: str,
     config: Config,
     lock_timeout: float = defaults.PRICE_DATA_REFRESH_LOCK_TIMEOUT,
@@ -176,14 +134,24 @@ async def refresh_generation_mix(
             except ValueError as exc:
                 logger.warning(f"Skipping generation mix update for {area.key}: {exc}.")
                 return None
-            try:
-                await update_last_update_time(area_key, config)
-            except Exception as exc:
-                logger.exception(f"Couldn't write generation update time: {exc}.")
-            if not check_data_new(stored_data, new_data):
+            response_data = generation_mix.parse_to_history_response_data(
+                new_data,
+                hours=defaults.GENERATION_RETENTION_HOURS,
+            )
+            new_metadata = generation_mix.metadata_from_response_data(
+                new_data,
+                response_data,
+                defaults.GENERATION_RETENTION_HOURS,
+            )
+            if not check_data_new(stored_metadata, new_metadata):
                 return None
-            await generation_mix.store_data(new_data, area_key, config)
-            return new_data
+            return await generation_mix.store_response_data(
+                new_data,
+                response_data,
+                area_key,
+                defaults.GENERATION_RETENTION_HOURS,
+                config,
+            )
 
     refresh_lock.release()
-    return await generation_mix.get_stored_data(area_key, config)
+    return await generation_mix.get_stored_metadata(area_key, config)

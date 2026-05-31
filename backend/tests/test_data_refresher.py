@@ -261,32 +261,25 @@ class DataRefresherCleanupTests(unittest.TestCase):
 
         asyncio.run(run_test())
 
-    def test_generation_prune_trims_old_points_but_keeps_recent_payload(self):
+    def test_generation_prune_deletes_legacy_and_unsupported_payloads(self):
         async def run_test():
             with tempfile.TemporaryDirectory() as temp_dir:
                 config = make_config(Path(temp_dir))
-                old_point = Box(
-                    {
-                        "start_timestamp": arrow.get("2026-05-10T00:00:00+02:00"),
-                        "end_timestamp": arrow.get("2026-05-10T01:00:00+02:00"),
-                        "raw_production_type": "B16",
-                        "raw_production_name": "Solar",
-                        "category": "solar",
-                        "quantity_mw": Decimal("10"),
-                        "is_renewable": True,
-                    }
-                )
-                recent_point = Box(
-                    {
-                        "start_timestamp": arrow.get("2026-05-24T00:00:00+02:00"),
-                        "end_timestamp": arrow.get("2026-05-24T01:00:00+02:00"),
-                        "raw_production_type": "B16",
-                        "raw_production_name": "Solar",
-                        "category": "solar",
-                        "quantity_mw": Decimal("10"),
-                        "is_renewable": True,
-                    }
-                )
+                generation_points = BoxList()
+                for hour in range(2):
+                    generation_points.append(
+                        Box(
+                            {
+                                "start_timestamp": arrow.get("2026-05-24T00:00:00+02:00").shift(hours=+hour),
+                                "end_timestamp": arrow.get("2026-05-24T01:00:00+02:00").shift(hours=+hour),
+                                "raw_production_type": "B16",
+                                "raw_production_name": "Solar",
+                                "category": "solar",
+                                "quantity_mw": Decimal("10"),
+                                "is_renewable": True,
+                            }
+                        )
+                    )
                 data = Box(
                     {
                         "source": "ENTSOE",
@@ -296,20 +289,40 @@ class DataRefresherCleanupTests(unittest.TestCase):
                         "timezone": AREA.timezone,
                         "resolution": "PT60M",
                         "updated_at": arrow.get("2026-05-24T01:00:00+02:00"),
-                        "generation_points": BoxList([old_point, recent_point]),
+                        "generation_points": generation_points,
                     }
                 )
                 await generation_mix.store_data(data, AREA.key, config)
+                retained_json_path = generation_mix.get_history_response_data_path(
+                    AREA.key,
+                    defaults.GENERATION_RETENTION_HOURS,
+                    config,
+                )
+                retained_metadata_path = generation_mix.get_metadata_path(AREA.key, config)
+                legacy_pickle_path = config.paths.generation_data_dir / "generation-data-DE-LU.pickle"
+                legacy_update_path = config.paths.generation_data_dir / "generation-update-ts-DE-LU.info"
+                unsupported_json_path = config.paths.generation_data_dir / "generation-history-OLD-168h.json"
+                unsupported_metadata_path = config.paths.generation_data_dir / "generation-meta-OLD.json"
+                unsupported_hours_path = config.paths.generation_data_dir / "generation-history-DE-LU-24h.json"
+                legacy_pickle_path.write_bytes(b"old pickle")
+                legacy_update_path.write_text("123")
+                unsupported_json_path.write_text("{}")
+                unsupported_metadata_path.write_text("{}")
+                unsupported_hours_path.write_text("{}")
 
                 pruned = await data_refresher.prune_generation_payloads(
                     config,
                     arrow.get("2026-05-25T12:00:00+02:00"),
                 )
-                stored_data = await generation_mix.get_stored_data(AREA.key, config)
 
-                self.assertEqual(pruned, 1)
-                self.assertEqual(len(stored_data.generation_points), 1)
-                self.assertEqual(stored_data.generation_points[0].start_timestamp, recent_point.start_timestamp)
+                self.assertEqual(pruned, 5)
+                self.assertTrue(retained_json_path.exists())
+                self.assertTrue(retained_metadata_path.exists())
+                self.assertFalse(legacy_pickle_path.exists())
+                self.assertFalse(legacy_update_path.exists())
+                self.assertFalse(unsupported_json_path.exists())
+                self.assertFalse(unsupported_metadata_path.exists())
+                self.assertFalse(unsupported_hours_path.exists())
 
         asyncio.run(run_test())
 

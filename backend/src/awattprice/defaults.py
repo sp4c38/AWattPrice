@@ -64,12 +64,12 @@ REFRESHER_STATE_FILE_NAME = "refresher-state.json"
 PRICE_DATA_FILE_NAME = "price-data-{}.pickle"
 PRICE_DATA_SUBDIR_NAME = "price_data"
 PRICE_HISTORY_DATA_SUBDIR_NAME = "history"
-GENERATION_DATA_FILE_NAME = "generation-data-{}.pickle"
 GENERATION_HISTORY_RESPONSE_FILE_NAME = "generation-history-{}-{}h.json"
+GENERATION_METADATA_FILE_NAME = "generation-meta-{}.json"
+GENERATION_REFRESH_LOCK_FILE_NAME = "generation-refresh-{}.lock"
 GENERATION_DATA_SUBDIR_NAME = "generation_data"
 PRICE_DATA_REFRESH_LOCK_TIMEOUT = 75
 PRICE_DATA_UPDATE_TS_FILE_NAME = "update-ts-{}.info"
-GENERATION_DATA_UPDATE_TS_FILE_NAME = "generation-update-ts-{}.info"
 
 supported_market_area_keys = list(SUPPORTED_MARKET_AREAS.keys())
 

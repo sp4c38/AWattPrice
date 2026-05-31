@@ -203,6 +203,12 @@ class DataRefresherScheduleTests(unittest.TestCase):
                     )
 
             self.assertEqual(run_bounded.await_count, 3)
+            self.assertEqual(run_bounded.await_args_list[0].kwargs, {})
+            self.assertEqual(run_bounded.await_args_list[1].kwargs, {})
+            self.assertEqual(
+                run_bounded.await_args_list[2].kwargs,
+                {"concurrency": data_refresher.defaults.REFRESHER_GENERATION_CONCURRENCY},
+            )
             self.assertEqual(result["area_count"], 1)
             self.assertEqual(result["current_prices"], "ran")
             self.assertEqual(result["price_history"], "ran")

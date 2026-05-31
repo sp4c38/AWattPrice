@@ -384,7 +384,11 @@ async def run_cycle(config: Config, state: RefresherState, now=None) -> dict:
 
     if due(state.generation_mix, defaults.REFRESHER_GENERATION_INTERVAL_SECONDS, current):
         logger.info("Refreshing generation mix caches.")
-        await run_bounded(areas, lambda area: refresh_generation_mix_for_area(area, config))
+        await run_bounded(
+            areas,
+            lambda area: refresh_generation_mix_for_area(area, config),
+            concurrency=defaults.REFRESHER_GENERATION_CONCURRENCY,
+        )
         state.generation_mix = current
         result["generation_mix"] = "ran"
 

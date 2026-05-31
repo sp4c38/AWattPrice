@@ -1,4 +1,5 @@
 """Poll and process generation mix data."""
+import json
 import pickle
 import xml.etree.ElementTree as ET
 
@@ -69,6 +70,29 @@ async def get_stored_data(area_key: str, config: Config) -> Optional[Box]:
         return None
 
     return data
+
+
+def get_history_response_data_path(area_key: str, hours: int, config: Config):
+    """Get the precomputed generation history response path."""
+    file_name = defaults.GENERATION_HISTORY_RESPONSE_FILE_NAME.format(area_file_key(area_key), hours)
+    return config.paths.generation_data_dir / file_name
+
+
+async def get_stored_history_response_json(area_key: str, hours: int, config: Config) -> Optional[bytes]:
+    """Get precomputed generation history response JSON."""
+    file_path = get_history_response_data_path(area_key, hours, config)
+
+    try:
+        async with async_open(file_path, "rb") as file:
+            response_json = await file.read()
+    except FileNotFoundError as exc:
+        logger.debug(f"No stored generation history response found: {exc}.")
+        return None
+
+    if len(response_json) == 0:
+        return None
+
+    return response_json
 
 
 def production_category(psr_type: Optional[str]) -> str:
@@ -152,6 +176,28 @@ async def store_data(data: Box, area_key: str, config: Config):
 
     logger.info(f"Storing ENTSO-E {area_key} generation data to {file_path}.")
     await utils.async_atomic_write_bytes(file_path, pickle.dumps(data))
+    try:
+        await store_history_response_data(data, area_key, defaults.GENERATION_RETENTION_HOURS, config)
+    except Exception as exc:
+        logger.exception(f"Couldn't store generation history response cache for {area_key}: {exc}.")
+
+
+def response_data_to_json_bytes(response_data: Box) -> bytes:
+    """Serialize response data once so the API can serve it without rebuilding."""
+    return json.dumps(response_data, separators=(",", ":"), ensure_ascii=False).encode()
+
+
+async def store_history_response_json(response_json: bytes, area_key: str, hours: int, config: Config):
+    """Store precomputed generation history response JSON."""
+    file_path = get_history_response_data_path(area_key, hours, config)
+    logger.info(f"Storing ENTSO-E {area_key} generation history response data to {file_path}.")
+    await utils.async_atomic_write_bytes(file_path, response_json)
+
+
+async def store_history_response_data(data: Box, area_key: str, hours: int, config: Config):
+    """Build and store precomputed generation history response JSON."""
+    response_data = parse_to_history_response_data(data, hours=hours)
+    await store_history_response_json(response_data_to_json_bytes(response_data), area_key, hours, config)
 
 
 def _intervals_by_end_timestamp(generation_data: Box) -> list[BoxList]:
@@ -160,6 +206,23 @@ def _intervals_by_end_timestamp(generation_data: Box) -> list[BoxList]:
     for point in generation_data.generation_points:
         points_by_end.setdefault(point.end_timestamp.int_timestamp, BoxList()).append(point)
     return [points_by_end[k] for k in sorted(points_by_end.keys())]
+
+
+def _production_type_count(points: BoxList) -> int:
+    """Count unique reported production types for one interval."""
+    return len({p.raw_production_type for p in points if p.raw_production_type is not None})
+
+
+def _representative_intervals_by_end_timestamp(generation_data: Box) -> list[BoxList]:
+    """Return intervals whose production mix is complete enough to serve."""
+    all_intervals = _intervals_by_end_timestamp(generation_data)
+    type_counts = [_production_type_count(points) for points in all_intervals]
+    typical_count = mode(type_counts)
+    return [
+        points
+        for points, count in zip(all_intervals, type_counts)
+        if count >= typical_count
+    ]
 
 
 def latest_interval_points(generation_data: Box) -> BoxList:
@@ -171,16 +234,8 @@ def latest_interval_points(generation_data: Box) -> BoxList:
     like wind have been published so far) while not being thrown off by a single
     anomalous interval with an unusually high type count.
     """
-    all_intervals = _intervals_by_end_timestamp(generation_data)
-    type_counts = [
-        len({p.raw_production_type for p in points if p.raw_production_type is not None})
-        for points in all_intervals
-    ]
-    typical_count = mode(type_counts)
-    for points, count in zip(reversed(all_intervals), reversed(type_counts)):
-        if count >= typical_count:
-            return points
-    return all_intervals[-1]
+    representative_intervals = _representative_intervals_by_end_timestamp(generation_data)
+    return representative_intervals[-1]
 
 
 def category_values_for_points(points: BoxList) -> tuple[dict[str, Decimal], Decimal, Decimal]:
@@ -247,7 +302,7 @@ def parse_to_response_data(generation_data: Box) -> Box:
 
 def parse_to_history_response_data(generation_data: Box, hours: int = 24) -> Box:
     """Parse cached generation data to grouped app history for the requested hours."""
-    all_intervals = _intervals_by_end_timestamp(generation_data)
+    all_intervals = _representative_intervals_by_end_timestamp(generation_data)
     latest_end = max(point.end_timestamp for point in all_intervals[-1])
     cutoff = latest_end.shift(hours=-hours)
     interval_points = [

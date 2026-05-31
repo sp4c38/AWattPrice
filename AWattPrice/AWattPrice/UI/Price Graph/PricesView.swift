@@ -42,6 +42,7 @@ private struct PriceHistoryRequestKey: Hashable {
     let mode: PricesDataMode
     let areaKey: String
     let selectedDate: Date
+    let taxEnabled: Bool
     let fixedPriceAddOn: Double
     let percentagePriceAddOn: Double
     let orderedAddOns: [PriceAddOnConfiguration]
@@ -127,6 +128,7 @@ struct PricesView: View {
             mode: dataMode,
             areaKey: pricingConfiguration.marketArea.key,
             selectedDate: selectedHistoryDate,
+            taxEnabled: pricingConfiguration.taxEnabled,
             fixedPriceAddOn: pricingConfiguration.fixedPriceAddOn,
             percentagePriceAddOn: pricingConfiguration.percentagePriceAddOn,
             orderedAddOns: pricingConfiguration.orderedAddOns

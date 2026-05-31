@@ -103,6 +103,7 @@ final class CheapestHourManagerTests: XCTestCase {
             with: PricingConfiguration(
                 fixedPriceAddOn: 0,
                 percentagePriceAddOn: 0,
+                taxEnabled: true,
                 orderedAddOns: [],
                 marketArea: MarketArea(key: "TEST", displayName: "Test", countryCode: "DE", timezone: "Europe/Berlin", currency: "EUR", taxMultiplier: nil)
             )

@@ -26,7 +26,7 @@ private let proBenefits = [
     ),
     ProBenefit(
         title: "Price add-ons",
-        subtitle: "Include your provider’s fees and taxes in displayed prices.",
+        subtitle: "Include your provider’s fees in displayed prices.",
         systemImage: "sum",
         tint: .teal
     ),

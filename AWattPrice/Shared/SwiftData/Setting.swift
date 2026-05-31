@@ -12,6 +12,7 @@ import SwiftData
 struct PricingConfiguration: Sendable {
     let fixedPriceAddOn: Double
     let percentagePriceAddOn: Double
+    let taxEnabled: Bool
     let orderedAddOns: [PriceAddOnConfiguration]
     let marketArea: MarketArea
 }
@@ -71,6 +72,7 @@ public class Setting {
         PricingConfiguration(
             fixedPriceAddOn: totalPriceAddOn,
             percentagePriceAddOn: percentagePriceAddOn,
+            taxEnabled: taxEnabled,
             orderedAddOns: orderedPriceAddOns,
             marketArea: marketArea
         )

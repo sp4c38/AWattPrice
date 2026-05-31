@@ -227,7 +227,7 @@ struct SettingsPageView: View {
                             } else {
                                 SettingsActionRow(
                                     title: "Price Add-ons".localized(),
-                                    subtitle: "Pro lets you include provider fees and taxes in displayed prices.".localized(),
+                                    subtitle: "Pro lets you include provider fees in displayed prices.".localized(),
                                     systemImage: "sum",
                                     tint: SettingsPageStyle.priceIconTint,
                                     action: onPresentProPaywall

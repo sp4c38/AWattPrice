@@ -92,6 +92,7 @@ private struct PriceValueLabel: View {
 private struct PriceAddOnsDraft: Equatable {
     var fixedPriceAddOn: Double
     var percentagePriceAddOn: Double
+    var taxEnabled: Bool
     var monthlyFixedCost: Double
     var annualConsumptionKWh: Double
     var addOnOrder: [PriceAddOnKind]
@@ -99,6 +100,7 @@ private struct PriceAddOnsDraft: Equatable {
     init(setting: Setting) {
         fixedPriceAddOn = setting.baseFeePrice
         percentagePriceAddOn = setting.percentagePriceAddOn
+        taxEnabled = setting.taxEnabled
         monthlyFixedCost = setting.monthlyFixedCost
         annualConsumptionKWh = setting.annualConsumptionKWh
         addOnOrder = setting.orderedPriceAddOnKinds
@@ -116,6 +118,7 @@ private struct PriceAddOnsDraft: Equatable {
     func hasServerRelevantChanges(comparedTo other: PriceAddOnsDraft) -> Bool {
         totalPriceAddOn != other.totalPriceAddOn
             || percentagePriceAddOn != other.percentagePriceAddOn
+            || taxEnabled != other.taxEnabled
             || activeAddOnKinds != other.activeAddOnKinds
     }
 
@@ -253,6 +256,7 @@ private class PriceAddOnsViewModel: ObservableObject {
 
         settingsManager.setting.baseFeePrice = draftToSave.fixedPriceAddOn
         settingsManager.setting.percentagePriceAddOn = draftToSave.percentagePriceAddOn
+        settingsManager.setting.taxEnabled = draftToSave.taxEnabled
         settingsManager.setting.monthlyFixedCost = draftToSave.monthlyFixedCost
         settingsManager.setting.annualConsumptionKWh = draftToSave.annualConsumptionKWh
         settingsManager.setting.orderedPriceAddOnKinds = draftToSave.addOnOrder
@@ -260,6 +264,7 @@ private class PriceAddOnsViewModel: ObservableObject {
         var notificationConfiguration = NotificationConfiguration.create(nil, settingsManager.setting)
         notificationConfiguration.general.baseFee = draftToSave.totalPriceAddOn
         notificationConfiguration.general.percentageAddOn = draftToSave.percentagePriceAddOn
+        notificationConfiguration.general.tax = draftToSave.taxEnabled
 
         if needsServerSave == false {
             settingsManager.saveChanges()
@@ -293,6 +298,7 @@ private class PriceAddOnsViewModel: ObservableObject {
             await waitForMinimumUploadingTime(since: uploadStart)
             settingsManager.setting.baseFeePrice = previousDraft.fixedPriceAddOn
             settingsManager.setting.percentagePriceAddOn = previousDraft.percentagePriceAddOn
+            settingsManager.setting.taxEnabled = previousDraft.taxEnabled
             settingsManager.setting.monthlyFixedCost = previousDraft.monthlyFixedCost
             settingsManager.setting.annualConsumptionKWh = previousDraft.annualConsumptionKWh
             settingsManager.setting.orderedPriceAddOnKinds = previousDraft.addOnOrder
@@ -513,10 +519,11 @@ private struct PriceFormulaView: View {
     let draft: PriceAddOnsDraft
 
     private var formulaTerms: [PriceFormulaTerm] {
-        var terms = [
-            PriceFormulaTerm.text("Market price", id: "market-price"),
-            PriceFormulaTerm.percentage("VAT".localized(), tint: .orange, id: "vat")
-        ]
+        var terms = [PriceFormulaTerm.text("Market price", id: "market-price")]
+
+        if draft.taxEnabled {
+            terms.append(PriceFormulaTerm.percentage("VAT".localized(), tint: .orange, id: "vat"))
+        }
 
         terms.append(contentsOf: draft.activeAddOnKinds.map { draft.formulaTerm(for: $0) })
 
@@ -544,6 +551,31 @@ private struct PriceFormulaView: View {
             }
         }
         .animation(.spring(response: 0.28, dampingFraction: 0.82), value: formulaTerms.map(\.id))
+    }
+}
+
+private struct PriceAddOnsToggleRow: View {
+    @Environment(\.colorScheme) private var colorScheme
+
+    let title: String
+    let systemImage: String
+    let tint: Color
+    @Binding var isOn: Bool
+
+    var body: some View {
+        HStack(spacing: 14) {
+            Text(title.localized())
+                .font(.headline)
+                .foregroundStyle(isOn ? tint : .primary)
+
+            Spacer()
+
+            Toggle(title.localized(), isOn: $isOn)
+                .labelsHidden()
+        }
+        .contentShape(Rectangle())
+        .tint(tint)
+        .animation(.spring(response: 0.26, dampingFraction: 0.82), value: isOn)
     }
 }
 
@@ -637,6 +669,15 @@ struct PriceAddOnsView: View {
                         VStack(alignment: .leading, spacing: 12) {
                             PriceFormulaView(draft: viewModel.draft)
                         }
+                    }
+
+                    PriceAddOnsCard {
+                        PriceAddOnsToggleRow(
+                            title: "VAT",
+                            systemImage: "percent",
+                            tint: .orange,
+                            isOn: $viewModel.draft.taxEnabled
+                        )
                     }
 
                     ForEach(Setting.normalizedPriceAddOnOrder(viewModel.draft.addOnOrder), id: \.self) { kind in

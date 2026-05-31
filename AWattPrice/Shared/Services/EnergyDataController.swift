@@ -105,6 +105,7 @@ struct EnergyData: Decodable {
 
         for i in adjustedPricePoints.indices {
             if
+                pricingConfiguration.taxEnabled,
                 adjustedPricePoints[i].marketprice > 0,
                 let taxMultiplier = pricingConfiguration.marketArea.taxMultiplier
             {

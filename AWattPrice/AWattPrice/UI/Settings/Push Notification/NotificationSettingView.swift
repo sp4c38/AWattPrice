@@ -318,7 +318,7 @@ class NotificationSettingViewModel: ObservableObject {
     private func notificationConfiguration(for draft: NotificationDraft, token: String?) -> NotificationConfiguration {
         let general = GeneralNotificationConfiguration(
             marketArea: settingsManager.setting.marketArea,
-            tax: true,
+            tax: settingsManager.setting.taxEnabled,
             baseFee: settingsManager.setting.totalPriceAddOn,
             percentageAddOn: settingsManager.setting.percentagePriceAddOn,
             fixedAddOn: settingsManager.setting.baseFeePrice,

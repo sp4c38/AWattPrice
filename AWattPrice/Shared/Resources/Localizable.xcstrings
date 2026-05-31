@@ -1775,6 +1775,7 @@
     },
     "Include your provider’s fees and taxes in displayed prices." : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1786,6 +1787,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Include your provider’s fees and taxes in displayed prices."
+          }
+        }
+      }
+    },
+    "Include your provider’s fees in displayed prices." : {
+      "comment" : "Localized custom view text",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Berücksichtige Gebühren deines Anbieters in den angezeigten Preisen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Include your provider’s fees in displayed prices."
           }
         }
       }
@@ -3331,6 +3349,7 @@
     },
     "Pro lets you include provider fees and taxes in displayed prices." : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3342,6 +3361,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pro lets you include provider fees and taxes in displayed prices."
+          }
+        }
+      }
+    },
+    "Pro lets you include provider fees in displayed prices." : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mit Pro können Gebühren in die Preise eingerechnet werden."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro lets you include provider fees in displayed prices."
           }
         }
       }

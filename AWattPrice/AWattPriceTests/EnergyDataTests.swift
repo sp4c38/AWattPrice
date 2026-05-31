@@ -34,6 +34,7 @@ final class EnergyDataTests: XCTestCase {
         let configuration = PricingConfiguration(
             fixedPriceAddOn: 0,
             percentagePriceAddOn: 0,
+            taxEnabled: true,
             orderedAddOns: [
                 PriceAddOnConfiguration(kind: .fixed, value: 2),
                 PriceAddOnConfiguration(kind: .percentage, value: 10),
@@ -55,6 +56,31 @@ final class EnergyDataTests: XCTestCase {
         XCTAssertEqual(timeRange.upperBound.timeIntervalSince1970, 4_102_455_600)
     }
 
+    func testComputeValuesSkipsTaxWhenDisabled() throws {
+        var data = try Self.decodeEnergyData(
+            """
+            {
+              "area": "DE-LU",
+              "resolution": "PT60M",
+              "prices": [
+                { "start_timestamp": 4102444800, "end_timestamp": 4102448400, "marketprice": 100 }
+              ]
+            }
+            """
+        )
+        let configuration = PricingConfiguration(
+            fixedPriceAddOn: 0,
+            percentagePriceAddOn: 0,
+            taxEnabled: false,
+            orderedAddOns: [],
+            marketArea: .germanyLuxembourg
+        )
+
+        data.computeValues(with: configuration)
+
+        XCTAssertEqual(try XCTUnwrap(data.currentPrices.first).marketprice, 10, accuracy: 0.0001)
+    }
+
     func testComputeValuesCanIncludeHistoricalPrices() throws {
         var data = try Self.decodeEnergyData(
             """
@@ -72,6 +98,7 @@ final class EnergyDataTests: XCTestCase {
             with: PricingConfiguration(
                 fixedPriceAddOn: 0,
                 percentagePriceAddOn: 0,
+                taxEnabled: true,
                 orderedAddOns: [],
                 marketArea: .austria
             ),

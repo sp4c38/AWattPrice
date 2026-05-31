@@ -101,7 +101,7 @@ struct NotificationConfiguration: Encodable {
     static func create(_ token: String?, _ setting: Setting) -> NotificationConfiguration {
         let general = GeneralNotificationConfiguration(
             marketArea: setting.marketArea,
-            tax: true,
+            tax: setting.taxEnabled,
             baseFee: setting.totalPriceAddOn,
             percentageAddOn: setting.percentagePriceAddOn,
             fixedAddOn: setting.baseFeePrice,

@@ -35,6 +35,17 @@ final class SettingsAndNotificationTests: XCTestCase {
         XCTAssertEqual(setting.activeNotificationRuleCount, 2)
     }
 
+    func testNotificationConfigurationUsesTaxSetting() throws {
+        let setting = Setting()
+        setting.taxEnabled = false
+
+        let configuration = NotificationConfiguration.create("token-1", setting)
+        let payload = try JSONSerialization.jsonObject(with: JSONEncoder().encode(configuration)) as? [String: Any]
+        let general = try XCTUnwrap(payload?["general"] as? [String: Any])
+
+        XCTAssertEqual(general["tax"] as? Bool, false)
+    }
+
     func testNotificationConfigurationEncodesThresholdsOnlyForEnabledRules() throws {
         let setting = Setting()
         setting.marketArea = .austria

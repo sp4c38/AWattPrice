@@ -12,6 +12,7 @@
 #   AWATTPRICE_BLUE_PORT   port blue API is currently on  (default 8003)
 #   AWATTPRICE_GREEN_PORT  port green API will start on   (default 8004)
 #   AWATTPRICE_NGINX_CONF  nginx site config              (default /etc/nginx/sites-enabled/awattprice)
+#   AWATTPRICE_SETTLE_SECONDS seconds to wait after worker restart before final cutback (default 8)
 set -euo pipefail
 
 cd "$(dirname "$0")"
@@ -35,6 +36,7 @@ REMOTE_COMPOSE="${AWATTPRICE_REMOTE_COMPOSE:-docker compose}"
 BLUE_PORT="${AWATTPRICE_BLUE_PORT:-8003}"
 GREEN_PORT="${AWATTPRICE_GREEN_PORT:-8004}"
 NGINX_CONF="${AWATTPRICE_NGINX_CONF:-/etc/nginx/sites-enabled/awattprice}"
+SETTLE_SECONDS="${AWATTPRICE_SETTLE_SECONDS:-8}"
 
 BLUE_API="awattprice-backend-v3"
 GREEN_API="awattprice-backend-v3-green"
@@ -218,6 +220,31 @@ for path in "/areas/" "/prices/AT" "/generation-mix/DE-LU/history?hours=168"; do
   info "Compose ${path} responded 200 OK"
 done
 
+step "Recreating background workers through compose while green serves traffic"
+ssh "$SERVER" \
+  "IMAGE='$IMAGE' HOST_ROOT='$HOST_ROOT' COMPOSE_ROOT='$COMPOSE_ROOT' \
+   REMOTE_COMPOSE='$REMOTE_COMPOSE' bash -s" <<'REMOTE'
+set -euo pipefail
+cd "$COMPOSE_ROOT"
+AWATTPRICE_IMAGE="$IMAGE" \
+AWATTPRICE_HOST_ROOT="$HOST_ROOT" \
+$REMOTE_COMPOSE --profile worker up -d --force-recreate notifications data-refresher
+REMOTE
+
+step "Waiting ${SETTLE_SECONDS}s for Docker worker churn to settle"
+sleep "$SETTLE_SECONDS"
+
+step "Rechecking compose API after worker restart"
+for path in "/areas/" "/prices/AT" "/generation-mix/DE-LU/history?hours=168"; do
+  STATUS=$(ssh "$SERVER" "curl -s -o /dev/null -w '%{http_code}' 'http://127.0.0.1:${BLUE_PORT}${path}'" 2>/dev/null || true)
+  if [ "$STATUS" != "200" ]; then
+    echo "ERROR: Compose API check after worker restart failed for ${path} on port ${BLUE_PORT} (got: $STATUS)." >&2
+    echo "Leaving nginx on green port ${GREEN_PORT}; inspect compose/API logs before retrying." >&2
+    exit 1
+  fi
+  info "Compose ${path} still responded 200 OK"
+done
+
 step "Switching nginx back: port $GREEN_PORT -> $BLUE_PORT"
 ssh "$SERVER" \
   "NGINX_CONF='$NGINX_CONF' BLUE_PORT='$BLUE_PORT' GREEN_PORT='$GREEN_PORT' bash -s" <<'REMOTE'
@@ -233,17 +260,6 @@ if [ "$matches" -ne 1 ]; then
 fi
 sudo sed -i "s|proxy_pass http://127.0.0.1:${GREEN_PORT}/|proxy_pass http://127.0.0.1:${BLUE_PORT}/|" "$NGINX_CONF"
 sudo nginx -t && sudo nginx -s reload
-REMOTE
-
-step "Recreating background workers through compose"
-ssh "$SERVER" \
-  "IMAGE='$IMAGE' HOST_ROOT='$HOST_ROOT' COMPOSE_ROOT='$COMPOSE_ROOT' \
-   REMOTE_COMPOSE='$REMOTE_COMPOSE' bash -s" <<'REMOTE'
-set -euo pipefail
-cd "$COMPOSE_ROOT"
-AWATTPRICE_IMAGE="$IMAGE" \
-AWATTPRICE_HOST_ROOT="$HOST_ROOT" \
-$REMOTE_COMPOSE --profile worker up -d --force-recreate notifications data-refresher
 REMOTE
 
 step "Removing temporary green containers"

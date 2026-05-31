@@ -153,6 +153,18 @@ def interpolated_price_count(price_data: Box) -> int:
     return sum(1 for price_point in price_data.prices if price_point.get("is_interpolated", False))
 
 
+def has_fallback_price_points(price_data: Optional[Box], period_start: Arrow, period_end: Arrow) -> bool:
+    """Return true when any price point in the given period was filled from a fallback sequence."""
+    if price_data is None or not price_data.prices:
+        return False
+    return any(
+        price_point.get("is_fallback", False)
+        and price_point.start_timestamp.int_timestamp >= period_start.int_timestamp
+        and price_point.end_timestamp.int_timestamp <= period_end.int_timestamp
+        for price_point in price_data.prices
+    )
+
+
 def has_complete_price_points(price_data: Optional[Box], period_start: Arrow, period_end: Arrow) -> bool:
     """Return true when a price payload contains every expected interval in a period."""
     if price_data is None or not price_data.prices or price_data.resolution is None:
@@ -189,7 +201,9 @@ def complete_tomorrow_prices(price_data: Optional[Box], area: MarketArea, now=No
     current = now or arrow.now(area.timezone)
     tomorrow_start = current.to(area.timezone).floor("day").shift(days=+1)
     tomorrow_end = tomorrow_start.shift(days=+1)
-    return has_complete_price_points(price_data, tomorrow_start, tomorrow_end)
+    if not has_complete_price_points(price_data, tomorrow_start, tomorrow_end):
+        return False
+    return not has_fallback_price_points(price_data, tomorrow_start, tomorrow_end)
 
 
 async def store_data(data: Box, area_key: str, config: Config):

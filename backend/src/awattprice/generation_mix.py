@@ -239,15 +239,21 @@ def _production_type_count(points: BoxList) -> int:
 
 
 def _representative_intervals_by_end_timestamp(generation_data: Box) -> list[BoxList]:
-    """Return intervals whose production mix is complete enough to serve."""
+    """Return all intervals with trailing incomplete ones trimmed.
+
+    Only trailing intervals (where only a handful of fast-reporting types like
+    wind/solar have been published so far) are removed.  Intervals in the middle
+    of the window that have fewer types than the mode are kept as-is — they
+    contain real partial data and removing them would create visible gaps in
+    history charts.
+    """
     all_intervals = _intervals_by_end_timestamp(generation_data)
     type_counts = [_production_type_count(points) for points in all_intervals]
     typical_count = mode(type_counts)
-    return [
-        points
-        for points, count in zip(all_intervals, type_counts)
-        if count >= typical_count
-    ]
+    end_idx = len(all_intervals)
+    while end_idx > 0 and type_counts[end_idx - 1] < typical_count:
+        end_idx -= 1
+    return all_intervals[:end_idx]
 
 
 def latest_interval_points(generation_data: Box) -> BoxList:

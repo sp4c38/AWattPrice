@@ -66,11 +66,6 @@ def retained_history_days(now=None) -> list[date]:
     return cache_status.latest_history_days(now)
 
 
-def price_data_covers_tomorrow(price_data: Optional[Box], area: MarketArea, now=None) -> bool:
-    """Return true when current prices cover the full next local day."""
-    return prices.complete_tomorrow_prices(price_data, area, now)
-
-
 async def run_bounded(
     areas: list[MarketArea],
     worker: Callable[[MarketArea], Awaitable[None]],
@@ -90,7 +85,7 @@ async def run_bounded(
 async def refresh_current_prices_for_area(area: MarketArea, config: Config):
     """Warm current/tomorrow price data for one area."""
     stored_data = await prices.get_stored_data(area.key, config)
-    if price_data_covers_tomorrow(stored_data, area):
+    if prices.complete_tomorrow_prices(stored_data, area):
         cache_status.record_price_success(config, area.key, stored_data)
         logger.debug(f"Skipping {area.key} current prices because tomorrow is already cached.")
         return

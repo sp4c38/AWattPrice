@@ -126,7 +126,7 @@ class RefresherStatePersistenceTests(unittest.TestCase):
 class DataRefresherScheduleTests(unittest.TestCase):
     def test_berlin_fast_window_uses_ten_minute_interval(self):
         fast_time = arrow.get("2026-05-25T13:30:00+02:00")
-        slow_time = arrow.get("2026-05-25T15:00:00+02:00")
+        slow_time = arrow.get("2026-05-25T16:00:00+02:00")
 
         self.assertTrue(data_refresher.fast_price_poll_window(fast_time))
         self.assertEqual(
@@ -138,6 +138,13 @@ class DataRefresherScheduleTests(unittest.TestCase):
             data_refresher.current_price_poll_interval(slow_time),
             60 * 60,
         )
+
+    def test_berlin_fast_window_ends_at_16(self):
+        inside = arrow.get("2026-05-25T15:59:00+02:00")
+        outside = arrow.get("2026-05-25T16:00:00+02:00")
+
+        self.assertTrue(data_refresher.fast_price_poll_window(inside))
+        self.assertFalse(data_refresher.fast_price_poll_window(outside))
 
     def test_current_price_refresh_skips_when_tomorrow_is_cached(self):
         async def run_test():
@@ -358,6 +365,114 @@ class AtomicCacheWriteTests(unittest.TestCase):
             self.assertEqual(observed["temp_payload"], b"new payload")
             self.assertEqual(observed["target_payload_before_replace"], b"old payload")
             self.assertEqual(path.read_bytes(), b"new payload")
+
+
+def complete_hourly_price_data_with_fallback(primary_day: str, fallback_day: str) -> Box:
+    """Build price data where one day is primary Sequence 1 and the next is Sequence 2 fallback."""
+    data = complete_hourly_price_data_for_day(primary_day)
+    fallback_start = arrow.get(fallback_day, "YYYY-MM-DD", tzinfo=AREA.timezone)
+    for hour in range(24):
+        point = Box()
+        point.start_timestamp = fallback_start.shift(hours=+hour)
+        point.end_timestamp = fallback_start.shift(hours=+(hour + 1))
+        point.marketprice = prices.MarketPrice(Decimal(str(10 + hour)), AREA)
+        point.sequence_position = "2"
+        point.is_fallback = True
+        data.prices.append(point)
+    data.fallback_price_count = 24
+    data.fallback_sequence_positions = ["2"]
+    return data
+
+
+class HasFallbackPricePointsTests(unittest.TestCase):
+    def test_returns_false_for_none(self):
+        period_start = arrow.get("2026-05-26T00:00:00+02:00")
+        period_end = arrow.get("2026-05-27T00:00:00+02:00")
+        self.assertFalse(prices.has_fallback_price_points(None, period_start, period_end))
+
+    def test_returns_false_when_all_primary(self):
+        data = complete_hourly_price_data_for_day("2026-05-26")
+        period_start = arrow.get("2026-05-26T00:00:00+02:00")
+        period_end = arrow.get("2026-05-27T00:00:00+02:00")
+        self.assertFalse(prices.has_fallback_price_points(data, period_start, period_end))
+
+    def test_returns_true_when_fallback_in_period(self):
+        data = complete_hourly_price_data_with_fallback("2026-05-25", "2026-05-26")
+        period_start = arrow.get("2026-05-26T00:00:00+02:00")
+        period_end = arrow.get("2026-05-27T00:00:00+02:00")
+        self.assertTrue(prices.has_fallback_price_points(data, period_start, period_end))
+
+    def test_returns_false_when_fallback_outside_period(self):
+        data = complete_hourly_price_data_with_fallback("2026-05-25", "2026-05-26")
+        # Query May 25 only — the fallback is on May 26
+        period_start = arrow.get("2026-05-25T00:00:00+02:00")
+        period_end = arrow.get("2026-05-26T00:00:00+02:00")
+        self.assertFalse(prices.has_fallback_price_points(data, period_start, period_end))
+
+
+class CompleteTomorrowPricesTests(unittest.TestCase):
+    def test_returns_false_when_tomorrow_incomplete(self):
+        data = complete_hourly_price_data_for_day("2026-05-25")
+        now = arrow.get("2026-05-25T14:00:00+02:00")
+        self.assertFalse(prices.complete_tomorrow_prices(data, AREA, now))
+
+    def test_returns_true_when_tomorrow_complete_and_primary(self):
+        data = complete_hourly_price_data_for_day("2026-05-26")
+        now = arrow.get("2026-05-25T14:00:00+02:00")
+        self.assertTrue(prices.complete_tomorrow_prices(data, AREA, now))
+
+    def test_returns_false_when_tomorrow_complete_but_has_fallback(self):
+        data = complete_hourly_price_data_with_fallback("2026-05-25", "2026-05-26")
+        now = arrow.get("2026-05-25T14:00:00+02:00")
+        self.assertFalse(prices.complete_tomorrow_prices(data, AREA, now))
+
+
+class FallbackRefreshTriggerTests(unittest.TestCase):
+    def test_current_price_refresh_runs_when_tomorrow_cached_with_fallback(self):
+        async def run_test():
+            with tempfile.TemporaryDirectory() as temp_dir:
+                config = make_config(Path(temp_dir))
+                cached_data = complete_hourly_price_data_with_fallback("2026-05-25", "2026-05-26")
+                await prices.store_data(cached_data, AREA.key, config)
+
+                with (
+                    patch(
+                        "awattprice_refresher.service.arrow.now",
+                        return_value=arrow.get("2026-05-25T13:10:00+02:00"),
+                    ),
+                    patch(
+                        "awattprice_refresher.service.prices_refresher.refresh_current_prices",
+                        new=AsyncMock(return_value=cached_data),
+                    ) as refresh,
+                ):
+                    await data_refresher.refresh_current_prices_for_area(AREA, config)
+
+                refresh.assert_awaited_once()
+
+        asyncio.run(run_test())
+
+    def test_current_price_refresh_skips_when_tomorrow_cached_without_fallback(self):
+        async def run_test():
+            with tempfile.TemporaryDirectory() as temp_dir:
+                config = make_config(Path(temp_dir))
+                cached_data = complete_hourly_price_data_for_day("2026-05-26")
+                await prices.store_data(cached_data, AREA.key, config)
+
+                with (
+                    patch(
+                        "awattprice_refresher.service.arrow.now",
+                        return_value=arrow.get("2026-05-25T13:10:00+02:00"),
+                    ),
+                    patch(
+                        "awattprice_refresher.service.prices_refresher.refresh_current_prices",
+                        new=AsyncMock(),
+                    ) as refresh,
+                ):
+                    await data_refresher.refresh_current_prices_for_area(AREA, config)
+
+                refresh.assert_not_awaited()
+
+        asyncio.run(run_test())
 
 
 if __name__ == "__main__":

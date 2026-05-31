@@ -229,6 +229,11 @@ h1 {
   padding-bottom: clamp(72px, 10vw, 128px);
 }
 
+.legal-shell-single {
+  grid-template-columns: minmax(0, 1040px);
+  justify-content: center;
+}
+
 .legal-aside {
   position: sticky;
   top: 104px;

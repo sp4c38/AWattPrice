@@ -16,6 +16,7 @@ from awattprice import prices
 from awattprice_refresher import prices as price_refresher
 from awattprice_notifications import payloads
 from awattprice_notifications import prices as notification_prices
+from awattprice_notifications import rules as notification_rules
 
 
 AREA = defaults.get_market_area("DE-LU")
@@ -99,6 +100,33 @@ def refresh_price_data(point_specs):
             )
         )
     return data
+
+
+def notification_price_data(day: str, resolution: str = "PT60M", fallback_indexes=None, interpolated_indexes=None):
+    fallback_indexes = set(fallback_indexes or [])
+    interpolated_indexes = set(interpolated_indexes or [])
+    interval_seconds = prices.resolution_to_seconds(resolution)
+    start = arrow.get(f"{day}T00:00:00+02:00")
+    point_count = int(24 * 60 * 60 / interval_seconds)
+    return Box(
+        {
+            "area": "DE-LU",
+            "resolution": resolution,
+            "prices": BoxList(
+                [
+                    Box(
+                        {
+                            "start_timestamp": start.shift(seconds=index * interval_seconds),
+                            "end_timestamp": start.shift(seconds=(index + 1) * interval_seconds),
+                            "is_fallback": index in fallback_indexes,
+                            "is_interpolated": index in interpolated_indexes,
+                        }
+                    )
+                    for index in range(point_count)
+                ]
+            ),
+        }
+    )
 
 
 class PriceCacheAndConversionTests(unittest.TestCase):
@@ -230,6 +258,63 @@ class NotificationPayloadEdgeTests(unittest.TestCase):
         price_data = Box({"DE-LU": Box({"area": "DE-LU", "resolution": "PT60M", "prices": []})})
 
         self.assertEqual(notification_prices.get_notifiable_areas_prices(price_data), {})
+
+    def test_notification_prices_allow_small_fallback_budget(self):
+        allowed_prices = notification_price_data("2026-05-26", fallback_indexes=[0, 1])
+        excessive_fallback_prices = notification_price_data("2026-05-26", fallback_indexes=[0, 1, 2])
+        allowed_quarter_hour_prices = notification_price_data(
+            "2026-05-26",
+            resolution="PT15M",
+            fallback_indexes=range(8),
+        )
+        excessive_quarter_hour_prices = notification_price_data(
+            "2026-05-26",
+            resolution="PT15M",
+            fallback_indexes=range(9),
+        )
+
+        with patch(
+            "awattprice_notifications.rules.arrow.now",
+            return_value=arrow.get("2026-05-25T14:00:00+02:00"),
+        ):
+            self.assertIsNotNone(notification_rules.get_notifiable_prices(allowed_prices))
+            self.assertIsNone(notification_rules.get_notifiable_prices(excessive_fallback_prices))
+            self.assertIsNotNone(notification_rules.get_notifiable_prices(allowed_quarter_hour_prices))
+            self.assertIsNone(notification_rules.get_notifiable_prices(excessive_quarter_hour_prices))
+
+    def test_notification_prices_reject_interpolated_points(self):
+        interpolated_prices = notification_price_data("2026-05-26", interpolated_indexes=[12])
+
+        with patch(
+            "awattprice_notifications.rules.arrow.now",
+            return_value=arrow.get("2026-05-25T14:00:00+02:00"),
+        ):
+            self.assertIsNone(notification_rules.get_notifiable_prices(interpolated_prices))
+
+    def test_price_refresh_freshness_allows_recent_updates_only(self):
+        last_update = arrow.get("2026-05-25T15:00:00+02:00")
+
+        self.assertTrue(
+            notification_rules.check_price_update_fresh(
+                last_update,
+                "DE-LU",
+                arrow.get("2026-05-25T17:30:00+02:00"),
+            )
+        )
+        self.assertFalse(
+            notification_rules.check_price_update_fresh(
+                last_update,
+                "DE-LU",
+                arrow.get("2026-05-25T22:00:00+02:00"),
+            )
+        )
+        self.assertFalse(
+            notification_rules.check_price_update_fresh(
+                None,
+                "DE-LU",
+                arrow.get("2026-05-25T15:00:00+02:00"),
+            )
+        )
 
 
 if __name__ == "__main__":

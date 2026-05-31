@@ -210,6 +210,7 @@ class NotificationWorkerMonitoringTests(unittest.IsolatedAsyncioTestCase):
         calls = []
         original_collect_prices = service.prices.collect_areas_prices
         original_get_updated_areas = service.prices.get_updated_areas
+        original_get_freshly_updated_areas = service.prices.get_freshly_updated_areas
         original_get_notifiable_areas_prices = service.prices.get_notifiable_areas_prices
         original_write_endtimes = service.prices.write_updated_areas_endtimes
         original_deliver = service.payloads.deliver_notifications
@@ -239,6 +240,9 @@ class NotificationWorkerMonitoringTests(unittest.IsolatedAsyncioTestCase):
         async def fake_get_updated_areas(_config, _areas_prices):
             return ["DE-LU"]
 
+        async def fake_get_freshly_updated_areas(_config, area_keys):
+            return area_keys
+
         async def fake_write_endtimes(_config, _areas_prices, _updated_areas):
             calls.append("write")
 
@@ -249,6 +253,7 @@ class NotificationWorkerMonitoringTests(unittest.IsolatedAsyncioTestCase):
         try:
             service.prices.collect_areas_prices = fake_collect_prices
             service.prices.get_updated_areas = fake_get_updated_areas
+            service.prices.get_freshly_updated_areas = fake_get_freshly_updated_areas
             service.prices.get_notifiable_areas_prices = lambda _areas_prices: notifiable_prices
             service.prices.write_updated_areas_endtimes = fake_write_endtimes
             service.payloads.deliver_notifications = fake_deliver
@@ -257,9 +262,75 @@ class NotificationWorkerMonitoringTests(unittest.IsolatedAsyncioTestCase):
         finally:
             service.prices.collect_areas_prices = original_collect_prices
             service.prices.get_updated_areas = original_get_updated_areas
+            service.prices.get_freshly_updated_areas = original_get_freshly_updated_areas
             service.prices.get_notifiable_areas_prices = original_get_notifiable_areas_prices
             service.prices.write_updated_areas_endtimes = original_write_endtimes
             service.payloads.deliver_notifications = original_deliver
 
         self.assertEqual(calls, ["deliver", "write"])
         self.assertEqual(result["notification_count"], 1)
+
+    async def test_worker_marks_stale_updated_area_without_delivery(self):
+        calls = []
+        original_collect_prices = service.prices.collect_areas_prices
+        original_get_updated_areas = service.prices.get_updated_areas
+        original_get_freshly_updated_areas = service.prices.get_freshly_updated_areas
+        original_get_notifiable_areas_prices = service.prices.get_notifiable_areas_prices
+        original_write_endtimes = service.prices.write_updated_areas_endtimes
+        original_deliver = service.payloads.deliver_notifications
+
+        profile_store = Box(
+            {
+                "list_profiles": lambda: [
+                    Box(
+                        {
+                            "general": {"area": "DE-LU"},
+                            "rules": {
+                                "price_below": {"active": True},
+                                "price_above": {"active": False},
+                                "daily_summary": {"active": False},
+                            },
+                        }
+                    )
+                ]
+            }
+        )
+        area_prices = Box({"DE-LU": Box({"prices": []})})
+        notifiable_prices = Box({"DE-LU": Box({"data": Box({"prices": []})})})
+
+        async def fake_collect_prices(_config, _active_areas):
+            return area_prices
+
+        async def fake_get_updated_areas(_config, _areas_prices):
+            return ["DE-LU"]
+
+        async def fake_get_freshly_updated_areas(_config, _area_keys):
+            return []
+
+        async def fake_write_endtimes(_config, _areas_prices, _updated_areas):
+            calls.append("write")
+
+        async def fake_deliver(_profile_store, _config, _profiles, _prices):
+            calls.append("deliver")
+            return 1, 0
+
+        try:
+            service.prices.collect_areas_prices = fake_collect_prices
+            service.prices.get_updated_areas = fake_get_updated_areas
+            service.prices.get_freshly_updated_areas = fake_get_freshly_updated_areas
+            service.prices.get_notifiable_areas_prices = lambda _areas_prices: notifiable_prices
+            service.prices.write_updated_areas_endtimes = fake_write_endtimes
+            service.payloads.deliver_notifications = fake_deliver
+
+            result = await service.run_worker_cycle(cronitor_config(), profile_store)
+        finally:
+            service.prices.collect_areas_prices = original_collect_prices
+            service.prices.get_updated_areas = original_get_updated_areas
+            service.prices.get_freshly_updated_areas = original_get_freshly_updated_areas
+            service.prices.get_notifiable_areas_prices = original_get_notifiable_areas_prices
+            service.prices.write_updated_areas_endtimes = original_write_endtimes
+            service.payloads.deliver_notifications = original_deliver
+
+        self.assertEqual(calls, ["write"])
+        self.assertEqual(result["reason"], "no_fresh_updated_prices")
+        self.assertEqual(result["notification_count"], 0)

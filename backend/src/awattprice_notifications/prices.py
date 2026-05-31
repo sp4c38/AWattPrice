@@ -5,8 +5,10 @@ import pickle
 
 from typing import Optional
 
+import arrow
 from aiofile import async_open
 from arrow import Arrow
+from awattprice import defaults as awattprice_defaults
 from awattprice import prices as awattprice_prices
 from box import Box
 from liteconfig import Config
@@ -14,6 +16,7 @@ from loguru import logger
 
 from awattprice_notifications import rules
 from awattprice_notifications.rules import check_area_updated
+from awattprice_notifications.rules import check_price_update_fresh
 from awattprice_notifications.rules import get_notifiable_prices
 
 
@@ -56,6 +59,22 @@ async def read_last_updated_endtime(config: Config, area_key: str) -> Optional[A
     return time
 
 
+async def read_price_data_update_time(config: Config, area_key: str) -> Optional[Arrow]:
+    """Get when the refresher last downloaded current price data for an area."""
+    file_name = awattprice_defaults.PRICE_DATA_UPDATE_TS_FILE_NAME.format(
+        awattprice_prices.area_file_key(area_key)
+    )
+    file_path = config.paths.price_data_dir / file_name
+    try:
+        async with async_open(file_path, "r") as file:
+            file_content = await file.read()
+    except FileNotFoundError:
+        logger.debug(f"No price refresh timestamp for area {area_key} exists yet.")
+        return None
+
+    return arrow.get(int(file_content))
+
+
 def get_current_endtime(prices: Box) -> Arrow:
     latest_price_point = max(prices.prices, key=lambda price_point: price_point.end_timestamp)
     current_endtime = latest_price_point.end_timestamp
@@ -86,6 +105,26 @@ async def get_updated_areas(config: Config, areas_prices: Box[str, Box]) -> list
             logger.debug(f"Area {area_key} did not update.")
 
     return updated_areas
+
+
+async def get_freshly_updated_areas(config: Config, area_keys: list[str]) -> list[str]:
+    """Filter updated areas to price refreshes that are still fresh enough to notify."""
+    update_time_tasks = [read_price_data_update_time(config, area_key) for area_key in area_keys]
+    update_times = await asyncio.gather(*update_time_tasks, return_exceptions=True)
+
+    fresh_areas = []
+    area_update_times = list(zip(area_keys, update_times))
+    for area_key, update_time in area_update_times:
+        if isinstance(update_time, Exception):
+            logger.exception(f"Couldn't read price refresh timestamp for area {area_key}: {update_time}.")
+            continue
+
+        if check_price_update_fresh(update_time, area_key):
+            fresh_areas.append(area_key)
+        else:
+            logger.debug(f"Skipping stale notification update for area {area_key}.")
+
+    return fresh_areas
 
 
 async def write_updated_areas_endtimes(

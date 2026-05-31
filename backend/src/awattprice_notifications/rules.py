@@ -10,6 +10,8 @@ from box import Box
 from loguru import logger
 
 NOTIFICATION_LAST_UPDATED_ENDTIME_FILE_NAME = "notification-last-updated-{}-endtime.pickle"
+NOTIFICATION_PRICE_UPDATE_FRESH_SECONDS = 3 * 60 * 60
+NOTIFICATION_MAX_FALLBACK_SECONDS = 2 * 60 * 60
 
 NOTIFICATION = Box(
     {
@@ -69,7 +71,30 @@ def get_notifiable_prices(price_data: Box) -> Optional[list[Box]]:
         logger.debug(f"Length of selected prices isn't equal to {expected_points}: {len(selected_prices)}.")
         return None
 
+    if not check_notifiable_price_quality(selected_prices, price_data.resolution):
+        return None
+
     return selected_prices
+
+
+def check_notifiable_price_quality(selected_prices: list[Box], resolution: str) -> bool:
+    """Return true when fallback prices stay within the notification tolerance."""
+    interpolated_count = sum(1 for price_point in selected_prices if price_point.get("is_interpolated", False))
+    if interpolated_count > 0:
+        logger.debug(f"Interpolated prices are not allowed for notification delivery: {interpolated_count}.")
+        return False
+
+    interval_seconds = awattprice_prices.resolution_to_seconds(resolution)
+    fallback_count = sum(1 for price_point in selected_prices if price_point.get("is_fallback", False))
+    fallback_seconds = fallback_count * interval_seconds
+    if fallback_seconds > NOTIFICATION_MAX_FALLBACK_SECONDS:
+        logger.debug(
+            f"Too many fallback prices for notification delivery: "
+            f"{fallback_seconds} seconds exceeds {NOTIFICATION_MAX_FALLBACK_SECONDS} seconds."
+        )
+        return False
+
+    return True
 
 
 def check_area_updated(stored_endtime: Optional[Arrow], new_endtime: Arrow, area_key: str) -> bool:
@@ -89,3 +114,15 @@ def check_area_updated(stored_endtime: Optional[Arrow], new_endtime: Arrow, area
         return False
 
     return True
+
+
+def check_price_update_fresh(last_update_time: Optional[Arrow], area_key: str, now=None) -> bool:
+    """Return true when the cached prices were refreshed recently enough to notify."""
+    if last_update_time is None:
+        return False
+
+    area = awattprice_defaults.get_market_area(area_key)
+    current = (now or arrow.now()).to(area.timezone)
+    update_time = last_update_time.to(area.timezone)
+    age_seconds = (current - update_time).total_seconds()
+    return 0 <= age_seconds <= NOTIFICATION_PRICE_UPDATE_FRESH_SECONDS

@@ -124,16 +124,26 @@ async def run_worker_cycle(config, profile_store: notification_profiles.Notifica
         logger.debug("No updated areas have complete notifiable prices.")
         return {"reason": "no_updated_notifiable_prices", "active_area_count": len(active_areas), "updated_area_count": len(updated_areas), "notification_count": 0, "error_count": 0}
 
+    fresh_updated_areas = await prices.get_freshly_updated_areas(config, list(updated_notifiable_areas_prices.keys()))
+    if len(fresh_updated_areas) == 0:
+        logger.debug("No updated areas are fresh enough for notification delivery.")
+        await prices.write_updated_areas_endtimes(config, areas_prices, list(updated_notifiable_areas_prices.keys()))
+        return {"reason": "no_fresh_updated_prices", "active_area_count": len(active_areas), "updated_area_count": len(updated_areas), "notification_count": 0, "error_count": 0}
+    fresh_updated_notifiable_areas_prices = {
+        area_key: updated_notifiable_areas_prices[area_key]
+        for area_key in fresh_updated_areas
+    }
+
     updated_active_area_profiles = Box(
         {
             area_key: active_area_profiles[area_key]
-            for area_key in updated_notifiable_areas_prices.keys()
+            for area_key in fresh_updated_notifiable_areas_prices.keys()
             if area_key in active_area_profiles
         }
     )
 
     notification_count, error_count = await payloads.deliver_notifications(
-        profile_store, config, updated_active_area_profiles, updated_notifiable_areas_prices
+        profile_store, config, updated_active_area_profiles, fresh_updated_notifiable_areas_prices
     )
 
     await prices.write_updated_areas_endtimes(config, areas_prices, list(updated_notifiable_areas_prices.keys()))

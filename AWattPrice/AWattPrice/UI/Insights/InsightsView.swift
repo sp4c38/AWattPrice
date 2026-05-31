@@ -442,7 +442,7 @@ private struct GenerationMixCard: View {
     private var dataAgeText: String {
         let hours = max(1, Int((-generationMix.endTime.timeIntervalSinceNow) / 3600))
         return String.localizedStringWithFormat(
-            NSLocalizedString("Data from %dh ago", comment: "Slightly stale data freshness label"),
+            NSLocalizedString("%dh ago", comment: "Compact data age label for widget"),
             hours
         )
     }

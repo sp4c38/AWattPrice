@@ -153,13 +153,18 @@ private struct EnergyPriceGraphDisplayRow: Identifiable {
 
 private struct EnergyPriceGraphLayout {
     static let axisHeight: CGFloat = 18
-    static let overlayHorizontalPadding: CGFloat = 6
+    static let overlayLeadingPadding: CGFloat = 6
+    static let overlayTrailingPadding: CGFloat = 6
     static let rowSpacing: CGFloat = 0.1
     static let focusedRowWeight: CGFloat = 3.6
     static let adjacentFocusedRowWeight: CGFloat = 1.9
     static let focusedHourlyRowWeight: CGFloat = 1.7
     static let adjacentFocusedHourlyRowWeight: CGFloat = 1.25
     static let plotTopPadding: CGFloat = 10
+
+    static let axisFontSize: CGFloat = 11
+    static let axisUnitFontSize: CGFloat = 10
+    static let dayBadgeFontSize: CGFloat = 11
 
     let plotHeight: CGFloat
     let rowHeights: [CGFloat]
@@ -211,7 +216,7 @@ private struct EnergyPriceGraphLayout {
 private struct EnergyPriceGraphAxis: View {
     let metrics: EnergyPriceGraphMetrics
     let plotWidth: CGFloat
-    private static let unitReservedWidth: CGFloat = 42
+    private static let unitReservedWidth: CGFloat = 46
 
     var body: some View {
         ZStack(alignment: .topLeading) {
@@ -220,7 +225,7 @@ private struct EnergyPriceGraphAxis: View {
 
             ForEach(metrics.axisTicks, id: \.self) { tick in
                 Text(tickText(for: tick))
-                    .font(.caption2.weight(.bold))
+                    .font(.system(size: EnergyPriceGraphLayout.axisFontSize, weight: .bold, design: .rounded))
                     .monospacedDigit()
                     .foregroundStyle(.primary)
                     .fixedSize()
@@ -231,11 +236,11 @@ private struct EnergyPriceGraphAxis: View {
             }
 
             Text("ct/kWh")
-                .font(.caption2.weight(.semibold))
+                .font(.system(size: EnergyPriceGraphLayout.axisUnitFontSize, weight: .semibold, design: .rounded))
                 .foregroundStyle(.secondary)
                 .fixedSize()
                 .position(
-                    x: max(plotWidth - 21, 21),
+                    x: max(plotWidth - (Self.unitReservedWidth / 2), Self.unitReservedWidth / 2),
                     y: 8
                 )
         }
@@ -420,7 +425,7 @@ private struct EnergyPriceBarRow: View {
 
                         if row.showsDayChange {
                             Text(dayBadgeText)
-                                .font(.caption2.weight(.semibold))
+                                .font(.system(size: EnergyPriceGraphLayout.dayBadgeFontSize, weight: .semibold, design: .rounded))
                                 .fixedSize()
                                 .padding(.horizontal, 6)
                                 .padding(.vertical, 2)
@@ -435,7 +440,8 @@ private struct EnergyPriceBarRow: View {
                     EnergyPriceValueBadge(row: row)
                 }
             }
-            .padding(.horizontal, EnergyPriceGraphLayout.overlayHorizontalPadding)
+            .padding(.leading, EnergyPriceGraphLayout.overlayLeadingPadding)
+            .padding(.trailing, EnergyPriceGraphLayout.overlayTrailingPadding)
             .frame(width: plotWidth, height: rowHeight)
         }
         .frame(width: plotWidth, height: rowHeight, alignment: .leading)
@@ -876,7 +882,8 @@ struct EnergyPriceGraph: View {
 
                             EnergyPriceValueBadge(row: row)
                         }
-                        .padding(.horizontal, EnergyPriceGraphLayout.overlayHorizontalPadding)
+                        .padding(.leading, EnergyPriceGraphLayout.overlayLeadingPadding)
+                        .padding(.trailing, EnergyPriceGraphLayout.overlayTrailingPadding)
                         .frame(width: plotWidth, height: layout.rowHeight(at: index), alignment: .trailing)
                         .position(
                             x: plotWidth / 2,
@@ -915,5 +922,6 @@ struct EnergyPriceGraph: View {
             expandedIntervalSwitchDirection = nil
             selectedGroupIndex = nil
         }
+        .dynamicTypeSize(.medium)
     }
 }

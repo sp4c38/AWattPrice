@@ -8,7 +8,7 @@
 import SwiftUI
 
 enum PricesLayout {
-    static let graphTrailingPadding: CGFloat = 16
+    static let graphTrailingPadding: CGFloat = 20
     static let graphTopPadding: CGFloat = 4
     static let graphBottomPadding: CGFloat = 6
     static let graphLeadingPadding: CGFloat = 7
@@ -201,6 +201,7 @@ struct PricesView: View {
                 } label: {
                     Image(systemName: "info.circle")
                         .imageScale(.medium)
+                        .frame(width: 30, height: 30)
                 }
                 .buttonStyle(.plain)
                 .foregroundStyle(.secondary)
@@ -377,6 +378,7 @@ struct PricesView: View {
                 refreshEnabled: false,
                 statusOverride: "Prices up to date · Tap for history".localized()
             )
+            .layoutPriority(-1)
         case .history:
             EmptyView()
         }

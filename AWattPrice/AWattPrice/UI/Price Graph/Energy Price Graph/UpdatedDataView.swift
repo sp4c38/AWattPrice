@@ -167,7 +167,6 @@ struct UpdatedDataView: View {
             }
         }
         .font(.fCaption)
-        .fixedSize(horizontal: fillsAvailableWidth == false, vertical: false)
         .contentShape(Rectangle())
     }
 

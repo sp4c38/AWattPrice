@@ -246,7 +246,6 @@ def parse_downloaded_data(area: MarketArea, xml_content: bytes, now: Optional[Ar
     new_data.fallback_sequence_positions = []
     new_data.fallback_price_count = 0
     new_data.carried_forward_price_count = 0
-    new_data.interpolated_price_count = 0
     prices_by_start_timestamp = {}
     for sequence_position, resolution, start_timestamp, end_timestamp, price_text, carried_forward in iter_time_series_points(
         selected_time_series_list,
@@ -263,7 +262,6 @@ def parse_downloaded_data(area: MarketArea, xml_content: bytes, now: Optional[Ar
         new_point.marketprice = prices.MarketPrice(Decimal(str(price_text)), area)
         new_point.sequence_position = sequence_position
         new_point.is_fallback = sequence_position != new_data.sequence_position
-        new_point.is_interpolated = False
         new_point.is_carried_forward = carried_forward
 
         local_day = new_point.start_timestamp.date()
@@ -405,13 +403,6 @@ def check_data_new(old_data: Optional[Box], new_data: Box, area: Optional[Market
     if new_point_count > old_point_count:
         return True
     if new_point_count < old_point_count:
-        return False
-
-    old_interpolated_count = prices.interpolated_price_count(old_data)
-    new_interpolated_count = prices.interpolated_price_count(new_data)
-    if new_interpolated_count < old_interpolated_count:
-        return True
-    if new_interpolated_count > old_interpolated_count:
         return False
 
     old_fallback_count = prices.fallback_price_count(old_data)

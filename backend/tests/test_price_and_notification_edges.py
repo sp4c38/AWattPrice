@@ -82,11 +82,7 @@ def price_point(hour: int, value: Decimal | str | int):
 def refresh_price_data(point_specs):
     data = Box({"prices": BoxList()})
     for point_spec in point_specs:
-        if len(point_spec) == 5:
-            start_time, end_time, value, sequence_position, is_fallback = point_spec
-            is_interpolated = False
-        else:
-            start_time, end_time, value, sequence_position, is_fallback, is_interpolated = point_spec
+        start_time, end_time, value, sequence_position, is_fallback = point_spec
         data.prices.append(
             Box(
                 {
@@ -95,7 +91,6 @@ def refresh_price_data(point_specs):
                     "marketprice": prices.MarketPrice(Decimal(str(value)), AREA),
                     "sequence_position": sequence_position,
                     "is_fallback": is_fallback,
-                    "is_interpolated": is_interpolated,
                 }
             )
         )
@@ -106,11 +101,9 @@ def notification_price_data(
     day: str,
     resolution: str = "PT60M",
     fallback_indexes=None,
-    interpolated_indexes=None,
     carried_forward_indexes=None,
 ):
     fallback_indexes = set(fallback_indexes or [])
-    interpolated_indexes = set(interpolated_indexes or [])
     carried_forward_indexes = set(carried_forward_indexes or [])
     interval_seconds = prices.resolution_to_seconds(resolution)
     start = arrow.get(f"{day}T00:00:00+02:00")
@@ -126,7 +119,6 @@ def notification_price_data(
                             "start_timestamp": start.shift(seconds=index * interval_seconds),
                             "end_timestamp": start.shift(seconds=(index + 1) * interval_seconds),
                             "is_fallback": index in fallback_indexes,
-                            "is_interpolated": index in interpolated_indexes,
                             "is_carried_forward": index in carried_forward_indexes,
                         }
                     )
@@ -194,21 +186,6 @@ class PriceCacheAndConversionTests(unittest.TestCase):
 
         self.assertTrue(price_refresher.check_data_new(fallback_data, preferred_data))
         self.assertFalse(price_refresher.check_data_new(preferred_data, fallback_data))
-
-    def test_check_data_new_replaces_interpolation_with_source_price(self):
-        interpolated_data = refresh_price_data([
-            ("2026-05-24T09:00:00+02:00", "2026-05-24T10:00:00+02:00", 10, "1", False),
-            ("2026-05-24T10:00:00+02:00", "2026-05-24T11:00:00+02:00", 20, "interpolated", False, True),
-            ("2026-05-24T11:00:00+02:00", "2026-05-24T12:00:00+02:00", 30, "1", False),
-        ])
-        fallback_data = refresh_price_data([
-            ("2026-05-24T09:00:00+02:00", "2026-05-24T10:00:00+02:00", 10, "1", False),
-            ("2026-05-24T10:00:00+02:00", "2026-05-24T11:00:00+02:00", 200, "2", True),
-            ("2026-05-24T11:00:00+02:00", "2026-05-24T12:00:00+02:00", 30, "1", False),
-        ])
-
-        self.assertTrue(price_refresher.check_data_new(interpolated_data, fallback_data))
-        self.assertFalse(price_refresher.check_data_new(fallback_data, interpolated_data))
 
     def test_current_price_fallback_rejects_expired_cache(self):
         async def run_test():
@@ -289,15 +266,6 @@ class NotificationPayloadEdgeTests(unittest.TestCase):
             self.assertIsNone(notification_rules.get_notifiable_prices(excessive_fallback_prices))
             self.assertIsNotNone(notification_rules.get_notifiable_prices(allowed_quarter_hour_prices))
             self.assertIsNone(notification_rules.get_notifiable_prices(excessive_quarter_hour_prices))
-
-    def test_notification_prices_reject_interpolated_points(self):
-        interpolated_prices = notification_price_data("2026-05-26", interpolated_indexes=[12])
-
-        with patch(
-            "awattprice_notifications.rules.arrow.now",
-            return_value=arrow.get("2026-05-25T14:00:00+02:00"),
-        ):
-            self.assertIsNone(notification_rules.get_notifiable_prices(interpolated_prices))
 
     def test_notification_prices_allow_carried_forward_points(self):
         carried_forward_prices = notification_price_data("2026-05-26", carried_forward_indexes=[12, 13, 14])

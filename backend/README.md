@@ -12,11 +12,11 @@ FastAPI backend for AWattPrice. It serves ENTSO-E electricity prices, caches the
 
 Prices are imported from the ENTSO-E Transparency Platform by the refresher and then served from the local cache by the API.
 
-For ENTSO-E day-ahead price documents with sequence data, AWattPrice treats Sequence 1 as authoritative. For DE-LU this is the SDAC day-ahead price series. If individual 15 minute intervals are missing from Sequence 1, the refresher fills only those missing intervals from later available sequences, usually Sequence 2. Sequence 1 prices always win when present.
+For ENTSO-E day-ahead price documents with sequence data, AWattPrice treats Sequence 1 as authoritative. For DE-LU this is the SDAC day-ahead price series. ENTSO-E `A03` step curves may omit repeated prices; the refresher expands those intervals by carrying the previous price forward before it looks at fallback sequences.
 
-If no sequence contains a missing price, the refresher may interpolate as a final repair step, but only for internal PT15M gaps of one or two missing blocks. Wider gaps are left missing. Interpolated points are marked in the cached/API data with `is_interpolated = true`; sequence fallback points are marked with `is_fallback = true`.
+If individual intervals are still missing after Sequence 1 step-curve expansion, the refresher fills only those missing intervals from later available sequences, usually Sequence 2. Sequence 1 prices always win when present or carried forward. Sequence fallback points are marked with `is_fallback = true`; carried-forward step-curve points are marked with `is_carried_forward = true`.
 
-The refresher keeps treating incomplete or repaired data as replaceable. If ENTSO-E later publishes the missing Sequence 1 price, that real price replaces the fallback or interpolated point in the cache.
+The refresher keeps treating incomplete or fallback data as replaceable. If ENTSO-E later publishes the missing Sequence 1 price, that real price replaces the fallback point in the cache.
 
 ## Maintenance Checks
 

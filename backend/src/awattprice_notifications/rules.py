@@ -79,11 +79,6 @@ def get_notifiable_prices(price_data: Box) -> Optional[list[Box]]:
 
 def check_notifiable_price_quality(selected_prices: list[Box], resolution: str) -> bool:
     """Return true when fallback prices stay within the notification tolerance."""
-    interpolated_count = sum(1 for price_point in selected_prices if price_point.get("is_interpolated", False))
-    if interpolated_count > 0:
-        logger.debug(f"Interpolated prices are not allowed for notification delivery: {interpolated_count}.")
-        return False
-
     interval_seconds = awattprice_prices.resolution_to_seconds(resolution)
     fallback_count = sum(1 for price_point in selected_prices if price_point.get("is_fallback", False))
     fallback_seconds = fallback_count * interval_seconds

@@ -394,14 +394,6 @@ def complete_hourly_price_data_with_fallback(primary_day: str, fallback_day: str
     return data
 
 
-def complete_hourly_price_data_with_interpolated(day: str) -> Box:
-    data = complete_hourly_price_data_for_day(day)
-    data.prices[12].sequence_position = "interpolated"
-    data.prices[12].is_interpolated = True
-    data.interpolated_price_count = 1
-    return data
-
-
 class HasFallbackPricePointsTests(unittest.TestCase):
     def test_returns_false_for_none(self):
         period_start = arrow.get("2026-05-26T00:00:00+02:00")
@@ -441,11 +433,6 @@ class CompleteTomorrowPricesTests(unittest.TestCase):
 
     def test_returns_false_when_tomorrow_complete_but_has_fallback(self):
         data = complete_hourly_price_data_with_fallback("2026-05-25", "2026-05-26")
-        now = arrow.get("2026-05-25T14:00:00+02:00")
-        self.assertFalse(prices.complete_tomorrow_prices(data, AREA, now))
-
-    def test_returns_false_when_tomorrow_complete_but_has_interpolated_price(self):
-        data = complete_hourly_price_data_with_interpolated("2026-05-26")
         now = arrow.get("2026-05-25T14:00:00+02:00")
         self.assertFalse(prices.complete_tomorrow_prices(data, AREA, now))
 
@@ -496,30 +483,6 @@ class FallbackRefreshTriggerTests(unittest.TestCase):
                 refresh.assert_not_awaited()
 
         asyncio.run(run_test())
-
-    def test_current_price_refresh_runs_when_tomorrow_cached_with_interpolated_price(self):
-        async def run_test():
-            with tempfile.TemporaryDirectory() as temp_dir:
-                config = make_config(Path(temp_dir))
-                cached_data = complete_hourly_price_data_with_interpolated("2026-05-26")
-                await prices.store_data(cached_data, AREA.key, config)
-
-                with (
-                    patch(
-                        "awattprice_refresher.service.arrow.now",
-                        return_value=arrow.get("2026-05-25T13:10:00+02:00"),
-                    ),
-                    patch(
-                        "awattprice_refresher.service.prices_refresher.refresh_current_prices",
-                        new=AsyncMock(return_value=cached_data),
-                    ) as refresh,
-                ):
-                    await data_refresher.refresh_current_prices_for_area(AREA, config)
-
-                refresh.assert_awaited_once()
-
-        asyncio.run(run_test())
-
 
 if __name__ == "__main__":
     unittest.main()

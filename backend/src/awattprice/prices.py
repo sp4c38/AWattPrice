@@ -122,19 +122,18 @@ def validate_history_date(area: MarketArea, day: date) -> bool:
     return day <= yesterday
 
 
-def _price_point_signature(price_point: Box) -> tuple[int, int, str, Optional[str], bool, bool, bool]:
+def _price_point_signature(price_point: Box) -> tuple[int, int, str, Optional[str], bool, bool]:
     return (
         price_point.start_timestamp.int_timestamp,
         price_point.end_timestamp.int_timestamp,
         str(price_point.marketprice.value),
         price_point.get("sequence_position"),
         bool(price_point.get("is_fallback", False)),
-        bool(price_point.get("is_interpolated", False)),
         bool(price_point.get("is_carried_forward", False)),
     )
 
 
-def price_data_signature(price_data: Box) -> tuple[tuple[int, int, str, Optional[str], bool, bool, bool], ...]:
+def price_data_signature(price_data: Box) -> tuple[tuple[int, int, str, Optional[str], bool, bool], ...]:
     """Build a stable signature for comparing cached price payloads."""
     return tuple(sorted(_price_point_signature(price_point) for price_point in price_data.prices))
 
@@ -149,11 +148,6 @@ def fallback_price_count(price_data: Box) -> int:
     return sum(1 for price_point in price_data.prices if price_point.get("is_fallback", False))
 
 
-def interpolated_price_count(price_data: Box) -> int:
-    """Count prices that were interpolated because no source sequence had the interval."""
-    return sum(1 for price_point in price_data.prices if price_point.get("is_interpolated", False))
-
-
 def carried_forward_price_count(price_data: Box) -> int:
     """Count prices carried forward from an ENTSO-E A03 step curve."""
     return sum(1 for price_point in price_data.prices if price_point.get("is_carried_forward", False))
@@ -165,18 +159,6 @@ def has_fallback_price_points(price_data: Optional[Box], period_start: Arrow, pe
         return False
     return any(
         price_point.get("is_fallback", False)
-        and price_point.start_timestamp.int_timestamp >= period_start.int_timestamp
-        and price_point.end_timestamp.int_timestamp <= period_end.int_timestamp
-        for price_point in price_data.prices
-    )
-
-
-def has_interpolated_price_points(price_data: Optional[Box], period_start: Arrow, period_end: Arrow) -> bool:
-    """Return true when any price point in the given period was interpolated."""
-    if price_data is None or not price_data.prices:
-        return False
-    return any(
-        price_point.get("is_interpolated", False)
         and price_point.start_timestamp.int_timestamp >= period_start.int_timestamp
         and price_point.end_timestamp.int_timestamp <= period_end.int_timestamp
         for price_point in price_data.prices
@@ -220,8 +202,6 @@ def complete_tomorrow_prices(price_data: Optional[Box], area: MarketArea, now=No
     tomorrow_start = current.to(area.timezone).floor("day").shift(days=+1)
     tomorrow_end = tomorrow_start.shift(days=+1)
     if not has_complete_price_points(price_data, tomorrow_start, tomorrow_end):
-        return False
-    if has_interpolated_price_points(price_data, tomorrow_start, tomorrow_end):
         return False
     return not has_fallback_price_points(price_data, tomorrow_start, tomorrow_end)
 
@@ -297,7 +277,6 @@ def parse_to_response_data(price_data: Box) -> Box:
     response_data.sequence_position = price_data.sequence_position
     response_data.fallback_sequence_positions = list(price_data.get("fallback_sequence_positions", []))
     response_data.fallback_price_count = int(price_data.get("fallback_price_count", 0))
-    response_data.interpolated_price_count = int(price_data.get("interpolated_price_count", 0))
     response_data.carried_forward_price_count = int(price_data.get("carried_forward_price_count", 0))
     response_data.prices = []
     for price_point in price_data.prices:
@@ -307,7 +286,6 @@ def parse_to_response_data(price_data: Box) -> Box:
         response_point.marketprice = float(price_point.marketprice.value)
         response_point.sequence_position = price_point.get("sequence_position", price_data.sequence_position)
         response_point.is_fallback = bool(price_point.get("is_fallback", False))
-        response_point.is_interpolated = bool(price_point.get("is_interpolated", False))
         response_point.is_carried_forward = bool(price_point.get("is_carried_forward", False))
         response_data.prices.append(response_point)
 

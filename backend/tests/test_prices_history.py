@@ -321,9 +321,8 @@ class PriceHistoryTests(unittest.TestCase):
         self.assertEqual(response.fallback_price_count, 0)
         self.assertEqual(response.carried_forward_price_count, 1)
         self.assertTrue(response.prices[2].is_carried_forward)
-        self.assertFalse(response.prices[2].is_interpolated)
 
-    def test_missing_a03_gap_is_carried_forward_without_interpolation(self):
+    def test_missing_a03_gap_is_carried_forward(self):
         sequence_points = """
       <Point><position>1</position><price.amount>10</price.amount></Point>
       <Point><position>4</position><price.amount>40</price.amount></Point>
@@ -346,11 +345,8 @@ class PriceHistoryTests(unittest.TestCase):
             Decimal("40"),
         ])
         self.assertEqual(data.carried_forward_price_count, 2)
-        self.assertEqual(data.interpolated_price_count, 0)
         self.assertEqual([point.is_carried_forward for point in data.prices], [False, True, True, False])
-        self.assertFalse(any(point.is_interpolated for point in data.prices))
         self.assertEqual(response.carried_forward_price_count, 2)
-        self.assertEqual(response.interpolated_price_count, 0)
 
     def test_larger_a03_gap_is_carried_forward_without_limit(self):
         sequence_points = """
@@ -369,7 +365,6 @@ class PriceHistoryTests(unittest.TestCase):
 
         self.assertEqual(len(data.prices), 11)
         self.assertEqual(data.carried_forward_price_count, 9)
-        self.assertEqual(data.interpolated_price_count, 0)
         self.assertEqual([point.marketprice.value for point in data.prices[1:10]], [Decimal("-0.01")] * 9)
         self.assertEqual(data.prices[-1].marketprice.value, Decimal("-0.02"))
 
@@ -402,7 +397,6 @@ class PriceHistoryTests(unittest.TestCase):
         ])
         self.assertEqual(data.fallback_price_count, 1)
         self.assertEqual(data.carried_forward_price_count, 1)
-        self.assertEqual(data.interpolated_price_count, 0)
         self.assertEqual([point.sequence_position for point in data.prices], ["2", "1", "1", "1"])
         self.assertEqual([point.is_fallback for point in data.prices], [True, False, False, False])
 

@@ -580,6 +580,18 @@ private struct PriceAddOnsToggleRow: View {
     }
 }
 
+private struct PriceAddOnsDragHandle: View {
+    let isDragging: Bool
+
+    var body: some View {
+        Image(systemName: "line.3.horizontal")
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(isDragging ? .secondary : .tertiary)
+            .contentShape(Rectangle())
+            .accessibilityLabel("Reorder".localized())
+    }
+}
+
 private struct ReorderablePriceAddOnSection<Content: View>: View {
     let kind: PriceAddOnKind
     let canReorder: Bool
@@ -594,18 +606,14 @@ private struct ReorderablePriceAddOnSection<Content: View>: View {
             content
         }
         .overlay(alignment: .topTrailing) {
-            if canReorder {
-                Image(systemName: "line.3.horizontal")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(isDragging ? .secondary : .tertiary)
+            if canReorder, kind != .tax {
+                PriceAddOnsDragHandle(isDragging: isDragging)
                     .padding(18) // matches PriceAddOnsCard's padding so it sits flush with the content edge
-                    .contentShape(Rectangle())
                     .gesture(
                         DragGesture(minimumDistance: 4, coordinateSpace: .global)
                             .onChanged(onDragChanged)
                             .onEnded(onDragEnded)
                     )
-                    .accessibilityLabel("Reorder".localized())
             }
         }
         .scaleEffect(isDragging ? 1.03 : 1)
@@ -739,12 +747,25 @@ struct PriceAddOnsView: View {
         ) {
             switch kind {
             case .tax:
-                PriceAddOnsToggleRow(
-                    title: "VAT",
-                    systemImage: "percent",
-                    tint: .orange,
-                    isOn: $viewModel.draft.taxEnabled
-                )
+                HStack(spacing: 5) {
+                    Text("VAT".localized())
+                        .font(.headline)
+                        .foregroundStyle(viewModel.draft.taxEnabled ? Color.orange : .primary)
+
+                    Spacer()
+
+                    Toggle("VAT".localized(), isOn: $viewModel.draft.taxEnabled)
+                        .labelsHidden()
+                        .tint(.orange)
+
+                    PriceAddOnsDragHandle(isDragging: draggingKind == kind)
+                        .frame(width: 28, height: 28)
+                        .gesture(
+                            DragGesture(minimumDistance: 4, coordinateSpace: .global)
+                                .onChanged { handleDragChanged(kind: kind, value: $0) }
+                                .onEnded { handleDragEnded(kind: kind, value: $0) }
+                        )
+                }
             case .fixed:
                 VStack(alignment: .leading, spacing: 16) {
                     PriceModelInputRow(

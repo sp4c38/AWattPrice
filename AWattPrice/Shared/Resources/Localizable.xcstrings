@@ -959,6 +959,7 @@
     },
     "Data from %dh ago" : {
       "comment" : "Slightly stale data freshness label",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

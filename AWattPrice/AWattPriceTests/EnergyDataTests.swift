@@ -36,6 +36,7 @@ final class EnergyDataTests: XCTestCase {
             percentagePriceAddOn: 0,
             taxEnabled: true,
             orderedAddOns: [
+                PriceAddOnConfiguration(kind: .tax, value: 0),
                 PriceAddOnConfiguration(kind: .fixed, value: 2),
                 PriceAddOnConfiguration(kind: .percentage, value: 10),
                 PriceAddOnConfiguration(kind: .monthly, value: 1),
@@ -99,7 +100,7 @@ final class EnergyDataTests: XCTestCase {
                 fixedPriceAddOn: 0,
                 percentagePriceAddOn: 0,
                 taxEnabled: true,
-                orderedAddOns: [],
+                orderedAddOns: [PriceAddOnConfiguration(kind: .tax, value: 0)],
                 marketArea: .austria
             ),
             includesPastPrices: true

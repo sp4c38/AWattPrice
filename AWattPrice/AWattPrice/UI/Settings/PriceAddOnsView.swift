@@ -32,6 +32,7 @@ private extension Double {
 private extension PriceAddOnKind {
     var tint: Color {
         switch self {
+        case .tax: .orange
         case .fixed: .green
         case .percentage: .cyan
         case .monthly: .blue
@@ -126,6 +127,7 @@ private struct PriceAddOnsDraft: Equatable {
         percentagePriceAddOn.isActivePriceComponent
             || fixedPriceAddOn.isActivePriceComponent
             || monthlyFixedCostPrice.isActivePriceComponent
+            || taxEnabled
     }
 
     var activeAddOnKinds: [PriceAddOnKind] {
@@ -143,6 +145,7 @@ private struct PriceAddOnsDraft: Equatable {
 
     func isActive(_ kind: PriceAddOnKind) -> Bool {
         switch kind {
+        case .tax: taxEnabled
         case .fixed: fixedPriceAddOn.isActivePriceComponent
         case .percentage: percentagePriceAddOn.isActivePriceComponent
         case .monthly: monthlyFixedCostPrice.isActivePriceComponent
@@ -151,6 +154,8 @@ private struct PriceAddOnsDraft: Equatable {
 
     func formulaTerm(for kind: PriceAddOnKind) -> PriceFormulaTerm {
         switch kind {
+        case .tax:
+            PriceFormulaTerm.percentage("VAT".localized(), tint: kind.tint, id: kind.rawValue)
         case .fixed:
             PriceFormulaTerm.price(fixedPriceAddOn.priceAddOnSummaryText, unit: "ct/kWh", tint: kind.tint, id: kind.rawValue)
         case .percentage:
@@ -521,10 +526,6 @@ private struct PriceFormulaView: View {
     private var formulaTerms: [PriceFormulaTerm] {
         var terms = [PriceFormulaTerm.text("Market price", id: "market-price")]
 
-        if draft.taxEnabled {
-            terms.append(PriceFormulaTerm.percentage("VAT".localized(), tint: .orange, id: "vat"))
-        }
-
         terms.append(contentsOf: draft.activeAddOnKinds.map { draft.formulaTerm(for: $0) })
 
         return terms
@@ -671,15 +672,6 @@ struct PriceAddOnsView: View {
                         }
                     }
 
-                    PriceAddOnsCard {
-                        PriceAddOnsToggleRow(
-                            title: "VAT",
-                            systemImage: "percent",
-                            tint: .orange,
-                            isOn: $viewModel.draft.taxEnabled
-                        )
-                    }
-
                     ForEach(Setting.normalizedPriceAddOnOrder(viewModel.draft.addOnOrder), id: \.self) { kind in
                         priceAddOnSection(for: kind)
                             .background(
@@ -746,6 +738,13 @@ struct PriceAddOnsView: View {
             onDragEnded: { handleDragEnded(kind: kind, value: $0) }
         ) {
             switch kind {
+            case .tax:
+                PriceAddOnsToggleRow(
+                    title: "VAT",
+                    systemImage: "percent",
+                    tint: .orange,
+                    isOn: $viewModel.draft.taxEnabled
+                )
             case .fixed:
                 VStack(alignment: .leading, spacing: 16) {
                     PriceModelInputRow(

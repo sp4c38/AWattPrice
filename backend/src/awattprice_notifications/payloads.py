@@ -42,11 +42,16 @@ def construct_notification_headers(apns_authorization: str, selected_prices: lis
 
 def adjusted_price(price_point: Box, profile: Box, round_: bool = True) -> Decimal:
     """Return the user's final price for a price point."""
-    marketprice = price_point.marketprice.subunit_kwh(taxed=profile.general.tax, round_=round_)
-    add_on_order = profile.general.get("add_on_order", ["percentage", "fixed", "monthly"])
+    marketprice = price_point.marketprice.subunit_kwh(taxed=False, round_=round_)
+    add_on_order = profile.general.get("add_on_order", ["tax", "percentage", "fixed", "monthly"])
 
     for add_on in add_on_order:
-        if add_on == "fixed":
+        if add_on == "tax":
+            if profile.general.tax and marketprice > 0:
+                area = awattprice_defaults.get_market_area(profile.general.area)
+                if area.tax_multiplier is not None:
+                    marketprice *= area.tax_multiplier
+        elif add_on == "fixed":
             marketprice += profile.general.get("fixed_add_on", profile.general.base_fee)
         elif add_on == "monthly":
             marketprice += profile.general.get("monthly_fixed_cost_add_on", Decimal("0"))

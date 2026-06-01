@@ -20,11 +20,11 @@ final class SettingsAndNotificationTests: XCTestCase {
 
         setting.orderedPriceAddOnKinds = [.monthly, .fixed, .monthly]
 
-        XCTAssertEqual(setting.orderedPriceAddOnKinds, [.monthly, .fixed, .percentage])
-        XCTAssertEqual(setting.orderedPriceAddOns.map(\.kind), [.monthly, .fixed, .percentage])
-        XCTAssertEqual(setting.orderedPriceAddOns[0].value, 4, accuracy: 0.0001)
-        XCTAssertEqual(setting.orderedPriceAddOns[1].value, 1.5, accuracy: 0.0001)
-        XCTAssertEqual(setting.orderedPriceAddOns[2].value, 7, accuracy: 0.0001)
+        XCTAssertEqual(setting.orderedPriceAddOnKinds, [.tax, .monthly, .fixed, .percentage])
+        XCTAssertEqual(setting.orderedPriceAddOns.map(\.kind), [.tax, .monthly, .fixed, .percentage])
+        XCTAssertEqual(setting.orderedPriceAddOns[1].value, 4, accuracy: 0.0001)
+        XCTAssertEqual(setting.orderedPriceAddOns[2].value, 1.5, accuracy: 0.0001)
+        XCTAssertEqual(setting.orderedPriceAddOns[3].value, 7, accuracy: 0.0001)
     }
 
     func testActiveNotificationRuleCountReflectsEnabledRules() {
@@ -74,7 +74,7 @@ final class SettingsAndNotificationTests: XCTestCase {
         XCTAssertEqual(general["base_fee"] as? Double, 8)
         XCTAssertEqual(general["fixed_add_on"] as? Double, 2)
         XCTAssertEqual(general["monthly_fixed_cost_add_on"] as? Double, 6)
-        XCTAssertEqual(general["add_on_order"] as? [String], ["fixed", "percentage", "monthly"])
+        XCTAssertEqual(general["add_on_order"] as? [String], ["tax", "fixed", "percentage", "monthly"])
         XCTAssertEqual(priceBelow["active"] as? Bool, true)
         XCTAssertEqual(priceBelow["threshold"] as? Int, 15)
         XCTAssertEqual(priceAbove["active"] as? Bool, false)

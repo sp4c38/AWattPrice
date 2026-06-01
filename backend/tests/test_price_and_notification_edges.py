@@ -220,13 +220,17 @@ class NotificationPayloadEdgeTests(unittest.TestCase):
         raw_profile.general.fixed_add_on = 2
         raw_profile.general.monthly_fixed_cost_add_on = 1
         raw_profile.general.percentage_add_on = Decimal("10")
-        raw_profile.general.add_on_order = ["fixed", "monthly", "percentage"]
+        raw_profile.general.add_on_order = ["tax", "fixed", "monthly", "percentage"]
         price = price_point(1, 10)
 
         self.assertEqual(payloads.adjusted_price(price, raw_profile), Decimal("16.390"))
 
-        raw_profile.general.add_on_order = ["percentage", "fixed", "monthly"]
+        raw_profile.general.add_on_order = ["tax", "percentage", "fixed", "monthly"]
         self.assertEqual(payloads.adjusted_price(price, raw_profile), Decimal("16.090"))
+
+        raw_profile.general.percentage_add_on = Decimal("0")
+        raw_profile.general.add_on_order = ["fixed", "tax", "monthly", "percentage"]
+        self.assertEqual(payloads.adjusted_price(price, raw_profile), Decimal("15.280"))
 
     def test_format_price_timestamp_uses_minutes_for_quarter_hour_resolution(self):
         timestamp = FakeTimestamp(7, 7 * 3600)

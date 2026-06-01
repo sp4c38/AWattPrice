@@ -18,6 +18,7 @@ struct PricingConfiguration: Sendable {
 }
 
 enum PriceAddOnKind: String, CaseIterable, Codable, Hashable, Sendable {
+    case tax
     case fixed
     case percentage
     case monthly
@@ -38,7 +39,7 @@ public class Setting {
     var percentagePriceAddOn: Double = 0.0
     var monthlyFixedCost: Double = 0.0
     var annualConsumptionKWh: Double = 3500.0
-    var priceAddOnOrder: String = "fixed,percentage,monthly"
+    var priceAddOnOrder: String = "tax,fixed,percentage,monthly"
     var onboarded: Bool = false // Splash screens finished
     
     // Notification attributes
@@ -95,6 +96,9 @@ public class Setting {
     var orderedPriceAddOns: [PriceAddOnConfiguration] {
         orderedPriceAddOnKinds.compactMap { kind in
             switch kind {
+            case .tax:
+                guard taxEnabled else { return nil }
+                return PriceAddOnConfiguration(kind: kind, value: 0)
             case .fixed:
                 guard baseFeePrice != 0 else { return nil }
                 return PriceAddOnConfiguration(kind: kind, value: baseFeePrice)
@@ -110,6 +114,9 @@ public class Setting {
 
     static func normalizedPriceAddOnOrder(_ order: [PriceAddOnKind]) -> [PriceAddOnKind] {
         var result: [PriceAddOnKind] = []
+        if order.contains(.tax) == false {
+            result.append(.tax)
+        }
         for kind in order where result.contains(kind) == false {
             result.append(kind)
         }

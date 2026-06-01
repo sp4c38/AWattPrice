@@ -89,7 +89,7 @@ NOTIFICATION_PROFILE_SCHEMA = {
                 "monthly_fixed_cost_add_on": {"type": "number"},
                 "add_on_order": {
                     "type": "array",
-                    "items": {"enum": ["fixed", "percentage", "monthly"]},
+                    "items": {"enum": ["tax", "fixed", "percentage", "monthly"]},
                     "uniqueItems": True,
                 },
             },

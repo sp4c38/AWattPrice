@@ -21,7 +21,7 @@ from awattprice import defaults
 
 SCHEMA_VERSION = 1
 STORE_FILE_NAME = "notification-profiles.json"
-DEFAULT_ADD_ON_ORDER = ["percentage", "fixed", "monthly"]
+DEFAULT_ADD_ON_ORDER = ["tax", "percentage", "fixed", "monthly"]
 
 
 def get_store_path(config) -> Path:
@@ -31,6 +31,20 @@ def get_store_path(config) -> Path:
 
 def _decimal_from_number(value: Any) -> Decimal:
     return Decimal(str(value))
+
+
+def normalize_add_on_order(order: list[str] | None) -> list[str]:
+    """Return an add-on order with the tax step in the legacy-compatible position."""
+    result = []
+    if order is None or "tax" not in order:
+        result.append("tax")
+    for add_on in order or DEFAULT_ADD_ON_ORDER:
+        if add_on not in result:
+            result.append(add_on)
+    for add_on in DEFAULT_ADD_ON_ORDER:
+        if add_on not in result:
+            result.append(add_on)
+    return result
 
 
 def parse_notification_profile_body(profile: Box) -> Optional[Box]:
@@ -56,6 +70,8 @@ def parse_notification_profile_body(profile: Box) -> Optional[Box]:
         profile.general.monthly_fixed_cost_add_on = _decimal_from_number(profile.general.monthly_fixed_cost_add_on)
     if "add_on_order" not in profile.general:
         profile.general.add_on_order = DEFAULT_ADD_ON_ORDER
+    else:
+        profile.general.add_on_order = normalize_add_on_order(profile.general.add_on_order)
 
     for rule_name in ("price_below", "price_above"):
         rule = profile.rules[rule_name]
@@ -145,4 +161,10 @@ class NotificationProfileStore:
             profile.general.monthly_fixed_cost_add_on = Decimal(str(profile.general.monthly_fixed_cost_add_on))
         if "add_on_order" not in profile.general:
             profile.general.add_on_order = DEFAULT_ADD_ON_ORDER
+        else:
+            profile.general.add_on_order = NotificationProfileStore._normalize_add_on_order(profile.general.add_on_order)
         return profile
+
+    @staticmethod
+    def _normalize_add_on_order(order: list[str]) -> list[str]:
+        return normalize_add_on_order(order)

@@ -104,16 +104,12 @@ struct EnergyData: Decodable {
         var adjustedPricePoints = pricePoints
 
         for i in adjustedPricePoints.indices {
-            if
-                pricingConfiguration.taxEnabled,
-                adjustedPricePoints[i].marketprice > 0,
-                let taxMultiplier = pricingConfiguration.marketArea.taxMultiplier
-            {
-                adjustedPricePoints[i].marketprice *= taxMultiplier
-            }
-
             for addOn in pricingConfiguration.orderedAddOns {
                 switch addOn.kind {
+                case .tax:
+                    if adjustedPricePoints[i].marketprice > 0, let taxMultiplier = pricingConfiguration.marketArea.taxMultiplier {
+                        adjustedPricePoints[i].marketprice *= taxMultiplier
+                    }
                 case .fixed, .monthly:
                     adjustedPricePoints[i].marketprice += addOn.value
                 case .percentage:

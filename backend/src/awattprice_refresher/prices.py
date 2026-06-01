@@ -50,6 +50,11 @@ def time_series_sequence_position(time_series: ET.Element) -> Optional[str]:
     return time_series.findtext("{*}classificationSequence_AttributeInstanceComponent.position")
 
 
+def time_series_curve_type(time_series: ET.Element) -> Optional[str]:
+    """Get the ENTSO-E curve type for one time series."""
+    return time_series.findtext("{*}curveType")
+
+
 def select_time_series(area: MarketArea, time_series_list: list[ET.Element]) -> list[ET.Element]:
     """Select ENTSO-E time series in preferred order for import."""
     if len(time_series_list) == 0:
@@ -111,32 +116,62 @@ def preferred_sequence_position(area: MarketArea, selected_time_series_list: lis
 def iter_time_series_points(
     time_series_list: list[ET.Element],
     area: MarketArea,
-) -> Iterator[tuple[Optional[str], str, Arrow, Arrow, str]]:
+) -> Iterator[tuple[Optional[str], str, Arrow, Arrow, str, bool]]:
     """Yield parsed ENTSO-E price point fields from selected time series."""
     for time_series in time_series_list:
         sequence_position = time_series_sequence_position(time_series)
+        curve_type = time_series_curve_type(time_series)
         for period in time_series.findall("{*}Period"):
             resolution = period.findtext("{*}resolution")
             period_start_text = period.findtext("{*}timeInterval/{*}start")
+            period_end_text = period.findtext("{*}timeInterval/{*}end")
             if resolution is None or period_start_text is None:
                 continue
 
             interval_seconds = prices.resolution_to_seconds(resolution)
             period_start = arrow.get(period_start_text).to(area.timezone)
+            explicit_points = {}
             for point in period.findall("{*}Point"):
                 position_text = point.findtext("{*}position")
                 price_text = point.findtext("{*}price.amount")
                 if position_text is None or price_text is None:
                     continue
 
-                position = int(position_text)
+                explicit_points[int(position_text)] = price_text
+
+            if curve_type != "A03" or period_end_text is None:
+                for position, price_text in sorted(explicit_points.items()):
+                    start_timestamp = period_start.shift(seconds=interval_seconds * (position - 1))
+                    yield (
+                        sequence_position,
+                        resolution,
+                        start_timestamp,
+                        start_timestamp.shift(seconds=interval_seconds),
+                        price_text,
+                        False,
+                    )
+                continue
+
+            period_end = arrow.get(period_end_text).to(area.timezone)
+            expected_point_count = int((period_end.int_timestamp - period_start.int_timestamp) / interval_seconds)
+            current_price_text = None
+            for position in range(1, expected_point_count + 1):
+                carried_forward = False
+                if position in explicit_points:
+                    current_price_text = explicit_points[position]
+                elif current_price_text is not None:
+                    carried_forward = True
+                else:
+                    continue
+
                 start_timestamp = period_start.shift(seconds=interval_seconds * (position - 1))
                 yield (
                     sequence_position,
                     resolution,
                     start_timestamp,
                     start_timestamp.shift(seconds=interval_seconds),
-                    price_text,
+                    current_price_text,
+                    carried_forward,
                 )
 
 
@@ -148,7 +183,7 @@ def local_days_with_sequence_price(
     """Return local days with at least one price in the given sequence."""
     return {
         start_timestamp.date()
-        for point_sequence, _, start_timestamp, _, _ in iter_time_series_points(time_series_list, area)
+        for point_sequence, _, start_timestamp, _, _, _ in iter_time_series_points(time_series_list, area)
         if point_sequence == sequence_position
     }
 
@@ -210,8 +245,10 @@ def parse_downloaded_data(area: MarketArea, xml_content: bytes, now: Optional[Ar
     new_data.sequence_position = primary_sequence_position
     new_data.fallback_sequence_positions = []
     new_data.fallback_price_count = 0
+    new_data.carried_forward_price_count = 0
+    new_data.interpolated_price_count = 0
     prices_by_start_timestamp = {}
-    for sequence_position, resolution, start_timestamp, end_timestamp, price_text in iter_time_series_points(
+    for sequence_position, resolution, start_timestamp, end_timestamp, price_text, carried_forward in iter_time_series_points(
         selected_time_series_list,
         area,
     ):
@@ -227,6 +264,7 @@ def parse_downloaded_data(area: MarketArea, xml_content: bytes, now: Optional[Ar
         new_point.sequence_position = sequence_position
         new_point.is_fallback = sequence_position != new_data.sequence_position
         new_point.is_interpolated = False
+        new_point.is_carried_forward = carried_forward
 
         local_day = new_point.start_timestamp.date()
         if (
@@ -244,10 +282,11 @@ def parse_downloaded_data(area: MarketArea, xml_content: bytes, now: Optional[Ar
             new_data.fallback_price_count += 1
             if sequence_position not in new_data.fallback_sequence_positions:
                 new_data.fallback_sequence_positions.append(sequence_position)
+        if new_point.is_carried_forward:
+            new_data.carried_forward_price_count += 1
         prices_by_start_timestamp[start_int_timestamp] = new_point
 
     new_data.resolution = selected_resolution
-    interpolate_missing_prices(new_data, area, prices_by_start_timestamp)
     new_data.prices = BoxList(sorted(prices_by_start_timestamp.values(), key=lambda point: point.start_timestamp))
     if len(new_data.prices) == 0:
         raise ValueError(f"No usable ENTSO-E price points found for {area.key}.")
@@ -258,53 +297,6 @@ def parse_downloaded_data(area: MarketArea, xml_content: bytes, now: Optional[Ar
         )
 
     return new_data
-
-
-def interpolate_missing_prices(data: Box, area: MarketArea, prices_by_start_timestamp: dict[int, Box]):
-    """Fill tiny internal PT15M gaps with linearly interpolated prices."""
-    if data.resolution != "PT15M" or len(prices_by_start_timestamp) < 2:
-        data.interpolated_price_count = 0
-        return
-
-    interval_seconds = prices.resolution_to_seconds(data.resolution)
-    sorted_points = sorted(prices_by_start_timestamp.values(), key=lambda point: point.start_timestamp)
-    interpolated_points = []
-
-    for previous_point, next_point in zip(sorted_points, sorted_points[1:]):
-        missing_interval_count = int(
-            (
-                next_point.start_timestamp.int_timestamp
-                - previous_point.end_timestamp.int_timestamp
-            ) / interval_seconds
-        )
-        if missing_interval_count <= 0 or missing_interval_count > 2:
-            continue
-
-        price_step = (
-            next_point.marketprice.value
-            - previous_point.marketprice.value
-        ) / Decimal(missing_interval_count + 1)
-        for offset in range(1, missing_interval_count + 1):
-            interpolated_point = Box()
-            interpolated_point.start_timestamp = previous_point.start_timestamp.shift(
-                seconds=interval_seconds * offset
-            )
-            interpolated_point.end_timestamp = interpolated_point.start_timestamp.shift(seconds=interval_seconds)
-            interpolated_point.marketprice = prices.MarketPrice(
-                previous_point.marketprice.value + price_step * offset,
-                area,
-            )
-            interpolated_point.sequence_position = "interpolated"
-            interpolated_point.is_fallback = False
-            interpolated_point.is_interpolated = True
-            interpolated_points.append(interpolated_point)
-
-    for interpolated_point in interpolated_points:
-        prices_by_start_timestamp[interpolated_point.start_timestamp.int_timestamp] = interpolated_point
-
-    data.interpolated_price_count = len(interpolated_points)
-    if data.interpolated_price_count > 0:
-        logger.warning(f"Interpolated {data.interpolated_price_count} missing {area.key} price points.")
 
 
 def get_data_refresh_lock(area_key: str, config: Config) -> ExtendedFileLock:

@@ -102,9 +102,16 @@ def refresh_price_data(point_specs):
     return data
 
 
-def notification_price_data(day: str, resolution: str = "PT60M", fallback_indexes=None, interpolated_indexes=None):
+def notification_price_data(
+    day: str,
+    resolution: str = "PT60M",
+    fallback_indexes=None,
+    interpolated_indexes=None,
+    carried_forward_indexes=None,
+):
     fallback_indexes = set(fallback_indexes or [])
     interpolated_indexes = set(interpolated_indexes or [])
+    carried_forward_indexes = set(carried_forward_indexes or [])
     interval_seconds = prices.resolution_to_seconds(resolution)
     start = arrow.get(f"{day}T00:00:00+02:00")
     point_count = int(24 * 60 * 60 / interval_seconds)
@@ -120,6 +127,7 @@ def notification_price_data(day: str, resolution: str = "PT60M", fallback_indexe
                             "end_timestamp": start.shift(seconds=(index + 1) * interval_seconds),
                             "is_fallback": index in fallback_indexes,
                             "is_interpolated": index in interpolated_indexes,
+                            "is_carried_forward": index in carried_forward_indexes,
                         }
                     )
                     for index in range(point_count)
@@ -290,6 +298,15 @@ class NotificationPayloadEdgeTests(unittest.TestCase):
             return_value=arrow.get("2026-05-25T14:00:00+02:00"),
         ):
             self.assertIsNone(notification_rules.get_notifiable_prices(interpolated_prices))
+
+    def test_notification_prices_allow_carried_forward_points(self):
+        carried_forward_prices = notification_price_data("2026-05-26", carried_forward_indexes=[12, 13, 14])
+
+        with patch(
+            "awattprice_notifications.rules.arrow.now",
+            return_value=arrow.get("2026-05-25T14:00:00+02:00"),
+        ):
+            self.assertIsNotNone(notification_rules.get_notifiable_prices(carried_forward_prices))
 
     def test_price_refresh_freshness_allows_recent_updates_only(self):
         last_update = arrow.get("2026-05-25T15:00:00+02:00")

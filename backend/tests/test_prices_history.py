@@ -24,6 +24,7 @@ AREA = defaults.get_market_area("DE-LU")
 
 def price_xml(resolution: str = "PT60M") -> bytes:
     if resolution == "PT15M":
+        period_end = "2026-05-13T01:00Z"
         points = """
       <Point><position>1</position><price.amount>10</price.amount></Point>
       <Point><position>2</position><price.amount>20</price.amount></Point>
@@ -31,6 +32,7 @@ def price_xml(resolution: str = "PT60M") -> bytes:
       <Point><position>4</position><price.amount>40</price.amount></Point>
 """
     else:
+        period_end = "2026-05-13T02:00Z"
         points = """
       <Point><position>1</position><price.amount>10</price.amount></Point>
       <Point><position>2</position><price.amount>20</price.amount></Point>
@@ -43,10 +45,11 @@ def price_xml(resolution: str = "PT60M") -> bytes:
     <out_Domain.mRID>{AREA.entsoe_domain}</out_Domain.mRID>
     <currency_Unit.name>EUR</currency_Unit.name>
     <classificationSequence_AttributeInstanceComponent.position>1</classificationSequence_AttributeInstanceComponent.position>
+    <curveType>A03</curveType>
     <Period>
       <timeInterval>
         <start>2026-05-13T00:00Z</start>
-        <end>2026-05-13T02:00Z</end>
+        <end>{period_end}</end>
       </timeInterval>
       <resolution>{resolution}</resolution>
 {points}
@@ -63,6 +66,7 @@ def unclassified_multi_series_xml() -> bytes:
     <in_Domain.mRID>{AREA.entsoe_domain}</in_Domain.mRID>
     <out_Domain.mRID>{AREA.entsoe_domain}</out_Domain.mRID>
     <currency_Unit.name>EUR</currency_Unit.name>
+    <curveType>A03</curveType>
     <Period>
       <timeInterval>
         <start>2026-05-13T00:00Z</start>
@@ -77,6 +81,7 @@ def unclassified_multi_series_xml() -> bytes:
     <in_Domain.mRID>{AREA.entsoe_domain}</in_Domain.mRID>
     <out_Domain.mRID>{AREA.entsoe_domain}</out_Domain.mRID>
     <currency_Unit.name>EUR</currency_Unit.name>
+    <curveType>A03</curveType>
     <Period>
       <timeInterval>
         <start>2026-05-13T02:00Z</start>
@@ -99,6 +104,7 @@ def classified_multi_sequence_xml(sequence_one_points: str) -> bytes:
     <out_Domain.mRID>{AREA.entsoe_domain}</out_Domain.mRID>
     <currency_Unit.name>EUR</currency_Unit.name>
     <classificationSequence_AttributeInstanceComponent.position>2</classificationSequence_AttributeInstanceComponent.position>
+    <curveType>A03</curveType>
     <Period>
       <timeInterval>
         <start>2026-05-13T00:00Z</start>
@@ -116,6 +122,7 @@ def classified_multi_sequence_xml(sequence_one_points: str) -> bytes:
     <out_Domain.mRID>{AREA.entsoe_domain}</out_Domain.mRID>
     <currency_Unit.name>EUR</currency_Unit.name>
     <classificationSequence_AttributeInstanceComponent.position>1</classificationSequence_AttributeInstanceComponent.position>
+    <curveType>A03</curveType>
     <Period>
       <timeInterval>
         <start>2026-05-13T00:00Z</start>
@@ -129,7 +136,11 @@ def classified_multi_sequence_xml(sequence_one_points: str) -> bytes:
 """.encode()
 
 
-def classified_multi_sequence_xml_with_points(sequence_one_points: str, sequence_two_points: str) -> bytes:
+def classified_multi_sequence_xml_with_points(
+    sequence_one_points: str,
+    sequence_two_points: str,
+    period_end: str = "2026-05-13T01:15Z",
+) -> bytes:
     return f"""<?xml version="1.0" encoding="UTF-8"?>
 <Publication_MarketDocument xmlns="urn:iec62325.351:tc57wg16:451-3:publicationdocument:7:3">
   <TimeSeries>
@@ -137,10 +148,11 @@ def classified_multi_sequence_xml_with_points(sequence_one_points: str, sequence
     <out_Domain.mRID>{AREA.entsoe_domain}</out_Domain.mRID>
     <currency_Unit.name>EUR</currency_Unit.name>
     <classificationSequence_AttributeInstanceComponent.position>2</classificationSequence_AttributeInstanceComponent.position>
+    <curveType>A03</curveType>
     <Period>
       <timeInterval>
         <start>2026-05-13T00:00Z</start>
-        <end>2026-05-13T01:15Z</end>
+        <end>{period_end}</end>
       </timeInterval>
       <resolution>PT15M</resolution>
 {sequence_two_points}
@@ -151,10 +163,11 @@ def classified_multi_sequence_xml_with_points(sequence_one_points: str, sequence
     <out_Domain.mRID>{AREA.entsoe_domain}</out_Domain.mRID>
     <currency_Unit.name>EUR</currency_Unit.name>
     <classificationSequence_AttributeInstanceComponent.position>1</classificationSequence_AttributeInstanceComponent.position>
+    <curveType>A03</curveType>
     <Period>
       <timeInterval>
         <start>2026-05-13T00:00Z</start>
-        <end>2026-05-13T01:15Z</end>
+        <end>{period_end}</end>
       </timeInterval>
       <resolution>PT15M</resolution>
 {sequence_one_points}
@@ -172,6 +185,7 @@ def tomorrow_fallback_sequence_xml() -> bytes:
     <out_Domain.mRID>{AREA.entsoe_domain}</out_Domain.mRID>
     <currency_Unit.name>EUR</currency_Unit.name>
     <classificationSequence_AttributeInstanceComponent.position>1</classificationSequence_AttributeInstanceComponent.position>
+    <curveType>A03</curveType>
     <Period>
       <timeInterval>
         <start>2026-05-12T22:00Z</start>
@@ -187,6 +201,7 @@ def tomorrow_fallback_sequence_xml() -> bytes:
     <out_Domain.mRID>{AREA.entsoe_domain}</out_Domain.mRID>
     <currency_Unit.name>EUR</currency_Unit.name>
     <classificationSequence_AttributeInstanceComponent.position>2</classificationSequence_AttributeInstanceComponent.position>
+    <curveType>A03</curveType>
     <Period>
       <timeInterval>
         <start>2026-05-13T22:00Z</start>
@@ -280,7 +295,7 @@ class PriceHistoryTests(unittest.TestCase):
         self.assertEqual(data.prices[0].marketprice.value, Decimal("10"))
         self.assertEqual(data.prices[-1].marketprice.value, Decimal("40"))
 
-    def test_preferred_sequence_is_filled_from_fallback_sequence(self):
+    def test_preferred_sequence_carries_forward_before_fallback_sequence(self):
         sequence_one_points = """
       <Point><position>1</position><price.amount>10</price.amount></Point>
       <Point><position>2</position><price.amount>20</price.amount></Point>
@@ -291,20 +306,24 @@ class PriceHistoryTests(unittest.TestCase):
         response = prices.parse_to_response_data(data)
 
         self.assertEqual(data.sequence_position, "1")
-        self.assertEqual(data.fallback_sequence_positions, ["2"])
-        self.assertEqual(data.fallback_price_count, 1)
+        self.assertEqual(data.fallback_sequence_positions, [])
+        self.assertEqual(data.fallback_price_count, 0)
+        self.assertEqual(data.carried_forward_price_count, 1)
         self.assertEqual([point.marketprice.value for point in data.prices], [
             Decimal("10"),
             Decimal("20"),
-            Decimal("300"),
+            Decimal("20"),
             Decimal("40"),
         ])
-        self.assertEqual([point.sequence_position for point in data.prices], ["1", "1", "2", "1"])
-        self.assertEqual([point.is_fallback for point in data.prices], [False, False, True, False])
-        self.assertEqual(response.fallback_price_count, 1)
-        self.assertTrue(response.prices[2].is_fallback)
+        self.assertEqual([point.sequence_position for point in data.prices], ["1", "1", "1", "1"])
+        self.assertEqual([point.is_fallback for point in data.prices], [False, False, False, False])
+        self.assertEqual([point.is_carried_forward for point in data.prices], [False, False, True, False])
+        self.assertEqual(response.fallback_price_count, 0)
+        self.assertEqual(response.carried_forward_price_count, 1)
+        self.assertTrue(response.prices[2].is_carried_forward)
+        self.assertFalse(response.prices[2].is_interpolated)
 
-    def test_tiny_missing_gap_is_interpolated_when_no_sequence_has_price(self):
+    def test_missing_a03_gap_is_carried_forward_without_interpolation(self):
         sequence_points = """
       <Point><position>1</position><price.amount>10</price.amount></Point>
       <Point><position>4</position><price.amount>40</price.amount></Point>
@@ -312,38 +331,80 @@ class PriceHistoryTests(unittest.TestCase):
 
         data = price_refresher.parse_downloaded_data(
             AREA,
-            classified_multi_sequence_xml_with_points(sequence_points, sequence_points),
+            classified_multi_sequence_xml_with_points(
+                sequence_points,
+                sequence_points,
+                period_end="2026-05-13T01:00Z",
+            ),
         )
         response = prices.parse_to_response_data(data)
 
         self.assertEqual([point.marketprice.value for point in data.prices], [
             Decimal("10"),
-            Decimal("20"),
-            Decimal("30"),
+            Decimal("10"),
+            Decimal("10"),
             Decimal("40"),
         ])
-        self.assertEqual(data.interpolated_price_count, 2)
-        self.assertEqual([point.is_interpolated for point in data.prices], [False, True, True, False])
-        self.assertEqual(response.interpolated_price_count, 2)
-        self.assertTrue(response.prices[1].is_interpolated)
+        self.assertEqual(data.carried_forward_price_count, 2)
+        self.assertEqual(data.interpolated_price_count, 0)
+        self.assertEqual([point.is_carried_forward for point in data.prices], [False, True, True, False])
+        self.assertFalse(any(point.is_interpolated for point in data.prices))
+        self.assertEqual(response.carried_forward_price_count, 2)
+        self.assertEqual(response.interpolated_price_count, 0)
 
-    def test_wider_missing_gap_is_not_interpolated(self):
+    def test_larger_a03_gap_is_carried_forward_without_limit(self):
         sequence_points = """
-      <Point><position>1</position><price.amount>10</price.amount></Point>
-      <Point><position>5</position><price.amount>50</price.amount></Point>
+      <Point><position>1</position><price.amount>-0.01</price.amount></Point>
+      <Point><position>11</position><price.amount>-0.02</price.amount></Point>
 """
 
         data = price_refresher.parse_downloaded_data(
             AREA,
-            classified_multi_sequence_xml_with_points(sequence_points, sequence_points),
+            classified_multi_sequence_xml_with_points(
+                sequence_points,
+                sequence_points,
+                period_end="2026-05-13T02:45Z",
+            ),
+        )
+
+        self.assertEqual(len(data.prices), 11)
+        self.assertEqual(data.carried_forward_price_count, 9)
+        self.assertEqual(data.interpolated_price_count, 0)
+        self.assertEqual([point.marketprice.value for point in data.prices[1:10]], [Decimal("-0.01")] * 9)
+        self.assertEqual(data.prices[-1].marketprice.value, Decimal("-0.02"))
+
+    def test_leading_preferred_sequence_gap_can_use_fallback_sequence(self):
+        sequence_one_points = """
+      <Point><position>2</position><price.amount>20</price.amount></Point>
+      <Point><position>4</position><price.amount>40</price.amount></Point>
+"""
+        sequence_two_points = """
+      <Point><position>1</position><price.amount>100</price.amount></Point>
+      <Point><position>2</position><price.amount>200</price.amount></Point>
+      <Point><position>3</position><price.amount>300</price.amount></Point>
+      <Point><position>4</position><price.amount>400</price.amount></Point>
+"""
+
+        data = price_refresher.parse_downloaded_data(
+            AREA,
+            classified_multi_sequence_xml_with_points(
+                sequence_one_points,
+                sequence_two_points,
+                period_end="2026-05-13T01:00Z",
+            ),
         )
 
         self.assertEqual([point.marketprice.value for point in data.prices], [
-            Decimal("10"),
-            Decimal("50"),
+            Decimal("100"),
+            Decimal("20"),
+            Decimal("20"),
+            Decimal("40"),
         ])
+        self.assertEqual(data.fallback_price_count, 1)
+        self.assertEqual(data.carried_forward_price_count, 1)
         self.assertEqual(data.interpolated_price_count, 0)
-        self.assertFalse(any(point.is_interpolated for point in data.prices))
+        self.assertEqual([point.sequence_position for point in data.prices], ["2", "1", "1", "1"])
+        self.assertEqual([point.is_fallback for point in data.prices], [True, False, False, False])
 
     def test_completed_preferred_sequence_replaces_fallback_prices(self):
         sequence_one_points = """

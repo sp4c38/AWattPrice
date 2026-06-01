@@ -70,7 +70,11 @@ Configure both Cronitor monitors as Jobs. The notifications monitor should use a
 
 ## Deploy
 
-Use `deploy.v3.sh` for deployment. Smoke test after deploy:
+Use `deploy-blue-green.v3.sh` for deployment. The script backs up
+`notification-profiles.json` to `backups/notification-profiles/` before it
+builds or changes anything on the server.
+
+Smoke test after deploy:
 
 ```sh
 curl https://api.awattprice.com/v3/areas/

@@ -1,5 +1,6 @@
 # _________ OTHER IGNORES _________
 .venv_activate
+backend/backups/
 
 # _________ XCODE IGNORES _________
 # User settings

@@ -8,7 +8,12 @@
 # Usage:
 #   ./deploy-blue-green.v3.sh user@server
 #
-# The same env-var overrides as deploy.v3.sh are supported, plus:
+# Env-var overrides:
+#   AWATTPRICE_IMAGE       canonical Docker image tag       (default awattprice-backend:v3)
+#   AWATTPRICE_HOST_ROOT   config/data root on the server   (default /etc/awattprice-v3)
+#   AWATTPRICE_COMPOSE_ROOT compose file root on the server  (default /srv/awattprice-v3)
+#   AWATTPRICE_NOTIFICATION_BACKUP_DIR local notification profile backup directory
+#                                                       (default ./backups/notification-profiles)
 #   AWATTPRICE_BLUE_PORT   port blue API is currently on  (default 8003)
 #   AWATTPRICE_GREEN_PORT  port green API will start on   (default 8004)
 #   AWATTPRICE_NGINX_CONF  nginx site config              (default /etc/nginx/sites-enabled/awattprice)
@@ -37,17 +42,43 @@ BLUE_PORT="${AWATTPRICE_BLUE_PORT:-8003}"
 GREEN_PORT="${AWATTPRICE_GREEN_PORT:-8004}"
 NGINX_CONF="${AWATTPRICE_NGINX_CONF:-/etc/nginx/sites-enabled/awattprice}"
 SETTLE_SECONDS="${AWATTPRICE_SETTLE_SECONDS:-8}"
+NOTIFICATION_BACKUP_DIR="${AWATTPRICE_NOTIFICATION_BACKUP_DIR:-./backups/notification-profiles}"
 
 BLUE_API="awattprice-backend-v3"
 GREEN_API="awattprice-backend-v3-green"
 GREEN_NOTIFICATIONS="awattprice-notifications-v3-green"
 GREEN_REFRESHER="awattprice-data-refresher-v3-green"
+NOTIFICATION_PROFILE_STORE="${HOST_ROOT}/data/notification-profiles.json"
 
 step() { echo; echo "==> $*"; }
 info() { echo "    $*"; }
 
 # ---------------------------------------------------------------------------
-# Step 1: Build green image on the server
+# Step 1: Back up notification profiles locally
+# ---------------------------------------------------------------------------
+step "Backing up notification profiles from $SERVER"
+
+mkdir -p "$NOTIFICATION_BACKUP_DIR"
+backup_timestamp="$(date -u +%Y%m%dT%H%M%SZ)"
+notification_backup_file="${NOTIFICATION_BACKUP_DIR}/notification-profiles-${backup_timestamp}.json"
+
+if ! ssh "$SERVER" "test -s '$NOTIFICATION_PROFILE_STORE'"; then
+  echo "ERROR: Missing or empty notification profile store on server: $NOTIFICATION_PROFILE_STORE" >&2
+  echo "Aborting before deploy because notification profiles are the only non-restorable data." >&2
+  exit 1
+fi
+
+scp -o Compression=no "$SERVER:$NOTIFICATION_PROFILE_STORE" "$notification_backup_file"
+
+if ! python3 -m json.tool "$notification_backup_file" >/dev/null; then
+  echo "ERROR: Downloaded notification profile backup is not valid JSON: $notification_backup_file" >&2
+  exit 1
+fi
+
+info "Saved notification profile backup: $notification_backup_file"
+
+# ---------------------------------------------------------------------------
+# Step 2: Build green image on the server
 # ---------------------------------------------------------------------------
 step "Building green image '$GREEN_IMAGE' on $SERVER"
 
@@ -66,7 +97,7 @@ tar \
   -czf - . | ssh "$SERVER" "$REMOTE_DOCKER build $remote_build_platform_arg -t '$GREEN_IMAGE' -"
 
 # ---------------------------------------------------------------------------
-# Step 2: Start green API only
+# Step 3: Start green API only
 # ---------------------------------------------------------------------------
 step "Starting green API on port $GREEN_PORT"
 
@@ -95,7 +126,7 @@ $REMOTE_DOCKER run -d \
 REMOTE
 
 # ---------------------------------------------------------------------------
-# Step 3: Smoke-test green
+# Step 4: Smoke-test green
 # ---------------------------------------------------------------------------
 step "Smoke-testing green API (waiting up to 20s)"
 
@@ -141,7 +172,7 @@ if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
 fi
 
 # ---------------------------------------------------------------------------
-# Step 4: Switch nginx to green (zero-downtime graceful reload)
+# Step 5: Switch nginx to green (zero-downtime graceful reload)
 # ---------------------------------------------------------------------------
 step "Switching nginx: port $BLUE_PORT -> $GREEN_PORT"
 
@@ -165,13 +196,13 @@ REMOTE
 info "Live traffic is now on green (port $GREEN_PORT)."
 
 # ---------------------------------------------------------------------------
-# Step 5: Stop blue API only
+# Step 6: Stop blue API only
 # ---------------------------------------------------------------------------
 step "Stopping blue API"
 ssh "$SERVER" "$REMOTE_DOCKER stop '$BLUE_API'"
 
 # ---------------------------------------------------------------------------
-# Step 6: Normalise API — retag and restart compose API on blue port
+# Step 7: Normalise API — retag and restart compose API on blue port
 # ---------------------------------------------------------------------------
 step "Normalising API: retagging and restarting compose API on port $BLUE_PORT"
 

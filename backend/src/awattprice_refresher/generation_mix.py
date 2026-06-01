@@ -1,5 +1,4 @@
 """Refresh ENTSO-E generation mix caches."""
-import asyncio
 import filelock
 import httpx
 
@@ -23,6 +22,7 @@ from awattprice import defaults
 from awattprice import generation_mix
 from awattprice.prices import area_file_key
 from awattprice.utils import ExtendedFileLock
+from awattprice.utils import acquire_file_lock_immediate
 from awattprice.utils import log_attempts
 from awattprice.market_areas import MarketArea
 
@@ -31,29 +31,6 @@ def get_data_refresh_lock(area_key: str, config: Config) -> ExtendedFileLock:
     """Get file lock used when refreshing generation data."""
     lock_file_name = defaults.GENERATION_REFRESH_LOCK_FILE_NAME.format(area_file_key(area_key))
     return ExtendedFileLock(config.paths.generation_data_dir / lock_file_name)
-
-
-async def acquire_refresh_lock_immediate(
-    lock: ExtendedFileLock, timeout: float = defaults.PRICE_DATA_REFRESH_LOCK_TIMEOUT
-) -> bool:
-    """Acquire the refresh lock either immediately or with waiting."""
-    async_acquire = asyncio.to_thread
-    try:
-        await async_acquire(lock.acquire, timeout=0)
-    except filelock.Timeout:
-        pass
-    else:
-        return True
-
-    if timeout <= 0:
-        raise filelock.Timeout(lock.lock_file)
-
-    try:
-        await async_acquire(lock.acquire, timeout=timeout)
-    except filelock.Timeout:
-        raise
-    else:
-        return False
 
 
 def get_entsoe_query_params(area: MarketArea) -> dict[str, str]:
@@ -119,7 +96,7 @@ async def refresh_generation_mix(
     area = defaults.get_market_area(area_key)
     refresh_lock = get_data_refresh_lock(area_key, config)
     try:
-        could_acquire_immediately = await acquire_refresh_lock_immediate(refresh_lock, timeout=lock_timeout)
+        could_acquire_immediately = await acquire_file_lock_immediate(refresh_lock, timeout=lock_timeout)
     except filelock.Timeout:
         logger.debug(f"Skipping generation refresh for {area.key} because another refresh is running.")
         return None

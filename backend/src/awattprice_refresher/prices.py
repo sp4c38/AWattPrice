@@ -5,11 +5,11 @@ import xml.etree.ElementTree as ET
 
 from datetime import date
 from decimal import Decimal
+from collections.abc import Iterator
 from typing import Optional
 
 import arrow
 
-from aiofile import async_open
 from arrow import Arrow
 from box import Box
 from box import BoxList
@@ -28,6 +28,7 @@ from awattprice import prices
 from awattprice import utils
 from awattprice.market_areas import MarketArea
 from awattprice.utils import ExtendedFileLock
+from awattprice.utils import acquire_file_lock_immediate
 from awattprice.utils import log_attempts
 
 
@@ -107,40 +108,49 @@ def preferred_sequence_position(area: MarketArea, selected_time_series_list: lis
     return sequence_positions[0]
 
 
-def local_day_has_sequence_price(
+def iter_time_series_points(
+    time_series_list: list[ET.Element],
+    area: MarketArea,
+) -> Iterator[tuple[Optional[str], str, Arrow, Arrow, str]]:
+    """Yield parsed ENTSO-E price point fields from selected time series."""
+    for time_series in time_series_list:
+        sequence_position = time_series_sequence_position(time_series)
+        for period in time_series.findall("{*}Period"):
+            resolution = period.findtext("{*}resolution")
+            period_start_text = period.findtext("{*}timeInterval/{*}start")
+            if resolution is None or period_start_text is None:
+                continue
+
+            interval_seconds = prices.resolution_to_seconds(resolution)
+            period_start = arrow.get(period_start_text).to(area.timezone)
+            for point in period.findall("{*}Point"):
+                position_text = point.findtext("{*}position")
+                price_text = point.findtext("{*}price.amount")
+                if position_text is None or price_text is None:
+                    continue
+
+                position = int(position_text)
+                start_timestamp = period_start.shift(seconds=interval_seconds * (position - 1))
+                yield (
+                    sequence_position,
+                    resolution,
+                    start_timestamp,
+                    start_timestamp.shift(seconds=interval_seconds),
+                    price_text,
+                )
+
+
+def local_days_with_sequence_price(
     time_series_list: list[ET.Element],
     area: MarketArea,
     sequence_position: Optional[str],
 ) -> set[date]:
     """Return local days with at least one price in the given sequence."""
-    local_days = set()
-    for time_series in time_series_list:
-        if time_series_sequence_position(time_series) != sequence_position:
-            continue
-        for period in time_series.findall("{*}Period"):
-            resolution = period.findtext("{*}resolution")
-            if resolution is None:
-                continue
-
-            interval_seconds = prices.resolution_to_seconds(resolution)
-            period_start = arrow.get(period.findtext("{*}timeInterval/{*}start")).to(area.timezone)
-            for point in period.findall("{*}Point"):
-                if point.findtext("{*}position") is None or point.findtext("{*}price.amount") is None:
-                    continue
-                position = int(point.findtext("{*}position"))
-                point_start = period_start.shift(seconds=interval_seconds * (position - 1))
-                local_days.add(point_start.date())
-
-    return local_days
-
-
-def allow_fallback_only_local_day(area: MarketArea, local_day: date, now: Optional[Arrow] = None) -> bool:
-    """Allow a day with no primary auction only after the local late fallback cutoff."""
-    now_local = (now or arrow.now(area.timezone)).to(area.timezone)
-    tomorrow = now_local.floor("day").shift(days=+1).date()
-    if local_day != tomorrow:
-        return True
-    return now_local.hour >= defaults.ENTSOE_FULL_FALLBACK_UPDATE_HOUR
+    return {
+        start_timestamp.date()
+        for point_sequence, _, start_timestamp, _, _ in iter_time_series_points(time_series_list, area)
+        if point_sequence == sequence_position
+    }
 
 
 def has_blocked_full_day_fallback(data: Optional[Box], area: MarketArea, now: Optional[Arrow] = None) -> bool:
@@ -184,7 +194,10 @@ def parse_downloaded_data(area: MarketArea, xml_content: bytes, now: Optional[Ar
     selected_time_series_list = select_time_series(area, matching_time_series)
     first_selected_time_series = selected_time_series_list[0]
     primary_sequence_position = preferred_sequence_position(area, selected_time_series_list)
-    primary_local_days = local_day_has_sequence_price(selected_time_series_list, area, primary_sequence_position)
+    primary_local_days = local_days_with_sequence_price(selected_time_series_list, area, primary_sequence_position)
+    now_local = (now or arrow.now(area.timezone)).to(area.timezone)
+    tomorrow = now_local.floor("day").shift(days=+1).date()
+    block_fallback_only_tomorrow = now_local.hour < defaults.ENTSOE_FULL_FALLBACK_UPDATE_HOUR
 
     selected_resolution = None
     new_data = Box()
@@ -198,51 +211,40 @@ def parse_downloaded_data(area: MarketArea, xml_content: bytes, now: Optional[Ar
     new_data.fallback_sequence_positions = []
     new_data.fallback_price_count = 0
     prices_by_start_timestamp = {}
-    for selected_time_series in selected_time_series_list:
-        sequence_position = time_series_sequence_position(selected_time_series)
-        for period in selected_time_series.findall("{*}Period"):
-            resolution = period.findtext("{*}resolution")
-            if resolution is None:
-                continue
-            if selected_resolution is None:
-                selected_resolution = resolution
-            elif selected_resolution != resolution:
-                raise ValueError(f"Mixed ENTSO-E resolutions for {area.key}: {selected_resolution} and {resolution}.")
+    for sequence_position, resolution, start_timestamp, end_timestamp, price_text in iter_time_series_points(
+        selected_time_series_list,
+        area,
+    ):
+        if selected_resolution is None:
+            selected_resolution = resolution
+        elif selected_resolution != resolution:
+            raise ValueError(f"Mixed ENTSO-E resolutions for {area.key}: {selected_resolution} and {resolution}.")
 
-            interval_seconds = prices.resolution_to_seconds(resolution)
-            period_start = arrow.get(period.findtext("{*}timeInterval/{*}start")).to(area.timezone)
+        new_point = Box()
+        new_point.start_timestamp = start_timestamp
+        new_point.end_timestamp = end_timestamp
+        new_point.marketprice = prices.MarketPrice(Decimal(str(price_text)), area)
+        new_point.sequence_position = sequence_position
+        new_point.is_fallback = sequence_position != new_data.sequence_position
+        new_point.is_interpolated = False
 
-            for point in period.findall("{*}Point"):
-                position_text = point.findtext("{*}position")
-                price_text = point.findtext("{*}price.amount")
-                if position_text is None or price_text is None:
-                    continue
+        local_day = new_point.start_timestamp.date()
+        if (
+            new_point.is_fallback
+            and local_day not in primary_local_days
+            and local_day == tomorrow
+            and block_fallback_only_tomorrow
+        ):
+            continue
 
-                new_point = Box()
-                position = int(position_text)
-                new_point.start_timestamp = period_start.shift(seconds=interval_seconds * (position - 1))
-                new_point.end_timestamp = new_point.start_timestamp.shift(seconds=interval_seconds)
-                new_point.marketprice = prices.MarketPrice(Decimal(str(price_text)), area)
-                new_point.sequence_position = sequence_position
-                new_point.is_fallback = sequence_position != new_data.sequence_position
-                new_point.is_interpolated = False
-
-                local_day = new_point.start_timestamp.date()
-                if (
-                    new_point.is_fallback
-                    and local_day not in primary_local_days
-                    and not allow_fallback_only_local_day(area, local_day, now)
-                ):
-                    continue
-
-                start_timestamp = new_point.start_timestamp.int_timestamp
-                if start_timestamp in prices_by_start_timestamp:
-                    continue
-                if new_point.is_fallback:
-                    new_data.fallback_price_count += 1
-                    if sequence_position not in new_data.fallback_sequence_positions:
-                        new_data.fallback_sequence_positions.append(sequence_position)
-                prices_by_start_timestamp[start_timestamp] = new_point
+        start_int_timestamp = new_point.start_timestamp.int_timestamp
+        if start_int_timestamp in prices_by_start_timestamp:
+            continue
+        if new_point.is_fallback:
+            new_data.fallback_price_count += 1
+            if sequence_position not in new_data.fallback_sequence_positions:
+                new_data.fallback_sequence_positions.append(sequence_position)
+        prices_by_start_timestamp[start_int_timestamp] = new_point
 
     new_data.resolution = selected_resolution
     interpolate_missing_prices(new_data, area, prices_by_start_timestamp)
@@ -305,33 +307,6 @@ def interpolate_missing_prices(data: Box, area: MarketArea, prices_by_start_time
         logger.warning(f"Interpolated {data.interpolated_price_count} missing {area.key} price points.")
 
 
-def check_update_data(data: Optional[Box], last_update_time: Optional[Arrow], area: MarketArea) -> bool:
-    """Check if current price data is due for update."""
-    if data is None or len(data.prices) == 0:
-        return True
-
-    now_local = arrow.now(area.timezone)
-    if not prices.has_current_price_points(data, area):
-        return True
-
-    if last_update_time is not None:
-        next_update_time = last_update_time.shift(seconds=defaults.ENTSOE_COOLDOWN_INTERVAL)
-        if now_local < next_update_time:
-            return False
-
-    tomorrow_start_local = now_local.floor("day").shift(days=+1)
-    midnight_tomorrow_local = tomorrow_start_local.shift(days=+1)
-    latest_price = max(data.prices, key=lambda point: point.end_timestamp)
-    if latest_price.end_timestamp >= midnight_tomorrow_local:
-        return not prices.has_complete_price_points(data, tomorrow_start_local, midnight_tomorrow_local)
-
-    midnight_today_local = now_local.floor("day").shift(days=+1)
-    if latest_price.end_timestamp < midnight_today_local:
-        return True
-
-    return now_local.hour >= defaults.ENTSOE_UPDATE_HOUR
-
-
 def get_data_refresh_lock(area_key: str, config: Config) -> ExtendedFileLock:
     """Get file lock used when refreshing current price data."""
     lock_file_name = defaults.PRICE_DATA_FILE_NAME.format(prices.area_file_key(area_key)) + ".lock"
@@ -342,29 +317,6 @@ def get_history_data_refresh_lock(area_key: str, day: date, config: Config) -> E
     """Get file lock used when refreshing one historical day."""
     lock_file_path = prices.get_history_data_path(area_key, day, config).with_suffix(".pickle.lock")
     return ExtendedFileLock(lock_file_path)
-
-
-async def acquire_refresh_lock_immediate(
-    lock: ExtendedFileLock, timeout: float = defaults.PRICE_DATA_REFRESH_LOCK_TIMEOUT
-) -> bool:
-    """Acquire a refresh lock immediately or wait up to timeout."""
-    async_acquire = utils.async_wrap(lock.acquire)
-    try:
-        await async_acquire(timeout=0)
-    except filelock.Timeout:
-        pass
-    else:
-        return True
-
-    if timeout <= 0:
-        raise filelock.Timeout(lock.lock_file)
-
-    try:
-        await async_acquire(timeout=timeout)
-    except filelock.Timeout:
-        raise
-    else:
-        return False
 
 
 def get_entsoe_query_params(
@@ -439,20 +391,6 @@ async def update_last_update_time(area_key: str, config: Config):
     await utils.async_atomic_write_text(file_path, str(arrow.now().int_timestamp))
 
 
-async def get_last_update_time(area_key: str, config: Config) -> Optional[Arrow]:
-    """Get the current price refresh timestamp."""
-    file_name = defaults.PRICE_DATA_UPDATE_TS_FILE_NAME.format(prices.area_file_key(area_key))
-    file_path = config.paths.price_data_dir / file_name
-
-    try:
-        async with async_open(file_path, "r") as file:
-            file_content = await file.read()
-    except FileNotFoundError:
-        return None
-
-    return arrow.get(int(file_content))
-
-
 def check_data_new(old_data: Optional[Box], new_data: Box, area: Optional[MarketArea] = None) -> bool:
     """Return true if the downloaded data contains newer price points."""
     if old_data is None or len(old_data.prices) == 0:
@@ -501,7 +439,7 @@ async def refresh_current_prices(
     area = defaults.get_market_area(area_key)
     refresh_lock = get_data_refresh_lock(area_key, config)
     try:
-        could_acquire_immediately = await acquire_refresh_lock_immediate(refresh_lock, timeout=lock_timeout)
+        could_acquire_immediately = await acquire_file_lock_immediate(refresh_lock, timeout=lock_timeout)
     except filelock.Timeout:
         logger.debug(f"Skipping refresh for {area.key} because another refresh is already running.")
         return None
@@ -535,7 +473,7 @@ async def refresh_history_prices(area_key: str, day: date, config: Config) -> Op
     prices.get_history_data_dir(config).mkdir(parents=True, exist_ok=True)
     refresh_lock = get_history_data_refresh_lock(area_key, day, config)
     try:
-        could_acquire_immediately = await acquire_refresh_lock_immediate(refresh_lock)
+        could_acquire_immediately = await acquire_file_lock_immediate(refresh_lock)
     except filelock.Timeout:
         return await prices.get_stored_history_data(area_key, day, config)
 

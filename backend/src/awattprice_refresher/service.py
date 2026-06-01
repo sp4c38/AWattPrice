@@ -1,6 +1,5 @@
 """Warm AWattPrice caches on a global Berlin-time schedule."""
 import asyncio
-import json
 import random
 import time
 import uuid
@@ -22,6 +21,7 @@ from awattprice import configurator
 from awattprice import defaults
 from awattprice import generation_mix
 from awattprice import prices
+from awattprice import utils
 from awattprice.market_areas import MarketArea
 from awattprice_notifications import cronitor
 from awattprice_refresher import generation_mix as generation_mix_refresher
@@ -339,37 +339,23 @@ def load_state(config: Config) -> RefresherState:
     """Load persisted refresher timestamps from disk, falling back to a fresh state."""
     state = RefresherState()
     path = _state_file_path(config)
-    try:
-        raw = json.loads(path.read_text())
-    except FileNotFoundError:
+    error, field_errors = utils.load_timestamp_attrs(path, state, _STATE_ATTRS)
+    if isinstance(error, FileNotFoundError):
         logger.debug("No persisted refresher state found; all tasks are due on first cycle.")
         return state
-    except Exception as exc:
-        logger.warning(f"Couldn't read refresher state ({exc}); all tasks are due on first cycle.")
+    if error is not None:
+        logger.warning(f"Couldn't read refresher state ({error}); all tasks are due on first cycle.")
         return state
 
-    for attr in _STATE_ATTRS:
-        ts = raw.get(attr)
-        if ts is not None:
-            try:
-                setattr(state, attr, arrow.get(int(ts)))
-            except Exception as exc:
-                logger.warning(f"Ignoring unreadable refresher state field {attr!r}: {exc}.")
+    for attr, exc in field_errors.items():
+        logger.warning(f"Ignoring unreadable refresher state field {attr!r}: {exc}.")
 
     return state
 
 
 def save_state(state: RefresherState, config: Config):
     """Persist current refresher timestamps to disk."""
-    data = {
-        attr: getattr(state, attr).int_timestamp if getattr(state, attr) is not None else None
-        for attr in _STATE_ATTRS
-    }
-    path = _state_file_path(config)
-    try:
-        path.write_text(json.dumps(data))
-    except OSError as exc:
-        logger.warning(f"Couldn't save refresher state: {exc}.")
+    utils.save_timestamp_attrs(_state_file_path(config), state, _STATE_ATTRS, "refresher")
 
 
 async def run_cycle(config: Config, state: RefresherState, now=None) -> dict:

@@ -1,22 +1,24 @@
 """Helper functions which don't fit into a bigger category."""
 import asyncio
+import json
 import os
 import tempfile
 
 from contextlib import contextmanager
 from decimal import Decimal
-from functools import partial
 from pathlib import Path
 from typing import Callable
+from typing import Optional
 from typing import Union
 
 import jsonschema
+import arrow
 
 from box import Box
 from fastapi import HTTPException
 from filelock import FileLock
+from filelock import Timeout
 from loguru import logger
-from loguru._logger import Logger
 
 from awattprice import defaults
 
@@ -42,17 +44,28 @@ class ExtendedFileLock(FileLock):
             self.release()
 
 
-def async_wrap(func: Callable):
-    """Wrap a synchronous running function to make it run asynchronous."""
+async def acquire_file_lock_immediate(
+    lock: ExtendedFileLock,
+    timeout: float = defaults.PRICE_DATA_REFRESH_LOCK_TIMEOUT,
+) -> bool:
+    """Acquire a file lock immediately or wait up to timeout.
 
-    async def run(*args, loop=None, executor=None, **kwargs) -> Callable:
-        """Run sync function async."""
-        if loop is None:
-            loop = asyncio.get_event_loop()
-        pfunc = partial(func, *args, **kwargs)
-        return await loop.run_in_executor(executor, pfunc)
+    Returns true when the caller acquired the lock immediately. Returns false
+    when the caller had to wait, so it should reread cached data instead of
+    doing duplicate work.
+    """
+    try:
+        await asyncio.to_thread(lock.acquire, timeout=0)
+    except Timeout:
+        pass
+    else:
+        return True
 
-    return run
+    if timeout <= 0:
+        raise Timeout(lock.lock_file)
+
+    await asyncio.to_thread(lock.acquire, timeout=timeout)
+    return False
 
 
 def atomic_write_bytes(path: Path, data: bytes) -> None:
@@ -84,6 +97,38 @@ async def async_atomic_write_bytes(path: Path, data: bytes) -> None:
 async def async_atomic_write_text(path: Path, text: str) -> None:
     """Async wrapper for atomic text writes."""
     await async_atomic_write_bytes(path, text.encode())
+
+
+def load_timestamp_attrs(path: Path, target: object, attrs: tuple[str, ...]) -> tuple[Optional[Exception], dict[str, Exception]]:
+    """Load integer timestamps from JSON into matching attributes on target."""
+    try:
+        raw = json.loads(path.read_text())
+    except Exception as exc:
+        return exc, {}
+
+    field_errors = {}
+    for attr in attrs:
+        ts = raw.get(attr)
+        if ts is None:
+            continue
+        try:
+            setattr(target, attr, arrow.get(int(ts)))
+        except Exception as exc:
+            field_errors[attr] = exc
+
+    return None, field_errors
+
+
+def save_timestamp_attrs(path: Path, source: object, attrs: tuple[str, ...], service_name: str):
+    """Persist timestamp attributes as compact JSON."""
+    data = {
+        attr: getattr(source, attr).int_timestamp if getattr(source, attr) is not None else None
+        for attr in attrs
+    }
+    try:
+        path.write_text(json.dumps(data))
+    except OSError as exc:
+        logger.warning(f"Couldn't save {service_name} state: {exc}.")
 
 
 def http_exc_validate_json_schema(body: Union[Box, dict, list], schema: dict, http_code: int):

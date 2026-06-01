@@ -299,7 +299,17 @@ class DataRefresherCleanupTests(unittest.TestCase):
                         "generation_points": generation_points,
                     }
                 )
-                await generation_mix.store_data(data, AREA.key, config)
+                response_data = generation_mix.parse_to_history_response_data(
+                    data,
+                    defaults.GENERATION_RETENTION_HOURS,
+                )
+                await generation_mix.store_response_data(
+                    data,
+                    response_data,
+                    AREA.key,
+                    defaults.GENERATION_RETENTION_HOURS,
+                    config,
+                )
                 retained_json_path = generation_mix.get_history_response_data_path(
                     AREA.key,
                     defaults.GENERATION_RETENTION_HOURS,

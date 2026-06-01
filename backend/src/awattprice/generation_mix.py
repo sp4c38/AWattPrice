@@ -187,12 +187,6 @@ async def store_history_response_json(response_json: bytes, area_key: str, hours
     await utils.async_atomic_write_bytes(file_path, response_json)
 
 
-async def store_history_response_data(data: Box, area_key: str, hours: int, config: Config):
-    """Build and store precomputed generation history response JSON."""
-    response_data = parse_to_history_response_data(data, hours=hours)
-    await store_response_data(data, response_data, area_key, hours, config)
-
-
 def metadata_from_response_data(data: Box, response_data: Box, hours: int) -> Box:
     """Build compact generation metadata from response data."""
     metadata = Box()
@@ -217,12 +211,6 @@ async def store_response_data(data: Box, response_data: Box, area_key: str, hour
     await store_history_response_json(response_data_to_json_bytes(response_data), area_key, hours, config)
     await store_metadata(metadata, area_key, config)
     return metadata
-
-
-async def store_data(data: Box, area_key: str, config: Config) -> Box:
-    """Store generation response data to the filesystem."""
-    response_data = parse_to_history_response_data(data, hours=defaults.GENERATION_RETENTION_HOURS)
-    return await store_response_data(data, response_data, area_key, defaults.GENERATION_RETENTION_HOURS, config)
 
 
 def _intervals_by_end_timestamp(generation_data: Box) -> list[BoxList]:

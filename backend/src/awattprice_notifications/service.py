@@ -204,6 +204,7 @@ async def main(run_once: bool = False):
                 raise
         else:
             duration = time.monotonic() - started_at
+            logger.info(f"Notification worker completed: {monitoring_message(result)}")
             await cronitor.send_event(
                 config,
                 "complete",

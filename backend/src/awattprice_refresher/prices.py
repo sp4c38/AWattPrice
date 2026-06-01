@@ -99,7 +99,81 @@ def select_time_series(area: MarketArea, time_series_list: list[ET.Element]) -> 
     return selected_time_series
 
 
-def parse_downloaded_data(area: MarketArea, xml_content: bytes) -> Box:
+def preferred_sequence_position(area: MarketArea, selected_time_series_list: list[ET.Element]) -> Optional[str]:
+    """Get the sequence that should be treated as the primary auction."""
+    sequence_positions = [time_series_sequence_position(time_series) for time_series in selected_time_series_list]
+    if area.preferred_price_sequence is not None and any(sequence is not None for sequence in sequence_positions):
+        return str(area.preferred_price_sequence)
+    return sequence_positions[0]
+
+
+def local_day_has_sequence_price(
+    time_series_list: list[ET.Element],
+    area: MarketArea,
+    sequence_position: Optional[str],
+) -> set[date]:
+    """Return local days with at least one price in the given sequence."""
+    local_days = set()
+    for time_series in time_series_list:
+        if time_series_sequence_position(time_series) != sequence_position:
+            continue
+        for period in time_series.findall("{*}Period"):
+            resolution = period.findtext("{*}resolution")
+            if resolution is None:
+                continue
+
+            interval_seconds = prices.resolution_to_seconds(resolution)
+            period_start = arrow.get(period.findtext("{*}timeInterval/{*}start")).to(area.timezone)
+            for point in period.findall("{*}Point"):
+                if point.findtext("{*}position") is None or point.findtext("{*}price.amount") is None:
+                    continue
+                position = int(point.findtext("{*}position"))
+                point_start = period_start.shift(seconds=interval_seconds * (position - 1))
+                local_days.add(point_start.date())
+
+    return local_days
+
+
+def allow_fallback_only_local_day(area: MarketArea, local_day: date, now: Optional[Arrow] = None) -> bool:
+    """Allow a day with no primary auction only after the local late fallback cutoff."""
+    now_local = (now or arrow.now(area.timezone)).to(area.timezone)
+    tomorrow = now_local.floor("day").shift(days=+1).date()
+    if local_day != tomorrow:
+        return True
+    return now_local.hour >= defaults.ENTSOE_FULL_FALLBACK_UPDATE_HOUR
+
+
+def has_blocked_full_day_fallback(data: Optional[Box], area: MarketArea, now: Optional[Arrow] = None) -> bool:
+    """Return true when cached tomorrow prices are only from fallback before the cutoff."""
+    if data is None or not data.prices:
+        return False
+
+    now_local = (now or arrow.now(area.timezone)).to(area.timezone)
+    if now_local.hour >= defaults.ENTSOE_FULL_FALLBACK_UPDATE_HOUR:
+        return False
+
+    tomorrow = now_local.floor("day").shift(days=+1).date()
+    tomorrow_prices = [
+        price_point
+        for price_point in data.prices
+        if price_point.start_timestamp.to(area.timezone).date() == tomorrow
+    ]
+    if not tomorrow_prices:
+        return False
+
+    preferred_sequence = str(area.preferred_price_sequence) if area.preferred_price_sequence is not None else None
+    has_primary_price = any(
+        not price_point.get("is_fallback", False)
+        and (
+            preferred_sequence is None
+            or price_point.get("sequence_position", data.get("sequence_position")) == preferred_sequence
+        )
+        for price_point in tomorrow_prices
+    )
+    return not has_primary_price and any(price_point.get("is_fallback", False) for price_point in tomorrow_prices)
+
+
+def parse_downloaded_data(area: MarketArea, xml_content: bytes, now: Optional[Arrow] = None) -> Box:
     """Parse downloaded ENTSO-E price data into the cache format."""
     root = ET.fromstring(xml_content)
     if root.tag.endswith("Acknowledgement_MarketDocument"):
@@ -109,6 +183,8 @@ def parse_downloaded_data(area: MarketArea, xml_content: bytes) -> Box:
     matching_time_series = get_matching_time_series(root, area)
     selected_time_series_list = select_time_series(area, matching_time_series)
     first_selected_time_series = selected_time_series_list[0]
+    primary_sequence_position = preferred_sequence_position(area, selected_time_series_list)
+    primary_local_days = local_day_has_sequence_price(selected_time_series_list, area, primary_sequence_position)
 
     selected_resolution = None
     new_data = Box()
@@ -118,7 +194,7 @@ def parse_downloaded_data(area: MarketArea, xml_content: bytes) -> Box:
     new_data.entsoe_domain = area.entsoe_domain
     new_data.timezone = area.timezone
     new_data.currency = first_selected_time_series.findtext("{*}currency_Unit.name") or area.currency
-    new_data.sequence_position = time_series_sequence_position(first_selected_time_series)
+    new_data.sequence_position = primary_sequence_position
     new_data.fallback_sequence_positions = []
     new_data.fallback_price_count = 0
     prices_by_start_timestamp = {}
@@ -150,6 +226,14 @@ def parse_downloaded_data(area: MarketArea, xml_content: bytes) -> Box:
                 new_point.sequence_position = sequence_position
                 new_point.is_fallback = sequence_position != new_data.sequence_position
                 new_point.is_interpolated = False
+
+                local_day = new_point.start_timestamp.date()
+                if (
+                    new_point.is_fallback
+                    and local_day not in primary_local_days
+                    and not allow_fallback_only_local_day(area, local_day, now)
+                ):
+                    continue
 
                 start_timestamp = new_point.start_timestamp.int_timestamp
                 if start_timestamp in prices_by_start_timestamp:
@@ -369,7 +453,7 @@ async def get_last_update_time(area_key: str, config: Config) -> Optional[Arrow]
     return arrow.get(int(file_content))
 
 
-def check_data_new(old_data: Optional[Box], new_data: Box) -> bool:
+def check_data_new(old_data: Optional[Box], new_data: Box, area: Optional[MarketArea] = None) -> bool:
     """Return true if the downloaded data contains newer price points."""
     if old_data is None or len(old_data.prices) == 0:
         return True
@@ -379,6 +463,8 @@ def check_data_new(old_data: Optional[Box], new_data: Box) -> bool:
     if new_latest.end_timestamp > old_latest.end_timestamp:
         return True
     if new_latest.end_timestamp < old_latest.end_timestamp:
+        if area is not None and has_blocked_full_day_fallback(old_data, area):
+            return True
         return False
 
     old_point_count = prices.unique_price_point_count(old_data)
@@ -430,7 +516,7 @@ async def refresh_current_prices(
             except Exception as exc:
                 logger.exception(f"Couldn't write last update time: {exc}.")
             new_data = parse_downloaded_data(area, downloaded_data)
-            if not check_data_new(stored_data, new_data):
+            if not check_data_new(stored_data, new_data, area):
                 return None
             await prices.store_data(new_data, area_key, config)
             return new_data

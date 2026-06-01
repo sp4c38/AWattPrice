@@ -164,6 +164,43 @@ def classified_multi_sequence_xml_with_points(sequence_one_points: str, sequence
 """.encode()
 
 
+def tomorrow_fallback_sequence_xml() -> bytes:
+    return f"""<?xml version="1.0" encoding="UTF-8"?>
+<Publication_MarketDocument xmlns="urn:iec62325.351:tc57wg16:451-3:publicationdocument:7:3">
+  <TimeSeries>
+    <in_Domain.mRID>{AREA.entsoe_domain}</in_Domain.mRID>
+    <out_Domain.mRID>{AREA.entsoe_domain}</out_Domain.mRID>
+    <currency_Unit.name>EUR</currency_Unit.name>
+    <classificationSequence_AttributeInstanceComponent.position>1</classificationSequence_AttributeInstanceComponent.position>
+    <Period>
+      <timeInterval>
+        <start>2026-05-12T22:00Z</start>
+        <end>2026-05-13T00:00Z</end>
+      </timeInterval>
+      <resolution>PT60M</resolution>
+      <Point><position>1</position><price.amount>10</price.amount></Point>
+      <Point><position>2</position><price.amount>20</price.amount></Point>
+    </Period>
+  </TimeSeries>
+  <TimeSeries>
+    <in_Domain.mRID>{AREA.entsoe_domain}</in_Domain.mRID>
+    <out_Domain.mRID>{AREA.entsoe_domain}</out_Domain.mRID>
+    <currency_Unit.name>EUR</currency_Unit.name>
+    <classificationSequence_AttributeInstanceComponent.position>2</classificationSequence_AttributeInstanceComponent.position>
+    <Period>
+      <timeInterval>
+        <start>2026-05-13T22:00Z</start>
+        <end>2026-05-14T00:00Z</end>
+      </timeInterval>
+      <resolution>PT60M</resolution>
+      <Point><position>1</position><price.amount>100</price.amount></Point>
+      <Point><position>2</position><price.amount>200</price.amount></Point>
+    </Period>
+  </TimeSeries>
+</Publication_MarketDocument>
+""".encode()
+
+
 def make_config(root: Path) -> Box:
     config = Box()
     config.paths = Box()
@@ -327,6 +364,45 @@ class PriceHistoryTests(unittest.TestCase):
         self.assertEqual(data.fallback_price_count, 0)
         self.assertTrue(all(point.sequence_position == "1" for point in data.prices))
         self.assertFalse(any(point.is_fallback for point in data.prices))
+
+    def test_tomorrow_fallback_only_sequence_is_blocked_before_cutoff(self):
+        data = price_refresher.parse_downloaded_data(
+            AREA,
+            tomorrow_fallback_sequence_xml(),
+            now=arrow.get("2026-05-13T14:00:00+02:00"),
+        )
+
+        self.assertEqual(data.sequence_position, "1")
+        self.assertEqual(data.fallback_price_count, 0)
+        self.assertEqual(len(data.prices), 2)
+        self.assertEqual(data.prices[-1].end_timestamp, arrow.get("2026-05-13T02:00:00+02:00"))
+
+    def test_tomorrow_fallback_only_sequence_is_allowed_after_cutoff(self):
+        data = price_refresher.parse_downloaded_data(
+            AREA,
+            tomorrow_fallback_sequence_xml(),
+            now=arrow.get("2026-05-13T17:00:00+02:00"),
+        )
+
+        self.assertEqual(data.fallback_sequence_positions, ["2"])
+        self.assertEqual(data.fallback_price_count, 2)
+        self.assertEqual(len(data.prices), 4)
+        self.assertEqual([point.is_fallback for point in data.prices], [False, False, True, True])
+
+    def test_blocked_fallback_cache_can_be_replaced_by_primary_only_data(self):
+        fallback_data = price_refresher.parse_downloaded_data(
+            AREA,
+            tomorrow_fallback_sequence_xml(),
+            now=arrow.get("2026-05-13T17:00:00+02:00"),
+        )
+        primary_only_data = price_refresher.parse_downloaded_data(
+            AREA,
+            tomorrow_fallback_sequence_xml(),
+            now=arrow.get("2026-05-13T14:00:00+02:00"),
+        )
+
+        with patch("awattprice_refresher.prices.arrow.now", return_value=arrow.get("2026-05-13T14:00:00+02:00")):
+            self.assertTrue(price_refresher.check_data_new(fallback_data, primary_only_data, AREA))
 
 
 class PriceHistoryAPITests(unittest.TestCase):

@@ -747,7 +747,7 @@ struct PriceAddOnsView: View {
         ) {
             switch kind {
             case .tax:
-                HStack(spacing: 5) {
+                HStack(spacing: 12) {
                     Text("VAT".localized())
                         .font(.headline)
                         .foregroundStyle(viewModel.draft.taxEnabled ? Color.orange : .primary)
@@ -759,7 +759,6 @@ struct PriceAddOnsView: View {
                         .tint(.orange)
 
                     PriceAddOnsDragHandle(isDragging: draggingKind == kind)
-                        .frame(width: 28, height: 28)
                         .gesture(
                             DragGesture(minimumDistance: 4, coordinateSpace: .global)
                                 .onChanged { handleDragChanged(kind: kind, value: $0) }

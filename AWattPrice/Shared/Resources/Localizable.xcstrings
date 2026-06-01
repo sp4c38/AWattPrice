@@ -3252,13 +3252,13 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Preisdaten aktuell · Tippen für Verlauf"
+            "value" : "Daten aktuell · Tippen für Verlauf"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Prices up to date · Tap for history"
+            "value" : "Up to date · Tap for history"
           }
         }
       }

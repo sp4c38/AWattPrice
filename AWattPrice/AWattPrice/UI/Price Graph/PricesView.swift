@@ -8,7 +8,7 @@
 import SwiftUI
 
 enum PricesLayout {
-    static let graphTrailingPadding: CGFloat = 20
+    static let graphTrailingPadding: CGFloat = 12
     static let graphTopPadding: CGFloat = 4
     static let graphBottomPadding: CGFloat = 6
     static let graphLeadingPadding: CGFloat = 7

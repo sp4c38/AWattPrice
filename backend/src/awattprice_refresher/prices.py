@@ -357,7 +357,7 @@ async def download_data(
                     | stop_after_delay(defaults.ENTSOE_RETRY_STOP_DELAY)
                 ),
                 wait=wait_exponential(multiplier=1.5, min=0, max=4),
-                retry=retry_if_exception_type(httpx.RequestError),
+                retry=retry_if_exception_type((httpx.RequestError, httpx.HTTPStatusError)),
                 reraise=True,
             ):
                 with attempt:
@@ -368,8 +368,11 @@ async def download_data(
                     )
                     response.raise_for_status()
                     return response.content
+        except httpx.HTTPStatusError as exc:
+            logger.warning(f"ENTSO-E price request for {area.key} failed with HTTP {exc.response.status_code}.")
+            return None
         except Exception as exc:
-            logger.exception(f"Requests failed when downloading price data: {exc}.")
+            logger.warning(f"ENTSO-E price request for {area.key} failed: {type(exc).__name__}.")
             return None
 
     return None

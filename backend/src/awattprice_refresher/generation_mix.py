@@ -59,7 +59,7 @@ async def download_data(area: MarketArea, config: Config) -> Optional[bytes]:
             before=log_attempts(logger.debug, "download ENTSO-E generation mix data"),
             wait=wait_fixed(3) + wait_exponential(multiplier=1, min=2, max=10),
             stop=(stop_after_attempt(defaults.ENTSOE_RETRY_MAX_ATTEMPTS) | stop_after_delay(defaults.ENTSOE_RETRY_STOP_DELAY)),
-            retry=retry_if_exception_type(httpx.RequestError),
+            retry=retry_if_exception_type((httpx.RequestError, httpx.HTTPStatusError)),
             reraise=True,
         ):
             with attempt:
@@ -71,8 +71,14 @@ async def download_data(area: MarketArea, config: Config) -> Optional[bytes]:
                     )
                     response.raise_for_status()
                     return response.content
+    except httpx.HTTPStatusError as exc:
+        logger.warning(
+            f"ENTSO-E generation mix request for {area.key} failed with "
+            f"HTTP {exc.response.status_code}."
+        )
+        return None
     except httpx.RequestError as exc:
-        logger.exception(f"Requests failed when downloading generation mix data: {exc}.")
+        logger.warning(f"ENTSO-E generation mix request for {area.key} failed: {type(exc).__name__}.")
         return None
 
     return None

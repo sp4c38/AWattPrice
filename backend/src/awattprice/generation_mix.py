@@ -1,9 +1,10 @@
 """Poll and process generation mix data."""
+import bisect
 import json
 import xml.etree.ElementTree as ET
 
+from collections import defaultdict
 from decimal import Decimal
-from statistics import mode
 from typing import Optional
 
 import arrow
@@ -46,6 +47,13 @@ PRODUCTION_TYPE_CATEGORIES = {
     "B20": "other",
 }
 GENERATION_CATEGORIES = ["solar", "wind", "hydro", "biomass", "fossil", "nuclear", "other"]
+
+# An interval counts as a partial publication when the production types that are
+# missing there (estimated from each type's last known value) make up more than
+# this fraction of the interval's estimated total generation.  This filters out
+# negligible trailing/gap drop-offs (e.g. a small oil plant) while still flagging
+# materially incomplete intervals (e.g. a multi-GW wind series with a gap).
+PARTIAL_PUBLICATION_MAGNITUDE_THRESHOLD = Decimal("0.02")
 
 
 def get_history_response_data_path(area_key: str, hours: int, config: Config):
@@ -173,20 +181,35 @@ def parse_downloaded_data(area: MarketArea, xml_content: bytes) -> Box:
                 continue
             period_start = arrow.get(period_start_text).to(area.timezone)
 
+            # ENTSO-E publishes these curves as curveType A03 (variable sized
+            # block): a point's value holds until the next published position, so
+            # omitted positions *inside* a Period are unchanged values, not
+            # missing data (e.g. solar staying 0 all night).  We forward-fill
+            # within the Period's published span.  Gaps *between* Periods are left
+            # empty on purpose — those are genuinely unpublished intervals.
+            quantities_by_position = {}
             for point in period.findall("{*}Point"):
                 position_text = point.findtext("{*}position")
                 quantity_text = point.findtext("{*}quantity")
                 if position_text is None or quantity_text is None:
                     continue
+                quantities_by_position[int(position_text)] = Decimal(str(quantity_text))
+
+            if not quantities_by_position:
+                continue
+
+            held_quantity = None
+            for position in range(min(quantities_by_position), max(quantities_by_position) + 1):
+                if position in quantities_by_position:
+                    held_quantity = quantities_by_position[position]
 
                 generation_point = Box()
-                position = int(position_text)
                 generation_point.start_timestamp = period_start.shift(seconds=interval_seconds * (position - 1))
                 generation_point.end_timestamp = generation_point.start_timestamp.shift(seconds=interval_seconds)
                 generation_point.raw_production_type = psr_type
                 generation_point.raw_production_name = psr_name
                 generation_point.category = category
-                generation_point.quantity_mw = Decimal(str(quantity_text))
+                generation_point.quantity_mw = held_quantity
                 generation_point.is_renewable = psr_type in RENEWABLE_PRODUCTION_TYPES
                 generation_points_by_key[(psr_type, psr_name, generation_point.start_timestamp.int_timestamp)] = generation_point
 
@@ -265,72 +288,103 @@ def _intervals_by_end_timestamp(generation_data: Box) -> list[BoxList]:
     return [points_by_end[k] for k in sorted(points_by_end.keys())]
 
 
-def _production_type_count(points: BoxList) -> int:
-    """Count unique reported production types for one interval."""
-    return len({p.raw_production_type for p in points if p.raw_production_type is not None})
+def _interval_end_timestamp(points: BoxList) -> int:
+    """Return the end timestamp shared by one interval's points."""
+    return max(point.end_timestamp for point in points).int_timestamp
 
 
-def _typical_production_type_count(all_intervals: list[BoxList]) -> int:
-    """Return the usual production type count for this response window."""
-    return mode([_production_type_count(points) for points in all_intervals])
+def _series_by_production_type(generation_data: Box) -> dict[Optional[str], list[tuple[int, Decimal]]]:
+    """Per production type, the sorted (interval-end, total MW) it has published.
+
+    Quantities are summed across units of the same type per interval so the
+    series mirrors the per-type totals ENTSO-E reports.
+    """
+    totals: dict[Optional[str], dict[int, Decimal]] = defaultdict(lambda: defaultdict(Decimal))
+    for point in generation_data.generation_points:
+        end_timestamp = point.end_timestamp.int_timestamp
+        totals[point.raw_production_type][end_timestamp] += max(point.quantity_mw, Decimal("0"))
+    return {ptype: sorted(by_end.items()) for ptype, by_end in totals.items()}
 
 
-def _is_partial_publication_interval(points: BoxList, typical_type_count: int) -> bool:
-    """Return true when an interval has fewer production types than usual."""
-    if typical_type_count == 0:
-        return False
+def _last_known_quantity(series: list[tuple[int, Decimal]], end_timestamp: int) -> Optional[Decimal]:
+    """Return a type's most recent published MW at or before an interval end.
 
-    return _production_type_count(points) < typical_type_count
-
-
-def _representative_intervals_by_end_timestamp(generation_data: Box) -> list[BoxList]:
-    """Return all intervals with trailing incomplete ones trimmed."""
-    all_intervals = _intervals_by_end_timestamp(generation_data)
-    typical_type_count = _typical_production_type_count(all_intervals)
-    end_idx = len(all_intervals)
-    while (
-        end_idx > 0
-        and _is_partial_publication_interval(all_intervals[end_idx - 1], typical_type_count)
-    ):
-        end_idx -= 1
-    return all_intervals[:end_idx]
+    Used to estimate how much generation a not-yet-published type would have
+    contributed.  Returns ``None`` when the type has no data yet at that point
+    (so it has not started reporting, rather than dropping out of a gap).
+    """
+    ends = [end for end, _ in series]
+    index = bisect.bisect_right(ends, end_timestamp) - 1
+    if index < 0:
+        return None
+    return series[index][1]
 
 
-def _publication_metadata(
+def _partial_interval_flags(
     generation_data: Box,
-    representative_intervals: list[BoxList],
-    interval_points: Optional[list[BoxList]] = None,
-) -> Box:
-    """Build optional metadata describing ENTSO-E partial publication state."""
-    all_intervals = _intervals_by_end_timestamp(generation_data)
-    typical_type_count = _typical_production_type_count(all_intervals)
-    latest_published_end = max(max(point.end_timestamp for point in points) for points in all_intervals)
-    latest_complete_end = max(max(point.end_timestamp for point in points) for points in representative_intervals)
-    is_partial_publication = latest_published_end > latest_complete_end
-    if interval_points is not None:
-        is_partial_publication = is_partial_publication or any(
-            _is_partial_publication_interval(points, typical_type_count)
-            for points in interval_points
-        )
+    threshold: Decimal = PARTIAL_PUBLICATION_MAGNITUDE_THRESHOLD,
+) -> dict[int, bool]:
+    """Map each interval end timestamp to whether it is a partial publication.
+
+    An interval is partial when production types that are expected for the window
+    (they report data somewhere) are missing here and the estimated missing
+    generation exceeds ``threshold`` of the interval's estimated total.
+    """
+    series_by_type = _series_by_production_type(generation_data)
+    expected_types = set(series_by_type)
+
+    flags: dict[int, bool] = {}
+    for points in _intervals_by_end_timestamp(generation_data):
+        end_timestamp = _interval_end_timestamp(points)
+        present_types = {point.raw_production_type for point in points}
+        present_mw = sum((max(point.quantity_mw, Decimal("0")) for point in points), Decimal("0"))
+
+        missing_mw = Decimal("0")
+        for ptype in expected_types - present_types:
+            estimate = _last_known_quantity(series_by_type[ptype], end_timestamp)
+            if estimate is not None:
+                missing_mw += estimate
+
+        total_mw = present_mw + missing_mw
+        flags[end_timestamp] = total_mw > 0 and missing_mw > threshold * total_mw
+    return flags
+
+
+def _publication_metadata(generation_data: Box, flags: dict[int, bool]) -> Box:
+    """Build metadata describing ENTSO-E partial publication state."""
+    end_timestamps = [_interval_end_timestamp(points) for points in _intervals_by_end_timestamp(generation_data)]
+    complete_ends = [end for end in end_timestamps if not flags[end]]
+
+    latest_published_end = max(end_timestamps)
+    latest_complete_end = max(complete_ends) if complete_ends else latest_published_end
 
     metadata = Box()
-    metadata.is_partial_publication = is_partial_publication
-    metadata.latest_complete_end_timestamp = latest_complete_end.int_timestamp
-    metadata.latest_published_end_timestamp = latest_published_end.int_timestamp
+    metadata.is_partial_publication = any(flags.values())
+    metadata.latest_complete_end_timestamp = latest_complete_end
+    metadata.latest_published_end_timestamp = latest_published_end
     return metadata
 
 
-def latest_interval_points(generation_data: Box) -> BoxList:
-    """Return the most recent interval with a complete production mix.
+def _trailing_complete_intervals(generation_data: Box, flags: dict[int, bool]) -> list[BoxList]:
+    """Return all intervals with only trailing partial ones trimmed.
 
-    Walks backward through intervals and returns the first one whose unique
-    production type count matches the mode across all intervals.  This skips
-    trailing incomplete intervals (where only a handful of fast-reporting types
-    like wind have been published so far) while not being thrown off by a single
-    anomalous interval with an unusually high type count.
+    Mid-window partial intervals are kept as-is; this just drops the trailing
+    not-yet-fully-published tail so the legacy ``intervals.last`` stays usable.
     """
-    representative_intervals = _representative_intervals_by_end_timestamp(generation_data)
-    return representative_intervals[-1]
+    intervals = _intervals_by_end_timestamp(generation_data)
+    end_idx = len(intervals)
+    while end_idx > 0 and flags[_interval_end_timestamp(intervals[end_idx - 1])]:
+        end_idx -= 1
+    return intervals[:end_idx]
+
+
+def latest_complete_interval_points(generation_data: Box, flags: dict[int, bool]) -> BoxList:
+    """Return the most recent interval that is not a partial publication."""
+    intervals = _intervals_by_end_timestamp(generation_data)
+    for points in reversed(intervals):
+        if not flags[_interval_end_timestamp(points)]:
+            return points
+    return intervals[-1]
 
 
 def category_values_for_points(points: BoxList) -> tuple[dict[str, Decimal], Decimal, Decimal]:
@@ -375,7 +429,8 @@ def interval_response(points: BoxList, is_partial_publication: bool = False) -> 
 
 def parse_to_response_data(generation_data: Box) -> Box:
     """Parse cached generation data to the narrow app response."""
-    points = latest_interval_points(generation_data)
+    flags = _partial_interval_flags(generation_data)
+    points = latest_complete_interval_points(generation_data, flags)
     interval = interval_response(points)
 
     response = Box()
@@ -392,14 +447,15 @@ def parse_to_response_data(generation_data: Box) -> Box:
     response.renewable_generation_mw = interval.renewable_generation_mw
     response.renewable_share = interval.renewable_share
     response.categories = interval.categories
-    response.update(_publication_metadata(generation_data, _representative_intervals_by_end_timestamp(generation_data)))
+    response.update(_publication_metadata(generation_data, flags))
 
     return response
 
 
 def parse_to_history_response_data(generation_data: Box, hours: int = 24) -> Box:
     """Parse cached generation data to grouped app history for the requested hours."""
-    all_intervals = _representative_intervals_by_end_timestamp(generation_data)
+    flags = _partial_interval_flags(generation_data)
+    all_intervals = _trailing_complete_intervals(generation_data, flags)
     latest_end = max(point.end_timestamp for point in all_intervals[-1])
     cutoff = latest_end.shift(hours=-hours)
     interval_points = [
@@ -437,16 +493,15 @@ def parse_to_history_response_data(generation_data: Box, hours: int = 24) -> Box
         for category in GENERATION_CATEGORIES
     ]
     response.intervals = interval_responses
-    response.update(_publication_metadata(generation_data, all_intervals))
+    response.update(_publication_metadata(generation_data, flags))
 
     return response
 
 
 def parse_to_published_history_response_data(generation_data: Box, hours: int = 24) -> Box:
     """Parse cached generation data to history including partial published intervals."""
+    flags = _partial_interval_flags(generation_data)
     all_intervals = _intervals_by_end_timestamp(generation_data)
-    representative_intervals = _representative_intervals_by_end_timestamp(generation_data)
-    typical_type_count = _typical_production_type_count(all_intervals)
     latest_end = max(point.end_timestamp for point in all_intervals[-1])
     cutoff = latest_end.shift(hours=-hours)
     interval_points = [
@@ -457,13 +512,13 @@ def parse_to_published_history_response_data(generation_data: Box, hours: int = 
     complete_interval_points = [
         points
         for points in interval_points
-        if not _is_partial_publication_interval(points, typical_type_count)
+        if not flags[_interval_end_timestamp(points)]
     ]
     summary_points = complete_interval_points if complete_interval_points else interval_points
     interval_responses = BoxList([
         interval_response(
             points,
-            is_partial_publication=_is_partial_publication_interval(points, typical_type_count),
+            is_partial_publication=flags[_interval_end_timestamp(points)],
         )
         for points in interval_points
     ])
@@ -496,6 +551,9 @@ def parse_to_published_history_response_data(generation_data: Box, hours: int = 
         for category in GENERATION_CATEGORIES
     ]
     response.intervals = interval_responses
-    response.update(_publication_metadata(generation_data, representative_intervals, interval_points))
+    complete_ends = [interval.end_timestamp for interval in interval_responses if not interval.is_partial_publication]
+    response.is_partial_publication = any(interval.is_partial_publication for interval in interval_responses)
+    response.latest_published_end_timestamp = max(interval.end_timestamp for interval in interval_responses)
+    response.latest_complete_end_timestamp = max(complete_ends) if complete_ends else response.latest_published_end_timestamp
 
     return response

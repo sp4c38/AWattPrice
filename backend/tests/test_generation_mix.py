@@ -113,6 +113,60 @@ def staggered_generation_xml() -> bytes:
 """
 
 
+def multi_period_generation_xml() -> bytes:
+    """Generation with an A03 within-period hold and a mid-window inter-period gap.
+
+    - Hydro (B12) reports continuously, 10:00-16:00.
+    - Wind (B19) reports 10:00-12:00 and again 14:00-16:00, leaving a real gap
+      (ends 13:00 and 14:00) between the two Periods.
+    - Solar (B16) omits positions 2 and 3 inside its single Period; per A03 those
+      are unchanged (held 0), not missing.
+    """
+    return b"""<?xml version="1.0" encoding="UTF-8"?>
+<GL_MarketDocument xmlns="urn:iec62325.351:tc57wg16:451-6:generationloaddocument:3:0">
+  <TimeSeries>
+    <MktPSRType><psrType>B12</psrType></MktPSRType>
+    <Period>
+      <timeInterval><start>2026-05-14T10:00Z</start><end>2026-05-14T16:00Z</end></timeInterval>
+      <resolution>PT60M</resolution>
+      <Point><position>1</position><quantity>1000</quantity></Point>
+      <Point><position>2</position><quantity>1000</quantity></Point>
+      <Point><position>3</position><quantity>1000</quantity></Point>
+      <Point><position>4</position><quantity>1000</quantity></Point>
+      <Point><position>5</position><quantity>1000</quantity></Point>
+      <Point><position>6</position><quantity>1000</quantity></Point>
+    </Period>
+  </TimeSeries>
+  <TimeSeries>
+    <MktPSRType><psrType>B19</psrType></MktPSRType>
+    <Period>
+      <timeInterval><start>2026-05-14T10:00Z</start><end>2026-05-14T12:00Z</end></timeInterval>
+      <resolution>PT60M</resolution>
+      <Point><position>1</position><quantity>5000</quantity></Point>
+      <Point><position>2</position><quantity>5000</quantity></Point>
+    </Period>
+    <Period>
+      <timeInterval><start>2026-05-14T14:00Z</start><end>2026-05-14T16:00Z</end></timeInterval>
+      <resolution>PT60M</resolution>
+      <Point><position>1</position><quantity>5000</quantity></Point>
+      <Point><position>2</position><quantity>5000</quantity></Point>
+    </Period>
+  </TimeSeries>
+  <TimeSeries>
+    <MktPSRType><psrType>B16</psrType></MktPSRType>
+    <Period>
+      <timeInterval><start>2026-05-14T10:00Z</start><end>2026-05-14T16:00Z</end></timeInterval>
+      <resolution>PT60M</resolution>
+      <Point><position>1</position><quantity>0</quantity></Point>
+      <Point><position>4</position><quantity>100</quantity></Point>
+      <Point><position>5</position><quantity>200</quantity></Point>
+      <Point><position>6</position><quantity>150</quantity></Point>
+    </Period>
+  </TimeSeries>
+</GL_MarketDocument>
+"""
+
+
 def append_generation_point(data: Box, end_time: arrow.Arrow, psr_type: str, quantity_mw: str):
     generation_point = Box()
     generation_point.start_timestamp = end_time.shift(hours=-1)
@@ -246,6 +300,59 @@ class GenerationMixParsingTests(unittest.TestCase):
         self.assertEqual(response.end_timestamp, arrow.get("2026-05-14T12:00Z").int_timestamp)
         self.assertEqual(categories["wind"].generation_mw, 180.0)
         self.assertTrue(response.is_partial_publication)
+
+    def test_parser_forward_fills_within_period_but_not_across_gaps(self):
+        data = generation_mix.parse_downloaded_data(AREA, multi_period_generation_xml())
+
+        def quantity_at(psr_type, end_iso):
+            end_ts = arrow.get(end_iso).int_timestamp
+            for point in data.generation_points:
+                if point.raw_production_type == psr_type and point.end_timestamp.int_timestamp == end_ts:
+                    return point.quantity_mw
+            return None
+
+        # A03 hold: solar's omitted positions 2 and 3 are filled with the held 0.
+        self.assertEqual(quantity_at("B16", "2026-05-14T12:00Z"), Decimal("0"))
+        self.assertEqual(quantity_at("B16", "2026-05-14T13:00Z"), Decimal("0"))
+        # Inter-period gap: wind is genuinely absent at ends 13:00 and 14:00.
+        self.assertIsNone(quantity_at("B19", "2026-05-14T13:00Z"))
+        self.assertIsNone(quantity_at("B19", "2026-05-14T14:00Z"))
+        # Wind resumes in its second period.
+        self.assertEqual(quantity_at("B19", "2026-05-14T15:00Z"), Decimal("5000"))
+
+    def test_published_history_flags_midwindow_gap_with_complete_trailing(self):
+        data = generation_mix.parse_downloaded_data(AREA, multi_period_generation_xml())
+        response = generation_mix.parse_to_published_history_response_data(data)
+
+        by_end = {interval.end_timestamp: interval for interval in response.intervals}
+        gap_13 = by_end[arrow.get("2026-05-14T13:00Z").int_timestamp]
+        gap_14 = by_end[arrow.get("2026-05-14T14:00Z").int_timestamp]
+        complete_12 = by_end[arrow.get("2026-05-14T12:00Z").int_timestamp]
+        complete_16 = by_end[arrow.get("2026-05-14T16:00Z").int_timestamp]
+
+        # The wind gap (~5 GW missing) is flagged even though the trailing data is complete.
+        self.assertTrue(gap_13.is_partial_publication)
+        self.assertTrue(gap_14.is_partial_publication)
+        self.assertFalse(complete_12.is_partial_publication)
+        self.assertFalse(complete_16.is_partial_publication)
+        self.assertTrue(response.is_partial_publication)
+        # Trailing is complete, so the watermark sits at the very end despite the mid-window gap.
+        self.assertEqual(response.latest_complete_end_timestamp, arrow.get("2026-05-14T16:00Z").int_timestamp)
+        self.assertEqual(response.latest_published_end_timestamp, arrow.get("2026-05-14T16:00Z").int_timestamp)
+
+    def test_published_history_ignores_negligible_gap(self):
+        data = generation_mix.parse_downloaded_data(AREA, generation_xml())
+        # Extend the big types to a third interval so 13:00 is otherwise complete.
+        for psr_type, quantity in (("B16", "120"), ("B19", "180"), ("B04", "300")):
+            append_generation_point(data, arrow.get("2026-05-14T13:00Z").to(AREA.timezone), psr_type, quantity)
+        # A tiny type reports at 11:00 and 13:00 but not 12:00 — a negligible gap.
+        append_generation_point(data, arrow.get("2026-05-14T11:00Z").to(AREA.timezone), "B14", "8")
+        append_generation_point(data, arrow.get("2026-05-14T13:00Z").to(AREA.timezone), "B14", "8")
+
+        response = generation_mix.parse_to_published_history_response_data(data)
+
+        self.assertFalse(any(interval.is_partial_publication for interval in response.intervals))
+        self.assertFalse(response.is_partial_publication)
 
 
 class GenerationMixAPITests(unittest.TestCase):

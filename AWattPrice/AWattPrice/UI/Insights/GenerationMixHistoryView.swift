@@ -111,12 +111,13 @@ private struct GenerationMixHistoryContent: View {
     let history: GenerationMixHistoryData
     let range: GenerationMixHistoryRange
 
-    // Pure computed view — no @State here. The only state (selected interval)
-    // lives inside GenerationMixStackedGenerationChart, so this view only
-    // re-renders when history data or the selected range changes, never during
-    // drag events. Both interval arrays are therefore computed exactly once per
-    // range switch, in the same render pass as the range change itself, which
-    // is what keeps the chart animation in sync.
+    // The selected interval lives inside GenerationMixStackedGenerationChart so
+    // this view does not re-render on every drag event — both interval arrays are
+    // computed once per range switch, which keeps the chart animation in sync.
+    // The chart writes back only this single boolean, and only when it actually
+    // flips (the user's selection crosses a preliminary/complete boundary), so
+    // those re-renders are rare and carry identical interval data.
+    @State private var selectedIntervalIsPartial = false
     // Selection intervals keep the last clock-hour at native resolution so the
     // breakdown matches the live InsightsView reading.
     private var displayIntervals: [GenerationMixInterval] {
@@ -163,12 +164,13 @@ private struct GenerationMixHistoryContent: View {
                         history: history,
                         allIntervals: allDisplayIntervals,
                         intervals: displayIntervals,
-                        range: range
+                        range: range,
+                        selectedIntervalIsPartial: $selectedIntervalIsPartial
                     )
                 }
 
                 if hasPartialPublicationIntervals {
-                    GenerationMixPartialPublicationNote()
+                    GenerationMixPartialPublicationNote(prominent: selectedIntervalIsPartial)
                 }
             }
             .padding(.horizontal, 16)
@@ -270,21 +272,30 @@ private func averagedGenerationMixInterval(
 }
 
 private struct GenerationMixPartialPublicationNote: View {
+    // Raised slightly when the user's selection lands on a preliminary interval,
+    // so the explanation is more noticeable right when it's relevant — without
+    // becoming an alarming warning.
+    var prominent: Bool = false
+
     var body: some View {
         HStack(alignment: .top, spacing: 8) {
-            Image(systemName: "info.circle.fill")
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(.orange)
+            Image(systemName: prominent ? "info.circle.fill" : "info.circle")
+                .font(.caption)
+                .foregroundStyle(prominent ? .primary : .secondary)
                 .frame(width: 16)
 
             Text("Some generation data for today has not been reported yet.")
                 .font(.caption)
-                .foregroundStyle(.secondary)
+                .fontWeight(prominent ? .medium : .regular)
+                .foregroundStyle(prominent ? .primary : .secondary)
                 .fixedSize(horizontal: false, vertical: true)
+                .frame(maxWidth: .infinity, alignment: .leading)
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 10)
-        .background(Color.orange.opacity(0.10), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.secondary.opacity(prominent ? 0.16 : 0.08), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .animation(.easeInOut(duration: 0.25), value: prominent)
     }
 }
 
@@ -360,6 +371,10 @@ private struct GenerationMixStackedGenerationChart: View {
     let allIntervals: [GenerationMixInterval]  // full 7d — stable across range switches
     let intervals: [GenerationMixInterval]     // range-filtered — for domain & selection
     let range: GenerationMixHistoryRange
+
+    // Mirrors whether the current selection sits on a preliminary interval. Owned
+    // by the parent so the explanatory note can react, but written only on flips.
+    @Binding var selectedIntervalIsPartial: Bool
 
     @Environment(\.colorScheme) private var colorScheme
 
@@ -461,7 +476,7 @@ private struct GenerationMixStackedGenerationChart: View {
                         yStart: .value(String(localized: "Generation"), yDomain.lowerBound),
                         yEnd: .value(String(localized: "Generation"), yDomain.upperBound)
                     )
-                    .foregroundStyle(Color.orange.opacity(0.16))
+                    .foregroundStyle(Color.secondary.opacity(0.12))
                 }
 
                 ForEach(chartPoints) { point in
@@ -588,6 +603,7 @@ private struct GenerationMixStackedGenerationChart: View {
                 if selectedIntervalID == nil {
                     selectedIntervalID = intervals.last?.startTime
                 }
+                syncSelectedPartial()
             }
 
             if let selectedInterval {
@@ -597,6 +613,16 @@ private struct GenerationMixStackedGenerationChart: View {
         .onChange(of: range) {
             // Jump to the latest interval in the new range.
             selectedIntervalID = intervals.last?.startTime
+            syncSelectedPartial()
+        }
+    }
+
+    /// Pushes the selected interval's preliminary state up to the parent, but
+    /// only when it changes, so the parent re-renders solely on boundary crossings.
+    private func syncSelectedPartial() {
+        let isPartial = selectedInterval?.isPartialPublication ?? false
+        if isPartial != selectedIntervalIsPartial {
+            selectedIntervalIsPartial = isPartial
         }
     }
 
@@ -634,6 +660,7 @@ private struct GenerationMixStackedGenerationChart: View {
         // including into the edge-padding zone.  The selectedInterval lookup above
         // already snaps to the nearest real data interval.
         selectedIntervalID = selectedTime
+        syncSelectedPartial()
     }
 
     private func smooth(_ values: [Double]) -> [Double] {

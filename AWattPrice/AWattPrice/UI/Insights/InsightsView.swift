@@ -465,16 +465,6 @@ private struct GenerationMixCard: View {
         // else: data is fresh — Live badge in the header is sufficient.
     }
 
-    @ViewBuilder
-    private var publicationNoteView: some View {
-        if generationMix.isPartialPublication {
-            Text("Some generation data for today has not been reported yet.")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-    }
-
     var body: some View {
         InsightsCard(tint: AppTheme.success) {
             VStack(alignment: .leading, spacing: 14) {
@@ -505,7 +495,6 @@ private struct GenerationMixCard: View {
                 }
 
                 freshnessView
-                publicationNoteView
 
                 GenerationMixBar(categories: visibleCategories)
 

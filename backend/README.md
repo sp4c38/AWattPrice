@@ -18,6 +18,8 @@ If individual intervals are still missing after Sequence 1 step-curve expansion,
 
 The refresher keeps treating incomplete or fallback data as replaceable. If ENTSO-E later publishes the missing Sequence 1 price, that real price replaces the fallback point in the cache.
 
+Generation mix endpoint compatibility is documented in [docs/generation-mix-data-flow.md](docs/generation-mix-data-flow.md).
+
 ## Maintenance Checks
 
 Check which configured ENTSO-E price zones currently expose price data:

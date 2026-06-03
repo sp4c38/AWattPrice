@@ -108,7 +108,7 @@ class APIClient {
         let requestURL = APIClient.apiURL
             .appendingPathComponent("generation-mix", isDirectory: true)
             .appendingPathComponent(marketArea.key, isDirectory: true)
-            .appendingPathComponent("history")
+            .appendingPathComponent("published-history")
         var components = URLComponents(url: requestURL, resolvingAgainstBaseURL: false)
         components?.queryItems = [
             URLQueryItem(name: "hours", value: String(generationMixHistoryHours(for: marketArea, range: range)))

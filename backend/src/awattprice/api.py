@@ -124,6 +124,24 @@ async def get_area_generation_mix_history_for_hours(area_key: str, hours: int = 
 
 
 @logger.catch
+@app.get("/generation-mix/{area_key}/published-history")
+async def get_area_published_generation_mix_history_for_hours(area_key: str, hours: int = Query(..., ge=168, le=168)):
+    """Get published generation mix history, including partial intervals."""
+    try:
+        normalized_area_key = defaults.normalize_market_area_key(area_key)
+        defaults.get_market_area(normalized_area_key)
+    except KeyError:
+        raise HTTPException(404)
+
+    cached_response_json = await generation_mix.get_stored_published_history_response_json(normalized_area_key, hours, config)
+    if cached_response_json is not None:
+        return Response(content=cached_response_json, media_type="application/json")
+
+    logger.warning(f"Couldn't get published generation mix history for area {normalized_area_key}.")
+    raise HTTPException(503)
+
+
+@logger.catch
 @app.get("/cache/status")
 async def get_cache_status():
     """Get internal cache coverage and freshness status."""

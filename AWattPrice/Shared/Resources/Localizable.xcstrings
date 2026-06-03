@@ -992,6 +992,23 @@
         }
       }
     },
+    "Some generation data for today has not been reported yet." : {
+      "comment" : "SwiftUI literal",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einige Erzeugungsdaten für heute wurden noch nicht gemeldet."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Some generation data for today has not been reported yet."
+          }
+        }
+      }
+    },
     "dataError.connection.message" : {
       "comment" : "Localized custom view text",
       "localizations" : {
@@ -3583,6 +3600,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Renewable mix unavailable"
+          }
+        }
+      }
+    },
+    "renewables" : {
+      "comment" : "SwiftUI literal",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erneuerbare"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "renewables"
           }
         }
       }

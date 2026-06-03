@@ -178,6 +178,72 @@ final class EnergyDataTests: XCTestCase {
         XCTAssertEqual(data.intervals.count, 1)
         XCTAssertEqual(data.renewableShare, 50)
         XCTAssertEqual(data.sortedIntervals.first?.visibleCategories.map(\.category), ["solar", "fossil"])
+        XCTAssertFalse(data.sortedIntervals.first?.isPartialPublication ?? true)
+        XCTAssertFalse(data.isPartialPublication)
+        XCTAssertNil(data.latestCompleteEndTime)
+        XCTAssertNil(data.latestPublishedEndTime)
+    }
+
+    func testGenerationMixHistoryDecodesPartialPublicationMetadata() throws {
+        let history = try GenerationMixHistoryData.jsonDecoder().decode(
+            GenerationMixHistoryData.self,
+            from: Data(
+                """
+                {
+                  "area": "DE-LU",
+                  "resolution": "PT60M",
+                  "updated_at": 4102444800,
+                  "start_timestamp": 4102444800,
+	                  "end_timestamp": 4102455600,
+                  "total_generation_mw": 100,
+                  "renewable_generation_mw": 50,
+                  "renewable_share": 50,
+                  "is_partial_publication": true,
+                  "latest_complete_end_timestamp": 4102448400,
+                  "latest_published_end_timestamp": 4102455600,
+                  "categories": [
+                    { "category": "solar", "generation_mw": 50, "share": 50, "is_renewable": true },
+                    { "category": "fossil", "generation_mw": 50, "share": 50, "is_renewable": false }
+                  ],
+                  "intervals": [
+                    {
+                      "start_timestamp": 4102444800,
+                      "end_timestamp": 4102448400,
+                      "total_generation_mw": 100,
+                      "renewable_generation_mw": 50,
+                      "renewable_share": 50,
+	                      "categories": [
+	                        { "category": "solar", "generation_mw": 50, "share": 50, "is_renewable": true },
+	                        { "category": "fossil", "generation_mw": 50, "share": 50, "is_renewable": false }
+	                      ]
+	                    },
+	                    {
+	                      "start_timestamp": 4102448400,
+	                      "end_timestamp": 4102455600,
+	                      "total_generation_mw": 10,
+	                      "renewable_generation_mw": 0,
+	                      "renewable_share": 0,
+	                      "is_partial_publication": true,
+	                      "categories": [
+	                        { "category": "fossil", "generation_mw": 10, "share": 100, "is_renewable": false }
+	                      ]
+	                    }
+	                  ]
+                }
+                """.utf8
+            )
+        )
+        let data = GenerationMixData(history: history)
+
+	        XCTAssertTrue(history.isPartialPublication)
+	        XCTAssertFalse(history.sortedIntervals[0].isPartialPublication)
+	        XCTAssertTrue(history.sortedIntervals[1].isPartialPublication)
+	        XCTAssertEqual(history.latestCompleteEndTime?.timeIntervalSince1970, 4_102_448_400)
+	        XCTAssertEqual(history.latestPublishedEndTime?.timeIntervalSince1970, 4_102_455_600)
+	        XCTAssertTrue(data.isPartialPublication)
+	        XCTAssertEqual(data.endTime.timeIntervalSince1970, 4_102_448_400)
+	        XCTAssertEqual(data.renewableShare, 50)
+	        XCTAssertEqual(data.latestPublishedEndTime?.timeIntervalSince1970, 4_102_455_600)
     }
 
     private static func decodePricePoint(start: Int, end: Int, marketprice: Double) throws -> EnergyPricePoint {

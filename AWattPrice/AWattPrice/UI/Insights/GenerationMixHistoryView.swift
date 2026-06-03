@@ -137,6 +137,10 @@ private struct GenerationMixHistoryContent: View {
         return totalGeneration > 0 ? (totalRenewable / totalGeneration) * 100 : 0
     }
 
+    private var hasPartialPublicationIntervals: Bool {
+        displayIntervals.contains { $0.isPartialPublication }
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 14) {
@@ -161,6 +165,10 @@ private struct GenerationMixHistoryContent: View {
                         intervals: displayIntervals,
                         range: range
                     )
+                }
+
+                if hasPartialPublicationIntervals {
+                    GenerationMixPartialPublicationNote()
                 }
             }
             .padding(.horizontal, 16)
@@ -256,8 +264,28 @@ private func averagedGenerationMixInterval(
         totalGenerationMW: totalGenerationMW,
         renewableGenerationMW: renewableGenerationMW,
         renewableShare: totalGenerationMW > 0 ? (renewableGenerationMW / totalGenerationMW) * 100 : 0,
-        categories: finalCategories
+        categories: finalCategories,
+        isPartialPublication: intervals.contains { $0.isPartialPublication }
     )
+}
+
+private struct GenerationMixPartialPublicationNote: View {
+    var body: some View {
+        HStack(alignment: .top, spacing: 8) {
+            Image(systemName: "info.circle.fill")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.orange)
+                .frame(width: 16)
+
+            Text("Some generation data for today has not been reported yet.")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+        .background(Color.orange.opacity(0.10), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+    }
 }
 
 private struct GenerationMixSelectedIntervalView: View {
@@ -369,6 +397,10 @@ private struct GenerationMixStackedGenerationChart: View {
         categoryDomain.map(generationMixColor)
     }
 
+    private var partialIntervals: [GenerationMixInterval] {
+        intervals.filter { $0.isPartialPublication }
+    }
+
     private var edgePaddingDuration: TimeInterval {
         guard let first = allIntervals.first else { return 60 * 60 }
         return max(first.endTime.timeIntervalSince(first.startTime), 60 * 60) * 0.5
@@ -422,6 +454,16 @@ private struct GenerationMixStackedGenerationChart: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Chart {
+                ForEach(partialIntervals) { interval in
+                    RectangleMark(
+                        xStart: .value(String(localized: "Time"), interval.startTime),
+                        xEnd: .value(String(localized: "Time"), interval.endTime),
+                        yStart: .value(String(localized: "Generation"), yDomain.lowerBound),
+                        yEnd: .value(String(localized: "Generation"), yDomain.upperBound)
+                    )
+                    .foregroundStyle(Color.orange.opacity(0.16))
+                }
+
                 ForEach(chartPoints) { point in
                     AreaMark(
                         x: .value(String(localized: "Time"), point.time),

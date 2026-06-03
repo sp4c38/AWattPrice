@@ -54,6 +54,12 @@ def get_history_response_data_path(area_key: str, hours: int, config: Config):
     return config.paths.generation_data_dir / file_name
 
 
+def get_published_history_response_data_path(area_key: str, hours: int, config: Config):
+    """Get the precomputed published generation history response path."""
+    file_name = defaults.GENERATION_PUBLISHED_HISTORY_RESPONSE_FILE_NAME.format(area_file_key(area_key), hours)
+    return config.paths.generation_data_dir / file_name
+
+
 def get_metadata_path(area_key: str, config: Config):
     """Get the generation metadata path."""
     file_name = defaults.GENERATION_METADATA_FILE_NAME.format(area_file_key(area_key))
@@ -69,6 +75,23 @@ async def get_stored_history_response_json(area_key: str, hours: int, config: Co
             response_json = await file.read()
     except FileNotFoundError as exc:
         logger.debug(f"No stored generation history response found: {exc}.")
+        return None
+
+    if len(response_json) == 0:
+        return None
+
+    return response_json
+
+
+async def get_stored_published_history_response_json(area_key: str, hours: int, config: Config) -> Optional[bytes]:
+    """Get precomputed published generation history response JSON."""
+    file_path = get_published_history_response_data_path(area_key, hours, config)
+
+    try:
+        async with async_open(file_path, "rb") as file:
+            response_json = await file.read()
+    except FileNotFoundError as exc:
+        logger.debug(f"No stored published generation history response found: {exc}.")
         return None
 
     if len(response_json) == 0:
@@ -187,6 +210,13 @@ async def store_history_response_json(response_json: bytes, area_key: str, hours
     await utils.async_atomic_write_bytes(file_path, response_json)
 
 
+async def store_published_history_response_json(response_json: bytes, area_key: str, hours: int, config: Config):
+    """Store precomputed published generation history response JSON."""
+    file_path = get_published_history_response_data_path(area_key, hours, config)
+    logger.info(f"Storing ENTSO-E {area_key} published generation history response data to {file_path}.")
+    await utils.async_atomic_write_bytes(file_path, response_json)
+
+
 def metadata_from_response_data(data: Box, response_data: Box, hours: int) -> Box:
     """Build compact generation metadata from response data."""
     metadata = Box()
@@ -205,10 +235,24 @@ def metadata_from_response_data(data: Box, response_data: Box, hours: int) -> Bo
     return metadata
 
 
-async def store_response_data(data: Box, response_data: Box, area_key: str, hours: int, config: Config) -> Box:
+async def store_response_data(
+    data: Box,
+    response_data: Box,
+    area_key: str,
+    hours: int,
+    config: Config,
+    published_response_data: Optional[Box] = None,
+) -> Box:
     """Store generation history response JSON and metadata."""
     metadata = metadata_from_response_data(data, response_data, hours)
     await store_history_response_json(response_data_to_json_bytes(response_data), area_key, hours, config)
+    if published_response_data is not None:
+        await store_published_history_response_json(
+            response_data_to_json_bytes(published_response_data),
+            area_key,
+            hours,
+            config,
+        )
     await store_metadata(metadata, area_key, config)
     return metadata
 
@@ -226,22 +270,54 @@ def _production_type_count(points: BoxList) -> int:
     return len({p.raw_production_type for p in points if p.raw_production_type is not None})
 
 
-def _representative_intervals_by_end_timestamp(generation_data: Box) -> list[BoxList]:
-    """Return all intervals with trailing incomplete ones trimmed.
+def _typical_production_type_count(all_intervals: list[BoxList]) -> int:
+    """Return the usual production type count for this response window."""
+    return mode([_production_type_count(points) for points in all_intervals])
 
-    Only trailing intervals (where only a handful of fast-reporting types like
-    wind/solar have been published so far) are removed.  Intervals in the middle
-    of the window that have fewer types than the mode are kept as-is — they
-    contain real partial data and removing them would create visible gaps in
-    history charts.
-    """
+
+def _is_partial_publication_interval(points: BoxList, typical_type_count: int) -> bool:
+    """Return true when an interval has fewer production types than usual."""
+    if typical_type_count == 0:
+        return False
+
+    return _production_type_count(points) < typical_type_count
+
+
+def _representative_intervals_by_end_timestamp(generation_data: Box) -> list[BoxList]:
+    """Return all intervals with trailing incomplete ones trimmed."""
     all_intervals = _intervals_by_end_timestamp(generation_data)
-    type_counts = [_production_type_count(points) for points in all_intervals]
-    typical_count = mode(type_counts)
+    typical_type_count = _typical_production_type_count(all_intervals)
     end_idx = len(all_intervals)
-    while end_idx > 0 and type_counts[end_idx - 1] < typical_count:
+    while (
+        end_idx > 0
+        and _is_partial_publication_interval(all_intervals[end_idx - 1], typical_type_count)
+    ):
         end_idx -= 1
     return all_intervals[:end_idx]
+
+
+def _publication_metadata(
+    generation_data: Box,
+    representative_intervals: list[BoxList],
+    interval_points: Optional[list[BoxList]] = None,
+) -> Box:
+    """Build optional metadata describing ENTSO-E partial publication state."""
+    all_intervals = _intervals_by_end_timestamp(generation_data)
+    typical_type_count = _typical_production_type_count(all_intervals)
+    latest_published_end = max(max(point.end_timestamp for point in points) for points in all_intervals)
+    latest_complete_end = max(max(point.end_timestamp for point in points) for points in representative_intervals)
+    is_partial_publication = latest_published_end > latest_complete_end
+    if interval_points is not None:
+        is_partial_publication = is_partial_publication or any(
+            _is_partial_publication_interval(points, typical_type_count)
+            for points in interval_points
+        )
+
+    metadata = Box()
+    metadata.is_partial_publication = is_partial_publication
+    metadata.latest_complete_end_timestamp = latest_complete_end.int_timestamp
+    metadata.latest_published_end_timestamp = latest_published_end.int_timestamp
+    return metadata
 
 
 def latest_interval_points(generation_data: Box) -> BoxList:
@@ -279,7 +355,7 @@ def category_response(category: str, quantity_mw: Decimal, total_mw: Decimal) ->
     return response
 
 
-def interval_response(points: BoxList) -> Box:
+def interval_response(points: BoxList, is_partial_publication: bool = False) -> Box:
     """Create a grouped app response for one generation interval."""
     categories, total_mw, renewable_mw = category_values_for_points(points)
 
@@ -289,6 +365,7 @@ def interval_response(points: BoxList) -> Box:
     response.total_generation_mw = float(total_mw)
     response.renewable_generation_mw = float(renewable_mw)
     response.renewable_share = float((renewable_mw / total_mw) * 100) if total_mw > 0 else 0.0
+    response.is_partial_publication = is_partial_publication
     response.categories = [
         category_response(category, categories[category], total_mw)
         for category in GENERATION_CATEGORIES
@@ -315,6 +392,7 @@ def parse_to_response_data(generation_data: Box) -> Box:
     response.renewable_generation_mw = interval.renewable_generation_mw
     response.renewable_share = interval.renewable_share
     response.categories = interval.categories
+    response.update(_publication_metadata(generation_data, _representative_intervals_by_end_timestamp(generation_data)))
 
     return response
 
@@ -359,5 +437,65 @@ def parse_to_history_response_data(generation_data: Box, hours: int = 24) -> Box
         for category in GENERATION_CATEGORIES
     ]
     response.intervals = interval_responses
+    response.update(_publication_metadata(generation_data, all_intervals))
+
+    return response
+
+
+def parse_to_published_history_response_data(generation_data: Box, hours: int = 24) -> Box:
+    """Parse cached generation data to history including partial published intervals."""
+    all_intervals = _intervals_by_end_timestamp(generation_data)
+    representative_intervals = _representative_intervals_by_end_timestamp(generation_data)
+    typical_type_count = _typical_production_type_count(all_intervals)
+    latest_end = max(point.end_timestamp for point in all_intervals[-1])
+    cutoff = latest_end.shift(hours=-hours)
+    interval_points = [
+        points
+        for points in all_intervals
+        if max(point.end_timestamp for point in points) > cutoff
+    ]
+    complete_interval_points = [
+        points
+        for points in interval_points
+        if not _is_partial_publication_interval(points, typical_type_count)
+    ]
+    summary_points = complete_interval_points if complete_interval_points else interval_points
+    interval_responses = BoxList([
+        interval_response(
+            points,
+            is_partial_publication=_is_partial_publication_interval(points, typical_type_count),
+        )
+        for points in interval_points
+    ])
+
+    categories = {category: Decimal("0") for category in GENERATION_CATEGORIES}
+    total_mw = Decimal("0")
+    renewable_mw = Decimal("0")
+    for points in summary_points:
+        interval_categories, interval_total_mw, interval_renewable_mw = category_values_for_points(points)
+        total_mw += interval_total_mw
+        renewable_mw += interval_renewable_mw
+        for category, quantity_mw in interval_categories.items():
+            categories[category] += quantity_mw
+
+    response = Box()
+    response.source = generation_data.source
+    response.area = generation_data.area
+    response.display_name = generation_data.display_name
+    response.entsoe_domain = generation_data.entsoe_domain
+    response.timezone = generation_data.timezone
+    response.resolution = generation_data.resolution
+    response.updated_at = generation_data.updated_at.int_timestamp
+    response.start_timestamp = min(interval.start_timestamp for interval in interval_responses)
+    response.end_timestamp = max(interval.end_timestamp for interval in interval_responses)
+    response.total_generation_mw = float(total_mw)
+    response.renewable_generation_mw = float(renewable_mw)
+    response.renewable_share = float((renewable_mw / total_mw) * 100) if total_mw > 0 else 0.0
+    response.categories = [
+        category_response(category, categories[category], total_mw)
+        for category in GENERATION_CATEGORIES
+    ]
+    response.intervals = interval_responses
+    response.update(_publication_metadata(generation_data, representative_intervals, interval_points))
 
     return response

@@ -434,11 +434,6 @@ private struct GenerationMixCard: View {
         generationMix.endTime >= Date().addingTimeInterval(-120 * 60)
     }
 
-    /// Data is stale enough to warn the user (ended > 4 hours ago).
-    private var isOutdated: Bool {
-        generationMix.endTime < Date().addingTimeInterval(-4 * 3600)
-    }
-
     private var dataAgeText: String {
         let hours = max(1, Int((-generationMix.endTime.timeIntervalSinceNow) / 3600))
         return String.localizedStringWithFormat(
@@ -447,10 +442,13 @@ private struct GenerationMixCard: View {
         )
     }
 
+    private var renewableSubtitle: LocalizedStringKey {
+        isLive ? "renewables now" : "renewables"
+    }
+
     @ViewBuilder
     private var freshnessView: some View {
         if generationMix.endTime > Date() {
-            // Interval is still running right now.
             Text(
                 String.localizedStringWithFormat(
                     NSLocalizedString("Live now · until %@", comment: "Live freshness text for generation mix data"),
@@ -459,18 +457,22 @@ private struct GenerationMixCard: View {
             )
             .font(.caption.weight(.semibold))
             .foregroundStyle(.secondary)
-        } else if isOutdated {
-            // Data is older than 3 hours — warn the user.
-            Label("Data may be outdated", systemImage: "exclamationmark.triangle.fill")
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(.orange)
         } else if !isLive {
-            // Data ended 90 min – 3 hours ago — show age without alarming the user.
             Text(dataAgeText)
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(.secondary)
         }
         // else: data is fresh — Live badge in the header is sufficient.
+    }
+
+    @ViewBuilder
+    private var publicationNoteView: some View {
+        if generationMix.isPartialPublication {
+            Text("Some generation data for today has not been reported yet.")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
     }
 
     var body: some View {
@@ -495,7 +497,7 @@ private struct GenerationMixCard: View {
                         .font(.system(.largeTitle, design: .rounded).weight(.bold))
                         .monospacedDigit()
 
-                    Text("renewables now")
+                    Text(renewableSubtitle)
                         .font(.subheadline.weight(.semibold))
                         .foregroundStyle(.secondary)
 
@@ -503,6 +505,7 @@ private struct GenerationMixCard: View {
                 }
 
                 freshnessView
+                publicationNoteView
 
                 GenerationMixBar(categories: visibleCategories)
 

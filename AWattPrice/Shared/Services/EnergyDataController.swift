@@ -189,9 +189,13 @@ struct GenerationMixData: Decodable {
     let renewableGenerationMW: Double
     let renewableShare: Double
     let categories: [GenerationMixCategory]
+    let isPartialPublication: Bool
+    let latestCompleteEndTime: Date?
+    let latestPublishedEndTime: Date?
 
     init(history: GenerationMixHistoryData) {
-        let latestInterval = history.sortedIntervals.last
+        let sortedIntervals = history.sortedIntervals
+        let latestInterval = sortedIntervals.last(where: { !$0.isPartialPublication }) ?? sortedIntervals.last
         self.area = history.area
         self.resolution = history.resolution
         self.updatedAt = history.updatedAt
@@ -201,6 +205,9 @@ struct GenerationMixData: Decodable {
         self.renewableGenerationMW = latestInterval?.renewableGenerationMW ?? history.renewableGenerationMW
         self.renewableShare = latestInterval?.renewableShare ?? history.renewableShare
         self.categories = latestInterval?.categories ?? history.categories
+        self.isPartialPublication = history.isPartialPublication
+        self.latestCompleteEndTime = history.latestCompleteEndTime
+        self.latestPublishedEndTime = history.latestPublishedEndTime
     }
 
     var visibleCategories: [GenerationMixCategory] {
@@ -231,6 +238,25 @@ struct GenerationMixData: Decodable {
         case renewableGenerationMW = "renewable_generation_mw"
         case renewableShare = "renewable_share"
         case categories
+        case isPartialPublication = "is_partial_publication"
+        case latestCompleteEndTime = "latest_complete_end_timestamp"
+        case latestPublishedEndTime = "latest_published_end_timestamp"
+    }
+
+    init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        area = try values.decodeIfPresent(String.self, forKey: .area)
+        resolution = try values.decodeIfPresent(String.self, forKey: .resolution)
+        updatedAt = try values.decode(Date.self, forKey: .updatedAt)
+        startTime = try values.decode(Date.self, forKey: .startTime)
+        endTime = try values.decode(Date.self, forKey: .endTime)
+        totalGenerationMW = try values.decode(Double.self, forKey: .totalGenerationMW)
+        renewableGenerationMW = try values.decode(Double.self, forKey: .renewableGenerationMW)
+        renewableShare = try values.decode(Double.self, forKey: .renewableShare)
+        categories = try values.decode([GenerationMixCategory].self, forKey: .categories)
+        isPartialPublication = try values.decodeIfPresent(Bool.self, forKey: .isPartialPublication) ?? false
+        latestCompleteEndTime = try values.decodeIfPresent(Date.self, forKey: .latestCompleteEndTime)
+        latestPublishedEndTime = try values.decodeIfPresent(Date.self, forKey: .latestPublishedEndTime)
     }
 
     static func jsonDecoder() -> JSONDecoder {
@@ -248,6 +274,7 @@ struct GenerationMixInterval: Decodable, Identifiable {
     let renewableGenerationMW: Double
     let renewableShare: Double
     let categories: [GenerationMixCategory]
+    let isPartialPublication: Bool
 
     var id: Date { startTime }
 
@@ -264,6 +291,36 @@ struct GenerationMixInterval: Decodable, Identifiable {
         case renewableGenerationMW = "renewable_generation_mw"
         case renewableShare = "renewable_share"
         case categories
+        case isPartialPublication = "is_partial_publication"
+    }
+
+    init(
+        startTime: Date,
+        endTime: Date,
+        totalGenerationMW: Double,
+        renewableGenerationMW: Double,
+        renewableShare: Double,
+        categories: [GenerationMixCategory],
+        isPartialPublication: Bool = false
+    ) {
+        self.startTime = startTime
+        self.endTime = endTime
+        self.totalGenerationMW = totalGenerationMW
+        self.renewableGenerationMW = renewableGenerationMW
+        self.renewableShare = renewableShare
+        self.categories = categories
+        self.isPartialPublication = isPartialPublication
+    }
+
+    init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        startTime = try values.decode(Date.self, forKey: .startTime)
+        endTime = try values.decode(Date.self, forKey: .endTime)
+        totalGenerationMW = try values.decode(Double.self, forKey: .totalGenerationMW)
+        renewableGenerationMW = try values.decode(Double.self, forKey: .renewableGenerationMW)
+        renewableShare = try values.decode(Double.self, forKey: .renewableShare)
+        categories = try values.decode([GenerationMixCategory].self, forKey: .categories)
+        isPartialPublication = try values.decodeIfPresent(Bool.self, forKey: .isPartialPublication) ?? false
     }
 }
 
@@ -308,6 +365,9 @@ struct GenerationMixHistoryData: Decodable {
     let renewableShare: Double
     let categories: [GenerationMixCategory]
     let intervals: [GenerationMixInterval]
+    let isPartialPublication: Bool
+    let latestCompleteEndTime: Date?
+    let latestPublishedEndTime: Date?
 
     var visibleCategories: [GenerationMixCategory] {
         categories
@@ -342,6 +402,26 @@ struct GenerationMixHistoryData: Decodable {
         case renewableShare = "renewable_share"
         case categories
         case intervals
+        case isPartialPublication = "is_partial_publication"
+        case latestCompleteEndTime = "latest_complete_end_timestamp"
+        case latestPublishedEndTime = "latest_published_end_timestamp"
+    }
+
+    init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        area = try values.decodeIfPresent(String.self, forKey: .area)
+        resolution = try values.decodeIfPresent(String.self, forKey: .resolution)
+        updatedAt = try values.decode(Date.self, forKey: .updatedAt)
+        startTime = try values.decode(Date.self, forKey: .startTime)
+        endTime = try values.decode(Date.self, forKey: .endTime)
+        totalGenerationMW = try values.decode(Double.self, forKey: .totalGenerationMW)
+        renewableGenerationMW = try values.decode(Double.self, forKey: .renewableGenerationMW)
+        renewableShare = try values.decode(Double.self, forKey: .renewableShare)
+        categories = try values.decode([GenerationMixCategory].self, forKey: .categories)
+        intervals = try values.decode([GenerationMixInterval].self, forKey: .intervals)
+        isPartialPublication = try values.decodeIfPresent(Bool.self, forKey: .isPartialPublication) ?? false
+        latestCompleteEndTime = try values.decodeIfPresent(Date.self, forKey: .latestCompleteEndTime)
+        latestPublishedEndTime = try values.decodeIfPresent(Date.self, forKey: .latestPublishedEndTime)
     }
 
     static func jsonDecoder() -> JSONDecoder {

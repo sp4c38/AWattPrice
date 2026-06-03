@@ -121,12 +121,21 @@ async def refresh_generation_mix(
                 new_data,
                 hours=defaults.GENERATION_RETENTION_HOURS,
             )
+            published_response_data = generation_mix.parse_to_published_history_response_data(
+                new_data,
+                hours=defaults.GENERATION_RETENTION_HOURS,
+            )
             new_metadata = generation_mix.metadata_from_response_data(
                 new_data,
                 response_data,
                 defaults.GENERATION_RETENTION_HOURS,
             )
-            if not check_data_new(stored_metadata, new_metadata):
+            published_cache_missing = await generation_mix.get_stored_published_history_response_json(
+                area_key,
+                defaults.GENERATION_RETENTION_HOURS,
+                config,
+            ) is None
+            if not check_data_new(stored_metadata, new_metadata) and not published_cache_missing:
                 return None
             return await generation_mix.store_response_data(
                 new_data,
@@ -134,6 +143,7 @@ async def refresh_generation_mix(
                 area_key,
                 defaults.GENERATION_RETENTION_HOURS,
                 config,
+                published_response_data,
             )
 
     refresh_lock.release()

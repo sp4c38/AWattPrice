@@ -6,9 +6,7 @@
 //
 
 import SwiftUI
-#if !targetEnvironment(macCatalyst)
 import MessageUI
-#endif
 
 class MailContent {
     var recipientEmails: String
@@ -93,11 +91,7 @@ class HelpMailContent: MailContent {
     }
 
     private static var systemName: String {
-        #if targetEnvironment(macCatalyst)
-        "macOS"
-        #else
         UIDevice.current.systemName
-        #endif
     }
 
     func setValues() {
@@ -134,7 +128,6 @@ class SuggestionMailContent: MailContent {
     }
 }
 
-#if !targetEnvironment(macCatalyst)
 struct MailView: UIViewControllerRepresentable {
     @Environment(\.presentationMode) var presentationMode
 
@@ -175,15 +168,11 @@ struct MailView: UIViewControllerRepresentable {
     func updateUIViewController(_: MFMailComposeViewController, context _: Context) {}
 
 }
-#endif
 
 enum MailAppURLProvider {
     static func alternativeMailApp(for mailContent: MailContent) -> URL? {
         let defaultUrl = URL(string: "mailto:\(mailContent.recipientEmails)?subject=\(mailContent.encodedSubject)&body=\(mailContent.encodedBody)")
 
-        #if targetEnvironment(macCatalyst)
-        return defaultUrl
-        #else
         let gmailUrl = URL(string: "googlegmail://co?to=\(mailContent.recipientEmails)&subject=\(mailContent.encodedSubject)&body=\(mailContent.encodedBody)")
         let outlookUrl = URL(string: "ms-outlook://compose?to=\(mailContent.recipientEmails)&subject=\(mailContent.encodedSubject)")
         let yahooMail = URL(string: "ymail://mail/compose?to=\(mailContent.recipientEmails)&subject=\(mailContent.encodedSubject)&body=\(mailContent.encodedBody)")
@@ -200,6 +189,5 @@ enum MailAppURLProvider {
         } else {
             return defaultUrl
         }
-        #endif
     }
 }

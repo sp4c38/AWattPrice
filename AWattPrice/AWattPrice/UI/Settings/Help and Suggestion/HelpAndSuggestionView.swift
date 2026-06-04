@@ -7,9 +7,7 @@
 
 import SwiftUI
 import UIKit
-#if !targetEnvironment(macCatalyst)
 import MessageUI
-#endif
 
 private struct HelpAndSuggestionBackground: View {
     @Environment(\.colorScheme) private var colorScheme
@@ -119,27 +117,17 @@ struct HelpAndSuggestionView: View {
         .navigationTitle("Help & Suggestions")
         .navigationBarTitleDisplayMode(.large)
         .sheet(item: $activeMailAction) { action in
-            #if targetEnvironment(macCatalyst)
-            EmptyView()
-            #else
             MailView(mailContent: action.mailContent)
                 .edgesIgnoringSafeArea(.bottom)
-            #endif
         }
     }
 
     private func openMail(for action: SupportMailAction) {
-        #if targetEnvironment(macCatalyst)
-        if let alternativeUrl = MailAppURLProvider.alternativeMailApp(for: action.mailContent) {
-            UIApplication.shared.open(alternativeUrl)
-        }
-        #else
         if MFMailComposeViewController.canSendMail() {
             activeMailAction = action
         } else if let alternativeUrl = MailAppURLProvider.alternativeMailApp(for: action.mailContent) {
             UIApplication.shared.open(alternativeUrl)
         }
-        #endif
     }
 }
 

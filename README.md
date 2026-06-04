@@ -1,53 +1,70 @@
-<div>
-	<img src="https://raw.githubusercontent.com/sp4c38/AWattPrice/refs/heads/master/Assets/App%20Icon/App%20Icon.png" width=100>
-	<h1>⚡️ AWattPrice ⚡️</div>
-</div>
+<p align="left">
+  <img src="website/images/app-icon.png" width="96" alt="AWattPrice app icon">
+</p>
 
-<img src="https://img.shields.io/github/last-commit/sp4c38/AWattPrice?label=last%20modified" />
+# AWattPrice
 
-### App Store Download
-<a href="https://apps.apple.com/app/awattprice/id1536629626"><img src="https://raw.githubusercontent.com/sp4c38/AWattPrice/master/readme_assets/download_button.png" width=190 height=63></img></a>  <a style="color:blue;" href="https://apps.apple.com/app/awattprice/id1536629626" target="_blank">
+<img src="https://img.shields.io/github/last-commit/sp4c38/AWattPrice/develop?label=last%20modified" alt="Last modified">
 
-https://apps.apple.com/app/awattprice/id1536629626</a>
+AWattPrice helps people understand dynamic electricity prices and find
+cost-effective windows for power consumption. The app shows upcoming prices in
+a clear, interactive graph, helps plan larger appliances such as washing
+machines, dishwashers, heat pumps, and electric vehicles, and can tailor the
+display to a specific tariff.
 
-🌍 <b>Supported aWATTar regions:</b> Germany 🇩🇪 and Austria 🇦🇹
+It runs on iOS, iPadOS, and macOS, with a FastAPI backend for cached ENTSO-E
+market data and price notifications.
 
-💰 <b> Cost:</b> 100% free of charge
+<a href="https://apps.apple.com/app/awattprice/id1536629626">
+  <img src="website/images/promotional/landscape-banner-ad-1200x720.png" alt="AWattPrice landscape banner">
+</a>
 
-💬 <b>Supported languages:</b> German and English
 
-📱 <b>Supported devices:</b> iOS 15+ and iPadOS 15+ devices
+## Features
 
-🗂 <b>App category:</b> Utilities
+- Interactive price chart for current and upcoming electricity prices.
+- Cheapest-window finder for appliances, EV charging, heat pumps, and similar
+  loads.
+- Tariff adjustments with fixed surcharges, percentage-based fees, monthly
+  costs, and taxes where available.
+- Push notifications when prices move below or above configured thresholds.
+- Energy mix insights, including renewable share where the backend has data.
+- Home screen widgets for current prices, upcoming prices, cheap windows, and
+  renewable mix.
+- German and English localization.
 
-### Description
+## App Store Screenshots
 
-AWattPrice shows the hourly prices by the electricity provider aWATTar. Instead of paying a fixed price for electricity, aWATTar customers are billed the current stock price. These prices are based on factors like available wind and
-solar power generation. Hence, they vary over time. Let's say one wants to operate a washing machine for some time. It will pay
-off to run it when prices are low. That reduces the electricity bill and helps the grid to balance out peaks. Further it strengthens
-the use of regenerative power.
+<p align="center">
+  <img src="website/images/screenshots/iPhone%206.9″%20for%20App%20Store/en-us-1-Intro%20-%20iPhone.png" width="220" alt="AWattPrice App Store screenshot 1 in English">
+  <img src="website/images/screenshots/iPhone%206.9″%20for%20App%20Store/en-us-2-Feature%20-%20iPhone.png" width="220" alt="AWattPrice App Store screenshot 2 in English">
+  <span style="white-space: nowrap;">
+    <img src="website/images/screenshots/iPhone%206.9″%20for%20App%20Store/en-us-3-Feature%20-%20iPhone.png" width="220" alt="AWattPrice App Store screenshot 3 in English">
+    <img src="website/images/screenshots/iPhone%206.9″%20for%20App%20Store/en-us-4-Feature%20-%20iPhone.png" width="220" alt="AWattPrice App Store screenshot 4 in English">
+  </span>
+  <img src="website/images/screenshots/iPhone%206.9″%20for%20App%20Store/en-us-5-Feature%20-%20iPhone.png" width="220" alt="AWattPrice App Store screenshot 5 in English">
+  <span style="white-space: nowrap;">
+    <img src="website/images/screenshots/iPhone%206.9″%20for%20App%20Store/en-us-6-Quotes%20-%20iPhone.png" width="220" alt="AWattPrice App Store screenshot 6 in English">
+    <img src="website/images/screenshots/iPhone%206.9″%20for%20App%20Store/en-us-7-Feature%20-%20iPhone.png" width="220" alt="AWattPrice App Store screenshot 7 in English">
+  </span>
+</p>
 
-Features:
+## Project Structure
 
-1️⃣ <b>Show</b> hourly electricity prices in an interactive chart.
+```text
+AWattPrice/
+  AWattPrice.xcodeproj       Xcode project for the app and widget extension
+  AWattPrice/                SwiftUI app target
+  AWattPriceWidget/          WidgetKit extension
+  Shared/                    Shared models, API client, resources, and storage
+  AWattPriceTests/           Unit tests
 
-2️⃣ <b>Find</b> the time frame with the lowest energy cost. Example: Charge the car by 23 kWh via an 11 kW outlet. The app will tell when to start for the minimal cost. You can also enter a time amount to find the cheapest prices for.
+backend/
+  src/                       FastAPI app, data refresher, and notifications
+  docs/                      Backend data-flow notes
+  compose.v3.yaml            Production Compose setup
 
-3️⃣ <b>Get notified</b> when prices drop under a certain value.
-
-Prices are sourced from the public aWATTar data feed. You can
-switch between prices for Austria and Germany. At about 2 pm the data is updated to show prices for the following day.
-
-AWattPrice is a personal hobby project. Sharing is caring. The app is not related in any way to the company aWATTar GmbH.
-Feedback of all kind and patches are very welcome.
-
-## Screenshots
-<div>
-	<img src="https://github.com/sp4c38/AWattPrice/blob/master/readme_assets/screenshots/1_screenshot.png?raw=true" width=270>
-	<img src="https://github.com/sp4c38/AWattPrice/blob/master/readme_assets/screenshots/2_screenshot.png?raw=true" width=270>
-	<img src="https://github.com/sp4c38/AWattPrice/blob/master/readme_assets/screenshots/3_screenshot.png?raw=true" width=270>
-</div>
-
-### Technical Note:
-AWattPrice consists out of two parts: The main app bundle and the backend part.
-To not overload the public aWATTar API AWattPrice caches the current price data. The AWattPrice Backend will only call the aWATTar API a few times a day.
+website/
+  index.html                 Public website with App Store, support, and legal links
+  images/                    App icon, App Store badge, screenshots, and media
+```

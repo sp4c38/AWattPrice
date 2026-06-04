@@ -104,16 +104,6 @@ extension View {
     }
 }
 
-enum AppPlatform {
-    static var isMacCatalyst: Bool {
-        #if targetEnvironment(macCatalyst)
-        true
-        #else
-        false
-        #endif
-    }
-}
-
 class DeviceOrientationManager: ObservableObject {
     @Published var deviceOrientation = UIInterfaceOrientation.portrait
 

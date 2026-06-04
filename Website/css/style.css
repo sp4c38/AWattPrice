@@ -556,7 +556,20 @@ h3 {
 }
 .cta-card .btn-ghost:hover { background: rgba(255, 255, 255, 0.08); border-color: #fff; }
 
-.cta-actions { display: flex; flex-wrap: wrap; gap: 14px; }
+.cta-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+}
+
+.app-qr-code {
+  width: 112px;
+  height: 112px;
+  border-radius: 12px;
+  border: 2px solid #000;
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.22);
+}
 
 /* Footer */
 
@@ -678,6 +691,7 @@ h3 {
   .cta-card .btn { width: auto; }
   .cta-actions { width: 100%; }
   .cta-actions .btn { flex: 1; min-width: 160px; }
+  .app-qr-code { width: 96px; height: 96px; }
 
   .footer-cols { grid-template-columns: 1fr 1fr; gap: 28px; }
   .footer-bottom { flex-direction: column; align-items: flex-start; }

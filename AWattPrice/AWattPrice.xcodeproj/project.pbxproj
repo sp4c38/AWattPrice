@@ -162,7 +162,6 @@
 		5B0000062FBE100100000001 /* ProFeatureGalleryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProFeatureGalleryView.swift; sourceTree = "<group>"; };
 		5CF596453B643BA753483A2C /* SettingsPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPageView.swift; sourceTree = "<group>"; };
 		5E69EEB1FA019DD2F16C2815 /* AWattPriceWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AWattPriceWidgetExtension.entitlements; sourceTree = "<group>"; };
-		5F5F50002FC1000100000001 /* AWattPriceMac.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AWattPriceMac.entitlements; sourceTree = "<group>"; };
 		60087A5B0602E5789304BDF1 /* ButtonStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonStyles.swift; sourceTree = "<group>"; };
 		61541BE12A548F4D00822908 /* AWattPriceWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AWattPriceWidgetExtension.entitlements; sourceTree = "<group>"; };
 		616111958CDF13E7ED308317 /* AWattPriceApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AWattPriceApp.swift; sourceTree = "<group>"; };
@@ -545,7 +544,6 @@
 				D6B5EC412FB8BB920073D82F /* Info.plist */,
 				3986605FAA7AF18D5AF2CB37 /* AppDelegate.swift */,
 				EFB366C2E4BA54E151458B35 /* AWattPrice.entitlements */,
-				5F5F50002FC1000100000001 /* AWattPriceMac.entitlements */,
 				616111958CDF13E7ED308317 /* AWattPriceApp.swift */,
 				5E69EEB1FA019DD2F16C2815 /* AWattPriceWidgetExtension.entitlements */,
 				9F3CD26A7BD9992AE1BA052B /* Extensions */,
@@ -851,12 +849,10 @@
 				APS_ENVIRONMENT = development;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = AWattPrice/AWattPrice.entitlements;
-				"CODE_SIGN_ENTITLEMENTS[sdk=macosx*]" = AWattPrice/AWattPriceMac.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
-				DERIVE_MACCATALYST_PRODUCT_BUNDLE_IDENTIFIER = NO;
-				DEVELOPMENT_ASSET_PATHS = "AWattPrice/Resources/Preview\\ Content";
-				DEVELOPMENT_TEAM = RC32A2AMHF;
+					CODE_SIGN_IDENTITY = "Apple Development";
+					CODE_SIGN_STYLE = Automatic;
+					DEVELOPMENT_ASSET_PATHS = "AWattPrice/Resources/Preview\\ Content";
+					DEVELOPMENT_TEAM = RC32A2AMHF;
 				INFOPLIST_FILE = AWattPrice/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = AWattPrice;
 				INFOPLIST_KEY_CFBundleURLTypes = "{\n    CFBundleURLName = \"me.space8.AWattPrice\";\n    CFBundleURLSchemes =     (\n        awattprice\n    );\n}";
@@ -874,16 +870,14 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 15.0;
-				MARKETING_VERSION = 3.0.3;
-				PRODUCT_BUNDLE_IDENTIFIER = me.space8.AWattPrice;
-				PROVISIONING_PROFILE_SPECIFIER = "";
-				SDKROOT = iphoneos;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SUPPORTS_MACCATALYST = YES;
-				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
-				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = YES;
-				TARGETED_DEVICE_FAMILY = "1,2,6";
+					MARKETING_VERSION = 3.0.2;
+					PRODUCT_BUNDLE_IDENTIFIER = me.space8.AWattPrice;
+					PROVISIONING_PROFILE_SPECIFIER = "";
+					SDKROOT = iphoneos;
+					SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+					SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
+					SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = YES;
+					TARGETED_DEVICE_FAMILY = "1,2,6";
 			};
 			name = Debug;
 		};
@@ -893,12 +887,10 @@
 				APS_ENVIRONMENT = production;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = AWattPrice/AWattPrice.entitlements;
-				"CODE_SIGN_ENTITLEMENTS[sdk=macosx*]" = AWattPrice/AWattPriceMac.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
-				DERIVE_MACCATALYST_PRODUCT_BUNDLE_IDENTIFIER = NO;
-				DEVELOPMENT_ASSET_PATHS = "AWattPrice/Resources/Preview\\ Content";
-				DEVELOPMENT_TEAM = RC32A2AMHF;
+					CODE_SIGN_IDENTITY = "Apple Development";
+					CODE_SIGN_STYLE = Automatic;
+					DEVELOPMENT_ASSET_PATHS = "AWattPrice/Resources/Preview\\ Content";
+					DEVELOPMENT_TEAM = RC32A2AMHF;
 				INFOPLIST_FILE = AWattPrice/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = AWattPrice;
 				INFOPLIST_KEY_CFBundleURLTypes = "{\n    CFBundleURLName = \"me.space8.AWattPrice\";\n    CFBundleURLSchemes =     (\n        awattprice\n    );\n}";
@@ -914,16 +906,14 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 15.0;
-				MARKETING_VERSION = 3.0.3;
-				PRODUCT_BUNDLE_IDENTIFIER = me.space8.AWattPrice;
-				PROVISIONING_PROFILE_SPECIFIER = "";
-				SDKROOT = iphoneos;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SUPPORTS_MACCATALYST = YES;
-				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
-				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = YES;
-				TARGETED_DEVICE_FAMILY = "1,2,6";
+					MARKETING_VERSION = 3.0.2;
+					PRODUCT_BUNDLE_IDENTIFIER = me.space8.AWattPrice;
+					PROVISIONING_PROFILE_SPECIFIER = "";
+					SDKROOT = iphoneos;
+					SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+					SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
+					SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = YES;
+					TARGETED_DEVICE_FAMILY = "1,2,6";
 			};
 			name = Release;
 		};
@@ -1060,7 +1050,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 3.0.3;
+				MARKETING_VERSION = 3.0.2;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -1136,7 +1126,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 3.0.3;
+				MARKETING_VERSION = 3.0.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = me.space8.AWattPrice.AWattPriceWidget;

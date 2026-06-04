@@ -1,5 +1,5 @@
 <p align="left">
-  <img src="website/images/app-icon.png" width="96" alt="AWattPrice app icon">
+  <img src="https://www.awattprice.com/images/app-icon.png" width="96" alt="AWattPrice app icon">
 </p>
 
 # AWattPrice
@@ -16,7 +16,7 @@ It runs on iOS, iPadOS, and macOS, with a FastAPI backend for cached ENTSO-E
 market data and price notifications.
 
 <a href="https://apps.apple.com/app/awattprice/id1536629626">
-  <img src="website/images/promotional/landscape-banner-ad-1200x720.png" alt="AWattPrice landscape banner">
+  <img src="https://www.awattprice.com/images/promotional/landscape-banner-ad-1200x720.png" alt="AWattPrice landscape banner">
 </a>
 
 
@@ -36,16 +36,16 @@ market data and price notifications.
 ## App Store Screenshots
 
 <p align="center">
-  <img src="website/images/screenshots/iPhone%206.9″%20for%20App%20Store/en-us-1-Intro%20-%20iPhone.png" width="220" alt="AWattPrice App Store screenshot 1 in English">
-  <img src="website/images/screenshots/iPhone%206.9″%20for%20App%20Store/en-us-2-Feature%20-%20iPhone.png" width="220" alt="AWattPrice App Store screenshot 2 in English">
+  <img src="https://www.awattprice.com/images/screenshots/iPhone%206.9%E2%80%B3%20for%20App%20Store/en-us-1-Intro%20-%20iPhone.png" width="220" alt="AWattPrice App Store screenshot 1 in English">
+  <img src="https://www.awattprice.com/images/screenshots/iPhone%206.9%E2%80%B3%20for%20App%20Store/en-us-2-Feature%20-%20iPhone.png" width="220" alt="AWattPrice App Store screenshot 2 in English">
   <span style="white-space: nowrap;">
-    <img src="website/images/screenshots/iPhone%206.9″%20for%20App%20Store/en-us-3-Feature%20-%20iPhone.png" width="220" alt="AWattPrice App Store screenshot 3 in English">
-    <img src="website/images/screenshots/iPhone%206.9″%20for%20App%20Store/en-us-4-Feature%20-%20iPhone.png" width="220" alt="AWattPrice App Store screenshot 4 in English">
+    <img src="https://www.awattprice.com/images/screenshots/iPhone%206.9%E2%80%B3%20for%20App%20Store/en-us-3-Feature%20-%20iPhone.png" width="220" alt="AWattPrice App Store screenshot 3 in English">
+    <img src="https://www.awattprice.com/images/screenshots/iPhone%206.9%E2%80%B3%20for%20App%20Store/en-us-4-Feature%20-%20iPhone.png" width="220" alt="AWattPrice App Store screenshot 4 in English">
   </span>
-  <img src="website/images/screenshots/iPhone%206.9″%20for%20App%20Store/en-us-5-Feature%20-%20iPhone.png" width="220" alt="AWattPrice App Store screenshot 5 in English">
+  <img src="https://www.awattprice.com/images/screenshots/iPhone%206.9%E2%80%B3%20for%20App%20Store/en-us-5-Feature%20-%20iPhone.png" width="220" alt="AWattPrice App Store screenshot 5 in English">
   <span style="white-space: nowrap;">
-    <img src="website/images/screenshots/iPhone%206.9″%20for%20App%20Store/en-us-6-Quotes%20-%20iPhone.png" width="220" alt="AWattPrice App Store screenshot 6 in English">
-    <img src="website/images/screenshots/iPhone%206.9″%20for%20App%20Store/en-us-7-Feature%20-%20iPhone.png" width="220" alt="AWattPrice App Store screenshot 7 in English">
+    <img src="https://www.awattprice.com/images/screenshots/iPhone%206.9%E2%80%B3%20for%20App%20Store/en-us-6-Quotes%20-%20iPhone.png" width="220" alt="AWattPrice App Store screenshot 6 in English">
+    <img src="https://www.awattprice.com/images/screenshots/iPhone%206.9%E2%80%B3%20for%20App%20Store/en-us-7-Feature%20-%20iPhone.png" width="220" alt="AWattPrice App Store screenshot 7 in English">
   </span>
 </p>
 

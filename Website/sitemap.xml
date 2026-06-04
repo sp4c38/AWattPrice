@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset
+  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://www.awattprice.com/</loc>
+    <lastmod>2026-06-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.awattprice.com/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.awattprice.com/?lang=en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.awattprice.com/" />
+  </url>
+  <url>
+    <loc>https://www.awattprice.com/support/</loc>
+    <lastmod>2026-06-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.awattprice.com/support/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.awattprice.com/support/?lang=en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.awattprice.com/support/" />
+  </url>
+  <url>
+    <loc>https://www.awattprice.com/privacy_policy/</loc>
+    <lastmod>2026-06-04</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.awattprice.com/privacy_policy/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.awattprice.com/privacy_policy/?lang=en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.awattprice.com/privacy_policy/" />
+  </url>
+  <url>
+    <loc>https://www.awattprice.com/terms_of_use/</loc>
+    <lastmod>2026-06-04</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.awattprice.com/terms_of_use/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.awattprice.com/terms_of_use/?lang=en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.awattprice.com/terms_of_use/" />
+  </url>
+  <url>
+    <loc>https://www.awattprice.com/impressum.html</loc>
+    <lastmod>2026-06-04</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.awattprice.com/impressum.html" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.awattprice.com/impressum.html?lang=en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.awattprice.com/impressum.html" />
+  </url>
+</urlset>

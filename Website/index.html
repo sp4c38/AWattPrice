@@ -1,18 +1,22 @@
 <!doctype html>
-<html lang="en">
+<html lang="de">
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title data-i18n-title data-en="AWattPrice – Electricity prices by the hour" data-de="AWattPrice – Dynamische Strompreise im Blick">AWattPrice – Electricity prices by the hour</title>
+        <title data-i18n-title data-en="AWattPrice – Electricity prices by the hour" data-de="AWattPrice – Dynamische Strompreise im Blick">AWattPrice – Dynamische Strompreise im Blick</title>
         <meta
             name="description"
             data-i18n-description
             data-en="AWattPrice helps you understand dynamic electricity prices and find cost-effective windows. Charts, widgets, notifications, energy mix info, and analytics – tailored to your tariff."
             data-de="AWattPrice hilft dir, dynamische Strompreise zu verstehen und günstige Zeitfenster zu finden. Diagramme, Widgets, Benachrichtigungen, Strommix-Infos und Analysen – passend zu deinem Tarif."
-            content="AWattPrice helps you understand dynamic electricity prices and find cost-effective windows. Charts, widgets, notifications, energy mix info, and analytics – tailored to your tariff."
+            content="AWattPrice hilft dir, dynamische Strompreise zu verstehen und günstige Zeitfenster zu finden. Diagramme, Widgets, Benachrichtigungen, Strommix-Infos und Analysen – passend zu deinem Tarif."
         />
         <meta name="theme-color" content="#ef7d32" />
         <meta name="apple-itunes-app" content="app-id=1536629626" />
+        <link rel="canonical" href="https://www.awattprice.com/" />
+        <link rel="alternate" hreflang="de" href="https://www.awattprice.com/" />
+        <link rel="alternate" hreflang="en" href="https://www.awattprice.com/?lang=en" />
+        <link rel="alternate" hreflang="x-default" href="https://www.awattprice.com/" />
         <meta
             property="og:title"
             content="AWattPrice – Dynamische Strompreise im Blick"
@@ -22,6 +26,17 @@
             content="Strompreise verstehen, günstige Zeitfenster finden, Geräte klug planen – für dynamische Stromtarife."
         />
         <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://www.awattprice.com/" />
+        <meta property="og:image" content="https://www.awattprice.com/images/promotional/landscape-banner-ad-1200x720.png" />
+        <meta property="og:image:width" content="1280" />
+        <meta property="og:image:height" content="720" />
+        <meta property="og:site_name" content="AWattPrice" />
+        <meta property="og:locale" content="de_DE" />
+        <meta property="og:locale:alternate" content="en_US" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="AWattPrice – Dynamische Strompreise im Blick" />
+        <meta name="twitter:description" content="Strompreise verstehen, günstige Zeitfenster finden, Geräte klug planen – für dynamische Stromtarife." />
+        <meta name="twitter:image" content="https://www.awattprice.com/images/promotional/landscape-banner-ad-1200x720.png" />
         <link rel="icon" type="image/png" sizes="16x16" href="images/favicon/favicon-16x16.png" />
         <link rel="icon" type="image/png" sizes="32x32" href="images/favicon/favicon-32x32.png" />
         <link rel="apple-touch-icon" sizes="180x180" href="images/favicon/apple-touch-icon.png" />
@@ -52,9 +67,33 @@
                 opacity: .3;
             }
         </style>
+        <script type="application/ld+json">
+            {
+                "@context": "https://schema.org",
+                "@type": "MobileApplication",
+                "name": "AWattPrice",
+                "alternateName": "AWattPrice – Dynamische Strompreise im Blick",
+                "description": "AWattPrice hilft dir, dynamische Strompreise zu verstehen und günstige Zeitfenster zu finden.",
+                "url": "https://www.awattprice.com/",
+                "image": "https://www.awattprice.com/images/promotional/landscape-banner-ad-1200x720.png",
+                "applicationCategory": "UtilitiesApplication",
+                "operatingSystem": "iOS, iPadOS, macOS",
+                "inLanguage": ["de", "en"],
+                "installUrl": "https://apps.apple.com/app/awattprice/id1536629626",
+                "offers": {
+                    "@type": "Offer",
+                    "price": "0",
+                    "priceCurrency": "EUR"
+                },
+                "publisher": {
+                    "@type": "Person",
+                    "name": "Leon Becker"
+                }
+            }
+        </script>
     </head>
     <body>
-        <div data-lang="en">
+        <div data-lang="en" hidden>
         <a class="skip-link" href="#en-main">Skip to main content</a>
 
         <header class="topbar">
@@ -488,7 +527,7 @@
         </footer>
         </div>
 
-        <div data-lang="de" hidden>
+        <div data-lang="de">
         <a class="skip-link" href="#de-main">Zum Hauptinhalt springen</a>
 
         <header class="topbar">
@@ -932,12 +971,11 @@
                 const params = new URLSearchParams(window.location.search);
                 const queryLanguage = params.get('lang');
                 const storedLanguage = localStorage.getItem('awattprice-lang');
-                const browserLanguage = (navigator.language || navigator.userLanguage || '').toLowerCase();
                 const language = queryLanguage === 'de' || queryLanguage === 'en'
                     ? queryLanguage
                     : storedLanguage === 'de' || storedLanguage === 'en'
                         ? storedLanguage
-                        : (browserLanguage.startsWith('de') ? 'de' : 'en');
+                        : 'de';
 
                 localStorage.setItem('awattprice-lang', language);
                 document.documentElement.lang = language;

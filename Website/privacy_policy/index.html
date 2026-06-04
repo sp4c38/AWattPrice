@@ -1,11 +1,29 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title data-i18n-title data-en="Privacy Policy | AWattPrice" data-de="Datenschutz | AWattPrice">Privacy Policy | AWattPrice</title>
-    <meta name="description" data-i18n-description data-en="Privacy policy for the AWattPrice app and website." data-de="Datenschutzrichtlinie für die AWattPrice App und Website." content="Privacy policy for the AWattPrice app and website.">
+    <title data-i18n-title data-en="Privacy Policy | AWattPrice" data-de="Datenschutz | AWattPrice">Datenschutz | AWattPrice</title>
+    <meta name="description" data-i18n-description data-en="Privacy policy for the AWattPrice app and website." data-de="Datenschutzrichtlinie für die AWattPrice App und Website." content="Datenschutzrichtlinie für die AWattPrice App und Website.">
     <meta name="theme-color" content="#ef7d32">
+    <link rel="canonical" href="https://www.awattprice.com/privacy_policy/">
+    <link rel="alternate" hreflang="de" href="https://www.awattprice.com/privacy_policy/">
+    <link rel="alternate" hreflang="en" href="https://www.awattprice.com/privacy_policy/?lang=en">
+    <link rel="alternate" hreflang="x-default" href="https://www.awattprice.com/privacy_policy/">
+    <meta property="og:title" content="Datenschutz | AWattPrice">
+    <meta property="og:description" content="Datenschutzrichtlinie für die AWattPrice App und Website.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.awattprice.com/privacy_policy/">
+    <meta property="og:image" content="https://www.awattprice.com/images/promotional/landscape-banner-ad-1200x720.png">
+    <meta property="og:image:width" content="1280">
+    <meta property="og:image:height" content="720">
+    <meta property="og:site_name" content="AWattPrice">
+    <meta property="og:locale" content="de_DE">
+    <meta property="og:locale:alternate" content="en_US">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Datenschutz | AWattPrice">
+    <meta name="twitter:description" content="Datenschutzrichtlinie für die AWattPrice App und Website.">
+    <meta name="twitter:image" content="https://www.awattprice.com/images/promotional/landscape-banner-ad-1200x720.png">
     <link rel="icon" type="image/png" sizes="16x16" href="../images/favicon/favicon-16x16.png">
     <link rel="icon" type="image/png" sizes="32x32" href="../images/favicon/favicon-32x32.png">
     <link rel="apple-touch-icon" sizes="180x180" href="../images/favicon/apple-touch-icon.png">
@@ -38,7 +56,7 @@
     </style>
 </head>
 <body>
-    <div data-lang="en">
+    <div data-lang="en" hidden>
         <a class="skip-link" href="#main-en">Skip to main content</a>
         <header class="topbar">
             <div class="container topbar-row">
@@ -175,7 +193,7 @@
     </footer>
     </div>
 
-    <div data-lang="de" hidden>
+    <div data-lang="de">
         <a class="skip-link" href="#main-de">Zum Hauptinhalt springen</a>
         <header class="topbar">
             <div class="container topbar-row">
@@ -317,12 +335,11 @@
             const params = new URLSearchParams(window.location.search);
             const queryLanguage = params.get('lang');
             const storedLanguage = localStorage.getItem('awattprice-lang');
-            const browserLanguage = (navigator.language || navigator.userLanguage || '').toLowerCase();
             const language = queryLanguage === 'de' || queryLanguage === 'en'
                 ? queryLanguage
                 : storedLanguage === 'de' || storedLanguage === 'en'
                     ? storedLanguage
-                    : (browserLanguage.startsWith('de') ? 'de' : 'en');
+                    : 'de';
 
             localStorage.setItem('awattprice-lang', language);
             document.documentElement.lang = language;

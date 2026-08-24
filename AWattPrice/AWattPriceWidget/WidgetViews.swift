@@ -157,25 +157,35 @@ struct WidgetUnavailableView: View {
 }
 
 struct WidgetProLockedView: View {
-    var body: some View {
-        VStack(alignment: .leading, spacing: 7) {
-            Image(systemName: "lock.fill")
-                .font(.title3)
-                .foregroundStyle(WidgetStyle.accent)
+    @Environment(\.widgetFamily) private var family
 
+    var body: some View {
+        if family == .accessoryRectangular {
             Text("Widgets are Pro")
                 .font(.headline)
-                .lineLimit(2)
+                .lineLimit(1)
+                .minimumScaleFactor(0.75)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+                .containerBackground(.fill, for: .widget)
+                .widgetURL(WidgetRoute.pro)
+        } else {
+            VStack(alignment: .leading, spacing: 7) {
+                Text("Widgets are Pro")
+                    .font(.headline)
+                    .lineLimit(2)
 
-            Text("Open AWattPrice to unlock widgets.")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .lineLimit(3)
+                Spacer(minLength: 0)
+
+                Text("Open AWattPrice to unlock widgets.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(3)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            .padding(WidgetStyle.smallPadding)
+            .awattWidgetBackground()
+            .widgetURL(WidgetRoute.pro)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .padding(WidgetStyle.smallPadding)
-        .awattWidgetBackground()
-        .widgetURL(WidgetRoute.pro)
     }
 }
 
@@ -569,22 +579,20 @@ struct CurrentPriceWidgetView: View {
             case .fresh, .cached:
                 if let point {
                     Gauge(value: point.marketprice, in: gaugeRange) {
-                        Text("Current Price")
+                        Text("ct")
                     } currentValueLabel: {
-                        VStack(spacing: -2) {
+                        VStack(spacing: -3) {
                             Text(WidgetText.priceValue(point.marketprice))
                                 .font(.system(size: 13, weight: .bold, design: .rounded))
                                 .monospacedDigit()
                                 .minimumScaleFactor(0.55)
                                 .lineLimit(1)
-
-                            Text(verbatim: "ct")
-                                .font(.system(size: 8, weight: .semibold, design: .rounded))
                         }
                     }
                     .gaugeStyle(.accessoryCircular)
                     .tint(priceColor)
                     .widgetAccentable()
+                    .accessibilityLabel(Text("Current Price"))
                     .accessibilityValue(WidgetText.price(point.marketprice))
                 } else {
                     Image(systemName: "bolt.slash.fill")
@@ -669,6 +677,55 @@ struct CurrentPriceWidgetView: View {
         .containerBackground(.fill, for: .widget)
         .widgetURL(WidgetRoute.prices)
     }
+}
+
+private extension WidgetPriceEntry {
+    static func gaugePreview(
+        currentPrice: Double,
+        minimumPrice: Double,
+        averagePrice: Double,
+        maximumPrice: Double
+    ) -> WidgetPriceEntry {
+        let now = Date()
+        let currentPoint = WidgetPricePoint(
+            startTime: now.addingTimeInterval(-15 * 60),
+            endTime: now.addingTimeInterval(15 * 60),
+            marketprice: currentPrice
+        )
+        let minimumPoint = WidgetPricePoint(
+            startTime: now.addingTimeInterval(15 * 60),
+            endTime: now.addingTimeInterval(30 * 60),
+            marketprice: minimumPrice
+        )
+        let maximumPoint = WidgetPricePoint(
+            startTime: now.addingTimeInterval(30 * 60),
+            endTime: now.addingTimeInterval(45 * 60),
+            marketprice: maximumPrice
+        )
+        let snapshot = WidgetPriceSnapshot(
+            createdAt: now,
+            marketAreaName: "Preview",
+            points: [currentPoint, minimumPoint, maximumPoint],
+            currentPrice: currentPoint,
+            averagePrice: averagePrice,
+            minPrice: minimumPoint,
+            maxPrice: maximumPoint,
+            cheapestWindows: []
+        )
+
+        return WidgetPriceEntry(date: now, snapshot: snapshot, state: .fresh)
+    }
+}
+
+#Preview("Current Price Gauge", as: .accessoryCircular) {
+    CurrentPriceWidget()
+} timeline: {
+    WidgetPriceEntry.gaugePreview(
+        currentPrice: 67.42,
+        minimumPrice: -5,
+        averagePrice: 25,
+        maximumPrice: 50
+    )
 }
 
 private struct WidgetPriceTrendLabel: View {

@@ -193,9 +193,10 @@ struct GenerationMixData: Decodable {
     let latestCompleteEndTime: Date?
     let latestPublishedEndTime: Date?
 
-    init(history: GenerationMixHistoryData) {
+    init(history: GenerationMixHistoryData, referenceDate: Date = Date()) {
         let sortedIntervals = history.sortedIntervals
         let latestInterval = sortedIntervals.last(where: { !$0.isPartialPublication }) ?? sortedIntervals.last
+        let latestPublishedInterval = sortedIntervals.last
         self.area = history.area
         self.resolution = history.resolution
         self.updatedAt = history.updatedAt
@@ -205,7 +206,9 @@ struct GenerationMixData: Decodable {
         self.renewableGenerationMW = latestInterval?.renewableGenerationMW ?? history.renewableGenerationMW
         self.renewableShare = latestInterval?.renewableShare ?? history.renewableShare
         self.categories = latestInterval?.categories ?? history.categories
-        self.isPartialPublication = history.isPartialPublication
+        self.isPartialPublication = latestPublishedInterval.map {
+            $0.isPartialPublication && $0.shouldBeVisible(referenceDate: referenceDate)
+        } ?? false
         self.latestCompleteEndTime = history.latestCompleteEndTime
         self.latestPublishedEndTime = history.latestPublishedEndTime
     }
@@ -268,6 +271,10 @@ struct GenerationMixData: Decodable {
 }
 
 struct GenerationMixInterval: Decodable, Identifiable {
+    /// Newly published incomplete intervals remain hidden while ENTSO-E has
+    /// time to publish the remaining production types.
+    static let partialPublicationVisibilityDelay: TimeInterval = 45 * 60
+
     let startTime: Date
     let endTime: Date
     let totalGenerationMW: Double
@@ -277,6 +284,11 @@ struct GenerationMixInterval: Decodable, Identifiable {
     let isPartialPublication: Bool
 
     var id: Date { startTime }
+
+    func shouldBeVisible(referenceDate: Date) -> Bool {
+        guard isPartialPublication else { return true }
+        return endTime <= referenceDate.addingTimeInterval(-Self.partialPublicationVisibilityDelay)
+    }
 
     var visibleCategories: [GenerationMixCategory] {
         categories

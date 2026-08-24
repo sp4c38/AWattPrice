@@ -4193,19 +4193,19 @@
         }
       }
     },
-    "Some generation data for today has not been reported yet." : {
+    "Some generation data has not been reported yet." : {
       "comment" : "SwiftUI literal",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Manche Erzeugungsdaten für heute wurden noch nicht gemeldet."
+            "value" : "Manche Erzeugungsdaten wurden noch nicht gemeldet."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Some generation data for today has not been reported yet."
+            "value" : "Some generation data has not been reported yet."
           }
         }
       }

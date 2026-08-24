@@ -81,6 +81,10 @@ struct GenerationMixHistoryView: View {
         .task(id: requestKey) {
             await loadHistory()
         }
+        .onReceive(energyDataService.$generationMixHistoryData) { history in
+            guard let history else { return }
+            loadState = .loaded(history)
+        }
     }
 
     private func loadHistory() async {
@@ -184,10 +188,16 @@ private func generationMixDisplayIntervals(
     range: GenerationMixHistoryRange,
     nativeLastHour: Bool
 ) -> [GenerationMixInterval] {
+    let referenceDate = Date()
+
     // Trim to the requested window.  The cached dataset is always 7d so 24h
-    // and 3d are derived in-memory without any extra network traffic.
+    // and 3d are derived in-memory without any extra network traffic. Newly
+    // published partial intervals stay hidden during their 45-minute grace
+    // period so ENTSO-E can complete them before they enter the UI.
     let cutoff = history.endTime.addingTimeInterval(-TimeInterval(range.hours) * 3600)
-    let trimmed = history.sortedIntervals.filter { $0.startTime >= cutoff }
+    let trimmed = history.sortedIntervals.filter {
+        $0.startTime >= cutoff && $0.shouldBeVisible(referenceDate: referenceDate)
+    }
     guard trimmed.isEmpty == false else { return [] }
 
     // Group by calendar clock-hours rather than offsets from firstStartTime.
@@ -284,7 +294,7 @@ private struct GenerationMixPartialPublicationNote: View {
                 .foregroundStyle(prominent ? .primary : .secondary)
                 .frame(width: 16)
 
-            Text("Some generation data for today has not been reported yet.")
+            Text("Some generation data has not been reported yet.")
                 .font(.caption)
                 .fontWeight(prominent ? .medium : .regular)
                 .foregroundStyle(prominent ? .primary : .secondary)
@@ -439,6 +449,15 @@ private struct GenerationMixStackedGenerationChart: View {
         return first.startTime.addingTimeInterval(-edgePaddingDuration * 2)...last.startTime.addingTimeInterval(edgePaddingDuration)
     }
 
+    private func partialOverlayEndTime(for interval: GenerationMixInterval) -> Date {
+        guard interval.id == intervals.last?.id else { return interval.endTime }
+
+        // The chart extends its final value into the trailing plot padding. If
+        // that value belongs to a partial interval, keep the overlay aligned
+        // with the same visual extent so the padding does not look complete.
+        return max(interval.endTime, xDomain.upperBound)
+    }
+
     private var yDomain: ClosedRange<Double> {
         // Scale to the *range-filtered* maximum so the chart fills its height
         // correctly for every range, while the mark data itself (allIntervals)
@@ -479,7 +498,7 @@ private struct GenerationMixStackedGenerationChart: View {
                 ForEach(partialIntervals) { interval in
                     RectangleMark(
                         xStart: .value(String(localized: "Time"), interval.startTime),
-                        xEnd: .value(String(localized: "Time"), interval.endTime),
+                        xEnd: .value(String(localized: "Time"), partialOverlayEndTime(for: interval)),
                         yStart: .value(String(localized: "Generation"), yDomain.lowerBound),
                         yEnd: .value(String(localized: "Generation"), yDomain.upperBound)
                     )

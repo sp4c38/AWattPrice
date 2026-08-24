@@ -233,17 +233,60 @@ final class EnergyDataTests: XCTestCase {
                 """.utf8
             )
         )
-        let data = GenerationMixData(history: history)
+        let recentData = GenerationMixData(
+            history: history,
+            referenceDate: Date(timeIntervalSince1970: 4_102_455_600 + (44 * 60))
+        )
+        let matureData = GenerationMixData(
+            history: history,
+            referenceDate: Date(timeIntervalSince1970: 4_102_455_600 + (45 * 60))
+        )
 
-	        XCTAssertTrue(history.isPartialPublication)
-	        XCTAssertFalse(history.sortedIntervals[0].isPartialPublication)
-	        XCTAssertTrue(history.sortedIntervals[1].isPartialPublication)
-	        XCTAssertEqual(history.latestCompleteEndTime?.timeIntervalSince1970, 4_102_448_400)
-	        XCTAssertEqual(history.latestPublishedEndTime?.timeIntervalSince1970, 4_102_455_600)
-	        XCTAssertTrue(data.isPartialPublication)
-	        XCTAssertEqual(data.endTime.timeIntervalSince1970, 4_102_448_400)
-	        XCTAssertEqual(data.renewableShare, 50)
-	        XCTAssertEqual(data.latestPublishedEndTime?.timeIntervalSince1970, 4_102_455_600)
+        XCTAssertTrue(history.isPartialPublication)
+        XCTAssertFalse(history.sortedIntervals[0].isPartialPublication)
+        XCTAssertTrue(history.sortedIntervals[1].isPartialPublication)
+        XCTAssertEqual(history.latestCompleteEndTime?.timeIntervalSince1970, 4_102_448_400)
+        XCTAssertEqual(history.latestPublishedEndTime?.timeIntervalSince1970, 4_102_455_600)
+        XCTAssertFalse(recentData.isPartialPublication)
+        XCTAssertTrue(matureData.isPartialPublication)
+        XCTAssertEqual(matureData.endTime.timeIntervalSince1970, 4_102_448_400)
+        XCTAssertEqual(matureData.renewableShare, 50)
+        XCTAssertEqual(matureData.latestPublishedEndTime?.timeIntervalSince1970, 4_102_455_600)
+    }
+
+    func testGenerationMixPartialPublicationVisibilityDelay() {
+        let referenceDate = Date(timeIntervalSince1970: 10_000)
+        let categories: [GenerationMixCategory] = []
+        let completeInterval = GenerationMixInterval(
+            startTime: referenceDate.addingTimeInterval(-15 * 60),
+            endTime: referenceDate,
+            totalGenerationMW: 100,
+            renewableGenerationMW: 50,
+            renewableShare: 50,
+            categories: categories
+        )
+        let recentPartialInterval = GenerationMixInterval(
+            startTime: referenceDate.addingTimeInterval(-59 * 60),
+            endTime: referenceDate.addingTimeInterval(-44 * 60),
+            totalGenerationMW: 10,
+            renewableGenerationMW: 0,
+            renewableShare: 0,
+            categories: categories,
+            isPartialPublication: true
+        )
+        let maturePartialInterval = GenerationMixInterval(
+            startTime: referenceDate.addingTimeInterval(-60 * 60),
+            endTime: referenceDate.addingTimeInterval(-45 * 60),
+            totalGenerationMW: 10,
+            renewableGenerationMW: 0,
+            renewableShare: 0,
+            categories: categories,
+            isPartialPublication: true
+        )
+
+        XCTAssertTrue(completeInterval.shouldBeVisible(referenceDate: referenceDate))
+        XCTAssertFalse(recentPartialInterval.shouldBeVisible(referenceDate: referenceDate))
+        XCTAssertTrue(maturePartialInterval.shouldBeVisible(referenceDate: referenceDate))
     }
 
     private static func decodePricePoint(start: Int, end: Int, marketprice: Double) throws -> EnergyPricePoint {

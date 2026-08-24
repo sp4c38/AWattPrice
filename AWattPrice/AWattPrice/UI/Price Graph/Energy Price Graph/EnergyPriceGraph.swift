@@ -535,6 +535,8 @@ private struct ExpandedIntervalTransitionModifier: ViewModifier, Animatable {
 
 /// The graph drawn on the prices screen displaying the price for each upcoming hour.
 struct EnergyPriceGraph: View {
+    private static let minimumHapticInterval: TimeInterval = 0.07
+
     @EnvironmentObject private var energyDataService: EnergyDataService
 
     let prices: [EnergyPricePoint]?
@@ -553,7 +555,8 @@ struct EnergyPriceGraph: View {
 
     @State private var selectedGroupIndex: Int?
     @State private var expandedIntervalSwitchDirection: Int?
-    @State private var feedbackGenerator = UIImpactFeedbackGenerator(style: .light)
+    @State private var feedbackGenerator = UISelectionFeedbackGenerator()
+    @State private var lastHapticTime: TimeInterval?
 
     private var currentPrices: [EnergyPricePoint] {
         prices ?? energyDataService.energyData?.currentPrices ?? []
@@ -711,11 +714,24 @@ struct EnergyPriceGraph: View {
         }
 
         if boundedGroupIndex != nil {
-            feedbackGenerator.impactOccurred(intensity: 0.75)
-            feedbackGenerator.prepare()
+            playSelectionFeedback()
+        } else {
+            lastHapticTime = nil
         }
 
         selectedGroupIndex = boundedGroupIndex
+    }
+
+    private func playSelectionFeedback() {
+        let currentTime = ProcessInfo.processInfo.systemUptime
+        if let lastHapticTime,
+           currentTime - lastHapticTime < Self.minimumHapticInterval {
+            return
+        }
+
+        lastHapticTime = currentTime
+        feedbackGenerator.selectionChanged()
+        feedbackGenerator.prepare()
     }
 
     private var dataChangeAnimation: Animation {

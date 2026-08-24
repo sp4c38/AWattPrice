@@ -89,12 +89,23 @@ async def get_area_price_history(area_key: str, history_date: date):
         raise HTTPException(400)
 
     price_data = await prices.get_stored_history_data(normalized_area_key, history_date, config)
-    if price_data is None and not is_retained_history_date(history_date):
+    if price_data is None:
         try:
-            price_data = await price_refresher.download_history_prices(normalized_area_key, history_date, config)
+            if is_retained_history_date(history_date):
+                price_data = await price_refresher.refresh_history_prices(
+                    normalized_area_key,
+                    history_date,
+                    config,
+                )
+            else:
+                price_data = await price_refresher.download_history_prices(
+                    normalized_area_key,
+                    history_date,
+                    config,
+                )
         except Exception as exc:
             logger.warning(
-                f"Couldn't download uncached historical price data for area "
+                f"Couldn't recover missing historical price data for area "
                 f"{normalized_area_key} and date {history_date}: {exc}."
             )
 

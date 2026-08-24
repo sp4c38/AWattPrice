@@ -483,15 +483,23 @@ class PriceHistoryAPITests(unittest.TestCase):
         download_history.assert_awaited_once()
         store_history.assert_not_awaited()
 
-    def test_retained_missing_history_is_not_downloaded_by_api(self):
+    def test_retained_missing_history_is_refreshed_and_stored_by_api(self):
+        price_data = price_refresher.parse_downloaded_data(AREA, price_xml())
+
         with (
             patch.object(api.prices, "get_stored_history_data", new=AsyncMock(return_value=None)),
             patch.object(api, "is_retained_history_date", return_value=True),
+            patch.object(
+                api.price_refresher,
+                "refresh_history_prices",
+                new=AsyncMock(return_value=price_data),
+            ) as refresh_history,
             patch.object(api.price_refresher, "download_history_prices", new=AsyncMock()) as download_history,
         ):
             response = self.client.get("/prices/DE-LU/history/2026-05-24")
 
-        self.assertEqual(response.status_code, 503)
+        self.assertEqual(response.status_code, 200)
+        refresh_history.assert_awaited_once_with("DE-LU", date(2026, 5, 24), api.config)
         download_history.assert_not_awaited()
 
 

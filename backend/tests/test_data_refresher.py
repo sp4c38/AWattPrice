@@ -124,6 +124,18 @@ class RefresherStatePersistenceTests(unittest.TestCase):
 
 
 class DataRefresherScheduleTests(unittest.TestCase):
+    def test_history_refresh_is_due_after_berlin_day_changes(self):
+        last_run = arrow.get("2026-05-25T23:55:00+02:00")
+        current = arrow.get("2026-05-26T00:01:00+02:00")
+
+        self.assertTrue(data_refresher.history_refresh_due(last_run, current))
+
+    def test_history_refresh_is_not_due_again_on_same_berlin_day(self):
+        last_run = arrow.get("2026-05-26T00:01:00+02:00")
+        current = arrow.get("2026-05-26T12:00:00+02:00")
+
+        self.assertFalse(data_refresher.history_refresh_due(last_run, current))
+
     def test_berlin_fast_window_uses_ten_minute_interval(self):
         fast_time = arrow.get("2026-05-25T13:30:00+02:00")
         slow_time = arrow.get("2026-05-25T16:00:00+02:00")

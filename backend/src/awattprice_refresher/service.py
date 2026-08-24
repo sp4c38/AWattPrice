@@ -61,6 +61,19 @@ def due(last_run_at: Optional[arrow.Arrow], interval_seconds: int, now=None) -> 
     return (current - last_run_at).total_seconds() >= interval_seconds
 
 
+def history_refresh_due(last_run_at: Optional[arrow.Arrow], now=None) -> bool:
+    """Return whether retained history needs refreshing for a new Berlin day."""
+    current = (now or now_berlin()).to(defaults.REFRESHER_TIMEZONE)
+    if last_run_at is None:
+        return True
+
+    previous = last_run_at.to(defaults.REFRESHER_TIMEZONE)
+    if previous.date() != current.date():
+        return True
+
+    return due(last_run_at, defaults.REFRESHER_HISTORY_INTERVAL_SECONDS, current)
+
+
 def retained_history_days(now=None) -> list[date]:
     """Return historical Berlin dates that should remain cached."""
     return cache_status.latest_history_days(now)
@@ -376,7 +389,7 @@ async def run_cycle(config: Config, state: RefresherState, now=None) -> dict:
         state.current_prices = current
         result["current_prices"] = "ran"
 
-    if due(state.price_history, defaults.REFRESHER_HISTORY_INTERVAL_SECONDS, current):
+    if history_refresh_due(state.price_history, current):
         logger.info("Refreshing retained price history caches.")
         await run_bounded(areas, lambda area: refresh_history_for_area(area, config))
         state.price_history = current

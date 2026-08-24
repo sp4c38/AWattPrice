@@ -579,7 +579,7 @@ struct CurrentPriceWidgetView: View {
             case .fresh, .cached:
                 if let point {
                     Gauge(value: point.marketprice, in: gaugeRange) {
-                        Text("ct")
+                        Text(verbatim: "ct")
                     } currentValueLabel: {
                         VStack(spacing: -3) {
                             Text(WidgetText.priceValue(point.marketprice))

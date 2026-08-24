@@ -155,7 +155,7 @@ for path in "/areas/" "/prices/AT" "/generation-mix/DE-LU/history?hours=168"; do
   info "Green ${path} responded 200 OK"
 done
 
-ssh "$SERVER" "curl -s http://127.0.0.1:${GREEN_PORT}/prices/AT" | python3 -m json.tool | head -6
+ssh "$SERVER" "curl -s http://127.0.0.1:${GREEN_PORT}/prices/AT" | python3 -m json.tool | sed -n '1,6p'
 
 # ---------------------------------------------------------------------------
 # Confirmation before cutting over live traffic
@@ -304,4 +304,4 @@ info "Image:      $IMAGE (retagged from $GREEN_IMAGE)"
 info "Containers: compose stack on port $BLUE_PORT"
 info ""
 info "Verifying live endpoint..."
-curl -s "https://api.awattprice.com/v3/prices/AT" | python3 -m json.tool | head -6
+curl -s "https://api.awattprice.com/v3/prices/AT" | python3 -m json.tool | sed -n '1,6p'

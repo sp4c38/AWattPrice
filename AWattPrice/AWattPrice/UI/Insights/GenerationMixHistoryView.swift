@@ -317,11 +317,18 @@ private struct GenerationMixSelectedIntervalView: View {
                     Text(timeRangeText(from: interval.startTime, to: interval.endTime))
                         .font(.subheadline.weight(.semibold))
 
-                    Text(megawattText(interval.totalGenerationMW))
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .monospacedDigit()
-                        .contentTransition(.numericText())
+                    HStack(spacing: 5) {
+                        Text(historyIntervalDateText(interval.startTime))
+
+                        Text("·")
+                            .accessibilityHidden(true)
+
+                        Text(megawattText(interval.totalGenerationMW))
+                            .monospacedDigit()
+                            .contentTransition(.numericText())
+                    }
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
                 }
 
                 Spacer()
@@ -715,10 +722,21 @@ private struct GenerationMixCompactLegendItem: View {
 // MARK: - History-only helpers
 
 private func historyIntervalAccessibilityText(_ interval: GenerationMixInterval) -> String {
-    String.localizedStringWithFormat(
+    let datedTimeRange = "\(historyIntervalDateText(interval.startTime)), \(timeRangeText(from: interval.startTime, to: interval.endTime))"
+
+    return String.localizedStringWithFormat(
         NSLocalizedString("%@, renewable mix %@", comment: "Accessibility label for one generation mix history interval"),
-        timeRangeText(from: interval.startTime, to: interval.endTime),
+        datedTimeRange,
         percentText(interval.renewableShare)
+    )
+}
+
+private func historyIntervalDateText(_ date: Date) -> String {
+    date.formatted(
+        .dateTime
+            .weekday(.abbreviated)
+            .day()
+            .month(.abbreviated)
     )
 }
 

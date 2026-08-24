@@ -14,6 +14,7 @@
     },
     "**Tomorrow's** price summary." : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -126,6 +127,7 @@
     },
     "%@h, %@min" : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -143,6 +145,7 @@
     },
     "%@min" : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -177,6 +180,7 @@
     },
     "<1min" : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -194,6 +198,7 @@
     },
     "1h usage" : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -211,6 +216,7 @@
     },
     "2h usage" : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -228,6 +234,7 @@
     },
     "4h usage" : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -262,6 +269,7 @@
     },
     "A note from the developer" : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -279,6 +287,7 @@
     },
     "About the price of a donut." : {
       "comment" : "Localized returned display text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -296,6 +305,7 @@
     },
     "Add our widgets to your Home Screen for quick price updates." : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -313,6 +323,7 @@
     },
     "Add-ons are applied to prices everywhere throughout AWattPrice." : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -330,6 +341,7 @@
     },
     "Advanced insights" : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -347,6 +359,7 @@
     },
     "Alert below" : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -364,6 +377,7 @@
     },
     "Annual Consumption" : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -381,6 +395,7 @@
     },
     "Annual consumption is required to allocate monthly fixed costs." : {
       "comment" : "Localized returned display text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -432,6 +447,7 @@
     },
     "Average" : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -449,6 +465,7 @@
     },
     "Average Price" : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -483,6 +500,7 @@
     },
     "AWattPrice Pro Supporter" : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -500,6 +518,7 @@
     },
     "Basic electricity provider fee." : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -517,6 +536,7 @@
     },
     "Bio" : {
       "comment" : "Localized returned display text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -585,6 +605,7 @@
     },
     "Category" : {
       "comment" : "String(localized:)",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -602,6 +623,7 @@
     },
     "Cheap hours **tomorrow**." : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -636,6 +658,7 @@
     },
     "Cheapest Time" : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -653,6 +676,7 @@
     },
     "Cheapest times" : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -687,6 +711,7 @@
     },
     "Cheapest windows, expensive peaks, and renewable mix infos." : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -704,6 +729,7 @@
     },
     "cheapestPriceResultPage.cheapestTimeErrorOccurred" : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -721,6 +747,7 @@
     },
     "Check your electricity contract and fill in whichever values apply to you." : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -738,6 +765,7 @@
     },
     "Compare today’s price range, cheapest and most expensive usage windows, plus the current renewable energy mix." : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -772,6 +800,7 @@
     },
     "Continue with %@" : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -789,6 +818,7 @@
     },
     "Couldn't get history" : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -806,6 +836,7 @@
     },
     "Couldn't get new data. Tap to retry." : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -840,6 +871,7 @@
     },
     "ct/kWh." : {
       "comment" : "Unit label with dot",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -925,6 +957,7 @@
     },
     "Custom date" : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -942,6 +975,7 @@
     },
     "Daily Summary" : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -992,25 +1026,9 @@
         }
       }
     },
-    "Some generation data for today has not been reported yet." : {
-      "comment" : "SwiftUI literal",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Manche Erzeugungsdaten für heute wurden noch nicht gemeldet."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Some generation data for today has not been reported yet."
-          }
-        }
-      }
-    },
     "dataError.connection.message" : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1028,6 +1046,7 @@
     },
     "dataError.connection.retryDisabled" : {
       "comment" : "SwiftUI literal",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1045,6 +1064,7 @@
     },
     "dataError.connection.title" : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1062,6 +1082,7 @@
     },
     "dataError.download.message" : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1079,6 +1100,7 @@
     },
     "dataError.download.title" : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1096,6 +1118,7 @@
     },
     "dataError.noData.message" : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1113,6 +1136,7 @@
     },
     "dataError.noData.title" : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1130,6 +1154,7 @@
     },
     "dataError.settings.title" : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1147,6 +1172,7 @@
     },
     "Date" : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1164,6 +1190,7 @@
     },
     "Development" : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1181,6 +1208,7 @@
     },
     "Done" : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1198,6 +1226,7 @@
     },
     "Duration" : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1215,6 +1244,7 @@
     },
     "Electricity Price" : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1232,6 +1262,7 @@
     },
     "End" : {
       "comment" : "Localized time range input field label",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1249,6 +1280,7 @@
     },
     "Energy mix" : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1266,6 +1298,7 @@
     },
     "Energy Mix" : {
       "comment" : "SwiftUI navigation title",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1334,6 +1367,7 @@
     },
     "EUR/month" : {
       "comment" : "Unit label",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1351,6 +1385,7 @@
     },
     "Expensive hours **tomorrow**." : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1368,6 +1403,7 @@
     },
     "Extras & Help" : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1385,6 +1421,7 @@
     },
     "Family Sharing" : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1402,6 +1439,7 @@
     },
     "Final price =" : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1419,6 +1457,7 @@
     },
     "Find the cheapest time for a selected duration within a time range." : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1436,6 +1475,7 @@
     },
     "Finding cheapest time..." : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1453,6 +1493,7 @@
     },
     "Fixed Add-on" : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1470,6 +1511,7 @@
     },
     "Focus modes may silence example notifications." : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1504,6 +1546,7 @@
     },
     "Generation" : {
       "comment" : "String(localized:)",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1521,6 +1564,7 @@
     },
     "Generation mix" : {
       "comment" : "Accessibility label",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1572,6 +1616,7 @@
     },
     "Get Help" : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1606,6 +1651,7 @@
     },
     "Help & Suggestions" : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1623,6 +1669,7 @@
     },
     "Help keep AWattPrice maintained." : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1640,6 +1687,7 @@
     },
     "Hi, I’m Leon, a student developing AWattPrice in my spare time. Pro helps keep the app running and supports further development. I hope you like the app!" : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1657,6 +1705,7 @@
     },
     "Highest" : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1674,6 +1723,7 @@
     },
     "Highest price" : {
       "comment" : "Accessibility label",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1691,6 +1741,7 @@
     },
     "Historical prices" : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1708,6 +1759,7 @@
     },
     "History" : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1725,6 +1777,7 @@
     },
     "Home Screen widgets" : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1742,6 +1795,7 @@
     },
     "hour" : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1759,6 +1813,7 @@
     },
     "hours" : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1811,6 +1866,7 @@
     },
     "Include your provider’s fees in displayed prices." : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1828,6 +1884,7 @@
     },
     "Insights" : {
       "comment" : "SwiftUI literal",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1845,6 +1902,7 @@
     },
     "Keep prices visible at a glance outside the app." : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1862,6 +1920,7 @@
     },
     "kWh/year" : {
       "comment" : "Unit label",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1879,6 +1938,7 @@
     },
     "Less than a dinner out." : {
       "comment" : "Localized returned display text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1896,6 +1956,7 @@
     },
     "Lifetime" : {
       "comment" : "Localized returned display text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1964,6 +2025,7 @@
     },
     "Loading" : {
       "comment" : "SwiftUI literal",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1998,6 +2060,7 @@
     },
     "Loading history" : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2015,6 +2078,7 @@
     },
     "Loading price zones…" : {
       "comment" : "SwiftUI literal",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2032,6 +2096,7 @@
     },
     "Loading Pro options" : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2049,6 +2114,7 @@
     },
     "Look back at previous days directly in the price graph." : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2066,6 +2132,7 @@
     },
     "Lowest" : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2083,6 +2150,7 @@
     },
     "Lowest price" : {
       "comment" : "Accessibility label",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2117,6 +2185,7 @@
     },
     "Market price" : {
       "comment" : "Localized formula label",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2134,6 +2203,7 @@
     },
     "Maximum" : {
       "comment" : "Localized returned display text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2151,6 +2221,7 @@
     },
     "min" : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2168,6 +2239,7 @@
     },
     "Monthly" : {
       "comment" : "Localized returned display text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2185,6 +2257,7 @@
     },
     "Monthly and yearly plans renew automatically. Lifetime is a one-time purchase. All purchases include free family sharing." : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2202,6 +2275,7 @@
     },
     "Monthly Fixed Cost" : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2219,6 +2293,7 @@
     },
     "Monthly fixed cost adds" : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2236,6 +2311,7 @@
     },
     "Most expensive times" : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2253,6 +2329,7 @@
     },
     "Most popular" : {
       "comment" : "Localized returned display text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2270,6 +2347,7 @@
     },
     "Next 3 hours" : {
       "comment" : "Localized returned display text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2338,6 +2416,7 @@
     },
     "Next 12 hours" : {
       "comment" : "Localized returned display text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2355,6 +2434,7 @@
     },
     "No active Pro purchase was found." : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2389,6 +2469,7 @@
     },
     "No history data available" : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2406,6 +2487,7 @@
     },
     "No Result Found" : {
       "comment" : "SwiftUI literal",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2423,6 +2505,7 @@
     },
     "Notification example could not be loaded." : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2440,6 +2523,7 @@
     },
     "Notification settings could not be saved to the server. Your previous settings were restored." : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2457,6 +2541,7 @@
     },
     "Notifications" : {
       "comment" : "SwiftUI literal",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2474,6 +2559,7 @@
     },
     "Notifications are disabled." : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2509,6 +2595,7 @@
     },
     "notifications.daily_summary.body.example" : {
       "comment" : "APNs localization key",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2526,6 +2613,7 @@
     },
     "notifications.daily_summary.title" : {
       "comment" : "APNs localization key",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2543,6 +2631,7 @@
     },
     "notifications.price_above.body.example" : {
       "comment" : "APNs localization key",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2632,6 +2721,7 @@
     },
     "notifications.price_above.title" : {
       "comment" : "APNs localization key",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2649,6 +2739,7 @@
     },
     "notifications.price_below.body.example" : {
       "comment" : "APNs localization key",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2738,6 +2829,7 @@
     },
     "notifications.price_below.title" : {
       "comment" : "APNs localization key",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2806,6 +2898,7 @@
     },
     "OK" : {
       "comment" : "SwiftUI literal",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2823,6 +2916,7 @@
     },
     "One-time" : {
       "comment" : "Localized returned display text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2857,6 +2951,7 @@
     },
     "Open Cheapest Time" : {
       "comment" : "Accessibility label",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2874,6 +2969,7 @@
     },
     "Open Energy Mix History" : {
       "comment" : "Accessibility label",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2891,6 +2987,7 @@
     },
     "Open Settings App" : {
       "comment" : "SwiftUI literal",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2925,6 +3022,7 @@
     },
     "Percentage Add-on" : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2942,6 +3040,7 @@
     },
     "Play confetti" : {
       "comment" : "SwiftUI literal",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2959,6 +3058,7 @@
     },
     "Price above value" : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2976,6 +3076,7 @@
     },
     "Price add-ons" : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2993,6 +3094,7 @@
     },
     "Price Add-ons" : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3010,6 +3112,7 @@
     },
     "Price add-ons could not be saved to the server. Your previous settings were restored." : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3027,6 +3130,7 @@
     },
     "Price alerts and daily summaries when new prices arrive." : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3044,6 +3148,7 @@
     },
     "Price below value" : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3061,6 +3166,7 @@
     },
     "Price data selection" : {
       "comment" : "Accessibility label",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3095,6 +3201,7 @@
     },
     "Price graph interval" : {
       "comment" : "SwiftUI literal",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3112,6 +3219,7 @@
     },
     "Price graph interval info" : {
       "comment" : "Accessibility label",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3129,6 +3237,7 @@
     },
     "Price history" : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3163,6 +3272,7 @@
     },
     "Price range" : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3197,6 +3307,7 @@
     },
     "Price zone" : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3214,6 +3325,7 @@
     },
     "Prices" : {
       "comment" : "SwiftUI literal",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3231,6 +3343,7 @@
     },
     "Prices loaded" : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3265,6 +3378,7 @@
     },
     "Prices up to date · Tap for history" : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3299,6 +3413,7 @@
     },
     "Privacy Policy" : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3333,6 +3448,7 @@
     },
     "Pro is active" : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3350,6 +3466,7 @@
     },
     "Pro is active. Thank you for your support." : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3385,6 +3502,7 @@
     },
     "Pro lets you include provider fees in displayed prices." : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3402,6 +3520,7 @@
     },
     "Pro options unavailable" : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3419,6 +3538,7 @@
     },
     "Pro products could not be loaded. Please try again in a moment." : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3436,6 +3556,7 @@
     },
     "Purchases could not be restored. Please try again." : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3453,6 +3574,7 @@
     },
     "Range" : {
       "comment" : "SwiftUI literal",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3470,6 +3592,7 @@
     },
     "Recommended end" : {
       "comment" : "Localized timeline note",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3487,6 +3610,7 @@
     },
     "Recommended start" : {
       "comment" : "Localized timeline note",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3504,6 +3628,7 @@
     },
     "Refresh" : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3521,6 +3646,7 @@
     },
     "Refreshing" : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3606,6 +3732,7 @@
     },
     "renewables" : {
       "comment" : "SwiftUI literal",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3623,6 +3750,7 @@
     },
     "renewables now" : {
       "comment" : "SwiftUI literal",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3640,6 +3768,7 @@
     },
     "Reorder" : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3657,6 +3786,7 @@
     },
     "Restore Purchases" : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3674,6 +3804,7 @@
     },
     "Retry" : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3691,6 +3822,7 @@
     },
     "Saving price zone…" : {
       "comment" : "SwiftUI literal",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3708,6 +3840,7 @@
     },
     "Saving to server" : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3725,6 +3858,7 @@
     },
     "Screenshot coming soon" : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3742,6 +3876,7 @@
     },
     "See Pro in action" : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3759,6 +3894,7 @@
     },
     "Select history date" : {
       "comment" : "Accessibility label",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3776,6 +3912,7 @@
     },
     "Select your electricity price market area" : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3793,6 +3930,7 @@
     },
     "Selected" : {
       "comment" : "String(localized:)",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3810,6 +3948,7 @@
     },
     "Selected time" : {
       "comment" : "String(localized:)",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3827,6 +3966,7 @@
     },
     "Selected total" : {
       "comment" : "String(localized:)",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3844,6 +3984,7 @@
     },
     "Send example" : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3861,6 +4002,7 @@
     },
     "Send Suggestion" : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3878,6 +4020,7 @@
     },
     "Sent" : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3895,6 +4038,7 @@
     },
     "Set price alerts for tomorrow’s cheap and expensive hours, plus a daily summary when new prices arrive." : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3912,6 +4056,7 @@
     },
     "Settings" : {
       "comment" : "SwiftUI literal",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3929,6 +4074,7 @@
     },
     "Share Pro with your family members at no extra cost." : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -4014,6 +4160,7 @@
     },
     "Smart notifications" : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -4046,6 +4193,23 @@
         }
       }
     },
+    "Some generation data for today has not been reported yet." : {
+      "comment" : "SwiftUI literal",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Manche Erzeugungsdaten für heute wurden noch nicht gemeldet."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Some generation data for today has not been reported yet."
+          }
+        }
+      }
+    },
     "splashScreen.start.notAffiliatedNote" : {
       "comment" : "SwiftUI literal",
       "localizations" : {
@@ -4065,6 +4229,7 @@
     },
     "Start" : {
       "comment" : "Localized time range input field label",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -4082,6 +4247,7 @@
     },
     "Terms of Use" : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -4099,6 +4265,7 @@
     },
     "Thank you for supporting AWattPrice!" : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -4116,6 +4283,7 @@
     },
     "The price of a book." : {
       "comment" : "Localized returned display text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -4133,6 +4301,7 @@
     },
     "The purchase could not be completed. Please try again." : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -4150,6 +4319,7 @@
     },
     "The purchase could not be verified." : {
       "comment" : "Localized returned display text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -4167,6 +4337,7 @@
     },
     "Time" : {
       "comment" : "String(localized:)",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -4184,6 +4355,7 @@
     },
     "Time range" : {
       "comment" : "SwiftUI literal",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -4201,6 +4373,7 @@
     },
     "Timeline" : {
       "comment" : "SwiftUI literal",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -4218,6 +4391,7 @@
     },
     "Today" : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -4235,6 +4409,7 @@
     },
     "Tomorrow" : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -4252,6 +4427,7 @@
     },
     "Tonight" : {
       "comment" : "Localized returned display text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -4286,6 +4462,7 @@
     },
     "Total" : {
       "comment" : "String(localized:)",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -4303,6 +4480,7 @@
     },
     "Try Again" : {
       "comment" : "SwiftUI literal",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -4354,6 +4532,7 @@
     },
     "Unlock pro features and support the app." : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -4371,6 +4550,7 @@
     },
     "Unlocked" : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -4388,6 +4568,7 @@
     },
     "Unlocked for you" : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -4422,6 +4603,7 @@
     },
     "Upcoming (default)" : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -4439,6 +4621,7 @@
     },
     "Updated just now" : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -4456,6 +4639,7 @@
     },
     "Used to spread fixed monthly costs over each kWh." : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -4473,6 +4657,7 @@
     },
     "VAT" : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -4490,6 +4675,7 @@
     },
     "Version" : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -4507,6 +4693,7 @@
     },
     "Warn above" : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -4541,6 +4728,7 @@
     },
     "What you get with Pro Supporter" : {
       "comment" : "Localized custom view text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -4558,6 +4746,7 @@
     },
     "Widgets" : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -4609,6 +4798,7 @@
     },
     "Yearly" : {
       "comment" : "Localized returned display text",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -4626,6 +4816,7 @@
     },
     "Yesterday" : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -4643,6 +4834,7 @@
     },
     "Your purchase is pending approval." : {
       "comment" : "String.localized()",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

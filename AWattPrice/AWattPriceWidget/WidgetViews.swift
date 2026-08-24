@@ -75,10 +75,13 @@ enum WidgetStyle {
 }
 
 enum WidgetText {
-    static func price(_ price: Double?) -> String {
+    static func priceValue(_ price: Double?) -> String {
         guard let price else { return "-" }
-        let formatted = price.priceString.flatMap { $0.isEmpty ? "0.00" : $0 } ?? "0.00"
-        return "\(formatted) ct"
+        return price.priceString.flatMap { $0.isEmpty ? "0.00" : $0 } ?? "0.00"
+    }
+
+    static func price(_ price: Double?) -> String {
+        "\(priceValue(price)) ct"
     }
 
     static func time(_ date: Date) -> String {
@@ -519,8 +522,23 @@ struct CurrentPriceWidgetView: View {
         entry.snapshot.nextThreeHourTrend
     }
 
+    private var gaugeRange: ClosedRange<Double> {
+        let currentPrice = point?.marketprice ?? 0
+        let lowerBound = min(entry.snapshot.minPrice?.marketprice ?? currentPrice, currentPrice)
+        let upperBound = max(entry.snapshot.maxPrice?.marketprice ?? currentPrice, currentPrice)
+
+        guard lowerBound < upperBound else {
+            let padding = max(abs(currentPrice) * 0.1, 1)
+            return (currentPrice - padding)...(currentPrice + padding)
+        }
+
+        return lowerBound...upperBound
+    }
+
     var body: some View {
-        if entry.state == .lockedPro {
+        if family == .accessoryCircular {
+            accessoryCircularBody
+        } else if entry.state == .lockedPro {
             WidgetProLockedView()
         } else if entry.snapshot.hasPrices == false {
             WidgetUnavailableView(snapshot: entry.snapshot, route: WidgetRoute.prices)
@@ -532,6 +550,51 @@ struct CurrentPriceWidgetView: View {
                 systemSmallBody
             }
         }
+    }
+
+    @ViewBuilder
+    private var accessoryCircularBody: some View {
+        Group {
+            switch entry.state {
+            case .lockedPro:
+                Image(systemName: "lock.fill")
+                    .font(.title2)
+                    .widgetAccentable()
+
+            case .unavailable:
+                Image(systemName: "bolt.slash.fill")
+                    .font(.title2)
+                    .widgetAccentable()
+
+            case .fresh, .cached:
+                if let point {
+                    Gauge(value: point.marketprice, in: gaugeRange) {
+                        Text("Current Price")
+                    } currentValueLabel: {
+                        VStack(spacing: -2) {
+                            Text(WidgetText.priceValue(point.marketprice))
+                                .font(.system(size: 13, weight: .bold, design: .rounded))
+                                .monospacedDigit()
+                                .minimumScaleFactor(0.55)
+                                .lineLimit(1)
+
+                            Text(verbatim: "ct")
+                                .font(.system(size: 8, weight: .semibold, design: .rounded))
+                        }
+                    }
+                    .gaugeStyle(.accessoryCircular)
+                    .tint(priceColor)
+                    .widgetAccentable()
+                    .accessibilityValue(WidgetText.price(point.marketprice))
+                } else {
+                    Image(systemName: "bolt.slash.fill")
+                        .font(.title2)
+                        .widgetAccentable()
+                }
+            }
+        }
+        .containerBackground(.fill, for: .widget)
+        .widgetURL(entry.state == .lockedPro ? WidgetRoute.pro : WidgetRoute.prices)
     }
 
     private var systemSmallBody: some View {

@@ -535,7 +535,7 @@ private struct ExpandedIntervalTransitionModifier: ViewModifier, Animatable {
 
 /// The graph drawn on the prices screen displaying the price for each upcoming hour.
 struct EnergyPriceGraph: View {
-    private static let minimumHapticInterval: TimeInterval = 0.07
+    private static let minimumHapticInterval: TimeInterval = 0.035
 
     @EnvironmentObject private var energyDataService: EnergyDataService
 

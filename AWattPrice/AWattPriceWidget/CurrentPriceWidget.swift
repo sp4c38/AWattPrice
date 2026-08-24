@@ -10,7 +10,7 @@ struct CurrentPriceWidget: Widget {
         }
         .configurationDisplayName("Current Price")
         .description("Shows the current electricity price.")
-        .supportedFamilies([.systemSmall, .accessoryRectangular])
+        .supportedFamilies([.systemSmall, .accessoryCircular, .accessoryRectangular])
         .contentMarginsDisabled()
     }
 }
@@ -40,6 +40,12 @@ struct CurrentPriceWidget: Widget {
 }
 
 #Preview(as: .accessoryRectangular) {
+    CurrentPriceWidget()
+} timeline: {
+    WidgetPriceEntry.preview
+}
+
+#Preview(as: .accessoryCircular) {
     CurrentPriceWidget()
 } timeline: {
     WidgetPriceEntry.preview

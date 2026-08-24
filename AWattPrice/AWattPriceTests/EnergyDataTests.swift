@@ -194,7 +194,7 @@ final class EnergyDataTests: XCTestCase {
                   "resolution": "PT60M",
                   "updated_at": 4102444800,
                   "start_timestamp": 4102444800,
-	                  "end_timestamp": 4102455600,
+                  "end_timestamp": 4102455600,
                   "total_generation_mw": 100,
                   "renewable_generation_mw": 50,
                   "renewable_share": 50,
@@ -212,23 +212,23 @@ final class EnergyDataTests: XCTestCase {
                       "total_generation_mw": 100,
                       "renewable_generation_mw": 50,
                       "renewable_share": 50,
-	                      "categories": [
-	                        { "category": "solar", "generation_mw": 50, "share": 50, "is_renewable": true },
-	                        { "category": "fossil", "generation_mw": 50, "share": 50, "is_renewable": false }
-	                      ]
-	                    },
-	                    {
-	                      "start_timestamp": 4102448400,
-	                      "end_timestamp": 4102455600,
-	                      "total_generation_mw": 10,
-	                      "renewable_generation_mw": 0,
-	                      "renewable_share": 0,
-	                      "is_partial_publication": true,
-	                      "categories": [
-	                        { "category": "fossil", "generation_mw": 10, "share": 100, "is_renewable": false }
-	                      ]
-	                    }
-	                  ]
+                      "categories": [
+                        { "category": "solar", "generation_mw": 50, "share": 50, "is_renewable": true },
+                        { "category": "fossil", "generation_mw": 50, "share": 50, "is_renewable": false }
+                      ]
+                    },
+                    {
+                      "start_timestamp": 4102448400,
+                      "end_timestamp": 4102455600,
+                      "total_generation_mw": 10,
+                      "renewable_generation_mw": 0,
+                      "renewable_share": 0,
+                      "is_partial_publication": true,
+                      "categories": [
+                        { "category": "fossil", "generation_mw": 10, "share": 100, "is_renewable": false }
+                      ]
+                    }
+                  ]
                 }
                 """.utf8
             )

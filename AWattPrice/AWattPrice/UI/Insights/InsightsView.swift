@@ -187,7 +187,7 @@ private struct PriceWindowRow: View {
                 Text(timeRangeText(from: window.startTime, to: window.endTime))
                       .font(.subheadline.weight(.semibold))
 
-                Text(window.title)
+                Text(window.title.localized())
                       .font(.caption)
                       .bold()
                       .foregroundStyle(.secondary)
@@ -755,6 +755,14 @@ struct InsightsView: View {
                     ScrollView {
                         VStack(alignment: .leading, spacing: 14) {
                             generationMixSection
+
+                            NavigationLink {
+                                PriceHistoryView()
+                            } label: {
+                                PriceHistoryNavigationCard()
+                            }
+                            .buttonStyle(.plain)
+                            .accessibilityLabel(Text("Open Price History"))
                             
                             InsightsCard(tint: AppTheme.success) {
                                 HStack {

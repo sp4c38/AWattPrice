@@ -192,7 +192,7 @@ private func generationMixDisplayIntervals(
 
     // Trim to the requested window.  The cached dataset is always 7d so 24h
     // and 3d are derived in-memory without any extra network traffic. Newly
-    // published partial intervals stay hidden during their 45-minute grace
+    // published partial intervals stay hidden during their two-hour grace
     // period so ENTSO-E can complete them before they enter the UI.
     let cutoff = history.endTime.addingTimeInterval(-TimeInterval(range.hours) * 3600)
     let trimmed = history.sortedIntervals.filter {

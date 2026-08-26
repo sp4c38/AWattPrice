@@ -273,7 +273,7 @@ struct GenerationMixData: Decodable {
 struct GenerationMixInterval: Decodable, Identifiable {
     /// Newly published incomplete intervals remain hidden while ENTSO-E has
     /// time to publish the remaining production types.
-    static let partialPublicationVisibilityDelay: TimeInterval = 45 * 60
+    static let partialPublicationVisibilityDelay: TimeInterval = 2 * 60 * 60
 
     let startTime: Date
     let endTime: Date

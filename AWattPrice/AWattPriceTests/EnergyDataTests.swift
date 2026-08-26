@@ -235,11 +235,11 @@ final class EnergyDataTests: XCTestCase {
         )
         let recentData = GenerationMixData(
             history: history,
-            referenceDate: Date(timeIntervalSince1970: 4_102_455_600 + (44 * 60))
+            referenceDate: Date(timeIntervalSince1970: 4_102_455_600 + (119 * 60))
         )
         let matureData = GenerationMixData(
             history: history,
-            referenceDate: Date(timeIntervalSince1970: 4_102_455_600 + (45 * 60))
+            referenceDate: Date(timeIntervalSince1970: 4_102_455_600 + (120 * 60))
         )
 
         XCTAssertTrue(history.isPartialPublication)
@@ -266,8 +266,8 @@ final class EnergyDataTests: XCTestCase {
             categories: categories
         )
         let recentPartialInterval = GenerationMixInterval(
-            startTime: referenceDate.addingTimeInterval(-59 * 60),
-            endTime: referenceDate.addingTimeInterval(-44 * 60),
+            startTime: referenceDate.addingTimeInterval(-134 * 60),
+            endTime: referenceDate.addingTimeInterval(-119 * 60),
             totalGenerationMW: 10,
             renewableGenerationMW: 0,
             renewableShare: 0,
@@ -275,8 +275,8 @@ final class EnergyDataTests: XCTestCase {
             isPartialPublication: true
         )
         let maturePartialInterval = GenerationMixInterval(
-            startTime: referenceDate.addingTimeInterval(-60 * 60),
-            endTime: referenceDate.addingTimeInterval(-45 * 60),
+            startTime: referenceDate.addingTimeInterval(-135 * 60),
+            endTime: referenceDate.addingTimeInterval(-120 * 60),
             totalGenerationMW: 10,
             renewableGenerationMW: 0,
             renewableShare: 0,

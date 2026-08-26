@@ -56,10 +56,6 @@ def get_notifiable_prices(price_data: Box) -> Optional[list[Box]]:
     now_local = arrow.now(area.timezone)
     tomorrow_start = now_local.floor("day").shift(days=+1)
     tomorrow_end = tomorrow_start.shift(days=+1)
-    expected_points = int(
-        (tomorrow_end - tomorrow_start).total_seconds() / awattprice_prices.resolution_to_seconds(price_data.resolution)
-    )
-
     for price_point in price_data.prices:
         if (
             price_point.start_timestamp >= tomorrow_start
@@ -67,21 +63,27 @@ def get_notifiable_prices(price_data: Box) -> Optional[list[Box]]:
         ):
             selected_prices.append(price_point)
 
-    if len(selected_prices) != expected_points:
-        logger.debug(f"Length of selected prices isn't equal to {expected_points}: {len(selected_prices)}.")
+    selected_data = Box({"prices": selected_prices})
+    if not awattprice_prices.has_complete_price_points(selected_data, tomorrow_start, tomorrow_end):
+        logger.debug("Selected notification prices do not continuously cover tomorrow.")
         return None
 
-    if not check_notifiable_price_quality(selected_prices, price_data.resolution):
+    if not check_notifiable_price_quality(selected_prices, price_data.get("resolution")):
         return None
 
     return selected_prices
 
 
-def check_notifiable_price_quality(selected_prices: list[Box], resolution: str) -> bool:
+def check_notifiable_price_quality(selected_prices: list[Box], resolution: Optional[str]) -> bool:
     """Return true when fallback prices stay within the notification tolerance."""
-    interval_seconds = awattprice_prices.resolution_to_seconds(resolution)
-    fallback_count = sum(1 for price_point in selected_prices if price_point.get("is_fallback", False))
-    fallback_seconds = fallback_count * interval_seconds
+    fallback_seconds = sum(
+        (
+            price_point.end_timestamp.int_timestamp
+            - price_point.start_timestamp.int_timestamp
+        )
+        for price_point in selected_prices
+        if price_point.get("is_fallback", False)
+    )
     if fallback_seconds > NOTIFICATION_MAX_FALLBACK_SECONDS:
         logger.debug(
             f"Too many fallback prices for notification delivery: "

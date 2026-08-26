@@ -1,4 +1,5 @@
 """Read, store and set configurations.."""
+import os
 import sys
 
 from pathlib import Path
@@ -116,11 +117,15 @@ def _ensure_config_dirs(config: Config):
 
 def get_config() -> Config:
     """Read and transform config and check some requirements."""
-    # First path in list will be used for creation if no config file exists yet.
-    read_attempt_paths = [
-        Path("~/awattprice/config.ini").expanduser(),
-        Path("/etc/awattprice/config.ini"),
-    ]
+    explicit_config_path = os.environ.get("AWATTPRICE_CONFIG_FILE")
+    if explicit_config_path:
+        read_attempt_paths = [Path(explicit_config_path).expanduser()]
+    else:
+        # First path in list will be used for creation if no config file exists yet.
+        read_attempt_paths = [
+            Path("~/awattprice/config.ini").expanduser(),
+            Path("/etc/awattprice/config.ini"),
+        ]
     config_path = None
     for possible_path in read_attempt_paths:
         if possible_path.is_file():

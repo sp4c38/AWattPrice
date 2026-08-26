@@ -3,6 +3,7 @@ import filelock
 import httpx
 import xml.etree.ElementTree as ET
 
+from bisect import bisect_left
 from datetime import date
 from decimal import Decimal
 from collections.abc import Iterator
@@ -141,12 +142,14 @@ def iter_time_series_points(
 
             if curve_type != "A03" or period_end_text is None:
                 for position, price_text in sorted(explicit_points.items()):
-                    start_timestamp = period_start.shift(seconds=interval_seconds * (position - 1))
+                    start_timestamp = arrow.get(
+                        period_start.int_timestamp + interval_seconds * (position - 1)
+                    ).to(area.timezone)
                     yield (
                         sequence_position,
                         resolution,
                         start_timestamp,
-                        start_timestamp.shift(seconds=interval_seconds),
+                        arrow.get(start_timestamp.int_timestamp + interval_seconds).to(area.timezone),
                         price_text,
                         False,
                     )
@@ -164,12 +167,14 @@ def iter_time_series_points(
                 else:
                     continue
 
-                start_timestamp = period_start.shift(seconds=interval_seconds * (position - 1))
+                start_timestamp = arrow.get(
+                    period_start.int_timestamp + interval_seconds * (position - 1)
+                ).to(area.timezone)
                 yield (
                     sequence_position,
                     resolution,
                     start_timestamp,
-                    start_timestamp.shift(seconds=interval_seconds),
+                    arrow.get(start_timestamp.int_timestamp + interval_seconds).to(area.timezone),
                     current_price_text,
                     carried_forward,
                 )
@@ -234,7 +239,7 @@ def parse_downloaded_data(area: MarketArea, xml_content: bytes, now: Optional[Ar
     tomorrow = now_local.floor("day").shift(days=+1).date()
     block_fallback_only_tomorrow = now_local.hour < defaults.ENTSOE_FULL_FALLBACK_UPDATE_HOUR
 
-    selected_resolution = None
+    selected_resolutions = set()
     new_data = Box()
     new_data.source = "ENTSOE"
     new_data.area = area.key
@@ -247,19 +252,18 @@ def parse_downloaded_data(area: MarketArea, xml_content: bytes, now: Optional[Ar
     new_data.fallback_price_count = 0
     new_data.carried_forward_price_count = 0
     prices_by_start_timestamp = {}
+    selected_start_timestamps = []
     for sequence_position, resolution, start_timestamp, end_timestamp, price_text, carried_forward in iter_time_series_points(
         selected_time_series_list,
         area,
     ):
-        if selected_resolution is None:
-            selected_resolution = resolution
-        elif selected_resolution != resolution:
-            raise ValueError(f"Mixed ENTSO-E resolutions for {area.key}: {selected_resolution} and {resolution}.")
+        selected_resolutions.add(resolution)
 
         new_point = Box()
         new_point.start_timestamp = start_timestamp
         new_point.end_timestamp = end_timestamp
         new_point.marketprice = prices.MarketPrice(Decimal(str(price_text)), area)
+        new_point.resolution = resolution
         new_point.sequence_position = sequence_position
         new_point.is_fallback = sequence_position != new_data.sequence_position
         new_point.is_carried_forward = carried_forward
@@ -274,7 +278,17 @@ def parse_downloaded_data(area: MarketArea, xml_content: bytes, now: Optional[Ar
             continue
 
         start_int_timestamp = new_point.start_timestamp.int_timestamp
-        if start_int_timestamp in prices_by_start_timestamp:
+        end_int_timestamp = new_point.end_timestamp.int_timestamp
+        insertion_index = bisect_left(selected_start_timestamps, start_int_timestamp)
+        overlaps_previous = insertion_index > 0 and (
+            prices_by_start_timestamp[selected_start_timestamps[insertion_index - 1]]
+            .end_timestamp.int_timestamp
+            > start_int_timestamp
+        )
+        overlaps_next = insertion_index < len(selected_start_timestamps) and (
+            selected_start_timestamps[insertion_index] < end_int_timestamp
+        )
+        if overlaps_previous or overlaps_next:
             continue
         if new_point.is_fallback:
             new_data.fallback_price_count += 1
@@ -283,8 +297,9 @@ def parse_downloaded_data(area: MarketArea, xml_content: bytes, now: Optional[Ar
         if new_point.is_carried_forward:
             new_data.carried_forward_price_count += 1
         prices_by_start_timestamp[start_int_timestamp] = new_point
+        selected_start_timestamps.insert(insertion_index, start_int_timestamp)
 
-    new_data.resolution = selected_resolution
+    new_data.resolution = next(iter(selected_resolutions)) if len(selected_resolutions) == 1 else None
     new_data.prices = BoxList(sorted(prices_by_start_timestamp.values(), key=lambda point: point.start_timestamp))
     if len(new_data.prices) == 0:
         raise ValueError(f"No usable ENTSO-E price points found for {area.key}.")
@@ -299,14 +314,14 @@ def parse_downloaded_data(area: MarketArea, xml_content: bytes, now: Optional[Ar
 
 def get_data_refresh_lock(area_key: str, config: Config) -> ExtendedFileLock:
     """Get file lock used when refreshing current price data."""
-    lock_file_name = defaults.PRICE_DATA_FILE_NAME.format(prices.area_file_key(area_key)) + ".lock"
+    lock_file_name = f"price-refresh-{prices.area_file_key(area_key)}.lock"
     return ExtendedFileLock(config.paths.price_data_dir / lock_file_name)
 
 
 def get_history_data_refresh_lock(area_key: str, day: date, config: Config) -> ExtendedFileLock:
     """Get file lock used when refreshing one historical day."""
-    lock_file_path = prices.get_history_data_path(area_key, day, config).with_suffix(".pickle.lock")
-    return ExtendedFileLock(lock_file_path)
+    lock_file_name = f"price-history-refresh-{prices.area_file_key(area_key)}-{day.isoformat()}.lock"
+    return ExtendedFileLock(config.paths.price_data_dir / lock_file_name)
 
 
 def get_entsoe_query_params(
@@ -456,7 +471,6 @@ async def refresh_history_prices(area_key: str, day: date, config: Config) -> Op
     if stored_data is not None and prices.has_complete_local_day(stored_data, area, day):
         return stored_data
 
-    prices.get_history_data_dir(config).mkdir(parents=True, exist_ok=True)
     refresh_lock = get_history_data_refresh_lock(area_key, day, config)
     try:
         could_acquire_immediately = await acquire_file_lock_immediate(refresh_lock)

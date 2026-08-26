@@ -3,13 +3,19 @@ set -euo pipefail
 
 cd "$(dirname "$0")"
 
-DATA_DIR="$HOME/awattprice"
+if [ "$#" -ne 0 ]; then
+  echo "Usage: ./run-local.sh" >&2
+  exit 2
+fi
+
+DATA_DIR="${AWATTPRICE_LOCAL_DIR:-$HOME/awattprice-v3-local}"
 CONFIG_FILE="$DATA_DIR/config.ini"
+TOKEN_FILE="${AWATTPRICE_ENTSOE_TOKEN_FILE:-$DATA_DIR/entsoe-token.txt}"
 uv sync
 
 mkdir -p "$DATA_DIR/data" "$DATA_DIR/logs"
-if [ ! -f "$DATA_DIR/entsoe-token.txt" ]; then
-  echo "Missing ENTSO-E token: $DATA_DIR/entsoe-token.txt" >&2
+if [ ! -f "$TOKEN_FILE" ]; then
+  echo "Missing ENTSO-E token: $TOKEN_FILE" >&2
   exit 1
 fi
 
@@ -20,7 +26,7 @@ log_level = DEBUG
 
 [entsoe]
 url = https://web-api.tp.entsoe.eu/api
-token_file = $DATA_DIR/entsoe-token.txt
+token_file = $TOKEN_FILE
 
 [paths]
 log_dir = $DATA_DIR/logs
@@ -38,4 +44,13 @@ environment = local
 EOF
 fi
 
-PYTHONPATH=src exec uv run python -m uvicorn awattprice.api:app --host 0.0.0.0 --port 8000 --reload
+export AWATTPRICE_CONFIG_FILE="$CONFIG_FILE"
+PYTHONPATH=src uv run python -m awattprice_refresher.service &
+REFRESHER_PID=$!
+
+stop_refresher() {
+  kill "$REFRESHER_PID" 2>/dev/null || true
+}
+trap stop_refresher EXIT INT TERM
+
+PYTHONPATH=src uv run python -m uvicorn awattprice.api:app --host 0.0.0.0 --port 8000 --reload

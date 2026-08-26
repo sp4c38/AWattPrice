@@ -255,31 +255,6 @@ class DataRefresherScheduleTests(unittest.TestCase):
 
 
 class DataRefresherCleanupTests(unittest.TestCase):
-    def test_history_prune_keeps_only_latest_five_completed_berlin_days(self):
-        async def run_test():
-            with tempfile.TemporaryDirectory() as temp_dir:
-                config = make_config(Path(temp_dir))
-                retained_data = price_data_for("2026-05-24T01:00:00+02:00")
-                old_data = price_data_for("2026-05-18T01:00:00+02:00")
-
-                await prices.store_history_data(retained_data, AREA.key, arrow.get("2026-05-24").date(), config)
-                await prices.store_history_data(old_data, AREA.key, arrow.get("2026-05-18").date(), config)
-
-                pruned = data_refresher.prune_history_payloads(
-                    config,
-                    arrow.get("2026-05-25T12:00:00+02:00"),
-                )
-
-                self.assertEqual(pruned, 1)
-                self.assertTrue(
-                    prices.get_history_data_path(AREA.key, arrow.get("2026-05-24").date(), config).exists()
-                )
-                self.assertFalse(
-                    prices.get_history_data_path(AREA.key, arrow.get("2026-05-18").date(), config).exists()
-                )
-
-        asyncio.run(run_test())
-
     def test_generation_prune_deletes_legacy_and_unsupported_payloads(self):
         async def run_test():
             with tempfile.TemporaryDirectory() as temp_dir:

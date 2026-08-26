@@ -25,6 +25,19 @@ def format_price_timestamp(price_timestamp, resolution: str) -> str:
     return price_timestamp.format("H:mm")
 
 
+def price_point_resolution(price_point: Box, price_data: Box) -> str:
+    """Return an interval's own resolution, falling back to legacy dataset metadata."""
+    resolution = price_point.get("resolution", price_data.get("resolution"))
+    if resolution is not None:
+        return resolution
+    duration_seconds = price_point.end_timestamp.int_timestamp - price_point.start_timestamp.int_timestamp
+    return {
+        15 * 60: "PT15M",
+        30 * 60: "PT30M",
+        60 * 60: "PT60M",
+    }.get(duration_seconds, "PT15M")
+
+
 def construct_notification_headers(apns_authorization: str, selected_prices: list[Box], rule_type: str) -> Box:
     """Construct APNs headers for a notification rule."""
     latest_price = max(selected_prices, key=lambda price_point: price_point.start_timestamp)
@@ -99,12 +112,18 @@ def construct_notification(profile: Box, rule_type: str, selected_prices: list[B
     notification.aps["alert"] = {}
     notification.aps["alert"]["title-loc-key"] = rules.NOTIFICATION.title_loc_keys[rule_type]
 
-    is_15min = notifiable_prices.data.resolution != "PT60M"
+    is_15min = any(
+        price_point_resolution(price_point, notifiable_prices.data) != "PT60M"
+        for price_point in selected_prices
+    )
     if rule_type == "price_below":
         threshold = round_subunitkwh(Decimal(str(profile.rules.price_below.threshold)))
         best_price = min(selected_prices, key=lambda price_point: adjusted_price(price_point, profile))
         threshold_str = stringify_price(threshold, awattprice_defaults.get_market_area(profile.general.area))
-        best_time = format_price_timestamp(best_price.start_timestamp, notifiable_prices.data.resolution)
+        best_time = format_price_timestamp(
+            best_price.start_timestamp,
+            price_point_resolution(best_price, notifiable_prices.data),
+        )
         best_price_str = stringify_adjusted_price(best_price, profile)
         if len(selected_prices) > 1:
             loc_key = rules.NOTIFICATION.loc_keys.price_below_multiple_15min if is_15min else rules.NOTIFICATION.loc_keys.price_below_multiple
@@ -116,7 +135,10 @@ def construct_notification(profile: Box, rule_type: str, selected_prices: list[B
         threshold = round_subunitkwh(Decimal(str(profile.rules.price_above.threshold)))
         worst_price = max(selected_prices, key=lambda price_point: adjusted_price(price_point, profile))
         threshold_str = stringify_price(threshold, awattprice_defaults.get_market_area(profile.general.area))
-        worst_time = format_price_timestamp(worst_price.start_timestamp, notifiable_prices.data.resolution)
+        worst_time = format_price_timestamp(
+            worst_price.start_timestamp,
+            price_point_resolution(worst_price, notifiable_prices.data),
+        )
         worst_price_str = stringify_adjusted_price(worst_price, profile)
         if len(selected_prices) > 1:
             loc_key = rules.NOTIFICATION.loc_keys.price_above_multiple_15min if is_15min else rules.NOTIFICATION.loc_keys.price_above_multiple
@@ -129,9 +151,15 @@ def construct_notification(profile: Box, rule_type: str, selected_prices: list[B
         worst_price = max(notifiable_prices.data.prices, key=lambda price_point: adjusted_price(price_point, profile))
         notification.aps["alert"]["loc-key"] = rules.NOTIFICATION.loc_keys.daily_summary
         notification.aps["alert"]["loc-args"] = [
-            format_price_timestamp(best_price.start_timestamp, notifiable_prices.data.resolution),
+            format_price_timestamp(
+                best_price.start_timestamp,
+                price_point_resolution(best_price, notifiable_prices.data),
+            ),
             stringify_adjusted_price(best_price, profile),
-            format_price_timestamp(worst_price.start_timestamp, notifiable_prices.data.resolution),
+            format_price_timestamp(
+                worst_price.start_timestamp,
+                price_point_resolution(worst_price, notifiable_prices.data),
+            ),
             stringify_adjusted_price(worst_price, profile),
         ]
     else:

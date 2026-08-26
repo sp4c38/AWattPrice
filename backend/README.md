@@ -4,9 +4,21 @@ FastAPI backend for AWattPrice. It serves ENTSO-E electricity prices, caches the
 
 ## Local Debug
 
+Place the ENTSO-E token at `~/awattprice-v3-local/entsoe-token.txt`, then start the backend:
+
 ```sh
 ./run-local.sh
 ```
+
+This creates the isolated local configuration and SQLite database under
+`~/awattprice-v3-local`, starts the API, and runs the regular production data-refresher for
+every supported area. Current/tomorrow prices, retained daily history, generation mix, and
+the two-year price archive populate automatically. No preparation command is required.
+
+The local launcher does not start notifications. Cronitor telemetry is skipped because the
+isolated configuration uses the `local` environment and has no monitoring credentials.
+
+The iOS Debug configuration can use it by setting `AWATTPRICE_API_BASE_URL` to `http://127.0.0.1:8000/` in the scheme environment.
 
 ## Price Selection
 
@@ -17,6 +29,28 @@ For ENTSO-E day-ahead price documents with sequence data, AWattPrice treats Sequ
 If individual intervals are still missing after Sequence 1 step-curve expansion, the refresher fills only those missing intervals from later available sequences, usually Sequence 2. Sequence 1 prices always win when present or carried forward. Sequence fallback points are marked with `is_fallback = true`; carried-forward step-curve points are marked with `is_carried_forward = true`.
 
 The refresher keeps treating incomplete or fallback data as replaceable. If ENTSO-E later publishes the missing Sequence 1 price, that real price replaces the fallback point in the cache.
+
+Current prices and the long-term archive are stored in `/etc/awattprice/data/prices.sqlite`. Existing price pickle files are neither read nor written. Notification profiles and notification progress files remain unchanged.
+
+## Automatic Price History Archive
+
+The regular data-refresher automatically populates the two-year SQLite archive for every
+supported area after its first normal refresh cycle. Completed monthly imports are skipped,
+so the process resumes safely after restarts and retries incomplete imports without manual
+setup.
+
+No deployment or local setup command is required. The importer remains available only for
+manual maintenance or troubleshooting:
+
+```sh
+docker compose -f /srv/awattprice-v3/compose.v3.yaml exec api \
+  python -m awattprice_refresher.price_history_backfill --years 2
+```
+
+To run it for one area only, add `--areas DE-LU`. The importer does not start the
+notifications service and does not modify any notification-owned file.
+
+The app requests adjusted statistics through `POST /prices/{area}/statistics`. The request contains the selected range and the user's ordered price adjustments, so the backend reproduces the displayed ct/kWh value for every interval before calculating duration-weighted statistics.
 
 Generation mix endpoint compatibility is documented in [docs/generation-mix-data-flow.md](docs/generation-mix-data-flow.md).
 
@@ -81,4 +115,7 @@ Smoke test after deploy:
 ```sh
 curl https://api.awattprice.com/v3/areas/
 curl https://api.awattprice.com/v3/prices/DE-LU
+curl -X POST https://api.awattprice.com/v3/prices/DE-LU/statistics \
+  -H 'Content-Type: application/json' \
+  -d '{"range":"1mo","add_ons":[]}'
 ```

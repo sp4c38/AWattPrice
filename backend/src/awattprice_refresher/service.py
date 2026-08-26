@@ -25,6 +25,7 @@ from awattprice import utils
 from awattprice.market_areas import MarketArea
 from awattprice_notifications import cronitor
 from awattprice_refresher import generation_mix as generation_mix_refresher
+from awattprice_refresher import price_history_backfill
 from awattprice_refresher import prices as prices_refresher
 
 
@@ -211,42 +212,6 @@ def _delete_path(path: Path) -> int:
     return 1
 
 
-def prune_current_price_payloads(config: Config) -> int:
-    """Delete current price payloads for areas that are no longer supported."""
-    supported_keys = _supported_area_file_keys()
-    pruned_count = 0
-    for path in config.paths.price_data_dir.glob("price-data-*.pickle"):
-        area_key = path.stem.removeprefix("price-data-")
-        if area_key not in supported_keys:
-            pruned_count += _delete_path(path)
-    return pruned_count
-
-
-def prune_history_payloads(config: Config, now=None) -> int:
-    """Keep only retained historical price payloads."""
-    history_dir = prices.get_history_data_dir(config)
-    if not history_dir.exists():
-        return 0
-
-    retained_days = {day.isoformat() for day in retained_history_days(now)}
-    supported_keys = _supported_area_file_keys()
-    pruned_count = 0
-    for path in history_dir.glob("price-data-*.pickle"):
-        cache_key = path.stem.removeprefix("price-data-")
-        matched_supported_area = False
-        should_keep = False
-        for area_key in supported_keys:
-            prefix = f"{area_key}-"
-            if not cache_key.startswith(prefix):
-                continue
-            matched_supported_area = True
-            should_keep = cache_key.removeprefix(prefix) in retained_days
-            break
-        if not matched_supported_area or not should_keep:
-            pruned_count += _delete_path(path)
-    return pruned_count
-
-
 def _history_response_cache_key(path: Path, supported_keys: set[str]) -> tuple[Optional[str], Optional[int]]:
     stem = path.stem.removeprefix("generation-history-")
     for area_key in supported_keys:
@@ -323,8 +288,6 @@ def prune_cache_metadata(config: Config, now=None) -> int:
 async def prune_cache(config: Config, now=None) -> int:
     """Run all cache retention rules."""
     pruned_count = 0
-    pruned_count += prune_current_price_payloads(config)
-    pruned_count += prune_history_payloads(config, now)
     pruned_count += await prune_generation_payloads(config, now)
     pruned_count += prune_cache_metadata(config, now)
     cache_status.record_prune_result(config, pruned_count)
@@ -430,51 +393,85 @@ def refresher_monitor_key(config: Config) -> Optional[str]:
     return getattr(config.cronitor, "refresher_monitor_key", None)
 
 
+async def maintain_price_archive(config: Config):
+    """Populate the long-term archive automatically, retrying incomplete imports."""
+    while True:
+        try:
+            failures = await price_history_backfill.backfill_areas(
+                defaults.supported_market_area_keys,
+                defaults.PRICE_ARCHIVE_YEARS,
+                config,
+                prepare_current=False,
+            )
+        except asyncio.CancelledError:
+            raise
+        except Exception as exc:
+            failures = 1
+            logger.exception(f"Automatic price archive backfill failed: {exc}.")
+
+        if failures == 0:
+            logger.info("Automatic price archive backfill is complete for all areas.")
+            return
+
+        logger.warning(
+            f"Automatic price archive backfill finished with {failures} failed imports; retrying later."
+        )
+        await asyncio.sleep(defaults.PRICE_ARCHIVE_RETRY_INTERVAL_SECONDS)
+
+
 async def run_forever(config: Config):
     """Run the refresher scheduler forever."""
     monitor_key = refresher_monitor_key(config)
-    cronitor.require_configured(config, monitor_key, service_name="cache refresher")
+    monitoring_enabled = cronitor.is_enabled(config, monitor_key)
+    if not monitoring_enabled and getattr(config.cronitor, "environment", None) != "local":
+        cronitor.require_configured(config, monitor_key, service_name="cache refresher")
     state = load_state(config)
+    archive_task = None
     while True:
         series = str(uuid.uuid4())
         started_at = time.monotonic()
-        await cronitor.send_event(
-            config,
-            "run",
-            series,
-            message="cache refresher cycle started",
-            monitor_key=monitor_key,
-        )
+        if monitoring_enabled:
+            await cronitor.send_event(
+                config,
+                "run",
+                series,
+                message="cache refresher cycle started",
+                monitor_key=monitor_key,
+            )
 
         try:
             result = await run_cycle(config, state)
             save_state(state, config)
         except Exception as exc:
             duration = time.monotonic() - started_at
-            await cronitor.send_event(
-                config,
-                "fail",
-                series,
-                message=f"cache refresher cycle failed: {exc}",
-                duration=duration,
-                error_count=1,
-                status_code=1,
-                monitor_key=monitor_key,
-            )
+            if monitoring_enabled:
+                await cronitor.send_event(
+                    config,
+                    "fail",
+                    series,
+                    message=f"cache refresher cycle failed: {exc}",
+                    duration=duration,
+                    error_count=1,
+                    status_code=1,
+                    monitor_key=monitor_key,
+                )
             raise
 
         duration = time.monotonic() - started_at
-        await cronitor.send_event(
-            config,
-            "complete",
-            series,
-            message=monitoring_message(result),
-            duration=duration,
-            count=result["area_count"],
-            error_count=0,
-            status_code=0,
-            monitor_key=monitor_key,
-        )
+        if monitoring_enabled:
+            await cronitor.send_event(
+                config,
+                "complete",
+                series,
+                message=monitoring_message(result),
+                duration=duration,
+                count=result["area_count"],
+                error_count=0,
+                status_code=0,
+                monitor_key=monitor_key,
+            )
+        if archive_task is None:
+            archive_task = asyncio.create_task(maintain_price_archive(config))
         await asyncio.sleep(60)
 
 

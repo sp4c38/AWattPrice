@@ -16,6 +16,7 @@ from awattprice import defaults
 from awattprice import generation_mix
 from awattprice import notification_profiles
 from awattprice import prices
+from awattprice import price_statistics
 from awattprice_notifications import rules as notification_defaults
 from awattprice_notifications import payloads as notification_payloads
 from awattprice_notifications import prices as notification_prices
@@ -114,6 +115,23 @@ async def get_area_price_history(area_key: str, history_date: date):
         raise HTTPException(503)
 
     return prices.parse_to_response_data(price_data)
+
+
+@logger.catch
+@app.post("/prices/{area_key}/statistics")
+async def get_area_price_statistics(area_key: str, request: price_statistics.PriceStatisticsRequest):
+    """Get long-term statistics using the user's ordered price adjustments."""
+    try:
+        normalized_area_key = defaults.normalize_market_area_key(area_key)
+        area = defaults.get_market_area(normalized_area_key)
+    except KeyError:
+        raise HTTPException(404)
+
+    response = await price_statistics.get_statistics(config, area, request)
+    if response is None:
+        logger.warning(f"Couldn't get price statistics for area {normalized_area_key}.")
+        raise HTTPException(503)
+    return response
 
 
 @logger.catch
@@ -237,23 +255,35 @@ async def get_notification_example(rule_type: str, request: Request):
             best_price = min(selected_prices, key=lambda price_point: notification_payloads.adjusted_price(price_point, profile))
             alert["loc-args"] = [
                 notification_payloads.stringify_adjusted_price(best_price, profile),
-                notification_payloads.format_price_timestamp(best_price.start_timestamp, example_prices.data.resolution),
+                notification_payloads.format_price_timestamp(
+                    best_price.start_timestamp,
+                    notification_payloads.price_point_resolution(best_price, example_prices.data),
+                ),
                 notification_payloads.stringify_adjusted_price(best_price, profile),
             ]
         elif rule_type == "price_above":
             worst_price = max(selected_prices, key=lambda price_point: notification_payloads.adjusted_price(price_point, profile))
             alert["loc-args"] = [
                 notification_payloads.stringify_adjusted_price(worst_price, profile),
-                notification_payloads.format_price_timestamp(worst_price.start_timestamp, example_prices.data.resolution),
+                notification_payloads.format_price_timestamp(
+                    worst_price.start_timestamp,
+                    notification_payloads.price_point_resolution(worst_price, example_prices.data),
+                ),
                 notification_payloads.stringify_adjusted_price(worst_price, profile),
             ]
         elif rule_type == "daily_summary":
             best_price = min(example_prices.data.prices, key=lambda price_point: notification_payloads.adjusted_price(price_point, profile))
             worst_price = max(example_prices.data.prices, key=lambda price_point: notification_payloads.adjusted_price(price_point, profile))
             alert["loc-args"] = [
-                notification_payloads.format_price_timestamp(best_price.start_timestamp, example_prices.data.resolution),
+                notification_payloads.format_price_timestamp(
+                    best_price.start_timestamp,
+                    notification_payloads.price_point_resolution(best_price, example_prices.data),
+                ),
                 notification_payloads.stringify_adjusted_price(best_price, profile),
-                notification_payloads.format_price_timestamp(worst_price.start_timestamp, example_prices.data.resolution),
+                notification_payloads.format_price_timestamp(
+                    worst_price.start_timestamp,
+                    notification_payloads.price_point_resolution(worst_price, example_prices.data),
+                ),
                 notification_payloads.stringify_adjusted_price(worst_price, profile),
             ]
         return notification_payloads.example_alert_response(alert, force)

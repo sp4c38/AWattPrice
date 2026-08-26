@@ -133,7 +133,6 @@ class PriceCacheAndConversionTests(unittest.TestCase):
     def test_area_file_key_normalizes_symbols_for_cache_paths(self):
         self.assertEqual(prices.area_file_key("DE-LU"), "de_lu")
         self.assertEqual(prices.area_file_key("IE(SEM)"), "ie_sem")
-        self.assertEqual(prices.history_date_file_key(arrow.get("2026-05-24").date()), "2026-05-24")
 
     def test_market_price_uses_area_tax_and_subunit_conversion(self):
         market_price = prices.MarketPrice(Decimal("100"), AREA)
@@ -201,18 +200,6 @@ class PriceCacheAndConversionTests(unittest.TestCase):
                 self.assertFalse(prices.has_current_price_points(cached_data, AREA))
 
         asyncio.run(run_test())
-
-    def test_history_cache_path_keeps_areas_and_dates_separate(self):
-        with tempfile.TemporaryDirectory() as temp_dir:
-            config = make_test_config(Path(temp_dir))
-
-            first_path = prices.get_history_data_path("DE-LU", arrow.get("2026-05-23").date(), config)
-            second_path = prices.get_history_data_path("AT", arrow.get("2026-05-23").date(), config)
-
-            self.assertIn("de_lu-2026-05-23", first_path.name)
-            self.assertIn("at-2026-05-23", second_path.name)
-            self.assertNotEqual(first_path, second_path)
-
 
 class NotificationPayloadEdgeTests(unittest.TestCase):
     def test_adjusted_price_respects_add_on_order(self):

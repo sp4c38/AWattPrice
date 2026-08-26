@@ -1,5 +1,6 @@
-"""Poll and process price data."""
-import pickle
+"""Poll, store, and process price data."""
+import asyncio
+import json
 
 from datetime import date
 from decimal import Decimal
@@ -7,13 +8,12 @@ from typing import Optional
 
 import arrow
 
-from aiofile import async_open
 from arrow import Arrow
 from box import Box
 from liteconfig import Config
-from loguru import logger
 
 from awattprice import defaults
+from awattprice import price_database
 from awattprice import utils
 from awattprice.market_areas import MarketArea
 
@@ -64,11 +64,6 @@ def area_file_key(area_key: str) -> str:
     return defaults.normalize_market_area_key(area_key).lower().replace("-", "_").replace("(", "_").replace(")", "")
 
 
-def history_date_file_key(day: date) -> str:
-    """Get a filesystem-friendly history date key."""
-    return day.isoformat()
-
-
 def resolution_to_seconds(resolution: str) -> int:
     """Convert a simple ISO8601 ENTSO-E duration to seconds."""
     resolution_mapping = {
@@ -79,32 +74,79 @@ def resolution_to_seconds(resolution: str) -> int:
     return resolution_mapping[resolution]
 
 
-async def get_stored_data(area_key: str, config: Config) -> Optional[Box]:
-    """Get locally cached price data.
-
-    :returns: Price data wrapped as a Box. If file not found returns None.
-    """
-    file_dir = config.paths.price_data_dir
-    file_name = defaults.PRICE_DATA_FILE_NAME.format(area_file_key(area_key))
-    file_path = file_dir / file_name
-
-    try:
-        async with async_open(file_path, "rb") as file:
-            unpickled_data = await file.read()
-    except FileNotFoundError as exc:
-        logger.debug(f"No stored price data found: {exc}.")
+def _database_rows_to_price_data(
+    rows: list[dict],
+    area: MarketArea,
+    metadata: Optional[dict] = None,
+) -> Optional[Box]:
+    """Reconstruct the established in-memory price format from SQLite rows."""
+    if not rows:
         return None
-
-    if len(unpickled_data) == 0:
-        logger.debug("Stored price data found, but is empty.")
-        return None
-
-    data = pickle.loads(unpickled_data)
-    if len(data.prices) == 0:
-        logger.debug(f"Stored {area_key} price data found, but includes no prices.")
-        return None
-
+    data = Box()
+    data.source = metadata["source"] if metadata else "ENTSOE"
+    data.area = metadata["area_key"] if metadata else area.key
+    data.display_name = metadata["display_name"] if metadata else area.display_name
+    data.entsoe_domain = metadata["entsoe_domain"] if metadata else area.entsoe_domain
+    data.timezone = metadata["timezone"] if metadata else area.timezone
+    data.currency = metadata["currency"] if metadata else area.currency
+    resolutions = {row["resolution"] for row in rows if row["resolution"] is not None}
+    data.resolution = metadata["resolution"] if metadata else (
+        next(iter(resolutions)) if len(resolutions) == 1 else None
+    )
+    primary_sequences = [
+        row["sequence_position"]
+        for row in rows
+        if not row["is_fallback"] and row["sequence_position"] is not None
+    ]
+    data.sequence_position = metadata["sequence_position"] if metadata else (
+        primary_sequences[0] if primary_sequences else None
+    )
+    if metadata:
+        data.fallback_sequence_positions = json.loads(metadata["fallback_sequence_positions"])
+        data.fallback_price_count = metadata["fallback_price_count"]
+        data.carried_forward_price_count = metadata["carried_forward_price_count"]
+    else:
+        data.fallback_sequence_positions = sorted(
+            {
+                row["sequence_position"]
+                for row in rows
+                if row["is_fallback"] and row["sequence_position"] is not None
+            }
+        )
+        data.fallback_price_count = sum(int(row["is_fallback"]) for row in rows)
+        data.carried_forward_price_count = sum(int(row["is_carried_forward"]) for row in rows)
+    data.prices = []
+    for row in rows:
+        point = Box()
+        point.start_timestamp = arrow.get(row["start_timestamp"]).to(area.timezone)
+        point.end_timestamp = arrow.get(row["end_timestamp"]).to(area.timezone)
+        point.marketprice = MarketPrice(Decimal(row["marketprice"]), area)
+        point.resolution = row["resolution"]
+        point.sequence_position = row["sequence_position"]
+        point.is_fallback = bool(row["is_fallback"])
+        point.is_carried_forward = bool(row["is_carried_forward"])
+        data.prices.append(point)
     return data
+
+
+def _database_payload_to_price_data(payload: dict, area: MarketArea) -> Optional[Box]:
+    """Reconstruct a named SQLite dataset."""
+    return _database_rows_to_price_data(payload["points"], area, payload["dataset"])
+
+
+async def get_stored_data(area_key: str, config: Config) -> Optional[Box]:
+    """Get current price data from SQLite."""
+    normalized_area_key = defaults.normalize_market_area_key(area_key)
+    area = defaults.get_market_area(normalized_area_key)
+    payload = await asyncio.to_thread(
+        price_database.load_dataset,
+        config,
+        normalized_area_key,
+        "current",
+    )
+    if payload is None:
+        return None
+    return _database_payload_to_price_data(payload, area)
 
 
 def has_current_price_points(data: Optional[Box], area: MarketArea) -> bool:
@@ -166,26 +208,26 @@ def has_fallback_price_points(price_data: Optional[Box], period_start: Arrow, pe
 
 
 def has_complete_price_points(price_data: Optional[Box], period_start: Arrow, period_end: Arrow) -> bool:
-    """Return true when a price payload contains every expected interval in a period."""
-    if price_data is None or not price_data.prices or price_data.resolution is None:
+    """Return true when price intervals continuously cover a period."""
+    if price_data is None or not price_data.prices:
         return False
-
-    interval_seconds = resolution_to_seconds(price_data.resolution)
-    expected_count = int((period_end.int_timestamp - period_start.int_timestamp) / interval_seconds)
-    expected_starts = {
-        period_start.int_timestamp + interval_seconds * index
-        for index in range(expected_count)
-    }
-    actual_starts = {
-        price_point.start_timestamp.int_timestamp
+    selected = sorted(
+        (
+            price_point.start_timestamp.int_timestamp,
+            price_point.end_timestamp.int_timestamp,
+        )
         for price_point in price_data.prices
         if (
             price_point.start_timestamp.int_timestamp >= period_start.int_timestamp
             and price_point.end_timestamp.int_timestamp <= period_end.int_timestamp
         )
-    }
-
-    return actual_starts == expected_starts
+    )
+    cursor = period_start.int_timestamp
+    for start_timestamp, end_timestamp in selected:
+        if start_timestamp != cursor or end_timestamp <= start_timestamp:
+            return False
+        cursor = end_timestamp
+    return cursor == period_end.int_timestamp
 
 
 def has_complete_local_day(price_data: Optional[Box], area: MarketArea, day: date) -> bool:
@@ -207,60 +249,55 @@ def complete_tomorrow_prices(price_data: Optional[Box], area: MarketArea, now=No
 
 
 async def store_data(data: Box, area_key: str, config: Config):
-    """Store new price data to the filesystem."""
-    file_name = defaults.PRICE_DATA_FILE_NAME.format(area_file_key(area_key))
-    file_path = config.paths.price_data_dir / file_name
-
-    pickled_data = pickle.dumps(data)
-
-    logger.info(f"Storing ENTSO-E {area_key} price data to {file_path}.")
-    await utils.async_atomic_write_bytes(file_path, pickled_data)
-
-
-def get_history_data_dir(config: Config):
-    """Get the directory used for immutable historical price caches."""
-    return config.paths.price_data_dir / defaults.PRICE_HISTORY_DATA_SUBDIR_NAME
-
-
-def get_history_data_path(area_key: str, day: date, config: Config):
-    """Get the cache path for one market area and historical day."""
-    file_name = defaults.PRICE_DATA_FILE_NAME.format(
-        f"{area_file_key(area_key)}-{history_date_file_key(day)}"
+    """Store current price data in SQLite."""
+    normalized_area_key = defaults.normalize_market_area_key(area_key)
+    await asyncio.to_thread(
+        price_database.store_dataset,
+        config,
+        normalized_area_key,
+        "current",
+        data,
     )
-    return get_history_data_dir(config) / file_name
 
 
 async def get_stored_history_data(area_key: str, day: date, config: Config) -> Optional[Box]:
-    """Get cached historical price data."""
-    file_path = get_history_data_path(area_key, day, config)
-
-    try:
-        async with async_open(file_path, "rb") as file:
-            unpickled_data = await file.read()
-    except FileNotFoundError as exc:
-        logger.debug(f"No stored historical price data found: {exc}.")
-        return None
-
-    if len(unpickled_data) == 0:
-        return None
-
-    data = pickle.loads(unpickled_data)
-    if len(data.prices) == 0:
-        return None
-
-    return data
+    """Get a historical day from SQLite."""
+    normalized_area_key = defaults.normalize_market_area_key(area_key)
+    area = defaults.get_market_area(normalized_area_key)
+    dataset_key = f"history:{day.isoformat()}"
+    payload = await asyncio.to_thread(
+        price_database.load_dataset,
+        config,
+        normalized_area_key,
+        dataset_key,
+    )
+    if payload is None:
+        period_start = arrow.get(day.isoformat(), "YYYY-MM-DD", tzinfo=area.timezone)
+        period_end = period_start.shift(days=+1)
+        rows = await asyncio.to_thread(
+            price_database.load_points,
+            config,
+            normalized_area_key,
+            period_start.int_timestamp,
+            period_end.int_timestamp,
+        )
+        stored_data = _database_rows_to_price_data(rows, area)
+        if stored_data is None or not has_complete_price_points(stored_data, period_start, period_end):
+            return None
+        return stored_data
+    return _database_payload_to_price_data(payload, area)
 
 
 async def store_history_data(data: Box, area_key: str, day: date, config: Config):
-    """Store immutable historical price data to the filesystem."""
-    store_dir = get_history_data_dir(config)
-    store_dir.mkdir(parents=True, exist_ok=True)
-    file_path = get_history_data_path(area_key, day, config)
-
-    pickled_data = pickle.dumps(data)
-
-    logger.info(f"Storing ENTSO-E {area_key} historical price data for {day} to {file_path}.")
-    await utils.async_atomic_write_bytes(file_path, pickled_data)
+    """Store a historical day in SQLite."""
+    normalized_area_key = defaults.normalize_market_area_key(area_key)
+    await asyncio.to_thread(
+        price_database.store_dataset,
+        config,
+        normalized_area_key,
+        f"history:{day.isoformat()}",
+        data,
+    )
 
 
 def parse_to_response_data(price_data: Box) -> Box:

@@ -15,6 +15,7 @@ from fastapi.testclient import TestClient
 
 from awattprice import api
 from awattprice import defaults
+from awattprice import price_database
 from awattprice import prices
 from awattprice_refresher import prices as price_refresher
 
@@ -53,6 +54,28 @@ def price_xml(resolution: str = "PT60M") -> bytes:
       </timeInterval>
       <resolution>{resolution}</resolution>
 {points}
+    </Period>
+  </TimeSeries>
+</Publication_MarketDocument>
+""".encode()
+
+
+def dst_day_price_xml(period_start: str, period_end: str) -> bytes:
+    return f"""<?xml version="1.0" encoding="UTF-8"?>
+<Publication_MarketDocument xmlns="urn:iec62325.351:tc57wg16:451-3:publicationdocument:7:3">
+  <TimeSeries>
+    <in_Domain.mRID>{AREA.entsoe_domain}</in_Domain.mRID>
+    <out_Domain.mRID>{AREA.entsoe_domain}</out_Domain.mRID>
+    <currency_Unit.name>EUR</currency_Unit.name>
+    <classificationSequence_AttributeInstanceComponent.position>1</classificationSequence_AttributeInstanceComponent.position>
+    <curveType>A03</curveType>
+    <Period>
+      <timeInterval>
+        <start>{period_start}</start>
+        <end>{period_end}</end>
+      </timeInterval>
+      <resolution>PT60M</resolution>
+      <Point><position>1</position><price.amount>10</price.amount></Point>
     </Period>
   </TimeSeries>
 </Publication_MarketDocument>
@@ -250,6 +273,37 @@ def complete_hourly_price_data_for_day(day: date) -> Box:
 
 
 class PriceHistoryTests(unittest.TestCase):
+    def test_price_storage_uses_only_sqlite(self):
+        async def run_test():
+            with tempfile.TemporaryDirectory() as temp_dir:
+                root = Path(temp_dir)
+                config = make_config(root)
+                history_date = date(2026, 5, 13)
+                data = complete_hourly_price_data_for_day(history_date)
+
+                await prices.store_data(data, AREA.key, config)
+                await prices.store_history_data(data, AREA.key, history_date, config)
+
+                self.assertTrue(price_database.database_path(config).exists())
+                self.assertEqual(list(root.rglob("*.pickle")), [])
+
+        asyncio.run(run_test())
+
+    def test_backfilled_archive_serves_existing_daily_history_endpoint(self):
+        async def run_test():
+            with tempfile.TemporaryDirectory() as temp_dir:
+                config = make_config(Path(temp_dir))
+                history_date = date(2026, 5, 13)
+                data = complete_hourly_price_data_for_day(history_date)
+                price_database.store_dataset(config, AREA.key, "archive:test", data)
+
+                stored = await prices.get_stored_history_data(AREA.key, history_date, config)
+
+                self.assertIsNotNone(stored)
+                self.assertTrue(prices.has_complete_local_day(stored, AREA, history_date))
+
+        asyncio.run(run_test())
+
     def test_history_query_uses_market_area_day_with_dst(self):
         period_start, period_end = price_refresher.get_history_period(AREA, date(2026, 3, 29))
         query_params = price_refresher.get_entsoe_query_params(AREA, period_start, period_end)
@@ -287,6 +341,36 @@ class PriceHistoryTests(unittest.TestCase):
         self.assertEqual(response.resolution, "PT15M")
         self.assertEqual(len(response.prices), 4)
         self.assertEqual(response.prices[1].start_timestamp - response.prices[0].start_timestamp, 15 * 60)
+
+    def test_spring_dst_day_has_23_continuous_hourly_intervals(self):
+        data = price_refresher.parse_downloaded_data(
+            AREA,
+            dst_day_price_xml("2025-03-29T23:00Z", "2025-03-30T22:00Z"),
+        )
+        period_start = arrow.get("2025-03-30", "YYYY-MM-DD", tzinfo=AREA.timezone)
+        period_end = period_start.shift(days=+1)
+
+        self.assertEqual(len(data.prices), 23)
+        self.assertTrue(prices.has_complete_price_points(data, period_start, period_end))
+        self.assertTrue(all(
+            point.end_timestamp.int_timestamp - point.start_timestamp.int_timestamp == 60 * 60
+            for point in data.prices
+        ))
+
+    def test_autumn_dst_day_has_25_continuous_hourly_intervals(self):
+        data = price_refresher.parse_downloaded_data(
+            AREA,
+            dst_day_price_xml("2024-10-26T22:00Z", "2024-10-27T23:00Z"),
+        )
+        period_start = arrow.get("2024-10-27", "YYYY-MM-DD", tzinfo=AREA.timezone)
+        period_end = period_start.shift(days=+1)
+
+        self.assertEqual(len(data.prices), 25)
+        self.assertTrue(prices.has_complete_price_points(data, period_start, period_end))
+        self.assertTrue(all(
+            point.end_timestamp.int_timestamp - point.start_timestamp.int_timestamp == 60 * 60
+            for point in data.prices
+        ))
 
     def test_unclassified_multiple_time_series_are_combined(self):
         data = price_refresher.parse_downloaded_data(AREA, unclassified_multi_series_xml())

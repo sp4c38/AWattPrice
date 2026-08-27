@@ -101,6 +101,25 @@ class APIClient {
         return ResponseRequest(urlRequest: urlRequest, decoder: decoder)
     }
 
+    static func createPriceStatisticsRequest(
+        marketArea: MarketArea,
+        body: PriceStatisticsRequestBody
+    ) throws -> ResponseRequest<PriceStatisticsData> {
+        let requestURL = APIClient.apiURL
+            .appendingPathComponent("prices", isDirectory: true)
+            .appendingPathComponent(marketArea.key, isDirectory: true)
+            .appendingPathComponent("statistics")
+        var urlRequest = URLRequest(
+            url: requestURL,
+            cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,
+            timeoutInterval: 90
+        )
+        urlRequest.httpMethod = "POST"
+        urlRequest.httpBody = try JSONEncoder().encode(body)
+        urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        return ResponseRequest(urlRequest: urlRequest, decoder: PriceStatisticsData.jsonDecoder())
+    }
+
     static func createGenerationMixHistoryRequest(
         marketArea: MarketArea,
         range: GenerationMixHistoryRange = .day

@@ -37,6 +37,63 @@ final class APIClientTests: XCTestCase {
         XCTAssertEqual(history.urlRequest.url?.absoluteString, "https://api.awattprice.com/v3/generation-mix/AT/published-history?hours=168")
     }
 
+    func testPriceStatisticsRequestPreservesPriceAddOnOrder() throws {
+        let setting = Setting()
+        setting.baseFeePrice = 3.5
+        setting.percentagePriceAddOn = 12
+        setting.priceAddOnOrder = "fixed,percentage,tax,monthly"
+        let request = try APIClient.createPriceStatisticsRequest(
+            marketArea: .germanyLuxembourg,
+            body: PriceStatisticsRequestBody(
+                range: "2yr",
+                pricingConfiguration: setting.pricingConfiguration
+            )
+        )
+        let payload = try XCTUnwrap(
+            JSONSerialization.jsonObject(with: try XCTUnwrap(request.urlRequest.httpBody)) as? [String: Any]
+        )
+        let addOns = try XCTUnwrap(payload["add_ons"] as? [[String: Any]])
+
+        XCTAssertEqual(request.urlRequest.url?.absoluteString, "https://api.awattprice.com/v3/prices/DE-LU/statistics")
+        XCTAssertEqual(request.urlRequest.httpMethod, "POST")
+        XCTAssertEqual(payload["range"] as? String, "2yr")
+        XCTAssertEqual(addOns.compactMap { $0["kind"] as? String }, ["fixed", "percentage", "tax"])
+    }
+
+    func testPriceStatisticsResponseDecodesBackendContract() throws {
+        let json = """
+        {
+          "average_price": 18.59,
+          "comparison_change_percent": -7.8,
+          "lowest": {"price": -3.72, "timestamp": 1786982400},
+          "highest": {"price": 68.44, "timestamp": 1786035600},
+          "negative_hours": 11.25,
+          "below_average_percent": 58,
+          "distribution": {
+            "cheap_percent": 38,
+            "typical_percent": 44,
+            "expensive_percent": 18,
+            "cheap_below": 20,
+            "expensive_above": 35
+          },
+          "trend": [{"start_timestamp": 1786032000, "average_price": 24.1}],
+          "highlight": {"kind": "weekday", "value": 7, "average_price": 19.8},
+          "coverage": {"percent": 99.5, "is_complete": false}
+        }
+        """
+
+        let data = try PriceStatisticsData.jsonDecoder().decode(
+            PriceStatisticsData.self,
+            from: Data(json.utf8)
+        )
+
+        XCTAssertEqual(data.averagePrice, 18.59)
+        XCTAssertEqual(data.negativeHours, 11.25)
+        XCTAssertEqual(data.trend.first?.averagePrice, 24.1)
+        XCTAssertEqual(data.highlight.value, 7)
+        XCTAssertFalse(data.coverage.isComplete)
+    }
+
     func testNotificationRequestRequiresToken() throws {
         let setting = Setting()
         let missingToken = APIClient.createNotificationRequest(NotificationConfiguration.create(nil, setting))

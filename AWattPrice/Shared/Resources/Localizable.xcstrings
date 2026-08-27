@@ -1,482 +1,6 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "%@ average" : {
-      "comment" : "Average value in the price history highlight",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ im Durchschnitt"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ average"
-          }
-        }
-      }
-    },
-    "%@ higher" : {
-      "comment" : "Price history comparison showing an increase",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ höher"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ higher"
-          }
-        }
-      }
-    },
-    "%@ lower" : {
-      "comment" : "Price history comparison showing a decrease",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ niedriger"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ lower"
-          }
-        }
-      }
-    },
-    "1mo" : {
-      "comment" : "One-month price history range",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1 Mon."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1mo"
-          }
-        }
-      }
-    },
-    "1yr" : {
-      "comment" : "One-year price history range",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1 Jahr"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1yr"
-          }
-        }
-      }
-    },
-    "2yr" : {
-      "comment" : "Two-year price history range",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "2 Jahre"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "2yr"
-          }
-        }
-      }
-    },
-    "3mo" : {
-      "comment" : "Three-month price history range",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "3 Mon."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "3mo"
-          }
-        }
-      }
-    },
-    "Below average" : {
-      "comment" : "Price history statistic",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Unter dem Durchschnitt"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Below average"
-          }
-        }
-      }
-    },
-    "Chart minimum" : {
-      "comment" : "Accessibility label for the price history chart baseline",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Diagrammminimum"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Chart minimum"
-          }
-        }
-      }
-    },
-    "Cheap" : {
-      "comment" : "Low-price distribution category",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Günstig"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cheap"
-          }
-        }
-      }
-    },
-    "Cheapest day" : {
-      "comment" : "Price history highlight",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Günstigster Tag"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cheapest day"
-          }
-        }
-      }
-    },
-    "Cheapest month" : {
-      "comment" : "Price history highlight",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Günstigster Monat"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cheapest month"
-          }
-        }
-      }
-    },
-    "Cheapest weekday" : {
-      "comment" : "Price history highlight",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Günstigster Wochentag"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cheapest weekday"
-          }
-        }
-      }
-    },
-    "Expensive" : {
-      "comment" : "High-price distribution category",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Teuer"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Expensive"
-          }
-        }
-      }
-    },
-    "February" : {
-      "comment" : "Sample cheapest month in price history",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Februar"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "February"
-          }
-        }
-      }
-    },
-    "Historic average price trend" : {
-      "comment" : "Accessibility label for the price history chart",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Historische Entwicklung des Durchschnittspreises"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Historic average price trend"
-          }
-        }
-      }
-    },
-    "Negative prices" : {
-      "comment" : "Price history statistic",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Negative Preise"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Negative prices"
-          }
-        }
-      }
-    },
-    "Of all intervals" : {
-      "comment" : "Subtitle for a price history percentage",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "aller Intervalle"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Of all intervals"
-          }
-        }
-      }
-    },
-    "Open Price History" : {
-      "comment" : "Accessibility label",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Preishistorie öffnen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Open Price History"
-          }
-        }
-      }
-    },
-    "Price" : {
-      "comment" : "Price history chart value label",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Preis"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Price"
-          }
-        }
-      }
-    },
-    "Price trend" : {
-      "comment" : "Price history chart title",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Preisentwicklung"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Price trend"
-          }
-        }
-      }
-    },
-    "previous month" : {
-      "comment" : "Price history comparison period",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "im Vormonat"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "previous month"
-          }
-        }
-      }
-    },
-    "previous three months" : {
-      "comment" : "Price history comparison period",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "in den vorherigen drei Monaten"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "previous three months"
-          }
-        }
-      }
-    },
-    "previous two years" : {
-      "comment" : "Price history comparison period",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "in den vorherigen zwei Jahren"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "previous two years"
-          }
-        }
-      }
-    },
-    "previous year" : {
-      "comment" : "Price history comparison period",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "im Vorjahr"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "previous year"
-          }
-        }
-      }
-    },
-    "Sunday" : {
-      "comment" : "Sample cheapest weekday in price history",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sonntag"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sunday"
-          }
-        }
-      }
-    },
-    "Total duration" : {
-      "comment" : "Subtitle for negative-price hours",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Gesamtdauer"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Total duration"
-          }
-        }
-      }
-    },
-    "Typical" : {
-      "comment" : "Typical-price distribution category",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Üblich"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Typical"
-          }
-        }
-      }
-    },
     "·" : {
       "localizations" : {
         "de" : {
@@ -549,6 +73,78 @@
         }
       },
       "shouldTranslate" : false
+    },
+    "%@ average" : {
+      "comment" : "Average value in the price history highlight",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ im Durchschnitt"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ average"
+          }
+        }
+      }
+    },
+    "%@ higher" : {
+      "comment" : "Price history comparison showing an increase",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ höher"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ higher"
+          }
+        }
+      }
+    },
+    "%@ lower" : {
+      "comment" : "Price history comparison showing a decrease",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ niedriger"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ lower"
+          }
+        }
+      }
+    },
+    "%@ of the selected period is available." : {
+      "comment" : "Price history data coverage note",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ des gewählten Zeitraums sind verfügbar."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ of the selected period is available."
+          }
+        }
+      }
     },
     "%@ usage" : {
       "comment" : "NSLocalizedString",
@@ -690,6 +286,42 @@
         }
       }
     },
+    "1mo" : {
+      "comment" : "One-month price history range",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 Mon."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1mo"
+          }
+        }
+      }
+    },
+    "1yr" : {
+      "comment" : "One-year price history range",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 Jahr"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1yr"
+          }
+        }
+      }
+    },
     "2h usage" : {
       "comment" : "Localized custom view text",
       "extractionState" : "stale",
@@ -704,6 +336,42 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "2h usage"
+          }
+        }
+      }
+    },
+    "2yr" : {
+      "comment" : "Two-year price history range",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 Jahre"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2yr"
+          }
+        }
+      }
+    },
+    "3mo" : {
+      "comment" : "Three-month price history range",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3 Mon."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3mo"
           }
         }
       }
@@ -1027,6 +695,24 @@
         }
       }
     },
+    "Below average" : {
+      "comment" : "Price history statistic",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unter dem Durchschnitt"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Below average"
+          }
+        }
+      }
+    },
     "Bio" : {
       "comment" : "Localized returned display text",
       "extractionState" : "stale",
@@ -1114,6 +800,42 @@
         }
       }
     },
+    "Chart minimum" : {
+      "comment" : "Accessibility label for the price history chart baseline",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diagrammminimum"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chart minimum"
+          }
+        }
+      }
+    },
+    "Cheap" : {
+      "comment" : "Low-price distribution category",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Günstig"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cheap"
+          }
+        }
+      }
+    },
     "Cheap hours **tomorrow**." : {
       "comment" : "Localized custom view text",
       "extractionState" : "stale",
@@ -1145,6 +867,42 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cheapest"
+          }
+        }
+      }
+    },
+    "Cheapest day" : {
+      "comment" : "Price history highlight",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Günstigster Tag"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cheapest day"
+          }
+        }
+      }
+    },
+    "Cheapest month" : {
+      "comment" : "Price history highlight",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Günstigster Monat"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cheapest month"
           }
         }
       }
@@ -1198,6 +956,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cheapest Times"
+          }
+        }
+      }
+    },
+    "Cheapest weekday" : {
+      "comment" : "Price history highlight",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Günstigster Wochentag"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cheapest weekday"
           }
         }
       }
@@ -1876,6 +1652,24 @@
         }
       }
     },
+    "Expensive" : {
+      "comment" : "High-price distribution category",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Teuer"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Expensive"
+          }
+        }
+      }
+    },
     "Expensive hours **tomorrow**." : {
       "comment" : "Localized custom view text",
       "extractionState" : "stale",
@@ -1926,6 +1720,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Family Sharing"
+          }
+        }
+      }
+    },
+    "February" : {
+      "comment" : "Sample cheapest month in price history",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Februar"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "February"
           }
         }
       }
@@ -2228,6 +2040,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Highest price"
+          }
+        }
+      }
+    },
+    "Historic average price trend" : {
+      "comment" : "Accessibility label for the price history chart",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Historische Entwicklung des Durchschnittspreises"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Historic average price trend"
           }
         }
       }
@@ -2569,6 +2398,23 @@
         }
       }
     },
+    "Loading price history" : {
+      "comment" : "Price history loading state",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preishistorie wird geladen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Loading price history"
+          }
+        }
+      }
+    },
     "Loading price zones…" : {
       "comment" : "SwiftUI literal",
       "extractionState" : "stale",
@@ -2851,6 +2697,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Most popular"
+          }
+        }
+      }
+    },
+    "Negative prices" : {
+      "comment" : "Price history statistic",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Negative Preise"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Negative prices"
           }
         }
       }
@@ -3406,6 +3270,24 @@
         }
       }
     },
+    "Of all intervals" : {
+      "comment" : "Subtitle for a price history percentage",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "aller Intervalle"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Of all intervals"
+          }
+        }
+      }
+    },
     "OK" : {
       "comment" : "SwiftUI literal",
       "extractionState" : "stale",
@@ -3495,6 +3377,23 @@
         }
       }
     },
+    "Open Price History" : {
+      "comment" : "Accessibility label",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preishistorie öffnen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open Price History"
+          }
+        }
+      }
+    },
     "Open Settings App" : {
       "comment" : "SwiftUI literal",
       "extractionState" : "stale",
@@ -3562,6 +3461,96 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Play confetti"
+          }
+        }
+      }
+    },
+    "previous month" : {
+      "comment" : "Price history comparison period",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "im Vormonat"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "previous month"
+          }
+        }
+      }
+    },
+    "previous three months" : {
+      "comment" : "Price history comparison period",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "in den vorherigen drei Monaten"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "previous three months"
+          }
+        }
+      }
+    },
+    "previous two years" : {
+      "comment" : "Price history comparison period",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "in den vorherigen zwei Jahren"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "previous two years"
+          }
+        }
+      }
+    },
+    "previous year" : {
+      "comment" : "Price history comparison period",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "im Vorjahr"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "previous year"
+          }
+        }
+      }
+    },
+    "Price" : {
+      "comment" : "Price history chart value label",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preis"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Price"
           }
         }
       }
@@ -3797,6 +3786,23 @@
         }
       }
     },
+    "Price history unavailable" : {
+      "comment" : "Price history error state",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preishistorie nicht verfügbar"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Price history unavailable"
+          }
+        }
+      }
+    },
     "Price is sub-zero" : {
       "comment" : "Localized returned display text",
       "localizations" : {
@@ -3845,6 +3851,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Price range from %@ to %@, average %@"
+          }
+        }
+      }
+    },
+    "Price trend" : {
+      "comment" : "Price history chart title",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preisentwicklung"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Price trend"
           }
         }
       }
@@ -4789,6 +4813,24 @@
         }
       }
     },
+    "Sunday" : {
+      "comment" : "Sample cheapest weekday in price history",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sonntag"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sunday"
+          }
+        }
+      }
+    },
     "Terms of Use" : {
       "comment" : "String.localized()",
       "extractionState" : "stale",
@@ -4809,6 +4851,7 @@
     },
     "than %@" : {
       "comment" : "Price history comparison suffix",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -4838,6 +4881,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Thank you for supporting AWattPrice!"
+          }
+        }
+      }
+    },
+    "the preceding year" : {
+      "comment" : "Two-year history comparison period",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "dem Jahr davor"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "the preceding year"
           }
         }
       }
@@ -5039,6 +5100,24 @@
         }
       }
     },
+    "Total duration" : {
+      "comment" : "Subtitle for negative-price hours",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gesamtdauer"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Total duration"
+          }
+        }
+      }
+    },
     "Try Again" : {
       "comment" : "SwiftUI literal",
       "extractionState" : "stale",
@@ -5053,6 +5132,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Try Again"
+          }
+        }
+      }
+    },
+    "Typical" : {
+      "comment" : "Typical-price distribution category",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Üblich"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Typical"
           }
         }
       }

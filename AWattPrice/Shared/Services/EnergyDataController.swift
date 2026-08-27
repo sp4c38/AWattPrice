@@ -144,6 +144,132 @@ struct EnergyData: Decodable {
     }
 }
 
+struct PriceStatisticsRequestBody: Encodable {
+    struct AddOn: Encodable {
+        let kind: String
+        let value: Double
+    }
+
+    let range: String
+    let addOns: [AddOn]
+
+    enum CodingKeys: String, CodingKey {
+        case range
+        case addOns = "add_ons"
+    }
+
+    init(range: String, pricingConfiguration: PricingConfiguration) {
+        self.range = range
+        addOns = pricingConfiguration.orderedAddOns.map {
+            AddOn(kind: $0.kind.rawValue, value: $0.value)
+        }
+    }
+}
+
+struct PriceStatisticsData: Decodable {
+    struct Extremum: Decodable {
+        let price: Double
+        let timestamp: Date
+    }
+
+    struct Distribution: Decodable {
+        let cheapPercent: Double
+        let typicalPercent: Double
+        let expensivePercent: Double
+        let cheapBelow: Double
+        let expensiveAbove: Double
+
+        enum CodingKeys: String, CodingKey {
+            case cheapPercent = "cheap_percent"
+            case typicalPercent = "typical_percent"
+            case expensivePercent = "expensive_percent"
+            case cheapBelow = "cheap_below"
+            case expensiveAbove = "expensive_above"
+        }
+    }
+
+    struct TrendPoint: Decodable, Identifiable {
+        let startTimestamp: Date
+        let averagePrice: Double
+
+        var id: Date { startTimestamp }
+
+        enum CodingKeys: String, CodingKey {
+            case startTimestamp = "start_timestamp"
+            case averagePrice = "average_price"
+        }
+    }
+
+    struct Highlight: Decodable {
+        let kind: String
+        let timestamp: Date?
+        let value: Int?
+        let averagePrice: Double
+
+        enum CodingKeys: String, CodingKey {
+            case kind
+            case timestamp
+            case value
+            case averagePrice = "average_price"
+        }
+    }
+
+    struct Coverage: Decodable {
+        let percent: Double
+        let isComplete: Bool
+
+        enum CodingKeys: String, CodingKey {
+            case percent
+            case isComplete = "is_complete"
+        }
+    }
+
+    let averagePrice: Double
+    let comparisonChangePercent: Double?
+    let lowest: Extremum
+    let highest: Extremum
+    let negativeHours: Double
+    let belowAveragePercent: Double
+    let distribution: Distribution
+    let trend: [TrendPoint]
+    let highlight: Highlight
+    let coverage: Coverage
+
+    enum CodingKeys: String, CodingKey {
+        case averagePrice = "average_price"
+        case comparisonChangePercent = "comparison_change_percent"
+        case lowest
+        case highest
+        case negativeHours = "negative_hours"
+        case belowAveragePercent = "below_average_percent"
+        case distribution
+        case trend
+        case highlight
+        case coverage
+    }
+
+    static func jsonDecoder() -> JSONDecoder {
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .secondsSince1970
+        return decoder
+    }
+
+    static func download(
+        marketArea: MarketArea,
+        range: String,
+        pricingConfiguration: PricingConfiguration
+    ) async throws -> PriceStatisticsData {
+        let request = try APIClient.createPriceStatisticsRequest(
+            marketArea: marketArea,
+            body: PriceStatisticsRequestBody(
+                range: range,
+                pricingConfiguration: pricingConfiguration
+            )
+        )
+        return try await APIClient().request(to: request)
+    }
+}
+
 struct GenerationMixCategory: Decodable, Identifiable {
     let category: String
     let generationMW: Double

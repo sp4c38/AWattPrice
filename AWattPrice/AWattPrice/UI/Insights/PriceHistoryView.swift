@@ -304,7 +304,11 @@ private struct PriceHistoryContent: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 14) {
-                PriceHistorySummaryCard(sample: history, comparisonLabel: range.comparisonLabel)
+                PriceHistorySummaryCard(
+                    sample: history,
+                    comparisonLabel: range.comparisonLabel,
+                    showsComparison: range != .twoYears
+                )
                 PriceHistoryTrendCard(sample: history, trend: chartTrend, range: range)
 
                 LazyVGrid(
@@ -360,6 +364,7 @@ private struct PriceHistoryContent: View {
 private struct PriceHistorySummaryCard: View {
     let sample: PriceStatisticsData
     let comparisonLabel: String
+    let showsComparison: Bool
 
     private var changeTint: Color {
         (sample.comparisonChangePercent ?? 0) <= 0 ? AppTheme.success : AppTheme.error
@@ -393,7 +398,7 @@ private struct PriceHistorySummaryCard: View {
                     .foregroundStyle(.secondary)
             }
 
-            if sample.comparisonChangePercent != nil {
+            if showsComparison, sample.comparisonChangePercent != nil {
                 HStack(spacing: 6) {
                     Label(changeText, systemImage: changeIcon)
                         .font(.caption.weight(.semibold))

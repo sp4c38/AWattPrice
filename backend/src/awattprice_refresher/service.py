@@ -20,6 +20,7 @@ from awattprice import cache_status
 from awattprice import configurator
 from awattprice import defaults
 from awattprice import generation_mix
+from awattprice import price_database
 from awattprice import prices
 from awattprice import utils
 from awattprice.market_areas import MarketArea
@@ -290,6 +291,7 @@ async def prune_cache(config: Config, now=None) -> int:
     pruned_count = 0
     pruned_count += await prune_generation_payloads(config, now)
     pruned_count += prune_cache_metadata(config, now)
+    pruned_count += await asyncio.to_thread(price_database.prune_old_data, config, now)
     cache_status.record_prune_result(config, pruned_count)
     return pruned_count
 

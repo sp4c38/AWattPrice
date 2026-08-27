@@ -3,8 +3,6 @@
 from __future__ import annotations
 
 import asyncio
-import hashlib
-import json
 
 from collections import defaultdict
 from decimal import Decimal
@@ -234,18 +232,6 @@ def calculate_statistics(
     if not all_rows:
         return None
 
-    cutoff_timestamp = max(row["updated_at"] for row in all_rows)
-    cache_source = request.model_dump(mode="json") | {
-        "area": area.key,
-        "period_end": period_end.int_timestamp,
-    }
-    cache_key = hashlib.sha256(
-        json.dumps(cache_source, sort_keys=True, separators=(",", ":")).encode()
-    ).hexdigest()
-    cached = price_database.get_cached_statistics(config, cache_key, cutoff_timestamp)
-    if cached is not None:
-        return cached if cached.get("coverage", {}).get("is_complete") else None
-
     selected_rows = [
         row
         for row in all_rows
@@ -299,7 +285,6 @@ def calculate_statistics(
         "comparison_change_percent": change_percent,
         **selected,
     }
-    price_database.store_cached_statistics(config, cache_key, area.key, cutoff_timestamp, response)
     return response
 
 

@@ -10,6 +10,8 @@ from collections.abc import Iterable
 from pathlib import Path
 from typing import Any, Optional
 
+import arrow
+
 from box import Box
 from liteconfig import Config
 
@@ -80,13 +82,6 @@ def connect(config: Config) -> sqlite3.Connection:
             PRIMARY KEY (area_key, period_start, period_end)
         );
 
-        CREATE TABLE IF NOT EXISTS price_statistics_cache (
-            cache_key TEXT PRIMARY KEY,
-            area_key TEXT NOT NULL,
-            cutoff_timestamp INTEGER NOT NULL,
-            response_json TEXT NOT NULL,
-            created_at INTEGER NOT NULL
-        );
         """
     )
     return connection
@@ -262,38 +257,42 @@ def import_is_complete(config: Config, area_key: str, period_start: int, period_
     return cursor == period_end
 
 
-def get_cached_statistics(config: Config, cache_key: str, cutoff_timestamp: int) -> Optional[dict[str, Any]]:
-    """Get a statistics response if it was produced for the same data cutoff."""
-    with connect(config) as connection:
-        row = connection.execute(
-            """
-            SELECT response_json FROM price_statistics_cache
-            WHERE cache_key = ? AND cutoff_timestamp = ?
-            """,
-            (cache_key, cutoff_timestamp),
-        ).fetchone()
-    return json.loads(row["response_json"]) if row else None
+def prune_old_data(config: Config, now=None) -> int:
+    """Prune prices and metadata outside the archive retention window."""
+    current = now or arrow.now("UTC")
+    areas = defaults.list_market_areas()
+    supported_area_keys = {area.key for area in areas}
+    pruned_count = 0
 
-
-def store_cached_statistics(
-    config: Config,
-    cache_key: str,
-    area_key: str,
-    cutoff_timestamp: int,
-    response: dict[str, Any],
-) -> None:
-    """Store a computed statistics response."""
     with connect(config) as connection:
-        connection.execute(
-            """
-            INSERT INTO price_statistics_cache (
-                cache_key, area_key, cutoff_timestamp, response_json, created_at
-            ) VALUES (?, ?, ?, ?, ?)
-            ON CONFLICT(cache_key) DO UPDATE SET
-                area_key = excluded.area_key,
-                cutoff_timestamp = excluded.cutoff_timestamp,
-                response_json = excluded.response_json,
-                created_at = excluded.created_at
-            """,
-            (cache_key, area_key, cutoff_timestamp, json.dumps(response), int(time.time())),
-        )
+        # Remove the discontinued persistent statistics cache from databases
+        # created by earlier development versions.
+        connection.execute("DROP TABLE IF EXISTS price_statistics_cache")
+
+        for area in areas:
+            cutoff = (
+                current.to(area.timezone)
+                .floor("day")
+                .shift(
+                    years=-defaults.PRICE_ARCHIVE_YEARS,
+                    months=-defaults.PRICE_ARCHIVE_RETENTION_BUFFER_MONTHS,
+                )
+                .int_timestamp
+            )
+            for table in ("price_points", "price_datasets", "price_history_imports"):
+                cursor = connection.execute(
+                    f"DELETE FROM {table} WHERE area_key = ? AND "
+                    f"{'end_timestamp' if table == 'price_points' else 'period_end'} <= ?",
+                    (area.key, cutoff),
+                )
+                pruned_count += cursor.rowcount
+
+        placeholders = ",".join("?" for _ in supported_area_keys)
+        for table in ("price_points", "price_datasets", "price_history_imports"):
+            cursor = connection.execute(
+                f"DELETE FROM {table} WHERE area_key NOT IN ({placeholders})",
+                tuple(sorted(supported_area_keys)),
+            )
+            pruned_count += cursor.rowcount
+
+    return pruned_count

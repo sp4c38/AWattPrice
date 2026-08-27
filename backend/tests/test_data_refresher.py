@@ -15,6 +15,7 @@ from box import BoxList
 from awattprice import cache_status
 from awattprice import defaults
 from awattprice import generation_mix
+from awattprice import price_database
 from awattprice import prices
 from awattprice import utils
 from awattprice_refresher import service as data_refresher
@@ -293,6 +294,99 @@ class DataRefresherScheduleTests(unittest.TestCase):
 
 
 class DataRefresherCleanupTests(unittest.TestCase):
+    def test_price_database_prune_keeps_retention_window_and_removes_legacy_cache(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            config = make_config(Path(temp_dir))
+            old_data = complete_hourly_price_data_for_day("2024-03-01")
+            retained_data = complete_hourly_price_data_for_day("2024-05-01")
+            old_start = old_data.prices[0].start_timestamp.int_timestamp
+            old_end = old_data.prices[-1].end_timestamp.int_timestamp
+            retained_start = retained_data.prices[0].start_timestamp.int_timestamp
+            retained_end = retained_data.prices[-1].end_timestamp.int_timestamp
+
+            price_database.store_dataset(config, AREA.key, "archive:old", old_data)
+            price_database.store_dataset(config, AREA.key, "archive:retained", retained_data)
+            price_database.record_import(
+                config, AREA.key, old_start, old_end, "complete", len(old_data.prices)
+            )
+            price_database.record_import(
+                config,
+                AREA.key,
+                retained_start,
+                retained_end,
+                "complete",
+                len(retained_data.prices),
+            )
+            with price_database.connect(config) as connection:
+                connection.execute(
+                    "CREATE TABLE price_statistics_cache (cache_key TEXT PRIMARY KEY)"
+                )
+
+            pruned = price_database.prune_old_data(
+                config,
+                arrow.get("2026-05-25T12:00:00+02:00"),
+            )
+
+            self.assertEqual(pruned, len(old_data.prices) + 2)
+            self.assertEqual(
+                price_database.load_points(config, AREA.key, old_start, old_end),
+                [],
+            )
+            self.assertEqual(
+                len(
+                    price_database.load_points(
+                        config,
+                        AREA.key,
+                        retained_start,
+                        retained_end,
+                    )
+                ),
+                len(retained_data.prices),
+            )
+            with price_database.connect(config) as connection:
+                legacy_cache = connection.execute(
+                    "SELECT name FROM sqlite_master "
+                    "WHERE type = 'table' AND name = 'price_statistics_cache'"
+                ).fetchone()
+                old_import = connection.execute(
+                    "SELECT 1 FROM price_history_imports "
+                    "WHERE area_key = ? AND period_start = ?",
+                    (AREA.key, old_start),
+                ).fetchone()
+                retained_import = connection.execute(
+                    "SELECT 1 FROM price_history_imports "
+                    "WHERE area_key = ? AND period_start = ?",
+                    (AREA.key, retained_start),
+                ).fetchone()
+
+            self.assertIsNone(legacy_cache)
+            self.assertIsNone(old_import)
+            self.assertIsNotNone(retained_import)
+
+    def test_normal_cleanup_includes_price_database_pruning(self):
+        async def run_test():
+            with tempfile.TemporaryDirectory() as temp_dir:
+                config = make_config(Path(temp_dir))
+                with (
+                    patch.object(
+                        data_refresher,
+                        "prune_generation_payloads",
+                        new=AsyncMock(return_value=2),
+                    ),
+                    patch.object(data_refresher, "prune_cache_metadata", return_value=3),
+                    patch.object(price_database, "prune_old_data", return_value=4),
+                    patch.object(data_refresher.cache_status, "record_prune_result") as record,
+                ):
+                    pruned = await data_refresher.prune_cache(
+                        config,
+                        arrow.get("2026-05-25T12:00:00+02:00"),
+                    )
+
+                self.assertEqual(pruned, 9)
+                record.assert_called_once_with(config, 9)
+
+        asyncio.run(run_test())
+
     def test_generation_prune_deletes_legacy_and_unsupported_payloads(self):
         async def run_test():
             with tempfile.TemporaryDirectory() as temp_dir:

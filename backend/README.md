@@ -55,6 +55,10 @@ notifications service and does not modify any notification-owned file.
 
 The app requests adjusted statistics through `POST /prices/{area}/statistics`. The request contains the selected range and the user's ordered price adjustments, so the backend reproduces the displayed ct/kWh value for every interval before calculating duration-weighted statistics.
 
+Statistics are calculated on demand and are not stored. The existing refresher cleanup also
+prunes SQLite price points, dataset metadata, and import records older than two years plus a
+one-month safety margin.
+
 Generation mix endpoint compatibility is documented in [docs/generation-mix-data-flow.md](docs/generation-mix-data-flow.md).
 
 ## Maintenance Checks

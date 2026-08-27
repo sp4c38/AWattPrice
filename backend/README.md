@@ -40,7 +40,8 @@ the stored price intervals continuously cover the requested period. Missing inte
 downloaded automatically, including when an older completion marker exists, and already
 complete data is reused even when no matching marker exists. Several regions are populated
 in parallel with a bounded request count, so one slow region cannot block all remaining
-regions.
+regions. Already-complete monthly chunks are silent; a single summary is logged after all
+configured regions have been checked.
 
 No deployment or local setup command is required. The importer remains available only for
 manual maintenance or troubleshooting:

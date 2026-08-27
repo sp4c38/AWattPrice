@@ -49,7 +49,6 @@ async def backfill_area(
             start_timestamp,
             end_timestamp,
         ):
-            logger.info(f"Skipping completed {area.key} import {period_start.date()}–{period_end.date()}.")
             continue
 
         await asyncio.to_thread(
@@ -133,6 +132,7 @@ async def backfill_areas(
     """Backfill a set of areas and return the combined failure count."""
     now = arrow.now("UTC")
     semaphore = asyncio.Semaphore(concurrency)
+    requested_area_keys = tuple(area_keys)
 
     async def backfill_one(raw_area_key: str) -> int:
         area_key = defaults.normalize_market_area_key(raw_area_key)
@@ -149,8 +149,13 @@ async def backfill_areas(
                 prepare_current=prepare_current,
             )
 
-    failures = await asyncio.gather(*(backfill_one(area_key) for area_key in area_keys))
-    return sum(failures)
+    failures = await asyncio.gather(*(backfill_one(area_key) for area_key in requested_area_keys))
+    failure_count = sum(failures)
+    if failure_count == 0:
+        logger.info(
+            f"Price archive coverage is complete for all {len(requested_area_keys)} checked areas."
+        )
+    return failure_count
 
 
 def parse_args() -> argparse.Namespace:

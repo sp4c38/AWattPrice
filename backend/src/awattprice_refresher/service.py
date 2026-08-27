@@ -412,7 +412,6 @@ async def maintain_price_archive(config: Config):
             logger.exception(f"Automatic price archive backfill failed: {exc}.")
 
         if failures == 0:
-            logger.info("Automatic price archive backfill is complete for all areas.")
             return
 
         logger.warning(

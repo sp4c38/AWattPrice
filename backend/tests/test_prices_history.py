@@ -365,7 +365,10 @@ class PriceHistoryTests(unittest.TestCase):
                 active_count -= 1
                 return 0
 
-            with patch.object(price_history_backfill, "backfill_area", side_effect=backfill_area):
+            with (
+                patch.object(price_history_backfill, "backfill_area", side_effect=backfill_area),
+                patch.object(price_history_backfill.logger, "info") as log_info,
+            ):
                 failures = await price_history_backfill.backfill_areas(
                     defaults.supported_market_area_keys,
                     2,
@@ -379,6 +382,10 @@ class PriceHistoryTests(unittest.TestCase):
             self.assertEqual(set(attempted_areas), set(defaults.supported_market_area_keys))
             self.assertIn("FR", attempted_areas)
             self.assertIn("PL", attempted_areas)
+            log_info.assert_called_once_with(
+                "Price archive coverage is complete for all "
+                f"{len(defaults.supported_market_area_keys)} checked areas."
+            )
 
         asyncio.run(run_test())
 

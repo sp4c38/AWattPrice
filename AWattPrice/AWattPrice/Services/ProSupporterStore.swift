@@ -67,11 +67,8 @@ enum ProSupporterStoreError: LocalizedError {
 @MainActor
 final class ProSupporterStore: ObservableObject {
     @Published private(set) var products: [Product] = []
-    @Published private(set) var purchasedProductIdentifiers: Set<String> = [] {
-        didSet {
-            ProSupporterEntitlementStore.setHasPro(hasPro)
-        }
-    }
+    @Published private(set) var purchasedProductIdentifiers: Set<String> = []
+    @Published private(set) var hasPro: Bool
     @Published private(set) var isLoadingProducts = false
     @Published private(set) var isRestoringPurchases = false
     @Published var purchaseInProgressProductIdentifier: String?
@@ -79,13 +76,14 @@ final class ProSupporterStore: ObservableObject {
     @Published var messageIsError = false
 
     private var transactionUpdatesTask: Task<Void, Never>?
+    private var hasStarted = false
+
+    init() {
+        hasPro = ProSupporterEntitlementStore.hasPro
+    }
 
     deinit {
         transactionUpdatesTask?.cancel()
-    }
-
-    var hasPro: Bool {
-        purchasedProductIdentifiers.isDisjoint(with: Set(ProSupporterPlan.productIdentifiers)) == false
     }
 
     var isBusy: Bool {
@@ -97,6 +95,12 @@ final class ProSupporterStore: ObservableObject {
     }
 
     func start() {
+        guard hasStarted == false else {
+            print("[Pro Supporter Store] Pro Supporter store is already running.")
+            return
+        }
+        hasStarted = true
+
         print("[Pro Supporter Store] Starting Pro Supporter store.")
 
         if transactionUpdatesTask == nil {
@@ -219,10 +223,21 @@ final class ProSupporterStore: ObservableObject {
     func refreshPurchasedProducts() async {
         print("[Pro Supporter Store] Refreshing current entitlements.")
         var purchasedIdentifiers = Set<String>()
+        var verificationWasInconclusive = false
 
         for await result in Transaction.currentEntitlements {
-            guard let transaction = try? verifiedTransaction(from: result) else {
-                print("[Pro Supporter Store] Ignored unverified entitlement.")
+            let transaction: Transaction
+            switch result {
+            case .verified(let verifiedTransaction):
+                transaction = verifiedTransaction
+            case .unverified(let unverifiedTransaction, let error):
+                if ProSupporterPlan.productIdentifiers.contains(unverifiedTransaction.productID) {
+                    verificationWasInconclusive = true
+                }
+                print(
+                    "[Pro Supporter Store] Ignored unverified entitlement for "
+                    + "\(unverifiedTransaction.productID): \(error.localizedDescription)."
+                )
                 continue
             }
             guard let activeProductIdentifier = activeProProductIdentifier(from: transaction, source: "entitlement") else { continue }
@@ -231,9 +246,21 @@ final class ProSupporterStore: ObservableObject {
             purchasedIdentifiers.insert(activeProductIdentifier)
         }
 
-        await addLatestActiveTransactions(to: &purchasedIdentifiers)
+        let latestVerificationWasInconclusive = await addLatestActiveTransactions(
+            to: &purchasedIdentifiers
+        )
+        verificationWasInconclusive =
+            verificationWasInconclusive || latestVerificationWasInconclusive
 
-        purchasedProductIdentifiers = purchasedIdentifiers
+        if verificationWasInconclusive, purchasedIdentifiers.isEmpty, hasPro {
+            print(
+                "[Pro Supporter Store] Entitlement verification was inconclusive; "
+                + "keeping the last verified Pro state."
+            )
+            return
+        }
+
+        applyVerifiedEntitlements(purchasedIdentifiers)
         print("[Pro Supporter Store] Active Pro entitlement count: \(purchasedProductIdentifiers.count).")
     }
 
@@ -265,7 +292,11 @@ final class ProSupporterStore: ObservableObject {
         }
     }
 
-    private func addLatestActiveTransactions(to purchasedIdentifiers: inout Set<String>) async {
+    private func addLatestActiveTransactions(
+        to purchasedIdentifiers: inout Set<String>
+    ) async -> Bool {
+        var verificationWasInconclusive = false
+
         for productIdentifier in ProSupporterPlan.productIdentifiers {
             guard purchasedIdentifiers.contains(productIdentifier) == false else { continue }
 
@@ -274,8 +305,16 @@ final class ProSupporterStore: ObservableObject {
                 continue
             }
 
-            guard let transaction = try? verifiedTransaction(from: result) else {
-                print("[Pro Supporter Store] Ignored unverified latest transaction for \(productIdentifier).")
+            let transaction: Transaction
+            switch result {
+            case .verified(let verifiedTransaction):
+                transaction = verifiedTransaction
+            case .unverified(_, let error):
+                verificationWasInconclusive = true
+                print(
+                    "[Pro Supporter Store] Ignored unverified latest transaction for "
+                    + "\(productIdentifier): \(error.localizedDescription)."
+                )
                 continue
             }
 
@@ -284,6 +323,17 @@ final class ProSupporterStore: ObservableObject {
             print("[Pro Supporter Store] Found active latest transaction: \(activeProductIdentifier).")
             purchasedIdentifiers.insert(activeProductIdentifier)
         }
+
+        return verificationWasInconclusive
+    }
+
+    private func applyVerifiedEntitlements(_ productIdentifiers: Set<String>) {
+        purchasedProductIdentifiers = productIdentifiers
+        let verifiedHasPro = productIdentifiers.isDisjoint(
+            with: Set(ProSupporterPlan.productIdentifiers)
+        ) == false
+        hasPro = verifiedHasPro
+        ProSupporterEntitlementStore.setHasPro(verifiedHasPro)
     }
 
     private func activeProProductIdentifier(from transaction: Transaction, source: String) -> String? {
@@ -315,6 +365,7 @@ extension ProSupporterStore {
     static func preview(hasPro: Bool) -> ProSupporterStore {
         let store = ProSupporterStore()
         store.purchasedProductIdentifiers = hasPro ? [ProSupporterPlan.yearly.rawValue] : []
+        store.hasPro = hasPro
         return store
     }
 }

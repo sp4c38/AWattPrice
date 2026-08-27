@@ -31,7 +31,9 @@ enum ProSupporterEntitlementStore {
     }
 
     static func setHasPro(_ hasPro: Bool) {
-        UserDefaults(suiteName: internalAppGroupIdentifier)?.set(hasPro, forKey: hasProKey)
+        guard let defaults = UserDefaults(suiteName: internalAppGroupIdentifier) else { return }
+        guard defaults.bool(forKey: hasProKey) != hasPro else { return }
+        defaults.set(hasPro, forKey: hasProKey)
         AWattPriceWidgetTimelines.reloadAll()
     }
 }

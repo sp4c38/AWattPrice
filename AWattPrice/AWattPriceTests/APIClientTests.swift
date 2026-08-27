@@ -78,7 +78,7 @@ final class APIClientTests: XCTestCase {
           },
           "trend": [{"start_timestamp": 1786032000, "average_price": 24.1}],
           "highlight": {"kind": "weekday", "value": 7, "average_price": 19.8},
-          "coverage": {"percent": 99.5, "is_complete": false}
+          "coverage": {"percent": 99.5, "is_complete": false, "is_usable": true}
         }
         """
 
@@ -92,6 +92,7 @@ final class APIClientTests: XCTestCase {
         XCTAssertEqual(data.trend.first?.averagePrice, 24.1)
         XCTAssertEqual(data.highlight.value, 7)
         XCTAssertFalse(data.coverage.isComplete)
+        XCTAssertTrue(data.coverage.isUsable)
     }
 
     func testNotificationRequestRequiresToken() throws {

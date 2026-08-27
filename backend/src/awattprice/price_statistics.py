@@ -18,6 +18,10 @@ from awattprice import utils
 from awattprice.market_areas import MarketArea
 
 
+MINIMUM_COVERAGE_PERCENT = 95
+MAXIMUM_CONTINUOUS_GAP_SECONDS = 24 * 60 * 60
+
+
 class PriceAddOnRequest(BaseModel):
     """One app price adjustment in the exact order selected by the user."""
 
@@ -76,20 +80,69 @@ def weighted_average(values: list[tuple[Decimal, int]]) -> Optional[Decimal]:
     return sum(value * item_duration for value, item_duration in values) / Decimal(duration)
 
 
-def _has_complete_coverage(
+def coverage_for_period(
     rows: list[dict],
     period_start: arrow.Arrow,
     period_end: arrow.Arrow,
-) -> bool:
-    """Return whether stored intervals continuously cover the requested period."""
+) -> dict:
+    """Measure unique interval coverage and the largest continuous gap."""
+    expected_seconds = period_end.int_timestamp - period_start.int_timestamp
+    available_seconds = 0
+    maximum_gap_seconds = 0
     cursor = period_start.int_timestamp
     for row in sorted(rows, key=lambda item: item["start_timestamp"]):
-        start_timestamp = row["start_timestamp"]
-        end_timestamp = row["end_timestamp"]
-        if start_timestamp != cursor or end_timestamp <= start_timestamp:
-            return False
+        start_timestamp = max(row["start_timestamp"], period_start.int_timestamp)
+        end_timestamp = min(row["end_timestamp"], period_end.int_timestamp)
+        if end_timestamp <= start_timestamp or end_timestamp <= cursor:
+            continue
+        if start_timestamp > cursor:
+            maximum_gap_seconds = max(maximum_gap_seconds, start_timestamp - cursor)
+        covered_start = max(start_timestamp, cursor)
+        available_seconds += end_timestamp - covered_start
         cursor = end_timestamp
-    return cursor == period_end.int_timestamp
+
+    if cursor < period_end.int_timestamp:
+        maximum_gap_seconds = max(maximum_gap_seconds, period_end.int_timestamp - cursor)
+
+    percent = available_seconds / expected_seconds * 100 if expected_seconds > 0 else 0
+    is_complete = available_seconds == expected_seconds and maximum_gap_seconds == 0
+    return {
+        "available_seconds": available_seconds,
+        "expected_seconds": expected_seconds,
+        "percent": percent,
+        "maximum_gap_seconds": maximum_gap_seconds,
+        "is_complete": is_complete,
+        "is_usable": (
+            percent >= MINIMUM_COVERAGE_PERCENT
+            and maximum_gap_seconds <= MAXIMUM_CONTINUOUS_GAP_SECONDS
+        ),
+    }
+
+
+def _eligible_calendar_months(
+    rows: list[dict],
+    period_start: arrow.Arrow,
+    period_end: arrow.Arrow,
+) -> set[tuple[int, int]]:
+    """Return complete-range calendar months with enough usable source data."""
+    eligible = set()
+    month_start = period_start.floor("month")
+    if month_start < period_start:
+        month_start = month_start.shift(months=+1)
+    while month_start < period_end:
+        month_end = month_start.shift(months=+1)
+        if month_end > period_end:
+            break
+        month_rows = [
+            row
+            for row in rows
+            if row["start_timestamp"] >= month_start.int_timestamp
+            and row["end_timestamp"] <= month_end.int_timestamp
+        ]
+        if coverage_for_period(month_rows, month_start, month_end)["is_usable"]:
+            eligible.add((month_start.year, month_start.month))
+        month_start = month_end
+    return eligible
 
 
 def _trend_bucket_start(timestamp: int, period_start: arrow.Arrow, range_key: str, timezone: str) -> int:
@@ -127,17 +180,11 @@ def _build_period_statistics(
         adjusted.append((row, adjusted_price(row["marketprice"], area, request.add_ons), duration))
 
     average = weighted_average([(value, duration) for _, value, duration in adjusted])
-    available_seconds = sum(duration for _, _, duration in adjusted)
-    expected_seconds = period_end.int_timestamp - period_start.int_timestamp
-    is_complete = _has_complete_coverage(rows, period_start, period_end)
+    coverage = coverage_for_period(rows, period_start, period_end)
+    available_seconds = coverage["available_seconds"]
     result = {
         "average_price": float(average) if average is not None else None,
-        "coverage": {
-            "available_seconds": available_seconds,
-            "expected_seconds": expected_seconds,
-            "percent": (available_seconds / expected_seconds * 100) if expected_seconds else 0,
-            "is_complete": is_complete,
-        },
+        "coverage": coverage,
     }
     if not include_details or not adjusted or average is None:
         return result
@@ -153,30 +200,25 @@ def _build_period_statistics(
 
     trend_values = defaultdict(list)
     highlight_values = defaultdict(list)
+    eligible_months = (
+        _eligible_calendar_months(rows, period_start, period_end)
+        if request.range in ("1yr", "2yr")
+        else None
+    )
     for row, value, duration in adjusted:
         trend_values[
             _trend_bucket_start(row["start_timestamp"], period_start, request.range, area.timezone)
         ].append((value, duration))
-        highlight_values[_highlight_key(row["start_timestamp"], request.range, area.timezone)].append(
-            (value, duration)
-        )
+        local = arrow.get(row["start_timestamp"]).to(area.timezone)
+        if eligible_months is None or (local.year, local.month) in eligible_months:
+            highlight_values[
+                _highlight_key(row["start_timestamp"], request.range, area.timezone)
+            ].append((value, duration))
 
     trend = [
         {"start_timestamp": timestamp, "average_price": float(weighted_average(values))}
         for timestamp, values in sorted(trend_values.items())
     ]
-    highlight_key, highlight_average = min(
-        ((key, weighted_average(values)) for key, values in highlight_values.items()),
-        key=lambda item: item[1],
-    )
-    if request.range == "1mo":
-        highlight = {"kind": "day", "timestamp": highlight_key}
-    elif request.range == "3mo":
-        highlight = {"kind": "weekday", "value": highlight_key}
-    else:
-        highlight = {"kind": "month", "value": highlight_key}
-    highlight["average_price"] = float(highlight_average)
-
     result.update(
         {
             "lowest": {"price": float(lowest[1]), "timestamp": lowest[0]["start_timestamp"]},
@@ -191,9 +233,21 @@ def _build_period_statistics(
                 "expensive_above": float(request.expensive_above),
             },
             "trend": trend,
-            "highlight": highlight,
         }
     )
+    if highlight_values:
+        highlight_key, highlight_average = min(
+            ((key, weighted_average(values)) for key, values in highlight_values.items()),
+            key=lambda item: item[1],
+        )
+        if request.range == "1mo":
+            highlight = {"kind": "day", "timestamp": highlight_key}
+        elif request.range == "3mo":
+            highlight = {"kind": "weekday", "value": highlight_key}
+        else:
+            highlight = {"kind": "month", "value": highlight_key}
+        highlight["average_price"] = float(highlight_average)
+        result["highlight"] = highlight
     return result
 
 
@@ -241,7 +295,11 @@ def calculate_statistics(
     selected = _build_period_statistics(
         selected_rows, area, request, period_start, period_end, include_details=True
     )
-    if selected["average_price"] is None or not selected["coverage"]["is_complete"]:
+    if (
+        selected["average_price"] is None
+        or not selected["coverage"]["is_usable"]
+        or "highlight" not in selected
+    ):
         return None
 
     change_percent = None
@@ -266,8 +324,8 @@ def calculate_statistics(
             previous_rows, area, request, previous_start, previous_end, include_details=False
         )
         if (
-            comparison["coverage"]["is_complete"]
-            and previous["coverage"]["is_complete"]
+            comparison["coverage"]["is_usable"]
+            and previous["coverage"]["is_usable"]
             and comparison["average_price"] is not None
             and previous["average_price"] not in (None, 0)
         ):

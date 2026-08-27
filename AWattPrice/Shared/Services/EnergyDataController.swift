@@ -217,10 +217,12 @@ struct PriceStatisticsData: Decodable {
     struct Coverage: Decodable {
         let percent: Double
         let isComplete: Bool
+        let isUsable: Bool
 
         enum CodingKeys: String, CodingKey {
             case percent
             case isComplete = "is_complete"
+            case isUsable = "is_usable"
         }
     }
 

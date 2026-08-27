@@ -865,7 +865,7 @@ struct InsightsView: View {
                 pricingConfiguration: setting.pricingConfiguration
             )
             guard Task.isCancelled == false else { return }
-            priceHistoryIsAvailable = history.coverage.isComplete
+            priceHistoryIsAvailable = history.coverage.isUsable
         } catch is CancellationError {
             return
         } catch {

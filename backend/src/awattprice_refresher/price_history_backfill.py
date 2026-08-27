@@ -14,6 +14,7 @@ from loguru import logger
 from awattprice import configurator
 from awattprice import defaults
 from awattprice import price_database
+from awattprice import price_statistics
 from awattprice import prices
 from awattprice_refresher import prices as price_refresher
 
@@ -26,6 +27,87 @@ def monthly_periods(start: arrow.Arrow, end: arrow.Arrow) -> Iterable[tuple[arro
         period_end = min(next_month, end)
         yield cursor, period_end
         cursor = period_end
+
+
+def daily_periods(start: arrow.Arrow, end: arrow.Arrow) -> Iterable[tuple[arrow.Arrow, arrow.Arrow]]:
+    """Yield local-day chunks clipped to the requested range."""
+    cursor = start
+    while cursor < end:
+        period_end = min(cursor.shift(days=+1), end)
+        yield cursor, period_end
+        cursor = period_end
+
+
+async def stored_period_is_complete(
+    config,
+    area_key: str,
+    start: arrow.Arrow,
+    end: arrow.Arrow,
+) -> bool:
+    """Return whether SQLite continuously covers a period."""
+    return await asyncio.to_thread(
+        price_database.import_is_complete,
+        config,
+        area_key,
+        start.int_timestamp,
+        end.int_timestamp,
+    )
+
+
+async def stored_period_coverage(
+    config,
+    area_key: str,
+    start: arrow.Arrow,
+    end: arrow.Arrow,
+) -> tuple[list[dict], dict]:
+    """Load a stored period and evaluate the shared statistics coverage policy."""
+    stored_points = await asyncio.to_thread(
+        price_database.load_points,
+        config,
+        area_key,
+        start.int_timestamp,
+        end.int_timestamp,
+    )
+    return stored_points, price_statistics.coverage_for_period(stored_points, start, end)
+
+
+async def store_archive_data(config, area_key: str, start: arrow.Arrow, end: arrow.Arrow, data) -> None:
+    """Store downloaded archive data under a period-specific dataset key."""
+    await asyncio.to_thread(
+        price_database.store_dataset,
+        config,
+        area_key,
+        f"archive:{start.int_timestamp}:{end.int_timestamp}",
+        data,
+    )
+
+
+async def fill_missing_days(
+    area,
+    config,
+    start: arrow.Arrow,
+    end: arrow.Arrow,
+    force: bool = False,
+) -> list[str]:
+    """Download only local days that are not already complete in SQLite."""
+    failed_days = []
+    for day_start, day_end in daily_periods(start, end):
+        if not force and await stored_period_is_complete(config, area.key, day_start, day_end):
+            continue
+
+        try:
+            xml = await price_refresher.download_data(area, config, day_start, day_end)
+            if xml is None:
+                raise RuntimeError("ENTSO-E returned no price data.")
+            data = price_refresher.parse_downloaded_data(area, xml, now=end)
+            if not prices.has_complete_price_points(data, day_start, day_end):
+                raise RuntimeError("Downloaded intervals do not continuously cover the requested day.")
+            await store_archive_data(config, area.key, day_start, day_end, data)
+        except Exception as exc:
+            failed_days.append(f"{day_start.date()} ({exc})")
+        await asyncio.sleep(1)
+
+    return failed_days
 
 
 async def backfill_area(
@@ -42,14 +124,33 @@ async def backfill_area(
     for period_start, period_end in monthly_periods(start.to(area.timezone), end.to(area.timezone)):
         start_timestamp = period_start.int_timestamp
         end_timestamp = period_end.int_timestamp
-        if not force and await asyncio.to_thread(
-            price_database.import_is_complete,
-            config,
-            area.key,
-            start_timestamp,
-            end_timestamp,
-        ):
-            continue
+        if not force:
+            stored_points, coverage = await stored_period_coverage(
+                config,
+                area.key,
+                period_start,
+                period_end,
+            )
+            if coverage["is_usable"]:
+                desired_state = "complete" if coverage["is_complete"] else "usable"
+                current_state = await asyncio.to_thread(
+                    price_database.import_state,
+                    config,
+                    area.key,
+                    start_timestamp,
+                    end_timestamp,
+                )
+                if current_state != desired_state:
+                    await asyncio.to_thread(
+                        price_database.record_import,
+                        config,
+                        area.key,
+                        start_timestamp,
+                        end_timestamp,
+                        desired_state,
+                        len(stored_points),
+                    )
+                continue
 
         await asyncio.to_thread(
             price_database.record_import,
@@ -60,32 +161,80 @@ async def backfill_area(
             "running",
         )
         try:
-            xml = await price_refresher.download_data(area, config, period_start, period_end)
-            if xml is None:
-                raise RuntimeError("ENTSO-E returned no price data.")
-            data = price_refresher.parse_downloaded_data(area, xml, now=end)
-            if not prices.has_complete_price_points(data, period_start, period_end):
-                raise RuntimeError("Downloaded intervals do not continuously cover the requested period.")
-            await asyncio.to_thread(
-                price_database.store_dataset,
+            stored_points, _ = await stored_period_coverage(
                 config,
                 area.key,
-                f"archive:{start_timestamp}:{end_timestamp}",
-                data,
+                period_start,
+                period_end,
             )
+            monthly_data_is_complete = False
+            if force or not stored_points:
+                try:
+                    xml = await price_refresher.download_data(area, config, period_start, period_end)
+                    if xml is not None:
+                        data = price_refresher.parse_downloaded_data(area, xml, now=end)
+                        await store_archive_data(config, area.key, period_start, period_end, data)
+                        monthly_data_is_complete = prices.has_complete_price_points(
+                            data,
+                            period_start,
+                            period_end,
+                        )
+                except Exception as exc:
+                    logger.debug(
+                        f"Monthly {area.key} import {period_start.date()}–{period_end.date()} "
+                        f"was unusable; falling back to daily requests: {exc}."
+                    )
+
+            failed_days = []
+            if not monthly_data_is_complete and not await stored_period_is_complete(
+                config,
+                area.key,
+                period_start,
+                period_end,
+            ):
+                failed_days = await fill_missing_days(
+                    area,
+                    config,
+                    period_start,
+                    period_end,
+                    force=force,
+                )
+
+            stored_points, coverage = await stored_period_coverage(
+                config,
+                area.key,
+                period_start,
+                period_end,
+            )
+            if not coverage["is_usable"]:
+                detail = "; ".join(failed_days[:3])
+                if len(failed_days) > 3:
+                    detail += f"; and {len(failed_days) - 3} more"
+                raise RuntimeError(
+                    f"Daily fallback left {len(failed_days)} unavailable days"
+                    + (f": {detail}" if detail else ".")
+                )
+
             await asyncio.to_thread(
                 price_database.record_import,
                 config,
                 area.key,
                 start_timestamp,
                 end_timestamp,
-                "complete",
-                len(data.prices),
+                "complete" if coverage["is_complete"] else "usable",
+                len(stored_points),
             )
-            logger.info(
-                f"Imported {len(data.prices)} {area.key} prices for "
-                f"{period_start.date()}–{period_end.date()}."
-            )
+            if coverage["is_complete"]:
+                logger.info(
+                    f"Imported {len(stored_points)} {area.key} prices for "
+                    f"{period_start.date()}–{period_end.date()}."
+                )
+            else:
+                logger.info(
+                    f"Accepted {area.key} archive {period_start.date()}–{period_end.date()} "
+                    f"with {coverage['percent']:.1f}% coverage and a maximum gap of "
+                    f"{coverage['maximum_gap_seconds'] / 3600:.0f}h."
+                )
         except Exception as exc:
             failures += 1
             await asyncio.to_thread(

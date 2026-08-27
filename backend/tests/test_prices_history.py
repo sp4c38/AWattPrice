@@ -389,6 +389,141 @@ class PriceHistoryTests(unittest.TestCase):
 
         asyncio.run(run_test())
 
+    def test_incomplete_monthly_download_is_completed_with_daily_requests(self):
+        async def run_test():
+            with tempfile.TemporaryDirectory() as temp_dir:
+                config = make_config(Path(temp_dir))
+                period_start = arrow.get("2026-05-13", "YYYY-MM-DD", tzinfo=AREA.timezone)
+                period_end = period_start.shift(days=+2)
+                first_day = complete_hourly_price_data_for_day(date(2026, 5, 13))
+                second_day = complete_hourly_price_data_for_day(date(2026, 5, 14))
+
+                with (
+                    patch.object(
+                        price_refresher,
+                        "download_data",
+                        new=AsyncMock(side_effect=[b"monthly", b"daily"]),
+                    ) as download_data,
+                    patch.object(
+                        price_refresher,
+                        "parse_downloaded_data",
+                        side_effect=[first_day, second_day],
+                    ),
+                    patch.object(price_history_backfill.asyncio, "sleep", new=AsyncMock()),
+                ):
+                    failures = await price_history_backfill.backfill_area(
+                        AREA.key,
+                        period_start,
+                        period_end,
+                        config,
+                        force=False,
+                        prepare_current=False,
+                    )
+
+                self.assertEqual(failures, 0)
+                self.assertEqual(download_data.await_count, 2)
+                self.assertTrue(
+                    price_database.import_is_complete(
+                        config,
+                        AREA.key,
+                        period_start.int_timestamp,
+                        period_end.int_timestamp,
+                    )
+                )
+
+        asyncio.run(run_test())
+
+    def test_existing_partial_month_downloads_only_missing_days(self):
+        async def run_test():
+            with tempfile.TemporaryDirectory() as temp_dir:
+                config = make_config(Path(temp_dir))
+                period_start = arrow.get("2026-05-13", "YYYY-MM-DD", tzinfo=AREA.timezone)
+                period_end = period_start.shift(days=+2)
+                first_day = complete_hourly_price_data_for_day(date(2026, 5, 13))
+                second_day = complete_hourly_price_data_for_day(date(2026, 5, 14))
+                price_database.store_dataset(config, AREA.key, "archive:partial", first_day)
+
+                with (
+                    patch.object(
+                        price_refresher,
+                        "download_data",
+                        new=AsyncMock(return_value=b"daily"),
+                    ) as download_data,
+                    patch.object(price_refresher, "parse_downloaded_data", return_value=second_day),
+                    patch.object(price_history_backfill.asyncio, "sleep", new=AsyncMock()),
+                ):
+                    failures = await price_history_backfill.backfill_area(
+                        AREA.key,
+                        period_start,
+                        period_end,
+                        config,
+                        force=False,
+                        prepare_current=False,
+                    )
+
+                self.assertEqual(failures, 0)
+                download_data.assert_awaited_once_with(
+                    AREA,
+                    config,
+                    period_start.shift(days=+1),
+                    period_end,
+                )
+
+        asyncio.run(run_test())
+
+    def test_usable_archive_gap_is_not_retried(self):
+        async def run_test():
+            with tempfile.TemporaryDirectory() as temp_dir:
+                config = make_config(Path(temp_dir))
+                period_start = arrow.get("2026-02-01", "YYYY-MM-DD", tzinfo=AREA.timezone)
+                period_end = period_start.shift(months=+1)
+                data = complete_hourly_price_data_for_day(date(2026, 2, 1))
+                for day in range(2, 29):
+                    data.prices.extend(
+                        complete_hourly_price_data_for_day(date(2026, 2, day)).prices
+                    )
+                data.prices = [
+                    point
+                    for point in data.prices
+                    if point.start_timestamp.date() != date(2026, 2, 10)
+                ]
+                price_database.store_dataset(config, AREA.key, "archive:usable", data)
+                price_database.record_import(
+                    config,
+                    AREA.key,
+                    period_start.int_timestamp,
+                    period_end.int_timestamp,
+                    "failed",
+                )
+
+                with patch.object(
+                    price_refresher,
+                    "download_data",
+                    new=AsyncMock(),
+                ) as download_data:
+                    failures = await price_history_backfill.backfill_area(
+                        AREA.key,
+                        period_start,
+                        period_end,
+                        config,
+                        force=False,
+                        prepare_current=False,
+                    )
+
+                self.assertEqual(failures, 0)
+                download_data.assert_not_awaited()
+                self.assertEqual(
+                    price_database.import_state(
+                        config,
+                        AREA.key,
+                        period_start.int_timestamp,
+                        period_end.int_timestamp,
+                    ),
+                    "usable",
+                )
+
+        asyncio.run(run_test())
+
     def test_history_query_uses_market_area_day_with_dst(self):
         period_start, period_end = price_refresher.get_history_period(AREA, date(2026, 3, 29))
         query_params = price_refresher.get_entsoe_query_params(AREA, period_start, period_end)

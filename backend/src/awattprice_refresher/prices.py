@@ -66,7 +66,7 @@ def select_time_series(area: MarketArea, time_series_list: list[ET.Element]) -> 
 
     sequence_values = [time_series_sequence_position(time_series) for time_series in time_series_list]
     if all(sequence is None for sequence in sequence_values):
-        logger.debug(f"Using all unclassified ENTSO-E price series for {area.key}.")
+        logger.trace(f"Using all unclassified ENTSO-E price series for {area.key}.")
         return time_series_list
 
     preferred_sequence = str(area.preferred_price_sequence) if area.preferred_price_sequence is not None else None
@@ -93,7 +93,7 @@ def select_time_series(area: MarketArea, time_series_list: list[ET.Element]) -> 
         if sequence is not None
     ]
     if preferred_sequence in selected_sequence_values:
-        logger.debug(
+        logger.trace(
             f"Selected ENTSO-E sequence {preferred_sequence} for {area.key} "
             f"with fallback sequences {selected_sequence_values[1:]}."
         )
@@ -359,7 +359,13 @@ async def download_data(
     """Download price data from ENTSO-E."""
     query_params = get_entsoe_query_params(area, period_start_local, period_end_local)
     query_params["securityToken"] = config.entsoe.token_file.read_text().strip()
-    logger.info(f"Polling {area.key} price data from ENTSO-E.")
+    if period_start_local is None or period_end_local is None:
+        logger.info(f"Polling {area.key} price data from ENTSO-E.")
+    else:
+        logger.trace(
+            f"Polling {area.key} price data from ENTSO-E for "
+            f"{period_start_local.date()}–{period_end_local.date()}."
+        )
 
     async with httpx.AsyncClient() as client:
         try:

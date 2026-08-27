@@ -202,7 +202,7 @@ struct PriceHistoryView: View {
                     range: range.rawValue,
                     pricingConfiguration: setting.pricingConfiguration
                 )
-                return history.coverage.isComplete ? history : nil
+                return history.coverage.isUsable ? history : nil
             } catch is CancellationError {
                 return nil
             } catch {
@@ -700,7 +700,7 @@ private extension PriceStatisticsData {
             ),
             trend: trend,
             highlight: Highlight(kind: "weekday", timestamp: nil, value: 7, averagePrice: 19.80),
-            coverage: Coverage(percent: 100, isComplete: true)
+            coverage: Coverage(percent: 100, isComplete: true, isUsable: true)
         )
     }
 }

@@ -1,6 +1,7 @@
 import tempfile
 import unittest
 
+from datetime import date
 from decimal import Decimal
 from pathlib import Path
 
@@ -69,6 +70,14 @@ def price_data(period_start: arrow.Arrow, period_end: arrow.Arrow) -> Box:
     return data
 
 
+def remove_local_days(data: Box, days: set[date]) -> None:
+    data.prices = BoxList(
+        point
+        for point in data.prices
+        if point.start_timestamp.to(AREA.timezone).date() not in days
+    )
+
+
 class PriceStatisticsTests(unittest.TestCase):
     def test_statistics_are_duration_weighted_and_use_ordered_adjustments(self):
         with tempfile.TemporaryDirectory() as temporary_directory:
@@ -121,6 +130,88 @@ class PriceStatisticsTests(unittest.TestCase):
             )
 
             self.assertIsNone(result)
+
+    def test_statistics_accept_at_least_95_percent_with_a_one_day_gap(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            config = make_config(Path(temporary_directory))
+            start = arrow.get("2026-02-01", tzinfo=AREA.timezone)
+            end = arrow.get("2026-03-01", tzinfo=AREA.timezone)
+            data = price_data(start, end)
+            remove_local_days(data, {date(2026, 2, 10)})
+            price_database.store_dataset(config, AREA.key, "archive:usable", data)
+
+            result = price_statistics.calculate_statistics(
+                config,
+                AREA,
+                price_statistics.PriceStatisticsRequest(range="1mo"),
+                now=end,
+            )
+
+            self.assertIsNotNone(result)
+            self.assertFalse(result["coverage"]["is_complete"])
+            self.assertTrue(result["coverage"]["is_usable"])
+            self.assertAlmostEqual(result["coverage"]["percent"], 27 / 28 * 100)
+            self.assertEqual(result["coverage"]["maximum_gap_seconds"], 24 * 60 * 60)
+
+    def test_statistics_reject_less_than_95_percent(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            config = make_config(Path(temporary_directory))
+            start = arrow.get("2026-02-01", tzinfo=AREA.timezone)
+            end = arrow.get("2026-03-01", tzinfo=AREA.timezone)
+            data = price_data(start, end)
+            remove_local_days(data, {date(2026, 2, 10), date(2026, 2, 20)})
+            price_database.store_dataset(config, AREA.key, "archive:insufficient", data)
+
+            result = price_statistics.calculate_statistics(
+                config,
+                AREA,
+                price_statistics.PriceStatisticsRequest(range="1mo"),
+                now=end,
+            )
+
+            self.assertIsNone(result)
+
+    def test_statistics_reject_gap_longer_than_24_hours(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            config = make_config(Path(temporary_directory))
+            start = arrow.get("2026-02-01", tzinfo=AREA.timezone)
+            end = arrow.get("2026-03-01", tzinfo=AREA.timezone)
+            data = price_data(start, end)
+            remove_local_days(data, {date(2026, 2, 10), date(2026, 2, 11)})
+            price_database.store_dataset(config, AREA.key, "archive:long-gap", data)
+
+            result = price_statistics.calculate_statistics(
+                config,
+                AREA,
+                price_statistics.PriceStatisticsRequest(range="1mo"),
+                now=end,
+            )
+
+            self.assertIsNone(result)
+
+    def test_incomplete_calendar_month_is_excluded_from_cheapest_month(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            config = make_config(Path(temporary_directory))
+            start = arrow.get("2025-03-01", tzinfo=AREA.timezone)
+            end = arrow.get("2026-03-01", tzinfo=AREA.timezone)
+            data = price_data(start, end)
+            remove_local_days(data, {date(2026, 1, 10), date(2026, 1, 20)})
+            for point in data.prices:
+                local = point.start_timestamp.to(AREA.timezone)
+                if local.year == 2026 and local.month == 1:
+                    point.marketprice = prices.MarketPrice(Decimal("-1000"), AREA)
+            price_database.store_dataset(config, AREA.key, "archive:incomplete-month", data)
+
+            result = price_statistics.calculate_statistics(
+                config,
+                AREA,
+                price_statistics.PriceStatisticsRequest(range="1yr"),
+                now=end,
+            )
+
+            self.assertIsNotNone(result)
+            self.assertEqual(result["highlight"]["kind"], "month")
+            self.assertEqual(result["highlight"]["value"], 2)
 
     def test_incomplete_previous_period_only_omits_comparison(self):
         with tempfile.TemporaryDirectory() as temporary_directory:

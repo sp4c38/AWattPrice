@@ -232,6 +232,24 @@ def record_import(
         )
 
 
+def import_state(
+    config: Config,
+    area_key: str,
+    period_start: int,
+    period_end: int,
+) -> Optional[str]:
+    """Return the recorded state for one historical import period."""
+    with connect(config) as connection:
+        row = connection.execute(
+            """
+            SELECT state FROM price_history_imports
+            WHERE area_key = ? AND period_start = ? AND period_end = ?
+            """,
+            (area_key, period_start, period_end),
+        ).fetchone()
+    return row["state"] if row is not None else None
+
+
 def import_is_complete(config: Config, area_key: str, period_start: int, period_end: int) -> bool:
     """Return whether stored prices continuously cover one import range."""
     cursor = period_start

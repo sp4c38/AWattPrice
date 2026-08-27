@@ -124,6 +124,44 @@ class RefresherStatePersistenceTests(unittest.TestCase):
 
 
 class DataRefresherScheduleTests(unittest.TestCase):
+    def test_archive_maintenance_starts_before_first_refresh_cycle_finishes(self):
+        async def run_test():
+            with tempfile.TemporaryDirectory() as temp_dir:
+                config = make_config(Path(temp_dir))
+                config.cronitor = Box(environment="local")
+                archive_started = asyncio.Event()
+                cycle_started = asyncio.Event()
+                keep_running = asyncio.Event()
+
+                async def maintain_archive(_config):
+                    archive_started.set()
+                    await keep_running.wait()
+
+                async def run_cycle(_config, _state):
+                    cycle_started.set()
+                    await keep_running.wait()
+
+                with (
+                    patch(
+                        "awattprice_refresher.service.maintain_price_archive",
+                        side_effect=maintain_archive,
+                    ),
+                    patch(
+                        "awattprice_refresher.service.run_cycle",
+                        side_effect=run_cycle,
+                    ),
+                ):
+                    refresher = asyncio.create_task(data_refresher.run_forever(config))
+                    try:
+                        await asyncio.wait_for(archive_started.wait(), timeout=1)
+                        await asyncio.wait_for(cycle_started.wait(), timeout=1)
+                    finally:
+                        refresher.cancel()
+                        with self.assertRaises(asyncio.CancelledError):
+                            await refresher
+
+        asyncio.run(run_test())
+
     def test_history_refresh_is_due_after_berlin_day_changes(self):
         last_run = arrow.get("2026-05-25T23:55:00+02:00")
         current = arrow.get("2026-05-26T00:01:00+02:00")

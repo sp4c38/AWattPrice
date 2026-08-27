@@ -78,6 +78,22 @@ def weighted_average(values: list[tuple[Decimal, int]]) -> Optional[Decimal]:
     return sum(value * item_duration for value, item_duration in values) / Decimal(duration)
 
 
+def _has_complete_coverage(
+    rows: list[dict],
+    period_start: arrow.Arrow,
+    period_end: arrow.Arrow,
+) -> bool:
+    """Return whether stored intervals continuously cover the requested period."""
+    cursor = period_start.int_timestamp
+    for row in sorted(rows, key=lambda item: item["start_timestamp"]):
+        start_timestamp = row["start_timestamp"]
+        end_timestamp = row["end_timestamp"]
+        if start_timestamp != cursor or end_timestamp <= start_timestamp:
+            return False
+        cursor = end_timestamp
+    return cursor == period_end.int_timestamp
+
+
 def _trend_bucket_start(timestamp: int, period_start: arrow.Arrow, range_key: str, timezone: str) -> int:
     local = arrow.get(timestamp).to(timezone)
     if range_key == "1mo":
@@ -115,13 +131,14 @@ def _build_period_statistics(
     average = weighted_average([(value, duration) for _, value, duration in adjusted])
     available_seconds = sum(duration for _, _, duration in adjusted)
     expected_seconds = period_end.int_timestamp - period_start.int_timestamp
+    is_complete = _has_complete_coverage(rows, period_start, period_end)
     result = {
         "average_price": float(average) if average is not None else None,
         "coverage": {
             "available_seconds": available_seconds,
             "expected_seconds": expected_seconds,
             "percent": (available_seconds / expected_seconds * 100) if expected_seconds else 0,
-            "is_complete": available_seconds == expected_seconds,
+            "is_complete": is_complete,
         },
     }
     if not include_details or not adjusted or average is None:
@@ -186,10 +203,9 @@ def _comparison_periods(
     period_start: arrow.Arrow,
     period_end: arrow.Arrow,
     range_key: str,
-) -> tuple[arrow.Arrow, arrow.Arrow, arrow.Arrow, arrow.Arrow]:
+) -> Optional[tuple[arrow.Arrow, arrow.Arrow, arrow.Arrow, arrow.Arrow]]:
     if range_key == "2yr":
-        middle = period_end.shift(years=-1)
-        return middle, period_end, period_start, middle
+        return None
     previous_start = range_start(period_start, range_key)
     return period_start, period_end, previous_start, period_start
 
@@ -203,15 +219,16 @@ def calculate_statistics(
     """Calculate and cache one long-term statistics response."""
     period_end = (now or arrow.now(area.timezone)).to(area.timezone).floor("day")
     period_start = range_start(period_end, request.range)
-    comparison_start, comparison_end, previous_start, previous_end = _comparison_periods(
+    comparison_periods = _comparison_periods(
         period_start,
         period_end,
         request.range,
     )
+    history_start = comparison_periods[2] if comparison_periods is not None else period_start
     all_rows = price_database.load_points(
         config,
         area.key,
-        previous_start.int_timestamp,
+        history_start.int_timestamp,
         period_end.int_timestamp,
     )
     if not all_rows:
@@ -227,7 +244,7 @@ def calculate_statistics(
     ).hexdigest()
     cached = price_database.get_cached_statistics(config, cache_key, cutoff_timestamp)
     if cached is not None:
-        return cached
+        return cached if cached.get("coverage", {}).get("is_complete") else None
 
     selected_rows = [
         row
@@ -235,36 +252,44 @@ def calculate_statistics(
         if row["start_timestamp"] >= period_start.int_timestamp
         and row["end_timestamp"] <= period_end.int_timestamp
     ]
-    comparison_rows = [
-        row
-        for row in all_rows
-        if row["start_timestamp"] >= comparison_start.int_timestamp
-        and row["end_timestamp"] <= comparison_end.int_timestamp
-    ]
-    previous_rows = [
-        row
-        for row in all_rows
-        if row["start_timestamp"] >= previous_start.int_timestamp
-        and row["end_timestamp"] <= previous_end.int_timestamp
-    ]
     selected = _build_period_statistics(
         selected_rows, area, request, period_start, period_end, include_details=True
     )
-    if selected["average_price"] is None:
+    if selected["average_price"] is None or not selected["coverage"]["is_complete"]:
         return None
-    comparison = _build_period_statistics(
-        comparison_rows, area, request, comparison_start, comparison_end, include_details=False
-    )
-    previous = _build_period_statistics(
-        previous_rows, area, request, previous_start, previous_end, include_details=False
-    )
+
     change_percent = None
-    if comparison["average_price"] is not None and previous["average_price"] not in (None, 0):
-        change_percent = (
-            (comparison["average_price"] - previous["average_price"])
-            / abs(previous["average_price"])
-            * 100
+    if comparison_periods is not None:
+        comparison_start, comparison_end, previous_start, previous_end = comparison_periods
+        comparison_rows = [
+            row
+            for row in all_rows
+            if row["start_timestamp"] >= comparison_start.int_timestamp
+            and row["end_timestamp"] <= comparison_end.int_timestamp
+        ]
+        previous_rows = [
+            row
+            for row in all_rows
+            if row["start_timestamp"] >= previous_start.int_timestamp
+            and row["end_timestamp"] <= previous_end.int_timestamp
+        ]
+        comparison = _build_period_statistics(
+            comparison_rows, area, request, comparison_start, comparison_end, include_details=False
         )
+        previous = _build_period_statistics(
+            previous_rows, area, request, previous_start, previous_end, include_details=False
+        )
+        if (
+            comparison["coverage"]["is_complete"]
+            and previous["coverage"]["is_complete"]
+            and comparison["average_price"] is not None
+            and previous["average_price"] not in (None, 0)
+        ):
+            change_percent = (
+                (comparison["average_price"] - previous["average_price"])
+                / abs(previous["average_price"])
+                * 100
+            )
 
     response = {
         "area": area.key,

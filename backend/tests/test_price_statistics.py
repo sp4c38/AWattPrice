@@ -95,17 +95,55 @@ class PriceStatisticsTests(unittest.TestCase):
             self.assertTrue(result["coverage"]["is_complete"])
             self.assertEqual(len(result["trend"]), 28)
 
-    def test_two_year_comparison_uses_latest_year_against_preceding_year(self):
+    def test_two_year_range_omits_comparison(self):
         end = arrow.get("2026-03-01", tzinfo=AREA.timezone)
         period_start = price_statistics.range_start(end, "2yr")
-        comparison_start, comparison_end, previous_start, previous_end = (
-            price_statistics._comparison_periods(period_start, end, "2yr")
-        )
 
-        self.assertEqual(comparison_start, arrow.get("2025-03-01", tzinfo=AREA.timezone))
-        self.assertEqual(comparison_end, end)
-        self.assertEqual(previous_start, arrow.get("2024-03-01", tzinfo=AREA.timezone))
-        self.assertEqual(previous_end, comparison_start)
+        self.assertIsNone(price_statistics._comparison_periods(period_start, end, "2yr"))
+
+    def test_incomplete_selected_period_returns_no_statistics(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            config = make_config(Path(temporary_directory))
+            end = arrow.get("2026-03-01", tzinfo=AREA.timezone)
+            partial_start = arrow.get("2026-02-15", tzinfo=AREA.timezone)
+            price_database.store_dataset(
+                config,
+                AREA.key,
+                "archive:partial",
+                price_data(partial_start, end),
+            )
+
+            result = price_statistics.calculate_statistics(
+                config,
+                AREA,
+                price_statistics.PriceStatisticsRequest(range="1mo"),
+                now=end,
+            )
+
+            self.assertIsNone(result)
+
+    def test_incomplete_previous_period_only_omits_comparison(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            config = make_config(Path(temporary_directory))
+            start = arrow.get("2026-02-01", tzinfo=AREA.timezone)
+            end = arrow.get("2026-03-01", tzinfo=AREA.timezone)
+            price_database.store_dataset(
+                config,
+                AREA.key,
+                "archive:current",
+                price_data(start, end),
+            )
+
+            result = price_statistics.calculate_statistics(
+                config,
+                AREA,
+                price_statistics.PriceStatisticsRequest(range="1mo"),
+                now=end,
+            )
+
+            self.assertIsNotNone(result)
+            self.assertIsNone(result["comparison_change_percent"])
+            self.assertTrue(result["coverage"]["is_complete"])
 
     def test_sqlite_keeps_primary_interval_when_a_fallback_import_arrives_later(self):
         with tempfile.TemporaryDirectory() as temporary_directory:

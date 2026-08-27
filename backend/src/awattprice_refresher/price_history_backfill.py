@@ -128,24 +128,29 @@ async def backfill_areas(
     config,
     force: bool = False,
     prepare_current: bool = True,
+    concurrency: int = defaults.PRICE_ARCHIVE_CONCURRENCY,
 ) -> int:
     """Backfill a set of areas and return the combined failure count."""
     now = arrow.now("UTC")
-    failures = 0
-    for raw_area_key in area_keys:
+    semaphore = asyncio.Semaphore(concurrency)
+
+    async def backfill_one(raw_area_key: str) -> int:
         area_key = defaults.normalize_market_area_key(raw_area_key)
         area = defaults.get_market_area(area_key)
         end = now.to(area.timezone).floor("day")
         start = end.shift(years=-years)
-        failures += await backfill_area(
-            area_key,
-            start,
-            end,
-            config,
-            force,
-            prepare_current=prepare_current,
-        )
-    return failures
+        async with semaphore:
+            return await backfill_area(
+                area_key,
+                start,
+                end,
+                config,
+                force,
+                prepare_current=prepare_current,
+            )
+
+    failures = await asyncio.gather(*(backfill_one(area_key) for area_key in area_keys))
+    return sum(failures)
 
 
 def parse_args() -> argparse.Namespace:

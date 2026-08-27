@@ -238,16 +238,28 @@ def record_import(
 
 
 def import_is_complete(config: Config, area_key: str, period_start: int, period_end: int) -> bool:
-    """Return whether one historical import range completed successfully."""
+    """Return whether stored prices continuously cover one import range."""
+    cursor = period_start
     with connect(config) as connection:
-        row = connection.execute(
+        rows = connection.execute(
             """
-            SELECT state FROM price_history_imports
-            WHERE area_key = ? AND period_start = ? AND period_end = ?
+            SELECT start_timestamp, end_timestamp FROM price_points
+            WHERE area_key = ?
+              AND start_timestamp >= ?
+              AND start_timestamp < ?
+            ORDER BY start_timestamp
             """,
             (area_key, period_start, period_end),
-        ).fetchone()
-    return row is not None and row["state"] == "complete"
+        ).fetchall()
+
+    for row in rows:
+        start_timestamp = row["start_timestamp"]
+        end_timestamp = row["end_timestamp"]
+        if start_timestamp != cursor or end_timestamp <= start_timestamp:
+            return False
+        cursor = end_timestamp
+
+    return cursor == period_end
 
 
 def get_cached_statistics(config: Config, cache_key: str, cutoff_timestamp: int) -> Optional[dict[str, Any]]:

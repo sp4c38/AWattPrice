@@ -426,7 +426,7 @@ async def run_forever(config: Config):
     if not monitoring_enabled and getattr(config.cronitor, "environment", None) != "local":
         cronitor.require_configured(config, monitor_key, service_name="cache refresher")
     state = load_state(config)
-    archive_task = None
+    archive_task = asyncio.create_task(maintain_price_archive(config))
     while True:
         series = str(uuid.uuid4())
         started_at = time.monotonic()
@@ -470,8 +470,6 @@ async def run_forever(config: Config):
                 status_code=0,
                 monitor_key=monitor_key,
             )
-        if archive_task is None:
-            archive_task = asyncio.create_task(maintain_price_archive(config))
         await asyncio.sleep(60)
 
 

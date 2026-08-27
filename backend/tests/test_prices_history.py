@@ -17,6 +17,7 @@ from awattprice import api
 from awattprice import defaults
 from awattprice import price_database
 from awattprice import prices
+from awattprice_refresher import price_history_backfill
 from awattprice_refresher import prices as price_refresher
 
 
@@ -301,6 +302,83 @@ class PriceHistoryTests(unittest.TestCase):
 
                 self.assertIsNotNone(stored)
                 self.assertTrue(prices.has_complete_local_day(stored, AREA, history_date))
+
+        asyncio.run(run_test())
+
+    def test_complete_stored_period_skips_import_without_completion_marker(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            config = make_config(Path(temp_dir))
+            history_date = date(2026, 5, 13)
+            data = complete_hourly_price_data_for_day(history_date)
+            period_start = data.prices[0].start_timestamp.int_timestamp
+            period_end = data.prices[-1].end_timestamp.int_timestamp
+            price_database.store_dataset(config, AREA.key, "archive:test", data)
+
+            self.assertTrue(
+                price_database.import_is_complete(
+                    config,
+                    AREA.key,
+                    period_start,
+                    period_end,
+                )
+            )
+
+    def test_completion_marker_does_not_hide_missing_stored_interval(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            config = make_config(Path(temp_dir))
+            history_date = date(2026, 5, 13)
+            data = complete_hourly_price_data_for_day(history_date)
+            period_start = data.prices[0].start_timestamp.int_timestamp
+            period_end = data.prices[-1].end_timestamp.int_timestamp
+            data.prices.pop(12)
+            price_database.store_dataset(config, AREA.key, "archive:incomplete", data)
+            price_database.record_import(
+                config,
+                AREA.key,
+                period_start,
+                period_end,
+                "complete",
+                len(data.prices),
+            )
+
+            self.assertFalse(
+                price_database.import_is_complete(
+                    config,
+                    AREA.key,
+                    period_start,
+                    period_end,
+                )
+            )
+
+    def test_archive_backfills_multiple_areas_with_bounded_concurrency(self):
+        async def run_test():
+            active_count = 0
+            peak_count = 0
+            attempted_areas = []
+
+            async def backfill_area(area_key, *_args, **_kwargs):
+                nonlocal active_count, peak_count
+                active_count += 1
+                peak_count = max(peak_count, active_count)
+                attempted_areas.append(area_key)
+                await asyncio.sleep(0.01)
+                active_count -= 1
+                return 0
+
+            with patch.object(price_history_backfill, "backfill_area", side_effect=backfill_area):
+                failures = await price_history_backfill.backfill_areas(
+                    defaults.supported_market_area_keys,
+                    2,
+                    Box(),
+                    prepare_current=False,
+                    concurrency=3,
+                )
+
+            self.assertEqual(failures, 0)
+            self.assertEqual(peak_count, 3)
+            self.assertEqual(set(attempted_areas), set(defaults.supported_market_area_keys))
+            self.assertIn("FR", attempted_areas)
+            self.assertIn("PL", attempted_areas)
 
         asyncio.run(run_test())
 

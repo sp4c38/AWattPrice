@@ -35,9 +35,12 @@ Current prices and the long-term archive are stored in `/etc/awattprice/data/pri
 ## Automatic Price History Archive
 
 The regular data-refresher automatically populates the two-year SQLite archive for every
-supported area after its first normal refresh cycle. Completed monthly imports are skipped,
-so the process resumes safely after restarts and retries incomplete imports without manual
-setup.
+supported area after its first normal refresh cycle. Monthly imports are skipped only when
+the stored price intervals continuously cover the requested period. Missing intervals are
+downloaded automatically, including when an older completion marker exists, and already
+complete data is reused even when no matching marker exists. Several regions are populated
+in parallel with a bounded request count, so one slow region cannot block all remaining
+regions.
 
 No deployment or local setup command is required. The importer remains available only for
 manual maintenance or troubleshooting:

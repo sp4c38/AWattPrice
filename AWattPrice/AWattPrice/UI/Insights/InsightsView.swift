@@ -714,7 +714,6 @@ struct InsightsView: View {
      @EnvironmentObject private var settingsManager: SettingsManager
      @AppStorage("pendingDeepLinkDestination") private var pendingDeepLinkDestination = ""
      @State private var navigateToCheapestTime = false
-     @State private var priceHistoryIsAvailable = false
 
     private var prices: [EnergyPricePoint] {
         energyDataService.energyData?.currentPrices ?? []
@@ -757,16 +756,13 @@ struct InsightsView: View {
                         VStack(alignment: .leading, spacing: 14) {
                             generationMixSection
 
-                            if priceHistoryIsAvailable {
-                                NavigationLink {
-                                    PriceHistoryView()
-                                } label: {
-                                    PriceHistoryNavigationCard()
-                                }
-                                .buttonStyle(.plain)
-                                .accessibilityLabel(Text("Open Price History"))
-                                .transition(.opacity.combined(with: .scale(scale: 0.98, anchor: .top)))
+                            NavigationLink {
+                                PriceHistoryView()
+                            } label: {
+                                PriceHistoryNavigationCard()
                             }
+                            .buttonStyle(.plain)
+                            .accessibilityLabel(Text("Open Price History"))
                             
                             InsightsCard(tint: AppTheme.success) {
                                 HStack {
@@ -827,10 +823,6 @@ struct InsightsView: View {
                         .padding(.vertical, 12)
                         .animation(.easeInOut(duration: 0.2), value: generationMix != nil)
                         .animation(.easeInOut(duration: 0.2), value: generationMixStateAnimationValue)
-                        .animation(.easeInOut(duration: 0.2), value: priceHistoryIsAvailable)
-                    }
-                    .task(id: settingsManager.setting.marketAreaKey) {
-                        await updatePriceHistoryAvailability()
                     }
                 }
             }
@@ -852,26 +844,6 @@ struct InsightsView: View {
 
         pendingDeepLinkDestination = ""
         navigateToCheapestTime = true
-    }
-
-    private func updatePriceHistoryAvailability() async {
-        priceHistoryIsAvailable = false
-        let setting = settingsManager.setting
-
-        do {
-            let history = try await PriceStatisticsData.download(
-                marketArea: setting.marketArea,
-                range: "1mo",
-                pricingConfiguration: setting.pricingConfiguration
-            )
-            guard Task.isCancelled == false else { return }
-            priceHistoryIsAvailable = history.coverage.isUsable
-        } catch is CancellationError {
-            return
-        } catch {
-            guard Task.isCancelled == false else { return }
-            priceHistoryIsAvailable = false
-        }
     }
 
     private var generationMixStateAnimationValue: String {

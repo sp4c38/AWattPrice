@@ -128,7 +128,7 @@ async def get_stored_metadata(area_key: str, config: Config) -> Optional[Box]:
 async def store_metadata(metadata: Box, area_key: str, config: Config):
     """Store generation metadata."""
     file_path = get_metadata_path(area_key, config)
-    logger.info(f"Storing ENTSO-E {area_key} generation metadata to {file_path}.")
+    logger.trace(f"Storing ENTSO-E {area_key} generation metadata to {file_path}.")
     await utils.async_atomic_write_text(file_path, json.dumps(metadata, separators=(",", ":"), ensure_ascii=False))
 
 
@@ -229,14 +229,14 @@ def response_data_to_json_bytes(response_data: Box) -> bytes:
 async def store_history_response_json(response_json: bytes, area_key: str, hours: int, config: Config):
     """Store precomputed generation history response JSON."""
     file_path = get_history_response_data_path(area_key, hours, config)
-    logger.info(f"Storing ENTSO-E {area_key} generation history response data to {file_path}.")
+    logger.trace(f"Storing ENTSO-E {area_key} generation history response data to {file_path}.")
     await utils.async_atomic_write_bytes(file_path, response_json)
 
 
 async def store_published_history_response_json(response_json: bytes, area_key: str, hours: int, config: Config):
     """Store precomputed published generation history response JSON."""
     file_path = get_published_history_response_data_path(area_key, hours, config)
-    logger.info(f"Storing ENTSO-E {area_key} published generation history response data to {file_path}.")
+    logger.trace(f"Storing ENTSO-E {area_key} published generation history response data to {file_path}.")
     await utils.async_atomic_write_bytes(file_path, response_json)
 
 
@@ -277,6 +277,7 @@ async def store_response_data(
             config,
         )
     await store_metadata(metadata, area_key, config)
+    logger.info(f"Stored {area_key} generation mix caches ({hours}h).")
     return metadata
 
 

@@ -53,7 +53,7 @@ async def download_data(area: MarketArea, config: Config) -> Optional[bytes]:
     query_params = get_entsoe_query_params(area)
     query_params["securityToken"] = config.entsoe.token_file.read_text().strip()
 
-    logger.info(f"Polling {area.key} generation mix data from ENTSO-E.")
+    logger.trace(f"Polling {area.key} generation mix data from ENTSO-E.")
     try:
         async for attempt in AsyncRetrying(
             before=log_attempts(logger.debug, "download ENTSO-E generation mix data"),

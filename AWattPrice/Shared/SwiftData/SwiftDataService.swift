@@ -8,11 +8,13 @@ let currentPriceWidgetKind = "me.space8.AWattPrice.currentPrice"
 let pricesWidgetKind = "me.space8.AWattPrice.prices"
 let cheapestTimesWidgetKind = "me.space8.AWattPrice.cheapestTimes"
 let renewableMixWidgetKind = "me.space8.AWattPrice.renewableMix"
+let priceBarChartWidgetKind = "me.space8.AWattPrice.priceBarChart"
 let allWidgetKinds = [
     currentPriceWidgetKind,
     pricesWidgetKind,
     cheapestTimesWidgetKind,
     renewableMixWidgetKind,
+    priceBarChartWidgetKind,
 ]
 
 enum AWattPriceWidgetTimelines {

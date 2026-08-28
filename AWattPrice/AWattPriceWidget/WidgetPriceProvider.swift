@@ -45,6 +45,14 @@ struct WidgetPriceEntry: TimelineEntry {
             state: .lockedPro
         )
     }
+
+    static var negativePricePreview: WidgetPriceEntry {
+        WidgetPriceEntry(
+            date: Date(),
+            snapshot: WidgetPreviewData.negativePriceSnapshot(),
+            state: .fresh
+        )
+    }
 }
 
 struct WidgetPriceProvider: TimelineProvider {
@@ -184,6 +192,38 @@ enum WidgetPreviewData {
             marketAreaName: setting.marketArea.localizedDisplayName,
             points: points
         )
+    }
+
+    static func negativePriceSnapshot() -> WidgetPriceSnapshot {
+        let setting = Setting()
+        let now = Calendar.autoupdatingCurrent.startOfHour(for: Date())
+        var points: [WidgetPricePoint] = []
+
+        for index in 0..<24 {
+            let startTime = now.addingTimeInterval(TimeInterval(index * 60 * 60))
+            let endTime = now.addingTimeInterval(TimeInterval((index + 1) * 60 * 60))
+
+            let point = WidgetPricePoint(
+                startTime: startTime,
+                endTime: endTime,
+                marketprice: negativePreviewPrice(hoursFromNow: Double(index))
+            )
+            points.append(point)
+        }
+
+        return WidgetPriceSnapshot(
+            createdAt: Date(),
+            marketAreaName: setting.marketArea.localizedDisplayName,
+            points: points
+        )
+    }
+
+    private static func negativePreviewPrice(hoursFromNow: Double) -> Double {
+        let morningPeak = gaussian(center: 2, width: 2.2, x: hoursFromNow) * 12.0
+        let solarSurplusDip = gaussian(center: 12, width: 3.0, x: hoursFromNow) * 22.0
+        let eveningPeak = gaussian(center: 20, width: 2.6, x: hoursFromNow) * 14.0
+
+        return 8.0 + morningPeak + eveningPeak - solarSurplusDip
     }
 
     private static func fallbackPrice(hoursFromNow: Double) -> Double {

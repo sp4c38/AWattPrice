@@ -45,6 +45,8 @@
 		612286822A56E39700FA0F9C /* AWattPriceWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 61635B242A482E690099F5AD /* AWattPriceWidgetExtension.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		61635B2C2A482E690099F5AD /* AWattPriceWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61635B2B2A482E690099F5AD /* AWattPriceWidgetBundle.swift */; };
 		61635B2E2A482E690099F5AD /* PricesWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61635B2D2A482E690099F5AD /* PricesWidget.swift */; };
+		71ABFD4F2BF436586DEF3563 /* PriceBarChartWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B29FE29B7B6E42782C4E9BA /* PriceBarChartWidget.swift */; };
+		516DB2FCA66B0FF2091A381D /* PriceBarChartWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE1A4C83E014CA9773B711A /* PriceBarChartWidgetView.swift */; };
 		61635B302A482E6A0099F5AD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 61635B2F2A482E6A0099F5AD /* Assets.xcassets */; };
 		61635B4C2A4835E70099F5AD /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C06F1B5903714FE38928934 /* Extensions.swift */; };
 		61635B4D2A483B140099F5AD /* PricesPreviewContent.json in Resources */ = {isa = PBXBuildFile; fileRef = 61635B3D2A4833730099F5AD /* PricesPreviewContent.json */; };
@@ -169,6 +171,8 @@
 		61635B242A482E690099F5AD /* AWattPriceWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = AWattPriceWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		61635B2B2A482E690099F5AD /* AWattPriceWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AWattPriceWidgetBundle.swift; sourceTree = "<group>"; };
 		61635B2D2A482E690099F5AD /* PricesWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PricesWidget.swift; sourceTree = "<group>"; };
+		7B29FE29B7B6E42782C4E9BA /* PriceBarChartWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceBarChartWidget.swift; sourceTree = "<group>"; };
+		4EE1A4C83E014CA9773B711A /* PriceBarChartWidgetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceBarChartWidgetView.swift; sourceTree = "<group>"; };
 		61635B2F2A482E6A0099F5AD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		61635B3D2A4833730099F5AD /* PricesPreviewContent.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = PricesPreviewContent.json; sourceTree = "<group>"; };
 		6A5CE8C0A77D6361AD5B708C /* KeyboardObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardObserver.swift; sourceTree = "<group>"; };
@@ -313,6 +317,8 @@
 				61635B2B2A482E690099F5AD /* AWattPriceWidgetBundle.swift */,
 				5A1000062FBE000100000001 /* CurrentPriceWidget.swift */,
 				61635B2D2A482E690099F5AD /* PricesWidget.swift */,
+				7B29FE29B7B6E42782C4E9BA /* PriceBarChartWidget.swift */,
+				4EE1A4C83E014CA9773B711A /* PriceBarChartWidgetView.swift */,
 				5A1000072FBE000100000001 /* CheapestTimesWidget.swift */,
 				5A10000F2FC2000100000001 /* RenewableMixWidget.swift */,
 				5A1000082FBE000100000001 /* WidgetPriceProvider.swift */,
@@ -808,6 +814,8 @@
 				D6A2D1D02D8B75700013028D /* NotificationConfiguration.swift in Sources */,
 				5A1000022FBE000100000001 /* CheapestTimesWidget.swift in Sources */,
 				61635B2E2A482E690099F5AD /* PricesWidget.swift in Sources */,
+				71ABFD4F2BF436586DEF3563 /* PriceBarChartWidget.swift in Sources */,
+				516DB2FCA66B0FF2091A381D /* PriceBarChartWidgetView.swift in Sources */,
 				5A1000032FBE000100000001 /* WidgetPriceProvider.swift in Sources */,
 				5A10000D2FC2000100000001 /* WidgetGenerationMixProvider.swift in Sources */,
 				5A1000052FBE000100000001 /* WidgetPriceSnapshot.swift in Sources */,

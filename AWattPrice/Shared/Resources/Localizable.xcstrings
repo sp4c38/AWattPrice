@@ -2204,6 +2204,24 @@
         }
       }
     },
+    "In the 60-minute view, pressing an hourly price enlarges it instead of showing the four 15-minute prices." : {
+      "comment" : "String.localized()",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In der 60-Minuten-Ansicht wird ein Stundenpreis beim Drücken vergrößert, anstatt die vier 15-Minuten-Preise anzuzeigen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In the 60-minute view, pressing an hourly price enlarges it instead of showing the four 15-minute prices."
+          }
+        }
+      }
+    },
     "Include your provider’s fees and taxes in displayed prices." : {
       "comment" : "Localized custom view text",
       "extractionState" : "stale",
@@ -2272,24 +2290,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Keep prices visible at a glance outside the app."
-          }
-        }
-      }
-    },
-    "In the 60-minute view, pressing an hourly price enlarges it instead of showing the four 15-minute prices." : {
-      "comment" : "String.localized()",
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "In der 60-Minuten-Ansicht wird ein Stundenpreis beim Drücken vergrößert, anstatt die vier 15-Minuten-Preise anzuzeigen."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "In the 60-minute view, pressing an hourly price enlarges it instead of showing the four 15-minute prices."
           }
         }
       }
@@ -2856,6 +2856,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Next 12 hours"
+          }
+        }
+      }
+    },
+    "Next 24h" : {
+      "comment" : "SwiftUI literal",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nächste 24h"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Next 24h"
           }
         }
       }
@@ -3611,7 +3628,6 @@
     },
     "Price" : {
       "comment" : "Price history chart value label",
-      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3713,6 +3729,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Price alerts and daily summaries when new prices arrive."
+          }
+        }
+      }
+    },
+    "Price Bars" : {
+      "comment" : "Widget display name",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preisbalken"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Price Bars"
           }
         }
       }
@@ -4782,6 +4815,23 @@
         }
       }
     },
+    "Shows the next 24 hours of electricity prices as bars." : {
+      "comment" : "Widget description",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zeigt die Strompreise der nächsten 24 Stunden als Balken."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shows the next 24 hours of electricity prices as bars."
+          }
+        }
+      }
+    },
     "Shows upcoming electricity prices." : {
       "comment" : "Widget description",
       "localizations" : {
@@ -5050,7 +5100,6 @@
     },
     "Time" : {
       "comment" : "String(localized:)",
-      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

@@ -89,7 +89,7 @@ struct WidgetGenerationMixProvider: TimelineProvider {
     }
 
     private func downloadSnapshot(setting: Setting) async throws -> WidgetGenerationMixSnapshot {
-        let history = try await GenerationMixHistoryData.download(marketArea: setting.marketArea, range: .day)
+        let history = try await GenerationMixHistoryData.download(marketArea: setting.marketArea, range: .week)
         return WidgetGenerationMixSnapshot(generationMix: GenerationMixData(history: history), setting: setting)
     }
 

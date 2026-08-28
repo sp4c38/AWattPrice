@@ -244,25 +244,17 @@ struct PriceHistoryView: View {
             PriceHistoryRange.twoYears: remaining.2,
         ].compactMapValues { $0 }
 
-        withAnimation(.easeInOut(duration: 0.25)) {
-            loadState = histories.isEmpty ? .failed : .loaded(histories)
-            loadingRanges.removeAll()
-        }
+        loadState = histories.isEmpty ? .failed : .loaded(histories)
+        loadingRanges.removeAll()
     }
 
     private func chartTrend(
         from histories: [PriceHistoryRange: PriceStatisticsData],
         for selectedRange: PriceHistoryRange
     ) -> [PriceStatisticsData.TrendPoint] {
-        let rangesFromLongestToShortest: [PriceHistoryRange] = [
-            .twoYears,
-            .year,
-            .quarter,
-            .month,
-        ]
         guard let selectedTrend = histories[selectedRange]?.trend,
               let selectedStart = selectedTrend.first?.startTimestamp,
-              let fallbackTrend = rangesFromLongestToShortest
+              let fallbackTrend = PriceHistoryRange.allCases.reversed()
                 .compactMap({ histories[$0]?.trend })
                 .first(where: { $0.isEmpty == false }) else {
             return []
@@ -273,10 +265,15 @@ struct PriceHistoryView: View {
                 history.trend.map(\.startTimestamp)
             }
         )
+        guard let latestTimestamp = timestamps.max() else { return [] }
+        let selectedTrendForChart = trend(
+            selectedTrend,
+            endingAt: latestTimestamp
+        )
 
         return timestamps.sorted().compactMap { timestamp in
-            let sourceTrend = timestamp >= selectedStart ? selectedTrend : fallbackTrend
-            guard let averagePrice = interpolatedAverage(at: timestamp, in: sourceTrend) else {
+            let sourceTrend = timestamp >= selectedStart ? selectedTrendForChart : fallbackTrend
+            guard let averagePrice = smoothlyInterpolatedAverage(at: timestamp, in: sourceTrend) else {
                 return nil
             }
             return PriceStatisticsData.TrendPoint(
@@ -286,7 +283,25 @@ struct PriceHistoryView: View {
         }
     }
 
-    private func interpolatedAverage(
+    private func trend(
+        _ trend: [PriceStatisticsData.TrendPoint],
+        endingAt latestTimestamp: Date
+    ) -> [PriceStatisticsData.TrendPoint] {
+        guard trend.count > 1,
+              let last = trend.last,
+              last.startTimestamp < latestTimestamp else {
+            return trend
+        }
+
+        return Array(trend.dropLast()) + [
+            PriceStatisticsData.TrendPoint(
+                startTimestamp: latestTimestamp,
+                averagePrice: last.averagePrice
+            )
+        ]
+    }
+
+    private func smoothlyInterpolatedAverage(
         at timestamp: Date,
         in trend: [PriceStatisticsData.TrendPoint]
     ) -> Double? {
@@ -305,14 +320,35 @@ struct PriceHistoryView: View {
             }
         }
 
-        let lowerPoint = trend[lowerIndex]
-        let upperPoint = trend[upperIndex]
-        let interval = upperPoint.startTimestamp.timeIntervalSince(lowerPoint.startTimestamp)
-        guard interval > 0 else { return lowerPoint.averagePrice }
+        let lower = trend[lowerIndex]
+        let upper = trend[upperIndex]
+        let interval = upper.startTimestamp.timeIntervalSince(lower.startTimestamp)
+        guard interval > 0 else { return lower.averagePrice }
 
-        let progress = timestamp.timeIntervalSince(lowerPoint.startTimestamp) / interval
-        return lowerPoint.averagePrice
-            + (upperPoint.averagePrice - lowerPoint.averagePrice) * progress
+        let previous = lowerIndex > 0 ? trend[lowerIndex - 1] : lower
+        let next = upperIndex + 1 < trend.count ? trend[upperIndex + 1] : upper
+        let lowerSlopeInterval = upper.startTimestamp.timeIntervalSince(previous.startTimestamp)
+        let upperSlopeInterval = next.startTimestamp.timeIntervalSince(lower.startTimestamp)
+        let segmentSlope = (upper.averagePrice - lower.averagePrice) / interval
+        let lowerSlope = lowerSlopeInterval > 0
+            ? (upper.averagePrice - previous.averagePrice) / lowerSlopeInterval
+            : segmentSlope
+        let upperSlope = upperSlopeInterval > 0
+            ? (next.averagePrice - lower.averagePrice) / upperSlopeInterval
+            : segmentSlope
+
+        let progress = timestamp.timeIntervalSince(lower.startTimestamp) / interval
+        let progressSquared = progress * progress
+        let progressCubed = progressSquared * progress
+        let lowerWeight = 2 * progressCubed - 3 * progressSquared + 1
+        let lowerSlopeWeight = progressCubed - 2 * progressSquared + progress
+        let upperWeight = -2 * progressCubed + 3 * progressSquared
+        let upperSlopeWeight = progressCubed - progressSquared
+
+        return lowerWeight * lower.averagePrice
+            + lowerSlopeWeight * interval * lowerSlope
+            + upperWeight * upper.averagePrice
+            + upperSlopeWeight * interval * upperSlope
     }
 }
 
@@ -370,7 +406,6 @@ private struct PriceHistoryContent: View {
                     )
                 }
 
-                PriceHistoryDistributionCard(distribution: history.distribution)
                 PriceHistoryHighlightCard(sample: history)
 
             }
@@ -437,10 +472,39 @@ private struct PriceHistoryTrendCard: View {
     let sample: PriceStatisticsData
     let trend: [PriceStatisticsData.TrendPoint]
     let range: PriceHistoryRange
+    @State private var selectedTimestamp: Date?
+
+    private var visibleTrend: [PriceStatisticsData.TrendPoint] {
+        guard let first = sample.trend.first?.startTimestamp else { return trend }
+        return trend.filter { $0.startTimestamp >= first }
+    }
+
+    private func chartPosition(
+        for point: PriceStatisticsData.TrendPoint
+    ) -> (timestamp: Date, averagePrice: Double) {
+        guard let first = visibleTrend.first,
+              point.startTimestamp < first.startTimestamp else {
+            return (point.startTimestamp, point.averagePrice)
+        }
+        return (first.startTimestamp, first.averagePrice)
+    }
+
+    private var selectedPoint: PriceStatisticsData.TrendPoint? {
+        guard let selectedTimestamp else { return nil }
+        guard let selectedBucket = sample.trend.min(by: {
+            abs($0.startTimestamp.timeIntervalSince(selectedTimestamp))
+                < abs($1.startTimestamp.timeIntervalSince(selectedTimestamp))
+        }) else { return nil }
+        return trend.first { $0.startTimestamp == selectedBucket.startTimestamp } ?? selectedBucket
+    }
+
+    private func selectedDateText(for point: PriceStatisticsData.TrendPoint) -> String {
+        point.startTimestamp.formatted(date: .numeric, time: .omitted)
+    }
 
     private var chartTimeDomain: ClosedRange<Date> {
         guard let first = sample.trend.first?.startTimestamp,
-              let last = trend.last?.startTimestamp else {
+              let last = visibleTrend.last?.startTimestamp else {
             let now = Date()
             return now...now.addingTimeInterval(1)
         }
@@ -450,41 +514,129 @@ private struct PriceHistoryTrendCard: View {
     }
 
     private var chartDomain: ClosedRange<Double> {
-        let values = trend
-            .filter { chartTimeDomain.contains($0.startTimestamp) }
-            .map(\.averagePrice)
+        let values = visibleTrend.map(\.averagePrice)
         let lower = max(0, (values.min() ?? 0) - 5)
         let upper = max(lower + 1, (values.max() ?? 50) + 5)
         return lower...upper
     }
 
+    private var axisDates: [Date] {
+        let calendar = Calendar.autoupdatingCurrent
+        guard let first = sample.trend.first?.startTimestamp,
+              let last = visibleTrend.last?.startTimestamp else {
+            return []
+        }
+
+        if range == .month {
+            return (0..<4).compactMap { week in
+                calendar.date(byAdding: .day, value: week * 7, to: first)
+            }.filter { $0 <= last }
+        }
+
+        let lowerBound = range == .quarter ? first : chartTimeDomain.lowerBound
+        let upperBound = range == .quarter ? last : chartTimeDomain.upperBound
+        guard var month = calendar.dateInterval(of: .month, for: lowerBound)?.start else {
+            return []
+        }
+
+        var dates: [Date] = []
+        while month <= upperBound {
+            let isInsideRange = month >= lowerBound
+            let monthNumber = calendar.component(.month, from: month)
+            let matchesInterval = switch range {
+            case .quarter: true
+            case .year: (monthNumber - 1).isMultiple(of: 2)
+            case .twoYears: (monthNumber - 1).isMultiple(of: 4)
+            case .month: false
+            }
+            if isInsideRange && matchesInterval {
+                dates.append(month)
+            }
+            guard let nextMonth = calendar.date(byAdding: .month, value: 1, to: month) else {
+                break
+            }
+            month = nextMonth
+        }
+        return dates
+    }
+
+    private func axisLabel(for date: Date) -> String {
+        let calendar = Calendar.autoupdatingCurrent
+        switch range {
+        case .month:
+            return date.formatted(.dateTime.day().month(.abbreviated))
+        case .quarter:
+            return date.formatted(.dateTime.month(.wide))
+        case .year, .twoYears:
+            if calendar.component(.month, from: date) == 1 {
+                return String(calendar.component(.year, from: date))
+            }
+            return date.formatted(.dateTime.month(.abbreviated))
+        }
+    }
+
     var body: some View {
         InsightsCard(tint: AppTheme.accent) {
-            Label("Price trend", systemImage: "waveform.path.ecg")
-                .font(.headline)
-                .foregroundStyle(.primary)
+            HStack(spacing: 8) {
+                Label("Price trend", systemImage: "waveform.path.ecg")
+                    .font(.headline)
+                    .foregroundStyle(.primary)
+                    .lineLimit(1)
+                    .layoutPriority(1)
 
-            Chart(trend) { point in
-                AreaMark(
-                    x: .value("Date", point.startTimestamp),
-                    yStart: .value("Chart minimum", chartDomain.lowerBound),
-                    yEnd: .value("Price", point.averagePrice)
-                )
-                .foregroundStyle(
-                    LinearGradient(
-                        colors: [AppTheme.accent.opacity(0.28), AppTheme.accent.opacity(0.02)],
-                        startPoint: .top,
-                        endPoint: .bottom
+                Spacer(minLength: 8)
+
+                if let selectedPoint {
+                    Text("\(selectedDateText(for: selectedPoint)) · \(historyPriceText(selectedPoint.averagePrice))")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .monospacedDigit()
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.75)
+                        .contentTransition(.numericText())
+                        .transition(.opacity)
+                }
+            }
+            .animation(.easeOut(duration: 0.14), value: selectedPoint?.startTimestamp)
+
+            Chart {
+                ForEach(trend, id: \.startTimestamp) { point in
+                    let position = chartPosition(for: point)
+                    AreaMark(
+                        x: .value("Date", position.timestamp),
+                        yStart: .value("Chart minimum", chartDomain.lowerBound),
+                        yEnd: .value("Price", position.averagePrice)
                     )
-                )
+                    .interpolationMethod(.catmullRom)
+                    .foregroundStyle(
+                        LinearGradient(
+                            colors: [AppTheme.accent.opacity(0.28), AppTheme.accent.opacity(0.02)],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    )
 
-                LineMark(
-                    x: .value("Date", point.startTimestamp),
-                    y: .value("Price", point.averagePrice)
-                )
-                .foregroundStyle(AppTheme.accent)
-                .lineStyle(StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
-                .interpolationMethod(.catmullRom)
+                    LineMark(
+                        x: .value("Date", position.timestamp),
+                        y: .value("Price", position.averagePrice)
+                    )
+                    .foregroundStyle(AppTheme.accent)
+                    .lineStyle(StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
+                    .interpolationMethod(.catmullRom)
+                }
+
+                if let selectedPoint {
+                    RuleMark(x: .value("Selected date", selectedPoint.startTimestamp))
+                        .foregroundStyle(.secondary.opacity(0.5))
+                        .lineStyle(StrokeStyle(lineWidth: 1, dash: [4, 4]))
+
+                    PointMark(
+                        x: .value("Selected date", selectedPoint.startTimestamp),
+                        y: .value("Selected average", selectedPoint.averagePrice)
+                    )
+                    .foregroundStyle(AppTheme.accent)
+                    .symbolSize(54)
+                }
             }
             .chartXScale(domain: chartTimeDomain)
             .chartYScale(domain: chartDomain)
@@ -493,9 +645,13 @@ private struct PriceHistoryTrendCard: View {
                     .clipShape(Rectangle())
             }
             .chartXAxis {
-                AxisMarks(values: .automatic(desiredCount: 4)) { _ in
-                    AxisValueLabel()
-                        .font(.caption2)
+                AxisMarks(values: axisDates) { value in
+                    if let date = value.as(Date.self) {
+                        AxisValueLabel {
+                            Text(axisLabel(for: date))
+                                .font(.caption2)
+                        }
+                    }
                     AxisTick()
                         .foregroundStyle(.secondary.opacity(0.35))
                 }
@@ -506,15 +662,45 @@ private struct PriceHistoryTrendCard: View {
                         .foregroundStyle(.secondary.opacity(0.12))
                     AxisValueLabel {
                         if let price = value.as(Double.self) {
-                            Text(historyPriceText(price, includesUnit: false))
+                            Text(price.formatted(.number.precision(.fractionLength(0))))
                                 .font(.caption2)
                         }
                     }
                 }
             }
+            .chartOverlay { proxy in
+                GeometryReader { geometry in
+                    Rectangle()
+                        .fill(.clear)
+                        .contentShape(Rectangle())
+                        .gesture(
+                            DragGesture(minimumDistance: 0)
+                                .onChanged { value in
+                                    guard let plotFrameAnchor = proxy.plotFrame else { return }
+                                    let plotFrame = geometry[plotFrameAnchor]
+                                    let xPosition = min(
+                                        max(value.location.x - plotFrame.origin.x, 0),
+                                        plotFrame.width
+                                    )
+                                    withAnimation(.easeOut(duration: 0.16)) {
+                                        selectedTimestamp = proxy.value(atX: xPosition)
+                                    }
+                                }
+                                .onEnded { _ in
+                                    withAnimation(.easeOut(duration: 0.14)) {
+                                        selectedTimestamp = nil
+                                    }
+                                }
+                        )
+                }
+            }
             .animation(.easeInOut(duration: 0.55), value: range)
+            .animation(.easeOut(duration: 0.16), value: selectedPoint?.startTimestamp)
             .frame(height: 190)
             .accessibilityLabel(Text("Historic average price trend"))
+        }
+        .onChange(of: range) {
+            selectedTimestamp = nil
         }
     }
 }
@@ -553,87 +739,6 @@ private struct PriceHistoryMetricTile: View {
         .padding(14)
         .frame(maxWidth: .infinity, minHeight: 112, alignment: .leading)
         .appCardStyle(cornerRadius: 16, padding: 0)
-    }
-}
-
-private struct PriceHistoryDistributionCard: View {
-    let distribution: PriceStatisticsData.Distribution
-
-    var body: some View {
-        InsightsCard(tint: AppTheme.accent) {
-            Text("Price distribution")
-                .font(.headline)
-
-            GeometryReader { geometry in
-                let spacing: CGFloat = 3
-                let width = max(geometry.size.width - spacing * 2, 0)
-
-                HStack(spacing: spacing) {
-                    RoundedRectangle(cornerRadius: 4, style: .continuous)
-                        .fill(AppTheme.success)
-                        .frame(width: width * distribution.cheapPercent / 100)
-
-                    RoundedRectangle(cornerRadius: 4, style: .continuous)
-                        .fill(AppTheme.accent)
-                        .frame(width: width * distribution.typicalPercent / 100)
-
-                    RoundedRectangle(cornerRadius: 4, style: .continuous)
-                        .fill(AppTheme.error)
-                        .frame(width: width * distribution.expensivePercent / 100)
-                }
-            }
-            .frame(height: 18)
-
-            HStack(spacing: 0) {
-                PriceDistributionLabel(
-                    title: "Cheap",
-                    value: distribution.cheapPercent,
-                    priceRange: "< \(historyPriceText(distribution.cheapBelow))",
-                    tint: AppTheme.success
-                )
-                Spacer()
-                PriceDistributionLabel(
-                    title: "Typical",
-                    value: distribution.typicalPercent,
-                    priceRange: "\(historyPriceText(distribution.cheapBelow))–\(historyPriceText(distribution.expensiveAbove))",
-                    tint: AppTheme.accent
-                )
-                Spacer()
-                PriceDistributionLabel(
-                    title: "Expensive",
-                    value: distribution.expensivePercent,
-                    priceRange: "> \(historyPriceText(distribution.expensiveAbove))",
-                    tint: AppTheme.error
-                )
-            }
-        }
-    }
-}
-
-private struct PriceDistributionLabel: View {
-    let title: String
-    let value: Double
-    let priceRange: String
-    let tint: Color
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 2) {
-            HStack(spacing: 6) {
-                Circle()
-                    .fill(tint)
-                    .frame(width: 7, height: 7)
-
-                Text(title.localized())
-                    .font(.caption.weight(.semibold))
-            }
-
-            Text("\((value / 100).formatted(.percent.precision(.fractionLength(0)))) · \(priceRange)")
-                .font(.caption2)
-                .foregroundStyle(.secondary)
-                .monospacedDigit()
-                .lineLimit(1)
-                .minimumScaleFactor(0.8)
-        }
     }
 }
 

@@ -170,19 +170,92 @@ struct DataDownloadAndError: View {
     @Environment(\.networkManager) var networkManager
     @EnvironmentObject var energyDataService: EnergyDataService
 
+    @State private var displayedDownloadState = EnergyDataService.DownloadState.idle
+    @State private var startedShowingLoadingAt: Date?
+    @State private var finishLoadingTask: Task<Void, Never>?
+
+    private let minimumLoadingDisplayDuration: TimeInterval = 0.8
+
+    private var actualDownloadStateKey: Int {
+        downloadStateKey(for: energyDataService.downloadState)
+    }
+
+    private var displayedDownloadStateKey: Int {
+        downloadStateKey(for: displayedDownloadState)
+    }
+
     var body: some View {
-        VStack {
-            if case .downloading = energyDataService.downloadState  {
-                DataRetrievalLoadingView()
-            } else if case .failed = energyDataService.downloadState {
-                DataRetrievalError(networkManager: networkManager)
-            } else if let energyData = energyDataService.energyData, energyData.currentPrices.isEmpty == true {
-                CurrentDataUnavailable()
-            } else if energyDataService.energyData == nil {
-                DataRetrievalLoadingView()
+        ZStack {
+            Group {
+                if case .downloading = displayedDownloadState {
+                    DataRetrievalLoadingView()
+                } else if case .failed = displayedDownloadState {
+                    DataRetrievalError(networkManager: networkManager)
+                } else if let energyData = energyDataService.energyData, energyData.currentPrices.isEmpty {
+                    CurrentDataUnavailable()
+                } else if energyDataService.energyData == nil {
+                    DataRetrievalLoadingView()
+                }
             }
+            .id(displayedDownloadStateKey)
+            .transition(.opacity)
         }
         .padding()
+        .animation(.easeInOut(duration: 0.25), value: displayedDownloadStateKey)
+        .onAppear {
+            var transaction = Transaction()
+            transaction.disablesAnimations = true
+            withTransaction(transaction) {
+                applyDownloadState(energyDataService.downloadState)
+            }
+        }
+        .onChange(of: actualDownloadStateKey) { _, _ in
+            applyDownloadState(energyDataService.downloadState)
+        }
+        .onDisappear {
+            finishLoadingTask?.cancel()
+        }
+    }
+
+    private func downloadStateKey(for state: EnergyDataService.DownloadState) -> Int {
+        switch state {
+        case .idle:
+            return 0
+        case .downloading:
+            return 1
+        case .failed:
+            return 2
+        case .finished:
+            return 3
+        }
+    }
+
+    private func applyDownloadState(_ state: EnergyDataService.DownloadState) {
+        if case .downloading = state {
+            finishLoadingTask?.cancel()
+            startedShowingLoadingAt = Date()
+            displayedDownloadState = .downloading
+            return
+        }
+
+        guard case .downloading = displayedDownloadState else {
+            displayedDownloadState = state
+            return
+        }
+
+        let elapsed = Date().timeIntervalSince(startedShowingLoadingAt ?? Date())
+        let remaining = max(minimumLoadingDisplayDuration - elapsed, 0)
+
+        finishLoadingTask?.cancel()
+        finishLoadingTask = Task { @MainActor in
+            if remaining > 0 {
+                try? await Task.sleep(nanoseconds: UInt64(remaining * 1_000_000_000))
+            }
+
+            guard !Task.isCancelled else { return }
+            displayedDownloadState = state
+            startedShowingLoadingAt = nil
+        }
     }
 }
 

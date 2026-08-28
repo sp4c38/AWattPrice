@@ -3683,6 +3683,7 @@
     },
     "Price distribution" : {
       "comment" : "Price history distribution title",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

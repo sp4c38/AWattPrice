@@ -25,6 +25,7 @@ enum AppDeepLinkDestination: String {
             self = .prices
         case Self.insights.rawValue:
             self = .insights
+
         case Self.cheapestTime.rawValue:
             self = .cheapestTime
         case Self.pro.rawValue:

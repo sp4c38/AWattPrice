@@ -87,11 +87,13 @@ def select_time_series(area: MarketArea, time_series_list: list[ET.Element]) -> 
             return 90, 90
 
     selected_time_series = sorted(time_series_list, key=sequence_priority)
-    selected_sequence_values = [
-        sequence
-        for sequence in [time_series_sequence_position(time_series) for time_series in selected_time_series]
-        if sequence is not None
-    ]
+    selected_sequence_values = list(
+        dict.fromkeys(
+            sequence
+            for sequence in [time_series_sequence_position(time_series) for time_series in selected_time_series]
+            if sequence is not None
+        )
+    )
     if preferred_sequence in selected_sequence_values:
         logger.trace(
             f"Selected ENTSO-E sequence {preferred_sequence} for {area.key} "

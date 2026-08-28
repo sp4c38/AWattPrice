@@ -322,6 +322,7 @@ private struct OtherSettingsView: View {
             SettingsCard {
                 VStack(alignment: .leading, spacing: 5) {
                     Toggle("Enlarge hourly prices".localized(), isOn: $enlargeHourlyPricesOnInteraction)
+                        .tint(AppTheme.accent)
                         .font(.subheadline.weight(.medium))
 
                     Text("In the 60-minute view, pressing an hourly price enlarges it instead of showing the four 15-minute prices.".localized())

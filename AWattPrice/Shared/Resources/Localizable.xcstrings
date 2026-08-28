@@ -3945,20 +3945,20 @@
         }
       }
     },
-    "Prices up to date · Tap for history" : {
+    "Prices up to date · Tap for more" : {
       "comment" : "String.localized()",
       "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Daten aktuell · Tippen für Historie"
+            "value" : "Daten aktuell · Tippe für mehr"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Up to date · Tap for history"
+            "value" : "Up to date · Tap for more"
           }
         }
       }
@@ -4828,6 +4828,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sunday"
+          }
+        }
+      }
+    },
+    "Temporarily show without fees" : {
+      "comment" : "String.localized()",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Temporär ohne Gebühren anzeigen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Temporarily show without fees"
           }
         }
       }

@@ -842,6 +842,21 @@ struct EnergyPriceGraph: View {
             return 1
 
         case .sixtyMinutes:
+            guard
+                let selectedGroupIndex,
+                rows.contains(where: { $0.groupIndex == selectedGroupIndex && $0.isExpandedInterval })
+            else {
+                return 1
+            }
+
+            if row.groupIndex == selectedGroupIndex, row.isExpandedInterval {
+                return EnergyPriceGraphLayout.focusedHourlyRowWeight
+            }
+
+            if abs(row.groupIndex - selectedGroupIndex) == 1 {
+                return EnergyPriceGraphLayout.adjacentFocusedHourlyRowWeight
+            }
+
             return 1
         }
     }

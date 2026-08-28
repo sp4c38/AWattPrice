@@ -48,7 +48,13 @@ private struct PriceHistoryRequestKey: Hashable {
     let orderedAddOns: [PriceAddOnConfiguration]
 }
 
+private struct PriceIntervalKey: Hashable {
+    let startTime: Date
+    let endTime: Date
+}
+
 struct PricesView: View {
+    @Environment(\.scenePhase) private var scenePhase
     @EnvironmentObject private var energyDataService: EnergyDataService
     @EnvironmentObject private var settingsManager: SettingsManager
     @EnvironmentObject private var proSupporterStore: ProSupporterStore
@@ -64,22 +70,69 @@ struct PricesView: View {
     @State private var showsHistoryDatePicker = false
     @State private var datePickerHistoryDate = PriceHistoryDateOptions.defaultDate
     @State private var showsDisplayIntervalInfo = false
+    @State private var temporarilyShowsPricesWithoutFees = false
 
     private var pricingConfiguration: PricingConfiguration {
         settingsManager.setting.pricingConfiguration
     }
 
+    private var hasConfiguredFees: Bool {
+        settingsManager.setting.baseFeePrice != 0
+            || settingsManager.setting.percentagePriceAddOn != 0
+            || settingsManager.setting.monthlyFixedCost != 0
+    }
+
+    private var pricingConfigurationWithoutFees: PricingConfiguration {
+        PricingConfiguration(
+            fixedPriceAddOn: 0,
+            percentagePriceAddOn: 0,
+            taxEnabled: pricingConfiguration.taxEnabled,
+            orderedAddOns: pricingConfiguration.orderedAddOns.filter { $0.kind == .tax },
+            marketArea: pricingConfiguration.marketArea
+        )
+    }
+
     private var visiblePrices: [EnergyPricePoint] {
+        let energyData: EnergyData?
+
         switch dataMode {
         case .current:
-            return energyDataService.energyData?.currentPrices ?? []
+            energyData = energyDataService.energyData
         case .history:
             if historyData == nil, isDownloadingHistory {
-                return energyDataService.energyData?.currentPrices ?? []
+                energyData = energyDataService.energyData
+            } else {
+                energyData = historyData
             }
-
-            return historyData?.currentPrices ?? []
         }
+
+        guard let energyData else { return [] }
+        guard temporarilyShowsPricesWithoutFees else {
+            return energyData.currentPrices
+        }
+
+        return pricesWithoutFees(from: energyData)
+    }
+
+    private func pricesWithoutFees(from energyData: EnergyData) -> [EnergyPricePoint] {
+        var rawPricesByInterval: [PriceIntervalKey: EnergyPricePoint] = [:]
+
+        for pricePoint in energyData.prices {
+            rawPricesByInterval[
+                PriceIntervalKey(startTime: pricePoint.startTime, endTime: pricePoint.endTime)
+            ] = pricePoint
+        }
+
+        let rawVisiblePrices = energyData.currentPrices.compactMap { pricePoint in
+            rawPricesByInterval[
+                PriceIntervalKey(startTime: pricePoint.startTime, endTime: pricePoint.endTime)
+            ]
+        }
+
+        return EnergyData.adjustedPrices(
+            rawVisiblePrices,
+            with: pricingConfigurationWithoutFees
+        )
     }
 
     private var todayEnergyData: EnergyData? {
@@ -167,6 +220,17 @@ struct PricesView: View {
         .onChange(of: proSupporterStore.hasPro) { _, hasPro in
             guard hasPro == false, dataMode == .history else { return }
             resetToCurrentPrices()
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            guard newPhase != .active else { return }
+            temporarilyShowsPricesWithoutFees = false
+        }
+        .onChange(of: hasConfiguredFees) { _, hasFees in
+            guard hasFees == false else { return }
+            temporarilyShowsPricesWithoutFees = false
+        }
+        .onDisappear {
+            temporarilyShowsPricesWithoutFees = false
         }
     }
 
@@ -299,6 +363,14 @@ struct PricesView: View {
             } label: {
                 Label("Custom date".localized(), systemImage: proSupporterStore.hasPro ? "calendar.badge.clock" : "lock")
             }
+
+            if hasConfiguredFees {
+                Divider()
+
+                Toggle(isOn: $temporarilyShowsPricesWithoutFees) {
+                    Label("Temporarily show without fees".localized(), systemImage: "tag.slash")
+                }
+            }
         } label: {
             dataSelectionLabel
                 .padding(.vertical, 8)
@@ -318,8 +390,7 @@ struct PricesView: View {
     ) -> some View {
         Menu {
             Button {
-                isDownloadingHistory = false
-                dataMode = .current
+                resetToCurrentPrices()
             } label: {
                 Label("Upcoming (default)".localized(), systemImage: "bolt")
             }
@@ -376,7 +447,7 @@ struct PricesView: View {
             UpdatedDataView(
                 fillsAvailableWidth: false,
                 refreshEnabled: false,
-                statusOverride: "Prices up to date · Tap for history".localized()
+                statusOverride: "Prices up to date · Tap for more".localized()
             )
             .layoutPriority(-1)
         case .history:
@@ -554,6 +625,8 @@ struct PricesView: View {
             return
         }
 
+        temporarilyShowsPricesWithoutFees = false
+
         if dataMode == .current {
             historyData = nil
         }
@@ -570,6 +643,7 @@ struct PricesView: View {
             return
         }
 
+        temporarilyShowsPricesWithoutFees = false
         selectedHistoryDate = PriceHistoryDateOptions.today(for: pricingConfiguration.marketArea)
         let todayData = todayEnergyData
         historyData = todayData
@@ -589,6 +663,7 @@ struct PricesView: View {
     }
 
     private func resetToCurrentPrices() {
+        temporarilyShowsPricesWithoutFees = false
         isDownloadingHistory = false
         historyDownloadFailed = false
         historyData = nil

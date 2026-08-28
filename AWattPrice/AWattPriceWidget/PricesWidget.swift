@@ -8,8 +8,8 @@ struct PricesWidget: Widget {
         StaticConfiguration(kind: kind, provider: WidgetPriceProvider()) { entry in
             ForecastWidgetView(entry: entry)
         }
-        .configurationDisplayName("Price Forecast")
-        .description("Shows upcoming electricity prices.")
+        .configurationDisplayName("Price Line")
+        .description("Shows all upcoming electricity prices.")
         .supportedFamilies([.systemMedium])
         .contentMarginsDisabled()
     }

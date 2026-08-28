@@ -3739,7 +3739,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Preisbalken"
+            "value" : "Preise als Balken"
           }
         },
         "en" : {
@@ -3804,19 +3804,19 @@
         }
       }
     },
-    "Price Forecast" : {
+    "Price Line" : {
       "comment" : "Widget display name",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Preisprognose"
+            "value" : "Preise als Linie"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Price Forecast"
+            "value" : "Price Line"
           }
         }
       }
@@ -4815,36 +4815,36 @@
         }
       }
     },
-    "Shows the next 24 hours of electricity prices as bars." : {
+    "Shows electricity prices for the next 24h." : {
       "comment" : "Widget description",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zeigt die Strompreise der nächsten 24 Stunden als Balken."
+            "value" : "Zeigt Strompreise der nächsten 24h."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Shows the next 24 hours of electricity prices as bars."
+            "value" : "Shows electricity prices for the next 24h."
           }
         }
       }
     },
-    "Shows upcoming electricity prices." : {
+    "Shows all upcoming electricity prices." : {
       "comment" : "Widget description",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zeigt kommende Strompreise."
+            "value" : "Zeigt alle kommenden Strompreise."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Shows upcoming electricity prices."
+            "value" : "Shows all upcoming electricity prices."
           }
         }
       }

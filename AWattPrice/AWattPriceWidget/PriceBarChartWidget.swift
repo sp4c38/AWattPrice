@@ -9,7 +9,7 @@ struct PriceBarChartWidget: Widget {
             PriceBarChartWidgetView(entry: entry)
         }
         .configurationDisplayName("Price Bars")
-        .description("Shows the next 24 hours of electricity prices as bars.")
+        .description("Shows electricity prices for the next 24h.")
         .supportedFamilies([.systemMedium])
         .contentMarginsDisabled()
     }

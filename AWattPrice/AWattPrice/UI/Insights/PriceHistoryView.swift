@@ -206,12 +206,12 @@ struct PriceHistoryView: View {
             )
             guard Task.isCancelled == false else { return }
 
-            let histories = Dictionary(uniqueKeysWithValues: response.compactMap { key, history in
-                guard let range = PriceHistoryRange(rawValue: key), history.coverage.isUsable else {
-                    return nil
+            let histories: [PriceHistoryRange: PriceStatisticsData] = response.reduce(into: [:]) { result, entry in
+                guard let range = PriceHistoryRange(rawValue: entry.key), entry.value.coverage.isUsable else {
+                    return
                 }
-                return (range, history)
-            })
+                result[range] = entry.value
+            }
             loadState = histories.isEmpty ? .failed : .loaded(histories)
         } catch is CancellationError {
             return

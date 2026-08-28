@@ -115,7 +115,10 @@ async def refresh_generation_mix(
             try:
                 new_data = generation_mix.parse_downloaded_data(area, downloaded_data)
             except ValueError as exc:
-                logger.warning(f"Skipping generation mix update for {area.key}: {exc}.")
+                if "No matching data found" in str(exc):
+                    logger.warning(f"No ENTSO-E generation mix data available for {area.key}.")
+                else:
+                    logger.warning(f"Skipping generation mix update for {area.key}: {exc}.")
                 return None
             response_data = generation_mix.parse_to_history_response_data(
                 new_data,

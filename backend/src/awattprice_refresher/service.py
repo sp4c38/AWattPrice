@@ -186,7 +186,7 @@ async def refresh_generation_mix_for_area(area: MarketArea, config: Config):
         )
         return
 
-    latest_metadata = refreshed_metadata or await generation_mix.get_stored_metadata(area.key, config)
+    latest_metadata = refreshed_metadata or stored_metadata
     if latest_metadata is None:
         cache_status.record_failure(
             config,

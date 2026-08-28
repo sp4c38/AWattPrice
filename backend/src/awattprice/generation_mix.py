@@ -115,8 +115,7 @@ async def get_stored_metadata(area_key: str, config: Config) -> Optional[Box]:
     try:
         async with async_open(file_path, "r") as file:
             metadata_json = await file.read()
-    except FileNotFoundError as exc:
-        logger.debug(f"No stored generation metadata found: {exc}.")
+    except FileNotFoundError:
         return None
 
     if len(metadata_json) == 0:

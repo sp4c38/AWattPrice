@@ -98,6 +98,7 @@ struct PriceHistoryView: View {
     @EnvironmentObject private var settingsManager: SettingsManager
     @State private var selectedRange: PriceHistoryRange = .month
     @State private var loadState: PriceHistoryLoadState
+    @State private var loadingRanges: Set<PriceHistoryRange> = []
     private let previewData: PriceStatisticsData?
 
     init(previewData: PriceStatisticsData? = nil) {
@@ -137,14 +138,7 @@ struct PriceHistoryView: View {
             Group {
                 switch loadState {
                 case .loading:
-                    VStack(spacing: 12) {
-                        ProgressView()
-                            .tint(AppTheme.accent)
-                        Text("Loading price history")
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(.secondary)
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    loadingView
                 case .loaded(let histories):
                     if let history = histories[selectedRange] {
                         PriceHistoryContent(
@@ -153,6 +147,8 @@ struct PriceHistoryView: View {
                             range: selectedRange
                         )
                             .transition(.opacity)
+                    } else if loadingRanges.contains(selectedRange) {
+                        loadingView
                     } else {
                         unavailableView
                     }
@@ -168,6 +164,17 @@ struct PriceHistoryView: View {
             await loadHistories()
         }
         .animation(.easeInOut(duration: 0.4), value: selectedRange)
+    }
+
+    private var loadingView: some View {
+        VStack(spacing: 12) {
+            ProgressView()
+                .tint(AppTheme.accent)
+            Text("Loading price history")
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     private var unavailableView: some View {
@@ -193,6 +200,7 @@ struct PriceHistoryView: View {
             return
         }
         loadState = .loading
+        loadingRanges = Set(PriceHistoryRange.allCases)
         let setting = settingsManager.setting
 
         func download(_ range: PriceHistoryRange) async -> PriceStatisticsData? {
@@ -215,18 +223,30 @@ struct PriceHistoryView: View {
         async let quarter = download(.quarter)
         async let year = download(.year)
         async let twoYears = download(.twoYears)
-        let loaded = await (month, quarter, year, twoYears)
+
+        let loadedMonth = await month
+        guard Task.isCancelled == false else { return }
+        loadingRanges.remove(.month)
+
+        if let loadedMonth {
+            withAnimation(.easeInOut(duration: 0.25)) {
+                loadState = .loaded([.month: loadedMonth])
+            }
+        }
+
+        let remaining = await (quarter, year, twoYears)
         guard Task.isCancelled == false else { return }
 
         let histories = [
-            PriceHistoryRange.month: loaded.0,
-            PriceHistoryRange.quarter: loaded.1,
-            PriceHistoryRange.year: loaded.2,
-            PriceHistoryRange.twoYears: loaded.3,
+            PriceHistoryRange.month: loadedMonth,
+            PriceHistoryRange.quarter: remaining.0,
+            PriceHistoryRange.year: remaining.1,
+            PriceHistoryRange.twoYears: remaining.2,
         ].compactMapValues { $0 }
 
         withAnimation(.easeInOut(duration: 0.25)) {
             loadState = histories.isEmpty ? .failed : .loaded(histories)
+            loadingRanges.removeAll()
         }
     }
 

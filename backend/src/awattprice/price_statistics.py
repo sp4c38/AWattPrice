@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 
 from collections import defaultdict
+from datetime import datetime
 from decimal import Decimal
 from typing import Literal, Optional
 
@@ -20,6 +21,7 @@ from awattprice.market_areas import MarketArea
 
 MINIMUM_COVERAGE_PERCENT = 95
 MAXIMUM_CONTINUOUS_GAP_SECONDS = 24 * 60 * 60
+RANGE_KEYS = ("1mo", "3mo", "1yr", "2yr")
 
 
 class PriceAddOnRequest(BaseModel):
@@ -32,7 +34,6 @@ class PriceAddOnRequest(BaseModel):
 class PriceStatisticsRequest(BaseModel):
     """Configuration used to reproduce the price displayed by the app."""
 
-    range: Literal["1mo", "3mo", "1yr", "2yr"]
     add_ons: list[PriceAddOnRequest] = Field(default_factory=list)
     cheap_below: Decimal = Decimal("20")
     expensive_above: Decimal = Decimal("35")
@@ -86,13 +87,15 @@ def coverage_for_period(
     period_end: arrow.Arrow,
 ) -> dict:
     """Measure unique interval coverage and the largest continuous gap."""
-    expected_seconds = period_end.int_timestamp - period_start.int_timestamp
+    period_start_timestamp = period_start.int_timestamp
+    period_end_timestamp = period_end.int_timestamp
+    expected_seconds = period_end_timestamp - period_start_timestamp
     available_seconds = 0
     maximum_gap_seconds = 0
-    cursor = period_start.int_timestamp
-    for row in sorted(rows, key=lambda item: item["start_timestamp"]):
-        start_timestamp = max(row["start_timestamp"], period_start.int_timestamp)
-        end_timestamp = min(row["end_timestamp"], period_end.int_timestamp)
+    cursor = period_start_timestamp
+    for row in rows:
+        start_timestamp = max(row["start_timestamp"], period_start_timestamp)
+        end_timestamp = min(row["end_timestamp"], period_end_timestamp)
         if end_timestamp <= start_timestamp or end_timestamp <= cursor:
             continue
         if start_timestamp > cursor:
@@ -101,8 +104,8 @@ def coverage_for_period(
         available_seconds += end_timestamp - covered_start
         cursor = end_timestamp
 
-    if cursor < period_end.int_timestamp:
-        maximum_gap_seconds = max(maximum_gap_seconds, period_end.int_timestamp - cursor)
+    if cursor < period_end_timestamp:
+        maximum_gap_seconds = max(maximum_gap_seconds, period_end_timestamp - cursor)
 
     percent = available_seconds / expected_seconds * 100 if expected_seconds > 0 else 0
     is_complete = available_seconds == expected_seconds and maximum_gap_seconds == 0
@@ -120,11 +123,15 @@ def coverage_for_period(
 
 
 def _eligible_calendar_months(
-    rows: list[dict],
+    adjusted_rows: list[tuple[dict, Decimal, int, datetime]],
     period_start: arrow.Arrow,
     period_end: arrow.Arrow,
 ) -> set[tuple[int, int]]:
     """Return complete-range calendar months with enough usable source data."""
+    rows_by_month = defaultdict(list)
+    for row, _, _, local_start in adjusted_rows:
+        rows_by_month[(local_start.year, local_start.month)].append(row)
+
     eligible = set()
     month_start = period_start.floor("month")
     if month_start < period_start:
@@ -133,53 +140,52 @@ def _eligible_calendar_months(
         month_end = month_start.shift(months=+1)
         if month_end > period_end:
             break
-        month_rows = [
-            row
-            for row in rows
-            if row["start_timestamp"] >= month_start.int_timestamp
-            and row["end_timestamp"] <= month_end.int_timestamp
-        ]
+        month_rows = rows_by_month[(month_start.year, month_start.month)]
         if coverage_for_period(month_rows, month_start, month_end)["is_usable"]:
             eligible.add((month_start.year, month_start.month))
         month_start = month_end
     return eligible
 
 
-def _trend_bucket_start(timestamp: int, period_start: arrow.Arrow, range_key: str, timezone: str) -> int:
-    local = arrow.get(timestamp).to(timezone)
+def _day_timestamp(local: datetime) -> int:
+    return int(local.replace(hour=0, minute=0, second=0, microsecond=0).timestamp())
+
+
+def _trend_bucket_start(
+    local: datetime,
+    period_start: arrow.Arrow,
+    range_key: str,
+    weekly_buckets: dict[int, int],
+) -> int:
     if range_key == "1mo":
-        return local.floor("day").int_timestamp
+        return _day_timestamp(local)
     if range_key == "3mo":
         elapsed_days = (local.date() - period_start.date()).days
-        return period_start.shift(days=(elapsed_days // 7) * 7).int_timestamp
-    return local.floor("month").int_timestamp
+        week = elapsed_days // 7
+        if week not in weekly_buckets:
+            weekly_buckets[week] = period_start.shift(days=week * 7).int_timestamp
+        return weekly_buckets[week]
+    return int(local.replace(day=1, hour=0, minute=0, second=0, microsecond=0).timestamp())
 
 
-def _highlight_key(timestamp: int, range_key: str, timezone: str):
-    local = arrow.get(timestamp).to(timezone)
+def _highlight_key(local: datetime, range_key: str):
     if range_key == "1mo":
-        return local.floor("day").int_timestamp
+        return _day_timestamp(local)
     if range_key == "3mo":
         return local.isoweekday()
     return local.month
 
 
 def _build_period_statistics(
-    rows: list[dict],
-    area: MarketArea,
+    adjusted: list[tuple[dict, Decimal, int, datetime]],
     request: PriceStatisticsRequest,
+    range_key: str,
     period_start: arrow.Arrow,
     period_end: arrow.Arrow,
     include_details: bool,
 ) -> dict:
-    adjusted = []
-    for row in rows:
-        duration = row["end_timestamp"] - row["start_timestamp"]
-        if duration <= 0:
-            continue
-        adjusted.append((row, adjusted_price(row["marketprice"], area, request.add_ons), duration))
-
-    average = weighted_average([(value, duration) for _, value, duration in adjusted])
+    rows = [row for row, _, _, _ in adjusted]
+    average = weighted_average([(value, duration) for _, value, duration, _ in adjusted])
     coverage = coverage_for_period(rows, period_start, period_end)
     available_seconds = coverage["available_seconds"]
     result = {
@@ -191,29 +197,27 @@ def _build_period_statistics(
 
     lowest = min(adjusted, key=lambda item: item[1])
     highest = max(adjusted, key=lambda item: item[1])
-    negative_seconds = sum(duration for _, value, duration in adjusted if value < 0)
-    below_average_seconds = sum(duration for _, value, duration in adjusted if value < average)
+    negative_seconds = sum(duration for _, value, duration, _ in adjusted if value < 0)
+    below_average_seconds = sum(duration for _, value, duration, _ in adjusted if value < average)
 
-    cheap_seconds = sum(duration for _, value, duration in adjusted if value < request.cheap_below)
-    expensive_seconds = sum(duration for _, value, duration in adjusted if value > request.expensive_above)
+    cheap_seconds = sum(duration for _, value, duration, _ in adjusted if value < request.cheap_below)
+    expensive_seconds = sum(duration for _, value, duration, _ in adjusted if value > request.expensive_above)
     typical_seconds = available_seconds - cheap_seconds - expensive_seconds
 
     trend_values = defaultdict(list)
     highlight_values = defaultdict(list)
+    weekly_buckets = {}
     eligible_months = (
-        _eligible_calendar_months(rows, period_start, period_end)
-        if request.range in ("1yr", "2yr")
+        _eligible_calendar_months(adjusted, period_start, period_end)
+        if range_key in ("1yr", "2yr")
         else None
     )
-    for row, value, duration in adjusted:
+    for row, value, duration, local in adjusted:
         trend_values[
-            _trend_bucket_start(row["start_timestamp"], period_start, request.range, area.timezone)
+            _trend_bucket_start(local, period_start, range_key, weekly_buckets)
         ].append((value, duration))
-        local = arrow.get(row["start_timestamp"]).to(area.timezone)
         if eligible_months is None or (local.year, local.month) in eligible_months:
-            highlight_values[
-                _highlight_key(row["start_timestamp"], request.range, area.timezone)
-            ].append((value, duration))
+            highlight_values[_highlight_key(local, range_key)].append((value, duration))
 
     trend = [
         {"start_timestamp": timestamp, "average_price": float(weighted_average(values))}
@@ -240,9 +244,9 @@ def _build_period_statistics(
             ((key, weighted_average(values)) for key, values in highlight_values.items()),
             key=lambda item: item[1],
         )
-        if request.range == "1mo":
+        if range_key == "1mo":
             highlight = {"kind": "day", "timestamp": highlight_key}
-        elif request.range == "3mo":
+        elif range_key == "3mo":
             highlight = {"kind": "weekday", "value": highlight_key}
         else:
             highlight = {"kind": "month", "value": highlight_key}
@@ -262,38 +266,39 @@ def _comparison_periods(
     return period_start, period_end, previous_start, period_start
 
 
-def calculate_statistics(
-    config: Config,
+def _rows_in_period(
+    adjusted_rows: list[tuple[dict, Decimal, int, datetime]],
+    period_start: arrow.Arrow,
+    period_end: arrow.Arrow,
+) -> list[tuple[dict, Decimal, int, datetime]]:
+    """Select a chronological sub-range from the shared adjusted rows."""
+    period_start_timestamp = period_start.int_timestamp
+    period_end_timestamp = period_end.int_timestamp
+    return [
+        item
+        for item in adjusted_rows
+        if item[0]["start_timestamp"] >= period_start_timestamp
+        and item[0]["end_timestamp"] <= period_end_timestamp
+    ]
+
+
+def _statistics_for_range(
+    adjusted_rows: list[tuple[dict, Decimal, int, datetime]],
     area: MarketArea,
     request: PriceStatisticsRequest,
-    now: Optional[arrow.Arrow] = None,
+    range_key: str,
+    period_end: arrow.Arrow,
 ) -> Optional[dict]:
-    """Calculate and cache one long-term statistics response."""
-    period_end = (now or arrow.now(area.timezone)).to(area.timezone).floor("day")
-    period_start = range_start(period_end, request.range)
+    """Derive one range from the shared, adjusted two-year dataset."""
+    period_start = range_start(period_end, range_key)
     comparison_periods = _comparison_periods(
         period_start,
         period_end,
-        request.range,
+        range_key,
     )
-    history_start = comparison_periods[2] if comparison_periods is not None else period_start
-    all_rows = price_database.load_points(
-        config,
-        area.key,
-        history_start.int_timestamp,
-        period_end.int_timestamp,
-    )
-    if not all_rows:
-        return None
-
-    selected_rows = [
-        row
-        for row in all_rows
-        if row["start_timestamp"] >= period_start.int_timestamp
-        and row["end_timestamp"] <= period_end.int_timestamp
-    ]
+    selected_rows = _rows_in_period(adjusted_rows, period_start, period_end)
     selected = _build_period_statistics(
-        selected_rows, area, request, period_start, period_end, include_details=True
+        selected_rows, request, range_key, period_start, period_end, include_details=True
     )
     if (
         selected["average_price"] is None
@@ -304,40 +309,26 @@ def calculate_statistics(
 
     change_percent = None
     if comparison_periods is not None:
-        comparison_start, comparison_end, previous_start, previous_end = comparison_periods
-        comparison_rows = [
-            row
-            for row in all_rows
-            if row["start_timestamp"] >= comparison_start.int_timestamp
-            and row["end_timestamp"] <= comparison_end.int_timestamp
-        ]
-        previous_rows = [
-            row
-            for row in all_rows
-            if row["start_timestamp"] >= previous_start.int_timestamp
-            and row["end_timestamp"] <= previous_end.int_timestamp
-        ]
-        comparison = _build_period_statistics(
-            comparison_rows, area, request, comparison_start, comparison_end, include_details=False
-        )
+        _, _, previous_start, previous_end = comparison_periods
+        previous_rows = _rows_in_period(adjusted_rows, previous_start, previous_end)
         previous = _build_period_statistics(
-            previous_rows, area, request, previous_start, previous_end, include_details=False
+            previous_rows, request, range_key, previous_start, previous_end, include_details=False
         )
         if (
-            comparison["coverage"]["is_usable"]
+            selected["coverage"]["is_usable"]
             and previous["coverage"]["is_usable"]
-            and comparison["average_price"] is not None
+            and selected["average_price"] is not None
             and previous["average_price"] not in (None, 0)
         ):
             change_percent = (
-                (comparison["average_price"] - previous["average_price"])
+                (selected["average_price"] - previous["average_price"])
                 / abs(previous["average_price"])
                 * 100
             )
 
     response = {
         "area": area.key,
-        "range": request.range,
+        "range": range_key,
         "start_timestamp": period_start.int_timestamp,
         "end_timestamp": period_end.int_timestamp,
         "comparison_change_percent": change_percent,
@@ -346,10 +337,50 @@ def calculate_statistics(
     return response
 
 
+def calculate_statistics(
+    config: Config,
+    area: MarketArea,
+    request: PriceStatisticsRequest,
+    now: Optional[arrow.Arrow] = None,
+) -> Optional[dict[str, dict]]:
+    """Calculate all long-term ranges from one database read and adjustment pass."""
+    period_end = (now or arrow.now(area.timezone)).to(area.timezone).floor("day")
+    archive_start = range_start(period_end, "2yr")
+    rows = price_database.load_statistic_points(
+        config,
+        area.key,
+        archive_start.int_timestamp,
+        period_end.int_timestamp,
+    )
+    if not rows:
+        return None
+
+    adjusted_rows = []
+    for row in rows:
+        duration = row["end_timestamp"] - row["start_timestamp"]
+        if duration <= 0:
+            continue
+        adjusted_rows.append(
+            (
+                row,
+                adjusted_price(row["marketprice"], area, request.add_ons),
+                duration,
+                arrow.get(row["start_timestamp"]).to(area.timezone).datetime,
+            )
+        )
+
+    statistics = {}
+    for range_key in RANGE_KEYS:
+        result = _statistics_for_range(adjusted_rows, area, request, range_key, period_end)
+        if result is not None:
+            statistics[range_key] = result
+    return statistics or None
+
+
 async def get_statistics(
     config: Config,
     area: MarketArea,
     request: PriceStatisticsRequest,
 ) -> Optional[dict]:
-    """Calculate statistics without blocking the API event loop."""
+    """Calculate all statistics ranges without blocking the API event loop."""
     return await asyncio.to_thread(calculate_statistics, config, area, request)

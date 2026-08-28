@@ -150,16 +150,13 @@ struct PriceStatisticsRequestBody: Encodable {
         let value: Double
     }
 
-    let range: String
     let addOns: [AddOn]
 
     enum CodingKeys: String, CodingKey {
-        case range
         case addOns = "add_ons"
     }
 
-    init(range: String, pricingConfiguration: PricingConfiguration) {
-        self.range = range
+    init(pricingConfiguration: PricingConfiguration) {
         addOns = pricingConfiguration.orderedAddOns.map {
             AddOn(kind: $0.kind.rawValue, value: $0.value)
         }
@@ -258,15 +255,11 @@ struct PriceStatisticsData: Decodable {
 
     static func download(
         marketArea: MarketArea,
-        range: String,
         pricingConfiguration: PricingConfiguration
-    ) async throws -> PriceStatisticsData {
+    ) async throws -> [String: PriceStatisticsData] {
         let request = try APIClient.createPriceStatisticsRequest(
             marketArea: marketArea,
-            body: PriceStatisticsRequestBody(
-                range: range,
-                pricingConfiguration: pricingConfiguration
-            )
+            body: PriceStatisticsRequestBody(pricingConfiguration: pricingConfiguration)
         )
         return try await APIClient().request(to: request)
     }

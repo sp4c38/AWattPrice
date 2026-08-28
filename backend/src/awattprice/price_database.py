@@ -226,6 +226,26 @@ def load_points(config: Config, area_key: str, period_start: int, period_end: in
     return [dict(row) for row in rows]
 
 
+def load_statistic_points(
+    config: Config,
+    area_key: str,
+    period_start: int,
+    period_end: int,
+) -> list[dict[str, Any]]:
+    """Load only the columns needed by long-term statistics."""
+    with connect(config) as connection:
+        rows = connection.execute(
+            """
+            SELECT start_timestamp, end_timestamp, marketprice
+            FROM price_points
+            WHERE area_key = ? AND start_timestamp >= ? AND end_timestamp <= ?
+            ORDER BY start_timestamp
+            """,
+            (area_key, period_start, period_end),
+        ).fetchall()
+    return [dict(row) for row in rows]
+
+
 def period_is_complete(config: Config, area_key: str, period_start: int, period_end: int) -> bool:
     """Return whether stored prices continuously cover a timestamp range."""
     cursor = period_start

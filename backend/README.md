@@ -54,7 +54,7 @@ docker compose -f /srv/awattprice-v3/compose.v3.yaml exec api \
 To run it for one area only, add `--areas DE-LU`. The importer does not start the
 notifications service and does not modify any notification-owned file.
 
-The app requests adjusted statistics through `POST /prices/{area}/statistics`. The request contains the selected range and the user's ordered price adjustments, so the backend reproduces the displayed ct/kWh value for every interval before calculating duration-weighted statistics.
+The app requests all adjusted statistics ranges through one `POST /prices/{area}/statistics` call. The request contains the user's ordered price adjustments, so the backend reproduces the displayed ct/kWh value once per interval and derives the 1-month, 3-month, 1-year, and 2-year results from the shared two-year dataset.
 
 Statistics are calculated on demand and are not stored. The existing refresher cleanup also
 prunes SQLite price points and dataset metadata older than two years plus a
@@ -125,5 +125,5 @@ curl https://api.awattprice.com/v3/areas/
 curl https://api.awattprice.com/v3/prices/DE-LU
 curl -X POST https://api.awattprice.com/v3/prices/DE-LU/statistics \
   -H 'Content-Type: application/json' \
-  -d '{"range":"1mo","add_ons":[]}'
+  -d '{"add_ons":[]}'
 ```

@@ -98,7 +98,6 @@ struct PriceHistoryView: View {
     @EnvironmentObject private var settingsManager: SettingsManager
     @State private var selectedRange: PriceHistoryRange = .month
     @State private var loadState: PriceHistoryLoadState
-    @State private var loadingRanges: Set<PriceHistoryRange> = []
     private let previewData: PriceStatisticsData?
 
     init(previewData: PriceStatisticsData? = nil) {
@@ -147,8 +146,6 @@ struct PriceHistoryView: View {
                             range: selectedRange
                         )
                             .transition(.opacity)
-                    } else if loadingRanges.contains(selectedRange) {
-                        loadingView
                     } else {
                         unavailableView
                     }
@@ -200,52 +197,28 @@ struct PriceHistoryView: View {
             return
         }
         loadState = .loading
-        loadingRanges = Set(PriceHistoryRange.allCases)
         let setting = settingsManager.setting
 
-        func download(_ range: PriceHistoryRange) async -> PriceStatisticsData? {
-            do {
-                let history = try await PriceStatisticsData.download(
-                    marketArea: setting.marketArea,
-                    range: range.rawValue,
-                    pricingConfiguration: setting.pricingConfiguration
-                )
-                return history.coverage.isUsable ? history : nil
-            } catch is CancellationError {
-                return nil
-            } catch {
-                print("Price history download failed for \(range.rawValue): \(error).")
-                return nil
-            }
+        do {
+            let response = try await PriceStatisticsData.download(
+                marketArea: setting.marketArea,
+                pricingConfiguration: setting.pricingConfiguration
+            )
+            guard Task.isCancelled == false else { return }
+
+            let histories = Dictionary(uniqueKeysWithValues: response.compactMap { key, history in
+                guard let range = PriceHistoryRange(rawValue: key), history.coverage.isUsable else {
+                    return nil
+                }
+                return (range, history)
+            })
+            loadState = histories.isEmpty ? .failed : .loaded(histories)
+        } catch is CancellationError {
+            return
+        } catch {
+            print("Price history download failed: \(error).")
+            loadState = .failed
         }
-
-        async let month = download(.month)
-        async let quarter = download(.quarter)
-        async let year = download(.year)
-        async let twoYears = download(.twoYears)
-
-        let loadedMonth = await month
-        guard Task.isCancelled == false else { return }
-        loadingRanges.remove(.month)
-
-        if let loadedMonth {
-            withAnimation(.easeInOut(duration: 0.25)) {
-                loadState = .loaded([.month: loadedMonth])
-            }
-        }
-
-        let remaining = await (quarter, year, twoYears)
-        guard Task.isCancelled == false else { return }
-
-        let histories = [
-            PriceHistoryRange.month: loadedMonth,
-            PriceHistoryRange.quarter: remaining.0,
-            PriceHistoryRange.year: remaining.1,
-            PriceHistoryRange.twoYears: remaining.2,
-        ].compactMapValues { $0 }
-
-        loadState = histories.isEmpty ? .failed : .loaded(histories)
-        loadingRanges.removeAll()
     }
 
     private func chartTrend(

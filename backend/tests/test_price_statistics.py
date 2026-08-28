@@ -87,7 +87,6 @@ class PriceStatisticsTests(unittest.TestCase):
             price_database.store_dataset(config, AREA.key, "archive:test", price_data(start, end))
 
             request = price_statistics.PriceStatisticsRequest(
-                range="1mo",
                 add_ons=[
                     {"kind": "tax", "value": 0},
                     {"kind": "fixed", "value": 5},
@@ -97,6 +96,7 @@ class PriceStatisticsTests(unittest.TestCase):
             result = price_statistics.calculate_statistics(config, AREA, request, now=end)
 
             self.assertIsNotNone(result)
+            result = result["1mo"]
             self.assertAlmostEqual(result["average_price"], 18.59)
             self.assertAlmostEqual(result["comparison_change_percent"], -41.3194444)
             self.assertEqual(result["distribution"]["cheap_percent"], 100)
@@ -125,7 +125,7 @@ class PriceStatisticsTests(unittest.TestCase):
             result = price_statistics.calculate_statistics(
                 config,
                 AREA,
-                price_statistics.PriceStatisticsRequest(range="1mo"),
+                price_statistics.PriceStatisticsRequest(),
                 now=end,
             )
 
@@ -143,11 +143,12 @@ class PriceStatisticsTests(unittest.TestCase):
             result = price_statistics.calculate_statistics(
                 config,
                 AREA,
-                price_statistics.PriceStatisticsRequest(range="1mo"),
+                price_statistics.PriceStatisticsRequest(),
                 now=end,
             )
 
             self.assertIsNotNone(result)
+            result = result["1mo"]
             self.assertFalse(result["coverage"]["is_complete"])
             self.assertTrue(result["coverage"]["is_usable"])
             self.assertAlmostEqual(result["coverage"]["percent"], 27 / 28 * 100)
@@ -165,7 +166,7 @@ class PriceStatisticsTests(unittest.TestCase):
             result = price_statistics.calculate_statistics(
                 config,
                 AREA,
-                price_statistics.PriceStatisticsRequest(range="1mo"),
+                price_statistics.PriceStatisticsRequest(),
                 now=end,
             )
 
@@ -183,7 +184,7 @@ class PriceStatisticsTests(unittest.TestCase):
             result = price_statistics.calculate_statistics(
                 config,
                 AREA,
-                price_statistics.PriceStatisticsRequest(range="1mo"),
+                price_statistics.PriceStatisticsRequest(),
                 now=end,
             )
 
@@ -205,11 +206,12 @@ class PriceStatisticsTests(unittest.TestCase):
             result = price_statistics.calculate_statistics(
                 config,
                 AREA,
-                price_statistics.PriceStatisticsRequest(range="1yr"),
+                price_statistics.PriceStatisticsRequest(),
                 now=end,
             )
 
             self.assertIsNotNone(result)
+            result = result["1yr"]
             self.assertEqual(result["highlight"]["kind"], "month")
             self.assertEqual(result["highlight"]["value"], 2)
 
@@ -228,11 +230,12 @@ class PriceStatisticsTests(unittest.TestCase):
             result = price_statistics.calculate_statistics(
                 config,
                 AREA,
-                price_statistics.PriceStatisticsRequest(range="1mo"),
+                price_statistics.PriceStatisticsRequest(),
                 now=end,
             )
 
             self.assertIsNotNone(result)
+            result = result["1mo"]
             self.assertIsNone(result["comparison_change_percent"])
             self.assertTrue(result["coverage"]["is_complete"])
 
@@ -258,7 +261,7 @@ class PriceStatisticsTests(unittest.TestCase):
             self.assertEqual(stored[0]["is_fallback"], 0)
 
     def test_statistics_endpoint_is_additive_and_validates_area(self):
-        expected = {"area": "DE-LU", "range": "1mo", "average_price": 12.3}
+        expected = {"1mo": {"area": "DE-LU", "range": "1mo", "average_price": 12.3}}
         client = TestClient(api.app)
         with patch.object(
             api.price_statistics,
@@ -267,10 +270,10 @@ class PriceStatisticsTests(unittest.TestCase):
         ) as get_statistics:
             response = client.post(
                 "/prices/DE-LU/statistics",
-                json={"range": "1mo", "add_ons": [{"kind": "fixed", "value": 4.2}]},
+                json={"add_ons": [{"kind": "fixed", "value": 4.2}]},
             )
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), expected)
         get_statistics.assert_awaited_once()
-        self.assertEqual(client.post("/prices/unknown/statistics", json={"range": "1mo"}).status_code, 404)
+        self.assertEqual(client.post("/prices/unknown/statistics", json={}).status_code, 404)

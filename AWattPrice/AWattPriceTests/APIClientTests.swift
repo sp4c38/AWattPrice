@@ -44,10 +44,7 @@ final class APIClientTests: XCTestCase {
         setting.priceAddOnOrder = "fixed,percentage,tax,monthly"
         let request = try APIClient.createPriceStatisticsRequest(
             marketArea: .germanyLuxembourg,
-            body: PriceStatisticsRequestBody(
-                range: "2yr",
-                pricingConfiguration: setting.pricingConfiguration
-            )
+            body: PriceStatisticsRequestBody(pricingConfiguration: setting.pricingConfiguration)
         )
         let payload = try XCTUnwrap(
             JSONSerialization.jsonObject(with: try XCTUnwrap(request.urlRequest.httpBody)) as? [String: Any]
@@ -56,13 +53,14 @@ final class APIClientTests: XCTestCase {
 
         XCTAssertEqual(request.urlRequest.url?.absoluteString, "https://api.awattprice.com/v3/prices/DE-LU/statistics")
         XCTAssertEqual(request.urlRequest.httpMethod, "POST")
-        XCTAssertEqual(payload["range"] as? String, "2yr")
+        XCTAssertNil(payload["range"])
         XCTAssertEqual(addOns.compactMap { $0["kind"] as? String }, ["fixed", "percentage", "tax"])
     }
 
     func testPriceStatisticsResponseDecodesBackendContract() throws {
         let json = """
         {
+          "1mo": {
           "average_price": 18.59,
           "comparison_change_percent": -7.8,
           "lowest": {"price": -3.72, "timestamp": 1786982400},
@@ -79,13 +77,15 @@ final class APIClientTests: XCTestCase {
           "trend": [{"start_timestamp": 1786032000, "average_price": 24.1}],
           "highlight": {"kind": "weekday", "value": 7, "average_price": 19.8},
           "coverage": {"percent": 99.5, "is_complete": false, "is_usable": true}
+          }
         }
         """
 
-        let data = try PriceStatisticsData.jsonDecoder().decode(
-            PriceStatisticsData.self,
+        let response = try PriceStatisticsData.jsonDecoder().decode(
+            [String: PriceStatisticsData].self,
             from: Data(json.utf8)
         )
+        let data = try XCTUnwrap(response["1mo"])
 
         XCTAssertEqual(data.averagePrice, 18.59)
         XCTAssertEqual(data.negativeHours, 11.25)

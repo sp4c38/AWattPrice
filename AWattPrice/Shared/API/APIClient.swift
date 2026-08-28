@@ -104,7 +104,7 @@ class APIClient {
     static func createPriceStatisticsRequest(
         marketArea: MarketArea,
         body: PriceStatisticsRequestBody
-    ) throws -> ResponseRequest<PriceStatisticsData> {
+    ) throws -> ResponseRequest<[String: PriceStatisticsData]> {
         let requestURL = APIClient.apiURL
             .appendingPathComponent("prices", isDirectory: true)
             .appendingPathComponent(marketArea.key, isDirectory: true)

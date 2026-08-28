@@ -19,6 +19,10 @@ from awattprice import prices
 from awattprice_refresher import prices as price_refresher
 
 
+class ArchiveCoverageUnavailable(RuntimeError):
+    """Raised when ENTSO-E does not provide enough history for a period."""
+
+
 def monthly_periods(start: arrow.Arrow, end: arrow.Arrow) -> Iterable[tuple[arrow.Arrow, arrow.Arrow]]:
     """Yield calendar-month chunks clipped to the requested local range."""
     cursor = start
@@ -102,9 +106,10 @@ async def fill_missing_days(
             data = price_refresher.parse_downloaded_data(area, xml, now=end)
             if not prices.has_complete_price_points(data, day_start, day_end):
                 raise RuntimeError("Downloaded intervals do not continuously cover the requested day.")
-            await store_archive_data(config, area.key, day_start, day_end, data)
         except Exception as exc:
             failed_days.append(f"{day_start.date()} ({exc})")
+        else:
+            await store_archive_data(config, area.key, day_start, day_end, data)
         await asyncio.sleep(1)
 
     return failed_days
@@ -118,7 +123,7 @@ async def backfill_area(
     force: bool,
     prepare_current: bool = True,
 ) -> int:
-    """Backfill one area, refresh its current dataset, and return failures."""
+    """Backfill one area, refresh its current dataset, and return operational failures."""
     area = defaults.get_market_area(area_key)
     failures = 0
     for period_start, period_end in monthly_periods(start.to(area.timezone), end.to(area.timezone)):
@@ -145,7 +150,6 @@ async def backfill_area(
                     xml = await price_refresher.download_data(area, config, period_start, period_end)
                     if xml is not None:
                         data = price_refresher.parse_downloaded_data(area, xml, now=end)
-                        await store_archive_data(config, area.key, period_start, period_end, data)
                         monthly_data_is_complete = prices.has_complete_price_points(
                             data,
                             period_start,
@@ -156,6 +160,9 @@ async def backfill_area(
                         f"Monthly {area.key} import {period_start.date()}–{period_end.date()} "
                         f"was unusable; falling back to daily requests: {exc}."
                     )
+                else:
+                    if xml is not None:
+                        await store_archive_data(config, area.key, period_start, period_end, data)
 
             failed_days = []
             if not monthly_data_is_complete and not await stored_period_is_complete(
@@ -182,7 +189,7 @@ async def backfill_area(
                 detail = "; ".join(failed_days[:3])
                 if len(failed_days) > 3:
                     detail += f"; and {len(failed_days) - 3} more"
-                raise RuntimeError(
+                raise ArchiveCoverageUnavailable(
                     f"Daily fallback left {len(failed_days)} unavailable days"
                     + (f": {detail}" if detail else ".")
                 )
@@ -198,6 +205,11 @@ async def backfill_area(
                     f"with {coverage['percent']:.1f}% coverage and a maximum gap of "
                     f"{coverage['maximum_gap_seconds'] / 3600:.0f}h."
                 )
+        except ArchiveCoverageUnavailable as exc:
+            logger.warning(
+                f"Price history is unavailable for {area.key} during "
+                f"{period_start.date()}–{period_end.date()}: {exc}."
+            )
         except Exception as exc:
             failures += 1
             logger.error(
@@ -255,7 +267,7 @@ async def backfill_areas(
     failure_count = sum(failures)
     if failure_count == 0:
         logger.info(
-            f"Price archive coverage is complete for all {len(requested_area_keys)} checked areas."
+            f"Price archive backfill finished for all {len(requested_area_keys)} checked areas."
         )
     return failure_count
 

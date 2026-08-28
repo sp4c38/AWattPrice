@@ -399,7 +399,7 @@ class PriceHistoryTests(unittest.TestCase):
             self.assertIn("FR", attempted_areas)
             self.assertIn("PL", attempted_areas)
             log_info.assert_called_once_with(
-                "Price archive coverage is complete for all "
+                "Price archive backfill finished for all "
                 f"{len(defaults.supported_market_area_keys)} checked areas."
             )
 
@@ -484,6 +484,37 @@ class PriceHistoryTests(unittest.TestCase):
                     period_start.shift(days=+1),
                     period_end,
                 )
+
+        asyncio.run(run_test())
+
+    def test_unavailable_entsoe_history_is_not_an_operational_failure(self):
+        async def run_test():
+            with tempfile.TemporaryDirectory() as temp_dir:
+                config = make_config(Path(temp_dir))
+                period_start = arrow.get("2026-05-13", "YYYY-MM-DD", tzinfo=AREA.timezone)
+                period_end = period_start.shift(days=+2)
+
+                with (
+                    patch.object(
+                        price_refresher,
+                        "download_data",
+                        new=AsyncMock(return_value=None),
+                    ) as download_data,
+                    patch.object(price_history_backfill.asyncio, "sleep", new=AsyncMock()),
+                    patch.object(price_history_backfill.logger, "warning") as log_warning,
+                ):
+                    failures = await price_history_backfill.backfill_area(
+                        AREA.key,
+                        period_start,
+                        period_end,
+                        config,
+                        force=False,
+                        prepare_current=False,
+                    )
+
+                self.assertEqual(failures, 0)
+                self.assertEqual(download_data.await_count, 3)
+                self.assertIn("Price history is unavailable", log_warning.call_args.args[0])
 
         asyncio.run(run_test())
 

@@ -306,17 +306,6 @@ class DataRefresherCleanupTests(unittest.TestCase):
 
             price_database.store_dataset(config, AREA.key, "archive:old", old_data)
             price_database.store_dataset(config, AREA.key, "archive:retained", retained_data)
-            price_database.record_import(
-                config, AREA.key, old_start, old_end, "complete", len(old_data.prices)
-            )
-            price_database.record_import(
-                config,
-                AREA.key,
-                retained_start,
-                retained_end,
-                "complete",
-                len(retained_data.prices),
-            )
             with price_database.connect(config) as connection:
                 connection.execute(
                     "CREATE TABLE price_statistics_cache (cache_key TEXT PRIMARY KEY)"
@@ -327,7 +316,7 @@ class DataRefresherCleanupTests(unittest.TestCase):
                 arrow.get("2026-05-25T12:00:00+02:00"),
             )
 
-            self.assertEqual(pruned, len(old_data.prices) + 2)
+            self.assertEqual(pruned, len(old_data.prices) + 1)
             self.assertEqual(
                 price_database.load_points(config, AREA.key, old_start, old_end),
                 [],
@@ -348,20 +337,8 @@ class DataRefresherCleanupTests(unittest.TestCase):
                     "SELECT name FROM sqlite_master "
                     "WHERE type = 'table' AND name = 'price_statistics_cache'"
                 ).fetchone()
-                old_import = connection.execute(
-                    "SELECT 1 FROM price_history_imports "
-                    "WHERE area_key = ? AND period_start = ?",
-                    (AREA.key, old_start),
-                ).fetchone()
-                retained_import = connection.execute(
-                    "SELECT 1 FROM price_history_imports "
-                    "WHERE area_key = ? AND period_start = ?",
-                    (AREA.key, retained_start),
-                ).fetchone()
 
             self.assertIsNone(legacy_cache)
-            self.assertIsNone(old_import)
-            self.assertIsNotNone(retained_import)
 
     def test_normal_cleanup_includes_price_database_pruning(self):
         async def run_test():

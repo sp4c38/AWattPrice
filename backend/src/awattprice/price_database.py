@@ -71,17 +71,6 @@ def connect(config: Config) -> sqlite3.Connection:
             PRIMARY KEY (area_key, dataset_key)
         );
 
-        CREATE TABLE IF NOT EXISTS price_history_imports (
-            area_key TEXT NOT NULL,
-            period_start INTEGER NOT NULL,
-            period_end INTEGER NOT NULL,
-            state TEXT NOT NULL,
-            point_count INTEGER NOT NULL DEFAULT 0,
-            updated_at INTEGER NOT NULL,
-            last_error TEXT,
-            PRIMARY KEY (area_key, period_start, period_end)
-        );
-
         """
     )
     return connection
@@ -206,52 +195,8 @@ def load_points(config: Config, area_key: str, period_start: int, period_end: in
     return [dict(row) for row in rows]
 
 
-def record_import(
-    config: Config,
-    area_key: str,
-    period_start: int,
-    period_end: int,
-    state: str,
-    point_count: int = 0,
-    last_error: Optional[str] = None,
-) -> None:
-    """Record a resumable historical import attempt."""
-    with connect(config) as connection:
-        connection.execute(
-            """
-            INSERT INTO price_history_imports (
-                area_key, period_start, period_end, state, point_count, updated_at, last_error
-            ) VALUES (?, ?, ?, ?, ?, ?, ?)
-            ON CONFLICT(area_key, period_start, period_end) DO UPDATE SET
-                state = excluded.state,
-                point_count = excluded.point_count,
-                updated_at = excluded.updated_at,
-                last_error = excluded.last_error
-            """,
-            (area_key, period_start, period_end, state, point_count, int(time.time()), last_error),
-        )
-
-
-def import_state(
-    config: Config,
-    area_key: str,
-    period_start: int,
-    period_end: int,
-) -> Optional[str]:
-    """Return the recorded state for one historical import period."""
-    with connect(config) as connection:
-        row = connection.execute(
-            """
-            SELECT state FROM price_history_imports
-            WHERE area_key = ? AND period_start = ? AND period_end = ?
-            """,
-            (area_key, period_start, period_end),
-        ).fetchone()
-    return row["state"] if row is not None else None
-
-
-def import_is_complete(config: Config, area_key: str, period_start: int, period_end: int) -> bool:
-    """Return whether stored prices continuously cover one import range."""
+def period_is_complete(config: Config, area_key: str, period_start: int, period_end: int) -> bool:
+    """Return whether stored prices continuously cover a timestamp range."""
     cursor = period_start
     with connect(config) as connection:
         rows = connection.execute(
@@ -297,7 +242,7 @@ def prune_old_data(config: Config, now=None) -> int:
                 )
                 .int_timestamp
             )
-            for table in ("price_points", "price_datasets", "price_history_imports"):
+            for table in ("price_points", "price_datasets"):
                 cursor = connection.execute(
                     f"DELETE FROM {table} WHERE area_key = ? AND "
                     f"{'end_timestamp' if table == 'price_points' else 'period_end'} <= ?",
@@ -306,7 +251,7 @@ def prune_old_data(config: Config, now=None) -> int:
                 pruned_count += cursor.rowcount
 
         placeholders = ",".join("?" for _ in supported_area_keys)
-        for table in ("price_points", "price_datasets", "price_history_imports"):
+        for table in ("price_points", "price_datasets"):
             cursor = connection.execute(
                 f"DELETE FROM {table} WHERE area_key NOT IN ({placeholders})",
                 tuple(sorted(supported_area_keys)),

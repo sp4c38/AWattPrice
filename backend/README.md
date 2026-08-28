@@ -37,8 +37,8 @@ Current prices and the long-term archive are stored in `/etc/awattprice/data/pri
 The regular data-refresher automatically populates the two-year SQLite archive for every
 supported area after its first normal refresh cycle. Monthly imports are skipped only when
 the stored price intervals continuously cover the requested period. Missing intervals are
-downloaded automatically, including when an older completion marker exists, and already
-complete data is reused even when no matching marker exists. Several regions are populated
+downloaded automatically, while complete data is detected directly from the stored price
+points and reused. Several regions are populated
 in parallel with a bounded request count, so one slow region cannot block all remaining
 regions. Already-complete monthly chunks are silent; a single summary is logged after all
 configured regions have been checked.
@@ -57,7 +57,7 @@ notifications service and does not modify any notification-owned file.
 The app requests adjusted statistics through `POST /prices/{area}/statistics`. The request contains the selected range and the user's ordered price adjustments, so the backend reproduces the displayed ct/kWh value for every interval before calculating duration-weighted statistics.
 
 Statistics are calculated on demand and are not stored. The existing refresher cleanup also
-prunes SQLite price points, dataset metadata, and import records older than two years plus a
+prunes SQLite price points and dataset metadata older than two years plus a
 one-month safety margin.
 
 Generation mix endpoint compatibility is documented in [docs/generation-mix-data-flow.md](docs/generation-mix-data-flow.md).

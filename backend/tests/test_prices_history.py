@@ -305,7 +305,7 @@ class PriceHistoryTests(unittest.TestCase):
 
         asyncio.run(run_test())
 
-    def test_complete_stored_period_skips_import_without_completion_marker(self):
+    def test_complete_stored_period_is_detected_from_price_points(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             config = make_config(Path(temp_dir))
             history_date = date(2026, 5, 13)
@@ -315,7 +315,7 @@ class PriceHistoryTests(unittest.TestCase):
             price_database.store_dataset(config, AREA.key, "archive:test", data)
 
             self.assertTrue(
-                price_database.import_is_complete(
+                price_database.period_is_complete(
                     config,
                     AREA.key,
                     period_start,
@@ -323,7 +323,7 @@ class PriceHistoryTests(unittest.TestCase):
                 )
             )
 
-    def test_completion_marker_does_not_hide_missing_stored_interval(self):
+    def test_missing_stored_interval_is_incomplete(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             config = make_config(Path(temp_dir))
             history_date = date(2026, 5, 13)
@@ -332,17 +332,9 @@ class PriceHistoryTests(unittest.TestCase):
             period_end = data.prices[-1].end_timestamp.int_timestamp
             data.prices.pop(12)
             price_database.store_dataset(config, AREA.key, "archive:incomplete", data)
-            price_database.record_import(
-                config,
-                AREA.key,
-                period_start,
-                period_end,
-                "complete",
-                len(data.prices),
-            )
 
             self.assertFalse(
-                price_database.import_is_complete(
+                price_database.period_is_complete(
                     config,
                     AREA.key,
                     period_start,
@@ -423,7 +415,7 @@ class PriceHistoryTests(unittest.TestCase):
                 self.assertEqual(failures, 0)
                 self.assertEqual(download_data.await_count, 2)
                 self.assertTrue(
-                    price_database.import_is_complete(
+                    price_database.period_is_complete(
                         config,
                         AREA.key,
                         period_start.int_timestamp,
@@ -488,13 +480,6 @@ class PriceHistoryTests(unittest.TestCase):
                     if point.start_timestamp.date() != date(2026, 2, 10)
                 ]
                 price_database.store_dataset(config, AREA.key, "archive:usable", data)
-                price_database.record_import(
-                    config,
-                    AREA.key,
-                    period_start.int_timestamp,
-                    period_end.int_timestamp,
-                    "failed",
-                )
 
                 with patch.object(
                     price_refresher,
@@ -512,15 +497,6 @@ class PriceHistoryTests(unittest.TestCase):
 
                 self.assertEqual(failures, 0)
                 download_data.assert_not_awaited()
-                self.assertEqual(
-                    price_database.import_state(
-                        config,
-                        AREA.key,
-                        period_start.int_timestamp,
-                        period_end.int_timestamp,
-                    ),
-                    "usable",
-                )
 
         asyncio.run(run_test())
 

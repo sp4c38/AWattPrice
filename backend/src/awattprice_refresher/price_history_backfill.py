@@ -46,7 +46,7 @@ async def stored_period_is_complete(
 ) -> bool:
     """Return whether SQLite continuously covers a period."""
     return await asyncio.to_thread(
-        price_database.import_is_complete,
+        price_database.period_is_complete,
         config,
         area_key,
         start.int_timestamp,
@@ -122,44 +122,16 @@ async def backfill_area(
     area = defaults.get_market_area(area_key)
     failures = 0
     for period_start, period_end in monthly_periods(start.to(area.timezone), end.to(area.timezone)):
-        start_timestamp = period_start.int_timestamp
-        end_timestamp = period_end.int_timestamp
         if not force:
-            stored_points, coverage = await stored_period_coverage(
+            _, coverage = await stored_period_coverage(
                 config,
                 area.key,
                 period_start,
                 period_end,
             )
             if coverage["is_usable"]:
-                desired_state = "complete" if coverage["is_complete"] else "usable"
-                current_state = await asyncio.to_thread(
-                    price_database.import_state,
-                    config,
-                    area.key,
-                    start_timestamp,
-                    end_timestamp,
-                )
-                if current_state != desired_state:
-                    await asyncio.to_thread(
-                        price_database.record_import,
-                        config,
-                        area.key,
-                        start_timestamp,
-                        end_timestamp,
-                        desired_state,
-                        len(stored_points),
-                    )
                 continue
 
-        await asyncio.to_thread(
-            price_database.record_import,
-            config,
-            area.key,
-            start_timestamp,
-            end_timestamp,
-            "running",
-        )
         try:
             stored_points, _ = await stored_period_coverage(
                 config,
@@ -215,15 +187,6 @@ async def backfill_area(
                     + (f": {detail}" if detail else ".")
                 )
 
-            await asyncio.to_thread(
-                price_database.record_import,
-                config,
-                area.key,
-                start_timestamp,
-                end_timestamp,
-                "complete" if coverage["is_complete"] else "usable",
-                len(stored_points),
-            )
             if coverage["is_complete"]:
                 logger.info(
                     f"Downloaded and stored {len(stored_points)} {area.key} prices for "
@@ -237,16 +200,6 @@ async def backfill_area(
                 )
         except Exception as exc:
             failures += 1
-            await asyncio.to_thread(
-                price_database.record_import,
-                config,
-                area.key,
-                start_timestamp,
-                end_timestamp,
-                "failed",
-                0,
-                str(exc),
-            )
             logger.error(
                 f"Failed {area.key} import {period_start.date()}–{period_end.date()}: {exc}."
             )

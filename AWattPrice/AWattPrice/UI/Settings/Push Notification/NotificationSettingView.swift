@@ -83,8 +83,8 @@ struct NotificationDraft: Equatable {
     }
 
     var canSave: Bool {
-        if priceBelowEnabled, priceBelowThreshold.integerValue == nil { return false }
-        if priceAboveEnabled, priceAboveThreshold.integerValue == nil { return false }
+        if priceBelowEnabled, priceBelowThreshold.doubleValue == nil { return false }
+        if priceAboveEnabled, priceAboveThreshold.doubleValue == nil { return false }
         return true
     }
 }
@@ -169,9 +169,9 @@ class NotificationSettingViewModel: ObservableObject {
         isUploadRequestInFlight = true
 
         settingsManager.setting.priceDropsBelowEnabled = draftToSave.priceBelowEnabled
-        settingsManager.setting.priceDropsBelowThreshold = draftToSave.priceBelowThreshold.integerValue ?? 0
+        settingsManager.setting.priceDropsBelowThreshold = draftToSave.priceBelowThreshold.doubleValue ?? 0
         settingsManager.setting.priceRisesAboveEnabled = draftToSave.priceAboveEnabled
-        settingsManager.setting.priceRisesAboveThreshold = draftToSave.priceAboveThreshold.integerValue ?? 0
+        settingsManager.setting.priceRisesAboveThreshold = draftToSave.priceAboveThreshold.doubleValue ?? 0
         settingsManager.setting.dailySummaryEnabled = draftToSave.dailySummaryEnabled
 
         let configuration = notificationConfiguration(for: draftToSave, token: nil)
@@ -201,9 +201,9 @@ class NotificationSettingViewModel: ObservableObject {
             print("Failed to update notification profile: \(error)")
             await waitForMinimumUploadingTime(since: uploadStart)
             settingsManager.setting.priceDropsBelowEnabled = previousValues.priceBelowEnabled
-            settingsManager.setting.priceDropsBelowThreshold = previousValues.priceBelowThreshold.integerValue ?? 0
+            settingsManager.setting.priceDropsBelowThreshold = previousValues.priceBelowThreshold.doubleValue ?? 0
             settingsManager.setting.priceRisesAboveEnabled = previousValues.priceAboveEnabled
-            settingsManager.setting.priceRisesAboveThreshold = previousValues.priceAboveThreshold.integerValue ?? 0
+            settingsManager.setting.priceRisesAboveThreshold = previousValues.priceAboveThreshold.doubleValue ?? 0
             settingsManager.setting.dailySummaryEnabled = previousValues.dailySummaryEnabled
             draft = savedDraft
             isUploadRequestInFlight = false
@@ -287,9 +287,9 @@ class NotificationSettingViewModel: ObservableObject {
     func canRequestExample(for ruleType: NotificationRuleType) -> Bool {
         switch ruleType {
         case .priceBelow:
-            return draft.priceBelowThreshold.integerValue != nil
+            return draft.priceBelowThreshold.doubleValue != nil
         case .priceAbove:
-            return draft.priceAboveThreshold.integerValue != nil
+            return draft.priceAboveThreshold.doubleValue != nil
         case .dailySummary:
             return true
         }
@@ -328,11 +328,11 @@ class NotificationSettingViewModel: ObservableObject {
         let rules = NotificationRulesConfiguration(
             priceBelow: PriceBelowNotificationNotificationConfiguration(
                 active: draft.priceBelowEnabled,
-                threshold: draft.priceBelowEnabled ? draft.priceBelowThreshold.integerValue : nil
+                threshold: draft.priceBelowEnabled ? draft.priceBelowThreshold.doubleValue : nil
             ),
             priceAbove: PriceAboveNotificationConfiguration(
                 active: draft.priceAboveEnabled,
-                threshold: draft.priceAboveEnabled ? draft.priceAboveThreshold.integerValue : nil
+                threshold: draft.priceAboveEnabled ? draft.priceAboveThreshold.doubleValue : nil
             ),
             dailySummary: DailySummaryNotificationConfiguration(active: draft.dailySummaryEnabled)
         )

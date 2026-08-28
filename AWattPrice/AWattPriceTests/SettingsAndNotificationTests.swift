@@ -55,7 +55,7 @@ final class SettingsAndNotificationTests: XCTestCase {
         setting.annualConsumptionKWh = 2_400
         setting.orderedPriceAddOnKinds = [.fixed, .percentage, .monthly]
         setting.priceDropsBelowEnabled = true
-        setting.priceDropsBelowThreshold = 15
+        setting.priceDropsBelowThreshold = -1.8
         setting.priceRisesAboveEnabled = false
         setting.priceRisesAboveThreshold = 50
         setting.dailySummaryEnabled = true
@@ -76,7 +76,7 @@ final class SettingsAndNotificationTests: XCTestCase {
         XCTAssertEqual(general["monthly_fixed_cost_add_on"] as? Double, 6)
         XCTAssertEqual(general["add_on_order"] as? [String], ["tax", "fixed", "percentage", "monthly"])
         XCTAssertEqual(priceBelow["active"] as? Bool, true)
-        XCTAssertEqual(priceBelow["threshold"] as? Int, 15)
+        XCTAssertEqual(priceBelow["threshold"] as? Double, -1.8)
         XCTAssertEqual(priceAbove["active"] as? Bool, false)
         XCTAssertTrue(priceAbove.keys.contains("threshold"))
         XCTAssertTrue(priceAbove["threshold"] is NSNull)

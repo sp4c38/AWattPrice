@@ -44,9 +44,9 @@ public class Setting {
     
     // Notification attributes
     var pushToken: String?
-    var priceDropsBelowThreshold: Int = 0
+    var priceDropsBelowThreshold: Double = 0
     var priceDropsBelowEnabled: Bool = false
-    var priceRisesAboveThreshold: Int = 0
+    var priceRisesAboveThreshold: Double = 0
     var priceRisesAboveEnabled: Bool = false
     var dailySummaryEnabled: Bool = false
     

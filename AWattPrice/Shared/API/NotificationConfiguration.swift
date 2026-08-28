@@ -39,7 +39,7 @@ struct GeneralNotificationConfiguration: Encodable {
 
 struct PriceBelowNotificationNotificationConfiguration: Encodable {
     var active: Bool
-    var threshold: Int?
+    var threshold: Double?
     
     enum CodingKeys: String, CodingKey {
         case active
@@ -59,7 +59,7 @@ struct PriceBelowNotificationNotificationConfiguration: Encodable {
 
 struct PriceAboveNotificationConfiguration: Encodable {
     var active: Bool
-    var threshold: Int?
+    var threshold: Double?
 
     enum CodingKeys: String, CodingKey {
         case active
@@ -110,11 +110,11 @@ struct NotificationConfiguration: Encodable {
         )
         let priceBelowNotification = PriceBelowNotificationNotificationConfiguration(
             active: setting.priceDropsBelowEnabled,
-            threshold: setting.priceDropsBelowEnabled ? Int(setting.priceDropsBelowThreshold) : nil
+            threshold: setting.priceDropsBelowEnabled ? setting.priceDropsBelowThreshold : nil
         )
         let priceAboveNotification = PriceAboveNotificationConfiguration(
             active: setting.priceRisesAboveEnabled,
-            threshold: setting.priceRisesAboveEnabled ? Int(setting.priceRisesAboveThreshold) : nil
+            threshold: setting.priceRisesAboveEnabled ? setting.priceRisesAboveThreshold : nil
         )
         let dailySummaryNotification = DailySummaryNotificationConfiguration(active: setting.dailySummaryEnabled)
         let rules = NotificationRulesConfiguration(

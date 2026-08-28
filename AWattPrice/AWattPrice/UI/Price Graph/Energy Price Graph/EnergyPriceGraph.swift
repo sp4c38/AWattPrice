@@ -158,8 +158,10 @@ private struct EnergyPriceGraphLayout {
     static let rowSpacing: CGFloat = 0.1
     static let focusedRowWeight: CGFloat = 3.6
     static let adjacentFocusedRowWeight: CGFloat = 1.9
-    static let focusedHourlyRowWeight: CGFloat = 1.7
-    static let adjacentFocusedHourlyRowWeight: CGFloat = 1.25
+    static let expandedHourlyIntervalWeight: CGFloat = 1.7
+    static let adjacentExpandedHourlyIntervalWeight: CGFloat = 1.25
+    static let focusedHourlyRowWeight: CGFloat = 2.6
+    static let adjacentFocusedHourlyRowWeight: CGFloat = 1.55
     static let plotTopPadding: CGFloat = 10
 
     static let axisFontSize: CGFloat = 11
@@ -542,15 +544,18 @@ struct EnergyPriceGraph: View {
     let prices: [EnergyPricePoint]?
     let displayInterval: PriceGraphDisplayInterval
     let allowsHourlyExpansion: Bool
+    let enlargesHourlyPricesOnInteraction: Bool
 
     init(
         prices: [EnergyPricePoint]? = nil,
         displayInterval: PriceGraphDisplayInterval,
-        allowsHourlyExpansion: Bool
+        allowsHourlyExpansion: Bool,
+        enlargesHourlyPricesOnInteraction: Bool
     ) {
         self.prices = prices
         self.displayInterval = displayInterval
         self.allowsHourlyExpansion = allowsHourlyExpansion
+        self.enlargesHourlyPricesOnInteraction = enlargesHourlyPricesOnInteraction
     }
 
     @State private var selectedGroupIndex: Int?
@@ -652,7 +657,9 @@ struct EnergyPriceGraph: View {
 
         return groups.enumerated().flatMap { groupIndex, group in
             let groupShowsDayChange = showsDayChange(at: groupIndex, groups: groups)
-            let expandsToIntervals = allowsHourlyExpansion && group.pricePoints.count > 1
+            let expandsToIntervals = allowsHourlyExpansion
+                && enlargesHourlyPricesOnInteraction == false
+                && group.pricePoints.count > 1
             let isSelectedGroup = selectedGroupIndex == groupIndex
 
             if isSelectedGroup, expandsToIntervals {
@@ -686,7 +693,7 @@ struct EnergyPriceGraph: View {
                     showsDayChange: groupShowsDayChange,
                     showsTimeLabel: true,
                     isExpandedInterval: false,
-                    isFocused: false,
+                    isFocused: isSelectedGroup && enlargesHourlyPricesOnInteraction,
                     showsPrice: true,
                     showsExtremePriceText: true,
                     showsSelectedOverlay: isSelectedGroup && expandsToIntervals == false,
@@ -842,14 +849,27 @@ struct EnergyPriceGraph: View {
             return 1
 
         case .sixtyMinutes:
-            guard
-                let selectedGroupIndex,
-                rows.contains(where: { $0.groupIndex == selectedGroupIndex && $0.isExpandedInterval })
-            else {
-                return 1
+            guard let selectedGroupIndex else { return 1 }
+            let selectedGroupIsExpanded = rows.contains {
+                $0.groupIndex == selectedGroupIndex && $0.isExpandedInterval
             }
 
-            if row.groupIndex == selectedGroupIndex, row.isExpandedInterval {
+            if selectedGroupIsExpanded,
+               row.groupIndex == selectedGroupIndex,
+               row.isExpandedInterval
+            {
+                return EnergyPriceGraphLayout.expandedHourlyIntervalWeight
+            }
+
+            if selectedGroupIsExpanded,
+               abs(row.groupIndex - selectedGroupIndex) == 1
+            {
+                return EnergyPriceGraphLayout.adjacentExpandedHourlyIntervalWeight
+            }
+
+            guard enlargesHourlyPricesOnInteraction else { return 1 }
+
+            if row.groupIndex == selectedGroupIndex {
                 return EnergyPriceGraphLayout.focusedHourlyRowWeight
             }
 

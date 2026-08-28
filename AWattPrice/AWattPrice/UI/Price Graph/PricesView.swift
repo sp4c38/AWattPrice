@@ -62,6 +62,7 @@ struct PricesView: View {
     let onPresentProPaywall: () -> Void
 
     @AppStorage("priceGraphDisplayInterval") private var storedDisplayInterval = PriceGraphDisplayInterval.defaultInterval.rawValue
+    @AppStorage("enlargeHourlyPricesOnInteraction") private var enlargeHourlyPricesOnInteraction = false
     @State private var dataMode = PricesDataMode.current
     @State private var selectedHistoryDate = PriceHistoryDateOptions.defaultDate
     @State private var historyData: EnergyData?
@@ -238,7 +239,8 @@ struct PricesView: View {
         EnergyPriceGraph(
             prices: visiblePrices,
             displayInterval: effectiveDisplayInterval,
-            allowsHourlyExpansion: hasFifteenMinutePriceIntervals
+            allowsHourlyExpansion: hasFifteenMinutePriceIntervals,
+            enlargesHourlyPricesOnInteraction: enlargeHourlyPricesOnInteraction
         )
             .padding(.leading, PricesLayout.graphLeadingPadding)
             .padding(.trailing, PricesLayout.graphTrailingPadding)

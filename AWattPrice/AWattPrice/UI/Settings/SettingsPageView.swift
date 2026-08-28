@@ -22,6 +22,7 @@ private enum SettingsPageStyle {
     static let widgetsIconTint = Color.indigo
     static let proIconTint = Color.green
     static let helpIconTint = Color.teal
+    static let otherIconTint = Color.secondary
 }
 
 private struct SettingsCard<Content: View>: View {
@@ -271,6 +272,17 @@ struct SettingsPageView: View {
                             ) {
                                 HelpAndSuggestionView()
                             }
+
+                            Divider()
+
+                            SettingsDestinationRow(
+                                title: "Other settings".localized(),
+                                subtitle: nil,
+                                systemImage: "slider.horizontal.3",
+                                tint: SettingsPageStyle.otherIconTint
+                            ) {
+                                OtherSettingsView()
+                            }
                         }
                     }
 
@@ -299,6 +311,31 @@ struct SettingsPageView: View {
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.large)
         }
+    }
+}
+
+private struct OtherSettingsView: View {
+    @AppStorage("enlargeHourlyPricesOnInteraction") private var enlargeHourlyPricesOnInteraction = false
+
+    var body: some View {
+        ScrollView {
+            SettingsCard {
+                VStack(alignment: .leading, spacing: 5) {
+                    Toggle("Enlarge hourly prices".localized(), isOn: $enlargeHourlyPricesOnInteraction)
+                        .font(.subheadline.weight(.medium))
+
+                    Text("In the 60-minute view, pressing an hourly price enlarges it instead of showing the four 15-minute prices.".localized())
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.top, 14)
+        }
+        .appScreenBackground()
+        .navigationTitle("Other settings".localized())
+        .navigationBarTitleDisplayMode(.inline)
     }
 }
 

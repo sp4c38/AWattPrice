@@ -1600,6 +1600,24 @@
         }
       }
     },
+    "Enlarge hourly prices" : {
+      "comment" : "String.localized()",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stundenpreise vergrößern"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enlarge hourly prices"
+          }
+        }
+      }
+    },
     "Enter app" : {
       "comment" : "SwiftUI literal",
       "localizations" : {
@@ -1684,6 +1702,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Expensive hours **tomorrow**."
+          }
+        }
+      }
+    },
+    "Extras" : {
+      "comment" : "String.localized()",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Extras"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Extras"
           }
         }
       }
@@ -2236,6 +2272,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Keep prices visible at a glance outside the app."
+          }
+        }
+      }
+    },
+    "In the 60-minute view, pressing an hourly price enlarges it instead of showing the four 15-minute prices." : {
+      "comment" : "String.localized()",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In der 60-Minuten-Ansicht wird ein Stundenpreis beim Drücken vergrößert, anstatt die vier 15-Minuten-Preise anzuzeigen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In the 60-minute view, pressing an hourly price enlarges it instead of showing the four 15-minute prices."
           }
         }
       }
@@ -3419,6 +3473,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sonstige"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Other"
+          }
+        }
+      }
+    },
+    "Other settings" : {
+      "comment" : "String.localized()",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anderes"
           }
         },
         "en" : {

@@ -11,7 +11,7 @@ enum WidgetRoute {
 enum WidgetStyle {
     static let accent = Color.orange
     static let low  = Color(red: 0.20, green: 0.70, blue: 0.38)
-    static let high = Color(red: 0.86, green: 0.20, blue: 0.16)
+    static let high = Color(red: 0.85, green: 0.34, blue: 0.24)
     static let neutral = Color.secondary
     static let smallPadding: CGFloat = 15
     static let chartPadding: CGFloat = 14
@@ -49,7 +49,7 @@ enum WidgetStyle {
         let t = min(max((price - floor) / range, 0), 1)
 
         let oy: (Double, Double, Double) = (1.00, 0.74, 0.12)   // yellow (baseline)
-        let dr: (Double, Double, Double) = (0.92, 0.14, 0.11)   // dark red (max)
+        let dr: (Double, Double, Double) = (0.85, 0.34, 0.24)   // dark red (max)
 
         let bottomColor = Color(red: oy.0, green: oy.1, blue: oy.2)
         let topColor    = lerp(from: oy, to: dr, t: t)

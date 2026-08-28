@@ -282,14 +282,14 @@ private enum EnergyPriceGraphPalette {
         LinearGradient(
             colors: [
                 Color(red: 1.00, green: 0.76, blue: 0.24),
-                Color(red: 0.86, green: 0.20, blue: 0.16),
+                Color(red: 0.85, green: 0.34, blue: 0.24),
             ],
             startPoint: .leading,
             endPoint: .trailing
         )
     }
 
-    static let selectedPositiveFill = Color(red: 0.92, green: 0.24, blue: 0.16)
+    static let selectedPositiveFill = Color(red: 0.88, green: 0.36, blue: 0.26)
     static let negativeFill = Color(red: 0.20, green: 0.70, blue: 0.38)
     static let selectedNegativeFill = Color(red: 0.02, green: 0.80, blue: 0.24)
 }

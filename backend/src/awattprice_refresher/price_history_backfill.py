@@ -226,7 +226,7 @@ async def backfill_area(
             )
             if coverage["is_complete"]:
                 logger.info(
-                    f"Imported {len(stored_points)} {area.key} prices for "
+                    f"Downloaded and stored {len(stored_points)} {area.key} prices for "
                     f"{period_start.date()}–{period_end.date()}."
                 )
             else:

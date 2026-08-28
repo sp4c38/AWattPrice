@@ -2,6 +2,7 @@ import asyncio
 import tempfile
 import unittest
 
+from concurrent.futures import ThreadPoolExecutor
 from datetime import date
 from decimal import Decimal
 from pathlib import Path
@@ -274,6 +275,29 @@ def complete_hourly_price_data_for_day(day: date) -> Box:
 
 
 class PriceHistoryTests(unittest.TestCase):
+    def test_fresh_database_initialization_is_concurrency_safe(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            config = make_config(Path(temp_dir))
+
+            def open_database():
+                with price_database.connect(config) as connection:
+                    return {
+                        row[0]
+                        for row in connection.execute(
+                            "SELECT name FROM sqlite_master WHERE type = 'table'"
+                        )
+                    }
+
+            with ThreadPoolExecutor(max_workers=8) as executor:
+                table_sets = list(executor.map(lambda _: open_database(), range(16)))
+
+            self.assertTrue(
+                all(
+                    {"price_points", "price_datasets"}.issubset(table_names)
+                    for table_names in table_sets
+                )
+            )
+
     def test_price_storage_uses_only_sqlite(self):
         async def run_test():
             with tempfile.TemporaryDirectory() as temp_dir:

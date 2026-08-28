@@ -13,9 +13,50 @@ from typing import Any, Optional
 import arrow
 
 from box import Box
+from filelock import FileLock
 from liteconfig import Config
 
 from awattprice import defaults
+
+
+_SCHEMA = """
+CREATE TABLE IF NOT EXISTS price_points (
+    area_key TEXT NOT NULL,
+    start_timestamp INTEGER NOT NULL,
+    end_timestamp INTEGER NOT NULL,
+    marketprice TEXT NOT NULL,
+    resolution TEXT,
+    sequence_position TEXT,
+    is_fallback INTEGER NOT NULL DEFAULT 0,
+    is_carried_forward INTEGER NOT NULL DEFAULT 0,
+    updated_at INTEGER NOT NULL,
+    PRIMARY KEY (area_key, start_timestamp)
+);
+CREATE INDEX IF NOT EXISTS price_points_area_end
+    ON price_points (area_key, end_timestamp);
+
+CREATE TABLE IF NOT EXISTS price_datasets (
+    area_key TEXT NOT NULL,
+    dataset_key TEXT NOT NULL,
+    period_start INTEGER NOT NULL,
+    period_end INTEGER NOT NULL,
+    source TEXT NOT NULL,
+    display_name TEXT NOT NULL,
+    entsoe_domain TEXT NOT NULL,
+    timezone TEXT NOT NULL,
+    currency TEXT NOT NULL,
+    resolution TEXT,
+    sequence_position TEXT,
+    fallback_sequence_positions TEXT NOT NULL,
+    fallback_price_count INTEGER NOT NULL,
+    carried_forward_price_count INTEGER NOT NULL,
+    updated_at INTEGER NOT NULL,
+    PRIMARY KEY (area_key, dataset_key)
+);
+"""
+
+_REQUIRED_TABLES = {"price_points", "price_datasets"}
+_INITIALIZED_DATABASE_PATHS: set[Path] = set()
 
 
 def database_path(config: Config) -> Path:
@@ -26,53 +67,43 @@ def database_path(config: Config) -> Path:
     return Path(config.paths.price_data_dir).parent / defaults.PRICE_DATABASE_FILE_NAME
 
 
-def connect(config: Config) -> sqlite3.Connection:
-    """Open and initialise a price database connection."""
-    path = database_path(config)
+def _initialize_database(path: Path) -> None:
+    """Create the WAL database and schema once without racing other workers."""
     path.parent.mkdir(parents=True, exist_ok=True)
+    if path in _INITIALIZED_DATABASE_PATHS and path.exists():
+        return
+
+    initialization_lock = FileLock(f"{path}.initialize.lock", timeout=30)
+    with initialization_lock:
+        if path in _INITIALIZED_DATABASE_PATHS and path.exists():
+            return
+
+        with sqlite3.connect(path, timeout=15) as connection:
+            connection.execute("PRAGMA busy_timeout = 15000")
+            journal_mode = connection.execute("PRAGMA journal_mode").fetchone()[0]
+            if journal_mode.lower() != "wal":
+                connection.execute("PRAGMA journal_mode = WAL")
+
+            existing_tables = {
+                row[0]
+                for row in connection.execute(
+                    "SELECT name FROM sqlite_master WHERE type = 'table'"
+                )
+            }
+            if not _REQUIRED_TABLES.issubset(existing_tables):
+                connection.executescript(_SCHEMA)
+
+        _INITIALIZED_DATABASE_PATHS.add(path)
+
+
+def connect(config: Config) -> sqlite3.Connection:
+    """Open an initialized price database connection."""
+    path = database_path(config)
+    _initialize_database(path)
     connection = sqlite3.connect(path, timeout=15)
     connection.row_factory = sqlite3.Row
-    connection.execute("PRAGMA journal_mode = WAL")
     connection.execute("PRAGMA busy_timeout = 15000")
     connection.execute("PRAGMA foreign_keys = ON")
-    connection.executescript(
-        """
-        CREATE TABLE IF NOT EXISTS price_points (
-            area_key TEXT NOT NULL,
-            start_timestamp INTEGER NOT NULL,
-            end_timestamp INTEGER NOT NULL,
-            marketprice TEXT NOT NULL,
-            resolution TEXT,
-            sequence_position TEXT,
-            is_fallback INTEGER NOT NULL DEFAULT 0,
-            is_carried_forward INTEGER NOT NULL DEFAULT 0,
-            updated_at INTEGER NOT NULL,
-            PRIMARY KEY (area_key, start_timestamp)
-        );
-        CREATE INDEX IF NOT EXISTS price_points_area_end
-            ON price_points (area_key, end_timestamp);
-
-        CREATE TABLE IF NOT EXISTS price_datasets (
-            area_key TEXT NOT NULL,
-            dataset_key TEXT NOT NULL,
-            period_start INTEGER NOT NULL,
-            period_end INTEGER NOT NULL,
-            source TEXT NOT NULL,
-            display_name TEXT NOT NULL,
-            entsoe_domain TEXT NOT NULL,
-            timezone TEXT NOT NULL,
-            currency TEXT NOT NULL,
-            resolution TEXT,
-            sequence_position TEXT,
-            fallback_sequence_positions TEXT NOT NULL,
-            fallback_price_count INTEGER NOT NULL,
-            carried_forward_price_count INTEGER NOT NULL,
-            updated_at INTEGER NOT NULL,
-            PRIMARY KEY (area_key, dataset_key)
-        );
-
-        """
-    )
     return connection
 
 

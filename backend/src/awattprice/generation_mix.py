@@ -276,7 +276,10 @@ async def store_response_data(
             config,
         )
     await store_metadata(metadata, area_key, config)
-    logger.info(f"Stored {area_key} generation mix caches ({hours}h).")
+    logger.info(
+        f"Wrote {area_key} generation mix API caches "
+        f"(rolling {hours}h output window)."
+    )
     return metadata
 
 

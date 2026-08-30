@@ -406,7 +406,10 @@ private struct PriceHistoryContent: View {
                     }
                 }
 
-                PriceHistoryWeekdayPatternCard(pattern: history.weekdayHourPattern)
+                PriceHistoryWeekdayPatternCard(
+                    pattern: history.weekdayHourPattern,
+                    averagePrice: history.averagePrice
+                )
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
@@ -746,6 +749,7 @@ private struct PriceHistoryMetricTile: View {
 /// price history (`weekday_hour_pattern`) — real per-user data, not an illustration.
 private struct PriceHistoryWeekdayPatternCard: View {
     let pattern: [PriceStatisticsData.WeekdayHourAveragePrice]
+    let averagePrice: Double
 
     private static let hourLabels = ["0", "4", "8", "12", "16", "20"]
     /// Monday-first, matching the ISO week used for `weekday` in the backend data.
@@ -772,18 +776,53 @@ private struct PriceHistoryWeekdayPatternCard: View {
         }
     }
 
-    /// The same grid, normalized to 0 (cheapest) ... 1 (priciest) across the whole pattern.
+    /// The same grid on a relative 0 (cheapest) ... 1 (priciest) scale. The selected
+    /// period's average is the neutral midpoint. Percentile anchors keep isolated price
+    /// extremes from washing out the useful differences between typical time slots.
     private var normalizedMatrix: [[Double?]] {
         let buckets = bucketedAverages
         let allValues = buckets.flatMap { $0.compactMap { $0 } }
-        guard let minValue = allValues.min(), let maxValue = allValues.max(), maxValue > minValue else {
+        guard let minValue = allValues.min(),
+              let maxValue = allValues.max(),
+              maxValue > minValue else {
             return buckets.map { $0.map { $0 == nil ? nil : 0.5 } }
         }
+
+        let lowerPercentile = percentile(0.10, in: allValues)
+        let upperPercentile = percentile(0.90, in: allValues)
+        let lowerAnchor = lowerPercentile < averagePrice ? lowerPercentile : minValue
+        let upperAnchor = upperPercentile > averagePrice ? upperPercentile : maxValue
+
         return buckets.map { row in
             row.map { value in
-                value.map { ($0 - minValue) / (maxValue - minValue) }
+                value.map { price in
+                    if price < averagePrice {
+                        let distance = averagePrice - lowerAnchor
+                        guard distance > 0 else { return 0.5 }
+                        return max(0, 0.5 - 0.5 * (averagePrice - price) / distance)
+                    }
+
+                    let distance = upperAnchor - averagePrice
+                    guard distance > 0 else { return 0.5 }
+                    return min(1, 0.5 + 0.5 * (price - averagePrice) / distance)
+                }
             }
         }
+    }
+
+    private func percentile(_ percentile: Double, in values: [Double]) -> Double {
+        let sortedValues = values.sorted()
+        guard let first = sortedValues.first else { return averagePrice }
+        guard sortedValues.count > 1 else { return first }
+
+        let position = percentile * Double(sortedValues.count - 1)
+        let lowerIndex = Int(position.rounded(.down))
+        let upperIndex = Int(position.rounded(.up))
+        guard lowerIndex != upperIndex else { return sortedValues[lowerIndex] }
+
+        let progress = position - Double(lowerIndex)
+        return sortedValues[lowerIndex]
+            + (sortedValues[upperIndex] - sortedValues[lowerIndex]) * progress
     }
 
     private func color(for value: Double?) -> Color {

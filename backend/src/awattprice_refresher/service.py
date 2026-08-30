@@ -11,6 +11,7 @@ from typing import Callable
 from typing import Optional
 
 import arrow
+import httpx
 
 from box import Box
 from liteconfig import Config
@@ -85,16 +86,18 @@ async def run_bounded(
     areas: list[MarketArea],
     worker: Callable[[MarketArea], Awaitable[None]],
     concurrency: int = defaults.REFRESHER_CONCURRENCY,
+    jitter_seconds: float = 2,
 ):
     """Run one per-area worker with bounded ENTSO-E concurrency."""
     semaphore = asyncio.Semaphore(concurrency)
 
     async def run_area(area: MarketArea):
         async with semaphore:
-            await asyncio.sleep(random.uniform(0, 2))
-            await worker(area)
+            if jitter_seconds > 0:
+                await asyncio.sleep(random.uniform(0, jitter_seconds))
+            return await worker(area)
 
-    await asyncio.gather(*(run_area(area) for area in areas))
+    return await asyncio.gather(*(run_area(area) for area in areas))
 
 
 async def refresh_current_prices_for_area(area: MarketArea, config: Config):
@@ -166,38 +169,65 @@ async def refresh_history_for_area(area: MarketArea, config: Config):
         cache_status.record_history_success(config, area.key, history_day, history_data)
 
 
-async def refresh_generation_mix_for_area(area: MarketArea, config: Config):
+async def refresh_generation_mix_for_area(
+    area: MarketArea,
+    config: Config,
+    client: httpx.AsyncClient,
+    records: dict,
+):
     """Warm generation mix data for one area."""
     stored_metadata = await generation_mix.get_stored_metadata(area.key, config)
+    record = records.get((area.key, cache_status.DATASET_GENERATION_MIX, "current"))
+    now = arrow.now()
+    if record is not None and record["next_retry_at"] is not None:
+        if int(record["next_retry_at"]) > now.int_timestamp:
+            return generation_mix_refresher.GenerationRefreshResult(
+                status="cooldown",
+                mode="none",
+                metadata=stored_metadata,
+            )
+
     try:
-        refreshed_metadata = await generation_mix_refresher.refresh_generation_mix(
+        refresh_result = await generation_mix_refresher.refresh_generation_mix(
             stored_metadata,
             area.key,
             config,
             lock_timeout=0,
+            client=client,
         )
     except Exception as exc:
         logger.exception(f"Couldn't refresh generation mix for {area.key}: {exc}.")
+        refresh_result = generation_mix_refresher.GenerationRefreshResult(
+            status="failed",
+            mode="none",
+            metadata=stored_metadata,
+            error=str(exc),
+        )
+
+    if refresh_result.status in {"failed", "no_data"}:
+        latest_metadata = refresh_result.metadata or stored_metadata
+        failure_state = (
+            cache_status.STATE_STALE_BUT_SERVED
+            if latest_metadata is not None
+            else cache_status.STATE_UNSUPPORTED_OR_NO_DATA
+            if refresh_result.status == "no_data"
+            else cache_status.STATE_TEMPORARILY_FAILED
+        )
         cache_status.record_failure(
             config,
             area.key,
             cache_status.DATASET_GENERATION_MIX,
-            exc,
+            refresh_result.error or "No generation mix data available.",
+            state=failure_state,
+            next_retry_at=now.shift(
+                seconds=defaults.ENTSOE_GENERATION_COOLDOWN_INTERVAL,
+            ).int_timestamp,
         )
-        return
+        return refresh_result
 
-    latest_metadata = refreshed_metadata or stored_metadata
-    if latest_metadata is None:
-        cache_status.record_failure(
-            config,
-            area.key,
-            cache_status.DATASET_GENERATION_MIX,
-            "No generation mix data available.",
-            state=cache_status.STATE_UNSUPPORTED_OR_NO_DATA,
-        )
-        return
-
-    cache_status.record_generation_success(config, area.key, latest_metadata)
+    if refresh_result.metadata is not None and refresh_result.status != "skipped":
+        cache_status.record_generation_success(config, area.key, refresh_result.metadata)
+    return refresh_result
 
 
 def _supported_area_file_keys() -> set[str]:
@@ -229,6 +259,15 @@ def _metadata_cache_key(path: Path, supported_keys: set[str]) -> Optional[str]:
     return None
 
 
+def _raw_generation_cache_key(path: Path, supported_keys: set[str]) -> tuple[Optional[str], Optional[int]]:
+    stem = path.stem.removeprefix("generation-raw-")
+    suffix = f"-{defaults.GENERATION_RETENTION_HOURS}h"
+    for area_key in supported_keys:
+        if stem == f"{area_key}{suffix}":
+            return area_key, defaults.GENERATION_RETENTION_HOURS
+    return None, None
+
+
 async def prune_generation_payloads(config: Config, now=None) -> int:
     """Delete legacy and unsupported generation mix payloads."""
     supported_keys = _supported_area_file_keys()
@@ -245,6 +284,11 @@ async def prune_generation_payloads(config: Config, now=None) -> int:
 
     for path in config.paths.generation_data_dir.glob("generation-history-*.json"):
         area_key, hours = _history_response_cache_key(path, supported_keys)
+        if area_key is None or hours != defaults.GENERATION_RETENTION_HOURS:
+            pruned_count += _delete_path(path)
+
+    for path in config.paths.generation_data_dir.glob("generation-raw-*.json"):
+        area_key, hours = _raw_generation_cache_key(path, supported_keys)
         if area_key is None or hours != defaults.GENERATION_RETENTION_HOURS:
             pruned_count += _delete_path(path)
 
@@ -362,10 +406,42 @@ async def run_cycle(config: Config, state: RefresherState, now=None) -> dict:
 
     if due(state.generation_mix, defaults.REFRESHER_GENERATION_INTERVAL_SECONDS, current):
         logger.info("Refreshing generation mix caches.")
-        await run_bounded(
-            areas,
-            lambda area: refresh_generation_mix_for_area(area, config),
-            concurrency=defaults.REFRESHER_GENERATION_CONCURRENCY,
+        generation_started_at = time.monotonic()
+        generation_records = cache_status.get_records(config)
+        limits = httpx.Limits(
+            max_connections=defaults.REFRESHER_GENERATION_CONCURRENCY,
+            max_keepalive_connections=defaults.REFRESHER_GENERATION_CONCURRENCY,
+        )
+        async with httpx.AsyncClient(http2=True, limits=limits) as client:
+            generation_results = await run_bounded(
+                areas,
+                lambda area: refresh_generation_mix_for_area(
+                    area,
+                    config,
+                    client,
+                    generation_records,
+                ),
+                concurrency=defaults.REFRESHER_GENERATION_CONCURRENCY,
+                jitter_seconds=0,
+            )
+        status_counts = {}
+        mode_counts = {}
+        downloaded_bytes = 0
+        for refresh_result in generation_results:
+            status_counts[refresh_result.status] = status_counts.get(refresh_result.status, 0) + 1
+            mode_counts[refresh_result.mode] = mode_counts.get(refresh_result.mode, 0) + 1
+            downloaded_bytes += refresh_result.downloaded_bytes
+        generation_duration = time.monotonic() - generation_started_at
+        logger.info(
+            "Generation mix refresh finished: "
+            f"full={mode_counts.get('full', 0)}, "
+            f"incremental={mode_counts.get('incremental', 0)}, "
+            f"updated={status_counts.get('updated', 0) + status_counts.get('rebuilt', 0)}, "
+            f"unchanged={status_counts.get('unchanged', 0)}, "
+            f"failed={status_counts.get('failed', 0) + status_counts.get('no_data', 0)}, "
+            f"cooldown={status_counts.get('cooldown', 0)}, "
+            f"downloaded={downloaded_bytes / 1_000_000:.1f} MB, "
+            f"duration={generation_duration:.1f}s."
         )
         state.generation_mix = current
         result["generation_mix"] = "ran"

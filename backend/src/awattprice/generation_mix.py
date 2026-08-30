@@ -47,6 +47,7 @@ PRODUCTION_TYPE_CATEGORIES = {
     "B20": "other",
 }
 GENERATION_CATEGORIES = ["solar", "wind", "hydro", "biomass", "fossil", "nuclear", "other"]
+RAW_CACHE_VERSION = 1
 
 # An interval counts as a partial publication when the production types that are
 # missing there (estimated from each type's last known value) make up more than
@@ -68,10 +69,24 @@ def get_published_history_response_data_path(area_key: str, hours: int, config: 
     return config.paths.generation_data_dir / file_name
 
 
+def get_raw_cache_path(area_key: str, hours: int, config: Config):
+    """Get the normalized generation point cache path."""
+    file_name = defaults.GENERATION_RAW_CACHE_FILE_NAME.format(area_file_key(area_key), hours)
+    return config.paths.generation_data_dir / file_name
+
+
 def get_metadata_path(area_key: str, config: Config):
     """Get the generation metadata path."""
     file_name = defaults.GENERATION_METADATA_FILE_NAME.format(area_file_key(area_key))
     return config.paths.generation_data_dir / file_name
+
+
+def cache_file_present(path) -> bool:
+    """Return whether an existing cache payload is non-empty."""
+    try:
+        return path.stat().st_size > 0
+    except FileNotFoundError:
+        return False
 
 
 async def get_stored_history_response_json(area_key: str, hours: int, config: Config) -> Optional[bytes]:
@@ -122,6 +137,101 @@ async def get_stored_metadata(area_key: str, config: Config) -> Optional[Box]:
         return None
 
     return Box(json.loads(metadata_json))
+
+
+def _raw_point_payload(point: Box) -> list:
+    return [
+        point.start_timestamp.int_timestamp,
+        point.end_timestamp.int_timestamp,
+        point.raw_production_type,
+        point.raw_production_name,
+        point.category,
+        str(point.quantity_mw),
+        bool(point.is_renewable),
+    ]
+
+
+def _raw_cache_payload(data: Box, last_full_refresh_at: Optional[arrow.Arrow]) -> dict:
+    return {
+        "version": RAW_CACHE_VERSION,
+        "source": data.source,
+        "area": data.area,
+        "display_name": data.display_name,
+        "entsoe_domain": data.entsoe_domain,
+        "timezone": data.timezone,
+        "resolution": data.resolution,
+        "updated_at": data.updated_at.int_timestamp,
+        "last_full_refresh_at": last_full_refresh_at.int_timestamp if last_full_refresh_at is not None else None,
+        "generation_points": [_raw_point_payload(point) for point in data.generation_points],
+    }
+
+
+def _generation_data_from_raw_payload(payload: dict, area_key: str) -> Box:
+    if payload.get("version") != RAW_CACHE_VERSION or payload.get("area") != area_key:
+        raise ValueError("Unsupported generation raw cache.")
+
+    timezone = payload["timezone"]
+    points = BoxList()
+    for raw_point in payload["generation_points"]:
+        if len(raw_point) != 7:
+            raise ValueError("Invalid generation raw cache point.")
+        point = Box()
+        point.start_timestamp = arrow.get(int(raw_point[0])).to(timezone)
+        point.end_timestamp = arrow.get(int(raw_point[1])).to(timezone)
+        point.raw_production_type = raw_point[2]
+        point.raw_production_name = raw_point[3]
+        point.category = raw_point[4]
+        point.quantity_mw = Decimal(str(raw_point[5]))
+        point.is_renewable = bool(raw_point[6])
+        points.append(point)
+
+    if not points:
+        raise ValueError("Empty generation raw cache.")
+
+    data = Box()
+    data.source = payload["source"]
+    data.area = payload["area"]
+    data.display_name = payload["display_name"]
+    data.entsoe_domain = payload["entsoe_domain"]
+    data.timezone = timezone
+    data.resolution = payload["resolution"]
+    data.updated_at = arrow.get(int(payload["updated_at"])).to(timezone)
+    data.last_full_refresh_at = (
+        arrow.get(int(payload["last_full_refresh_at"])).to(timezone)
+        if payload.get("last_full_refresh_at") is not None
+        else None
+    )
+    data.generation_points = BoxList(sorted(points, key=lambda point: point.start_timestamp))
+    return data
+
+
+async def get_stored_raw_data(area_key: str, hours: int, config: Config) -> Optional[Box]:
+    """Load normalized generation points used for incremental updates."""
+    file_path = get_raw_cache_path(area_key, hours, config)
+    try:
+        async with async_open(file_path, "r") as file:
+            raw_json = await file.read()
+        return _generation_data_from_raw_payload(json.loads(raw_json), area_key)
+    except FileNotFoundError:
+        return None
+    except (KeyError, TypeError, ValueError, json.JSONDecodeError) as exc:
+        logger.warning(f"Ignoring invalid {area_key} generation raw cache: {exc}.")
+        return None
+
+
+async def store_raw_data(
+    data: Box,
+    area_key: str,
+    hours: int,
+    config: Config,
+    last_full_refresh_at: Optional[arrow.Arrow],
+):
+    """Atomically store normalized generation points."""
+    payload = _raw_cache_payload(data, last_full_refresh_at)
+    await utils.async_atomic_write_text(
+        get_raw_cache_path(area_key, hours, config),
+        json.dumps(payload, separators=(",", ":"), ensure_ascii=False),
+    )
 
 
 async def store_metadata(metadata: Box, area_key: str, config: Config):
@@ -220,6 +330,91 @@ def parse_downloaded_data(area: MarketArea, xml_content: bytes) -> Box:
     return new_data
 
 
+def _generation_point_key(point: Box) -> tuple:
+    return (
+        point.raw_production_type,
+        point.raw_production_name,
+        point.start_timestamp.int_timestamp,
+    )
+
+
+def _generation_point_sort_key(point: Box) -> tuple:
+    return (
+        point.start_timestamp.int_timestamp,
+        point.raw_production_type or "",
+        point.raw_production_name or "",
+    )
+
+
+def generation_data_signature(data: Box) -> tuple:
+    """Return a stable semantic signature for normalized generation points."""
+    return tuple(
+        (
+            *_generation_point_key(point),
+            point.end_timestamp.int_timestamp,
+            str(point.quantity_mw),
+            point.category,
+            bool(point.is_renewable),
+        )
+        for point in sorted(data.generation_points, key=_generation_point_sort_key)
+    )
+
+
+def retain_generation_window(
+    data: Box,
+    hours: int,
+    safety_hours: int = defaults.GENERATION_RETENTION_SAFETY_HOURS,
+) -> Box:
+    """Keep the rolling API window plus a small merge safety overlap."""
+    latest_end = max(point.end_timestamp for point in data.generation_points)
+    cutoff = latest_end.shift(hours=-(hours + safety_hours))
+    data.generation_points = BoxList([
+        point for point in data.generation_points if point.end_timestamp > cutoff
+    ])
+    return data
+
+
+def merge_generation_data(
+    stored_data: Box,
+    downloaded_data: Box,
+    hours: int = defaults.GENERATION_RETENTION_HOURS,
+) -> Box:
+    """Replace downloaded intervals while retaining the older local history."""
+    if stored_data.area != downloaded_data.area:
+        raise ValueError("Cannot merge generation data for different areas.")
+    if stored_data.resolution != downloaded_data.resolution:
+        raise ValueError("Generation resolution changed; a full refresh is required.")
+
+    replacement_starts = {
+        point.start_timestamp.int_timestamp for point in downloaded_data.generation_points
+    }
+    points_by_key = {
+        _generation_point_key(point): point
+        for point in stored_data.generation_points
+        if point.start_timestamp.int_timestamp not in replacement_starts
+    }
+    points_by_key.update({
+        _generation_point_key(point): point for point in downloaded_data.generation_points
+    })
+
+    merged = Box()
+    for attribute in (
+        "source",
+        "area",
+        "display_name",
+        "entsoe_domain",
+        "timezone",
+        "resolution",
+        "updated_at",
+    ):
+        setattr(merged, attribute, getattr(downloaded_data, attribute))
+    merged.generation_points = BoxList(sorted(
+        points_by_key.values(),
+        key=lambda point: point.start_timestamp,
+    ))
+    return retain_generation_window(merged, hours)
+
+
 def response_data_to_json_bytes(response_data: Box) -> bytes:
     """Serialize response data once so the API can serve it without rebuilding."""
     return json.dumps(response_data, separators=(",", ":"), ensure_ascii=False).encode()
@@ -293,7 +488,9 @@ def _interval_end_timestamp(points: BoxList) -> int:
     return max(point.end_timestamp for point in points).int_timestamp
 
 
-def _series_by_production_type(generation_data: Box) -> dict[Optional[str], list[tuple[int, Decimal]]]:
+def _series_by_production_type(
+    generation_data: Box,
+) -> dict[Optional[str], tuple[list[int], list[Decimal]]]:
     """Per production type, the sorted (interval-end, total MW) it has published.
 
     Quantities are summed across units of the same type per interval so the
@@ -303,26 +500,37 @@ def _series_by_production_type(generation_data: Box) -> dict[Optional[str], list
     for point in generation_data.generation_points:
         end_timestamp = point.end_timestamp.int_timestamp
         totals[point.raw_production_type][end_timestamp] += max(point.quantity_mw, Decimal("0"))
-    return {ptype: sorted(by_end.items()) for ptype, by_end in totals.items()}
+    series = {}
+    for ptype, by_end in totals.items():
+        sorted_values = sorted(by_end.items())
+        series[ptype] = (
+            [end for end, _ in sorted_values],
+            [quantity for _, quantity in sorted_values],
+        )
+    return series
 
 
-def _last_known_quantity(series: list[tuple[int, Decimal]], end_timestamp: int) -> Optional[Decimal]:
+def _last_known_quantity(
+    series: tuple[list[int], list[Decimal]],
+    end_timestamp: int,
+) -> Optional[Decimal]:
     """Return a type's most recent published MW at or before an interval end.
 
     Used to estimate how much generation a not-yet-published type would have
     contributed.  Returns ``None`` when the type has no data yet at that point
     (so it has not started reporting, rather than dropping out of a gap).
     """
-    ends = [end for end, _ in series]
+    ends, quantities = series
     index = bisect.bisect_right(ends, end_timestamp) - 1
     if index < 0:
         return None
-    return series[index][1]
+    return quantities[index]
 
 
 def _partial_interval_flags(
     generation_data: Box,
     threshold: Decimal = PARTIAL_PUBLICATION_MAGNITUDE_THRESHOLD,
+    intervals: Optional[list[BoxList]] = None,
 ) -> dict[int, bool]:
     """Map each interval end timestamp to whether it is a partial publication.
 
@@ -334,7 +542,7 @@ def _partial_interval_flags(
     expected_types = set(series_by_type)
 
     flags: dict[int, bool] = {}
-    for points in _intervals_by_end_timestamp(generation_data):
+    for points in intervals or _intervals_by_end_timestamp(generation_data):
         end_timestamp = _interval_end_timestamp(points)
         present_types = {point.raw_production_type for point in points}
         present_mw = sum((max(point.quantity_mw, Decimal("0")) for point in points), Decimal("0"))
@@ -350,9 +558,16 @@ def _partial_interval_flags(
     return flags
 
 
-def _publication_metadata(generation_data: Box, flags: dict[int, bool]) -> Box:
+def _publication_metadata(
+    generation_data: Box,
+    flags: dict[int, bool],
+    intervals: Optional[list[BoxList]] = None,
+) -> Box:
     """Build metadata describing ENTSO-E partial publication state."""
-    end_timestamps = [_interval_end_timestamp(points) for points in _intervals_by_end_timestamp(generation_data)]
+    end_timestamps = [
+        _interval_end_timestamp(points)
+        for points in (intervals or _intervals_by_end_timestamp(generation_data))
+    ]
     complete_ends = [end for end in end_timestamps if not flags[end]]
 
     latest_published_end = max(end_timestamps)
@@ -365,17 +580,21 @@ def _publication_metadata(generation_data: Box, flags: dict[int, bool]) -> Box:
     return metadata
 
 
-def _trailing_complete_intervals(generation_data: Box, flags: dict[int, bool]) -> list[BoxList]:
+def _trailing_complete_intervals(
+    generation_data: Box,
+    flags: dict[int, bool],
+    intervals: Optional[list[BoxList]] = None,
+) -> list[BoxList]:
     """Return all intervals with only trailing partial ones trimmed.
 
     Mid-window partial intervals are kept as-is; this just drops the trailing
     not-yet-fully-published tail so the legacy ``intervals.last`` stays usable.
     """
-    intervals = _intervals_by_end_timestamp(generation_data)
-    end_idx = len(intervals)
-    while end_idx > 0 and flags[_interval_end_timestamp(intervals[end_idx - 1])]:
+    grouped_intervals = intervals or _intervals_by_end_timestamp(generation_data)
+    end_idx = len(grouped_intervals)
+    while end_idx > 0 and flags[_interval_end_timestamp(grouped_intervals[end_idx - 1])]:
         end_idx -= 1
-    return intervals[:end_idx]
+    return grouped_intervals[:end_idx]
 
 
 def latest_complete_interval_points(generation_data: Box, flags: dict[int, bool]) -> BoxList:
@@ -452,10 +671,23 @@ def parse_to_response_data(generation_data: Box) -> Box:
     return response
 
 
-def parse_to_history_response_data(generation_data: Box, hours: int = 24) -> Box:
+def parse_to_history_response_data(
+    generation_data: Box,
+    hours: int = 24,
+    intervals: Optional[list[BoxList]] = None,
+    flags: Optional[dict[int, bool]] = None,
+) -> Box:
     """Parse cached generation data to grouped app history for the requested hours."""
-    flags = _partial_interval_flags(generation_data)
-    all_intervals = _trailing_complete_intervals(generation_data, flags)
+    grouped_intervals = intervals or _intervals_by_end_timestamp(generation_data)
+    publication_flags = flags or _partial_interval_flags(
+        generation_data,
+        intervals=grouped_intervals,
+    )
+    all_intervals = _trailing_complete_intervals(
+        generation_data,
+        publication_flags,
+        grouped_intervals,
+    )
     latest_end = max(point.end_timestamp for point in all_intervals[-1])
     cutoff = latest_end.shift(hours=-hours)
     interval_points = [
@@ -493,15 +725,27 @@ def parse_to_history_response_data(generation_data: Box, hours: int = 24) -> Box
         for category in GENERATION_CATEGORIES
     ]
     response.intervals = interval_responses
-    response.update(_publication_metadata(generation_data, flags))
+    response.update(_publication_metadata(
+        generation_data,
+        publication_flags,
+        grouped_intervals,
+    ))
 
     return response
 
 
-def parse_to_published_history_response_data(generation_data: Box, hours: int = 24) -> Box:
+def parse_to_published_history_response_data(
+    generation_data: Box,
+    hours: int = 24,
+    intervals: Optional[list[BoxList]] = None,
+    flags: Optional[dict[int, bool]] = None,
+) -> Box:
     """Parse cached generation data to history including partial published intervals."""
-    flags = _partial_interval_flags(generation_data)
-    all_intervals = _intervals_by_end_timestamp(generation_data)
+    all_intervals = intervals or _intervals_by_end_timestamp(generation_data)
+    publication_flags = flags or _partial_interval_flags(
+        generation_data,
+        intervals=all_intervals,
+    )
     latest_end = max(point.end_timestamp for point in all_intervals[-1])
     cutoff = latest_end.shift(hours=-hours)
     interval_points = [
@@ -512,13 +756,13 @@ def parse_to_published_history_response_data(generation_data: Box, hours: int = 
     complete_interval_points = [
         points
         for points in interval_points
-        if not flags[_interval_end_timestamp(points)]
+        if not publication_flags[_interval_end_timestamp(points)]
     ]
     summary_points = complete_interval_points if complete_interval_points else interval_points
     interval_responses = BoxList([
         interval_response(
             points,
-            is_partial_publication=flags[_interval_end_timestamp(points)],
+            is_partial_publication=publication_flags[_interval_end_timestamp(points)],
         )
         for points in interval_points
     ])
@@ -557,3 +801,26 @@ def parse_to_published_history_response_data(generation_data: Box, hours: int = 
     response.latest_complete_end_timestamp = max(complete_ends) if complete_ends else response.latest_published_end_timestamp
 
     return response
+
+
+def parse_history_responses(
+    generation_data: Box,
+    hours: int,
+) -> tuple[Box, Box]:
+    """Build both history payloads while sharing interval and publication work."""
+    intervals = _intervals_by_end_timestamp(generation_data)
+    flags = _partial_interval_flags(generation_data, intervals=intervals)
+    return (
+        parse_to_history_response_data(
+            generation_data,
+            hours,
+            intervals=intervals,
+            flags=flags,
+        ),
+        parse_to_published_history_response_data(
+            generation_data,
+            hours,
+            intervals=intervals,
+            flags=flags,
+        ),
+    )

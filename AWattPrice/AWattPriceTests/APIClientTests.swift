@@ -67,14 +67,8 @@ final class APIClientTests: XCTestCase {
           "highest": {"price": 68.44, "timestamp": 1786035600},
           "negative_hours": 11.25,
           "below_average_percent": 58,
-          "distribution": {
-            "cheap_percent": 38,
-            "typical_percent": 44,
-            "expensive_percent": 18,
-            "cheap_below": 20,
-            "expensive_above": 35
-          },
           "trend": [{"start_timestamp": 1786032000, "average_price": 24.1}],
+          "weekday_hour_pattern": [{"weekday": 1, "hour": 0, "average_price": 22.4}],
           "highlight": {"kind": "weekday", "value": 7, "average_price": 19.8},
           "coverage": {"percent": 99.5, "is_complete": false, "is_usable": true}
           }
@@ -90,6 +84,9 @@ final class APIClientTests: XCTestCase {
         XCTAssertEqual(data.averagePrice, 18.59)
         XCTAssertEqual(data.negativeHours, 11.25)
         XCTAssertEqual(data.trend.first?.averagePrice, 24.1)
+        XCTAssertEqual(data.weekdayHourPattern.first?.weekday, 1)
+        XCTAssertEqual(data.weekdayHourPattern.first?.hour, 0)
+        XCTAssertEqual(data.weekdayHourPattern.first?.averagePrice, 22.4)
         XCTAssertEqual(data.highlight.value, 7)
         XCTAssertFalse(data.coverage.isComplete)
         XCTAssertTrue(data.coverage.isUsable)

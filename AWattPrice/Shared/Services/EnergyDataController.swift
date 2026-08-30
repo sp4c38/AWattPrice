@@ -169,19 +169,17 @@ struct PriceStatisticsData: Decodable {
         let timestamp: Date
     }
 
-    struct Distribution: Decodable {
-        let cheapPercent: Double
-        let typicalPercent: Double
-        let expensivePercent: Double
-        let cheapBelow: Double
-        let expensiveAbove: Double
+    struct WeekdayHourAveragePrice: Decodable {
+        /// ISO weekday: 1 = Monday ... 7 = Sunday.
+        let weekday: Int
+        /// Local hour of day, 0...23.
+        let hour: Int
+        let averagePrice: Double
 
         enum CodingKeys: String, CodingKey {
-            case cheapPercent = "cheap_percent"
-            case typicalPercent = "typical_percent"
-            case expensivePercent = "expensive_percent"
-            case cheapBelow = "cheap_below"
-            case expensiveAbove = "expensive_above"
+            case weekday
+            case hour
+            case averagePrice = "average_price"
         }
     }
 
@@ -229,8 +227,8 @@ struct PriceStatisticsData: Decodable {
     let highest: Extremum
     let negativeHours: Double
     let belowAveragePercent: Double
-    let distribution: Distribution
     let trend: [TrendPoint]
+    let weekdayHourPattern: [WeekdayHourAveragePrice]
     let highlight: Highlight
     let coverage: Coverage
 
@@ -241,8 +239,8 @@ struct PriceStatisticsData: Decodable {
         case highest
         case negativeHours = "negative_hours"
         case belowAveragePercent = "below_average_percent"
-        case distribution
         case trend
+        case weekdayHourPattern = "weekday_hour_pattern"
         case highlight
         case coverage
     }

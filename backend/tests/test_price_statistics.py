@@ -97,12 +97,30 @@ class PriceStatisticsTests(unittest.TestCase):
 
             self.assertIsNotNone(result)
             result = result["1mo"]
+            legacy_app_store_keys = {
+                "average_price",
+                "comparison_change_percent",
+                "lowest",
+                "highest",
+                "negative_hours",
+                "below_average_percent",
+                "distribution",
+                "trend",
+                "highlight",
+                "coverage",
+            }
+            self.assertTrue(legacy_app_store_keys.issubset(result))
             self.assertAlmostEqual(result["average_price"], 18.59)
             self.assertAlmostEqual(result["comparison_change_percent"], -41.3194444)
             self.assertEqual(result["distribution"]["cheap_percent"], 100)
             self.assertEqual(result["negative_hours"], 0)
             self.assertTrue(result["coverage"]["is_complete"])
             self.assertEqual(len(result["trend"]), 28)
+            self.assertEqual(len(result["weekday_hour_pattern"]), 24 * 7)
+            self.assertEqual(
+                {(entry["weekday"], entry["hour"]) for entry in result["weekday_hour_pattern"]},
+                {(weekday, hour) for weekday in range(1, 8) for hour in range(24)},
+            )
 
     def test_two_year_range_omits_comparison(self):
         end = arrow.get("2026-03-01", tzinfo=AREA.timezone)

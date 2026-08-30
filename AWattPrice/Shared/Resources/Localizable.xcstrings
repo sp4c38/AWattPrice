@@ -1,6 +1,193 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Based on this market area's own price history for the selected period." : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Basierend auf der eigenen Preishistorie dieses Marktgebiets im ausgewählten Zeitraum."
+          }
+        }
+      }
+    },
+    "Between days" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Von Tag zu Tag"
+          }
+        }
+      }
+    },
+    "Between months" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Von Monat zu Monat"
+          }
+        }
+      }
+    },
+    "Between weeks" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Von Woche zu Woche"
+          }
+        }
+      }
+    },
+    "Check your connection and try again." : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Überprüfe deine Verbindung und versuche es erneut."
+          }
+        }
+      }
+    },
+    "Cheaper" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Günstiger"
+          }
+        }
+      }
+    },
+    "More expensive" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Teurer"
+          }
+        }
+      }
+    },
+    "Not enough history yet" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Noch nicht genügend Preisdaten"
+          }
+        }
+      }
+    },
+    "Right now: %@ above %@ average" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jetzt: %@ über dem Durchschnitt %@"
+          }
+        }
+      }
+    },
+    "Right now: %@ below %@ average" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jetzt: %@ unter dem Durchschnitt %@"
+          }
+        }
+      }
+    },
+    "these two years'" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "dieser zwei Jahre"
+          }
+        }
+      }
+    },
+    "this month's" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "dieses Monats"
+          }
+        }
+      }
+    },
+    "this quarter's" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "dieses Quartals"
+          }
+        }
+      }
+    },
+    "this year's" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "dieses Jahres"
+          }
+        }
+      }
+    },
+    "Typical price pattern" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Typisches Preismuster"
+          }
+        }
+      }
+    },
+    "Typical swing" : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Typische Preisschwankung"
+          }
+        }
+      }
+    },
+    "We don't have enough price data for this market area and range yet. Check back later." : {
+      "comment" : "String.localized()",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Für dieses Marktgebiet und den ausgewählten Zeitraum liegen noch nicht genügend Preisdaten vor. Schau später noch einmal vorbei."
+          }
+        }
+      }
+    },
     "·" : {
       "localizations" : {
         "de" : {
@@ -3804,23 +3991,6 @@
         }
       }
     },
-    "Price Line" : {
-      "comment" : "Widget display name",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Preise als Linie"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Price Line"
-          }
-        }
-      }
-    },
     "Price graph interval" : {
       "comment" : "SwiftUI literal",
       "extractionState" : "stale",
@@ -3894,6 +4064,7 @@
     },
     "Price history unavailable" : {
       "comment" : "Price history error state",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3922,6 +4093,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Price is sub-zero"
+          }
+        }
+      }
+    },
+    "Price Line" : {
+      "comment" : "Widget display name",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preise als Linie"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Price Line"
           }
         }
       }
@@ -4764,6 +4952,40 @@
         }
       }
     },
+    "Shows all upcoming electricity prices." : {
+      "comment" : "Widget description",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zeigt alle kommenden Strompreise."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shows all upcoming electricity prices."
+          }
+        }
+      }
+    },
+    "Shows electricity prices for the next 24h." : {
+      "comment" : "Widget description",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zeigt Strompreise der nächsten 24h."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shows electricity prices for the next 24h."
+          }
+        }
+      }
+    },
     "Shows the cheapest upcoming electricity windows." : {
       "comment" : "Widget description",
       "localizations" : {
@@ -4811,40 +5033,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Shows the current renewable energy mix."
-          }
-        }
-      }
-    },
-    "Shows electricity prices for the next 24h." : {
-      "comment" : "Widget description",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Zeigt Strompreise der nächsten 24h."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Shows electricity prices for the next 24h."
-          }
-        }
-      }
-    },
-    "Shows all upcoming electricity prices." : {
-      "comment" : "Widget description",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Zeigt alle kommenden Strompreise."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Shows all upcoming electricity prices."
           }
         }
       }

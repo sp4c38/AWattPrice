@@ -35,6 +35,8 @@ class PriceStatisticsRequest(BaseModel):
     """Configuration used to reproduce the price displayed by the app."""
 
     add_ons: list[PriceAddOnRequest] = Field(default_factory=list)
+    # Kept as part of the v3 API contract for installed app versions that still
+    # decode the legacy distribution block. The current UI no longer displays it.
     cheap_below: Decimal = Decimal("20")
     expensive_above: Decimal = Decimal("35")
 
@@ -176,6 +178,17 @@ def _highlight_key(local: datetime, range_key: str):
     return local.month
 
 
+def _weekday_hour_pattern(adjusted: list[tuple[dict, Decimal, int, datetime]]) -> list[dict]:
+    """Duration-weighted average price for each (ISO weekday, hour-of-day) combination."""
+    buckets = defaultdict(list)
+    for _, value, duration, local in adjusted:
+        buckets[(local.isoweekday(), local.hour)].append((value, duration))
+    return [
+        {"weekday": weekday, "hour": hour, "average_price": float(weighted_average(values))}
+        for (weekday, hour), values in sorted(buckets.items())
+    ]
+
+
 def _build_period_statistics(
     adjusted: list[tuple[dict, Decimal, int, datetime]],
     request: PriceStatisticsRequest,
@@ -199,7 +212,6 @@ def _build_period_statistics(
     highest = max(adjusted, key=lambda item: item[1])
     negative_seconds = sum(duration for _, value, duration, _ in adjusted if value < 0)
     below_average_seconds = sum(duration for _, value, duration, _ in adjusted if value < average)
-
     cheap_seconds = sum(duration for _, value, duration, _ in adjusted if value < request.cheap_below)
     expensive_seconds = sum(duration for _, value, duration, _ in adjusted if value > request.expensive_above)
     typical_seconds = available_seconds - cheap_seconds - expensive_seconds
@@ -237,6 +249,7 @@ def _build_period_statistics(
                 "expensive_above": float(request.expensive_above),
             },
             "trend": trend,
+            "weekday_hour_pattern": _weekday_hour_pattern(adjusted),
         }
     )
     if highlight_values:

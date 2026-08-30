@@ -28,40 +28,49 @@ private enum PriceHistoryRange: String, CaseIterable, Identifiable, Hashable {
         case .twoYears: "the preceding year"
         }
     }
+
+    /// Names the period itself, for phrases like "12% below <periodLabel> average".
+    var periodLabel: String {
+        switch self {
+        case .month: "this month's"
+        case .quarter: "this quarter's"
+        case .year: "this year's"
+        case .twoYears: "these two years'"
+        }
+    }
+
+    /// What consecutive trend buckets represent for this range, for the "typical swing" tile.
+    var swingLabel: String {
+        switch self {
+        case .month: "Between days"
+        case .quarter: "Between weeks"
+        case .year, .twoYears: "Between months"
+        }
+    }
+}
+
+private extension PriceStatisticsData {
+    /// Average absolute change between consecutive trend buckets. Unlike a mean-based
+    /// percentage, this isn't distorted by distribution skew — a period with a few wild
+    /// spikes or dips should read as more volatile, and this number goes up exactly because
+    /// of that, rather than being pulled around by where the mean happens to sit.
+    var typicalSwing: Double? {
+        let sorted = trend.sorted { $0.startTimestamp < $1.startTimestamp }
+        guard sorted.count > 1 else { return nil }
+        let diffs = zip(sorted, sorted.dropFirst()).map { abs($1.averagePrice - $0.averagePrice) }
+        return diffs.reduce(0, +) / Double(diffs.count)
+    }
+}
+
+private enum PriceHistoryFailureReason: Equatable {
+    case network
+    case insufficientData
 }
 
 private enum PriceHistoryLoadState {
     case loading
     case loaded([PriceHistoryRange: PriceStatisticsData])
-    case failed
-}
-
-private extension PriceStatisticsData {
-    var highlightTitle: String {
-        switch highlight.kind {
-        case "day": "Cheapest day"
-        case "weekday": "Cheapest weekday"
-        default: "Cheapest month"
-        }
-    }
-
-    var highlightValue: String {
-        if let timestamp = highlight.timestamp {
-            return timestamp.formatted(date: .abbreviated, time: .omitted)
-        }
-        guard let value = highlight.value else { return "–" }
-        let formatter = DateFormatter()
-        switch highlight.kind {
-        case "weekday":
-            let symbols = formatter.weekdaySymbols ?? []
-            let calendarIndex = value % 7
-            return symbols.indices.contains(calendarIndex) ? symbols[calendarIndex] : "–"
-        default:
-            let symbols = formatter.monthSymbols ?? []
-            let monthIndex = value - 1
-            return symbols.indices.contains(monthIndex) ? symbols[monthIndex] : "–"
-        }
-    }
+    case failed(PriceHistoryFailureReason)
 }
 
 struct PriceHistoryNavigationCard: View {
@@ -144,14 +153,15 @@ struct PriceHistoryView: View {
                         PriceHistoryContent(
                             history: history,
                             chartTrend: chartTrend(from: histories, for: selectedRange),
-                            range: selectedRange
+                            range: selectedRange,
+                            liveComparisonPercent: liveComparisonPercent(for: history)
                         )
                             .transition(.opacity)
                     } else {
-                        unavailableView
+                        unavailableView(reason: .insufficientData)
                     }
-                case .failed:
-                    unavailableView
+                case .failed(let reason):
+                    unavailableView(reason: reason)
                 }
             }
         }
@@ -175,13 +185,24 @@ struct PriceHistoryView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
-    private var unavailableView: some View {
+    private func unavailableView(reason: PriceHistoryFailureReason) -> some View {
         VStack(spacing: 14) {
-            Image(systemName: "chart.line.downtrend.xyaxis")
+            Image(systemName: reason == .network ? "wifi.slash" : "clock.arrow.circlepath")
                 .font(.largeTitle)
                 .foregroundStyle(AppTheme.accent)
-            Text("Price history unavailable")
+            Text((reason == .network ? "Price history unavailable" : "Not enough history yet").localized())
                 .font(.headline)
+            Text(
+                (
+                    reason == .network
+                        ? "Check your connection and try again."
+                        : "We don't have enough price data for this market area and range yet. Check back later."
+                ).localized()
+            )
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 32)
             Button("Try Again") {
                 Task { await loadHistories() }
             }
@@ -224,7 +245,7 @@ struct PriceHistoryView: View {
             return
         } catch {
             print("Price history download failed: \(error).")
-            loadState = .failed
+            loadState = .failed(.network)
         }
     }
 
@@ -235,7 +256,19 @@ struct PriceHistoryView: View {
             }
             result[range] = entry.value
         }
-        return histories.isEmpty ? .failed : .loaded(histories)
+        return histories.isEmpty ? .failed(.insufficientData) : .loaded(histories)
+    }
+
+    /// Compares the currently active price (already includes the user's add-ons, same as `history.averagePrice`)
+    /// against the selected period's average, as a percentage (negative = currently cheaper than usual).
+    private func liveComparisonPercent(for history: PriceStatisticsData) -> Double? {
+        guard history.averagePrice != 0,
+              let currentPrice = energyDataService.energyData?.currentPrices.first(where: { $0.startTime <= Date() && $0.endTime > Date() })
+                ?? energyDataService.energyData?.currentPrices.first
+        else {
+            return nil
+        }
+        return (currentPrice.marketprice - history.averagePrice) / abs(history.averagePrice) * 100
     }
 
     private func chartTrend(
@@ -346,6 +379,7 @@ private struct PriceHistoryContent: View {
     let history: PriceStatisticsData
     let chartTrend: [PriceStatisticsData.TrendPoint]
     let range: PriceHistoryRange
+    let liveComparisonPercent: Double?
 
     var body: some View {
         ScrollView {
@@ -353,7 +387,9 @@ private struct PriceHistoryContent: View {
                 PriceHistorySummaryCard(
                     sample: history,
                     comparisonLabel: range.comparisonLabel,
-                    showsComparison: range != .twoYears
+                    showsComparison: range != .twoYears,
+                    liveComparisonPercent: liveComparisonPercent,
+                    periodLabel: range.periodLabel
                 )
                 PriceHistoryTrendCard(sample: history, trend: chartTrend, range: range)
 
@@ -385,19 +421,18 @@ private struct PriceHistoryContent: View {
                         systemImage: "minus.circle.fill",
                         tint: AppTheme.success
                     )
-                    PriceHistoryMetricTile(
-                        title: "Below average",
-                        value: (history.belowAveragePercent / 100).formatted(
-                            .percent.precision(.fractionLength(0))
-                        ),
-                        detail: "Of all intervals".localized(),
-                        systemImage: "chart.bar.fill",
-                        tint: AppTheme.accent
-                    )
+                    if let swing = history.typicalSwing {
+                        PriceHistoryMetricTile(
+                            title: "Typical swing",
+                            value: historyPriceText(swing),
+                            detail: range.swingLabel.localized(),
+                            systemImage: "arrow.up.arrow.down",
+                            tint: AppTheme.accent
+                        )
+                    }
                 }
 
-                PriceHistoryHighlightCard(sample: history)
-
+                PriceHistoryWeekdayPatternCard(pattern: history.weekdayHourPattern)
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
@@ -410,6 +445,8 @@ private struct PriceHistorySummaryCard: View {
     let sample: PriceStatisticsData
     let comparisonLabel: String
     let showsComparison: Bool
+    let liveComparisonPercent: Double?
+    let periodLabel: String
 
     private var changeTint: Color {
         (sample.comparisonChangePercent ?? 0) <= 0 ? AppTheme.success : AppTheme.error
@@ -424,6 +461,19 @@ private struct PriceHistorySummaryCard: View {
             .formatted(.percent.precision(.fractionLength(1)))
         let format = (sample.comparisonChangePercent ?? 0) <= 0 ? "%@ lower".localized() : "%@ higher".localized()
         return String(format: format, percentage)
+    }
+
+    private var liveTint: Color {
+        (liveComparisonPercent ?? 0) <= 0 ? AppTheme.success : AppTheme.error
+    }
+
+    private var liveText: String {
+        let percentage = (abs(liveComparisonPercent ?? 0) / 100)
+            .formatted(.percent.precision(.fractionLength(0)))
+        let format = (liveComparisonPercent ?? 0) <= 0
+            ? "Right now: %@ below %@ average".localized()
+            : "Right now: %@ above %@ average".localized()
+        return String(format: format, percentage, periodLabel.localized())
     }
 
     var body: some View {
@@ -454,7 +504,21 @@ private struct PriceHistorySummaryCard: View {
                         .foregroundStyle(.secondary)
                 }
             }
+
+            if let liveComparisonPercent {
+                HStack(spacing: 6) {
+                    Image(systemName: "bolt.fill")
+                        .font(.caption2)
+                        .foregroundStyle(liveTint)
+                    Text(liveText)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                .padding(.top, 2)
+                .accessibilityElement(children: .combine)
+            }
         }
+        .animation(.easeInOut(duration: 0.3), value: liveComparisonPercent)
     }
 }
 
@@ -732,30 +796,112 @@ private struct PriceHistoryMetricTile: View {
     }
 }
 
-private struct PriceHistoryHighlightCard: View {
-    let sample: PriceStatisticsData
+/// Weekday x time-of-day price pattern, computed by the backend from this market area's own
+/// price history (`weekday_hour_pattern`) — real per-user data, not an illustration.
+private struct PriceHistoryWeekdayPatternCard: View {
+    let pattern: [PriceStatisticsData.WeekdayHourAveragePrice]
+
+    private static let hourLabels = ["0", "4", "8", "12", "16", "20"]
+    private static let weekdayLabels = DateFormatter().shortWeekdaySymbols
+        ?? ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+    private static let weekdayLabelWidth: CGFloat = 30
+
+    /// 7 (Sunday-first) x 6 (4-hour bucket) grid of average prices, or nil where no data exists.
+    private var bucketedAverages: [[Double?]] {
+        var byWeekdayHour: [Int: [Int: Double]] = [:]
+        for entry in pattern {
+            byWeekdayHour[entry.weekday, default: [:]][entry.hour] = entry.averagePrice
+        }
+        return (0..<7).map { row in
+            // Sunday-first row order (row 0 = Sun) to ISO weekday (Sun = 7).
+            let isoWeekday = row == 0 ? 7 : row
+            let hourly = byWeekdayHour[isoWeekday] ?? [:]
+            return stride(from: 0, to: 24, by: 4).map { bucketStart in
+                let values = (bucketStart..<(bucketStart + 4)).compactMap { hourly[$0] }
+                return values.isEmpty ? nil : values.reduce(0, +) / Double(values.count)
+            }
+        }
+    }
+
+    /// The same grid, normalized to 0 (cheapest) ... 1 (priciest) across the whole pattern.
+    private var normalizedMatrix: [[Double?]] {
+        let buckets = bucketedAverages
+        let allValues = buckets.flatMap { $0.compactMap { $0 } }
+        guard let minValue = allValues.min(), let maxValue = allValues.max(), maxValue > minValue else {
+            return buckets.map { $0.map { $0 == nil ? nil : 0.5 } }
+        }
+        return buckets.map { row in
+            row.map { value in
+                value.map { ($0 - minValue) / (maxValue - minValue) }
+            }
+        }
+    }
+
+    private func color(for value: Double?) -> Color {
+        guard let value else { return Color.secondary.opacity(0.08) }
+        let palette: [Color] = [
+            AppTheme.success.opacity(0.85),
+            AppTheme.success.opacity(0.4),
+            Color.secondary.opacity(0.15),
+            AppTheme.error.opacity(0.4),
+            AppTheme.error.opacity(0.85),
+        ]
+        let index = min(max(Int(value * Double(palette.count)), 0), palette.count - 1)
+        return palette[index]
+    }
 
     var body: some View {
-        InsightsCard(tint: AppTheme.success) {
-            Label(sample.highlightTitle.localized(), systemImage: "sparkles")
+        InsightsCard(tint: AppTheme.accent) {
+            Label("Typical price pattern".localized(), systemImage: "clock.fill")
                 .font(.headline)
                 .foregroundStyle(.primary)
 
-            HStack(alignment: .firstTextBaseline) {
-                Text(sample.highlightValue)
-                    .font(.title2.weight(.bold))
+            Text("Based on this market area's own price history for the selected period.".localized())
+                .font(.caption2)
+                .foregroundStyle(.secondary)
 
-                Spacer()
+            VStack(alignment: .leading, spacing: 4) {
+                HStack(spacing: 4) {
+                    Color.clear.frame(width: Self.weekdayLabelWidth, height: 1)
+                    ForEach(Self.hourLabels, id: \.self) { label in
+                        Text(label)
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                            .frame(maxWidth: .infinity)
+                    }
+                }
 
-                Text(
-                    String(
-                        format: "%@ average".localized(),
-                        historyPriceText(sample.highlight.averagePrice)
-                    )
+                let matrix = normalizedMatrix
+                ForEach(Self.weekdayLabels.indices, id: \.self) { row in
+                    HStack(spacing: 4) {
+                        Text(Self.weekdayLabels[row])
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                            .frame(width: Self.weekdayLabelWidth, alignment: .leading)
+
+                        ForEach(matrix[row].indices, id: \.self) { column in
+                            RoundedRectangle(cornerRadius: 4, style: .continuous)
+                                .fill(color(for: matrix[row][column]))
+                                .frame(height: 18)
+                        }
+                    }
+                }
+            }
+
+            HStack(spacing: 6) {
+                Text("Cheaper".localized())
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                LinearGradient(
+                    colors: [AppTheme.success.opacity(0.85), Color.secondary.opacity(0.15), AppTheme.error.opacity(0.85)],
+                    startPoint: .leading,
+                    endPoint: .trailing
                 )
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(AppTheme.success)
-                    .monospacedDigit()
+                .frame(height: 4)
+                .clipShape(Capsule())
+                Text("More expensive".localized())
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
             }
         }
     }
@@ -785,6 +931,7 @@ private func historyPriceText(_ price: Double, includesUnit: Bool = true) -> Str
         PriceHistoryView(previewData: .preview)
     }
     .environmentObject(SettingsManager.shared)
+    .environmentObject(EnergyDataService())
 }
 
 private extension PriceStatisticsData {
@@ -799,6 +946,17 @@ private extension PriceStatisticsData {
                     averagePrice: value
                 )
             }
+        let weekdayHourPattern = (1...7).flatMap { weekday in
+            (0..<24).map { hour -> WeekdayHourAveragePrice in
+                let base = weekday >= 6 ? 18.0 : 24.0
+                let hourOffset: Double = switch hour {
+                case 11...14: -8
+                case 6...7, 17...19: 10
+                default: 0
+                }
+                return WeekdayHourAveragePrice(weekday: weekday, hour: hour, averagePrice: base + hourOffset)
+            }
+        }
         return PriceStatisticsData(
             averagePrice: 24.10,
             comparisonChangePercent: -7.8,
@@ -806,14 +964,8 @@ private extension PriceStatisticsData {
             highest: Extremum(price: 68.44, timestamp: today.addingTimeInterval(-18 * 86_400)),
             negativeHours: 11,
             belowAveragePercent: 58,
-            distribution: Distribution(
-                cheapPercent: 38,
-                typicalPercent: 44,
-                expensivePercent: 18,
-                cheapBelow: 20,
-                expensiveAbove: 35
-            ),
             trend: trend,
+            weekdayHourPattern: weekdayHourPattern,
             highlight: Highlight(kind: "weekday", timestamp: nil, value: 7, averagePrice: 19.80),
             coverage: Coverage(percent: 100, isComplete: true, isUsable: true)
         )

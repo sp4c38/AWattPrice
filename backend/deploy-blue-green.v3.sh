@@ -53,6 +53,46 @@ NOTIFICATION_PROFILE_STORE="${HOST_ROOT}/data/notification-profiles.json"
 step() { echo; echo "==> $*"; }
 info() { echo "    $*"; }
 
+verify_price_statistics_contract() {
+  local port="$1"
+  local label="$2"
+  local response
+
+  if ! response=$(ssh "$SERVER" "curl -fsS -X POST -H 'Content-Type: application/json' --data '{\"add_ons\":[]}' 'http://127.0.0.1:${port}/prices/DE-LU/statistics'"); then
+    echo "ERROR: ${label} price-statistics request failed on port ${port}." >&2
+    return 1
+  fi
+
+  if ! printf '%s' "$response" | python3 -c '
+import json
+import sys
+
+payload = json.load(sys.stdin)
+if not isinstance(payload, dict) or not payload:
+    raise SystemExit("empty statistics response")
+
+distribution_keys = {
+    "cheap_percent",
+    "typical_percent",
+    "expensive_percent",
+    "cheap_below",
+    "expensive_above",
+}
+for range_key, statistics in payload.items():
+    distribution = statistics.get("distribution")
+    pattern = statistics.get("weekday_hour_pattern")
+    if not isinstance(distribution, dict) or not distribution_keys.issubset(distribution):
+        raise SystemExit(f"{range_key}: legacy distribution contract is missing")
+    if not isinstance(pattern, list) or not pattern:
+        raise SystemExit(f"{range_key}: weekday_hour_pattern is missing or empty")
+'; then
+    echo "ERROR: ${label} price-statistics response failed contract validation on port ${port}." >&2
+    return 1
+  fi
+
+  info "${label} price-statistics contract is valid"
+}
+
 # ---------------------------------------------------------------------------
 # Step 1: Back up notification profiles locally
 # ---------------------------------------------------------------------------
@@ -155,6 +195,11 @@ for path in "/areas/" "/prices/AT" "/generation-mix/DE-LU/history?hours=168"; do
   info "Green ${path} responded 200 OK"
 done
 
+if ! verify_price_statistics_contract "$GREEN_PORT" "Green"; then
+  ssh "$SERVER" "$REMOTE_DOCKER rm -f '$GREEN_API' '$GREEN_NOTIFICATIONS' '$GREEN_REFRESHER' 2>/dev/null || true" >&2
+  exit 1
+fi
+
 ssh "$SERVER" "curl -s http://127.0.0.1:${GREEN_PORT}/prices/AT" | python3 -m json.tool | sed -n '1,6p'
 
 # ---------------------------------------------------------------------------
@@ -250,6 +295,11 @@ for path in "/areas/" "/prices/AT" "/generation-mix/DE-LU/history?hours=168"; do
   fi
   info "Compose ${path} responded 200 OK"
 done
+
+if ! verify_price_statistics_contract "$BLUE_PORT" "Compose"; then
+  echo "Leaving nginx on green port ${GREEN_PORT}; inspect compose/API logs before retrying." >&2
+  exit 1
+fi
 
 step "Recreating background workers through compose while green serves traffic"
 ssh "$SERVER" \

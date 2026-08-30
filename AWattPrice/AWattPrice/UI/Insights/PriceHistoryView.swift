@@ -29,16 +29,6 @@ private enum PriceHistoryRange: String, CaseIterable, Identifiable, Hashable {
         }
     }
 
-    /// Names the period itself, for phrases like "12% below <periodLabel> average".
-    var periodLabel: String {
-        switch self {
-        case .month: "this month's"
-        case .quarter: "this quarter's"
-        case .year: "this year's"
-        case .twoYears: "these two years'"
-        }
-    }
-
     /// What consecutive trend buckets represent for this range, for the "typical swing" tile.
     var swingLabel: String {
         switch self {
@@ -153,8 +143,7 @@ struct PriceHistoryView: View {
                         PriceHistoryContent(
                             history: history,
                             chartTrend: chartTrend(from: histories, for: selectedRange),
-                            range: selectedRange,
-                            liveComparisonPercent: liveComparisonPercent(for: history)
+                            range: selectedRange
                         )
                             .transition(.opacity)
                     } else {
@@ -257,18 +246,6 @@ struct PriceHistoryView: View {
             result[range] = entry.value
         }
         return histories.isEmpty ? .failed(.insufficientData) : .loaded(histories)
-    }
-
-    /// Compares the currently active price (already includes the user's add-ons, same as `history.averagePrice`)
-    /// against the selected period's average, as a percentage (negative = currently cheaper than usual).
-    private func liveComparisonPercent(for history: PriceStatisticsData) -> Double? {
-        guard history.averagePrice != 0,
-              let currentPrice = energyDataService.energyData?.currentPrices.first(where: { $0.startTime <= Date() && $0.endTime > Date() })
-                ?? energyDataService.energyData?.currentPrices.first
-        else {
-            return nil
-        }
-        return (currentPrice.marketprice - history.averagePrice) / abs(history.averagePrice) * 100
     }
 
     private func chartTrend(
@@ -379,7 +356,6 @@ private struct PriceHistoryContent: View {
     let history: PriceStatisticsData
     let chartTrend: [PriceStatisticsData.TrendPoint]
     let range: PriceHistoryRange
-    let liveComparisonPercent: Double?
 
     var body: some View {
         ScrollView {
@@ -387,9 +363,7 @@ private struct PriceHistoryContent: View {
                 PriceHistorySummaryCard(
                     sample: history,
                     comparisonLabel: range.comparisonLabel,
-                    showsComparison: range != .twoYears,
-                    liveComparisonPercent: liveComparisonPercent,
-                    periodLabel: range.periodLabel
+                    showsComparison: range != .twoYears
                 )
                 PriceHistoryTrendCard(sample: history, trend: chartTrend, range: range)
 
@@ -445,8 +419,6 @@ private struct PriceHistorySummaryCard: View {
     let sample: PriceStatisticsData
     let comparisonLabel: String
     let showsComparison: Bool
-    let liveComparisonPercent: Double?
-    let periodLabel: String
 
     private var changeTint: Color {
         (sample.comparisonChangePercent ?? 0) <= 0 ? AppTheme.success : AppTheme.error
@@ -461,19 +433,6 @@ private struct PriceHistorySummaryCard: View {
             .formatted(.percent.precision(.fractionLength(1)))
         let format = (sample.comparisonChangePercent ?? 0) <= 0 ? "%@ lower".localized() : "%@ higher".localized()
         return String(format: format, percentage)
-    }
-
-    private var liveTint: Color {
-        (liveComparisonPercent ?? 0) <= 0 ? AppTheme.success : AppTheme.error
-    }
-
-    private var liveText: String {
-        let percentage = (abs(liveComparisonPercent ?? 0) / 100)
-            .formatted(.percent.precision(.fractionLength(0)))
-        let format = (liveComparisonPercent ?? 0) <= 0
-            ? "Right now: %@ below %@ average".localized()
-            : "Right now: %@ above %@ average".localized()
-        return String(format: format, percentage, periodLabel.localized())
     }
 
     var body: some View {
@@ -504,21 +463,7 @@ private struct PriceHistorySummaryCard: View {
                         .foregroundStyle(.secondary)
                 }
             }
-
-            if let liveComparisonPercent {
-                HStack(spacing: 6) {
-                    Image(systemName: "bolt.fill")
-                        .font(.caption2)
-                        .foregroundStyle(liveTint)
-                    Text(liveText)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-                .padding(.top, 2)
-                .accessibilityElement(children: .combine)
-            }
         }
-        .animation(.easeInOut(duration: 0.3), value: liveComparisonPercent)
     }
 }
 
@@ -768,14 +713,15 @@ private struct PriceHistoryMetricTile: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            HStack(spacing: 6) {
+            HStack(alignment: .top, spacing: 6) {
                 Image(systemName: systemImage)
                     .foregroundStyle(tint)
 
                 Text(title.localized())
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(.secondary)
-                    .lineLimit(1)
+                    .lineLimit(nil)
+                    .fixedSize(horizontal: false, vertical: true)
             }
 
             Text(value)
@@ -802,19 +748,22 @@ private struct PriceHistoryWeekdayPatternCard: View {
     let pattern: [PriceStatisticsData.WeekdayHourAveragePrice]
 
     private static let hourLabels = ["0", "4", "8", "12", "16", "20"]
-    private static let weekdayLabels = DateFormatter().shortWeekdaySymbols
-        ?? ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+    /// Monday-first, matching the ISO week used for `weekday` in the backend data.
+    private static let weekdayLabels: [String] = {
+        let sundayFirst = DateFormatter().shortWeekdaySymbols ?? ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+        return Array(sundayFirst[1...]) + [sundayFirst[0]]
+    }()
     private static let weekdayLabelWidth: CGFloat = 30
 
-    /// 7 (Sunday-first) x 6 (4-hour bucket) grid of average prices, or nil where no data exists.
+    /// 7 (Monday-first) x 6 (4-hour bucket) grid of average prices, or nil where no data exists.
     private var bucketedAverages: [[Double?]] {
         var byWeekdayHour: [Int: [Int: Double]] = [:]
         for entry in pattern {
             byWeekdayHour[entry.weekday, default: [:]][entry.hour] = entry.averagePrice
         }
         return (0..<7).map { row in
-            // Sunday-first row order (row 0 = Sun) to ISO weekday (Sun = 7).
-            let isoWeekday = row == 0 ? 7 : row
+            // Monday-first row order maps directly to ISO weekday (Mon = 1 ... Sun = 7).
+            let isoWeekday = row + 1
             let hourly = byWeekdayHour[isoWeekday] ?? [:]
             return stride(from: 0, to: 24, by: 4).map { bucketStart in
                 let values = (bucketStart..<(bucketStart + 4)).compactMap { hourly[$0] }
@@ -852,13 +801,16 @@ private struct PriceHistoryWeekdayPatternCard: View {
 
     var body: some View {
         InsightsCard(tint: AppTheme.accent) {
-            Label("Typical price pattern".localized(), systemImage: "clock.fill")
-                .font(.headline)
-                .foregroundStyle(.primary)
-
-            Text("Based on this market area's own price history for the selected period.".localized())
-                .font(.caption2)
-                .foregroundStyle(.secondary)
+            HStack(alignment: .top, spacing: 6) {
+                Image(systemName: "clock.fill")
+                    .font(.headline)
+                Text("Typical price pattern".localized())
+                    .font(.headline)
+                    .lineLimit(nil)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .foregroundStyle(.primary)
 
             VStack(alignment: .leading, spacing: 4) {
                 HStack(spacing: 4) {

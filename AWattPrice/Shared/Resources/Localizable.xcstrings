@@ -1,193 +1,6 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "Based on this market area's own price history for the selected period." : {
-      "comment" : "String.localized()",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Basierend auf der eigenen Preishistorie dieses Marktgebiets im ausgewählten Zeitraum."
-          }
-        }
-      }
-    },
-    "Between days" : {
-      "comment" : "String.localized()",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Von Tag zu Tag"
-          }
-        }
-      }
-    },
-    "Between months" : {
-      "comment" : "String.localized()",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Von Monat zu Monat"
-          }
-        }
-      }
-    },
-    "Between weeks" : {
-      "comment" : "String.localized()",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Von Woche zu Woche"
-          }
-        }
-      }
-    },
-    "Check your connection and try again." : {
-      "comment" : "String.localized()",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Überprüfe deine Verbindung und versuche es erneut."
-          }
-        }
-      }
-    },
-    "Cheaper" : {
-      "comment" : "String.localized()",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Günstiger"
-          }
-        }
-      }
-    },
-    "More expensive" : {
-      "comment" : "String.localized()",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Teurer"
-          }
-        }
-      }
-    },
-    "Not enough history yet" : {
-      "comment" : "String.localized()",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Noch nicht genügend Preisdaten"
-          }
-        }
-      }
-    },
-    "Right now: %@ above %@ average" : {
-      "comment" : "String.localized()",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Jetzt: %@ über dem Durchschnitt %@"
-          }
-        }
-      }
-    },
-    "Right now: %@ below %@ average" : {
-      "comment" : "String.localized()",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Jetzt: %@ unter dem Durchschnitt %@"
-          }
-        }
-      }
-    },
-    "these two years'" : {
-      "comment" : "String.localized()",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "dieser zwei Jahre"
-          }
-        }
-      }
-    },
-    "this month's" : {
-      "comment" : "String.localized()",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "dieses Monats"
-          }
-        }
-      }
-    },
-    "this quarter's" : {
-      "comment" : "String.localized()",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "dieses Quartals"
-          }
-        }
-      }
-    },
-    "this year's" : {
-      "comment" : "String.localized()",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "dieses Jahres"
-          }
-        }
-      }
-    },
-    "Typical price pattern" : {
-      "comment" : "String.localized()",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Typisches Preismuster"
-          }
-        }
-      }
-    },
-    "Typical swing" : {
-      "comment" : "String.localized()",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Typische Preisschwankung"
-          }
-        }
-      }
-    },
-    "We don't have enough price data for this market area and range yet. Check back later." : {
-      "comment" : "String.localized()",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Für dieses Marktgebiet und den ausgewählten Zeitraum liegen noch nicht genügend Preisdaten vor. Schau später noch einmal vorbei."
-          }
-        }
-      }
-    },
     "·" : {
       "localizations" : {
         "de" : {
@@ -864,6 +677,18 @@
         }
       }
     },
+    "Based on this market area's own price history for the selected period." : {
+      "comment" : "String.localized()",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Basierend auf der eigenen Preishistorie dieses Marktgebiets im ausgewählten Zeitraum."
+          }
+        }
+      }
+    },
     "Basic electricity provider fee." : {
       "comment" : "Localized custom view text",
       "extractionState" : "stale",
@@ -896,6 +721,42 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Below average"
+          }
+        }
+      }
+    },
+    "Between days" : {
+      "comment" : "String.localized()",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Von Tag zu Tag"
+          }
+        }
+      }
+    },
+    "Between months" : {
+      "comment" : "String.localized()",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Von Monat zu Monat"
+          }
+        }
+      }
+    },
+    "Between weeks" : {
+      "comment" : "String.localized()",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Von Woche zu Woche"
           }
         }
       }
@@ -1037,6 +898,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cheap hours **tomorrow**."
+          }
+        }
+      }
+    },
+    "Cheaper" : {
+      "comment" : "String.localized()",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Günstiger"
           }
         }
       }
@@ -1197,6 +1070,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "An error occurred.\nPlease try again later."
+          }
+        }
+      }
+    },
+    "Check your connection and try again." : {
+      "comment" : "String.localized()",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Überprüfe deine Verbindung und versuche es erneut."
           }
         }
       }
@@ -2906,6 +2791,18 @@
         }
       }
     },
+    "More expensive" : {
+      "comment" : "String.localized()",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Teurer"
+          }
+        }
+      }
+    },
     "Most expensive times" : {
       "comment" : "Localized custom view text",
       "extractionState" : "stale",
@@ -3131,6 +3028,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No Result Found"
+          }
+        }
+      }
+    },
+    "Not enough history yet" : {
+      "comment" : "String.localized()",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Noch nicht genügend Preisdaten"
           }
         }
       }
@@ -4682,6 +4591,30 @@
         }
       }
     },
+    "Right now: %@ above %@ average" : {
+      "comment" : "String.localized()",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jetzt: %@ über dem Durchschnitt %@"
+          }
+        }
+      }
+    },
+    "Right now: %@ below %@ average" : {
+      "comment" : "String.localized()",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jetzt: %@ unter dem Durchschnitt %@"
+          }
+        }
+      }
+    },
     "Saving price zone…" : {
       "comment" : "SwiftUI literal",
       "extractionState" : "stale",
@@ -5286,6 +5219,54 @@
         }
       }
     },
+    "these two years'" : {
+      "comment" : "String.localized()",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "dieser zwei Jahre"
+          }
+        }
+      }
+    },
+    "this month's" : {
+      "comment" : "String.localized()",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "dieses Monats"
+          }
+        }
+      }
+    },
+    "this quarter's" : {
+      "comment" : "String.localized()",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "dieses Quartals"
+          }
+        }
+      }
+    },
+    "this year's" : {
+      "comment" : "String.localized()",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "dieses Jahres"
+          }
+        }
+      }
+    },
     "Time" : {
       "comment" : "String(localized:)",
       "localizations" : {
@@ -5478,6 +5459,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Typical"
+          }
+        }
+      }
+    },
+    "Typical price pattern" : {
+      "comment" : "String.localized()",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Typisches Preismuster"
+          }
+        }
+      }
+    },
+    "Typical swing" : {
+      "comment" : "String.localized()",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Typische Preisschwankung"
           }
         }
       }
@@ -5691,6 +5696,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Warn above"
+          }
+        }
+      }
+    },
+    "We don't have enough price data for this market area and range yet. Check back later." : {
+      "comment" : "String.localized()",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Für dieses Marktgebiet und den ausgewählten Zeitraum liegen noch nicht genügend Preisdaten vor. Schau später noch einmal vorbei."
           }
         }
       }

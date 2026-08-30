@@ -299,7 +299,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "1mo"
+            "value" : "1 Month"
           }
         }
       }
@@ -317,7 +317,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "1yr"
+            "value" : "1 Year"
           }
         }
       }
@@ -353,7 +353,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "2yr"
+            "value" : "2 Years"
           }
         }
       }
@@ -371,7 +371,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "3mo"
+            "value" : "3 Months"
           }
         }
       }

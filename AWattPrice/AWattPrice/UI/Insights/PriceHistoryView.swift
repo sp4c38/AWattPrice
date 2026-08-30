@@ -96,6 +96,7 @@ struct PriceHistoryNavigationCard: View {
 
 struct PriceHistoryView: View {
     @EnvironmentObject private var settingsManager: SettingsManager
+    @EnvironmentObject private var energyDataService: EnergyDataService
     @State private var selectedRange: PriceHistoryRange = .month
     @State private var loadState: PriceHistoryLoadState
     private let previewData: PriceStatisticsData?
@@ -196,6 +197,13 @@ struct PriceHistoryView: View {
             )
             return
         }
+
+        let requestKey = requestKey
+        if let cache = energyDataService.priceStatisticsCache, cache.isValid(for: requestKey) {
+            loadState = decodeRanges(from: cache.histories)
+            return
+        }
+
         loadState = .loading
         let setting = settingsManager.setting
 
@@ -206,19 +214,28 @@ struct PriceHistoryView: View {
             )
             guard Task.isCancelled == false else { return }
 
-            let histories: [PriceHistoryRange: PriceStatisticsData] = response.reduce(into: [:]) { result, entry in
-                guard let range = PriceHistoryRange(rawValue: entry.key), entry.value.coverage.isUsable else {
-                    return
-                }
-                result[range] = entry.value
-            }
-            loadState = histories.isEmpty ? .failed : .loaded(histories)
+            energyDataService.priceStatisticsCache = PriceStatisticsCache(
+                requestKey: requestKey,
+                cachedAt: Date(),
+                histories: response
+            )
+            loadState = decodeRanges(from: response)
         } catch is CancellationError {
             return
         } catch {
             print("Price history download failed: \(error).")
             loadState = .failed
         }
+    }
+
+    private func decodeRanges(from response: [String: PriceStatisticsData]) -> PriceHistoryLoadState {
+        let histories: [PriceHistoryRange: PriceStatisticsData] = response.reduce(into: [:]) { result, entry in
+            guard let range = PriceHistoryRange(rawValue: entry.key), entry.value.coverage.isUsable else {
+                return
+            }
+            result[range] = entry.value
+        }
+        return histories.isEmpty ? .failed : .loaded(histories)
     }
 
     private func chartTrend(

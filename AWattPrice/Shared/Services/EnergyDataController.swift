@@ -265,6 +265,21 @@ struct PriceStatisticsData: Decodable {
     }
 }
 
+/// Caches a price statistics response for as long as the request key (market
+/// area + pricing config) is unchanged and the calendar day hasn't rolled
+/// over — day-ahead prices only publish once a day, so there is nothing new
+/// to fetch in between.
+struct PriceStatisticsCache {
+    let requestKey: String
+    let cachedAt: Date
+    let histories: [String: PriceStatisticsData]
+
+    func isValid(for requestKey: String, now: Date = Date()) -> Bool {
+        guard requestKey == self.requestKey else { return false }
+        return Calendar.current.isDate(cachedAt, inSameDayAs: now)
+    }
+}
+
 struct GenerationMixCategory: Decodable, Identifiable {
     let category: String
     let generationMW: Double
@@ -598,6 +613,7 @@ class EnergyDataService: ObservableObject {
     @Published var generationMixData: GenerationMixData? = nil
       @Published var generationMixDownloadState: GenerationMixDownloadState = .idle
       @Published var generationMixHistoryData: GenerationMixHistoryData? = nil
+      @Published var priceStatisticsCache: PriceStatisticsCache? = nil
       
       func download(setting: Setting) {
         let pricingConfiguration = setting.pricingConfiguration

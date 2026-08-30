@@ -367,6 +367,11 @@ private struct PriceHistoryContent: View {
                 )
                 PriceHistoryTrendCard(sample: history, trend: chartTrend, range: range)
 
+                PriceHistoryWeekdayPatternCard(
+                    pattern: history.weekdayHourPattern,
+                    averagePrice: history.averagePrice
+                )
+
                 LazyVGrid(
                     columns: [
                         GridItem(.flexible(), spacing: 10),
@@ -405,11 +410,6 @@ private struct PriceHistoryContent: View {
                         )
                     }
                 }
-
-                PriceHistoryWeekdayPatternCard(
-                    pattern: history.weekdayHourPattern,
-                    averagePrice: history.averagePrice
-                )
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)

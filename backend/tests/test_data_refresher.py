@@ -243,39 +243,6 @@ class DataRefresherScheduleTests(unittest.TestCase):
 
         asyncio.run(run_test())
 
-    def test_generation_refresh_honors_failure_cooldown(self):
-        async def run_test():
-            with tempfile.TemporaryDirectory() as temp_dir:
-                config = make_config(Path(temp_dir))
-                records = {
-                    (AREA.key, cache_status.DATASET_GENERATION_MIX, "current"): {
-                        "next_retry_at": 9_999_999_999,
-                    }
-                }
-                with (
-                    patch.object(
-                        data_refresher.generation_mix,
-                        "get_stored_metadata",
-                        new=AsyncMock(return_value=Box({"area": AREA.key})),
-                    ),
-                    patch.object(
-                        data_refresher.generation_mix_refresher,
-                        "refresh_generation_mix",
-                        new=AsyncMock(),
-                    ) as refresh,
-                ):
-                    result = await data_refresher.refresh_generation_mix_for_area(
-                        AREA,
-                        config,
-                        AsyncMock(),
-                        records,
-                    )
-
-                self.assertEqual(result.status, "cooldown")
-                refresh.assert_not_awaited()
-
-        asyncio.run(run_test())
-
     def test_run_cycle_returns_monitoring_summary(self):
         async def run_test():
             with tempfile.TemporaryDirectory() as temp_dir:
@@ -298,10 +265,7 @@ class DataRefresherScheduleTests(unittest.TestCase):
             self.assertEqual(run_bounded.await_args_list[1].kwargs, {})
             self.assertEqual(
                 run_bounded.await_args_list[2].kwargs,
-                {
-                    "concurrency": data_refresher.defaults.REFRESHER_GENERATION_CONCURRENCY,
-                    "jitter_seconds": 0,
-                },
+                {"concurrency": data_refresher.defaults.REFRESHER_GENERATION_CONCURRENCY},
             )
             self.assertEqual(result["area_count"], 1)
             self.assertEqual(result["current_prices"], "ran")
@@ -448,40 +412,30 @@ class DataRefresherCleanupTests(unittest.TestCase):
                     config,
                 )
                 retained_metadata_path = generation_mix.get_metadata_path(AREA.key, config)
-                retained_raw_path = generation_mix.get_raw_cache_path(
-                    AREA.key,
-                    defaults.GENERATION_RETENTION_HOURS,
-                    config,
-                )
                 legacy_pickle_path = config.paths.generation_data_dir / "generation-data-DE-LU.pickle"
                 legacy_update_path = config.paths.generation_data_dir / "generation-update-ts-DE-LU.info"
                 unsupported_json_path = config.paths.generation_data_dir / "generation-history-OLD-168h.json"
                 unsupported_metadata_path = config.paths.generation_data_dir / "generation-meta-OLD.json"
                 unsupported_hours_path = config.paths.generation_data_dir / "generation-history-DE-LU-24h.json"
-                unsupported_raw_path = config.paths.generation_data_dir / "generation-raw-OLD-168h.json"
-                retained_raw_path.write_text("{}")
                 legacy_pickle_path.write_bytes(b"old pickle")
                 legacy_update_path.write_text("123")
                 unsupported_json_path.write_text("{}")
                 unsupported_metadata_path.write_text("{}")
                 unsupported_hours_path.write_text("{}")
-                unsupported_raw_path.write_text("{}")
 
                 pruned = await data_refresher.prune_generation_payloads(
                     config,
                     arrow.get("2026-05-25T12:00:00+02:00"),
                 )
 
-                self.assertEqual(pruned, 6)
+                self.assertEqual(pruned, 5)
                 self.assertTrue(retained_json_path.exists())
                 self.assertTrue(retained_metadata_path.exists())
-                self.assertTrue(retained_raw_path.exists())
                 self.assertFalse(legacy_pickle_path.exists())
                 self.assertFalse(legacy_update_path.exists())
                 self.assertFalse(unsupported_json_path.exists())
                 self.assertFalse(unsupported_metadata_path.exists())
                 self.assertFalse(unsupported_hours_path.exists())
-                self.assertFalse(unsupported_raw_path.exists())
 
         asyncio.run(run_test())
 

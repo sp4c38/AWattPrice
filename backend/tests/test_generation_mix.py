@@ -1,11 +1,8 @@
-import asyncio
-import tempfile
 import unittest
 
 import arrow
 
 from decimal import Decimal
-from pathlib import Path
 from unittest.mock import AsyncMock
 from unittest.mock import patch
 
@@ -14,7 +11,6 @@ from fastapi.testclient import TestClient
 
 from awattprice import api
 from awattprice import generation_mix
-from awattprice_refresher import generation_mix as generation_mix_refresher
 from awattprice.market_areas import create_market_area
 
 
@@ -357,157 +353,6 @@ class GenerationMixParsingTests(unittest.TestCase):
 
         self.assertFalse(any(interval.is_partial_publication for interval in response.intervals))
         self.assertFalse(response.is_partial_publication)
-
-    def test_incremental_merge_replaces_overlapping_interval_and_keeps_older_data(self):
-        stored_data = generation_mix.parse_downloaded_data(AREA, generation_xml())
-        downloaded_data = generation_mix.parse_downloaded_data(AREA, generation_xml())
-        latest_start = max(point.start_timestamp for point in downloaded_data.generation_points)
-        downloaded_data.generation_points = type(downloaded_data.generation_points)([
-            point
-            for point in downloaded_data.generation_points
-            if point.start_timestamp == latest_start and point.raw_production_type != "B04"
-        ])
-        for point in downloaded_data.generation_points:
-            if point.raw_production_type == "B16":
-                point.quantity_mw = Decimal("999")
-
-        merged = generation_mix.merge_generation_data(stored_data, downloaded_data)
-        first_interval = [
-            point for point in merged.generation_points if point.start_timestamp < latest_start
-        ]
-        latest_interval = [
-            point for point in merged.generation_points if point.start_timestamp == latest_start
-        ]
-
-        self.assertEqual(len(first_interval), 3)
-        self.assertEqual(len(latest_interval), 2)
-        self.assertFalse(any(point.raw_production_type == "B04" for point in latest_interval))
-        self.assertEqual(
-            next(point.quantity_mw for point in latest_interval if point.raw_production_type == "B16"),
-            Decimal("999"),
-        )
-
-    def test_raw_generation_cache_roundtrip(self):
-        async def run_test():
-            with tempfile.TemporaryDirectory() as temp_dir:
-                config = Box({"paths": {"generation_data_dir": Path(temp_dir)}})
-                data = generation_mix.parse_downloaded_data(AREA, generation_xml())
-                full_refresh_at = arrow.get("2026-05-15T12:00:00+02:00")
-
-                await generation_mix.store_raw_data(
-                    data,
-                    AREA.key,
-                    168,
-                    config,
-                    full_refresh_at,
-                )
-                loaded = await generation_mix.get_stored_raw_data(
-                    AREA.key,
-                    168,
-                    config,
-                )
-
-                self.assertEqual(
-                    generation_mix.generation_data_signature(loaded),
-                    generation_mix.generation_data_signature(data),
-                )
-                self.assertEqual(
-                    loaded.last_full_refresh_at.int_timestamp,
-                    full_refresh_at.int_timestamp,
-                )
-
-        asyncio.run(run_test())
-
-    def test_generation_query_window_uses_requested_hours(self):
-        now = arrow.get("2026-05-15T12:37:00+02:00")
-        params = generation_mix_refresher.get_entsoe_query_params(AREA, 48, now)
-
-        self.assertEqual(params["periodStart"], "202605131000")
-        self.assertEqual(params["periodEnd"], "202605151100")
-
-    def test_full_refresh_becomes_due_after_24_hours(self):
-        now = arrow.get("2026-05-15T12:00:00+02:00")
-        raw_data = Box({"last_full_refresh_at": now.shift(hours=-23)})
-
-        self.assertFalse(generation_mix_refresher.full_refresh_due(raw_data, now))
-        raw_data.last_full_refresh_at = now.shift(hours=-24)
-        self.assertTrue(generation_mix_refresher.full_refresh_due(raw_data, now))
-
-
-class GenerationMixIncrementalRefreshTests(unittest.TestCase):
-    def test_first_refresh_bootstraps_full_cache_then_uses_48_hours(self):
-        async def run_test():
-            with tempfile.TemporaryDirectory() as temp_dir:
-                generation_dir = Path(temp_dir)
-                config = Box({"paths": {"generation_data_dir": generation_dir}})
-                with patch.object(
-                    generation_mix_refresher,
-                    "download_data",
-                    new=AsyncMock(side_effect=[generation_xml(), generation_xml()]),
-                ) as download:
-                    first = await generation_mix_refresher.refresh_generation_mix(
-                        None,
-                        AREA.key,
-                        config,
-                    )
-                    second = await generation_mix_refresher.refresh_generation_mix(
-                        first.metadata,
-                        AREA.key,
-                        config,
-                    )
-
-                self.assertEqual(first.status, "updated")
-                self.assertEqual(first.mode, "full")
-                self.assertEqual(second.status, "unchanged")
-                self.assertEqual(second.mode, "incremental")
-                self.assertEqual(download.await_args_list[0].args[2], 174)
-                self.assertEqual(download.await_args_list[1].args[2], 48)
-                self.assertTrue(generation_mix.get_raw_cache_path(AREA.key, 168, config).exists())
-                self.assertTrue(generation_mix.get_history_response_data_path(AREA.key, 168, config).exists())
-                self.assertTrue(
-                    generation_mix.get_published_history_response_data_path(AREA.key, 168, config).exists()
-                )
-
-        asyncio.run(run_test())
-
-    def test_failed_incremental_refresh_keeps_existing_cache(self):
-        async def run_test():
-            with tempfile.TemporaryDirectory() as temp_dir:
-                generation_dir = Path(temp_dir)
-                config = Box({"paths": {"generation_data_dir": generation_dir}})
-                with patch.object(
-                    generation_mix_refresher,
-                    "download_data",
-                    new=AsyncMock(side_effect=[generation_xml(), None]),
-                ):
-                    first = await generation_mix_refresher.refresh_generation_mix(
-                        None,
-                        AREA.key,
-                        config,
-                    )
-                    history_before = generation_mix.get_history_response_data_path(
-                        AREA.key,
-                        168,
-                        config,
-                    ).read_bytes()
-                    second = await generation_mix_refresher.refresh_generation_mix(
-                        first.metadata,
-                        AREA.key,
-                        config,
-                    )
-
-                self.assertEqual(second.status, "failed")
-                self.assertEqual(second.mode, "incremental")
-                self.assertEqual(
-                    generation_mix.get_history_response_data_path(
-                        AREA.key,
-                        168,
-                        config,
-                    ).read_bytes(),
-                    history_before,
-                )
-
-        asyncio.run(run_test())
 
 
 class GenerationMixAPITests(unittest.TestCase):

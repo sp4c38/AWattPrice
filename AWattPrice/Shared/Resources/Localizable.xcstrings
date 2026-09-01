@@ -819,13 +819,13 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ergebnis berechnen"
+            "value" : "Berechnen"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Calculate results"
+            "value" : "Calculate"
           }
         }
       }

@@ -2906,7 +2906,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Next 3 hours"
+            "value" : "Next 3h"
           }
         }
       }
@@ -2975,7 +2975,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Next 12 hours"
+            "value" : "Next 12h"
           }
         }
       }

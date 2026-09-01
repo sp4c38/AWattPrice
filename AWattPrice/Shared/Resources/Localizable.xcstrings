@@ -358,6 +358,24 @@
         }
       }
     },
+    "3h usage" : {
+      "comment" : "Localized custom view text",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3h Nutzung"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3h usage"
+          }
+        }
+      }
+    },
     "3mo" : {
       "comment" : "Three-month price history range",
       "extractionState" : "stale",
@@ -372,24 +390,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "3 Months"
-          }
-        }
-      }
-    },
-    "4h usage" : {
-      "comment" : "Localized custom view text",
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "4h Nutzung"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "4h usage"
           }
         }
       }
@@ -2272,6 +2272,42 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Hydro"
+          }
+        }
+      }
+    },
+    "in %@" : {
+      "comment" : "Localized custom view text",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "in %@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "in %@"
+          }
+        }
+      }
+    },
+    "In Progress" : {
+      "comment" : "Localized custom view text",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Läuft"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In Progress"
           }
         }
       }
@@ -4361,42 +4397,6 @@
         }
       }
     },
-    "Recommended end" : {
-      "comment" : "Localized timeline note",
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Empfohlenes Ende"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Recommended end"
-          }
-        }
-      }
-    },
-    "Recommended start" : {
-      "comment" : "Localized timeline note",
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Empfohlener Start"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Recommended start"
-          }
-        }
-      }
-    },
     "Refresh" : {
       "comment" : "String.localized()",
       "extractionState" : "stale",
@@ -5053,6 +5053,42 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Start"
+          }
+        }
+      }
+    },
+    "Starts In" : {
+      "comment" : "Localized custom view text",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Startet in"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Starts In"
+          }
+        }
+      }
+    },
+    "Status" : {
+      "comment" : "Localized custom view text",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Status"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Status"
           }
         }
       }

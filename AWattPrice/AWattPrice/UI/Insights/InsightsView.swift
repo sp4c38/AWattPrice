@@ -53,7 +53,7 @@ private struct InsightsModel {
         [
             priceWindow(duration: 60 * 60, title: "1h usage", prefersLowerAverage: true),
             priceWindow(duration: 2 * 60 * 60, title: "2h usage", prefersLowerAverage: true),
-            priceWindow(duration: 4 * 60 * 60, title: "4h usage", prefersLowerAverage: true),
+            priceWindow(duration: 3 * 60 * 60, title: "3h usage", prefersLowerAverage: true),
         ]
         .compactMap { $0 }
     }
@@ -62,7 +62,7 @@ private struct InsightsModel {
         [
             priceWindow(duration: 60 * 60, title: "1h usage", prefersLowerAverage: false),
             priceWindow(duration: 2 * 60 * 60, title: "2h usage", prefersLowerAverage: false),
-            priceWindow(duration: 4 * 60 * 60, title: "4h usage", prefersLowerAverage: false),
+            priceWindow(duration: 3 * 60 * 60, title: "3h usage", prefersLowerAverage: false),
         ]
         .compactMap { $0 }
     }
@@ -177,6 +177,27 @@ private struct PriceWindowRow: View {
     let window: PriceWindow
     let tint: Color
 
+    // Only drives the "starts in" text below; the window itself is
+    // calculated once by InsightsModel and never recomputed from this ticking.
+    @State private var now = Date()
+    private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+
+    /// Nil once the window has started — there's nothing left to count down to.
+    private var startsInText: String? {
+        let secondsUntilStart = Int(window.startTime.timeIntervalSince(now))
+        guard secondsUntilStart > 0 else { return nil }
+
+        let hours = secondsUntilStart / 3600
+        let minutes = (secondsUntilStart % 3600) / 60
+        return TotalTimeFormatter().string(hour: hours, minute: minutes)
+    }
+
+    private var subtitleText: String {
+        guard let startsInText else { return window.title.localized() }
+        let inText = String(format: "in %@".localized(), startsInText)
+        return String(format: "%@ · %@".localized(), window.title.localized(), inText)
+    }
+
     var body: some View {
         HStack(spacing: 10) {
             Capsule()
@@ -187,7 +208,7 @@ private struct PriceWindowRow: View {
                 Text(timeRangeText(from: window.startTime, to: window.endTime))
                       .font(.subheadline.weight(.semibold))
 
-                Text(window.title.localized())
+                Text(subtitleText)
                       .font(.caption)
                       .bold()
                       .foregroundStyle(.secondary)
@@ -199,6 +220,7 @@ private struct PriceWindowRow: View {
                 .font(.subheadline.weight(.semibold))
                 .monospacedDigit()
         }
+        .onReceive(timer) { now = $0 }
     }
 }
 

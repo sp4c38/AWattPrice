@@ -37,8 +37,9 @@ private struct CheapestTimeTimelineRow: View {
     let startTime: Date
     let endTime: Date
     let priceText: String
-    let note: String?
-    let isLast: Bool
+    let marker: CheapestTimeTimelineMarker?
+
+    static let markerColumnWidth: CGFloat = 20
 
     private var timeFormatter: DateFormatter {
         let formatter = DateFormatter()
@@ -47,40 +48,32 @@ private struct CheapestTimeTimelineRow: View {
     }
 
     var body: some View {
-        HStack(alignment: .top, spacing: 14) {
-            ZStack(alignment: .top) {
-                if !isLast {
-                    Rectangle()
-                        .fill(cheapestTimeAccent.opacity(0.22))
-                        .frame(width: 2)
-                        .padding(.top, 5)
-                }
-
-                Circle()
-                    .fill(cheapestTimeAccent)
-                    .frame(width: 10, height: 10)
-            }
-            .frame(width: 10, height: 36)
-
-            VStack(alignment: .leading, spacing: 4) {
-                Text("\(timeFormatter.string(from: startTime)) - \(timeFormatter.string(from: endTime))")
-                    .font(.headline)
-
-                if let note {
-                    Text(note.localized())
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+        HStack(alignment: .center, spacing: 10) {
+            ZStack {
+                if marker != nil {
+                    Circle()
+                        .fill(cheapestTimeAccent)
+                        .frame(width: 10, height: 10)
                 }
             }
+            .frame(width: Self.markerColumnWidth, height: Self.markerColumnWidth)
+
+            Text("\(timeFormatter.string(from: startTime)) - \(timeFormatter.string(from: endTime))")
+                .font(.subheadline)
+                .foregroundStyle(.primary)
 
             Spacer()
 
             Text(priceText)
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(.primary)
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
         }
-        .padding(.bottom, note == nil ? 0 : 8)
     }
+}
+
+private enum CheapestTimeTimelineMarker {
+    case start
+    case end
 }
 
 private struct CheapestTimeTimelineEntry: Identifiable {
@@ -90,14 +83,35 @@ private struct CheapestTimeTimelineEntry: Identifiable {
     let priceText: String
 }
 
+private struct CheapestTimeMetricCardData: Identifiable {
+    let id: String
+    let title: LocalizedStringKey
+    let value: String
+    let systemImage: String
+}
+
 private struct CheapestTimeResultContent: View {
     let result: HourPair
 
-    private var heroTitle: String {
-        "Cheapest Time".localized()
+    // Only drives the "Starts In" countdown text below; the result itself is
+    // calculated once and never recomputed from this ticking.
+    @State private var now = Date()
+    private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+
+    /// First line of the hero window display — the relative day ("Today,"), if any.
+    private var windowLinePrefix: String? {
+        guard let startDate = result.startDate else { return nil }
+        let calendar = Calendar.current
+        if calendar.isDateInToday(startDate) {
+            return "\("Today".localized()),"
+        } else if calendar.isDateInTomorrow(startDate) {
+            return "\("Tomorrow".localized()),"
+        }
+        return nil
     }
 
-    private var windowText: String {
+    /// Second line of the hero window display — weekday and time range.
+    private var windowLine: String {
         guard let startDate = result.startDate, let endDate = result.endDate else { return "" }
 
         let weekdayFormatter = DateFormatter()
@@ -106,20 +120,8 @@ private struct CheapestTimeResultContent: View {
         let timeFormatter = DateFormatter()
         timeFormatter.dateFormat = "HH:mm"
 
-        let calendar = Calendar.current
-        let relativeDay: String
-        if calendar.isDateInToday(startDate) {
-            relativeDay = "Today".localized()
-        } else if calendar.isDateInTomorrow(startDate) {
-            relativeDay = "Tomorrow".localized()
-        } else {
-            relativeDay = ""
-        }
-
         let weekday = weekdayFormatter.string(from: startDate)
-        let prefix = relativeDay.isEmpty ? weekday : "\(relativeDay), \(weekday)"
-
-        return "\(prefix) \(timeFormatter.string(from: startDate)) - \(timeFormatter.string(from: endDate))"
+        return "\(weekday) \(timeFormatter.string(from: startDate)) - \(timeFormatter.string(from: endDate))"
     }
 
     private var durationText: String {
@@ -131,6 +133,37 @@ private struct CheapestTimeResultContent: View {
 
     private var averagePriceText: String {
         "\(result.averagePrice.priceString ?? "-") ct/kWh"
+    }
+
+    private var hasStarted: Bool {
+        guard let startDate = result.startDate else { return false }
+        return startDate.timeIntervalSince(now) <= 0
+    }
+
+    private var startsInText: String {
+        guard let startDate = result.startDate else { return "" }
+        let secondsUntilStart = Int(startDate.timeIntervalSince(now))
+        guard secondsUntilStart > 0 else { return "" }
+
+        let hours = secondsUntilStart / 3600
+        let minutes = (secondsUntilStart % 3600) / 60
+        return TotalTimeFormatter().string(hour: hours, minute: minutes)
+    }
+
+    /// "Starts In"/countdown before the window begins, "Status"/"In Progress" once it has.
+    private var startsInCard: CheapestTimeMetricCardData {
+        if hasStarted {
+            return CheapestTimeMetricCardData(id: "startsIn", title: "Status", value: "In Progress".localized(), systemImage: "hourglass.bottomhalf.fill")
+        }
+        return CheapestTimeMetricCardData(id: "startsIn", title: "Starts In", value: startsInText, systemImage: "hourglass")
+    }
+
+    private var metricCards: [CheapestTimeMetricCardData] {
+        [
+            startsInCard,
+            CheapestTimeMetricCardData(id: "duration", title: "Duration", value: durationText, systemImage: "timer"),
+            CheapestTimeMetricCardData(id: "averagePrice", title: "Average Price", value: averagePriceText, systemImage: "bolt.fill"),
+        ]
     }
 
     private var timelineEntries: [CheapestTimeTimelineEntry] {
@@ -145,7 +178,7 @@ private struct CheapestTimeResultContent: View {
                 id: index,
                 startTime: displayStart,
                 endTime: displayEnd,
-                priceText: "\(pricePoint.marketprice.priceString ?? "-") ct/kWh"
+                priceText: pricePoint.marketprice.priceString ?? "-"
             )
         }
     }
@@ -153,27 +186,38 @@ private struct CheapestTimeResultContent: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 18) {
-                VStack(alignment: .leading, spacing: 14) {
-                    Text(heroTitle)
-                        .font(.headline)
-                        .foregroundStyle(.secondary)
+                VStack(alignment: .leading, spacing: 2) {
+                    if let windowLinePrefix {
+                        Text(windowLinePrefix)
+                            .font(.system(size: 30, weight: .semibold, design: .rounded))
+                            .foregroundStyle(.primary)
+                    }
 
-                    Text(windowText)
+                    Text(windowLine)
                         .font(.system(size: 30, weight: .semibold, design: .rounded))
                         .foregroundStyle(.primary)
                 }
                 .cheapestTimeCardStyle()
 
-                HStack(spacing: 12) {
-                    CheapestTimeMetricCard(title: "Duration", value: durationText, systemImage: "timer")
-                    CheapestTimeMetricCard(title: "Average Price", value: averagePriceText, systemImage: "bolt.fill")
+                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
+                    ForEach(metricCards) { card in
+                        CheapestTimeMetricCard(title: card.title, value: card.value, systemImage: card.systemImage)
+                    }
                 }
 
                 VStack(alignment: .leading, spacing: 14) {
-                    Label("Timeline", systemImage: "list.bullet.rectangle.portrait")
-                        .font(.headline)
+                    HStack {
+                        Label("Timeline", systemImage: "list.bullet.rectangle.portrait")
+                            .font(.headline)
 
-                    VStack(alignment: .leading, spacing: 0) {
+                        Spacer()
+
+                        Text("ct/kWh".localized())
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+
+                    VStack(alignment: .leading, spacing: 10) {
                         ForEach(Array(timelineEntries.enumerated()), id: \.element.id) { index, entry in
                             let isFirst = index == 0
                             let isLast = index == timelineEntries.count - 1
@@ -182,10 +226,19 @@ private struct CheapestTimeResultContent: View {
                                 startTime: entry.startTime,
                                 endTime: entry.endTime,
                                 priceText: entry.priceText,
-                                note: isFirst ? "Recommended start" : (isLast ? "Recommended end" : nil),
-                                isLast: isLast
+                                marker: isFirst ? .start : (isLast ? .end : nil)
                             )
                         }
+                    }
+                    .background(alignment: .leading) {
+                        // One continuous rail connecting the start and end markers,
+                        // instead of a separate line segment per row. Rows are a fixed
+                        // height now (no notes), so both insets are just half that height.
+                        Rectangle()
+                            .fill(Color.secondary.opacity(0.18))
+                            .frame(width: 2)
+                            .padding(.vertical, CheapestTimeTimelineRow.markerColumnWidth / 2)
+                            .padding(.leading, (CheapestTimeTimelineRow.markerColumnWidth - 2) / 2)
                     }
                 }
                 .cheapestTimeCardStyle()
@@ -194,6 +247,7 @@ private struct CheapestTimeResultContent: View {
             .padding(.top, 14)
             .padding(.bottom, 32)
         }
+        .onReceive(timer) { now = $0 }
     }
 }
 

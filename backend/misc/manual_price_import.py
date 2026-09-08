@@ -56,7 +56,7 @@ def detect_area_key(xml_bytes: bytes) -> str:
     return (supported_areas or matching_areas)[0].key
 
 
-async def import_one(config, xml_path: Path, import_day: date) -> None:
+async def import_one(config, xml_path: Path, import_day: date, allow_fallback: bool = False) -> None:
     """Import, merge, store, and verify a single exported day for one area."""
     xml_bytes = xml_path.read_bytes()
     area_key = detect_area_key(xml_bytes)
@@ -66,7 +66,16 @@ async def import_one(config, xml_path: Path, import_day: date) -> None:
     if not prices.has_complete_local_day(imported, area, import_day):
         raise RuntimeError(f"{xml_path.name}: export does not contain a complete {import_day} local day")
     if prices.fallback_price_count(imported) != 0:
-        raise RuntimeError(f"{xml_path.name}: export unexpectedly contains fallback prices")
+        if not allow_fallback:
+            raise RuntimeError(
+                f"{xml_path.name}: export unexpectedly contains fallback prices "
+                f"(pass --allow-fallback to import anyway; ENTSO-E only published a "
+                f"non-primary sequence for this day)"
+            )
+        print(
+            f"WARNING: {xml_path.name} contains {prices.fallback_price_count(imported)} fallback-sequence "
+            f"prices; importing anyway per --allow-fallback."
+        )
 
     stored = await prices.get_stored_data(area_key, config)
     if stored is None:
@@ -81,9 +90,12 @@ async def import_one(config, xml_path: Path, import_day: date) -> None:
     await update_last_update_time(area_key, config)
 
     reloaded = await prices.get_stored_data(area_key, config)
-    verification_time = arrow.now(area.timezone).floor("day").shift(hours=18)
-    if not prices.complete_tomorrow_prices(reloaded, area, now=verification_time):
-        raise RuntimeError(f"{area_key}: stored data failed tomorrow-price verification after import")
+    if not prices.has_complete_local_day(reloaded, area, import_day):
+        raise RuntimeError(f"{area_key}: stored data failed completeness verification after import")
+    if not allow_fallback:
+        day_start = arrow.get(import_day.isoformat(), "YYYY-MM-DD", tzinfo=area.timezone)
+        if prices.has_fallback_price_points(reloaded, day_start, day_start.shift(days=+1)):
+            raise RuntimeError(f"{area_key}: stored data unexpectedly contains fallback prices after import")
 
     imported_count = sum(
         1 for point in reloaded.prices if point.start_timestamp.to(area.timezone).date() == import_day
@@ -100,6 +112,11 @@ def parse_args() -> argparse.Namespace:
         default=None,
         help="Local day the exports cover (YYYY-MM-DD). Defaults to tomorrow (UTC).",
     )
+    parser.add_argument(
+        "--allow-fallback",
+        action="store_true",
+        help="Import even if ENTSO-E only published a non-primary (fallback) sequence for this day.",
+    )
     return parser.parse_args()
 
 
@@ -111,7 +128,7 @@ async def async_main() -> int:
     failures = 0
     for xml_path in args.xml_files:
         try:
-            await import_one(config, xml_path, import_day)
+            await import_one(config, xml_path, import_day, allow_fallback=args.allow_fallback)
         except Exception as exc:
             failures += 1
             print(f"FAILED {xml_path.name}: {exc}", file=sys.stderr)
